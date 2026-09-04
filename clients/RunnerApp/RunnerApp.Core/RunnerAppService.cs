@@ -41,35 +41,131 @@ public class RunnerAppService : BackgroundService
         _loggerFactory = loggerFactory;
     }
 
+    // Trigger that the Windows service host can pulse when OS network availability changes.
+    // This lets the service reconnect immediately after sleep/wake or network restore instead
+    // of waiting for the next poll/backoff cycle. A new token source is created each listener
+    // iteration so multiple network events over the service lifetime keep working.
+    private CancellationTokenSource _reconnectCts = new();
+    private readonly object _reconnectLock = new();
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("RunnerAppService started in {Mode} mode.", _options.IsServiceMode ? "service" : "single-shot");
         DebugLog.Info($"RunnerAppService started in {(_options.IsServiceMode ? "service" : "single-shot")} mode. Logs: {DebugLog.CurrentLogFilePath}");
 
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+        var consecutiveFailures = 0;
 
-        try
+        while (!stoppingToken.IsCancellationRequested)
         {
-            // Connect once and stay connected for the lifetime of the service. Job execution
-            // is handled inside the hub command handler, so the service remains online and
-            // ready for Abort/Killed commands between jobs.
-            await RunHubListenerAsync(cts.Token);
+            CancellationTokenSource reconnectCts;
+            lock (_reconnectLock)
+            {
+                reconnectCts = _reconnectCts;
+            }
+
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken, reconnectCts.Token);
+
+            try
+            {
+                // Connect and stay connected for the lifetime of the service (or until an
+                // unrecoverable failure). Job execution is handled inside the hub command
+                // handler, so the service remains online and ready for Abort/Killed commands
+                // between jobs.
+                await RunHubListenerAsync(cts.Token);
+
+                // Normal exit means single-shot mode finished, or cancellation was requested.
+                break;
+            }
+            catch (OperationCanceledException) when (reconnectCts.IsCancellationRequested && !stoppingToken.IsCancellationRequested)
+            {
+                // Reconnect was deliberately triggered by the OS network event. Restart the
+                // listener immediately so we reconnect without waiting for the backoff timer.
+                _logger.LogInformation("RunnerAppService reconnect triggered; restarting hub listener now.");
+                DebugLog.Info("RunnerAppService reconnect triggered; restarting hub listener now.");
+                consecutiveFailures = 0;
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // Expected on service stop.
+                break;
+            }
+            catch (Exception ex)
+            {
+                consecutiveFailures++;
+                _logger.LogError(ex, "RunnerAppService hub listener failed unexpectedly. Restarting...");
+                DebugLog.Error("RunnerAppService hub listener failed unexpectedly. Restarting...", ex);
+            }
+
+            // Reset the reconnect trigger so future OS network events can be observed.
+            lock (_reconnectLock)
+            {
+                if (_reconnectCts == reconnectCts)
+                {
+                    _reconnectCts.Dispose();
+                    _reconnectCts = new();
+                }
+            }
+
+            if (stoppingToken.IsCancellationRequested)
+                break;
+
+            // Exponential backoff between restarts, capped at 60s, with jitter. Skipped when
+            // the restart was triggered by an OS network event.
+            var delaySeconds = Math.Min(60, 5 * Math.Pow(2, consecutiveFailures - 1));
+            var jitterMs = Random.Shared.Next(0, 500);
+            var delay = TimeSpan.FromSeconds(delaySeconds) + TimeSpan.FromMilliseconds(jitterMs);
+            _logger.LogInformation("RunnerAppService will restart the hub listener in {DelaySeconds:F0}s.", delay.TotalSeconds);
+            DebugLog.Info($"RunnerAppService will restart the hub listener in {delay.TotalSeconds:F0}s.");
+            await Task.Delay(delay, stoppingToken);
         }
-        catch (OperationCanceledException) when (cts.IsCancellationRequested)
+
+        lock (_reconnectLock)
         {
-            // Expected on service stop.
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "RunnerAppService hub listener failed unexpectedly.");
-            DebugLog.Error("RunnerAppService hub listener failed unexpectedly.", ex);
-        }
-        finally
-        {
-            cts.Dispose();
+            try
+            {
+                _reconnectCts.Dispose();
+            }
+            catch
+            {
+                // Best effort.
+            }
         }
 
         _logger.LogInformation("RunnerAppService stopped.");
+    }
+
+    /// <summary>
+    /// Signals the service to attempt an immediate hub reconnect. Called by the Windows host
+    /// when the OS reports network availability has changed. Safe to call from any thread; the
+    /// signal is ignored when no listener is currently waiting.
+    /// </summary>
+    public void TriggerReconnect()
+    {
+        lock (_reconnectLock)
+        {
+            try
+            {
+                if (_reconnectCts.IsCancellationRequested)
+                    return;
+            }
+            catch (ObjectDisposedException)
+            {
+                // Service is shutting down; ignore.
+                return;
+            }
+
+            DebugLog.Info("RunnerAppService reconnect triggered by OS network availability change.");
+            _logger.LogInformation("RunnerAppService reconnect triggered by OS network availability change.");
+
+            try
+            {
+                _reconnectCts.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Service is shutting down; ignore.
+            }
+        }
     }
 
     // Long-lived listener: registers the machine, connects to the hub, and stays connected.
@@ -236,19 +332,20 @@ public class RunnerAppService : BackgroundService
             // pending-job drain so jobs created while offline (or whose SignalR push was
             // missed) are still picked up after the hub reconnects.
             ExecutorCommandReceivedEventArgs? command = null;
+            using var commandWaitCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            commandWaitCts.CancelAfter(TimeSpan.FromSeconds(30));
+
             try
             {
-                command = await _commandChannel.Reader.ReadAsync(cancellationToken)
-                    .AsTask()
-                    .WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+                command = await _commandChannel.Reader.ReadAsync(commandWaitCts.Token);
             }
-            catch (TimeoutException)
+            catch (OperationCanceledException) when (commandWaitCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
-                // Poll interval elapsed with no command; drain pending jobs below.
+                // 30-second poll interval elapsed with no command; drain pending jobs below.
             }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
-                // Unexpected cancellation of the wait itself; treat as an empty poll.
+                break;
             }
 
             if (command == null)
@@ -283,12 +380,36 @@ public class RunnerAppService : BackgroundService
             return;
         }
 
+        var consecutiveFailures = 0;
         while (!cancellationToken.IsCancellationRequested)
         {
             Guid? nextJobId;
             try
             {
                 nextJobId = await backendClient.GetNextPendingJobAsync(machineId, cancellationToken);
+                consecutiveFailures = 0;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (Exception ex) when (IsTransientNetworkFailure(ex))
+            {
+                consecutiveFailures++;
+                _logger.LogWarning(ex, "Transient failure querying next pending job for machine {MachineId} (attempt {Attempt}).", machineId, consecutiveFailures);
+                DebugLog.Warn($"Transient failure querying next pending job for machine {machineId}: {ex.Message}");
+
+                // Back off briefly so a backend/network blip does not spin tight.
+                var delay = TimeSpan.FromSeconds(Math.Min(30, 5 * consecutiveFailures));
+                try
+                {
+                    await Task.Delay(delay, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                continue;
             }
             catch (Exception ex)
             {
@@ -307,6 +428,14 @@ public class RunnerAppService : BackgroundService
             DebugLog.Info($"Draining pending job {nextJobId.Value} for machine {machineId}.");
             await ExecuteJobAsync(backendClient, hubClient, nextJobId.Value, accessToken, cancellationToken);
         }
+    }
+
+    private static bool IsTransientNetworkFailure(Exception ex)
+    {
+        return ex is HttpRequestException
+            || ex is System.Net.Sockets.SocketException
+            || ex is TimeoutException
+            || (ex is IOException && ex.InnerException is System.Net.Sockets.SocketException);
     }
 
     // Refresh path for the token manager. Service mode re-registers with the tenant API key
@@ -341,23 +470,41 @@ public class RunnerAppService : BackgroundService
 
     private async Task ConnectHubWithRetryAsync(IOrchestratorHubClient hubClient, CancellationToken cancellationToken)
     {
-        const int maxAttempts = 5;
-        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        var attempt = 0;
+        while (!cancellationToken.IsCancellationRequested)
         {
+            attempt++;
             try
             {
-                _logger.LogInformation("Connecting to OrchestratorHub (attempt {Attempt}/{MaxAttempts})...", attempt, maxAttempts);
+                _logger.LogInformation("Connecting to OrchestratorHub (attempt {Attempt})...", attempt);
                 await hubClient.ConnectAsync(cancellationToken);
                 return;
             }
-            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
-                _logger.LogWarning(ex, "Failed to connect to OrchestratorHub (attempt {Attempt}/{MaxAttempts}).", attempt, maxAttempts);
-                if (attempt == maxAttempts)
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to connect to OrchestratorHub (attempt {Attempt}).", attempt);
+                DebugLog.Warn($"Failed to connect to OrchestratorHub (attempt {attempt}): {ex.Message}");
+
+                // Exponential backoff capped at 60s. Retry indefinitely until cancellation so
+                // the service stays alive through long outages and reconnects as soon as the
+                // network/backend is back.
+                var delay = TimeSpan.FromSeconds(Math.Min(60, Math.Pow(2, attempt - 1)));
+                try
+                {
+                    await Task.Delay(delay, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
                     throw;
-                await Task.Delay(TimeSpan.FromSeconds(5 * attempt), cancellationToken);
+                }
             }
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
     }
 
     private async Task ExecuteJobAsync(

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RunnerApp;
 using RunnerApp.Services;
+using System.Net.NetworkInformation;
 
 var mode = ParseMode(args);
 if (mode == ExecutorMode.Install)
@@ -61,6 +62,28 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
 #endif
 
     var host = hostBuilder.Build();
+
+#if WINDOWS
+    // Wire the OS network-availability event so the service reconnects immediately after
+    // sleep/wake or network restore instead of waiting for the polling/backoff loop.
+    RunnerAppService? runnerService = null;
+    NetworkChange.NetworkAvailabilityChanged += (_, args) =>
+    {
+        try
+        {
+            if (!args.IsAvailable)
+                return;
+
+            runnerService ??= host.Services.GetService(typeof(RunnerAppService)) as RunnerAppService;
+            runnerService?.TriggerReconnect();
+        }
+        catch (Exception ex)
+        {
+            // Never let an OS event handler crash the service host.
+            DebugLog.Error("NetworkAvailabilityChanged handler failed.", ex);
+        }
+    };
+#endif
 
     await host.RunAsync();
     return 0;
