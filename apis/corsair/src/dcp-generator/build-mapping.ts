@@ -44,9 +44,6 @@ export function buildPluginCategory(
   plugin: PluginMetadata,
   actions: ActionSelectorAction[],
 ): ActionSelectorCategory {
-  if(plugin.providerName.includes("open")) {
-    console.log("plugin:", plugin);
-  }
   return {
     label: plugin.providerName,
     // Remove internal "Corsair" branding from user-facing description.
