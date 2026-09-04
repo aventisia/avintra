@@ -251,15 +251,16 @@ app.post("/credentials", async (req, res) => {
     for (const [field, value] of Object.entries(credentials as Record<string, unknown>)) {
       if (typeof value !== "string" || value.length === 0) continue;
       const normalizedField = {
-        ApiKey: "api_key",
-        AccessToken: "access_token",
-        ApiToken: "api_token",
-        ClientId: "client_id",
-        ClientSecret: "client_secret",
-        RedirectUrl: "redirect_url",
-      }[field] ?? field;
+        apikey: "api_key",
+        accesstoken: "access_token",
+        apitoken: "api_token",
+        clientid: "client_id",
+        clientsecret: "client_secret",
+        redirecturl: "redirect_url",
+      }[field.replaceAll("_", "").toLowerCase()] ?? field;
       const setter = keyManager[`set_${normalizedField}`];
       if (typeof setter !== "function") {
+        if (pluginId === "gemini" && field.replaceAll("_", "").toLowerCase() === "host") continue;
         return res.status(400).json({ error: `Unsupported credential field: ${field}` });
       }
       await setter(value);

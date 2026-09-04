@@ -82833,7 +82833,7 @@
         ]
       },
       {
-        "label": "Microsoft",
+        "label": "OneDrive",
         "description": "onedrive",
         "icon": null,
         "img": "/brand-img/onedrive.svg",
@@ -85739,7 +85739,7 @@
         ]
       },
       {
-        "label": "Microsoft",
+        "label": "Outlook",
         "description": "Outlook",
         "icon": null,
         "img": "/brand-img/outlook.svg",
@@ -92147,7 +92147,7 @@
         ]
       },
       {
-        "label": "Microsoft",
+        "label": "SharePoint",
         "description": "Sharepoint",
         "icon": null,
         "img": "/brand-img/sharepoint.svg",
@@ -97789,7 +97789,7 @@
         ]
       },
       {
-        "label": "Microsoft",
+        "label": "Microsoft Teams",
         "description": "Microsoft Teams",
         "icon": null,
         "img": "/brand-img/teams.svg",

@@ -3638,9 +3638,12 @@
   {
     "pluginId": "onedrive",
     "pluginIds": [
-      "onedrive"
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
     ],
-    "providerName": "Microsoft",
+    "providerName": "OneDrive",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -3663,16 +3666,29 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "offline_access",
-        "User.Read",
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
         "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
         "Sites.Read.All",
-        "Subscription.Read.All"
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
       ]
     },
     "icon": "/brand-img/onedrive.svg",
-    "vaultType": "Onedrive",
-    "configFile": "Onedrive.json"
+    "vaultType": "M365",
+    "configFile": "M365.json"
   },
   {
     "pluginId": "onepassword",
@@ -3762,9 +3778,12 @@
   {
     "pluginId": "outlook",
     "pluginIds": [
-      "outlook"
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
     ],
-    "providerName": "Microsoft",
+    "providerName": "Outlook",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -3787,11 +3806,24 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "offline_access",
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
         "Mail.ReadWrite",
         "Mail.Send",
-        "Calendars.ReadWrite",
-        "Contacts.ReadWrite"
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
       ]
     },
     "icon": "/brand-img/outlook.svg",
@@ -4057,9 +4089,12 @@
   {
     "pluginId": "sharepoint",
     "pluginIds": [
-      "sharepoint"
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
     ],
-    "providerName": "Microsoft",
+    "providerName": "SharePoint",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -4084,16 +4119,29 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "offline_access",
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        "Sites.Manage.All",
-        "Sites.FullControl.All"
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
       ]
     },
     "icon": "/brand-img/sharepoint.svg",
-    "vaultType": "Sharepoint",
-    "configFile": "Sharepoint.json"
+    "vaultType": "M365",
+    "configFile": "M365.json"
   },
   {
     "pluginId": "slack",
@@ -4409,9 +4457,12 @@
   {
     "pluginId": "teams",
     "pluginIds": [
+      "onedrive",
+      "outlook",
+      "sharepoint",
       "teams"
     ],
-    "providerName": "Microsoft",
+    "providerName": "Microsoft Teams",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -4434,18 +4485,29 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "offline_access",
-        "Team.ReadBasic.All",
+        "Calendars.ReadWrite",
         "Channel.ReadBasic.All",
         "ChannelMessage.Read.All",
         "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
         "TeamMember.Read.All",
-        "Chat.ReadWrite"
+        "User.Read",
+        "offline_access"
       ]
     },
     "icon": "/brand-img/teams.svg",
-    "vaultType": "Teams",
-    "configFile": "Teams.json"
+    "vaultType": "M365",
+    "configFile": "M365.json"
   },
   {
     "pluginId": "telegram",
