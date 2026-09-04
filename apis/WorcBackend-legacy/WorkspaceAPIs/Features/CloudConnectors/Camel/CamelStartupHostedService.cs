@@ -104,25 +104,26 @@ public class CamelStartupHostedService : BackgroundService
         var seedingService = scope.ServiceProvider.GetRequiredService<ICamelSeedingService>();
         var catalogClient = scope.ServiceProvider.GetRequiredService<CamelCatalogClient>();
 
-        // Fetch the API connector list up-front. When the harness is unreachable
-        // the list comes back empty and is NOT cached, so a later retry attempt
-        // re-queries it once the harness is up.
-        var connectorList = await catalogClient.GetConnectorListAsync(cancellationToken);
+        // Probe the harness via the schemas endpoint (the primary data source)
+        // to decide whether the harness is reachable. When the harness is
+        // unreachable the catalog comes back empty and is NOT cached, so a
+        // later retry attempt re-queries it once the harness is up.
+        var catalog = await catalogClient.GetCatalogAsync(cancellationToken);
 
         // Run the unified seeding workflow: tools + connector JSON + mapping.
         var seeded = await seedingService.SeedAsync(dbContext, cancellationToken);
 
         _logger.LogInformation(
             "Camel startup: {Seeded} connectors seeded, {ConnectorCount} connectors available from the harness.",
-            seeded, connectorList.Count);
+            seeded, catalog.Count);
 
-        // If the harness was unreachable (empty connector list), do NOT report
-        // this attempt as handled: the retry loop backs off and tries again so
-        // the full catalog is seeded once the harness comes up.
-        if (connectorList.Count == 0)
+        // If the harness was unreachable (empty catalog), do NOT report this
+        // attempt as handled: the retry loop backs off and tries again so the
+        // full catalog is seeded once the harness comes up.
+        if (catalog.Count == 0)
         {
             _logger.LogWarning(
-                "Camel harness connector list is empty (harness unreachable); retrying so the full connector catalog is seeded once it is up.");
+                "Camel harness catalog is empty (harness unreachable); retrying so the full connector catalog is seeded once it is up.");
             return false;
         }
 

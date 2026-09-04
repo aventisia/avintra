@@ -94,9 +94,14 @@ public static class CamelCredentialHelpers
 
     /// <summary>
     /// Database authentication. Reads the connection string/URL from the
-    /// <c>ConnectionString</c> (or <c>Url</c>) key. Username/password may be
-    /// overridden via the <c>dbUsername</c>/<c>dbPassword</c> payload fields or
-    /// the credential's <c>Username</c>/<c>Password</c> keys.
+    /// <c>ConnectionString</c> (or <c>Url</c>) key. Username/password are
+    /// resolved in this precedence:
+    ///   1. <c>dbUsername</c>/<c>dbPassword</c> payload fields (explicit override)
+    ///   2. credential <c>Username</c>/<c>Password</c> keys
+    ///   3. parsed from the connection string itself (URL userinfo or ADO.NET
+    ///      <c>Username</c>/<c>Password</c> key-value pairs)
+    /// The harness SQL metadata requires a <c>username</c> auth property, so the
+    /// parsed credentials are always injected into the auth properties.
     /// </summary>
     public static CamelAuthResult Database(
         AppSecretDto credential,
@@ -119,6 +124,17 @@ public static class CamelCredentialHelpers
 
         var username = GetPayloadString(payload, "dbUsername") ?? GetString(credential, "Username");
         var password = GetPayloadString(payload, "dbPassword") ?? GetString(credential, "Password");
+
+        // When the credential does not carry explicit username/password, extract
+        // them from the connection string so the harness receives the required
+        // auth properties without the caller having to pass dbUsername/dbPassword.
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        {
+            TryExtractCredentials(url, out var parsedUsername, out var parsedPassword);
+            username ??= parsedUsername;
+            password ??= parsedPassword;
+        }
+
         if (!string.IsNullOrWhiteSpace(username))
         {
             properties["username"] = username;
@@ -133,6 +149,79 @@ public static class CamelCredentialHelpers
             ["type"] = "database",
             ["properties"] = properties
         });
+    }
+
+    /// <summary>
+    /// Extracts username/password from a database connection string. Supports:
+    ///   - URL-style:  <c>postgresql://user:pass@host:port/db</c> (also
+    ///     <c>jdbc:postgresql://user:pass@host:port/db</c>)
+    ///   - ADO.NET:    <c>Host=...;Username=...;Password=...</c> (Npgsql-style
+    ///     key=value pairs; keys are case-insensitive)
+    /// Percent-encoded characters in URL userinfo (e.g. <c>%40</c> for <c>@</c>)
+    /// are decoded.
+    /// </summary>
+    private static void TryExtractCredentials(
+        string connectionString,
+        out string? username,
+        out string? password)
+    {
+        username = null;
+        password = null;
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        // URL-style with userinfo: scheme://user:pass@host...
+        var schemeEnd = connectionString.IndexOf("://", StringComparison.Ordinal);
+        if (schemeEnd >= 0)
+        {
+            // Split on the LAST '@' so passwords containing '@' (e.g.
+            // postgres:Post@123@localhost) are handled correctly. The first '@'
+            // after the scheme may be inside the password, not the userinfo
+            // separator.
+            var atIndex = connectionString.LastIndexOf('@');
+            if (atIndex > schemeEnd + 3)
+            {
+                var userInfo = connectionString.Substring(schemeEnd + 3, atIndex - (schemeEnd + 3));
+                var colon = userInfo.IndexOf(':');
+                if (colon >= 0)
+                {
+                    username = Uri.UnescapeDataString(userInfo.Substring(0, colon));
+                    password = Uri.UnescapeDataString(userInfo.Substring(colon + 1));
+                }
+                else
+                {
+                    username = Uri.UnescapeDataString(userInfo);
+                }
+                return;
+            }
+        }
+
+        // ADO.NET / Npgsql key=value pairs separated by ';'.
+        try
+        {
+            var builder = new System.Data.Common.DbConnectionStringBuilder
+            {
+                ConnectionString = connectionString
+            };
+            if (builder.TryGetValue("Username", out var u)
+                || builder.TryGetValue("User ID", out u)
+                || builder.TryGetValue("Uid", out u))
+            {
+                username = Convert.ToString(u);
+            }
+            if (builder.TryGetValue("Password", out var p)
+                || builder.TryGetValue("Pwd", out p))
+            {
+                password = Convert.ToString(p);
+            }
+        }
+        catch
+        {
+            // Not a parseable key=value connection string; leave credentials null.
+        }
     }
 
     /// <summary>
