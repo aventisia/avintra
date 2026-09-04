@@ -574,7 +574,13 @@ public class AppSecretService : IAppSecretService
             var newJson = System.Text.Json.JsonSerializer.SerializeToNode(appSecretDto.Data);
             bool isDataChanged = !JsonNode.DeepEquals(existingJson, newJson);
 
-            if (isDataChanged)
+            // A type change requires re-validating the data against the new type and re-syncing the
+            // Corsair sidecar mirror, since the previous type's plugin(s)/field names may no longer apply.
+            var typeChanged = existingAppSecret.Type != appSecretDto.Type;
+            var previousType = existingAppSecret.Type;
+            var needsRevalidation = isDataChanged || typeChanged;
+
+            if (needsRevalidation)
             {
                 // Validate the updated secret data.
                 validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
@@ -620,9 +626,7 @@ public class AppSecretService : IAppSecretService
             }
 
             // Update the secret type only if it has changed.
-            // TODO: Type changes are a known limitation. The sidecar account row still uses
-            // the old integration_id; switching types after creation is not synced in this plan.
-            if (existingAppSecret.Type != appSecretDto.Type)
+            if (typeChanged)
             {
                 existingAppSecret.Type = appSecretDto.Type;
             }
@@ -641,7 +645,7 @@ public class AppSecretService : IAppSecretService
             }
 
             // Update encrypted key-values only if the secret data has changed.
-            if (isDataChanged)
+            if (needsRevalidation)
             {
                 // Get existing encrypted key-values from the database
                 var existingKeyValues = existingAppSecret.EncryptedKeyValues;
@@ -715,8 +719,15 @@ public class AppSecretService : IAppSecretService
             }
 
             // Mirror the credential to the Corsair sidecar for supported API-key plugins.
-            if (isDataChanged && validateData != null)
+            if (needsRevalidation && validateData != null)
             {
+                if (typeChanged)
+                {
+                    // Remove the previous type's mirrored credential(s); the new type's plugin(s)
+                    // may differ entirely, so the old sidecar rows would otherwise be orphaned.
+                    await UnmirrorCredentialFromCorsairAsync(existingAppSecret.Id, previousType);
+                }
+
                 await MirrorCredentialToCorsairAsync(existingAppSecret, validateData.EncryptedValues);
                 await MirrorOAuthCredentialToCorsairAsync(existingAppSecret, validateData.EncryptedValues);
             }
@@ -3962,11 +3973,18 @@ public class AppSecretService : IAppSecretService
             if (property.Value.ValueKind == JsonValueKind.String)
             {
                 var value = property.Value.GetString() ?? string.Empty;
-                if (value.Length > 0)
+                if (IsOAuthConfigurationField(property.Name))
                 {
-                    result.EncryptedValues[property.Name] = _encryptionService.EncryptString(value);
+                    sanitized[property.Name] = value;
                 }
-                sanitized[property.Name] = string.Empty;
+                else
+                {
+                    if (value.Length > 0)
+                    {
+                        result.EncryptedValues[property.Name] = _encryptionService.EncryptString(value);
+                    }
+                    sanitized[property.Name] = string.Empty;
+                }
             }
             else
             {
@@ -3982,6 +4000,12 @@ public class AppSecretService : IAppSecretService
 
         result.SanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(sanitized, jsonOptions);
         return result;
+    }
+
+    private static bool IsOAuthConfigurationField(string fieldName)
+    {
+        var normalized = fieldName.Replace("_", string.Empty, StringComparison.Ordinal).ToLowerInvariant();
+        return normalized is "clientid" or "oauthredirecturl" or "redirecturl";
     }
 
     /// <summary>
@@ -4004,9 +4028,9 @@ public class AppSecretService : IAppSecretService
             // SendGrid is mapped to the existing resend plugin because a public @corsair-dev/sendgrid
             // package was not found. If a dedicated SendGrid plugin is added later, change this mapping.
             AppSecretTypesEnum.SendGrid => "resend",
-            // Twilio is intentionally not mirrored until the Corsair Twilio plugin's expected credential
-            // shape (ApiKeySid+ApiKeySecret vs AuthToken) is verified.
-            AppSecretTypesEnum.Twilio => null,
+            // Twilio's plugin only supports AccountSid+AuthToken Basic auth (see BuildTwilioCredentials);
+            // the ApiKeySid+ApiKeySecret variant is skipped at mirror time.
+            AppSecretTypesEnum.Twilio => "twilio",
             _ => null
         };
 
@@ -4018,16 +4042,13 @@ public class AppSecretService : IAppSecretService
     /// Returns <c>null</c> when the type does not correspond to a Corsair-supported OAuth plugin.
     /// </summary>
     /// <remarks>
-    /// To add a new OAuth-capable credential:
-    /// 1. Add the Corsair OAuth plugin to the sidecar (<c>apis/corsair/src/corsair.ts</c>).
-    /// 2. Add the <c>AppSecretTypesEnum</c> case below pointing to that plugin id.
-    /// 3. Add a frontend form config JSON under <c>clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json/</c>
-    ///    with the OAuth client fields the sidecar needs (typically ClientId and ClientSecret).
-    /// 4. Ensure <c>MirrorOAuthCredentialToCorsairAsync</c> sends the fields the plugin expects.
+    /// Explicit cases below are legacy aliases kept for clarity/back-compat. Any other OAuth-capable
+    /// credential type falls back to <see cref="CorsairConfigRepository.GetOAuthPluginIdForVaultType"/>,
+    /// so newly generated Corsair OAuth plugins work without a code change here.
     /// </remarks>
-    private static string? MapAppSecretTypeToCorsairOAuthPlugin(AppSecretTypesEnum type)
+    private string? MapAppSecretTypeToCorsairOAuthPlugin(AppSecretTypesEnum type)
     {
-        return type switch
+        var mappedPlugin = type switch
         {
             // M365 credentials carry ClientId/ClientSecret and map to the Corsair Outlook plugin.
             AppSecretTypesEnum.M365 => "outlook",
@@ -4036,6 +4057,8 @@ public class AppSecretService : IAppSecretService
             AppSecretTypesEnum.GoogleWorkspace => "gmail",
             _ => null
         };
+
+        return mappedPlugin ?? _corsairConfigRepository.GetOAuthPluginIdForVaultType(type.ToString());
     }
 
     /// <summary>
@@ -4104,6 +4127,13 @@ public class AppSecretService : IAppSecretService
             kv => kv.Key,
             kv => _encryptionService.DecryptString(kv.Value));
 
+        // OAuth credentials are mirrored by MirrorOAuthCredentialToCorsairAsync;
+        // sending their ClientSecret to API-key plugins produces a 400 response.
+        if (decryptedValues.ContainsKey("ClientSecret"))
+        {
+            return;
+        }
+
         if (decryptedValues.Count == 0)
         {
             _logger.LogInformation(
@@ -4115,8 +4145,40 @@ public class AppSecretService : IAppSecretService
 
         foreach (var pluginId in plugins.Count > 0 ? plugins : new[] { plugin! })
         {
-            await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, pluginId, decryptedValues);
+            IReadOnlyDictionary<string, string>? credentials = pluginId == "twilio"
+                ? BuildTwilioCredentials(appSecret, decryptedValues)
+                : decryptedValues;
+
+            if (credentials == null)
+            {
+                _logger.LogInformation(
+                    "Skipping Corsair mirror for credential {AppSecretId}: plugin {Plugin} requires fields not present in this credential.",
+                    appSecret.Id,
+                    pluginId);
+                continue;
+            }
+
+            await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, pluginId, credentials);
         }
+    }
+
+    /// <summary>
+    /// Builds the field names the Corsair Twilio plugin expects ("key" for the Auth Token, "accountSid"
+    /// for the account SID). Only the AccountSid+AuthToken auth mode is supported: the plugin always uses
+    /// AccountSid as the Basic-auth username, which is not compatible with API Key SID+Secret credentials.
+    /// </summary>
+    private static IReadOnlyDictionary<string, string>? BuildTwilioCredentials(
+        AppSecret appSecret,
+        Dictionary<string, string> decryptedValues)
+    {
+        var authToken = decryptedValues.GetValueOrDefault("AuthToken");
+        var accountSid = GetSanitized(appSecret.Data, "AccountSid");
+        if (string.IsNullOrWhiteSpace(authToken) || string.IsNullOrWhiteSpace(accountSid))
+        {
+            return null;
+        }
+
+        return new Dictionary<string, string> { ["key"] = authToken, ["accountSid"] = accountSid };
     }
 
     /// <summary>
@@ -4147,7 +4209,10 @@ public class AppSecretService : IAppSecretService
         }
 
         // ClientId and RedirectUrl are stored in the sanitized JSON (not encrypted).
-        var clientId = GetSanitized(appSecret.Data, "ClientId");
+        var clientId = GetFirstCredentialValue(decryptedValues, "ClientID", "ClientId", "my_client_id")
+            ?? GetSanitized(appSecret.Data, "ClientID")
+            ?? GetSanitized(appSecret.Data, "ClientId")
+            ?? GetSanitized(appSecret.Data, "my_client_id");
         var redirectUrl = _environmentConfig.CorsairRedirectUri;
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(redirectUrl))
@@ -4159,7 +4224,12 @@ public class AppSecretService : IAppSecretService
             return;
         }
 
-        await _corsairSidecarService.StoreIntegrationKeysAsync(appSecret.Id, plugin, clientId, clientSecret, redirectUrl);
+        await _corsairSidecarService.StoreIntegrationKeysAsync(
+            appSecret.Id,
+            plugin,
+            clientId,
+            clientSecret,
+            redirectUrl);
     }
 
     /// <summary>
@@ -4169,8 +4239,10 @@ public class AppSecretService : IAppSecretService
     {
         try
         {
-            var node = JsonNode.Parse(dataJson);
-            var value = node?[propertyName]?.GetValue<string>();
+            var node = JsonNode.Parse(dataJson)?.AsObject();
+            var property = node?.FirstOrDefault(pair =>
+                string.Equals(pair.Key, propertyName, StringComparison.OrdinalIgnoreCase));
+            var value = property?.Value?.GetValue<string>();
             return string.IsNullOrWhiteSpace(value) ? null : value;
         }
         catch

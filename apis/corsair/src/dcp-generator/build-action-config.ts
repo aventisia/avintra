@@ -39,10 +39,14 @@ export function actionToLabel(action: string): string {
 /** Build the credential-select field for a plugin. */
 function buildCredentialField(plugin: PluginMetadata): DcpField {
   const label = plugin.providerName;
+  // The field name must be the canonical in-house credential type (AppSecretTypesEnum-compatible)
+  // so the Studio selector can filter via /app-secret/option-to-select?type=<vaultType>.
+  // The visible label stays friendly (providerName).
+  const credentialType = plugin.vaultType;
   return {
     direction: "Input",
     type: "credentials-select",
-    name: `__CredentialName__${label}`,
+    name: `__CredentialName__${credentialType}`,
     label: `${label} Credential`,
     description: `Select ${label} credentials used to authenticate the request.`,
     defaultValue: "",

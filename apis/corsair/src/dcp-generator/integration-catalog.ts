@@ -22,6 +22,9 @@ const LEGACY_VAULT_ALIASES: Record<string, string> = {
   github: "GitHub",
   openai: "OpenAI",
   outlook: "M365",
+  teams: "M365",
+  onedrive: "M365",
+  sharepoint: "M365",
   gemini: "GoogleGemini",
   twilio: "Twilio",
   resend: "SendGrid",
@@ -41,6 +44,8 @@ const GOOGLE_WORKSPACE_PLUGINS = new Set([
   "googlesheets",
 ]);
 
+const M365_PLUGINS = new Set(["outlook", "teams", "onedrive", "sharepoint"]);
+
 function titleCase(id: string): string {
   return id.charAt(0).toUpperCase() + id.slice(1);
 }
@@ -49,7 +54,7 @@ function fieldLabel(field: string): string {
   return field.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (value) => value.toUpperCase());
 }
 
-function getVaultType(pluginId: string): string {
+export function getVaultType(pluginId: string): string {
   if (GOOGLE_WORKSPACE_PLUGINS.has(pluginId)) return "GoogleWorkspace";
   return LEGACY_VAULT_ALIASES[pluginId] ?? titleCase(pluginId);
 }
@@ -58,10 +63,18 @@ function getVaultType(pluginId: string): string {
 export function buildIntegrationCatalog(
   pluginMetas: readonly PluginMetadata[],
 ): CorsairIntegrationCatalogEntry[] {
+  const m365Scopes = [...new Set(
+    pluginMetas
+      .filter((meta) => M365_PLUGINS.has(meta.id))
+      .flatMap((meta) => meta.oauthConfig?.scopes ?? []),
+  )].sort();
+
   const entries = pluginMetas.map((meta) => {
     const vaultType = getVaultType(meta.id);
     const pluginIds = GOOGLE_WORKSPACE_PLUGINS.has(meta.id)
       ? [...GOOGLE_WORKSPACE_PLUGINS].sort()
+      : M365_PLUGINS.has(meta.id)
+        ? [...M365_PLUGINS].sort()
       : [meta.id];
 
     return {
@@ -70,7 +83,9 @@ export function buildIntegrationCatalog(
       providerName: meta.providerName,
       authModes: meta.authModes,
       defaultAuthMode: meta.authType,
-      oauthConfig: meta.oauthConfig,
+      oauthConfig: M365_PLUGINS.has(meta.id) && meta.oauthConfig
+        ? { ...meta.oauthConfig, scopes: m365Scopes }
+        : meta.oauthConfig,
       icon: meta.img ?? "/function.png",
       vaultType,
       configFile: `${vaultType}.json`,

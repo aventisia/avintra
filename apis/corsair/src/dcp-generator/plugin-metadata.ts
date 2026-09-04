@@ -15,6 +15,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.js";
 
+import { getVaultType } from "./integration-catalog.js";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
@@ -277,6 +279,14 @@ export const DEFAULT_ICON_MAP: Record<string, string> = {
   amcards: "/brand-img/stripe.svg",
   boltiot: "/brand-img/default-provider.svg",
   twochat: "/brand-img/whatsapp.svg",
+};
+
+/** Canonical user-facing names for plugins whose package metadata is generic. */
+export const DISPLAY_NAME_OVERRIDES: Record<string, string> = {
+  outlook: "Outlook",
+  teams: "Microsoft Teams",
+  onedrive: "OneDrive",
+  sharepoint: "SharePoint",
 };
 
 /** Default base URLs for OpenAPI spec generation. */
@@ -571,7 +581,9 @@ export function toPluginMetadata(
 ): PluginMetadata {
   const raw = plugin as RawPlugin;
   const id = raw.id ?? "unknown";
-  const providerName = raw.oauthConfig?.providerName ?? titleCase(id);
+  const providerName = DISPLAY_NAME_OVERRIDES[id]
+    ?? raw.oauthConfig?.providerName
+    ?? titleCase(id);
   const pkgDescription = readPackageDescription(id);
   const description =
     pkgDescription && pkgDescription.trim().length > 0
@@ -594,6 +606,7 @@ export function toPluginMetadata(
   return {
     id,
     providerName,
+    vaultType: getVaultType(id),
     description,
     img: iconMap[id] ?? "/function.png",
     authType,

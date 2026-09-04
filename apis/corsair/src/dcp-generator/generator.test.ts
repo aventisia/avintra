@@ -114,6 +114,51 @@ async function main() {
       "App Integrations has no Corsair action categories",
     );
 
+    // 5. Microsoft plugins use distinct labels while sharing the M365 vault.
+    const microsoftLabels = new Map(
+      appIntegrations.actionCategories
+        .filter((category: any) => ["outlook", "teams", "onedrive", "sharepoint"].some(
+          (id) => category.actions.some((action: any) => action.name.includes(`/${id.charAt(0).toUpperCase() + id.slice(1)}/`)),
+        ))
+        .map((category: any) => [category.actions[0].name.split("/")[1], category.label]),
+    );
+    assert(microsoftLabels.get("Outlook") === "Outlook", "Outlook category is not named Outlook");
+    assert(microsoftLabels.get("Teams") === "Microsoft Teams", "Teams category has no canonical name");
+    assert(microsoftLabels.get("Onedrive") === "OneDrive", "OneDrive category has no canonical name");
+    assert(microsoftLabels.get("Sharepoint") === "SharePoint", "SharePoint category has no canonical name");
+
+    const catalog = JSON.parse(fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"));
+    const microsoftEntries = catalog.filter((entry: any) =>
+      ["outlook", "teams", "onedrive", "sharepoint"].includes(entry.pluginId),
+    );
+    assert(microsoftEntries.length === 4, "M365 catalog is missing a Microsoft plugin");
+    assert(microsoftEntries.every((entry: any) => entry.vaultType === "M365"), "Microsoft plugins do not share M365");
+    assert(
+      microsoftEntries.every((entry: any) => entry.pluginIds.join(",") === "onedrive,outlook,sharepoint,teams"),
+      "M365 catalog does not contain the complete shared plugin family",
+    );
+    const m365Scopes = new Set(microsoftEntries[0].oauthConfig?.scopes ?? []);
+    assert(m365Scopes.has("Mail.ReadWrite"), "M365 scopes are missing Outlook permissions");
+    assert(m365Scopes.has("Chat.ReadWrite"), "M365 scopes are missing Teams permissions");
+    assert(m365Scopes.has("Sites.FullControl.All"), "M365 scopes are missing SharePoint permissions");
+
+    // 6. Every credential-select field name must use the canonical catalog vault type
+    //    (AppSecretTypesEnum-compatible), never the display providerName.
+    const vaultTypeByPlugin = new Map(
+      catalog.map((entry: any) => [entry.pluginId, entry.vaultType]),
+    );
+    for (const file of configFiles) {
+      const config = JSON.parse(fs.readFileSync(file, "utf8"));
+      const credField = config.fields.find((f: any) => f.type === "credentials-select");
+      if (!credField) continue;
+      const pluginId = config.name.split("/")[1]?.toLowerCase();
+      const expected = `__CredentialName__${vaultTypeByPlugin.get(pluginId)}`;
+      assert(
+        credField.name === expected,
+        `config ${file} credential field '${credField.name}' does not match canonical vault type '${expected}'`,
+      );
+    }
+
     console.log(`PASS: ${configFiles.length} configs, ${actionMap.length} invocations, ${appIntegrations.actionCategories.length} categories.`);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
