@@ -173,7 +173,7 @@ When deploying the Corsair sidecar, follow this order:
 **Important — `seed:tools` is intentionally NOT part of `prestart`.** It is a
 separate, explicit deployment step because it writes into the **Workspace
 database** (`ws_Tools`), which is owned by the Workspace API — not the sidecar.
-The sidecar's runtime (OAuth, `/v1/corsair/invoke`) does not depend on the
+The sidecar's runtime (OAuth, `/api/corsair/invoke`) does not depend on the
 seeded tools, so coupling the seed to startup would block the sidecar if the
 Workspace DB is temporarily unavailable.
 

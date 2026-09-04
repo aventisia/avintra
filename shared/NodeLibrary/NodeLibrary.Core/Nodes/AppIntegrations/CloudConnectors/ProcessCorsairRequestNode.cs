@@ -6,7 +6,7 @@ namespace NodeLibrary.CloudConnectorNodes;
 // This node is not visible in the node selector; it is the runtime node that
 // executes a Corsair plugin operation. It calls the Workspace API Corsair
 // adapter, which resolves the Vault credential, enforces authorization, and
-// invokes the Corsair sidecar with a short-lived bound JWT.
+// invokes the private Corsair sidecar through the Workspace API.
 public class ProcessCorsairRequestNode : BaseNode
 {
     private static readonly HttpClient _httpClient = new()

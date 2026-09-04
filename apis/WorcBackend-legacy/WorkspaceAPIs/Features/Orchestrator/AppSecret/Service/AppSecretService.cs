@@ -617,14 +617,6 @@ public class AppSecretService : IAppSecretService
                 existingAppSecret.IsTenantWideAccess = appSecretDto.IsTenantWideAccess;
             }
 
-            // Update the disabled status only if a new value was provided and it has changed.
-            // Sidecar mirroring is intentionally NOT updated when a credential is disabled;
-            // access enforcement remains in WorkspaceAPIs/llmpipeline.
-            if (appSecretDto.IsDisabled.HasValue && existingAppSecret.IsDisabled != appSecretDto.IsDisabled.Value)
-            {
-                existingAppSecret.IsDisabled = appSecretDto.IsDisabled.Value;
-            }
-
             // Update the secret type only if it has changed.
             if (typeChanged)
             {
@@ -4015,26 +4007,7 @@ public class AppSecretService : IAppSecretService
     /// </summary>
     private string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
     {
-        var mappedPlugin = type switch
-        {
-            AppSecretTypesEnum.OpenAI => "openai",
-            AppSecretTypesEnum.GoogleGemini => "gemini",
-            AppSecretTypesEnum.OpenRouter => "openrouter",
-            AppSecretTypesEnum.Anthropic => "anthropicadministrator",
-            AppSecretTypesEnum.ElevenLabs => "elevenlabs",
-            AppSecretTypesEnum.Groq => "groqcloud",
-            AppSecretTypesEnum.Mistral => "mistral",
-            AppSecretTypesEnum.GitHub => "github",
-            // SendGrid is mapped to the existing resend plugin because a public @corsair-dev/sendgrid
-            // package was not found. If a dedicated SendGrid plugin is added later, change this mapping.
-            AppSecretTypesEnum.SendGrid => "resend",
-            // Twilio's plugin only supports AccountSid+AuthToken Basic auth (see BuildTwilioCredentials);
-            // the ApiKeySid+ApiKeySecret variant is skipped at mirror time.
-            AppSecretTypesEnum.Twilio => "twilio",
-            _ => null
-        };
-
-        return mappedPlugin ?? _corsairConfigRepository.GetPluginIdForVaultType(type.ToString());
+        return WorkspaceAPIs.Features.Corsair.CorsairPluginResolver.ResolveApiKeyPlugin(type, _corsairConfigRepository);
     }
 
     /// <summary>
@@ -4052,6 +4025,9 @@ public class AppSecretService : IAppSecretService
         {
             // M365 credentials carry ClientId/ClientSecret and map to the Corsair Outlook plugin.
             AppSecretTypesEnum.M365 => "outlook",
+            AppSecretTypesEnum.Teams => "teams",
+            AppSecretTypesEnum.Onedrive => "onedrive",
+            AppSecretTypesEnum.Sharepoint => "sharepoint",
             // Google Workspace credentials use the shared Google OAuth account family. Gmail is
             // the OAuth entry point; the resulting account can be used by the other Google plugins.
             AppSecretTypesEnum.GoogleWorkspace => "gmail",
