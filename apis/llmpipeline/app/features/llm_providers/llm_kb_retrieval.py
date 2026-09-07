@@ -154,19 +154,12 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     )
                     continue
                 
-                # Validate that the KB config carries a credential NAME.
                 store_credential = _resolve_kb_credential(
                     kb_config, "store_credential_name", llm_request.credential_name
                 )
                 embedding_credential = _resolve_kb_credential(
                     kb_config, "embedding_credential_name", llm_request.credential_name
                 )
-                if not store_credential and not embedding_credential:
-                    logger.warning(
-                        "[KB-RETRIEVAL] KB '%s' has no credential name configured. Skipping.",
-                        kb_config["kb_name"],
-                    )
-                    continue
 
                 # Build query request for this KB
                 query_doc_request = QueryDocRequest(
