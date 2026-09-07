@@ -896,6 +896,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CallerReferenceId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double>("Duration")
                         .HasColumnType("double precision");
 
@@ -913,6 +917,13 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid>("JobId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("LoopIterationIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LoopReferenceId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("NodeDisplayName")
                         .IsRequired()

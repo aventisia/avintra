@@ -31,7 +31,27 @@ public class NodeExecutionLog
     /// </summary>
     [JsonPropertyName("uniqueNodeId")]
     public string UniqueNodeId { get; set; } = Guid.NewGuid().ToString();
+    /// <summary>
+    /// Gets or sets the id of the parent-flow node (callAgentNode/blockNode) that invoked the
+    /// sub-flow this node belongs to. Empty for nodes in the top-level flow that are not called
+    /// by another node. Enables tracing which caller spawned each log across nested sub-flows.
+    /// </summary>
+    [JsonPropertyName("callerReferenceId")]
+    public string CallerReferenceId { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets the id of the innermost active loop (forLoopNode) that contained this node
+    /// at execution time. Empty when the node did not run inside any loop.
+    /// </summary>
+    [JsonPropertyName("loopReferenceId")]
+    public string LoopReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the zero-based iteration index of the innermost active loop when this node
+    /// executed. -1 indicates the node did not run inside a loop.
+    /// </summary>
+    [JsonPropertyName("loopIterationIndex")]
+    public int LoopIterationIndex { get; set; } = -1;
     [JsonPropertyName("inputs")]
     public Dictionary<string, string> Inputs { get; set; } = new();
 
