@@ -1,6 +1,7 @@
 """High-level service that runs LangGraph chat workflows."""
 
 import asyncio
+import json
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
 from typing import Any
@@ -951,7 +952,16 @@ class ChatService:
         recommended_actions: list[str] = []
 
         if isinstance(output, dict):
-            text = output.get("text", "")
+            text_value = output.get("text")
+            text = (
+                text_value
+                if isinstance(text_value, str)
+                else json.dumps(
+                    text_value if text_value is not None else output,
+                    ensure_ascii=False,
+                    default=str,
+                )
+            )
             tools = output.get("tools", [])
 
             if include_followups:
@@ -963,7 +973,16 @@ class ChatService:
             # does not explicitly set ``is_json_output`` (custom prompt).
             parsed = self._extract_chat_agent_json_response(output)
             if isinstance(parsed, dict):
-                text = parsed.get("text", "")
+                text_value = parsed.get("text")
+                text = (
+                    text_value
+                    if isinstance(text_value, str)
+                    else json.dumps(
+                        text_value if text_value is not None else parsed,
+                        ensure_ascii=False,
+                        default=str,
+                    )
+                )
                 if include_followups:
                     followup_messages = parsed.get("followup_messages", [])
                     recommended_actions = parsed.get("recommended_actions", [])
