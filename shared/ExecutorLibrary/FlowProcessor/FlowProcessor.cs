@@ -190,7 +190,18 @@ public class FlowProcessor
                     return CreateCompletedResult(startTime, logs, flowExecutionContext);
                 }
 
-                flow = enteredSubFlow ?? flow;
+                if (enteredSubFlow is not null)
+                {
+                    flow = enteredSubFlow;
+
+                    // Switch to the sub-flow's isolated router/loop state so that branches
+                    // and loops inside the sub-flow are evaluated independently of any prior
+                    // invocation (critical when a block/callAgent is called inside a loop).
+                    var frame = executionStack.Peek();
+                    conditionalStates = frame.SubFlowConditionalStates;
+                    loopStates = frame.SubFlowLoopStates;
+                }
+
                 currentNodeId = nextNodeId;
             }
 
@@ -461,7 +472,9 @@ public class FlowProcessor
             ReturnEdgeId = returnEdge?.Id,
             CallerNodeId = node.Id,
             ConditionalStates = conditionalStates,
-            LoopStates = loopStates
+            LoopStates = loopStates,
+            SubFlowConditionalStates = new Dictionary<string, ConditionalBranchState>(StringComparer.OrdinalIgnoreCase),
+            SubFlowLoopStates = new Dictionary<string, LoopState>(StringComparer.OrdinalIgnoreCase)
         };
         executionStack.Push(frame);
 
