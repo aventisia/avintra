@@ -1,6 +1,7 @@
 import { Edge, Node } from "@xyflow/react";
 
 import { isValidFlowGraph } from "@/features/execute-flow/helpers/flow-validation-helper";
+import { NodeDataType } from "@/types/node-data-type";
 
 type ImportedNode = Node<Record<string, unknown>>;
 
@@ -122,7 +123,7 @@ export const remapImportedFlowIds = (
     nodeId: nodeIdMap.get(flowVariable.nodeId) || flowVariable.nodeId,
   }));
 
-  const validationError = isValidFlowGraph(nodes as ImportedNode[], edges);
+  const validationError = isValidFlowGraph(nodes as Node<NodeDataType>[], edges);
   if (validationError) {
     throw new Error(validationError);
   }
