@@ -141,6 +141,9 @@ public class NodeExecutionLogService : INodeExecutionLogService
             writer.WriteBoolean("isSuccess", entity.IsSuccess);
             writer.WriteNumber("duration", entity.Duration);
             writer.WriteString("executedAt", entity.ExecutedAt);
+            writer.WriteString("callerReferenceId", entity.CallerReferenceId);
+            writer.WriteString("loopReferenceId", entity.LoopReferenceId);
+            writer.WriteNumber("loopIterationIndex", entity.LoopIterationIndex);
             writer.WritePropertyName("inputs");
             writer.WriteRawValue(inputsJson ?? "{}", skipInputValidation: true);
             writer.WritePropertyName("outputs");
@@ -176,7 +179,10 @@ public class NodeExecutionLogService : INodeExecutionLogService
             // Prefer the executor-captured timestamp so read ordering reflects true node
             // execution order across batched uploads; fall back to insert time for legacy
             // payloads that predate the field.
-            ExecutedAt = dto.ExecutedAt ?? DateTimeOffset.UtcNow
+            ExecutedAt = dto.ExecutedAt ?? DateTimeOffset.UtcNow,
+            CallerReferenceId = dto.CallerReferenceId ?? string.Empty,
+            LoopReferenceId = dto.LoopReferenceId ?? string.Empty,
+            LoopIterationIndex = dto.LoopIterationIndex
         };
     }
 
@@ -196,6 +202,9 @@ public class NodeExecutionLogService : INodeExecutionLogService
             IsSuccess = entity.IsSuccess,
             Duration = entity.Duration,
             ExecutedAt = entity.ExecutedAt,
+            CallerReferenceId = entity.CallerReferenceId,
+            LoopReferenceId = entity.LoopReferenceId,
+            LoopIterationIndex = entity.LoopIterationIndex,
             Inputs = DeserializeDictionary(inputsJson),
             Outputs = DeserializeDictionary(outputsJson)
         };

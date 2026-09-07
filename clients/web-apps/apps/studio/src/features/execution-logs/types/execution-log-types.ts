@@ -8,6 +8,12 @@ export type NodeExecutionLogType = {
   isSuccess: boolean;
   inputs: Record<string, unknown>;
   outputs: Record<string, unknown>;
+  /** Id of the parent-flow node (callAgentNode/blockNode) that invoked the sub-flow; empty at top level. */
+  callerReferenceId?: string;
+  /** Id of the innermost active loop (forLoopNode); empty when not inside a loop. */
+  loopReferenceId?: string;
+  /** Zero-based iteration index of the innermost active loop; -1 when not inside a loop. */
+  loopIterationIndex?: number;
 };
 
 export interface ExecutionState {

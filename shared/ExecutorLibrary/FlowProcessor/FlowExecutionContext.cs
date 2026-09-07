@@ -10,6 +10,25 @@ public class FlowExecutionContext
     private static readonly Regex SingleVarRegex = new(@"^\s*\{\{([^\}]+)\}\}\s*$", RegexOptions.Compiled);
     private readonly Dictionary<string, object?> _variables = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// Id of the parent-flow node (callAgentNode/blockNode) that invoked the sub-flow currently
+    /// executing. Empty for the top-level flow. This is an internal runtime marker, deliberately
+    /// NOT stored in <see cref="_variables"/> so it stays invisible to node template resolution.
+    /// </summary>
+    public string CallerReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Id of the innermost active loop (forLoopNode) when a node executes. Empty when not inside
+    /// a loop. Internal runtime marker, not exposed to template resolution.
+    /// </summary>
+    public string LoopReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Zero-based iteration index of the innermost active loop when a node executes. -1 when not
+    /// inside a loop. Internal runtime marker, not exposed to template resolution.
+    /// </summary>
+    public int LoopIterationIndex { get; set; } = -1;
+
     public FlowExecutionContext()
     {
         Interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LambdaExpressions | InterpreterOptions.CaseInsensitive);

@@ -21,6 +21,9 @@ interface IncomingNodeLog {
   isSuccess: boolean;
   duration: number;
   uniqueNodeId?: string;
+  callerReferenceId?: string;
+  loopReferenceId?: string;
+  loopIterationIndex?: number;
   inputs?: Record<string, string>;
   outputs?: Record<string, string>;
 }
@@ -67,6 +70,9 @@ const mapIncomingNodeLog = (log: IncomingNodeLog): NodeExecutionLogType => ({
   nodeUniqueName: log.nodeUniqueName,
   isSuccess: log.isSuccess,
   duration: log.duration / 1000, // ms → seconds (matches NodeExecutionLogType contract)
+  callerReferenceId: log.callerReferenceId,
+  loopReferenceId: log.loopReferenceId,
+  loopIterationIndex: log.loopIterationIndex,
   inputs: Object.entries(log.inputs ?? {}).map(([key, value]) => ({ key, value })),
   outputs: Object.entries(log.outputs ?? {}).map(([key, value]) => ({ key, value })),
 });
