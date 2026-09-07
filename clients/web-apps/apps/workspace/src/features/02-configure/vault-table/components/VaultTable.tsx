@@ -8,7 +8,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
-import { CheckCircleIcon } from "lucide-react";
+import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
@@ -20,7 +20,7 @@ import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
-import { isOAuthCredentialType } from "../vault-config/constants/oauth-credential-types";
+import { getCorsairVaultIcon } from "../vault-config/constants/corsair-integration-mapper";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
 import { vaultsTableColumns } from "./VaultsTableColumns";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
@@ -91,11 +91,12 @@ export const VaultTable = () => {
                       <img
                         src={
                           basePath +
-                          vaultAppIconMapper[
-                          VaultAppsEnum[
-                          row.getValue("type") as keyof typeof VaultAppsEnum
-                          ] as VaultAppsEnum
-                          ]
+                          (getCorsairVaultIcon(String(row.getValue("type"))) ??
+                            vaultAppIconMapper[
+                              VaultAppsEnum[
+                                row.getValue("type") as keyof typeof VaultAppsEnum
+                              ] as VaultAppsEnum
+                            ])
                         }
                         alt="icon"
                         className="size-6"
@@ -112,9 +113,24 @@ export const VaultTable = () => {
                           {row.getValue("name")}
                         </div>
 
-                        {isOAuthCredentialType(row.original.type) && row.original.oauthConnected && (
+                        {row.original.corsairStatus === "Connected" && (
                           <Tooltip content="OAuth connected">
                             <CheckCircleIcon className="h-3.5 w-3.5 text-green-600" aria-label="OAuth connected" />
+                          </Tooltip>)}
+
+                        {row.original.corsairStatus === "Failed" && (
+                          <Tooltip content={row.original.corsairStatusReason ?? "Connection failed"}>
+                            <AlertCircleIcon className="h-3.5 w-3.5 text-red-600" aria-label="Connection failed" />
+                          </Tooltip>)}
+
+                        {row.original.corsairStatus === "Expired" && (
+                          <Tooltip content="Connection expired; reconnect required">
+                            <AlertCircleIcon className="h-3.5 w-3.5 text-red-600" aria-label="Connection expired" />
+                          </Tooltip>)}
+
+                        {row.original.corsairStatus === "Pending" && (
+                          <Tooltip content="Connection pending">
+                            <Clock3Icon className="h-3.5 w-3.5 text-amber-600" aria-label="Connection pending" />
                           </Tooltip>)}
 
                         {isShared && (

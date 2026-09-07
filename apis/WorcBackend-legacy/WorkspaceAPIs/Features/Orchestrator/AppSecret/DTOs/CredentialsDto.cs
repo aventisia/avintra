@@ -172,9 +172,9 @@ public class SendGridCredentialsDto
 public class GitHubCredentialsDto
 {
     /// <summary>
-    /// Gets or sets the GitHub username associated with the personal access token.
+    /// Gets or sets the base URL of the GitHub API. Defaults to "https://api.github.com".
     /// </summary>
-    public string Server { get; set; } = string.Empty;
+    public string Url { get; set; } = "https://api.github.com";
 
     /// <summary>
     /// Gets or sets the user identifier in your application or system.
@@ -946,13 +946,6 @@ public class GdcCredentialsDto
 
 /// <summary>Credentials for the 'gigachat' provider.</summary>
 public class GigachatCredentialsDto
-{
-    /// <summary>Gets or sets the api key.</summary>
-    public string ApiKey { get; set; } = string.Empty;
-}
-
-/// <summary>Credentials for the 'github' provider.</summary>
-public class GithubCredentialsDto
 {
     /// <summary>Gets or sets the api key.</summary>
     public string ApiKey { get; set; } = string.Empty;

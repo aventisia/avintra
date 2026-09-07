@@ -19,7 +19,6 @@ import { NodeInputType } from "@/features/dynamic-config-panel/types/input-outpu
 import { isVaultNameAvailable } from "../../apis/vaults-table-apis";
 import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
-import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import { useTableTab } from "../../hooks/useTableTab";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 import {
@@ -166,13 +165,8 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
         option.value === (vaultData ? vaultData?.type : form.watch("selectedType")?.value),
     );
 
-    const name =
-      vaultData?.name ??
-      appToCredentialNameMapper[
-        VaultAppsEnum[
-          form.watch("selectedType").value as keyof typeof VaultAppsEnum
-        ] as VaultAppsEnum
-      ];
+    const selectedTypeValue = vaultData?.type ?? form.watch("selectedType")?.value;
+    const name = vaultData?.name ?? appToCredentialNameMapper[selectedTypeValue];
 
     setCredName(name);
 

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "workspace_id",
+    "label": "Workspace_id",
+    "description": "Workspace_id for Botpress.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "domain",
+    "label": "Domain",
+    "description": "Domain for Clientary.",
+    "defaultValue": "",
+    "required": true
+  }
+]

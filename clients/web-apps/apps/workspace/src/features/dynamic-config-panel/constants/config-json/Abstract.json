@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "email_reputation_api_key",
+    "label": "Email_reputation_api_key",
+    "description": "Email_reputation_api_key for Abstract.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "vat_api_key",
+    "label": "Vat_api_key",
+    "description": "Vat_api_key for Abstract.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "iban_api_key",
+    "label": "Iban_api_key",
+    "description": "Iban_api_key for Abstract.",
+    "defaultValue": "",
+    "required": true
+  }
+]

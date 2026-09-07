@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "username",
+    "label": "Username",
+    "description": "Username for Bigml.",
+    "defaultValue": "",
+    "required": true
+  }
+]

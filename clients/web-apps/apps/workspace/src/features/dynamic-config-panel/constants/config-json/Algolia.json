@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "applicationId",
+    "label": "Application Id",
+    "description": "Application Id for Algolia.",
+    "defaultValue": "",
+    "required": true
+  }
+]

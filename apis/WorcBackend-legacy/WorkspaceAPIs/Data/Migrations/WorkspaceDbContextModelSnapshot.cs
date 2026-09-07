@@ -2743,7 +2743,7 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("CreatedByUserId")
+                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -2774,7 +2774,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("LastModifiedByUserId")
+                    b.Property<Guid?>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("LastModifiedOn")
@@ -4007,14 +4007,12 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
                         .WithMany()
                         .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 

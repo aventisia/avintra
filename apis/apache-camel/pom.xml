@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -20,6 +21,8 @@
     <properties>
         <java.version>21</java.version>
         <camel.version>4.18.4</camel.version>
+        <camel.connector.catalog.file>classpath:connectors.json</camel.connector.catalog.file>
+        <camel.connector.loader.enabled>true</camel.connector.loader.enabled>
     </properties>
 
     <dependencyManagement>
@@ -35,69 +38,101 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- Spring Boot + Camel runtime -->
+
+        <!-- Camel Catalog metadata -->
+        <!-- Core runtime: connectors are NOT bundled here -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- HTTP endpoint support for dynamically created routes -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-platform-http-starter</artifactId>
         </dependency>
+
+        <!-- Jakarta JMS API: BackendConfiguration references jakarta.jms.ConnectionFactory -->
         <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-http-starter</artifactId>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
+
+        <!-- JDBC connection pool used by DynamicDatabaseRegistry -->
         <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-sql-starter</artifactId>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-jdbc-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-file-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-ftp-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-jms-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-kafka-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-mail-starter</artifactId>
-        </dependency>
+
+        <!-- ActiveMQ Artemis Jakarta client used by JmsConfigurer -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-jakarta-client</artifactId>
             <version>2.41.0</version>
         </dependency>
+
+        <!-- ActiveMQ Classic client used by JmsConfigurer / ActiveMQConnectionFactory -->
+        <!-- 5.19.10 supports Java 11+, including this Java 21 application. -->
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.19.10</version>
         </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.13</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
+
+
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-catalog</artifactId>
             <version>${camel.version}</version>
         </dependency>
+
+        <!-- SAP + ServiceNow runtime components -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-servicenow-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-sap-netweaver-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-salesforce-starter</artifactId>
+        </dependency>
+
+        <!-- FTP runtime component used directly by consumer operations in ConnectorApiRoute -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-ftp-starter</artifactId>
+        </dependency>
+
+        <!-- SQL runtime component: SqlConfigurer/JdbcConfigurer build `sql:` URIs and
+             bind per-request Hikari datasources via `dataSource=#requestDataSource_*`.
+             Without this starter, any `sql:`/`jdbc:` dispatch fails with
+             "No endpoint could be found for: sql://...". -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-sql-starter</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL JDBC driver used by the per-request Hikari pools in
+             DynamicDatabaseRegistry when connecting to Postgres databases. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JSON/YAML serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+
+        <!-- Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

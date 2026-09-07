@@ -30,7 +30,7 @@ class HttpConfigurerTest {
     @Test
     void basicAuthSetsAuthorizationHeader() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "GET",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "GET",
             Map.of("host", "example.com"),
             new AuthConfiguration("basic", "user", "pass", null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null),
@@ -43,7 +43,7 @@ class HttpConfigurerTest {
     @Test
     void bearerAuthSetsAuthorizationHeader() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "GET",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "GET",
             Map.of("host", "example.com"),
             new AuthConfiguration("bearer", null, null, "tok", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null),
@@ -55,7 +55,7 @@ class HttpConfigurerTest {
     @Test
     void apiKeySetsConfiguredHeader() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "GET",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "GET",
             Map.of("host", "example.com"),
             new AuthConfiguration("apiKey", null, null, null, null, null,
                 null, null, "key123", "X-Custom-Key", null, null, null, null, null, null, null, null, null),

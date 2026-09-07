@@ -1,0 +1,45 @@
+meta {
+  name: 03 - Query - verify user table columns
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Query",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "SELECT column_name FROM information_schema.columns WHERE table_name = 'users' ORDER BY ordinal_position",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("user table exposes the expected columns", function() {
+    expect(Array.isArray(res.body.data.response)).to.equal(true);
+    const columns = res.body.data.response.map(r => r.column_name);
+    expect(columns).to.include.members(["id", "user_name", "first_name", "last_name", "avatar_src", "created_at"]);
+  });
+}

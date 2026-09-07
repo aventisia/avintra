@@ -1,0 +1,44 @@
+meta {
+  name: Operation schema - minimal request fields
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{APACHE_CAMEL_BASE_URL}}/connectors/http/operations/GET/schema
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response identifies connector and operation", function() {
+    expect(res.body.connector).to.equal('http');
+    expect(res.body.operation).to.equal('GET');
+  });
+
+  test("response has a fields array", function() {
+    expect(Array.isArray(res.body.fields)).to.equal(true);
+    expect(res.body.fields.length).to.be.greaterThan(0);
+  });
+
+  test("operation field is pinned to GET", function() {
+    const opField = res.body.fields.find(f => f.name === 'operation');
+    expect(opField).to.exist;
+    expect(opField.required).to.equal(true);
+  });
+
+  test("each field has only name, type, required, and optional description", function() {
+    for (const field of res.body.fields) {
+      expect(field).to.have.property("name");
+      expect(field).to.have.property("type");
+      expect(field).to.have.property("required");
+      // No Camel-internal metadata.
+      expect(field).to.not.have.property("enumValues");
+      expect(field).to.not.have.property("defaultValue");
+    }
+  });
+}

@@ -34,7 +34,8 @@ export function buildActionSelectorAction(
     docsLink: "https://docs.aventisia.com",
     icon: null,
     img: plugin.img,
-    supportedPlatforms: ["cloud"],
+    // Runtime is a platform-agnostic backend call (ProcessCorsairRequestNode), so desktop can run it too.
+    supportedPlatforms: ["cloud", "windows"],
   };
 }
 
@@ -43,9 +44,6 @@ export function buildPluginCategory(
   plugin: PluginMetadata,
   actions: ActionSelectorAction[],
 ): ActionSelectorCategory {
-  if(plugin.providerName.includes("open")) {
-    console.log("plugin:", plugin);
-  }
   return {
     label: plugin.providerName,
     // Remove internal "Corsair" branding from user-facing description.

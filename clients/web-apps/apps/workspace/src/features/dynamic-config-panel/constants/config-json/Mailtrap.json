@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "account_id",
+    "label": "Account_id",
+    "description": "Account_id for Mailtrap.",
+    "defaultValue": "",
+    "required": true
+  }
+]

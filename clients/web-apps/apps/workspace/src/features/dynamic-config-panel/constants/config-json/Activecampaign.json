@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "account",
+    "label": "Account",
+    "description": "Account for Activecampaign.",
+    "defaultValue": "",
+    "required": true
+  }
+]

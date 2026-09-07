@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "client_id",
+    "label": "Client_id",
+    "description": "Client_id for Brandfetch.",
+    "defaultValue": "",
+    "required": true
+  }
+]

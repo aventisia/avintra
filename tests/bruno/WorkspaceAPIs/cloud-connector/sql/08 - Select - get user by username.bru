@@ -1,0 +1,53 @@
+meta {
+  name: 08 - Select - get user by username
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Select",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "SELECT id, user_name, first_name, last_name FROM users WHERE user_name = 'alice@example.com'",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("select operation returned a result set", function() {
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.action).to.equal("Select");
+    expect(Array.isArray(res.body.data.response)).to.equal(true);
+    expect(res.body.data.response.length).to.equal(1);
+  });
+  
+  test("selected user matches the lookup criteria", function() {
+    const row = res.body.data.response[0];
+    expect(row.user_name).to.equal("alice@example.com");
+    expect(row.first_name).to.equal("Alice");
+    expect(row.last_name).to.equal("Anderson");
+  });
+}

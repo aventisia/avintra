@@ -73,13 +73,32 @@ export type ActionSelectorPrimary = {
   actionCategories: ActionSelectorCategory[];
 };
 
+/** Authentication fields declared by a Corsair plugin. */
+export type PluginAuthMode = {
+  mode: string;
+  accountFields: string[];
+};
+
+/** OAuth settings declared by a Corsair plugin. */
+export type PluginOAuthConfig = {
+  providerName?: string;
+  authUrl?: string;
+  tokenUrl?: string;
+  scopes?: string[];
+  tokenAuthMethod?: "body" | "basic";
+};
+
 /** Normalized metadata extracted from a registered Corsair plugin. */
 export type PluginMetadata = {
   id: string;
   providerName: string;
+  /** Canonical in-house credential type (AppSecretTypesEnum-compatible) used for credential field names. */
+  vaultType: string;
   description: string;
   img: string | null;
   authType: string;
+  authModes: PluginAuthMode[];
+  oauthConfig?: PluginOAuthConfig;
   /** dotted action path → human-readable description (from endpointMeta). */
   actionDescriptions: Record<string, string>;
 };

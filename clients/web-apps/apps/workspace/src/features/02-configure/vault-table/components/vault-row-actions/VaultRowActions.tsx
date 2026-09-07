@@ -8,9 +8,11 @@ import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { isOAuthCredentialType } from "../../vault-config/constants/oauth-credential-types";
+import { isCorsairCredentialType } from "../../vault-config/constants/corsair-integration-mapper";
 import { useTableTab } from "../../hooks/useTableTab";
 import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
 import { VaultRowReconnectAction } from "./VaultRowReconnectAction";
+import { VaultRowTestConnectionAction } from "./VaultRowTestConnectionAction";
 
 interface VaultRowActionsProps {
   rowId: string;
@@ -50,6 +52,9 @@ export const VaultRowActions = ({
 
       {/* Reconnect OAuth for OAuth-capable credentials */}
       {actions?.update && isOAuthCredentialType(type) && <VaultRowReconnectAction rowId={rowId} />}
+      {actions?.update && isCorsairCredentialType(type) && !isOAuthCredentialType(type) && (
+        <VaultRowTestConnectionAction rowId={rowId} />
+      )}
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

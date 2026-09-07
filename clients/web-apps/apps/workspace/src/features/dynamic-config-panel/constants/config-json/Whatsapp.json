@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "phone_number_id",
+    "label": "Phone_number_id",
+    "description": "Phone_number_id for Whatsapp.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "business_account_id",
+    "label": "Business_account_id",
+    "description": "Business_account_id for Whatsapp.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "webhook_verify_token",
+    "label": "Webhook_verify_token",
+    "description": "Webhook_verify_token for Whatsapp.",
+    "defaultValue": "",
+    "required": true
+  }
+]

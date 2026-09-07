@@ -1,0 +1,51 @@
+meta {
+  name: 07 - Query - verify UTF-8 round trip
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Query",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "SELECT user_name, first_name, last_name, avatar_src FROM users WHERE user_name = 'josé@example.com'",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("special characters survive UTF-8 round trip (data integrity)", function() {
+    expect(Array.isArray(res.body.data.response)).to.equal(true);
+    expect(res.body.data.response.length).to.equal(1);
+    expect(res.body.data.response[0].first_name).to.equal("José");
+    expect(res.body.data.response[0].last_name).to.equal("Müller");
+    expect(res.body.data.response[0].avatar_src).to.equal("https://example.com/josé.png");
+  });
+  
+  test("decimal precision is preserved", function() {
+    expect(Number(res.body.data.response[0].amount)).to.equal(99.99);
+  });
+}

@@ -24,7 +24,7 @@ class MailSmtpSendTest {
 
     private Exchange resolve(Map<String, Object> config, AuthConfiguration auth) {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "mail", "send", config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "mail", "send", config,
             auth, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         exchange.setProperty("targetUri", uri);

@@ -1,0 +1,5185 @@
+[
+  {
+    "pluginId": "ably",
+    "pluginIds": [
+      "ably"
+    ],
+    "providerName": "Ably",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ably.svg",
+    "vaultType": "Ably",
+    "configFile": "Ably.json"
+  },
+  {
+    "pluginId": "abstract",
+    "pluginIds": [
+      "abstract"
+    ],
+    "providerName": "Abstract",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "email_reputation_api_key",
+          "vat_api_key",
+          "iban_api_key"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/abstract.svg",
+    "vaultType": "Abstract",
+    "configFile": "Abstract.json"
+  },
+  {
+    "pluginId": "abuseipdb",
+    "pluginIds": [
+      "abuseipdb"
+    ],
+    "providerName": "Abuseipdb",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/abuseipdb.png",
+    "vaultType": "Abuseipdb",
+    "configFile": "Abuseipdb.json"
+  },
+  {
+    "pluginId": "abyssale",
+    "pluginIds": [
+      "abyssale"
+    ],
+    "providerName": "Abyssale",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/abyssale.png",
+    "vaultType": "Abyssale",
+    "configFile": "Abyssale.json"
+  },
+  {
+    "pluginId": "accrediblecertificates",
+    "pluginIds": [
+      "accrediblecertificates"
+    ],
+    "providerName": "Accrediblecertificates",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/accrediblecertificates.png",
+    "vaultType": "Accrediblecertificates",
+    "configFile": "Accrediblecertificates.json"
+  },
+  {
+    "pluginId": "activecampaign",
+    "pluginIds": [
+      "activecampaign"
+    ],
+    "providerName": "Activecampaign",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "account"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/activecampaign.png",
+    "vaultType": "Activecampaign",
+    "configFile": "Activecampaign.json"
+  },
+  {
+    "pluginId": "activetrail",
+    "pluginIds": [
+      "activetrail"
+    ],
+    "providerName": "Activetrail",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/activetrail.png",
+    "vaultType": "Activetrail",
+    "configFile": "Activetrail.json"
+  },
+  {
+    "pluginId": "addresszen",
+    "pluginIds": [
+      "addresszen"
+    ],
+    "providerName": "Addresszen",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/addresszen.svg",
+    "vaultType": "Addresszen",
+    "configFile": "Addresszen.json"
+  },
+  {
+    "pluginId": "aeroleads",
+    "pluginIds": [
+      "aeroleads"
+    ],
+    "providerName": "Aeroleads",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/aeroleads.png",
+    "vaultType": "Aeroleads",
+    "configFile": "Aeroleads.json"
+  },
+  {
+    "pluginId": "affinda",
+    "pluginIds": [
+      "affinda"
+    ],
+    "providerName": "Affinda",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/affinda.png",
+    "vaultType": "Affinda",
+    "configFile": "Affinda.json"
+  },
+  {
+    "pluginId": "agencyzoom",
+    "pluginIds": [
+      "agencyzoom"
+    ],
+    "providerName": "Agencyzoom",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/agencyzoom.png",
+    "vaultType": "Agencyzoom",
+    "configFile": "Agencyzoom.json"
+  },
+  {
+    "pluginId": "agentmail",
+    "pluginIds": [
+      "agentmail"
+    ],
+    "providerName": "Agentmail",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/agentmail.png",
+    "vaultType": "Agentmail",
+    "configFile": "Agentmail.json"
+  },
+  {
+    "pluginId": "agentql",
+    "pluginIds": [
+      "agentql"
+    ],
+    "providerName": "Agentql",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/agentql.png",
+    "vaultType": "Agentql",
+    "configFile": "Agentql.json"
+  },
+  {
+    "pluginId": "agenty",
+    "pluginIds": [
+      "agenty"
+    ],
+    "providerName": "Agenty",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/agenty.png",
+    "vaultType": "Agenty",
+    "configFile": "Agenty.json"
+  },
+  {
+    "pluginId": "agilitycms",
+    "pluginIds": [
+      "agilitycms"
+    ],
+    "providerName": "Agilitycms",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/agilitycms.png",
+    "vaultType": "Agilitycms",
+    "configFile": "Agilitycms.json"
+  },
+  {
+    "pluginId": "ahrefs",
+    "pluginIds": [
+      "ahrefs"
+    ],
+    "providerName": "Ahrefs",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ahrefs.svg",
+    "vaultType": "Ahrefs",
+    "configFile": "Ahrefs.json"
+  },
+  {
+    "pluginId": "aimlapi",
+    "pluginIds": [
+      "aimlapi"
+    ],
+    "providerName": "Aimlapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/aimlapi.svg",
+    "vaultType": "Aimlapi",
+    "configFile": "Aimlapi.json"
+  },
+  {
+    "pluginId": "airtable",
+    "pluginIds": [
+      "airtable"
+    ],
+    "providerName": "Airtable",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "oauthConfig": {
+      "providerName": "Airtable",
+      "authUrl": "https://airtable.com/oauth2/v1/authorize",
+      "tokenUrl": "https://airtable.com/oauth2/v1/token",
+      "scopes": [
+        "data.records:read",
+        "data.records:write",
+        "schema.bases:read"
+      ],
+      "tokenAuthMethod": "basic"
+    },
+    "icon": "/brand-img/airtable.svg",
+    "vaultType": "Airtable",
+    "configFile": "Airtable.json"
+  },
+  {
+    "pluginId": "aivoov",
+    "pluginIds": [
+      "aivoov"
+    ],
+    "providerName": "Aivoov",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/aivoov.png",
+    "vaultType": "Aivoov",
+    "configFile": "Aivoov.json"
+  },
+  {
+    "pluginId": "alchemy",
+    "pluginIds": [
+      "alchemy"
+    ],
+    "providerName": "Alchemy",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/alchemy.svg",
+    "vaultType": "Alchemy",
+    "configFile": "Alchemy.json"
+  },
+  {
+    "pluginId": "algolia",
+    "pluginIds": [
+      "algolia"
+    ],
+    "providerName": "Algolia",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "applicationId"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/algolia.svg",
+    "vaultType": "Algolia",
+    "configFile": "Algolia.json"
+  },
+  {
+    "pluginId": "allimagesai",
+    "pluginIds": [
+      "allimagesai"
+    ],
+    "providerName": "Allimagesai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/openai.svg",
+    "vaultType": "Allimagesai",
+    "configFile": "Allimagesai.json"
+  },
+  {
+    "pluginId": "alphavantage",
+    "pluginIds": [
+      "alphavantage"
+    ],
+    "providerName": "Alphavantage",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/alphavantage.svg",
+    "vaultType": "Alphavantage",
+    "configFile": "Alphavantage.json"
+  },
+  {
+    "pluginId": "altoviz",
+    "pluginIds": [
+      "altoviz"
+    ],
+    "providerName": "Altoviz",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/altoviz.png",
+    "vaultType": "Altoviz",
+    "configFile": "Altoviz.json"
+  },
+  {
+    "pluginId": "alttextai",
+    "pluginIds": [
+      "alttextai"
+    ],
+    "providerName": "Alttextai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/alttextai.svg",
+    "vaultType": "Alttextai",
+    "configFile": "Alttextai.json"
+  },
+  {
+    "pluginId": "amara",
+    "pluginIds": [
+      "amara"
+    ],
+    "providerName": "Amara",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/amara.png",
+    "vaultType": "Amara",
+    "configFile": "Amara.json"
+  },
+  {
+    "pluginId": "ambee",
+    "pluginIds": [
+      "ambee"
+    ],
+    "providerName": "Ambee",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/openweathermap.svg",
+    "vaultType": "Ambee",
+    "configFile": "Ambee.json"
+  },
+  {
+    "pluginId": "ambientweather",
+    "pluginIds": [
+      "ambientweather"
+    ],
+    "providerName": "Ambientweather",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "applicationKey"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ambientweather.png",
+    "vaultType": "Ambientweather",
+    "configFile": "Ambientweather.json"
+  },
+  {
+    "pluginId": "amcards",
+    "pluginIds": [
+      "amcards"
+    ],
+    "providerName": "Amcards",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/stripe.svg",
+    "vaultType": "Amcards",
+    "configFile": "Amcards.json"
+  },
+  {
+    "pluginId": "amplitude",
+    "pluginIds": [
+      "amplitude"
+    ],
+    "providerName": "Amplitude",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/amplitude.svg",
+    "vaultType": "Amplitude",
+    "configFile": "Amplitude.json"
+  },
+  {
+    "pluginId": "anchorbrowser",
+    "pluginIds": [
+      "anchorbrowser"
+    ],
+    "providerName": "Anchorbrowser",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/anchorbrowser.png",
+    "vaultType": "Anchorbrowser",
+    "configFile": "Anchorbrowser.json"
+  },
+  {
+    "pluginId": "anonyflow",
+    "pluginIds": [
+      "anonyflow"
+    ],
+    "providerName": "Anonyflow",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/anonyflow.png",
+    "vaultType": "Anonyflow",
+    "configFile": "Anonyflow.json"
+  },
+  {
+    "pluginId": "anthropicadministrator",
+    "pluginIds": [
+      "anthropicadministrator"
+    ],
+    "providerName": "Anthropicadministrator",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/anthropicadministrator.svg",
+    "vaultType": "Anthropic",
+    "configFile": "Anthropic.json"
+  },
+  {
+    "pluginId": "apaleo",
+    "pluginIds": [
+      "apaleo"
+    ],
+    "providerName": "Apaleo",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Apaleo",
+      "authUrl": "https://identity.apaleo.com/connect/authorize",
+      "tokenUrl": "https://identity.apaleo.com/connect/token",
+      "scopes": [
+        "offline_access",
+        "setup.read",
+        "setup.manage"
+      ]
+    },
+    "icon": "/brand-img/apaleo.png",
+    "vaultType": "Apaleo",
+    "configFile": "Apaleo.json"
+  },
+  {
+    "pluginId": "api2pdf",
+    "pluginIds": [
+      "api2pdf"
+    ],
+    "providerName": "Api2pdf",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/api2pdf.png",
+    "vaultType": "Api2pdf",
+    "configFile": "Api2pdf.json"
+  },
+  {
+    "pluginId": "apibible",
+    "pluginIds": [
+      "apibible"
+    ],
+    "providerName": "Apibible",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apibible.png",
+    "vaultType": "Apibible",
+    "configFile": "Apibible.json"
+  },
+  {
+    "pluginId": "apify",
+    "pluginIds": [
+      "apify"
+    ],
+    "providerName": "Apify",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apify.svg",
+    "vaultType": "Apify",
+    "configFile": "Apify.json"
+  },
+  {
+    "pluginId": "apilabz",
+    "pluginIds": [
+      "apilabz"
+    ],
+    "providerName": "Apilabz",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apilabz.png",
+    "vaultType": "Apilabz",
+    "configFile": "Apilabz.json"
+  },
+  {
+    "pluginId": "apininjas",
+    "pluginIds": [
+      "apininjas"
+    ],
+    "providerName": "Apininjas",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apininjas.png",
+    "vaultType": "Apininjas",
+    "configFile": "Apininjas.json"
+  },
+  {
+    "pluginId": "apipie",
+    "pluginIds": [
+      "apipie"
+    ],
+    "providerName": "Apipie",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apipie.svg",
+    "vaultType": "Apipie",
+    "configFile": "Apipie.json"
+  },
+  {
+    "pluginId": "apisports",
+    "pluginIds": [
+      "apisports"
+    ],
+    "providerName": "Apisports",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/apisports.png",
+    "vaultType": "Apisports",
+    "configFile": "Apisports.json"
+  },
+  {
+    "pluginId": "asana",
+    "pluginIds": [
+      "asana"
+    ],
+    "providerName": "Asana",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "workspace_gid",
+          "project_gid"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "workspace_gid",
+          "project_gid"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "workspace_gid",
+          "project_gid"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Asana",
+      "authUrl": "https://app.asana.com/-/oauth_authorize",
+      "tokenUrl": "https://app.asana.com/-/oauth_token",
+      "scopes": [
+        "projects:read",
+        "projects:write",
+        "tasks:read",
+        "tasks:write",
+        "tasks:delete",
+        "tags:read",
+        "tags:write",
+        "teams:read",
+        "users:read",
+        "workspaces:read",
+        "stories:read",
+        "stories:write",
+        "webhooks:read",
+        "webhooks:write"
+      ]
+    },
+    "icon": "/brand-img/asana.svg",
+    "vaultType": "Asana",
+    "configFile": "Asana.json"
+  },
+  {
+    "pluginId": "asindataapi",
+    "pluginIds": [
+      "asindataapi"
+    ],
+    "providerName": "Asindataapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/asindataapi.png",
+    "vaultType": "Asindataapi",
+    "configFile": "Asindataapi.json"
+  },
+  {
+    "pluginId": "asticaai",
+    "pluginIds": [
+      "asticaai"
+    ],
+    "providerName": "Asticaai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/asticaai.svg",
+    "vaultType": "Asticaai",
+    "configFile": "Asticaai.json"
+  },
+  {
+    "pluginId": "asyncinterview",
+    "pluginIds": [
+      "asyncinterview"
+    ],
+    "providerName": "Asyncinterview",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/asyncinterview.png",
+    "vaultType": "Asyncinterview",
+    "configFile": "Asyncinterview.json"
+  },
+  {
+    "pluginId": "attio",
+    "pluginIds": [
+      "attio"
+    ],
+    "providerName": "Attio",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Attio",
+      "authUrl": "https://app.attio.com/authorize",
+      "tokenUrl": "https://app.attio.com/oauth/token",
+      "scopes": [
+        "record_permission:read-write",
+        "object_configuration:read-write",
+        "user_management:read",
+        "list_entry:read-write",
+        "list_configuration:read-write",
+        "comment:read-write",
+        "task:read-write",
+        "note:read-write",
+        "webhook:read-write"
+      ],
+      "authParams": {
+        "prompt": "consent"
+      },
+      "tokenAuthMethod": "body"
+    },
+    "icon": "/brand-img/attio.svg",
+    "vaultType": "Attio",
+    "configFile": "Attio.json"
+  },
+  {
+    "pluginId": "autom",
+    "pluginIds": [
+      "autom"
+    ],
+    "providerName": "Autom",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "generic_api_key"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/autom.png",
+    "vaultType": "Autom",
+    "configFile": "Autom.json"
+  },
+  {
+    "pluginId": "ayrshare",
+    "pluginIds": [
+      "ayrshare"
+    ],
+    "providerName": "Ayrshare",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "profile_key"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ayrshare.svg",
+    "vaultType": "Ayrshare",
+    "configFile": "Ayrshare.json"
+  },
+  {
+    "pluginId": "backendless",
+    "pluginIds": [
+      "backendless"
+    ],
+    "providerName": "Backendless",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "application_id",
+          "base_url",
+          "user_token"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/backendless.svg",
+    "vaultType": "Backendless",
+    "configFile": "Backendless.json"
+  },
+  {
+    "pluginId": "bannerbear",
+    "pluginIds": [
+      "bannerbear"
+    ],
+    "providerName": "Bannerbear",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bannerbear.png",
+    "vaultType": "Bannerbear",
+    "configFile": "Bannerbear.json"
+  },
+  {
+    "pluginId": "bart",
+    "pluginIds": [
+      "bart"
+    ],
+    "providerName": "Bart",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bart.png",
+    "vaultType": "Bart",
+    "configFile": "Bart.json"
+  },
+  {
+    "pluginId": "basecamp",
+    "pluginIds": [
+      "basecamp"
+    ],
+    "providerName": "Basecamp",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Basecamp",
+      "authUrl": "https://launchpad.37signals.com/authorization/new",
+      "tokenUrl": "https://launchpad.37signals.com/authorization/token",
+      "scopes": []
+    },
+    "icon": "/brand-img/basecamp.svg",
+    "vaultType": "Basecamp",
+    "configFile": "Basecamp.json"
+  },
+  {
+    "pluginId": "baselinker",
+    "pluginIds": [
+      "baselinker"
+    ],
+    "providerName": "Baselinker",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/baselinker.png",
+    "vaultType": "Baselinker",
+    "configFile": "Baselinker.json"
+  },
+  {
+    "pluginId": "basin",
+    "pluginIds": [
+      "basin"
+    ],
+    "providerName": "Basin",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/basin.png",
+    "vaultType": "Basin",
+    "configFile": "Basin.json"
+  },
+  {
+    "pluginId": "beaconstac",
+    "pluginIds": [
+      "beaconstac"
+    ],
+    "providerName": "Beaconstac",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "organization_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/beaconstac.png",
+    "vaultType": "Beaconstac",
+    "configFile": "Beaconstac.json"
+  },
+  {
+    "pluginId": "beeminder",
+    "pluginIds": [
+      "beeminder"
+    ],
+    "providerName": "Beeminder",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "username"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "username"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/beeminder.png",
+    "vaultType": "Beeminder",
+    "configFile": "Beeminder.json"
+  },
+  {
+    "pluginId": "bettercontact",
+    "pluginIds": [
+      "bettercontact"
+    ],
+    "providerName": "Bettercontact",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bettercontact.png",
+    "vaultType": "Bettercontact",
+    "configFile": "Bettercontact.json"
+  },
+  {
+    "pluginId": "betterproposals",
+    "pluginIds": [
+      "betterproposals"
+    ],
+    "providerName": "Betterproposals",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/betterproposals.png",
+    "vaultType": "Betterproposals",
+    "configFile": "Betterproposals.json"
+  },
+  {
+    "pluginId": "betterstack",
+    "pluginIds": [
+      "betterstack"
+    ],
+    "providerName": "Betterstack",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/betterstack.svg",
+    "vaultType": "Betterstack",
+    "configFile": "Betterstack.json"
+  },
+  {
+    "pluginId": "bigdatacloud",
+    "pluginIds": [
+      "bigdatacloud"
+    ],
+    "providerName": "Bigdatacloud",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bigdatacloud.png",
+    "vaultType": "Bigdatacloud",
+    "configFile": "Bigdatacloud.json"
+  },
+  {
+    "pluginId": "bigmailer",
+    "pluginIds": [
+      "bigmailer"
+    ],
+    "providerName": "Bigmailer",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bigmailer.png",
+    "vaultType": "Bigmailer",
+    "configFile": "Bigmailer.json"
+  },
+  {
+    "pluginId": "bigml",
+    "pluginIds": [
+      "bigml"
+    ],
+    "providerName": "Bigml",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "username"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bigml.svg",
+    "vaultType": "Bigml",
+    "configFile": "Bigml.json"
+  },
+  {
+    "pluginId": "bitbucket",
+    "pluginIds": [
+      "bitbucket"
+    ],
+    "providerName": "Bitbucket",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Bitbucket",
+      "authUrl": "https://bitbucket.org/site/oauth2/authorize",
+      "tokenUrl": "https://bitbucket.org/site/oauth2/access_token",
+      "scopes": [
+        "account",
+        "email",
+        "repository",
+        "repository:write",
+        "repository:admin",
+        "repository:delete",
+        "pullrequest",
+        "pullrequest:write",
+        "issue",
+        "issue:write",
+        "snippet",
+        "snippet:write",
+        "project",
+        "pipeline",
+        "pipeline:write",
+        "pipeline:variable",
+        "runner"
+      ]
+    },
+    "icon": "/brand-img/bitbucket.svg",
+    "vaultType": "Bitbucket",
+    "configFile": "Bitbucket.json"
+  },
+  {
+    "pluginId": "bitwarden",
+    "pluginIds": [
+      "bitwarden"
+    ],
+    "providerName": "Bitwarden",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/bitwarden.svg",
+    "vaultType": "Bitwarden",
+    "configFile": "Bitwarden.json"
+  },
+  {
+    "pluginId": "blazemeter",
+    "pluginIds": [
+      "blazemeter"
+    ],
+    "providerName": "Blazemeter",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "api_key_secret"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/blazemeter.svg",
+    "vaultType": "Blazemeter",
+    "configFile": "Blazemeter.json"
+  },
+  {
+    "pluginId": "blocknative",
+    "pluginIds": [
+      "blocknative"
+    ],
+    "providerName": "Blocknative",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/blocknative.png",
+    "vaultType": "Blocknative",
+    "configFile": "Blocknative.json"
+  },
+  {
+    "pluginId": "bluesky",
+    "pluginIds": [
+      "bluesky"
+    ],
+    "providerName": "Bluesky",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "handle"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bluesky.svg",
+    "vaultType": "Bluesky",
+    "configFile": "Bluesky.json"
+  },
+  {
+    "pluginId": "boloforms",
+    "pluginIds": [
+      "boloforms"
+    ],
+    "providerName": "Boloforms",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/boloforms.svg",
+    "vaultType": "Boloforms",
+    "configFile": "Boloforms.json"
+  },
+  {
+    "pluginId": "boltiot",
+    "pluginIds": [
+      "boltiot"
+    ],
+    "providerName": "Boltiot",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/default-provider.svg",
+    "vaultType": "Boltiot",
+    "configFile": "Boltiot.json"
+  },
+  {
+    "pluginId": "bonsai",
+    "pluginIds": [
+      "bonsai"
+    ],
+    "providerName": "Bonsai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "api_secret"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bonsai.png",
+    "vaultType": "Bonsai",
+    "configFile": "Bonsai.json"
+  },
+  {
+    "pluginId": "bookingmood",
+    "pluginIds": [
+      "bookingmood"
+    ],
+    "providerName": "Bookingmood",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "organization_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bookingmood.svg",
+    "vaultType": "Bookingmood",
+    "configFile": "Bookingmood.json"
+  },
+  {
+    "pluginId": "botpress",
+    "pluginIds": [
+      "botpress"
+    ],
+    "providerName": "Botpress",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "workspace_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/botpress.png",
+    "vaultType": "Botpress",
+    "configFile": "Botpress.json"
+  },
+  {
+    "pluginId": "botsonic",
+    "pluginIds": [
+      "botsonic"
+    ],
+    "providerName": "Botsonic",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/botsonic.svg",
+    "vaultType": "Botsonic",
+    "configFile": "Botsonic.json"
+  },
+  {
+    "pluginId": "bouncer",
+    "pluginIds": [
+      "bouncer"
+    ],
+    "providerName": "Bouncer",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "api_key"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bouncer.png",
+    "vaultType": "Bouncer",
+    "configFile": "Bouncer.json"
+  },
+  {
+    "pluginId": "box",
+    "pluginIds": [
+      "box"
+    ],
+    "providerName": "Box",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/box.svg",
+    "vaultType": "Box",
+    "configFile": "Box.json"
+  },
+  {
+    "pluginId": "boxhero",
+    "pluginIds": [
+      "boxhero"
+    ],
+    "providerName": "Boxhero",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/boxhero.svg",
+    "vaultType": "Boxhero",
+    "configFile": "Boxhero.json"
+  },
+  {
+    "pluginId": "brandfetch",
+    "pluginIds": [
+      "brandfetch"
+    ],
+    "providerName": "Brandfetch",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "client_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/brandfetch.svg",
+    "vaultType": "Brandfetch",
+    "configFile": "Brandfetch.json"
+  },
+  {
+    "pluginId": "brex",
+    "pluginIds": [
+      "brex"
+    ],
+    "providerName": "Brex",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "company_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "company_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Brex",
+      "authUrl": "https://accounts-api.brex.com/oauth2/default/v1/authorize",
+      "tokenUrl": "https://accounts-api.brex.com/oauth2/default/v1/token",
+      "scopes": [
+        "openid",
+        "offline_access",
+        "users",
+        "users.readonly",
+        "cards",
+        "cards.readonly",
+        "expenses",
+        "expenses.card.readonly",
+        "budgets",
+        "vendors",
+        "transfers",
+        "accounts.cash.readonly",
+        "transactions.card.readonly"
+      ],
+      "tokenAuthMethod": "body"
+    },
+    "icon": "/brand-img/brex.svg",
+    "vaultType": "Brex",
+    "configFile": "Brex.json"
+  },
+  {
+    "pluginId": "browseai",
+    "pluginIds": [
+      "browseai"
+    ],
+    "providerName": "Browseai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/browseai.png",
+    "vaultType": "Browseai",
+    "configFile": "Browseai.json"
+  },
+  {
+    "pluginId": "browserless",
+    "pluginIds": [
+      "browserless"
+    ],
+    "providerName": "Browserless",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/browserless.svg",
+    "vaultType": "Browserless",
+    "configFile": "Browserless.json"
+  },
+  {
+    "pluginId": "bugsnag",
+    "pluginIds": [
+      "bugsnag"
+    ],
+    "providerName": "Bugsnag",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/bugsnag.svg",
+    "vaultType": "Bugsnag",
+    "configFile": "Bugsnag.json"
+  },
+  {
+    "pluginId": "cal",
+    "pluginIds": [
+      "cal"
+    ],
+    "providerName": "Cal",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/cal.svg",
+    "vaultType": "Cal",
+    "configFile": "Cal.json"
+  },
+  {
+    "pluginId": "calendly",
+    "pluginIds": [
+      "calendly"
+    ],
+    "providerName": "Calendly",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/calendly.svg",
+    "vaultType": "Calendly",
+    "configFile": "Calendly.json"
+  },
+  {
+    "pluginId": "canva",
+    "pluginIds": [
+      "canva"
+    ],
+    "providerName": "Canva",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "user_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Canva",
+      "authUrl": "https://www.canva.com/api/oauth/authorize",
+      "tokenUrl": "https://api.canva.com/rest/v1/oauth/token",
+      "scopes": [
+        "design:meta:read",
+        "design:content:read",
+        "design:content:write",
+        "asset:read",
+        "asset:write",
+        "folder:read",
+        "folder:write",
+        "profile:read",
+        "brandtemplate:meta:read",
+        "brandtemplate:content:read",
+        "comment:read",
+        "comment:write"
+      ]
+    },
+    "icon": "/brand-img/canva.svg",
+    "vaultType": "Canva",
+    "configFile": "Canva.json"
+  },
+  {
+    "pluginId": "canvas",
+    "pluginIds": [
+      "canvas"
+    ],
+    "providerName": "Canvas",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "base_url"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "base_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/canvas.svg",
+    "vaultType": "Canvas",
+    "configFile": "Canvas.json"
+  },
+  {
+    "pluginId": "chatbotkit",
+    "pluginIds": [
+      "chatbotkit"
+    ],
+    "providerName": "Chatbotkit",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/chatbotkit.png",
+    "vaultType": "Chatbotkit",
+    "configFile": "Chatbotkit.json"
+  },
+  {
+    "pluginId": "circleci",
+    "pluginIds": [
+      "circleci"
+    ],
+    "providerName": "Circleci",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/circleci.svg",
+    "vaultType": "Circleci",
+    "configFile": "Circleci.json"
+  },
+  {
+    "pluginId": "clickhouse",
+    "pluginIds": [
+      "clickhouse"
+    ],
+    "providerName": "Clickhouse",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/clickhouse.svg",
+    "vaultType": "Clickhouse",
+    "configFile": "Clickhouse.json"
+  },
+  {
+    "pluginId": "clientary",
+    "pluginIds": [
+      "clientary"
+    ],
+    "providerName": "Clientary",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "domain"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/clientary.png",
+    "vaultType": "Clientary",
+    "configFile": "Clientary.json"
+  },
+  {
+    "pluginId": "clockify",
+    "pluginIds": [
+      "clockify"
+    ],
+    "providerName": "Clockify",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/clockify.svg",
+    "vaultType": "Clockify",
+    "configFile": "Clockify.json"
+  },
+  {
+    "pluginId": "cloudflare",
+    "pluginIds": [
+      "cloudflare"
+    ],
+    "providerName": "Cloudflare",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/cloudflare.svg",
+    "vaultType": "Cloudflare",
+    "configFile": "Cloudflare.json"
+  },
+  {
+    "pluginId": "cloudinary",
+    "pluginIds": [
+      "cloudinary"
+    ],
+    "providerName": "Cloudinary",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "api_secret",
+          "cloud_name"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/cloudinary.svg",
+    "vaultType": "Cloudinary",
+    "configFile": "Cloudinary.json"
+  },
+  {
+    "pluginId": "collegefootballdata",
+    "pluginIds": [
+      "collegefootballdata"
+    ],
+    "providerName": "Collegefootballdata",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/collegefootballdata.png",
+    "vaultType": "Collegefootballdata",
+    "configFile": "Collegefootballdata.json"
+  },
+  {
+    "pluginId": "confluence",
+    "pluginIds": [
+      "confluence"
+    ],
+    "providerName": "Confluence",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "email",
+          "cloud_url"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "cloud_id",
+          "cloud_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Confluence",
+      "authUrl": "https://auth.atlassian.com/authorize",
+      "tokenUrl": "https://auth.atlassian.com/oauth/token",
+      "scopes": [
+        "read:page:confluence",
+        "read:space:confluence",
+        "search:confluence",
+        "offline_access"
+      ],
+      "authParams": {
+        "audience": "api.atlassian.com",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/confluence.svg",
+    "vaultType": "Confluence",
+    "configFile": "Confluence.json"
+  },
+  {
+    "pluginId": "contentfulgraphql",
+    "pluginIds": [
+      "contentfulgraphql"
+    ],
+    "providerName": "Contentfulgraphql",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "space_id",
+          "environment_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/contentfulgraphql.svg",
+    "vaultType": "Contentfulgraphql",
+    "configFile": "Contentfulgraphql.json"
+  },
+  {
+    "pluginId": "contextsevenmcp",
+    "pluginIds": [
+      "contextsevenmcp"
+    ],
+    "providerName": "Contextsevenmcp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/contextsevenmcp.png",
+    "vaultType": "Contextsevenmcp",
+    "configFile": "Contextsevenmcp.json"
+  },
+  {
+    "pluginId": "crowterminal",
+    "pluginIds": [
+      "crowterminal"
+    ],
+    "providerName": "Crowterminal",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/crowterminal.png",
+    "vaultType": "Crowterminal",
+    "configFile": "Crowterminal.json"
+  },
+  {
+    "pluginId": "cursor",
+    "pluginIds": [
+      "cursor"
+    ],
+    "providerName": "Cursor",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/cursor.svg",
+    "vaultType": "Cursor",
+    "configFile": "Cursor.json"
+  },
+  {
+    "pluginId": "customgpt",
+    "pluginIds": [
+      "customgpt"
+    ],
+    "providerName": "Customgpt",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/customgpt.png",
+    "vaultType": "Customgpt",
+    "configFile": "Customgpt.json"
+  },
+  {
+    "pluginId": "databricks",
+    "pluginIds": [
+      "databricks"
+    ],
+    "providerName": "Databricks",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/databricks.svg",
+    "vaultType": "Databricks",
+    "configFile": "Databricks.json"
+  },
+  {
+    "pluginId": "datadog",
+    "pluginIds": [
+      "datadog"
+    ],
+    "providerName": "Datadog",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "app_key",
+          "site"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/datadog.svg",
+    "vaultType": "Datadog",
+    "configFile": "Datadog.json"
+  },
+  {
+    "pluginId": "deepseek",
+    "pluginIds": [
+      "deepseek"
+    ],
+    "providerName": "Deepseek",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/deepseek.svg",
+    "vaultType": "Deepseek",
+    "configFile": "Deepseek.json"
+  },
+  {
+    "pluginId": "devinmcp",
+    "pluginIds": [
+      "devinmcp"
+    ],
+    "providerName": "Devinmcp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/devinmcp.svg",
+    "vaultType": "Devinmcp",
+    "configFile": "Devinmcp.json"
+  },
+  {
+    "pluginId": "diffbot",
+    "pluginIds": [
+      "diffbot"
+    ],
+    "providerName": "Diffbot",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/diffbot.svg",
+    "vaultType": "Diffbot",
+    "configFile": "Diffbot.json"
+  },
+  {
+    "pluginId": "digitalocean",
+    "pluginIds": [
+      "digitalocean"
+    ],
+    "providerName": "Digitalocean",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/digitalocean.svg",
+    "vaultType": "Digitalocean",
+    "configFile": "Digitalocean.json"
+  },
+  {
+    "pluginId": "discord",
+    "pluginIds": [
+      "discord"
+    ],
+    "providerName": "Discord",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/discord.svg",
+    "vaultType": "Discord",
+    "configFile": "Discord.json"
+  },
+  {
+    "pluginId": "dockerhub",
+    "pluginIds": [
+      "dockerhub"
+    ],
+    "providerName": "Dockerhub",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/dockerhub.svg",
+    "vaultType": "Dockerhub",
+    "configFile": "Dockerhub.json"
+  },
+  {
+    "pluginId": "dodopayments",
+    "pluginIds": [
+      "dodopayments"
+    ],
+    "providerName": "Dodopayments",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/dodopayments.svg",
+    "vaultType": "Dodopayments",
+    "configFile": "Dodopayments.json"
+  },
+  {
+    "pluginId": "doppler",
+    "pluginIds": [
+      "doppler"
+    ],
+    "providerName": "Doppler",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/doppler.svg",
+    "vaultType": "Doppler",
+    "configFile": "Doppler.json"
+  },
+  {
+    "pluginId": "dreamstudio",
+    "pluginIds": [
+      "dreamstudio"
+    ],
+    "providerName": "Dreamstudio",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/dreamstudio.png",
+    "vaultType": "Dreamstudio",
+    "configFile": "Dreamstudio.json"
+  },
+  {
+    "pluginId": "dropbox",
+    "pluginIds": [
+      "dropbox"
+    ],
+    "providerName": "Dropbox",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "account_id",
+          "user_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "account_id",
+          "user_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Dropbox",
+      "authUrl": "https://www.dropbox.com/oauth2/authorize",
+      "tokenUrl": "https://api.dropboxapi.com/oauth2/token",
+      "scopes": [
+        "files.metadata.read",
+        "files.metadata.write",
+        "files.content.read",
+        "files.content.write"
+      ],
+      "authParams": {
+        "token_access_type": "offline"
+      }
+    },
+    "icon": "/brand-img/dropbox.svg",
+    "vaultType": "Dropbox",
+    "configFile": "Dropbox.json"
+  },
+  {
+    "pluginId": "dropboxsign",
+    "pluginIds": [
+      "dropboxsign"
+    ],
+    "providerName": "Dropboxsign",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/dropboxsign.png",
+    "vaultType": "Dropboxsign",
+    "configFile": "Dropboxsign.json"
+  },
+  {
+    "pluginId": "epicgames",
+    "pluginIds": [
+      "epicgames"
+    ],
+    "providerName": "Epicgames",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/epicgames.svg",
+    "vaultType": "Epicgames",
+    "configFile": "Epicgames.json"
+  },
+  {
+    "pluginId": "exa",
+    "pluginIds": [
+      "exa"
+    ],
+    "providerName": "Exa",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/exa.svg",
+    "vaultType": "Exa",
+    "configFile": "Exa.json"
+  },
+  {
+    "pluginId": "facebook",
+    "pluginIds": [
+      "facebook"
+    ],
+    "providerName": "Facebook",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Facebook",
+      "authUrl": "https://www.facebook.com/v25.0/dialog/oauth",
+      "tokenUrl": "https://graph.facebook.com/v25.0/oauth/access_token",
+      "scopes": [
+        "email",
+        "pages_show_list",
+        "pages_read_engagement",
+        "pages_manage_posts",
+        "pages_manage_metadata",
+        "pages_manage_engagement",
+        "pages_messaging",
+        "pages_read_user_content",
+        "publish_video",
+        "business_management",
+        "read_insights"
+      ]
+    },
+    "icon": "/brand-img/facebook.svg",
+    "vaultType": "Facebook",
+    "configFile": "Facebook.json"
+  },
+  {
+    "pluginId": "faraday",
+    "pluginIds": [
+      "faraday"
+    ],
+    "providerName": "Faraday",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/faraday.svg",
+    "vaultType": "Faraday",
+    "configFile": "Faraday.json"
+  },
+  {
+    "pluginId": "figma",
+    "pluginIds": [
+      "figma"
+    ],
+    "providerName": "Figma",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/figma.svg",
+    "vaultType": "Figma",
+    "configFile": "Figma.json"
+  },
+  {
+    "pluginId": "firecrawl",
+    "pluginIds": [
+      "firecrawl"
+    ],
+    "providerName": "Firecrawl",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/firecrawl.svg",
+    "vaultType": "Firecrawl",
+    "configFile": "Firecrawl.json"
+  },
+  {
+    "pluginId": "fireflies",
+    "pluginIds": [
+      "fireflies"
+    ],
+    "providerName": "Fireflies",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/fireflies.png",
+    "vaultType": "Fireflies",
+    "configFile": "Fireflies.json"
+  },
+  {
+    "pluginId": "formbricks",
+    "pluginIds": [
+      "formbricks"
+    ],
+    "providerName": "Formbricks",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/formbricks.svg",
+    "vaultType": "Formbricks",
+    "configFile": "Formbricks.json"
+  },
+  {
+    "pluginId": "gemini",
+    "pluginIds": [
+      "gemini"
+    ],
+    "providerName": "Gemini",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/gemini.svg",
+    "vaultType": "GoogleGemini",
+    "configFile": "GoogleGemini.json"
+  },
+  {
+    "pluginId": "github",
+    "pluginIds": [
+      "github"
+    ],
+    "providerName": "GitHub",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "installation_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "installation_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "installation_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "GitHub",
+      "authUrl": "https://github.com/login/oauth/authorize",
+      "tokenUrl": "https://github.com/login/oauth/access_token",
+      "scopes": [
+        "repo",
+        "user",
+        "read:org"
+      ]
+    },
+    "icon": "/brand-img/github.svg",
+    "vaultType": "GitHub",
+    "configFile": "GitHub.json"
+  },
+  {
+    "pluginId": "gitlab",
+    "pluginIds": [
+      "gitlab"
+    ],
+    "providerName": "GitLab",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "project_id",
+          "group_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "project_id",
+          "group_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "GitLab",
+      "authUrl": "https://gitlab.com/oauth/authorize",
+      "tokenUrl": "https://gitlab.com/oauth/token",
+      "scopes": [
+        "read_user",
+        "read_api",
+        "api"
+      ],
+      "tokenAuthMethod": "body",
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/gitlab.svg",
+    "vaultType": "Gitlab",
+    "configFile": "Gitlab.json"
+  },
+  {
+    "pluginId": "gmail",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "email_address",
+          "last_history_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/gmail.modify",
+        "https://www.googleapis.com/auth/gmail.labels",
+        "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/gmail.compose"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/gmail.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googleaddressvalidation",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Googleaddressvalidation",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/googleaddressvalidation.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlebigquery",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "project_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/bigquery",
+        "https://www.googleapis.com/auth/cloud-platform"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googlebigquery.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlecalendar",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "channel_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/calendar"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googlecalendar.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlecloudvision",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Googlecloudvision",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/googlecloudvision.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googledocs",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "channel_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/documents",
+        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/spreadsheets.readonly"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googledocs.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googledrive",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "channel_id",
+          "changes_page_token"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/drive"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googledrive.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlemaps",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Googlemaps",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/googlemaps.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlemeet",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/meetings.space.created",
+        "https://www.googleapis.com/auth/meetings.space.readonly"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googlemeet.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googlesheets",
+    "pluginIds": [
+      "gmail",
+      "googleaddressvalidation",
+      "googlebigquery",
+      "googlecalendar",
+      "googlecloudvision",
+      "googledocs",
+      "googledrive",
+      "googlemaps",
+      "googlemeet",
+      "googlesheets"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "spreadsheet_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.readonly"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googlesheets.svg",
+    "vaultType": "GoogleWorkspace",
+    "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "grafana",
+    "pluginIds": [
+      "grafana"
+    ],
+    "providerName": "Grafana",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "grafana_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/grafana.svg",
+    "vaultType": "Grafana",
+    "configFile": "Grafana.json"
+  },
+  {
+    "pluginId": "groqcloud",
+    "pluginIds": [
+      "groqcloud"
+    ],
+    "providerName": "Groqcloud",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/groqcloud.svg",
+    "vaultType": "Groqcloud",
+    "configFile": "Groqcloud.json"
+  },
+  {
+    "pluginId": "habitica",
+    "pluginIds": [
+      "habitica"
+    ],
+    "providerName": "Habitica",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "user_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/habitica.png",
+    "vaultType": "Habitica",
+    "configFile": "Habitica.json"
+  },
+  {
+    "pluginId": "hackernews",
+    "pluginIds": [
+      "hackernews"
+    ],
+    "providerName": "Hackernews",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/hackernews.svg",
+    "vaultType": "Hackernews",
+    "configFile": "Hackernews.json"
+  },
+  {
+    "pluginId": "harvest",
+    "pluginIds": [
+      "harvest"
+    ],
+    "providerName": "Harvest",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/harvest.svg",
+    "vaultType": "Harvest",
+    "configFile": "Harvest.json"
+  },
+  {
+    "pluginId": "hashnode",
+    "pluginIds": [
+      "hashnode"
+    ],
+    "providerName": "Hashnode",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/hashnode.svg",
+    "vaultType": "Hashnode",
+    "configFile": "Hashnode.json"
+  },
+  {
+    "pluginId": "here",
+    "pluginIds": [
+      "here"
+    ],
+    "providerName": "Here",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/here.svg",
+    "vaultType": "Here",
+    "configFile": "Here.json"
+  },
+  {
+    "pluginId": "heygen",
+    "pluginIds": [
+      "heygen"
+    ],
+    "providerName": "Heygen",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/heygen.png",
+    "vaultType": "Heygen",
+    "configFile": "Heygen.json"
+  },
+  {
+    "pluginId": "htmltoimage",
+    "pluginIds": [
+      "htmltoimage"
+    ],
+    "providerName": "Htmltoimage",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/htmltoimage.png",
+    "vaultType": "Htmltoimage",
+    "configFile": "Htmltoimage.json"
+  },
+  {
+    "pluginId": "hubspot",
+    "pluginIds": [
+      "hubspot"
+    ],
+    "providerName": "HubSpot",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "portal_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "portal_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "portal_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "HubSpot",
+      "authUrl": "https://app.hubspot.com/oauth/authorize",
+      "tokenUrl": "https://api.hubapi.com/oauth/v1/token",
+      "scopes": [
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.objects.companies.read",
+        "crm.objects.companies.write",
+        "crm.objects.deals.read",
+        "crm.objects.deals.write"
+      ]
+    },
+    "icon": "/brand-img/hubspot.svg",
+    "vaultType": "Hubspot",
+    "configFile": "Hubspot.json"
+  },
+  {
+    "pluginId": "huggingface",
+    "pluginIds": [
+      "huggingface"
+    ],
+    "providerName": "Huggingface",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/huggingface.svg",
+    "vaultType": "Huggingface",
+    "configFile": "Huggingface.json"
+  },
+  {
+    "pluginId": "imgbb",
+    "pluginIds": [
+      "imgbb"
+    ],
+    "providerName": "Imgbb",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/imgbb.png",
+    "vaultType": "Imgbb",
+    "configFile": "Imgbb.json"
+  },
+  {
+    "pluginId": "insightoai",
+    "pluginIds": [
+      "insightoai"
+    ],
+    "providerName": "Insightoai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/insightoai.png",
+    "vaultType": "Insightoai",
+    "configFile": "Insightoai.json"
+  },
+  {
+    "pluginId": "instagram",
+    "pluginIds": [
+      "instagram"
+    ],
+    "providerName": "Facebook",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Facebook",
+      "authUrl": "https://www.facebook.com/v25.0/dialog/oauth",
+      "tokenUrl": "https://graph.facebook.com/v25.0/oauth/access_token",
+      "scopes": [
+        "pages_show_list",
+        "pages_manage_metadata",
+        "pages_messaging",
+        "pages_read_engagement",
+        "instagram_basic",
+        "instagram_manage_comments",
+        "instagram_manage_messages",
+        "instagram_content_publish",
+        "instagram_manage_insights"
+      ]
+    },
+    "icon": "/brand-img/instagram.svg",
+    "vaultType": "Instagram",
+    "configFile": "Instagram.json"
+  },
+  {
+    "pluginId": "intercom",
+    "pluginIds": [
+      "intercom"
+    ],
+    "providerName": "Intercom",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/intercom.svg",
+    "vaultType": "Intercom",
+    "configFile": "Intercom.json"
+  },
+  {
+    "pluginId": "jigsawstack",
+    "pluginIds": [
+      "jigsawstack"
+    ],
+    "providerName": "Jigsawstack",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/jigsawstack.svg",
+    "vaultType": "Jigsawstack",
+    "configFile": "Jigsawstack.json"
+  },
+  {
+    "pluginId": "jira",
+    "pluginIds": [
+      "jira"
+    ],
+    "providerName": "Jira",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "cloud_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "oauthConfig": {
+      "providerName": "Jira",
+      "authUrl": "https://auth.atlassian.com/authorize",
+      "tokenUrl": "https://auth.atlassian.com/oauth/token",
+      "scopes": [
+        "read:jira-work",
+        "write:jira-work",
+        "read:jira-user",
+        "offline_access"
+      ],
+      "authParams": {
+        "audience": "api.atlassian.com",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/jira.svg",
+    "vaultType": "Jira",
+    "configFile": "Jira.json"
+  },
+  {
+    "pluginId": "kaggle",
+    "pluginIds": [
+      "kaggle"
+    ],
+    "providerName": "Kaggle",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/kaggle.svg",
+    "vaultType": "Kaggle",
+    "configFile": "Kaggle.json"
+  },
+  {
+    "pluginId": "linear",
+    "pluginIds": [
+      "linear"
+    ],
+    "providerName": "Linear",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "organization_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "organization_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "organization_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Linear",
+      "authUrl": "https://linear.app/oauth/authorize",
+      "tokenUrl": "https://api.linear.app/oauth/token",
+      "scopes": [
+        "read",
+        "write"
+      ],
+      "authParams": {
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/linear.svg",
+    "vaultType": "Linear",
+    "configFile": "Linear.json"
+  },
+  {
+    "pluginId": "linkedin",
+    "pluginIds": [
+      "linkedin"
+    ],
+    "providerName": "LinkedIn",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "LinkedIn",
+      "authUrl": "https://www.linkedin.com/oauth/v2/authorization",
+      "tokenUrl": "https://www.linkedin.com/oauth/v2/accessToken",
+      "tokenAuthMethod": "body",
+      "scopes": [
+        "openid",
+        "profile",
+        "email",
+        "r_basicprofile",
+        "r_member_social",
+        "w_member_social",
+        "r_organization_social",
+        "w_organization_social",
+        "rw_organization_admin",
+        "r_organization_admin",
+        "r_organization_relationships",
+        "r_ads",
+        "rw_ads",
+        "r_1st_connections_size"
+      ]
+    },
+    "icon": "/brand-img/linkedin.svg",
+    "vaultType": "Linkedin",
+    "configFile": "Linkedin.json"
+  },
+  {
+    "pluginId": "loyverse",
+    "pluginIds": [
+      "loyverse"
+    ],
+    "providerName": "Loyverse",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/loyverse.png",
+    "vaultType": "Loyverse",
+    "configFile": "Loyverse.json"
+  },
+  {
+    "pluginId": "mailboxlayer",
+    "pluginIds": [
+      "mailboxlayer"
+    ],
+    "providerName": "Mailboxlayer",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/mailboxlayer.png",
+    "vaultType": "Mailboxlayer",
+    "configFile": "Mailboxlayer.json"
+  },
+  {
+    "pluginId": "mailchimp",
+    "pluginIds": [
+      "mailchimp"
+    ],
+    "providerName": "Mailchimp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/mailchimp.svg",
+    "vaultType": "Mailchimp",
+    "configFile": "Mailchimp.json"
+  },
+  {
+    "pluginId": "mailtrap",
+    "pluginIds": [
+      "mailtrap"
+    ],
+    "providerName": "Mailtrap",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/mailtrap.svg",
+    "vaultType": "Mailtrap",
+    "configFile": "Mailtrap.json"
+  },
+  {
+    "pluginId": "merriamwebsterdict",
+    "pluginIds": [
+      "merriamwebsterdict"
+    ],
+    "providerName": "Merriamwebsterdict",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/merriamwebsterdict.png",
+    "vaultType": "Merriamwebsterdict",
+    "configFile": "Merriamwebsterdict.json"
+  },
+  {
+    "pluginId": "monday",
+    "pluginIds": [
+      "monday"
+    ],
+    "providerName": "Monday",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/monday.svg",
+    "vaultType": "Monday",
+    "configFile": "Monday.json"
+  },
+  {
+    "pluginId": "neon",
+    "pluginIds": [
+      "neon"
+    ],
+    "providerName": "Neon",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/neon.svg",
+    "vaultType": "Neon",
+    "configFile": "Neon.json"
+  },
+  {
+    "pluginId": "nextdns",
+    "pluginIds": [
+      "nextdns"
+    ],
+    "providerName": "Nextdns",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/nextdns.svg",
+    "vaultType": "Nextdns",
+    "configFile": "Nextdns.json"
+  },
+  {
+    "pluginId": "notion",
+    "pluginIds": [
+      "notion"
+    ],
+    "providerName": "Notion",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "workspace_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "workspace_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "workspace_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Notion",
+      "authUrl": "https://api.notion.com/v1/oauth/authorize",
+      "tokenUrl": "https://api.notion.com/v1/oauth/token",
+      "scopes": [],
+      "tokenAuthMethod": "basic",
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/notion.svg",
+    "vaultType": "Notion",
+    "configFile": "Notion.json"
+  },
+  {
+    "pluginId": "ocrspace",
+    "pluginIds": [
+      "ocrspace"
+    ],
+    "providerName": "Ocrspace",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ocrspace.svg",
+    "vaultType": "Ocrspace",
+    "configFile": "Ocrspace.json"
+  },
+  {
+    "pluginId": "ocrwebservice",
+    "pluginIds": [
+      "ocrwebservice"
+    ],
+    "providerName": "Ocrwebservice",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/ocrwebservice.svg",
+    "vaultType": "Ocrwebservice",
+    "configFile": "Ocrwebservice.json"
+  },
+  {
+    "pluginId": "ollama",
+    "pluginIds": [
+      "ollama"
+    ],
+    "providerName": "Ollama",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/ollama.svg",
+    "vaultType": "Ollama",
+    "configFile": "Ollama.json"
+  },
+  {
+    "pluginId": "onedrive",
+    "pluginIds": [
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
+    ],
+    "providerName": "OneDrive",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Microsoft",
+      "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": [
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
+      ]
+    },
+    "icon": "/brand-img/onedrive.svg",
+    "vaultType": "M365",
+    "configFile": "M365.json"
+  },
+  {
+    "pluginId": "onepassword",
+    "pluginIds": [
+      "onepassword"
+    ],
+    "providerName": "Onepassword",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/onepassword.svg",
+    "vaultType": "Onepassword",
+    "configFile": "Onepassword.json"
+  },
+  {
+    "pluginId": "openai",
+    "pluginIds": [
+      "openai"
+    ],
+    "providerName": "Openai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/openai.svg",
+    "vaultType": "OpenAI",
+    "configFile": "OpenAI.json"
+  },
+  {
+    "pluginId": "openrouter",
+    "pluginIds": [
+      "openrouter"
+    ],
+    "providerName": "Openrouter",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/openrouter.svg",
+    "vaultType": "Openrouter",
+    "configFile": "Openrouter.json"
+  },
+  {
+    "pluginId": "openweathermap",
+    "pluginIds": [
+      "openweathermap"
+    ],
+    "providerName": "Openweathermap",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/openweathermap.svg",
+    "vaultType": "Openweathermap",
+    "configFile": "Openweathermap.json"
+  },
+  {
+    "pluginId": "oura",
+    "pluginIds": [
+      "oura"
+    ],
+    "providerName": "Oura",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/oura.png",
+    "vaultType": "Oura",
+    "configFile": "Oura.json"
+  },
+  {
+    "pluginId": "outlook",
+    "pluginIds": [
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
+    ],
+    "providerName": "Outlook",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Microsoft",
+      "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": [
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
+      ]
+    },
+    "icon": "/brand-img/outlook.svg",
+    "vaultType": "M365",
+    "configFile": "M365.json"
+  },
+  {
+    "pluginId": "pagerduty",
+    "pluginIds": [
+      "pagerduty"
+    ],
+    "providerName": "Pagerduty",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/pagerduty.svg",
+    "vaultType": "Pagerduty",
+    "configFile": "Pagerduty.json"
+  },
+  {
+    "pluginId": "pdfmonkey",
+    "pluginIds": [
+      "pdfmonkey"
+    ],
+    "providerName": "Pdfmonkey",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/pdfmonkey.svg",
+    "vaultType": "Pdfmonkey",
+    "configFile": "Pdfmonkey.json"
+  },
+  {
+    "pluginId": "perplexityai",
+    "pluginIds": [
+      "perplexityai"
+    ],
+    "providerName": "Perplexityai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/perplexityai.svg",
+    "vaultType": "Perplexityai",
+    "configFile": "Perplexityai.json"
+  },
+  {
+    "pluginId": "pinecone",
+    "pluginIds": [
+      "pinecone"
+    ],
+    "providerName": "Pinecone",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/pinecone.svg",
+    "vaultType": "Pinecone",
+    "configFile": "Pinecone.json"
+  },
+  {
+    "pluginId": "posthog",
+    "pluginIds": [
+      "posthog"
+    ],
+    "providerName": "Posthog",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/posthog.svg",
+    "vaultType": "Posthog",
+    "configFile": "Posthog.json"
+  },
+  {
+    "pluginId": "razorpay",
+    "pluginIds": [
+      "razorpay"
+    ],
+    "providerName": "Razorpay",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/razorpay.svg",
+    "vaultType": "Razorpay",
+    "configFile": "Razorpay.json"
+  },
+  {
+    "pluginId": "reddit",
+    "pluginIds": [
+      "reddit"
+    ],
+    "providerName": "Reddit",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/reddit.svg",
+    "vaultType": "Reddit",
+    "configFile": "Reddit.json"
+  },
+  {
+    "pluginId": "resend",
+    "pluginIds": [
+      "resend"
+    ],
+    "providerName": "Resend",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/resend.svg",
+    "vaultType": "SendGrid",
+    "configFile": "SendGrid.json"
+  },
+  {
+    "pluginId": "retailed",
+    "pluginIds": [
+      "retailed"
+    ],
+    "providerName": "Retailed",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/retailed.png",
+    "vaultType": "Retailed",
+    "configFile": "Retailed.json"
+  },
+  {
+    "pluginId": "salesforce",
+    "pluginIds": [
+      "salesforce"
+    ],
+    "providerName": "Salesforce",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id",
+          "instance_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Salesforce",
+      "authUrl": "https://login.salesforce.com/services/oauth2/authorize",
+      "tokenUrl": "https://login.salesforce.com/services/oauth2/token",
+      "scopes": [
+        "api",
+        "refresh_token",
+        "id"
+      ]
+    },
+    "icon": "/brand-img/salesforce.svg",
+    "vaultType": "Salesforce",
+    "configFile": "Salesforce.json"
+  },
+  {
+    "pluginId": "securitytrails",
+    "pluginIds": [
+      "securitytrails"
+    ],
+    "providerName": "Securitytrails",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/securitytrails.png",
+    "vaultType": "Securitytrails",
+    "configFile": "Securitytrails.json"
+  },
+  {
+    "pluginId": "sentry",
+    "pluginIds": [
+      "sentry"
+    ],
+    "providerName": "Sentry",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/sentry.svg",
+    "vaultType": "Sentry",
+    "configFile": "Sentry.json"
+  },
+  {
+    "pluginId": "serpapi",
+    "pluginIds": [
+      "serpapi"
+    ],
+    "providerName": "Serpapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/serpapi.png",
+    "vaultType": "Serpapi",
+    "configFile": "Serpapi.json"
+  },
+  {
+    "pluginId": "sharepoint",
+    "pluginIds": [
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
+    ],
+    "providerName": "SharePoint",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "site_id",
+          "subscription_id",
+          "client_state"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "site_id",
+          "subscription_id",
+          "client_state"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Microsoft",
+      "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": [
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
+      ]
+    },
+    "icon": "/brand-img/sharepoint.svg",
+    "vaultType": "M365",
+    "configFile": "M365.json"
+  },
+  {
+    "pluginId": "slack",
+    "pluginIds": [
+      "slack"
+    ],
+    "providerName": "Slack",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "team_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "team_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "team_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Slack",
+      "authUrl": "https://slack.com/oauth/v2/authorize",
+      "tokenUrl": "https://slack.com/api/oauth.v2.access",
+      "scopes": [
+        "channels:read",
+        "channels:history",
+        "channels:join",
+        "channels:manage",
+        "groups:read",
+        "groups:history",
+        "groups:write",
+        "im:read",
+        "im:history",
+        "im:write",
+        "mpim:read",
+        "mpim:history",
+        "mpim:write",
+        "chat:write",
+        "chat:write.public",
+        "reactions:read",
+        "reactions:write",
+        "files:read",
+        "files:write",
+        "users:read",
+        "users:read.email"
+      ]
+    },
+    "icon": "/brand-img/slack.svg",
+    "vaultType": "Slack",
+    "configFile": "Slack.json"
+  },
+  {
+    "pluginId": "sourcegraph",
+    "pluginIds": [
+      "sourcegraph"
+    ],
+    "providerName": "Sourcegraph",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/sourcegraph.svg",
+    "vaultType": "Sourcegraph",
+    "configFile": "Sourcegraph.json"
+  },
+  {
+    "pluginId": "spotify",
+    "pluginIds": [
+      "spotify"
+    ],
+    "providerName": "Spotify",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Spotify",
+      "authUrl": "https://accounts.spotify.com/authorize",
+      "tokenUrl": "https://accounts.spotify.com/api/token",
+      "scopes": [
+        "user-read-private",
+        "user-read-email",
+        "user-read-playback-state",
+        "user-modify-playback-state",
+        "user-read-currently-playing",
+        "user-read-recently-played",
+        "user-library-read",
+        "user-library-modify",
+        "user-follow-read",
+        "user-follow-modify",
+        "playlist-read-private",
+        "playlist-read-collaborative",
+        "playlist-modify-public",
+        "playlist-modify-private"
+      ],
+      "tokenAuthMethod": "basic",
+      "requiresRegisteredRedirect": true,
+      "authParams": {
+        "show_dialog": "true"
+      }
+    },
+    "icon": "/brand-img/spotify.svg",
+    "vaultType": "Spotify",
+    "configFile": "Spotify.json"
+  },
+  {
+    "pluginId": "strava",
+    "pluginIds": [
+      "strava"
+    ],
+    "providerName": "Strava",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/strava.svg",
+    "vaultType": "Strava",
+    "configFile": "Strava.json"
+  },
+  {
+    "pluginId": "streamtime",
+    "pluginIds": [
+      "streamtime"
+    ],
+    "providerName": "Streamtime",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/streamtime.png",
+    "vaultType": "Streamtime",
+    "configFile": "Streamtime.json"
+  },
+  {
+    "pluginId": "stripe",
+    "pluginIds": [
+      "stripe"
+    ],
+    "providerName": "Stripe",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "account_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "account_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Stripe",
+      "authUrl": "https://marketplace.stripe.com/oauth/v2/authorize",
+      "tokenUrl": "https://api.stripe.com/v1/oauth/token",
+      "scopes": [
+        "stripe_apps"
+      ],
+      "tokenAuthMethod": "basic",
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/stripe.svg",
+    "vaultType": "Stripe",
+    "configFile": "Stripe.json"
+  },
+  {
+    "pluginId": "studiobyai21labs",
+    "pluginIds": [
+      "studiobyai21labs"
+    ],
+    "providerName": "Studiobyai21labs",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/studiobyai21labs.png",
+    "vaultType": "Studiobyai21labs",
+    "configFile": "Studiobyai21labs.json"
+  },
+  {
+    "pluginId": "supabase",
+    "pluginIds": [
+      "supabase"
+    ],
+    "providerName": "Supabase",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Supabase",
+      "authUrl": "https://api.supabase.com/v1/oauth/authorize",
+      "tokenUrl": "https://api.supabase.com/v1/oauth/token",
+      "scopes": [
+        "all"
+      ],
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/supabase.svg",
+    "vaultType": "Supabase",
+    "configFile": "Supabase.json"
+  },
+  {
+    "pluginId": "synthflowai",
+    "pluginIds": [
+      "synthflowai"
+    ],
+    "providerName": "Synthflowai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/synthflowai.png",
+    "vaultType": "Synthflowai",
+    "configFile": "Synthflowai.json"
+  },
+  {
+    "pluginId": "tally",
+    "pluginIds": [
+      "tally"
+    ],
+    "providerName": "Tally",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/tally.svg",
+    "vaultType": "Tally",
+    "configFile": "Tally.json"
+  },
+  {
+    "pluginId": "tavily",
+    "pluginIds": [
+      "tavily"
+    ],
+    "providerName": "Tavily",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/tavily.svg",
+    "vaultType": "Tavily",
+    "configFile": "Tavily.json"
+  },
+  {
+    "pluginId": "tavilymcp",
+    "pluginIds": [
+      "tavilymcp"
+    ],
+    "providerName": "Tavilymcp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/tavilymcp.svg",
+    "vaultType": "Tavilymcp",
+    "configFile": "Tavilymcp.json"
+  },
+  {
+    "pluginId": "teams",
+    "pluginIds": [
+      "onedrive",
+      "outlook",
+      "sharepoint",
+      "teams"
+    ],
+    "providerName": "Microsoft Teams",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "subscription_id",
+          "client_state"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Microsoft",
+      "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "scopes": [
+        "Calendars.ReadWrite",
+        "Channel.ReadBasic.All",
+        "ChannelMessage.Read.All",
+        "ChannelMessage.Send",
+        "Chat.ReadWrite",
+        "Contacts.ReadWrite",
+        "Files.ReadWrite.All",
+        "Mail.ReadWrite",
+        "Mail.Send",
+        "Sites.FullControl.All",
+        "Sites.Manage.All",
+        "Sites.Read.All",
+        "Sites.ReadWrite.All",
+        "Subscription.Read.All",
+        "Team.ReadBasic.All",
+        "TeamMember.Read.All",
+        "User.Read",
+        "offline_access"
+      ]
+    },
+    "icon": "/brand-img/teams.svg",
+    "vaultType": "M365",
+    "configFile": "M365.json"
+  },
+  {
+    "pluginId": "telegram",
+    "pluginIds": [
+      "telegram"
+    ],
+    "providerName": "Telegram",
+    "authModes": [
+      {
+        "mode": "bot_token",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "bot_token",
+    "icon": "/brand-img/telegram.svg",
+    "vaultType": "Telegram",
+    "configFile": "Telegram.json"
+  },
+  {
+    "pluginId": "textrazor",
+    "pluginIds": [
+      "textrazor"
+    ],
+    "providerName": "Textrazor",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/textrazor.svg",
+    "vaultType": "Textrazor",
+    "configFile": "Textrazor.json"
+  },
+  {
+    "pluginId": "ticktick",
+    "pluginIds": [
+      "ticktick"
+    ],
+    "providerName": "TickTick",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "TickTick",
+      "authUrl": "https://ticktick.com/oauth/authorize",
+      "tokenUrl": "https://ticktick.com/oauth/token",
+      "scopes": [
+        "tasks:read",
+        "tasks:write"
+      ]
+    },
+    "icon": "/brand-img/ticktick.svg",
+    "vaultType": "Ticktick",
+    "configFile": "Ticktick.json"
+  },
+  {
+    "pluginId": "timecamp",
+    "pluginIds": [
+      "timecamp"
+    ],
+    "providerName": "Timecamp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/timecamp.png",
+    "vaultType": "Timecamp",
+    "configFile": "Timecamp.json"
+  },
+  {
+    "pluginId": "tisane",
+    "pluginIds": [
+      "tisane"
+    ],
+    "providerName": "Tisane",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/tisane.svg",
+    "vaultType": "Tisane",
+    "configFile": "Tisane.json"
+  },
+  {
+    "pluginId": "todoist",
+    "pluginIds": [
+      "todoist"
+    ],
+    "providerName": "Todoist",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/todoist.svg",
+    "vaultType": "Todoist",
+    "configFile": "Todoist.json"
+  },
+  {
+    "pluginId": "toggl",
+    "pluginIds": [
+      "toggl"
+    ],
+    "providerName": "Toggl",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/toggl.svg",
+    "vaultType": "Toggl",
+    "configFile": "Toggl.json"
+  },
+  {
+    "pluginId": "trello",
+    "pluginIds": [
+      "trello"
+    ],
+    "providerName": "Trello",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/trello.svg",
+    "vaultType": "Trello",
+    "configFile": "Trello.json"
+  },
+  {
+    "pluginId": "twentyonerisk",
+    "pluginIds": [
+      "twentyonerisk"
+    ],
+    "providerName": "Twentyonerisk",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/twentyonerisk.png",
+    "vaultType": "Twentyonerisk",
+    "configFile": "Twentyonerisk.json"
+  },
+  {
+    "pluginId": "twilio",
+    "pluginIds": [
+      "twilio"
+    ],
+    "providerName": "Twilio",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "accountSid"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/twilio.svg",
+    "vaultType": "Twilio",
+    "configFile": "Twilio.json"
+  },
+  {
+    "pluginId": "twitter",
+    "pluginIds": [
+      "twitter"
+    ],
+    "providerName": "Twitter",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/twitter.svg",
+    "vaultType": "Twitter",
+    "configFile": "Twitter.json"
+  },
+  {
+    "pluginId": "twitterapiio",
+    "pluginIds": [
+      "twitterapiio"
+    ],
+    "providerName": "Twitterapiio",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/twitterapiio.svg",
+    "vaultType": "Twitterapiio",
+    "configFile": "Twitterapiio.json"
+  },
+  {
+    "pluginId": "twochat",
+    "pluginIds": [
+      "twochat"
+    ],
+    "providerName": "Twochat",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/whatsapp.svg",
+    "vaultType": "Twochat",
+    "configFile": "Twochat.json"
+  },
+  {
+    "pluginId": "typeform",
+    "pluginIds": [
+      "typeform"
+    ],
+    "providerName": "Typeform",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/typeform.svg",
+    "vaultType": "Typeform",
+    "configFile": "Typeform.json"
+  },
+  {
+    "pluginId": "unione",
+    "pluginIds": [
+      "unione"
+    ],
+    "providerName": "Unione",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "user_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/unione.png",
+    "vaultType": "Unione",
+    "configFile": "Unione.json"
+  },
+  {
+    "pluginId": "uniswapapi",
+    "pluginIds": [
+      "uniswapapi"
+    ],
+    "providerName": "Uniswapapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/uniswapapi.png",
+    "vaultType": "Uniswapapi",
+    "configFile": "Uniswapapi.json"
+  },
+  {
+    "pluginId": "vapi",
+    "pluginIds": [
+      "vapi"
+    ],
+    "providerName": "Vapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/vapi.svg",
+    "vaultType": "Vapi",
+    "configFile": "Vapi.json"
+  },
+  {
+    "pluginId": "vercel",
+    "pluginIds": [
+      "vercel"
+    ],
+    "providerName": "Vercel",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/vercel.svg",
+    "vaultType": "Vercel",
+    "configFile": "Vercel.json"
+  },
+  {
+    "pluginId": "vestaboard",
+    "pluginIds": [
+      "vestaboard"
+    ],
+    "providerName": "Vestaboard",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "api_secret"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/vestaboard.png",
+    "vaultType": "Vestaboard",
+    "configFile": "Vestaboard.json"
+  },
+  {
+    "pluginId": "wakatime",
+    "pluginIds": [
+      "wakatime"
+    ],
+    "providerName": "Wakatime",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/wakatime.svg",
+    "vaultType": "Wakatime",
+    "configFile": "Wakatime.json"
+  },
+  {
+    "pluginId": "webflow",
+    "pluginIds": [
+      "webflow"
+    ],
+    "providerName": "Webflow",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Webflow",
+      "authUrl": "https://webflow.com/oauth/authorize",
+      "tokenUrl": "https://api.webflow.com/oauth/access_token",
+      "scopes": [
+        "authorized_user:read",
+        "assets:read",
+        "assets:write",
+        "cms:read",
+        "cms:write",
+        "comments:read",
+        "components:read",
+        "ecommerce:read",
+        "ecommerce:write",
+        "forms:read",
+        "pages:read",
+        "pages:write",
+        "sites:read",
+        "sites:write"
+      ],
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/webflow.svg",
+    "vaultType": "Webflow",
+    "configFile": "Webflow.json"
+  },
+  {
+    "pluginId": "webvizio",
+    "pluginIds": [
+      "webvizio"
+    ],
+    "providerName": "Webvizio",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/webvizio.png",
+    "vaultType": "Webvizio",
+    "configFile": "Webvizio.json"
+  },
+  {
+    "pluginId": "whatsapp",
+    "pluginIds": [
+      "whatsapp"
+    ],
+    "providerName": "Whatsapp",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "phone_number_id",
+          "business_account_id",
+          "webhook_verify_token"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/whatsapp.svg",
+    "vaultType": "Whatsapp",
+    "configFile": "Whatsapp.json"
+  },
+  {
+    "pluginId": "witai",
+    "pluginIds": [
+      "witai"
+    ],
+    "providerName": "Witai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/witai.svg",
+    "vaultType": "Witai",
+    "configFile": "Witai.json"
+  },
+  {
+    "pluginId": "wiza",
+    "pluginIds": [
+      "wiza"
+    ],
+    "providerName": "Wiza",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/wiza.png",
+    "vaultType": "Wiza",
+    "configFile": "Wiza.json"
+  },
+  {
+    "pluginId": "workday",
+    "pluginIds": [
+      "workday"
+    ],
+    "providerName": "Workday",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant",
+          "host",
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Workday",
+      "authUrl": "https://placeholder.workday.com/ccx/oauth2/placeholder/authorize",
+      "tokenUrl": "https://placeholder.workday.com/ccx/oauth2/placeholder/token",
+      "scopes": [
+        "staffing",
+        "absenceManagement",
+        "recruiting",
+        "payroll",
+        "common",
+        "person"
+      ],
+      "tokenAuthMethod": "body",
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/brand-img/workday.svg",
+    "vaultType": "Workday",
+    "configFile": "Workday.json"
+  },
+  {
+    "pluginId": "xquik",
+    "pluginIds": [
+      "xquik"
+    ],
+    "providerName": "Xquik",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one",
+          "webhook_signature"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/xquik.svg",
+    "vaultType": "Xquik",
+    "configFile": "Xquik.json"
+  },
+  {
+    "pluginId": "youcom",
+    "pluginIds": [
+      "youcom"
+    ],
+    "providerName": "Youcom",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/youcom.png",
+    "vaultType": "Youcom",
+    "configFile": "Youcom.json"
+  },
+  {
+    "pluginId": "youtube",
+    "pluginIds": [
+      "youtube"
+    ],
+    "providerName": "Youtube",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/youtube.svg",
+    "vaultType": "Youtube",
+    "configFile": "Youtube.json"
+  },
+  {
+    "pluginId": "zendesk",
+    "pluginIds": [
+      "zendesk"
+    ],
+    "providerName": "Zendesk",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "subdomain"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/zendesk.svg",
+    "vaultType": "Zendesk",
+    "configFile": "Zendesk.json"
+  },
+  {
+    "pluginId": "zohomail",
+    "pluginIds": [
+      "zohomail"
+    ],
+    "providerName": "Zoho",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "zuid"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "zuid"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Zoho",
+      "authUrl": "https://accounts.zoho.com/oauth/v2/auth",
+      "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+      "scopes": [
+        "ZohoMail.messages.ALL",
+        "ZohoMail.folders.ALL",
+        "ZohoMail.accounts.READ"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      },
+      "tokenAuthMethod": "body"
+    },
+    "icon": "/brand-img/zohomail.svg",
+    "vaultType": "Zohomail",
+    "configFile": "Zohomail.json"
+  },
+  {
+    "pluginId": "zoom",
+    "pluginIds": [
+      "zoom"
+    ],
+    "providerName": "Zoom",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/zoom.svg",
+    "vaultType": "Zoom",
+    "configFile": "Zoom.json"
+  },
+  {
+    "pluginId": "zoominfo",
+    "pluginIds": [
+      "zoominfo"
+    ],
+    "providerName": "Zoominfo",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/zoominfo.png",
+    "vaultType": "Zoominfo",
+    "configFile": "Zoominfo.json"
+  }
+]

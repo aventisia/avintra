@@ -13,7 +13,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { PluginMetadata } from "./types.js";
+import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.js";
+
+import { getVaultType } from "./integration-catalog.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -175,10 +177,14 @@ export const DEFAULT_ICON_MAP: Record<string, string> = {
   nextdns: "/brand-img/nextdns.svg",
   // --- Icons fetched from official pages / other open libraries ---
   ably: "/brand-img/ably.svg",
+  abuseipdb: "/brand-img/abuseipdb.png",
   addresszen: "/brand-img/addresszen.svg",
   alttextai: "/brand-img/alttextai.svg",
   apify: "/brand-img/apify.svg",
   ayrshare: "/brand-img/ayrshare.svg",
+  abyssale: "/brand-img/abyssale.png",
+  accrediblecertificates: "/brand-img/accrediblecertificates.png",
+  activecampaign: "/brand-img/activecampaign.png",
   boloforms: "/brand-img/boloforms.svg",
   bookingmood: "/brand-img/bookingmood.svg",
   botsonic: "/brand-img/botsonic.svg",
@@ -193,6 +199,94 @@ export const DEFAULT_ICON_MAP: Record<string, string> = {
   tally: "/brand-img/tally.svg",
   twitterapiio: "/brand-img/twitterapiio.svg",
   xquik: "/brand-img/xquik.svg",
+  ...Object.fromEntries(
+    [
+      "activetrail",
+      "aeroleads",
+      "affinda",
+      "agencyzoom",
+      "agentmail",
+      "agentql",
+      "agenty",
+      "agilitycms",
+      "aivoov",
+      "altoviz",
+      "amara",
+      "ambientweather",
+      "anchorbrowser",
+      "anonyflow",
+      "apaleo",
+      "api2pdf",
+      "apibible",
+      "apilabz",
+      "apininjas",
+      "apisports",
+      "asindataapi",
+      "asyncinterview",
+      "autom",
+      "bannerbear",
+      "bart",
+      "baselinker",
+      "basin",
+      "beaconstac",
+      "beeminder",
+      "bettercontact",
+      "betterproposals",
+      "bigdatacloud",
+      "bigmailer",
+      "blocknative",
+      "bonsai",
+      "botpress",
+      "bouncer",
+      "browseai",
+      "chatbotkit",
+      "clientary",
+      "collegefootballdata",
+      "contextsevenmcp",
+      "crowterminal",
+      "customgpt",
+      "dreamstudio",
+      "dropboxsign",
+      "fireflies",
+      "habitica",
+      "heygen",
+      "htmltoimage",
+      "imgbb",
+      "insightoai",
+      "loyverse",
+      "mailboxlayer",
+      "merriamwebsterdict",
+      "oura",
+      "retailed",
+      "securitytrails",
+      "serpapi",
+      "streamtime",
+      "studiobyai21labs",
+      "synthflowai",
+      "timecamp",
+      "twentyonerisk",
+      "unione",
+      "uniswapapi",
+      "vestaboard",
+      "webvizio",
+      "wiza",
+      "youcom",
+      "zoominfo",
+    ].map((id) => [id, `/brand-img/${id}.png`]),
+  ),
+  allimagesai: "/brand-img/openai.svg",
+  ambee: "/brand-img/openweathermap.svg",
+  amcards: "/brand-img/stripe.svg",
+  boltiot: "/brand-img/default-provider.svg",
+  twochat: "/brand-img/whatsapp.svg",
+};
+
+/** Canonical user-facing names for plugins whose package metadata is generic. */
+export const DISPLAY_NAME_OVERRIDES: Record<string, string> = {
+  outlook: "Outlook",
+  teams: "Microsoft Teams",
+  onedrive: "OneDrive",
+  sharepoint: "SharePoint",
 };
 
 /** Default base URLs for OpenAPI spec generation. */
@@ -459,10 +553,23 @@ function readPackageDescription(pluginId: string): string | undefined {
 /** Cast a plugin object to a shape we can read metadata from. */
 type RawPlugin = {
   id?: string;
-  oauthConfig?: { providerName?: string };
+  oauthConfig?: PluginOAuthConfig;
+  options?: { authType?: string };
   endpointMeta?: Record<string, { description?: string }>;
-  authConfig?: Record<string, unknown>;
+  authConfig?: Record<string, { account?: unknown }>;
 };
+
+function normalizeAccountFields(account: unknown): string[] {
+  if (!Array.isArray(account)) return [];
+  return account.filter((field): field is string => typeof field === "string");
+}
+
+function normalizeAuthModes(authConfig: RawPlugin["authConfig"]): PluginAuthMode[] {
+  return Object.entries(authConfig ?? {}).map(([mode, config]) => ({
+    mode,
+    accountFields: normalizeAccountFields(config?.account),
+  }));
+}
 
 /**
  * Normalize a registered Corsair plugin into PluginMetadata.
@@ -474,7 +581,9 @@ export function toPluginMetadata(
 ): PluginMetadata {
   const raw = plugin as RawPlugin;
   const id = raw.id ?? "unknown";
-  const providerName = raw.oauthConfig?.providerName ?? titleCase(id);
+  const providerName = DISPLAY_NAME_OVERRIDES[id]
+    ?? raw.oauthConfig?.providerName
+    ?? titleCase(id);
   const pkgDescription = readPackageDescription(id);
   const description =
     pkgDescription && pkgDescription.trim().length > 0
@@ -486,14 +595,23 @@ export function toPluginMetadata(
     if (meta?.description) actionDescriptions[action] = meta.description;
   }
 
-  const authType = raw.authConfig && "oauth_2" in raw.authConfig ? "oauth_2" : "accessToken";
+  const authModes = normalizeAuthModes(raw.authConfig);
+  if (authModes.length === 0 && raw.options?.authType) {
+    authModes.push({ mode: raw.options.authType, accountFields: [] });
+  }
+  const authType = authModes.some(({ mode }) => mode === "oauth_2")
+    ? "oauth_2"
+    : authModes[0]?.mode ?? "none";
 
   return {
     id,
     providerName,
+    vaultType: getVaultType(id),
     description,
     img: iconMap[id] ?? "/function.png",
     authType,
+    authModes,
+    oauthConfig: raw.oauthConfig,
     actionDescriptions,
   };
 }

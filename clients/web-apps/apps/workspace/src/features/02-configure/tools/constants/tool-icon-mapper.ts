@@ -1,3 +1,5 @@
+import { getCorsairPluginIcon } from "../../vault-table/vault-config/constants/corsair-integration-mapper";
+
 /**
  * Maps tool names/ids to their brand icons from corsair DCP generator.
  * These icons are available in the studio public/brand-img folder.
@@ -185,5 +187,5 @@ export const getToolIcon = (toolName?: string): string => {
   const lowerName = toolName.toLowerCase();
   const shortName = lowerName.replace(/^corsair\s+/, "");
   
-  return toolIconMapper[shortName] || toolIconMapper.default;
+  return toolIconMapper[shortName] || getCorsairPluginIcon(shortName) || toolIconMapper.default;
 };

@@ -10,10 +10,12 @@ public interface ICorsairSidecarService
     /// </summary>
     /// <param name="connectionId">Stable connection handle (AppSecret Id).</param>
     /// <param name="plugin">Target plugin identifier.</param>
-    /// <param name="apiKey">API key value to store.</param>
+    /// <param name="credentials">Decrypted credential fields to store.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><c>true</c> when the sidecar acknowledged the mirror.</returns>
-    Task<bool> MirrorCredentialAsync(Guid connectionId, string plugin, string apiKey, CancellationToken cancellationToken = default);
+    Task<bool> MirrorCredentialAsync(Guid connectionId, string plugin, IReadOnlyDictionary<string, string> credentials, CancellationToken cancellationToken = default);
+
+    Task<CorsairCredentialTestResult?> TestCredentialAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Clears a mirrored API-key credential from the Corsair sidecar.
@@ -128,4 +130,10 @@ public sealed class CorsairConnectionStatus
     public Guid ConnectionId { get; set; }
     public string State { get; set; } = string.Empty;
     public bool Connected { get; set; }
+}
+
+public sealed class CorsairCredentialTestResult
+{
+    public string Status { get; set; } = "Unknown";
+    public string? Reason { get; set; }
 }

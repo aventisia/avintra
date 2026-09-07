@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_key",
+    "label": "Api_key",
+    "description": "Api_key for Bouncer.",
+    "defaultValue": "",
+    "required": true
+  }
+]
