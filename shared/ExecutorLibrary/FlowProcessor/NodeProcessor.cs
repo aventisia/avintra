@@ -60,12 +60,12 @@ public class NodeProcessor : INodeProcessor
 
             if (string.IsNullOrWhiteSpace(nodeClassName))
             {
-                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, "Node data is missing the 'Name' field (class name).");
+                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, context, sw, "Node data is missing the 'Name' field (class name).");
             }
 
             if (!NodeTypeCache.Value.TryGetValue(nodeClassName, out var nodeType))
             {
-                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in a NodeLibrary.* assembly.");
+                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, context, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in a NodeLibrary.* assembly.");
             }
 
             // 2. Create instance
@@ -121,6 +121,11 @@ public class NodeProcessor : INodeProcessor
                 Duration = sw.Elapsed.TotalMilliseconds,
                 Inputs = inputLogs,
                 Outputs = outputLogs,
+                // Stamp the runtime caller/loop context so logs are attributable to the invoking
+                // caller node and the innermost active loop iteration.
+                CallerReferenceId = context.CallerReferenceId,
+                LoopReferenceId = context.LoopReferenceId,
+                LoopIterationIndex = context.LoopIterationIndex,
             };
 
             return new NodeExecutionResult
@@ -140,7 +145,7 @@ public class NodeProcessor : INodeProcessor
             var errorMessage = ex.InnerException is not null
                 ? $"{ex.Message} | Inner: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}"
                 : ex.Message;
-            return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, errorMessage, inputLogs);
+            return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, context, sw, errorMessage, inputLogs);
         }
     }
 
@@ -298,6 +303,7 @@ public class NodeProcessor : INodeProcessor
         string nodeId,
         string nodeDisplayName,
         string? nodeUniqueName,
+        FlowExecutionContext context,
         Stopwatch sw,
         string errorMessage,
         Dictionary<string, string>? inputLogs = null)
@@ -316,6 +322,9 @@ public class NodeProcessor : INodeProcessor
             {
                 ["Status"] = $"Node execution has failed: {errorMessage}"
             },
+            CallerReferenceId = context.CallerReferenceId,
+            LoopReferenceId = context.LoopReferenceId,
+            LoopIterationIndex = context.LoopIterationIndex,
         };
 
         return new NodeExecutionResult

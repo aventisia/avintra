@@ -147,7 +147,11 @@ public class BackfillNodeExecutionLogsHostedService : IHostedService
             InputsJsonLength = inputsJson.Length,
             OutputsJsonLength = outputsJson.Length,
             // Prefer the executor-captured timestamp; fall back to insert time for legacy logs.
-            ExecutedAt = log.ExecutedAt == default ? DateTimeOffset.UtcNow : log.ExecutedAt
+            ExecutedAt = log.ExecutedAt == default ? DateTimeOffset.UtcNow : log.ExecutedAt,
+            // Legacy backfill logs predate these fields; they will be empty/-1.
+            CallerReferenceId = log.CallerReferenceId,
+            LoopReferenceId = log.LoopReferenceId,
+            LoopIterationIndex = log.LoopIterationIndex
         };
     }
 }

@@ -256,6 +256,9 @@ public class BackendHttpClient : IBackendClient
             IsSuccess = l.IsSuccess,
             Duration = l.Duration,
             ExecutedAt = l.ExecutedAt == default ? null : l.ExecutedAt,
+            CallerReferenceId = l.CallerReferenceId,
+            LoopReferenceId = l.LoopReferenceId,
+            LoopIterationIndex = l.LoopIterationIndex,
             Inputs = l.Inputs,
             Outputs = l.Outputs,
         }).ToList();
@@ -340,6 +343,15 @@ public class BackendHttpClient : IBackendClient
 
         [JsonPropertyName("executedAt")]
         public DateTimeOffset? ExecutedAt { get; set; }
+
+        [JsonPropertyName("callerReferenceId")]
+        public string CallerReferenceId { get; set; } = string.Empty;
+
+        [JsonPropertyName("loopReferenceId")]
+        public string LoopReferenceId { get; set; } = string.Empty;
+
+        [JsonPropertyName("loopIterationIndex")]
+        public int LoopIterationIndex { get; set; } = -1;
 
         [JsonPropertyName("inputs")]
         public Dictionary<string, string> Inputs { get; set; } = new();
