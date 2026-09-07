@@ -8,6 +8,7 @@ import { SUPPORTED_FILE_TYPES } from "../constants";
 import { useFileUpload } from "../hooks/useFileUpload";
 import { useFlowMutation } from "../hooks/useUpdateFlowMutation";
 import { useImportStore } from "../stores/import-flow-store";
+import { remapImportedFlowIds } from "../utils/remap-imported-flow-ids.util";
 import { ImportConfirmationDialog } from "./ImportConfirmationDialog";
 
 /**
@@ -54,16 +55,18 @@ const ImportFlow = () => {
     try {
       const parsedData = JSON.parse(uploadedData);
       const { reactFlowObject, flowVariablesObject } = parsedData;
+      const remappedData = remapImportedFlowIds(reactFlowObject, flowVariablesObject);
 
       // Update flow with the correct structure
       updateFlow({
         id: flowId,
-        reactFlowObject: JSON.stringify(reactFlowObject),
-        flowVariablesObject: JSON.stringify(flowVariablesObject),
+        reactFlowObject: JSON.stringify(remappedData.reactFlowObject),
+        flowVariablesObject: JSON.stringify(remappedData.flowVariablesObject),
         versionId,
       });
-    } catch {
-      toast.error("Error processing the imported file");
+    } catch (error) {
+      setImportPending(false);
+      toast.error(error instanceof Error ? error.message : "Error processing the imported file");
     }
   };
 
