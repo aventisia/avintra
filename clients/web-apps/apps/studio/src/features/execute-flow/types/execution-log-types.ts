@@ -18,6 +18,12 @@ type NodeExecutionLogType = {
   duration: number; // Duration in seconds
   inputs: Array<{ key: string; value: string }>;
   outputs: Array<{ key: string; value: string }>;
+  /** Id of the parent-flow node (callAgentNode/blockNode) that invoked the sub-flow; empty at top level. */
+  callerReferenceId?: string;
+  /** Id of the innermost active loop (forLoopNode); empty when not inside a loop. */
+  loopReferenceId?: string;
+  /** Zero-based iteration index of the innermost active loop; -1 when not inside a loop. */
+  loopIterationIndex?: number;
 };
 
 export type { AgentExecutionLogType, NodeExecutionLogType };

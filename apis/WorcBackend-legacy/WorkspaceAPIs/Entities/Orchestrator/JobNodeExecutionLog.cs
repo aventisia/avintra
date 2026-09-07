@@ -84,6 +84,25 @@ public class JobNodeExecutionLog
     public DateTimeOffset ExecutedAt { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
+    /// Gets or sets the id of the parent-flow node (callAgentNode/blockNode) that invoked the
+    /// sub-flow this node belongs to. Empty for top-level flow nodes not called by another node.
+    /// Enables tracing which caller spawned each log across nested sub-flows.
+    /// </summary>
+    public string CallerReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the id of the innermost active loop (forLoopNode) that contained this node
+    /// at execution time. Empty when the node did not run inside any loop.
+    /// </summary>
+    public string LoopReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the zero-based iteration index of the innermost active loop when this node
+    /// executed. -1 indicates the node did not run inside a loop.
+    /// </summary>
+    public int LoopIterationIndex { get; set; } = -1;
+
+    /// <summary>
     /// Gets or sets the parent job navigation property.
     /// </summary>
     [ForeignKey("JobId")]

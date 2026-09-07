@@ -6,6 +6,9 @@ export interface ExecutionNode {
   nodeUniqueName: string;
   isSuccess: boolean;
   duration: number;
+  callerReferenceId?: string;
+  loopReferenceId?: string;
+  loopIterationIndex?: number;
   inputs: { [key: string]: string };
   outputs: { [key: string]: string };
 }

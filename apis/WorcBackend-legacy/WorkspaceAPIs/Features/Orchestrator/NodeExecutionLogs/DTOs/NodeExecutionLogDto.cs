@@ -48,6 +48,24 @@ public class NodeExecutionLogDto
     public DateTimeOffset? ExecutedAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the id of the parent-flow node (callAgentNode/blockNode) that invoked the
+    /// sub-flow this node belongs to. Empty for top-level flow nodes not called by another node.
+    /// </summary>
+    public string CallerReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the id of the innermost active loop (forLoopNode) that contained this node
+    /// at execution time. Empty when the node did not run inside any loop.
+    /// </summary>
+    public string LoopReferenceId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the zero-based iteration index of the innermost active loop when this node
+    /// executed. -1 indicates the node did not run inside a loop.
+    /// </summary>
+    public int LoopIterationIndex { get; set; } = -1;
+
+    /// <summary>
     /// Gets or sets the node input values as key/value pairs.
     /// </summary>
     public Dictionary<string, string> Inputs { get; set; } = new();

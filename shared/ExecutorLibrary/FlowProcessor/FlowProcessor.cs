@@ -144,6 +144,11 @@ public class FlowProcessor
                         loopStates = frame.LoopStates;
                         currentNodeId = frame.ReturnNodeId;
 
+                        // Restore the caller context to the enclosing frame's caller (or empty for
+                        // the top-level flow) so subsequent nodes/logs are attributed correctly.
+                        flowExecutionContext.CallerReferenceId =
+                            executionStack.Count > 0 ? executionStack.Peek().CallerNodeId : string.Empty;
+
                         // Mark the parent sub-flow caller node (block/callAgent) as completed
                         // so the Studio canvas flips its spinner to a success indicator once
                         // the nested sub-flow actually finishes.
@@ -161,7 +166,10 @@ public class FlowProcessor
                                     Duration = 0,
                                     Inputs = callerNode.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                                         ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
-                                    Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                                    Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                                    CallerReferenceId = flowExecutionContext.CallerReferenceId,
+                                    LoopReferenceId = flowExecutionContext.LoopReferenceId,
+                                    LoopIterationIndex = flowExecutionContext.LoopIterationIndex
                                 };
                                 callerLog.ExecutedAt = DateTimeOffset.UtcNow;
                                 logs.Add(callerLog);
@@ -222,13 +230,13 @@ public class FlowProcessor
             case "mergeBranchesNode":
             case "branchStartNode":
                 var supportEdge = FindNextEdge(flow, node.Id);
-                CompleteSupportNode(node, logs, onNodeCompleted);
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted);
                 return (supportEdge?.Id, supportEdge?.Target, null);
 
             case "branchNode1":
                 var (branchNext, branchLog) = await ProcessBranchNode1Async(node, flow, flowExecutionContext, cancellationToken);
                 var branchEdge = FindNextEdge(flow, node.Id, branchNext);
-                CompleteSupportNode(node, logs, onNodeCompleted, branchLog);
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, branchLog);
                 return (branchEdge?.Id, branchNext, null);
 
             case "activityNode":
@@ -246,7 +254,7 @@ public class FlowProcessor
             case "conditionalNode":
                 var (conditionalNext, routerLog) = ProcessConditionalNode(node, flow, flowExecutionContext, conditionalStates);
                 var conditionalEdge = string.IsNullOrWhiteSpace(conditionalNext) ? null : FindNextEdge(flow, node.Id, conditionalNext);
-                CompleteSupportNode(node, logs, onNodeCompleted, routerLog);
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, routerLog);
                 return (conditionalEdge?.Id, conditionalNext, null);
 
             case "branchEndNode":
@@ -254,7 +262,7 @@ public class FlowProcessor
                 var branchEndEdge = string.IsNullOrWhiteSpace(branchEndNext) ? null : FindNextEdge(flow, node.Id, branchEndNext);
                 // Log the branchEnd first so it stays keyed to the iteration that just
                 // finished; the loop continuation log then opens the next iteration.
-                CompleteSupportNode(node, logs, onNodeCompleted);
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted);
                 if (loopContinuationLog is not null)
                 {
                     var parentLoopNodeId = node.Data?.CustomParentId;
@@ -263,7 +271,7 @@ public class FlowProcessor
                         var parentLoopNode = flow.Nodes.FirstOrDefault(n => n.Id == parentLoopNodeId);
                         if (parentLoopNode is not null)
                         {
-                            CompleteSupportNode(parentLoopNode, logs, onNodeCompleted, loopContinuationLog);
+                            CompleteSupportNode(parentLoopNode, logs, flowExecutionContext, onNodeCompleted, loopContinuationLog);
                         }
                     }
                 }
@@ -272,7 +280,7 @@ public class FlowProcessor
             case "forLoopNode":
                 var (loopNext, loopLog) = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
                 var loopEdge = string.IsNullOrWhiteSpace(loopNext) ? null : FindNextEdge(flow, node.Id, loopNext);
-                CompleteSupportNode(node, logs, onNodeCompleted, loopLog);
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, loopLog);
                 return (loopEdge?.Id, loopNext, null);
 
             case "callAgentNode":
@@ -316,6 +324,7 @@ public class FlowProcessor
     private static void CompleteSupportNode(
         ReactFlowNodeModel node,
         List<NodeExecutionLog> logs,
+        FlowExecutionContext flowExecutionContext,
         Action<NodeExecutionLog>? onNodeCompleted = null,
         NodeExecutionLog? resultLog = null)
     {
@@ -335,6 +344,16 @@ public class FlowProcessor
         log.NodeId = node.Id;
         log.NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label;
         log.NodeUniqueName = node.Data?.Name ?? node.Type;
+
+        // Generated support-node logs (trigger/plus/branchStart/merge/branchEnd) carry the active
+        // runtime caller/loop context. Loop/branch result logs already stamp their own explicit
+        // loop fields (see CreateLoopLog), so we do not clobber those.
+        if (resultLog is null)
+        {
+            log.CallerReferenceId = flowExecutionContext.CallerReferenceId;
+            log.LoopReferenceId = flowExecutionContext.LoopReferenceId;
+            log.LoopIterationIndex = flowExecutionContext.LoopIterationIndex;
+        }
 
         log.ExecutedAt = DateTimeOffset.UtcNow;
         logs.Add(log);
@@ -445,6 +464,10 @@ public class FlowProcessor
             LoopStates = loopStates
         };
         executionStack.Push(frame);
+
+        // The sub-flow's nodes are attributed to the caller node (block/callAgent) that
+        // invoked them until this frame pops. Restored on pop in the main execution loop.
+        flowExecutionContext.CallerReferenceId = node.Id;
 
         return (subFlow, subFlowTrigger.Id);
     }
@@ -887,10 +910,12 @@ public class FlowProcessor
                                 flowExecutionContext.Set(loopState.ItemIndexVariableName, loopState.CurrentIndex);
                         }
                     }
+                    SetLoopContext(flowExecutionContext, parentNodeId, loopState.CurrentIndex);
                     return (loopState.LoopBodyStartNodeId, CreateLoopLog(parentNode, loopState, "continue", true));
                 }
 
                 loopStates.Remove(parentNodeId);
+                ClearLoopContext(flowExecutionContext);
                 return (loopState.MergeBranchesNodeId, CreateLoopLog(parentNode, loopState, "exit", false));
             }
 
@@ -905,10 +930,12 @@ public class FlowProcessor
             // the condition becomes false (or is missing/empty).
             if (EvaluateLoopCondition(parentNode, flowExecutionContext))
             {
+                SetLoopContext(flowExecutionContext, parentNodeId, loopState.CurrentIteration);
                 return (loopState.LoopBodyStartNodeId, CreateLoopLog(parentNode, loopState, "continue", true));
             }
 
             loopStates.Remove(parentNodeId);
+            ClearLoopContext(flowExecutionContext);
             return (loopState.MergeBranchesNodeId, CreateLoopLog(parentNode, loopState, "exit", false));
         }
 
@@ -924,6 +951,10 @@ public class FlowProcessor
         if (loopStates.TryGetValue(node.Id, out var existing))
         {
             // Already initialized: only re-enter the body if the loop has not been closed.
+            var iter = existing.LoopType.Equals("ForEachLoop", StringComparison.OrdinalIgnoreCase)
+                ? existing.CurrentIndex
+                : existing.CurrentIteration;
+            SetLoopContext(flowExecutionContext, node.Id, iter);
             return (existing.LoopBodyStartNodeId, CreateLoopLog(node, existing, "continue", true));
         }
 
@@ -982,9 +1013,11 @@ public class FlowProcessor
             if (totalCount == 0)
             {
                 loopStates.Remove(node.Id);
+                ClearLoopContext(flowExecutionContext);
                 return (mergeNodeId, CreateLoopLog(node, forEachState, "skip", false));
             }
 
+            SetLoopContext(flowExecutionContext, node.Id, forEachState.CurrentIndex);
             return (bodyStartNodeId, CreateLoopLog(node, forEachState, "enter", true));
         }
 
@@ -1008,9 +1041,11 @@ public class FlowProcessor
         if (!conditionMet)
         {
             loopStates.Remove(node.Id);
+            ClearLoopContext(flowExecutionContext);
             return (mergeNodeId, CreateLoopLog(node, whileState, "skip", false));
         }
 
+        SetLoopContext(flowExecutionContext, node.Id, whileState.CurrentIteration);
         return (bodyStartNodeId, CreateLoopLog(node, whileState, "enter", true));
     }
 
@@ -1049,7 +1084,32 @@ public class FlowProcessor
             Inputs = node.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             Outputs = outputs,
+            // The loop node's own log is attributed to the loop itself.
+            LoopReferenceId = node.Id,
+            LoopIterationIndex = loopState.LoopType.Equals("ForEachLoop", StringComparison.OrdinalIgnoreCase)
+                ? loopState.CurrentIndex
+                : loopState.CurrentIteration,
         };
+    }
+
+    /// <summary>
+    /// Sets the active loop context on the execution context so nodes executing inside a loop
+    /// body are attributed to the innermost active loop and its current zero-based iteration.
+    /// </summary>
+    private static void SetLoopContext(FlowExecutionContext ctx, string loopReferenceId, int iterationIndex)
+    {
+        ctx.LoopReferenceId = loopReferenceId;
+        ctx.LoopIterationIndex = iterationIndex;
+    }
+
+    /// <summary>
+    /// Clears the active loop context (loop exited/skipped) so downstream nodes are no longer
+    /// attributed to a loop.
+    /// </summary>
+    private static void ClearLoopContext(FlowExecutionContext ctx)
+    {
+        ctx.LoopReferenceId = string.Empty;
+        ctx.LoopIterationIndex = -1;
     }
 
     /// <summary>
