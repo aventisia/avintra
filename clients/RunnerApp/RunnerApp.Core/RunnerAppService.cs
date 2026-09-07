@@ -26,6 +26,13 @@ public class RunnerAppService : BackgroundService
         Channel.CreateUnbounded<ExecutorCommandReceivedEventArgs>(
             new UnboundedChannelOptions { SingleReader = true });
 
+    // Job IDs whose Initiate command is currently queued in _commandChannel. The pending-job
+    // REST drain checks this so it never starts a job that the backend also pushed over the
+    // hub (double-dispatch would start the same job twice, and the second StartJob would 409).
+    // Guarded by _queuedCommandIdsLock.
+    private readonly HashSet<Guid> _queuedCommandJobIds = new();
+    private readonly object _queuedCommandIdsLock = new();
+
     // Machine JWT manager (service/hub listener modes) and the OS username the machine was
     // registered under, which workers need to renew their own JWTs.
     private MachineTokenManager? _tokenManager;
@@ -229,6 +236,14 @@ public class RunnerAppService : BackgroundService
                 // Queue the command; the main loop consumes it. Commands that arrive while a
                 // job is executing or while the hub is reconnecting are preserved instead of
                 // being written to a completed one-shot source and silently lost.
+                if (e.JobId != Guid.Empty)
+                {
+                    lock (_queuedCommandIdsLock)
+                    {
+                        _queuedCommandJobIds.Add(e.JobId);
+                    }
+                }
+
                 _commandChannel.Writer.TryWrite(e);
             }
             else if (e.Command == ExecutorCommand.Abort || e.Command == ExecutorCommand.Killed)
@@ -272,12 +287,12 @@ public class RunnerAppService : BackgroundService
 
         var machineId = registration?.MachineId ?? Guid.Empty;
 
-        // Drain any jobs that became pending while this runner was offline.
-        await DrainPendingJobsAsync(backendClient, hubClient, machineId, accessToken, cancellationToken);
-
         // Service mode: keep listening for commands and execute each assigned job.
         // Also poll periodically for pending work so missed SignalR events and new
-        // time-trigger jobs do not sit idle.
+        // time-trigger jobs do not sit idle. No blocking drain runs here: any jobs that
+        // became pending while offline are picked up by the poll below (every 30s), which
+        // also consumes hub Initiate commands from the command channel. A blocking drain
+        // before this loop would starve the channel and jam the service indefinitely.
         var lastTokenVersion = tokenManager?.Version ?? 0;
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -357,6 +372,11 @@ public class RunnerAppService : BackgroundService
 
             _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
             DebugLog.Info($"Job request received: {command.JobId}. Starting execution...");
+            lock (_queuedCommandIdsLock)
+            {
+                _queuedCommandJobIds.Remove(command.JobId);
+            }
+
             await ExecuteJobAsync(backendClient, hubClient, command.JobId, accessToken, cancellationToken);
 
             // After finishing a job, keep pulling any additional pending jobs until none remain.
@@ -424,9 +444,31 @@ public class RunnerAppService : BackgroundService
                 break;
             }
 
+            // If the backend pushed an Initiate command for this job over the hub and it is still
+            // queued in the command channel, do not start it again here — the command loop will
+            // consume it. Starting it from the drain too would double-dispatch (second StartJob 409).
+            bool alreadyQueued;
+            lock (_queuedCommandIdsLock)
+            {
+                alreadyQueued = _queuedCommandJobIds.Contains(nextJobId.Value);
+            }
+
+            if (alreadyQueued)
+            {
+                _logger.LogInformation("Skipping pending job {JobId} in drain: an Initiate command for it is already queued from the hub.", nextJobId.Value);
+                DebugLog.Info($"Skipping pending job {nextJobId.Value} in drain: an Initiate command is already queued from the hub.");
+                break;
+            }
+
             _logger.LogInformation("Draining pending job {JobId} for machine {MachineId}.", nextJobId.Value, machineId);
             DebugLog.Info($"Draining pending job {nextJobId.Value} for machine {machineId}.");
             await ExecuteJobAsync(backendClient, hubClient, nextJobId.Value, accessToken, cancellationToken);
+
+            // After starting one drained job, return to the command loop so queued hub Initiate
+            // commands (which the drain can no longer see as pending because StartJob flipped
+            // their status) are consumed, and so the loop stays responsive to Abort/Killed
+            // commands. The caller re-enters the drain after the command is processed.
+            break;
         }
     }
 

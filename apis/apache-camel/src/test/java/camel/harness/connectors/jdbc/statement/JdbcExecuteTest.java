@@ -26,7 +26,7 @@ class JdbcExecuteTest {
     @Test
     void buildsSqlUriWithQuery() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "jdbc", "execute",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jdbc", "execute",
             Map.of("query", "SELECT * FROM users"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertEquals("sql:SELECT%20*%20FROM%20users", uri);
@@ -39,7 +39,7 @@ class JdbcExecuteTest {
             "url", "jdbc:postgresql://localhost/testdb",
             "username", "test",
             "password", "test");
-        ConnectorRequest request = new ConnectorRequest(null, null, "jdbc", "execute",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jdbc", "execute",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -54,7 +54,7 @@ class JdbcExecuteTest {
         // URL-style connection string with credentials embedded in the userinfo.
         Map<String, String> props = Map.of(
             "url", "postgresql://postgres:Post@123@localhost:5432/WorkspaceDb");
-        ConnectorRequest request = new ConnectorRequest(null, null, "jdbc", "execute",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jdbc", "execute",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),

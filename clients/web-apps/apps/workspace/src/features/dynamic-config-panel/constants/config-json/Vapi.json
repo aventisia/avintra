@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Vapi.",
+    "defaultValue": "",
+    "required": true
+  }
+]

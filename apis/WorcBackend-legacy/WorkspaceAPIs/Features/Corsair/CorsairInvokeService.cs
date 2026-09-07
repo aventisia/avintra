@@ -108,12 +108,17 @@ public class CorsairInvokeService : ICorsairInvokeService
             }
 
             // Validate the requested plugin/action against the credential type.
-            var plugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
-            if (string.IsNullOrWhiteSpace(plugin) || !string.Equals(plugin, request.Plugin, StringComparison.OrdinalIgnoreCase))
+            var mappedPlugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
+            var supportedPlugins = _configRepository.GetPluginIdsForVaultType(appSecret.Type.ToString());
+            if (string.IsNullOrWhiteSpace(mappedPlugin) ||
+                (supportedPlugins.Count > 0 && !supportedPlugins.Contains(request.Plugin, StringComparer.OrdinalIgnoreCase)) ||
+                (supportedPlugins.Count == 0 && !string.Equals(mappedPlugin, request.Plugin, StringComparison.OrdinalIgnoreCase)))
             {
                 serviceResponse.Message = $"Credential type does not support plugin '{request.Plugin}'.";
                 return serviceResponse;
             }
+
+            var plugin = request.Plugin.Trim().ToLowerInvariant();
 
             // Resolve the exact dotted sidecar action from the generated action
             // map. The node passes the PascalCase action segment (e.g.
@@ -165,15 +170,8 @@ public class CorsairInvokeService : ICorsairInvokeService
     /// Maps an <see cref="AppSecretTypesEnum"/> to the corresponding Corsair plugin identifier.
     /// Returns <c>null</c> when the type does not correspond to a Corsair-supported plugin.
     /// </summary>
-    private static string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
+    private string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
     {
-        return type switch
-        {
-            AppSecretTypesEnum.GitHub => "github",
-            AppSecretTypesEnum.M365 => "outlook",
-            AppSecretTypesEnum.SendGrid => "resend",
-            AppSecretTypesEnum.Twilio => "twilio",
-            _ => null
-        };
+        return WorkspaceAPIs.Features.Corsair.CorsairPluginResolver.ResolveApiKeyPlugin(type, _configRepository);
     }
 }

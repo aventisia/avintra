@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "cloud_url",
+    "label": "Cloud_url",
+    "description": "Cloud_url for Jira.",
+    "defaultValue": "",
+    "required": true
+  }
+]

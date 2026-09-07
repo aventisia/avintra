@@ -1,0 +1,45 @@
+meta {
+  name: 13 - Execute - count remaining users
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Execute",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "SELECT count(*) AS cnt FROM users",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("execute count returned a result set", function() {
+    expect(res.body.success).to.equal(true);
+    expect(Array.isArray(res.body.data.response)).to.equal(true);
+    expect(Number(res.body.data.response[0].cnt)).to.be.at.least(1);
+  });
+}

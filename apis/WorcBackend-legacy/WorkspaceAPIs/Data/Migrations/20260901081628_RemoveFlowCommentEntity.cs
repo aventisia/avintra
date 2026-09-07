@@ -11,23 +11,13 @@ namespace WorkspaceAPIs.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "FlowComment");
+            migrationBuilder.Sql("DROP TABLE IF EXISTS \"FlowComment\";");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Flows_CreatedByUserId_Name",
-                table: "Flows");
+            migrationBuilder.Sql("DROP INDEX IF EXISTS \"IX_Flows_CreatedByUserId_Name\";");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Flows_CreatedByUserId",
-                table: "Flows",
-                column: "CreatedByUserId");
+            migrationBuilder.Sql("CREATE INDEX IF NOT EXISTS \"IX_Flows_CreatedByUserId\" ON \"Flows\" (\"CreatedByUserId\");");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Flows_TenantId_Name",
-                table: "Flows",
-                columns: new[] { "TenantId", "Name" },
-                unique: true);
+            migrationBuilder.Sql("CREATE UNIQUE INDEX IF NOT EXISTS \"IX_Flows_TenantId_Name\" ON \"Flows\" (\"TenantId\", \"Name\");");
         }
 
         /// <inheritdoc />

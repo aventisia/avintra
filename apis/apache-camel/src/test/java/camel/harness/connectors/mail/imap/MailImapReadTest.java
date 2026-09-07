@@ -25,7 +25,7 @@ class MailImapReadTest {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         AuthConfiguration auth = new AuthConfiguration("basic", "test", "test", null, null, null,
             null, null, null, null, null, null, null, null, null, null, null, null, null);
-        ConnectorRequest request = new ConnectorRequest(null, null, "mail", operation,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "mail", operation,
             Map.of("scheme", "imap", "host", "imap.example.com", "port", "993"), auth,
             null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);

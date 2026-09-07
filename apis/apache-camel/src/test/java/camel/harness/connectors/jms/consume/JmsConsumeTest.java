@@ -23,7 +23,7 @@ class JmsConsumeTest {
     @Test
     void buildsJmsUriWithDestination() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "jms", "read",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jms", "read",
             Map.of("destinationName", "orders"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertTrue(uri.startsWith("jms:orders?connectionFactory=#jmsConnectionFactory_"));

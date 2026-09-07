@@ -1,0 +1,31 @@
+meta {
+  name: 00 - Login and obtain access token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "email": "{{MY_EMAIL}}",
+      "pwd": "{{MY_PWD}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200 && res.getBody()?.data?.accessToken) {
+      bru.setGlobalEnvVar("ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > Must run first to populate `ACCESS_TOKEN`.
+  > Set `MY_EMAIL` / `MY_PWD` via a Bruno environment or collection secret. Do not commit real credentials.
+  > All requests use the vault AppSecret named `Apache_Camel` (each request sets `SQL_CREDENTIAL_NAME: Apache_Camel`). Its ConnectionString must point at the target PostgreSQL.
+  > Target a disposable/temp DB (e.g. `test_apache_camel`). This suite creates and drops a `users` table, so never point it at a shared or production database.
+}

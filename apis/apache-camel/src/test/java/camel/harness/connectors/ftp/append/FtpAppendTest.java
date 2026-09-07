@@ -33,7 +33,7 @@ class FtpAppendTest {
         config.put("appendPosition", position);
         AuthConfiguration auth = new AuthConfiguration("basic", "test", "test", null, null, null,
             null, null, null, null, null, null, null, null, null, null, null, null, null);
-        ConnectorRequest request = new ConnectorRequest(null, null, "ftp", "append", config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "ftp", "append", config,
             auth, null, null, null, null);
         return configurer.resolveEndpoint(exchange(), request, null);
     }

@@ -88,4 +88,8 @@ export interface VaultsTableDto {
    * completed for OAuth-capable credential types.
    */
   oauthConnected?: boolean;
+
+  corsairStatus?: "Connected" | "Failed" | "Expired" | "Pending" | "Unknown";
+
+  corsairStatusReason?: string;
 }

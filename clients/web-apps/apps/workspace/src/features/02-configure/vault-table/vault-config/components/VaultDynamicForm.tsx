@@ -16,7 +16,7 @@ import {
   buildCustomApiToolPayload,
   customApiToolSchema,
 } from "../constants/custom-api-tool-schema";
-import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
+import { getDistinctVaultAppSelectOptions } from "../constants/vault-app-select-options";
 import { OAUTH_CREDENTIAL_TYPES } from "../constants/oauth-credential-types";
 import { useAddCredMutation } from "../hooks/useAddCredMutation";
 import { useUpdateCredMutation } from "../hooks/useUpdateCredMutation";
@@ -164,7 +164,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
               render={({ field }) => (
                 <AppSelector
                   autoFocus={true}
-                  options={Object.values(vaultAppsSelectOptions)}
+                  options={getDistinctVaultAppSelectOptions()}
                   selectedItem={field.value || null}
                   onItemSelect={(item) => field.onChange(item)}
                   onItemClear={() => field.onChange(null)}

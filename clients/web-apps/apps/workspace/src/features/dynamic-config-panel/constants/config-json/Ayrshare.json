@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "profile_key",
+    "label": "Profile_key",
+    "description": "Profile_key for Ayrshare.",
+    "defaultValue": "",
+    "required": true
+  }
+]

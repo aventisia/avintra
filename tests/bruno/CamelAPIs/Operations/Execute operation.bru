@@ -1,0 +1,37 @@
+meta {
+  name: Execute operation - flat request body
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{APACHE_CAMEL_BASE_URL}}/connectors/log/operations/info/execute
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "loggerName": "com.example.Test",
+    "body": "hello from minimal execute"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response success is true", function() {
+    expect(res.body.success).to.equal(true);
+  });
+
+  test("response identifies connector and operation", function() {
+    expect(res.body.connector).to.equal('log');
+    expect(res.body.operation).to.equal('info');
+  });
+
+  test("response data contains the executed output", function() {
+    expect(res.body.data).to.exist;
+  });
+}

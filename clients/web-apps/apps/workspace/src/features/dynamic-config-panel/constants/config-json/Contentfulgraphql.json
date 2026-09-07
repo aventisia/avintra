@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "space_id",
+    "label": "Space_id",
+    "description": "Space_id for Contentfulgraphql.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "environment_id",
+    "label": "Environment_id",
+    "description": "Environment_id for Contentfulgraphql.",
+    "defaultValue": "",
+    "required": true
+  }
+]

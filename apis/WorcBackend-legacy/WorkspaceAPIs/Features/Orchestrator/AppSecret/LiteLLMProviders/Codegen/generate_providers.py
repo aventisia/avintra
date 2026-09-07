@@ -281,7 +281,22 @@ REUSED_PROVIDERS: Dict[str, str] = {
     "ollama": "Ollama",
 }
 
-NEW_PROVIDERS: List[str] = [p for p in PROVIDERS if p not in REUSED_PROVIDERS]
+# Providers that are model providers but reuse an existing vault credential
+# type (no dedicated AppSecretTypesEnum member / DTO / config-json). The value
+# is the AppSecretTypesEnum / VaultAppsEnum member they route to. The LiteLLM
+# "github" model provider shares the single "GitHub" vault credential type.
+MODEL_ONLY_PROVIDERS: Dict[str, str] = {
+    "github": "GitHub",
+}
+
+NEW_PROVIDERS: List[str] = [
+    p for p in PROVIDERS
+    if p not in REUSED_PROVIDERS and p not in MODEL_ONLY_PROVIDERS
+]
+
+# All providers that appear in the model-provider enums (LLMProviderTypesEnum /
+# ModelProviderEnum): the generated ones plus the model-only ones.
+MODEL_PROVIDERS: List[str] = NEW_PROVIDERS + list(MODEL_ONLY_PROVIDERS)
 
 
 def generate_dtos() -> str:
@@ -557,7 +572,7 @@ def generate_llm_provider_enum() -> str:
     lines.append("    Mistral,")
     lines.append("")
     lines.append("    // --- Individual LiteLLM provider types (generated) ---")
-    for provider in NEW_PROVIDERS:
+    for provider in MODEL_PROVIDERS:
         lines.append(f'    [Description("{provider} provider")]')
         lines.append(f"    {enum_name(provider)},")
     lines.append("}")
@@ -709,7 +724,7 @@ def generate_model_provider_enum() -> str:
         lines.append(f'  {key} = "{value}",')
     lines.append("")
     lines.append("  // --- Individual LiteLLM provider types (generated) ---")
-    for p in NEW_PROVIDERS:
+    for p in MODEL_PROVIDERS:
         lines.append(f'  {enum_name(p)} = "{p}",')
     lines.append("}")
     return "\n".join(lines) + "\n"
@@ -771,12 +786,16 @@ def generate_model_provider_definitions() -> str:
         lines.append("  },")
     lines.append("")
     lines.append("  // --- Individual LiteLLM provider types (generated) ---")
-    for p in NEW_PROVIDERS:
+    for p in MODEL_PROVIDERS:
         m = enum_name(p)
+        vault = MODEL_ONLY_PROVIDERS.get(p, m)
+        # Model-only providers reuse an existing vault type; use the vault
+        # member's display name (e.g. "github" -> "GitHub") for the label.
+        label = vault if p in MODEL_ONLY_PROVIDERS else m
         lines.append("  {")
         lines.append(f"    value: ModelProviderEnum.{m},")
-        lines.append(f'    label: "{m}",')
-        lines.append(f"    vaultType: VaultAppsEnum.{m},")
+        lines.append(f'    label: "{label}",')
+        lines.append(f"    vaultType: VaultAppsEnum.{vault},")
         lines.append(f'    description: "Enable {p} models.",')
         lines.append("  },")
     lines.append("];")

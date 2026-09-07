@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ClientId",
+    "label": "Client Id",
+    "description": "Client Id for Linear.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ClientSecret",
+    "label": "Client Secret",
+    "description": "Client Secret for Linear.",
+    "defaultValue": "",
+    "required": true
+  }
+]

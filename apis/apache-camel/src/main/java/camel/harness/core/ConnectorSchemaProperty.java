@@ -13,14 +13,12 @@ public record ConnectorSchemaProperty(
         List<String> required,
         @JsonProperty("properties") Map<String, ConnectorSchemaProperty> nestedProperties,
         String defaultValue,
-        List<String> enumValues,
-        Boolean defaultBoolean,
-        ConnectorSchemaProperty items) {
+        List<String> enumValues) {
 
     public static ConnectorSchemaProperty objectProperty(String description,
                                                          List<String> required,
                                                          Map<String, ConnectorSchemaProperty> nestedProperties) {
-        return new ConnectorSchemaProperty("object", description, required, nestedProperties, null, null, null, null);
+        return new ConnectorSchemaProperty("object", description, required, nestedProperties, null, null);
     }
 
     public static ConnectorSchemaProperty objectProperty(String description,

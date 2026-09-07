@@ -107,6 +107,14 @@ export const getOAuthConnectionStatus = (id: string) => {
     .then((res) => res.data);
 };
 
+export const testCorsairCredential = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<{ status: string; reason?: string }>>(`${baseAPIURL}/${id}/connection-test`, undefined, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
 /**
  * Performs an optimistic mutation on a config based on the provided CRUD action.
  *

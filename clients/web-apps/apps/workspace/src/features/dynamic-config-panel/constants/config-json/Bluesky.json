@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "handle",
+    "label": "Handle",
+    "description": "Handle for Bluesky.",
+    "defaultValue": "",
+    "required": true
+  }
+]

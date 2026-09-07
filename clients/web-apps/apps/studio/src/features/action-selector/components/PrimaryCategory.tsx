@@ -20,7 +20,6 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
     }
 
     return {
-      actionCategoryCount: data.actionCategories.length,
       totalActions,
     };
   }, [data.actionCategories]);

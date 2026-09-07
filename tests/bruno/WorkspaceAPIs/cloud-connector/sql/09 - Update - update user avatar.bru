@@ -1,0 +1,44 @@
+meta {
+  name: 09 - Update - update user avatar
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Update",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "UPDATE users SET avatar_src = 'https://example.com/alice-avatar-v2.png', last_name = 'Anderson-Smith' WHERE user_name = 'alice@example.com'",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("update user succeeded", function() {
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.action).to.equal("Update");
+  });
+}

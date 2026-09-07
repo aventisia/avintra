@@ -23,7 +23,7 @@ class HttpPostTest {
     @Test
     void buildsUriFromHostAndPath() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "POST",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "POST",
             Map.of("host", "localhost:8081", "path", "echo"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertEquals("http://localhost:8081/echo", uri);
@@ -32,7 +32,7 @@ class HttpPostTest {
     @Test
     void carriesBearerAuthHeader() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "POST",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "POST",
             Map.of("host", "localhost:8081", "path", "echo"),
             new AuthConfiguration("bearer", null, null, "secret-token", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null),
@@ -44,7 +44,7 @@ class HttpPostTest {
     @Test
     void targetUriCanBePassedDirectly() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest("http://localhost:8081/echo", null, "http", "POST",
+        ConnectorRequest request = ConnectorRequest.legacy("http://localhost:8081/echo", null, "http", "POST",
             Map.of(), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertEquals("http://localhost:8081/echo", uri);

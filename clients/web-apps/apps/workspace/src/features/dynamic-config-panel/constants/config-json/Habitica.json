@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "user_id",
+    "label": "User_id",
+    "description": "User_id for Habitica.",
+    "defaultValue": "",
+    "required": true
+  }
+]

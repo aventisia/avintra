@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "generic_api_key",
+    "label": "Generic_api_key",
+    "description": "Generic_api_key for Autom.",
+    "defaultValue": "",
+    "required": true
+  }
+]
