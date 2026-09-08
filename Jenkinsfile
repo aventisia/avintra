@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,corsair_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
     }
     stages {
         stage('Detect Changes') {
@@ -60,6 +60,7 @@ pipeline {
                         env.BUILD_WORKSPACE_API = reposToBuild.contains('workspace_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = reposToBuild.contains('apachecamel_api') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = reposToBuild.contains('corsair_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio') || reposToBuild.contains('atlas')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
@@ -74,6 +75,7 @@ pipeline {
                         env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = hasChangesInPath('apis/apache-camel') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = hasChangesInPath('apis/corsair') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
@@ -85,6 +87,7 @@ pipeline {
                     - Workspace API: ${env.BUILD_WORKSPACE_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Apache Camel API: ${env.BUILD_APACHECAMEL_API}
+                    - Corsair API: ${env.BUILD_CORSAIR_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Web Apps: ${env.BUILD_WEB_APPS}
                     - Runner App: ${env.BUILD_RUNNER_APP}
@@ -159,6 +162,68 @@ pipeline {
                                     sh "ssh admin@${server} 'mv /var/www/aventisia.com/apis/apachecamel/camel-connector-harness-staging.jar /var/www/aventisia.com/apis/apachecamel/camel-connector-harness.jar'"
                                     sh "ssh admin@${server} 'sudo systemctl restart apachecamel_apis.service'"
                                     echo "Successfully deployed Apache Camel API to ${server}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // ======================
+        // Corsair Sidecar Build Stage
+        // ======================
+
+        stage('Corsair API') {
+            when {
+                expression { env.BUILD_CORSAIR_API == 'true' }
+            }
+            agent any
+            tools {
+                nodejs 'NodeJS 22.18.0'
+            }
+            stages {
+                stage('Install - Corsair API') {
+                    steps {
+                        dir('apis/corsair') {
+                            echo 'Installing Corsair dependencies...'
+                            // --force: @corsair-dev/onepassword pins zod@4.1.13 while
+                            // other plugins require ^4.1.13; force resolves the conflict.
+                            sh 'npm ci --force'
+                        }
+                    }
+                }
+                stage('Build - Corsair API') {
+                    steps {
+                        dir('apis/corsair') {
+                            echo 'Building Corsair API...'
+                            sh 'npm run build'
+                        }
+                    }
+                }
+                stage('Deploy - Corsair API') {
+                    steps {
+                        script {
+                            sshagent(credentials: ['aventisia_vps_ssh']) {
+                                def targetServers = getTargetServers(env.BRANCH_NAME)
+                                echo "Deploying Corsair API to ${targetServers.size()} server(s)..."
+
+                                targetServers.each { server ->
+                                    def deployPath = '/home/admin/corsair'
+
+                                    // Push the whole project, excluding local artifacts
+                                    // and secrets so each server keeps its own .env.local.
+                                    echo "Transferring to ${server}..."
+                                    sh "rsync -avz --exclude 'node_modules' --exclude 'dist' --exclude '.env.local' --exclude '.git' --exclude 'Jenkinsfile' --delete ${WORKSPACE}/apis/corsair/ admin@${server}:${deployPath}/"
+
+                                    echo "Installing production dependencies..."
+                                    // --force: same zod peer conflict as the build step.
+                                    sh "ssh admin@${server} 'cd ${deployPath} && npm ci --omit=dev --force'"
+
+                                    echo "Restarting the service..."
+                                    sh "ssh admin@${server} 'sudo systemctl restart corsair_apis.service'"
+
+                                    echo "Successfully deployed Corsair API to ${server}"
                                 }
                             }
                         }
