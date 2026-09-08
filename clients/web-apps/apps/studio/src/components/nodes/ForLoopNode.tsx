@@ -8,6 +8,9 @@ import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
+import { mapLogsToFlow } from "@/features/execution-logs/utils/execution-log-parser";
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 
 import BaseNode from "./BaseNode";
@@ -21,8 +24,24 @@ export const ForLoopNode = memo(
     const { loopRegistry, activeIteration, setIteration, executionMap, nodeToParentStack } =
       useExecutionStore();
 
+    const { nodeLogHistory, liveActiveIteration, setLiveIteration, liveExecutionMap } =
+      useLiveExecutionStore();
+    const { nodes, edges } = useReactFlowExtStore();
+
+    const liveExecutionData = mapLogsToFlow(
+      nodeLogHistory.map((log) => ({
+        ...log,
+        inputs: Object.fromEntries(log.inputs.map(({ key, value }) => [key, value])),
+        outputs: Object.fromEntries(log.outputs.map(({ key, value }) => [key, value])),
+      })),
+      nodes,
+      edges,
+    );
+
     const total = loopRegistry[id]?.total || 0;
     const current = activeIteration[id] || 0;
+    const liveTotal = liveExecutionData.loopRegistry[id]?.total || 0;
+    const liveCurrent = liveActiveIteration[id] ?? Math.max(0, liveTotal - 1);
 
     // 2. Resolve the path coordinate for this loop's context
     const parents = nodeToParentStack[id] || [];
@@ -32,10 +51,15 @@ export const ForLoopNode = memo(
     const isActiveInCurrentPath = !!executionMap[id]?.[pathKey];
 
     const [inputValue, setInputValue] = useState(current + 1);
+    const [liveInputValue, setLiveInputValue] = useState(liveCurrent + 1);
 
     useEffect(() => {
       setInputValue(current + 1);
     }, [current]);
+
+    useEffect(() => {
+      setLiveInputValue(liveCurrent + 1);
+    }, [liveCurrent]);
     //  Circular navigation
     const goPrev = (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -49,6 +73,38 @@ export const ForLoopNode = memo(
       if (!total) return;
       const next = current === total - 1 ? 0 : current + 1;
       setIteration(id, next);
+    };
+
+    const goLivePrev = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!liveTotal) return;
+      setLiveIteration(id, liveCurrent === 0 ? liveTotal - 1 : liveCurrent - 1);
+    };
+
+    const goLiveNext = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!liveTotal) return;
+      setLiveIteration(id, liveCurrent === liveTotal - 1 ? 0 : liveCurrent + 1);
+    };
+
+    const handleLiveChange = (value: string) => {
+      if (value === "") {
+        setLiveInputValue(NaN);
+        return;
+      }
+      const number = Number(value);
+      if (!Number.isNaN(number)) setLiveInputValue(number);
+    };
+
+    const commitLiveInput = () => {
+      if (!liveTotal) return;
+
+      let value = liveInputValue;
+      if (!value || Number.isNaN(value)) value = liveCurrent + 1;
+
+      value = Math.max(1, Math.min(liveTotal, value));
+      setLiveIteration(id, value - 1);
+      setLiveInputValue(value);
     };
 
     //  Input logic
@@ -114,6 +170,37 @@ export const ForLoopNode = memo(
             </div>
 
             <Button variant="ghost" size="icon5" onClick={goNext}>
+              <ChevronRightIcon />
+            </Button>
+          </Badge>
+        )}
+
+        {!isExecutionLog && liveTotal > 0 && liveExecutionMap[id] && (
+          <Badge
+            className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2"
+            variant="default"
+          >
+            <Button variant="ghost" size="icon5" onClick={goLivePrev}>
+              <ChevronLeftIcon />
+            </Button>
+            <div className="flex items-center gap-1 text-xs">
+              <input
+                type="text"
+                value={Number.isNaN(liveInputValue) ? "" : liveInputValue}
+                onChange={(e) => handleLiveChange(e.target.value)}
+                onBlur={commitLiveInput}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commitLiveInput();
+                  }
+                }}
+                className="w-4 bg-transparent border-none outline-none text-center appearance-none focus:ring-0"
+              />
+              <span>/</span>
+              <p>{liveTotal}</p>
+            </div>
+            <Button variant="ghost" size="icon5" onClick={goLiveNext}>
               <ChevronRightIcon />
             </Button>
           </Badge>

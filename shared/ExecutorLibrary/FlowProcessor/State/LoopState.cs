@@ -22,4 +22,10 @@ public class LoopState
     public int CurrentIndex { get; set; }
 
     public int TotalCount { get; set; }
+
+    public string PreviousLoopReferenceId { get; set; } = string.Empty;
+
+    public int PreviousLoopIterationIndex { get; set; } = -1;
+
+    public bool IsCompleted { get; set; }
 }

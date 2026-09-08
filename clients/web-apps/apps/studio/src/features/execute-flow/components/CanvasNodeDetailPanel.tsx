@@ -13,10 +13,12 @@ import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
 import { useRunResultsQueryParams } from "@/features/execute-flow/hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { mapLogsToFlow } from "@/features/execution-logs/utils/execution-log-parser";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { buildNodeLogPayload } from "@/utils/node-log-payload";
 
 type NodeTiming = {
@@ -40,11 +42,16 @@ export const CanvasNodeDetailPanel = () => {
     })),
   );
 
-  const { liveExecutionMap, nodeLogsMap } = useLiveExecutionStore(
+  const { liveExecutionMap, nodeLogsMap, nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
     useShallow((state) => ({
       liveExecutionMap: state.liveExecutionMap,
       nodeLogsMap: state.nodeLogsMap,
+      nodeLogHistory: state.nodeLogHistory,
+      liveActiveIteration: state.liveActiveIteration,
     })),
+  );
+  const { nodes, edges } = useReactFlowExtStore(
+    useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -75,12 +82,13 @@ export const CanvasNodeDetailPanel = () => {
       const latestExecution = executions[executions.length - 1];
       const map: Record<string, "success" | "failed"> = {};
       const logMap: Record<string, NodeExecutionLogType> = {};
+      const restoredHistory: NodeExecutionLogType[] = [];
       const timingMap: Record<string, NodeTiming> = {};
       const baseExecutedOn = new Date(latestExecution.executedOn);
 
       latestExecution.nodes.forEach((node) => {
         map[node.nodeId] = node.isSuccess ? "success" : "failed";
-        logMap[node.nodeId] = {
+        const restoredLog: NodeExecutionLogType = {
           nodeExecutionId: node.nodeExecutionId,
           retryAttempt: node.retryAttempt,
           nodeId: node.nodeId,
@@ -88,16 +96,25 @@ export const CanvasNodeDetailPanel = () => {
           nodeUniqueName: node.nodeUniqueName,
           isSuccess: node.isSuccess,
           duration: node.duration,
+          callerReferenceId: node.callerReferenceId,
+          loopReferenceId: node.loopReferenceId,
+          loopIterationIndex: node.loopIterationIndex,
           inputs: Object.entries(node.inputs).map(([key, value]) => ({ key, value })),
           outputs: Object.entries(node.outputs).map(([key, value]) => ({ key, value })),
         };
+        logMap[node.nodeId] = restoredLog;
+        restoredHistory.push(restoredLog);
 
         const startedAt = baseExecutedOn;
         const endedAt = new Date(startedAt.getTime() + Math.max(0, node.duration) * 1000);
         timingMap[node.nodeId] = { startedAt, endedAt, duration: node.duration };
       });
 
-      useLiveExecutionStore.setState({ liveExecutionMap: map, nodeLogsMap: logMap });
+      useLiveExecutionStore.setState({
+        liveExecutionMap: map,
+        nodeLogsMap: logMap,
+        nodeLogHistory: restoredHistory,
+      });
       setNodeTimingMap(timingMap);
       setJob({
         status: latestExecution.isSuccess ? JobStatusEnum.Completed : JobStatusEnum.Failed,
@@ -149,6 +166,39 @@ export const CanvasNodeDetailPanel = () => {
     return nodeLogsMap[selectedNode.id] ?? null;
   }, [selectedNode, nodeLogsMap]);
 
+  const liveParserLogs = useMemo(
+    () =>
+      nodeLogHistory.map((log) => ({
+        ...log,
+        inputs: Object.fromEntries(log.inputs.map(({ key, value }) => [key, value])),
+        outputs: Object.fromEntries(log.outputs.map(({ key, value }) => [key, value])),
+      })),
+    [nodeLogHistory],
+  );
+
+  const liveExecutionData = useMemo(
+    () => mapLogsToFlow(liveParserLogs, nodes, edges),
+    [liveParserLogs, nodes, edges],
+  );
+
+  const selectedLiveLog = useMemo(() => {
+    if (!selectedNode) return nodeLog;
+    const parents = liveExecutionData.nodeToParentStack[selectedNode.id] || [];
+    const pathKey =
+      parents
+        .map(
+          (id) =>
+            liveActiveIteration[id] ??
+            Math.max(0, (liveExecutionData.loopRegistry[id]?.total ?? 1) - 1),
+        )
+        .join("-") || "global";
+    const selectedParserLog = liveExecutionData.executionMap[selectedNode.id]?.[pathKey];
+    return (
+      nodeLogHistory.find((log) => log.nodeExecutionId === selectedParserLog?.nodeExecutionId) ??
+      nodeLog
+    );
+  }, [liveActiveIteration, liveExecutionData, nodeLog, nodeLogHistory, selectedNode]);
+
   const nodeTiming = useMemo(() => {
     if (!selectedNode) return null;
     return nodeTimingMap[selectedNode.id] ?? {};
@@ -156,12 +206,12 @@ export const CanvasNodeDetailPanel = () => {
 
   const nodeLogPayload = useMemo<Record<string, unknown> | undefined>(() => {
     if (!nodeData || !selectedNode) return undefined;
-    return buildNodeLogPayload(nodeLog, {
+    return buildNodeLogPayload(selectedLiveLog, {
       displayName: nodeData.label || nodeData.name,
       nodeType: nodeData.type,
       executedAt: nodeTiming?.endedAt,
     });
-  }, [nodeData, nodeLog, nodeTiming, selectedNode]);
+  }, [nodeData, nodeTiming, selectedLiveLog, selectedNode]);
 
   // Auto-open the panel when a single colored node is selected.
   useEffect(() => {
@@ -196,7 +246,7 @@ export const CanvasNodeDetailPanel = () => {
             {/* Full node log JSON — same design as LAST NODE LOG. Only render once the
                 node has actually completed and produced a log; a running node has no log
                 yet and would otherwise show a card full of fallback placeholders. */}
-            {nodeLog && nodeLogPayload && (
+            {selectedLiveLog && nodeLogPayload && (
               <ViewInfoRowsCard
                 title="Node Log"
                 icon={<LogsIcon className="size-3.5 text-muted-foreground" />}

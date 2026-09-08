@@ -19,6 +19,10 @@ type LiveExecutionState = {
    */
   nodeLogsMap: Record<string, NodeExecutionLogType>;
 
+  /** Every completed log in execution order, including repeated loop iterations. */
+  nodeLogHistory: NodeExecutionLogType[];
+  liveActiveIteration: Record<string, number>;
+
   /**
    * Set of edge ids that the runner explicitly traversed. This is the authoritative source
    * for live path highlighting; an edge is only green if the executor actually followed it.
@@ -47,6 +51,8 @@ export type SubflowProgressNode = {
 type LiveExecutionActions = {
   setNodeStatus: (nodeId: string, status: LiveNodeStatus) => void;
   setNodeLog: (nodeId: string, log: NodeExecutionLogType) => void;
+  setNodeLogHistory: (logs: NodeExecutionLogType[]) => void;
+  setLiveIteration: (loopId: string, index: number) => void;
   markEdgeTraversed: (edgeId: string) => void;
   resetLiveExecution: () => void;
   /** Append a sub-flow-internal node that started running. */
@@ -59,6 +65,8 @@ type LiveExecutionActions = {
 export const useLiveExecutionStore = create<LiveExecutionState & LiveExecutionActions>((set) => ({
   liveExecutionMap: {},
   nodeLogsMap: {},
+  nodeLogHistory: [],
+  liveActiveIteration: {},
   liveTraversedEdges: {},
   subflowProgressNodes: [],
 
@@ -70,6 +78,21 @@ export const useLiveExecutionStore = create<LiveExecutionState & LiveExecutionAc
   setNodeLog: (nodeId, log) =>
     set((state) => ({
       nodeLogsMap: { ...state.nodeLogsMap, [nodeId]: log },
+      nodeLogHistory: [
+        ...state.nodeLogHistory.filter((entry) => entry.nodeExecutionId !== log.nodeExecutionId),
+        log,
+      ],
+    })),
+
+  setNodeLogHistory: (logs) =>
+    set({
+      nodeLogsMap: Object.fromEntries(logs.map((log) => [log.nodeId, log])),
+      nodeLogHistory: logs,
+    }),
+
+  setLiveIteration: (loopId, index) =>
+    set((state) => ({
+      liveActiveIteration: { ...state.liveActiveIteration, [loopId]: index },
     })),
 
   markEdgeTraversed: (edgeId) =>
@@ -95,6 +118,8 @@ export const useLiveExecutionStore = create<LiveExecutionState & LiveExecutionAc
     set({
       liveExecutionMap: {},
       nodeLogsMap: {},
+      nodeLogHistory: [],
+      liveActiveIteration: {},
       liveTraversedEdges: {},
       subflowProgressNodes: [],
     }),
