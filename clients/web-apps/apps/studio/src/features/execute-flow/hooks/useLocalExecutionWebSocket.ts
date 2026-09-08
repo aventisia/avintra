@@ -132,7 +132,7 @@ export const useLocalExecutionWebSocket = () => {
 
     // Accumulate per-node outcomes during the run so we can persist them on completion,
     // even if the RunnerApp does not include full nodeLogs in the jobCompleted payload.
-    const nodeLogsByNodeId = new Map<string, NodeExecutionLogType>();
+    const nodeLogsByExecutionId = new Map<string, NodeExecutionLogType>();
 
     // Friendly metadata for sub-flow-internal nodes, keyed by nodeId. The runner sends the raw
     // nodeId as the "nodeName" on running messages, so we capture the friendlier name/type from
@@ -192,7 +192,7 @@ export const useLocalExecutionWebSocket = () => {
           // Capture the final outcome + full log (when provided) so we can persist it.
           if (message.status !== "running" && message.nodeLog) {
             const mappedLog = mapIncomingNodeLog(message.nodeLog);
-            nodeLogsByNodeId.set(message.nodeId, mappedLog);
+            nodeLogsByExecutionId.set(mappedLog.nodeExecutionId, mappedLog);
             subflowNodeMetaByNodeId.set(message.nodeId, {
               nodeName: message.nodeLog.nodeName || message.nodeId,
               nodeType: message.nodeLog.nodeUniqueName || "",
@@ -222,7 +222,7 @@ export const useLocalExecutionWebSocket = () => {
           // `versionId` would strand sub-flow logs under the sub-flow version.
           const nodeLogs = message.nodeLogs?.length
             ? message.nodeLogs.map(mapIncomingNodeLog)
-            : Array.from(nodeLogsByNodeId.values());
+            : Array.from(nodeLogsByExecutionId.values());
           const persistVersionId = runVersionId || versionIdRef.current;
           if (persistVersionId && nodeLogs.length > 0) {
             void saveCompletedExecutionLog(
@@ -235,9 +235,7 @@ export const useLocalExecutionWebSocket = () => {
 
           // Ensure the live node-log map contains the final logs even if they were
           // bundled only in the jobCompleted payload.
-          nodeLogs.forEach((log) => {
-            useLiveExecutionStore.getState().setNodeLog(log.nodeId, log);
-          });
+          useLiveExecutionStore.getState().setNodeLogHistory(nodeLogs);
         }
       };
 
