@@ -127,6 +127,26 @@ async function main() {
     assert(microsoftLabels.get("Onedrive") === "OneDrive", "OneDrive category has no canonical name");
     assert(microsoftLabels.get("Sharepoint") === "SharePoint", "SharePoint category has no canonical name");
 
+    // 5b. Google plugins use distinct labels while sharing the Google vault.
+    const googleLabels = new Map(
+      appIntegrations.actionCategories
+        .filter((category: any) => ["gmail", "googlecalendar", "googlesheets", "googledocs", "googledrive", "googlemeet", "googlebigquery", "googlecloudvision", "googlemaps", "googleaddressvalidation", "youtube"].some(
+          (id) => category.actions.some((action: any) => action.name.includes(`/${id.charAt(0).toUpperCase() + id.slice(1)}/`)),
+        ))
+        .map((category: any) => [category.actions[0].name.split("/")[1], category.label]),
+    );
+    assert(googleLabels.get("Gmail") === "Gmail", "Gmail category is not named Gmail");
+    assert(googleLabels.get("Googlecalendar") === "Google Calendar", "Google Calendar category has no canonical name");
+    assert(googleLabels.get("Googlesheets") === "Google Sheets", "Google Sheets category has no canonical name");
+    assert(googleLabels.get("Googledocs") === "Google Docs", "Google Docs category has no canonical name");
+    assert(googleLabels.get("Googledrive") === "Google Drive", "Google Drive category has no canonical name");
+    assert(googleLabels.get("Googlemeet") === "Google Meet", "Google Meet category has no canonical name");
+    assert(googleLabels.get("Googlebigquery") === "Google BigQuery", "Google BigQuery category has no canonical name");
+    assert(googleLabels.get("Googlecloudvision") === "Google Cloud Vision", "Google Cloud Vision category has no canonical name");
+    assert(googleLabels.get("Googlemaps") === "Google Maps", "Google Maps category has no canonical name");
+    assert(googleLabels.get("Googleaddressvalidation") === "Google Address Validation", "Google Address Validation category has no canonical name");
+    assert(googleLabels.get("Youtube") === "YouTube", "YouTube category has no canonical name");
+
     const catalog = JSON.parse(fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"));
     const microsoftEntries = catalog.filter((entry: any) =>
       ["outlook", "teams", "onedrive", "sharepoint"].includes(entry.pluginId),

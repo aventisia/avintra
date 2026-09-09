@@ -283,10 +283,23 @@ export const DEFAULT_ICON_MAP: Record<string, string> = {
 
 /** Canonical user-facing names for plugins whose package metadata is generic. */
 export const DISPLAY_NAME_OVERRIDES: Record<string, string> = {
+  // Microsoft 365 family
   outlook: "Outlook",
   teams: "Microsoft Teams",
   onedrive: "OneDrive",
   sharepoint: "SharePoint",
+  // Google Workspace / Google Cloud family
+  gmail: "Gmail",
+  googlecalendar: "Google Calendar",
+  googlesheets: "Google Sheets",
+  googledocs: "Google Docs",
+  googledrive: "Google Drive",
+  googlemeet: "Google Meet",
+  googlebigquery: "Google BigQuery",
+  googlecloudvision: "Google Cloud Vision",
+  googlemaps: "Google Maps",
+  googleaddressvalidation: "Google Address Validation",
+  youtube: "YouTube",
 };
 
 /** Default base URLs for OpenAPI spec generation. */

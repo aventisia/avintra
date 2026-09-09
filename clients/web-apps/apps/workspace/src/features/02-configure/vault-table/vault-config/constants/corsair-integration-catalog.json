@@ -2537,7 +2537,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Gmail",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2581,7 +2581,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Googleaddressvalidation",
+    "providerName": "Google Address Validation",
     "authModes": [
       {
         "mode": "api_key",
@@ -2609,7 +2609,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google BigQuery",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2650,7 +2650,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google Calendar",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2690,7 +2690,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Googlecloudvision",
+    "providerName": "Google Cloud Vision",
     "authModes": [
       {
         "mode": "api_key",
@@ -2724,7 +2724,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google Docs",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2766,7 +2766,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google Drive",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2807,7 +2807,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Googlemaps",
+    "providerName": "Google Maps",
     "authModes": [
       {
         "mode": "api_key",
@@ -2841,7 +2841,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google Meet",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -2880,7 +2880,7 @@
       "googlemeet",
       "googlesheets"
     ],
-    "providerName": "Google",
+    "providerName": "Google Sheets",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -5075,7 +5075,7 @@
     "pluginIds": [
       "youtube"
     ],
-    "providerName": "Youtube",
+    "providerName": "YouTube",
     "authModes": [
       {
         "mode": "oauth_2",
