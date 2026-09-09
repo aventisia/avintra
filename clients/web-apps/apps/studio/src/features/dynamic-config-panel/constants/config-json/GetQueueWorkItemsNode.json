@@ -19,7 +19,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "queue-status-select",
       "name": "Status",
       "label": "Status",
       "description": "Select the status of the work items to retrieve. Custom statuses defined on the queue are supported.",

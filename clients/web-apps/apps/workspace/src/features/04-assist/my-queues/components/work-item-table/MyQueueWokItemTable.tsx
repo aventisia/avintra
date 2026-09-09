@@ -140,7 +140,7 @@ export const MyQueueWokItemTable = () => {
             className="min-w-60"
             size="sm"
           />
-          {isFifo && !isAgent && tabValue === "Current" && (
+          {isFifo && tabValue === "Current" && (
             <Button
               size="xs"
               onClick={() => getNextItem()}

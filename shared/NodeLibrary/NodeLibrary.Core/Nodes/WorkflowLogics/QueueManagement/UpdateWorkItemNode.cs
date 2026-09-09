@@ -15,6 +15,7 @@ public class UpdateWorkItemNode : BaseNode
     [DisplayName("Status")]
     [Description("Select the new status to assign to the work item. Custom statuses defined on the work item's queue are validated at runtime.")]
     [DefaultValue("Pending")]
+    [NodeFieldType(NodeFieldTypeEnum.QueueStatusSelect)]
     public InArgument<string> Status { get; set; } = new InArgument<string>("Pending");
 
     [DisplayName("Description")]
@@ -58,6 +59,12 @@ public class UpdateWorkItemNode : BaseNode
             if (string.IsNullOrWhiteSpace(workItemId))
                 throw new ArgumentException("Work Item ID cannot be null or empty.");
 
+            // The backend binds the work item id to a Guid. Resolve the string to a
+            // Guid up front so a malformed value fails here with a clear message
+            // instead of surfacing as a generic 400 model-binding error.
+            if (!Guid.TryParse(workItemId.Trim(), out var workItemGuid))
+                throw new ArgumentException($"Work Item ID '{workItemId}' is not a valid GUID. Provide the work item's 'id' value (e.g. from the Result of a Get Work Items / Get Next Work Item node).");
+
             if (shouldUpdateData && string.IsNullOrWhiteSpace(workItemData))
                 throw new ArgumentException("Work Item Data cannot be null or empty when 'Should Update Work Item Data' is true.");
 
@@ -77,7 +84,7 @@ public class UpdateWorkItemNode : BaseNode
 
             var payload = new
             {
-                id = workItemId,
+                id = workItemGuid,
                 status = status,
                 workItemData = shouldUpdateData ? workItemData : null,
                 description = description,

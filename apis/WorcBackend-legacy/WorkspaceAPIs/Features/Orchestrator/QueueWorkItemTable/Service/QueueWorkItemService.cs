@@ -327,7 +327,9 @@ public class QueueWorkItemService : IQueueWorkItemService
             if (queue.ProcessingMode != QueueProcessingModeEnum.Fifo)
             {
                 _logger.LogWarning("Queue {QueueId} is not in FIFO mode; cannot auto-claim next item.", queue.Id);
-                serviceResponse.Message = "This queue does not support automatic next-item claiming.";
+                serviceResponse.Message =
+                    $"Queue '{queue.Name}' is not in FIFO mode (current: {queue.ProcessingMode}). " +
+                    "Set Processing Mode to Fifo to use 'Get Next Work Item'.";
                 return serviceResponse;
             }
 
