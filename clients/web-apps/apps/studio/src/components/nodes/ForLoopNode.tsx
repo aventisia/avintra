@@ -8,8 +8,8 @@ import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
-import { mapLogsToFlow } from "@/features/execution-logs/utils/execution-log-parser";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { buildLiveLoopIndex } from "@/features/execute-flow/utils/live-loop-index";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 
@@ -26,17 +26,9 @@ export const ForLoopNode = memo(
 
     const { nodeLogHistory, liveActiveIteration, setLiveIteration, liveExecutionMap } =
       useLiveExecutionStore();
-    const { nodes, edges } = useReactFlowExtStore();
+    const { nodes } = useReactFlowExtStore();
 
-    const liveExecutionData = mapLogsToFlow(
-      nodeLogHistory.map((log) => ({
-        ...log,
-        inputs: Object.fromEntries(log.inputs.map(({ key, value }) => [key, value])),
-        outputs: Object.fromEntries(log.outputs.map(({ key, value }) => [key, value])),
-      })),
-      nodes,
-      edges,
-    );
+    const liveExecutionData = buildLiveLoopIndex(nodeLogHistory, nodes);
 
     const total = loopRegistry[id]?.total || 0;
     const current = activeIteration[id] || 0;

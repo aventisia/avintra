@@ -3,6 +3,7 @@ import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { LogsIcon, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { Panel, PanelClose, PanelContent } from "@/components/panel/components/Panel";
@@ -13,8 +14,11 @@ import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
 import { useRunResultsQueryParams } from "@/features/execute-flow/hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import { mapLogsToFlow } from "@/features/execution-logs/utils/execution-log-parser";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
+import {
+  buildLiveLoopIndex,
+  getLiveNodeLog,
+} from "@/features/execute-flow/utils/live-loop-index";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -29,6 +33,8 @@ type NodeTiming = {
 
 export const CanvasNodeDetailPanel = () => {
   const { showRunResults } = useRunResultsQueryParams();
+  const [searchParams] = useSearchParams();
+  const subflowCallerId = searchParams.get("ci") || "";
   const { panels, closePanel } = usePanelStore(
     useShallow((state) => ({
       panels: state.panels,
@@ -50,8 +56,8 @@ export const CanvasNodeDetailPanel = () => {
       liveActiveIteration: state.liveActiveIteration,
     })),
   );
-  const { nodes, edges } = useReactFlowExtStore(
-    useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
+  const { nodes } = useReactFlowExtStore(
+    useShallow((state) => ({ nodes: state.nodes })),
   );
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -163,41 +169,23 @@ export const CanvasNodeDetailPanel = () => {
 
   const nodeLog = useMemo(() => {
     if (!selectedNode) return null;
-    return nodeLogsMap[selectedNode.id] ?? null;
-  }, [selectedNode, nodeLogsMap]);
-
-  const liveParserLogs = useMemo(
-    () =>
-      nodeLogHistory.map((log) => ({
-        ...log,
-        inputs: Object.fromEntries(log.inputs.map(({ key, value }) => [key, value])),
-        outputs: Object.fromEntries(log.outputs.map(({ key, value }) => [key, value])),
-      })),
-    [nodeLogHistory],
-  );
+    const scopedLogs = nodeLogHistory.filter((log) =>
+      subflowCallerId
+        ? log.callerReferenceId === subflowCallerId
+        : !log.callerReferenceId,
+    );
+    return [...scopedLogs].reverse().find((log) => log.nodeId === selectedNode.id) ?? null;
+  }, [nodeLogHistory, selectedNode, subflowCallerId]);
 
   const liveExecutionData = useMemo(
-    () => mapLogsToFlow(liveParserLogs, nodes, edges),
-    [liveParserLogs, nodes, edges],
+    () => buildLiveLoopIndex(nodeLogHistory, nodes),
+    [nodeLogHistory, nodes],
   );
 
   const selectedLiveLog = useMemo(() => {
     if (!selectedNode) return nodeLog;
-    const parents = liveExecutionData.nodeToParentStack[selectedNode.id] || [];
-    const pathKey =
-      parents
-        .map(
-          (id) =>
-            liveActiveIteration[id] ??
-            Math.max(0, (liveExecutionData.loopRegistry[id]?.total ?? 1) - 1),
-        )
-        .join("-") || "global";
-    const selectedParserLog = liveExecutionData.executionMap[selectedNode.id]?.[pathKey];
-    return (
-      nodeLogHistory.find((log) => log.nodeExecutionId === selectedParserLog?.nodeExecutionId) ??
-      nodeLog
-    );
-  }, [liveActiveIteration, liveExecutionData, nodeLog, nodeLogHistory, selectedNode]);
+    return getLiveNodeLog(liveExecutionData, subflowCallerId, selectedNode.id, liveActiveIteration) ?? null;
+  }, [liveActiveIteration, liveExecutionData, nodeLog, selectedNode, subflowCallerId]);
 
   const nodeTiming = useMemo(() => {
     if (!selectedNode) return null;
@@ -234,7 +222,7 @@ export const CanvasNodeDetailPanel = () => {
     }
   }, [closePanel, liveExecutionMap, panels, selectedNode]);
 
-  if (!nodeData || !selectedNode || !nodeLog) {
+  if (!nodeData || !selectedNode || !selectedLiveLog) {
     return null;
   }
 
