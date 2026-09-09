@@ -79,7 +79,7 @@ public static class EnvironmentConfigurationExtension
         // Public OAuth redirect URI must use the generic "integration" proxy path so end users
         // never see the internal "corsair" service name in browser URLs.
         var configuredCorsairRedirectUri = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"];
-        var CORSAIR_REDIRECT_URI = configuredCorsairRedirectUri ?? "https://local-avintra.aventisia.com/workspace/api/integration/oauth-callback";
+        var CORSAIR_REDIRECT_URI = configuredCorsairRedirectUri ?? $"https://{APP_BASE_URL}/workspace/api/integration/oauth-callback";
         if (!isLocalhostEnvironment && string.IsNullOrWhiteSpace(configuredCorsairRedirectUri))
         {
             Console.Error.WriteLine("CORSAIR_REDIRECT_URI is not configured; using the local development OAuth callback.");

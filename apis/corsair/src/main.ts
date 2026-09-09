@@ -14,11 +14,24 @@
 
 import dotenv from "dotenv";
 import express from "express";
-import { toExpressHandler, PermissionRequiredError, AuthMissingError, listOperations, getStructuredSchema } from "corsair";
+import {
+  toExpressHandler,
+  PermissionRequiredError,
+  AuthMissingError,
+  listOperations,
+  getStructuredSchema,
+} from "corsair";
 import { createIntegrationKeyManager } from "corsair/core";
 import { createCorsairDatabase } from "corsair/db";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
-import { corsair, provision, plugins, pool, isOAuthPlugin, getPluginMeta } from "./corsair.js";
+import {
+  corsair,
+  provision,
+  plugins,
+  pool,
+  isOAuthPlugin,
+  getPluginMeta,
+} from "./corsair.js";
 import { validatePayload, normalizeInvokeError } from "./validation.js";
 
 // Load defaults first, then allow .env.local to override with real local values.
@@ -28,18 +41,30 @@ dotenv.config({ path: ".env.local", override: true });
 // --- Proxy-aware fetch for corporate networks ---
 // Node's native fetch does not honour http_proxy / https_proxy. We route outbound
 // requests through undici when a proxy is configured, matching curl's behaviour.
-const proxyUrl = process.env.https_proxy || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.HTTP_PROXY;
+const proxyUrl =
+  process.env.https_proxy ||
+  process.env.HTTPS_PROXY ||
+  process.env.http_proxy ||
+  process.env.HTTP_PROXY;
 const proxyAgent = proxyUrl ? new ProxyAgent({ uri: proxyUrl }) : undefined;
 if (proxyAgent) {
   const nativeFetch = globalThis.fetch;
-  globalThis.fetch = (input: any, init?: any) => undiciFetch(input, { ...init, dispatcher: proxyAgent } as any) as any;
+  globalThis.fetch = (input: any, init?: any) =>
+    undiciFetch(input, { ...init, dispatcher: proxyAgent } as any) as any;
   console.log(`[corsair:proxy] using proxy ${proxyUrl}`);
 }
 
 const app = express();
-const port = Number(process.env.PORT || 3456);
-const appUrl = process.env.APP_URL || `http://localhost:${port}`;
-const workspaceAppUrl = process.env.WORKSPACE_APP_URL || appUrl;
+const port = Number(process.env.PORT || 4006);
+// Internal base used for self-referenced URLs and as a fallback when the public
+// workspace app URL cannot be derived.
+const appUrl = process.env.WORKSPACE_API_BASE_URL || `http://localhost:${port}`;
+// Public workspace app URL used to redirect the browser after OAuth completes
+// and to scope CORS. Derive it from APP_BASE_URL (single source of truth),
+// falling back to the backend base URL only when APP_BASE_URL is unset.
+const workspaceAppUrl = process.env.APP_BASE_URL
+  ? `https://${process.env.APP_BASE_URL}/workspace`
+  : appUrl;
 
 // REQUIRED: express.json() must run BEFORE the Corsair route.
 app.use(express.json());
@@ -93,7 +118,9 @@ app.get("/connect", async (req, res) => {
     const pluginId = (resolved as any).plugin as string | undefined;
     const oauthUrl = (resolved as any).oauthUrl as string | undefined;
     if (!pluginId || !oauthUrl) {
-      return res.status(400).send("Invalid connect state: missing plugin or OAuth URL.");
+      return res
+        .status(400)
+        .send("Invalid connect state: missing plugin or OAuth URL.");
     }
 
     const meta = getPluginMeta(pluginId);
@@ -146,9 +173,14 @@ app.get("/api/oauth/callback", async (req, res) => {
 // We don't use the real-time hub in this sidecar, so downgrade it to a debug log.
 const originalStderr = process.stderr.write.bind(process.stderr);
 process.stderr.write = (chunk: any, ...args: any[]) => {
-  const text = typeof chunk === "string" ? chunk : chunk?.toString?.() ?? "";
-  if (text.includes("[corsair:oauth] BYO subscribe failed") && text.includes("HubNotConfiguredError")) {
-    console.debug("[corsair:oauth] hub not configured (expected for internal sidecar; real-time features disabled)");
+  const text = typeof chunk === "string" ? chunk : (chunk?.toString?.() ?? "");
+  if (
+    text.includes("[corsair:oauth] BYO subscribe failed") &&
+    text.includes("HubNotConfiguredError")
+  ) {
+    console.debug(
+      "[corsair:oauth] hub not configured (expected for internal sidecar; real-time features disabled)",
+    );
     return true;
   }
   return originalStderr(chunk, ...(args as [any]));
@@ -162,10 +194,15 @@ app.post("/connect/link", async (req, res) => {
   if (!plugin) return res.status(400).json({ error: "plugin required" });
   const pluginId = String(plugin).toLowerCase();
   if (!isOAuthPlugin(pluginId)) {
-    return res.status(400).json({ error: `Plugin ${pluginId} does not support OAuth` });
+    return res
+      .status(400)
+      .json({ error: `Plugin ${pluginId} does not support OAuth` });
   }
   try {
-    const link = await corsair.manage.connect.createLink({ plugin: pluginId, tenantId });
+    const link = await corsair.manage.connect.createLink({
+      plugin: pluginId,
+      tenantId,
+    });
     res.json({
       plugin: pluginId,
       tenantId,
@@ -175,7 +212,9 @@ app.post("/connect/link", async (req, res) => {
       expiresAt: link.expiresAt,
     });
   } catch (err: any) {
-    res.status(500).json({ error: err?.code ?? "unknown", message: err?.message });
+    res
+      .status(500)
+      .json({ error: err?.code ?? "unknown", message: err?.message });
   }
 });
 
@@ -195,7 +234,9 @@ app.post("/connect/status", async (req, res) => {
       connected: state === "connected",
     });
   } catch (err: any) {
-    res.status(500).json({ error: err?.code ?? "unknown", message: err?.message });
+    res
+      .status(500)
+      .json({ error: err?.code ?? "unknown", message: err?.message });
   }
 });
 
@@ -203,16 +244,20 @@ app.post("/connect/status", async (req, res) => {
 // These are the client_id / client_secret / redirect_url used by Corsair to
 // drive the OAuth flow and refresh tokens for this specific tenant.
 app.post("/integration-keys", async (req, res) => {
-  const { plugin, tenantId, clientId, clientSecret, redirectUrl } = req.body ?? {};
+  const { plugin, tenantId, clientId, clientSecret, redirectUrl } =
+    req.body ?? {};
   if (!plugin || !tenantId || !clientId || !clientSecret || !redirectUrl) {
     return res.status(400).json({
-      error: "plugin, tenantId, clientId, clientSecret, and redirectUrl required",
+      error:
+        "plugin, tenantId, clientId, clientSecret, and redirectUrl required",
     });
   }
 
   const pluginId = String(plugin).toLowerCase();
   if (!isOAuthPlugin(pluginId)) {
-    return res.status(400).json({ error: `Plugin ${pluginId} does not support OAuth` });
+    return res
+      .status(400)
+      .json({ error: `Plugin ${pluginId} does not support OAuth` });
   }
 
   try {
@@ -229,7 +274,10 @@ app.post("/integration-keys", async (req, res) => {
 
     res.json({ success: true, plugin: pluginId, tenantId });
   } catch (err: any) {
-    console.error("[corsair:integration-keys] failed:", err?.message ?? String(err));
+    console.error(
+      "[corsair:integration-keys] failed:",
+      err?.message ?? String(err),
+    );
     res.status(500).json({ error: err?.message ?? String(err) });
   }
 });
@@ -237,8 +285,15 @@ app.post("/integration-keys", async (req, res) => {
 // --- Mirror an API-key credential into Corsair (vault already owns the copy) ---
 app.post("/credentials", async (req, res) => {
   const { connectionId, plugin, credentials } = req.body ?? {};
-  if (!connectionId || !plugin || !credentials || typeof credentials !== "object") {
-    return res.status(400).json({ error: "connectionId, plugin, and credentials required" });
+  if (
+    !connectionId ||
+    !plugin ||
+    !credentials ||
+    typeof credentials !== "object"
+  ) {
+    return res
+      .status(400)
+      .json({ error: "connectionId, plugin, and credentials required" });
   }
   const pluginId = String(plugin).toLowerCase();
   const pluginNames = plugins.map((p) => (p as any).id as string);
@@ -247,49 +302,76 @@ app.post("/credentials", async (req, res) => {
   }
   try {
     const tenant = corsair.withTenant(connectionId) as any;
-    const keyManager = tenant[pluginId].keys as Record<string, (value: string) => Promise<void>>;
-    for (const [field, value] of Object.entries(credentials as Record<string, unknown>)) {
+    const keyManager = tenant[pluginId].keys as Record<
+      string,
+      (value: string) => Promise<void>
+    >;
+    for (const [field, value] of Object.entries(
+      credentials as Record<string, unknown>,
+    )) {
       if (typeof value !== "string" || value.length === 0) continue;
-      const normalizedField = {
-        apikey: "api_key",
-        accesstoken: "access_token",
-        apitoken: "api_token",
-        clientid: "client_id",
-        clientsecret: "client_secret",
-        redirecturl: "redirect_url",
-      }[field.replaceAll("_", "").toLowerCase()] ?? field;
+      const normalizedField =
+        {
+          apikey: "api_key",
+          accesstoken: "access_token",
+          apitoken: "api_token",
+          clientid: "client_id",
+          clientsecret: "client_secret",
+          redirecturl: "redirect_url",
+        }[field.replaceAll("_", "").toLowerCase()] ?? field;
       const setter = keyManager[`set_${normalizedField}`];
       if (typeof setter !== "function") {
-        if (pluginId === "gemini" && field.replaceAll("_", "").toLowerCase() === "host") continue;
-        return res.status(400).json({ error: `Unsupported credential field: ${field}` });
+        if (
+          pluginId === "gemini" &&
+          field.replaceAll("_", "").toLowerCase() === "host"
+        )
+          continue;
+        return res
+          .status(400)
+          .json({ error: `Unsupported credential field: ${field}` });
       }
       await setter(value);
     }
     res.json({ success: true, connectionId, plugin: pluginId });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err?.message ?? String(err) });
+    res
+      .status(500)
+      .json({ success: false, error: err?.message ?? String(err) });
   }
 });
 
 app.post("/credentials/test", async (req, res) => {
   const { connectionId, plugin } = req.body ?? {};
   if (!connectionId || !plugin) {
-    return res.status(400).json({ status: "Unknown", reason: "connectionId and plugin required" });
+    return res
+      .status(400)
+      .json({ status: "Unknown", reason: "connectionId and plugin required" });
   }
 
   const pluginId = String(plugin).toLowerCase();
   if (!plugins.some((registered) => (registered as any).id === pluginId)) {
-    return res.status(400).json({ status: "Unknown", reason: `Unsupported plugin: ${plugin}` });
+    return res
+      .status(400)
+      .json({ status: "Unknown", reason: `Unsupported plugin: ${plugin}` });
   }
 
   try {
-    const status = await corsair.manage.connectionStatus.get({ tenantId: String(connectionId) });
+    const status = await corsair.manage.connectionStatus.get({
+      tenantId: String(connectionId),
+    });
     const state = String(status[pluginId] ?? "not_connected");
     if (state === "connected") return res.json({ status: "Connected" });
-    if (state === "expired") return res.json({ status: "Expired", reason: "Credential expired." });
-    return res.json({ status: "NotTestable", reason: "No safe provider health check is configured." });
+    if (state === "expired")
+      return res.json({ status: "Expired", reason: "Credential expired." });
+    return res.json({
+      status: "NotTestable",
+      reason: "No safe provider health check is configured.",
+    });
   } catch {
-    return res.json({ status: "Unknown", reason: "Connection test unavailable." });
+    return res.json({
+      status: "Unknown",
+      reason: "Connection test unavailable.",
+    });
   }
 });
 
@@ -313,11 +395,14 @@ app.delete("/credentials", async (req, res) => {
       `UPDATE corsair_accounts
        SET dek = NULL, config = '{}', updated_at = NOW()
        WHERE tenant_id = $1 AND integration_id = $2`,
-      [String(connectionId), pluginId]
+      [String(connectionId), pluginId],
     );
     return res.status(204).send();
   } catch (err: any) {
-    console.error("[corsair:credentials] clear failed:", err?.message ?? String(err));
+    console.error(
+      "[corsair:credentials] clear failed:",
+      err?.message ?? String(err),
+    );
     return res.status(500).json({ error: err?.message ?? String(err) });
   }
 });
@@ -331,18 +416,26 @@ app.post("/api/corsair/invoke", async (req, res) => {
   const { connectionId, plugin, action, payload = {} } = req.body ?? {};
   const pluginId = String(plugin).toLowerCase();
   if (!connectionId || !pluginId || !action) {
-    return res.status(400).json({ success: false, error: "connectionId, plugin, and action required" });
+    return res.status(400).json({
+      success: false,
+      error: "connectionId, plugin, and action required",
+    });
   }
   const pluginNames = plugins.map((p) => (p as any).id as string);
   if (!pluginNames.includes(pluginId)) {
-    return res.status(400).json({ success: false, error: `Unsupported plugin: ${plugin}` });
+    return res
+      .status(400)
+      .json({ success: false, error: `Unsupported plugin: ${plugin}` });
   }
 
   const parts = String(action).split(".");
   const tenant = corsair.withTenant(connectionId) as any;
   let fn: any = tenant[pluginId]?.api;
   for (const part of parts) fn = fn?.[part];
-  if (typeof fn !== "function") return res.status(400).json({ success: false, error: `Unknown action: ${pluginId}.${action}` });
+  if (typeof fn !== "function")
+    return res
+      .status(400)
+      .json({ success: false, error: `Unknown action: ${pluginId}.${action}` });
 
   // Validate the payload against the plugin's declared input schema before
   // dispatching to the provider SDK. This prevents malformed/oversized input
@@ -350,7 +443,11 @@ app.post("/api/corsair/invoke", async (req, res) => {
   const schema = getStructuredSchema(corsair, `${pluginId}.api.${action}`);
   const validationErrors = validatePayload(schema?.input, payload);
   if (validationErrors.length > 0) {
-    return res.status(400).json({ success: false, error: "Invalid tool input", details: validationErrors.join("; ") });
+    return res.status(400).json({
+      success: false,
+      error: "Invalid tool input",
+      details: validationErrors.join("; "),
+    });
   }
 
   try {
@@ -358,7 +455,9 @@ app.post("/api/corsair/invoke", async (req, res) => {
     res.json({ success: true, data: result });
   } catch (err: any) {
     if (err instanceof PermissionRequiredError) {
-      return res.status(202).json({ success: false, approvalRequired: true, message: err.message });
+      return res
+        .status(202)
+        .json({ success: false, approvalRequired: true, message: err.message });
     }
     if (err instanceof AuthMissingError) {
       return res.status(401).json({
@@ -372,7 +471,9 @@ app.post("/api/corsair/invoke", async (req, res) => {
     const normalized = normalizeInvokeError(err);
     // Log only a sanitized summary — never the raw error object, which can carry
     // the Authorization header / request body containing the live credential.
-    console.error(`[corsair:invoke] ${pluginId}.${action} failed: ${normalized.body.errorType} (${normalized.status})`);
+    console.error(
+      `[corsair:invoke] ${pluginId}.${action} failed: ${normalized.body.errorType} (${normalized.status})`,
+    );
     res.status(normalized.status).json(normalized.body);
   }
 });
@@ -381,12 +482,17 @@ app.post("/api/corsair/invoke", async (req, res) => {
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 // --- Status ---
-app.get("/dashboard", (_req, res) => res.send("Connected. See /api/corsair/ok for health."));
+app.get("/dashboard", (_req, res) =>
+  res.send("Connected. See /api/corsair/ok for health."),
+);
 
 // Corsair management handler: serves /connect/links, /connect/resolve,
 // /connect/oauth-callback, /ok, etc. Keep this catch-all after the explicit
 // routes above so it cannot intercept the custom invoke endpoint.
-app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
+app.use(
+  "/api/corsair",
+  toExpressHandler(corsair, { basePath: "/api/corsair" }),
+);
 
 app.listen(port, async () => {
   await provision();

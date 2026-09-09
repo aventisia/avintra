@@ -14,7 +14,7 @@ FROM node:22-slim
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3456
+ENV PORT=4006
 ENV PYTHONUNBUFFERED=1
 # Generated config artifacts are written here at startup. Mount this as a
 # shared volume so the Workspace API can read them from its own

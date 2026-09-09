@@ -32,12 +32,12 @@ export const corsair = createCorsair({
   database: pool,
   kek: process.env.CORSAIR_KEK!,
   manual: {
-    baseUrl: `${process.env.APP_URL}/connect`,
-    // The OAuth callback is proxied through the Workspace API, so the redirect
-    // URI must point at the public proxy path (never the internal sidecar).
-    redirectUri:
-      process.env.CORSAIR_REDIRECT_URI ??
-      `${process.env.APP_URL}/api/oauth/callback`,
+    // Consent/callback URLs are proxied by the Workspace API (WORKSPACE_API_BASE_URL),
+    // so the browser only ever talks to the public "integration" path, never the
+    // internal sidecar. baseUrl points at the generic connect endpoint and
+    // redirectUri at the OAuth callback for the configured backend.
+    baseUrl: `${process.env.WORKSPACE_API_BASE_URL}/api/integration/connect`,
+    redirectUri: `${process.env.WORKSPACE_API_BASE_URL}/api/oauth/callback`,
   },
 });
 
@@ -78,5 +78,8 @@ export function getPluginMeta(pluginId: string): PluginMeta | undefined {
  */
 export async function provision() {
   await setupCorsair(corsair);
-  console.log("Provisioned Corsair integration rows for:", plugins.map((p) => (p as any).id).join(", "));
+  console.log(
+    "Provisioned Corsair integration rows for:",
+    plugins.map((p) => (p as any).id).join(", "),
+  );
 }
