@@ -121,12 +121,9 @@ export interface QueuesTableDto {
    */
   accessLevel: ResourceAccessTypeEnum;
 
-  credentialId?: string;
-
   /**
    * Name of the credential used to access resources associated with the queue.
-   * The Agent Builder stores and submits the resource NAME; the backend resolves
-   * it to the credentialId before persisting.
+   * The Agent Builder stores and submits the resource NAME; the backend persists it directly.
    */
   credentialName?: string;
 

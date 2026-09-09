@@ -858,7 +858,7 @@ public class FlowBuilderService : IFlowBuilderService
                 OutputSchema = devQueue.OutputSchema,
                 Statuses = devQueue.Statuses,
                 IsTenantWideAccess = devQueue.IsTenantWideAccess,
-                CredentialId = await ResolveProdCredentialIdAsync(devQueue.CredentialId),
+                CredentialName = devQueue.CredentialName,
                 EnvType = ConfigureEnvironmentType.Prod,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,

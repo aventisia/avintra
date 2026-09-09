@@ -130,15 +130,10 @@ public class QueuesTableDto
     public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential used to access resources associated with the queue.
-    /// </summary>
-    public Guid? CredentialId { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the credential used to access resources associated with the queue.
-    /// The Agent Builder stores and submits the resource NAME; the service resolves it to the
-    /// CredentialId before persisting.
+    /// The Agent Builder stores and submits the resource NAME; the backend persists it directly.
     /// </summary>
+    [MaxLength(255)]
     public string? CredentialName { get; set; }
 
     /// <summary>
