@@ -392,22 +392,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Check if a credential with the same name already exists within the current environment
-            var existingSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w =>
-                    w.Name.ToLower() == appSecretDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
-                .SingleOrDefaultAsync();
-
-            // If an existing credential is found, return a conflict response
-            if (existingSecret != null)
-            {
-                _logger.LogWarning("Credential creation aborted. A credential named '{CredentialName}' already exists.", appSecretDto.Name);
-                serviceResponse.Message = $"A credential named '{appSecretDto.Name}' already exists.";
-                serviceResponse.StatusCode = 409;
-                return serviceResponse;
-            }
-
             // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
@@ -421,15 +405,86 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Create a new credential entity
-            var newAppSecret = appSecretDto.Adapt<AppSecret>();
-            newAppSecret.Data = validateData.SanitizedDataJson;
-            newAppSecret.CreatedByUserId = _userId;
-            newAppSecret.LastModifiedByUserId = _userId;
-            newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
+            // Resolve the target spaces for this credential.
+            // The current space is always included by default; additional spaces may be
+            // supplied via SpaceIds. Guid.Empty represents the Central space (SpaceId == null).
+            var currentSpaceId = _currentTenantService.CurrentSpaceId;
+            var targetSpaces = new List<Guid?>();
 
-            // Insert the new credential into the repository
-            await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
+            if (appSecretDto.SpaceIds != null && appSecretDto.SpaceIds.Any())
+            {
+                // Normalize: Guid.Empty entries map to Central (null SpaceId).
+                targetSpaces = appSecretDto.SpaceIds
+                    .Select(s => s == Guid.Empty ? (Guid?)null : s)
+                    .Distinct()
+                    .ToList();
+
+                // Ensure the current space is always included.
+                var currentSpace = currentSpaceId == Guid.Empty ? (Guid?)null : currentSpaceId;
+                if (!targetSpaces.Contains(currentSpace))
+                {
+                    targetSpaces.Add(currentSpace);
+                }
+            }
+            else
+            {
+                // No spaces supplied -> create only in the current space (Central when Guid.Empty).
+                targetSpaces.Add(currentSpaceId == Guid.Empty ? (Guid?)null : currentSpaceId);
+            }
+
+            // Validate duplicates per space. The global SpaceId query filter scopes queries to
+            // the current space only, so we bypass it to check every target space at once.
+            var existingSecrets = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == appSecretDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .IgnoreQueryFilters()
+                .Select(w => w.SpaceId)
+                .ToListAsync();
+
+            var existingSpaceSet = existingSecrets
+                .Where(s => s != null)
+                .Select(s => s!.Value)
+                .ToHashSet();
+            var hasCentralSecret = existingSecrets.Any(s => s == null);
+
+            foreach (var spaceId in targetSpaces)
+            {
+                var alreadyExists = spaceId == null
+                    ? hasCentralSecret
+                    : existingSpaceSet.Contains(spaceId.Value);
+
+                if (alreadyExists)
+                {
+                    var spaceLabel = spaceId == null ? "Central" : spaceId.Value.ToString();
+                    _logger.LogWarning(
+                        "Credential creation aborted. A credential named '{CredentialName}' already exists in space {SpaceId}.",
+                        appSecretDto.Name,
+                        spaceLabel);
+                    serviceResponse.Message = $"A credential named '{appSecretDto.Name}' already exists in the selected space.";
+                    serviceResponse.StatusCode = 409;
+                    return serviceResponse;
+                }
+            }
+
+            // Create one credential record per target space so the credential is available
+            // in every selected space.
+            var createdSecrets = new List<AppSecret>();
+
+            foreach (var spaceId in targetSpaces)
+            {
+                // Create a new credential entity
+                var newAppSecret = appSecretDto.Adapt<AppSecret>();
+                newAppSecret.Data = validateData.SanitizedDataJson;
+                newAppSecret.CreatedByUserId = _userId;
+                newAppSecret.LastModifiedByUserId = _userId;
+                newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
+                newAppSecret.SpaceId = spaceId;
+
+                // Insert the new credential into the repository
+                await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
+                createdSecrets.Add(newAppSecret);
+            }
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -438,17 +493,20 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Add new entries
-            foreach (var kv in validateData.EncryptedValues)
+            // Add encrypted key-value entries for each created credential record.
+            foreach (var newAppSecret in createdSecrets)
             {
-                // Create new key-value entry
-                var newEncryptedValue = new EncryptedKeyValue
+                foreach (var kv in validateData.EncryptedValues)
                 {
-                    Name = kv.Key,
-                    Value = kv.Value,
-                    AppSecretId = newAppSecret.Id
-                };
-                await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
+                    // Create new key-value entry
+                    var newEncryptedValue = new EncryptedKeyValue
+                    {
+                        Name = kv.Key,
+                        Value = kv.Value,
+                        AppSecretId = newAppSecret.Id
+                    };
+                    await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
+                }
             }
 
             // Save changes
@@ -458,28 +516,35 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
+            // Assign ownership for each created credential record.
+            foreach (var newAppSecret in createdSecrets)
             {
-                serviceResponse.Message = "Failed assigning ownership.";
-                _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
-                return serviceResponse;
+                if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
+                {
+                    serviceResponse.Message = "Failed assigning ownership.";
+                    _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
+                    return serviceResponse;
+                }
             }
 
-            // Mirror the credential to the Corsair sidecar for supported API-key plugins.
-            await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
+            // Mirror each credential to the Corsair sidecar for supported API-key plugins.
+            foreach (var newAppSecret in createdSecrets)
+            {
+                await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
-            // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
-            await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
+                // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
+                await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
+            }
 
-            // Adapt the entity to DTO and return success response
-            serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
+            // Adapt the first created entity to DTO and return success response
+            serviceResponse.Data = createdSecrets.First().Adapt<AppSecretDto>();
 
             // For OAuth-capable credential types, mint a connect link so the frontend can
             // complete consent immediately after creation.
-            if (MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type) is not null)
+            var firstSecret = createdSecrets.First();
+            if (MapAppSecretTypeToCorsairOAuthPlugin(firstSecret.Type) is not null)
             {
-                var link = await _corsairSidecarService.CreateConnectLinkAsync(newAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type)!);
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(firstSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(firstSecret.Type)!);
                 if (link != null)
                 {
                     serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;

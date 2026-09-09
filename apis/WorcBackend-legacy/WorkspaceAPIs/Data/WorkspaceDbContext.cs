@@ -310,6 +310,9 @@ public class WorkspaceDbContext : DbContext
 
         // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
         // When in a specific space (not Central), new records are assigned to that space.
+        // Only stamp when the entity does not already have an explicit SpaceId so that
+        // multi-space creation (e.g. a credential created in several spaces at once) can
+        // assign a different SpaceId per record.
         if (CurrentSpaceId != Guid.Empty)
         {
             foreach (var entry in ChangeTracker.Entries().ToList())
@@ -319,7 +322,10 @@ public class WorkspaceDbContext : DbContext
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
                     {
-                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        if (spaceIdProp.GetValue(entry.Entity) == null)
+                        {
+                            spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        }
                     }
                 }
             }
@@ -349,6 +355,9 @@ public class WorkspaceDbContext : DbContext
 
         // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
         // When in a specific space (not Central), new records are assigned to that space.
+        // Only stamp when the entity does not already have an explicit SpaceId so that
+        // multi-space creation (e.g. a credential created in several spaces at once) can
+        // assign a different SpaceId per record.
         if (CurrentSpaceId != Guid.Empty)
         {
             foreach (var entry in ChangeTracker.Entries().ToList())
@@ -358,7 +367,10 @@ public class WorkspaceDbContext : DbContext
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
                     {
-                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        if (spaceIdProp.GetValue(entry.Entity) == null)
+                        {
+                            spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        }
                     }
                 }
             }

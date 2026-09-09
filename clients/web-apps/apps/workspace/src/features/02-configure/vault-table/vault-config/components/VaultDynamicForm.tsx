@@ -8,8 +8,11 @@ import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
 
+import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 import { RenderField, shouldRenderField } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
+import { useFetchSpaceOptions } from "@/features/05-tenant-admin/spaces/hooks/useFetchSpaceOptions";
+import { CENTRAL_SPACE_VALUE, useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import {
@@ -32,6 +35,15 @@ interface VaultDynamicFormProps {
 const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const [showOutputFields, setShowOutputFields] = useState(false);
   const { onCloseConfirmed } = useCrudDialogDirty();
+
+  // Fetch the spaces the current user can assign the credential to.
+  const { data: spaceOptionsData } = useFetchSpaceOptions();
+  const spaceOptions = spaceOptionsData?.data ?? [];
+
+  // The current space is always selected by default. Central (null) is
+  // represented by the all-zero GUID sentinel so the multi-select can render it.
+  const { currentSpace } = useCurrentSpaceStore();
+  const currentSpaceId = currentSpace?.id ?? CENTRAL_SPACE_VALUE;
 
   const {
     form,
@@ -78,6 +90,47 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const isCustomApiToolSelected = isType === "CustomApiTool" || vaultData?.type === "CustomApiTool";
   const isOAuthCredential = Boolean(isType && OAUTH_CREDENTIAL_TYPES.has(isType));
 
+  // Resolve the selected spaces into the backend's space-id contract.
+  // The "central" sentinel maps to the all-zero GUID (Central space).
+  // The current space is always included by default.
+  const resolveSpaceIds = (selected: string[] | undefined): string[] => {
+    const normalized = (selected ?? [])
+      .map((id) => (id === CENTRAL_SPACE_VALUE ? "00000000-0000-0000-0000-000000000000" : id))
+      .filter(Boolean);
+
+    const current = currentSpaceId === CENTRAL_SPACE_VALUE
+      ? "00000000-0000-0000-0000-000000000000"
+      : currentSpaceId;
+
+    if (current && !normalized.includes(current)) {
+      normalized.push(current);
+    }
+
+    return Array.from(new Set(normalized));
+  };
+
+  // Space options for the multi-select. Central is always the first, default option.
+  const spaceSelectOptions = [
+    { value: CENTRAL_SPACE_VALUE, label: "Central", isDefault: true },
+    ...spaceOptions
+      .filter((option) => !option.isDefault)
+      .map((option) => ({ value: option.value, label: option.label })),
+  ];
+
+  // Pre-select the current space by default when creating a credential.
+  // The form stores the same sentinel values as the select options ("central"
+  // for Central) so badges render correctly; resolveSpaceIds converts them to
+  // the backend contract (all-zero GUID) at submit time.
+  useEffect(() => {
+    if (action !== "create" || !isFormReady) return;
+
+    const existing = (form.getValues("spaceIds") as string[] | undefined) ?? [];
+    if (!existing.includes(currentSpaceId)) {
+      form.setValue("spaceIds", [currentSpaceId], { shouldDirty: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, isFormReady, currentSpaceId]);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
     if (isCustomApiToolSelected) {
@@ -95,6 +148,10 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
 
       const customValues = parsed.data;
 
+      // spaceIds lives on the vault form schema (not the base customApiToolSchema),
+      // so read it from the live form values.
+      const rawSpaceIds = (rawValues as { spaceIds?: string[] }).spaceIds;
+
       const payload = {
         id: crudAction === "update" ? rowId : undefined,
         type: VaultAppsEnum[VaultAppsEnum.CustomApiTool],
@@ -102,6 +159,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
         description: customValues.description?.trim(),
         data: buildCustomApiToolPayload(customValues),
         isDisabled: customValues.isDisabled ?? false,
+        spaceIds: action === "create" ? resolveSpaceIds(rawSpaceIds) : undefined,
       };
 
       if (action === "create") {
@@ -123,6 +181,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
         data: convertToObject(inputs) as unknown as {
           [key: string]: string | number | boolean | null;
         },
+        spaceIds: resolveSpaceIds(formData.spaceIds),
       });
     } else if (action == "update") {
       updateMutation({
@@ -181,6 +240,16 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
             crudAction={crudAction}
             onNameChange={handleInputChange}
             availabilityMessage={availabilityMessage}
+          />
+        )}
+        {isType && action === "create" && (
+          <MultiSelectField
+            name="spaceIds"
+            label="Spaces"
+            isRequired
+            description="Select the spaces where this credential should be available. The current space is selected by default; you can add more spaces as needed."
+            placeholder="Select spaces"
+            selectOptions={spaceSelectOptions}
           />
         )}
         {isType && !isCustomApiToolSelected ? (
