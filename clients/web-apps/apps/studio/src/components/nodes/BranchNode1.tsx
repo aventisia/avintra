@@ -1,13 +1,16 @@
 import { cn } from "@avplatform/ui/lib";
-import { Node, NodeProps } from "@xyflow/react";
+import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { GitBranchIcon } from "lucide-react";
 import { memo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { buildLiveLoopIndex, isLiveBranchNodeActive } from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -27,12 +30,30 @@ export const BranchNode1 = memo(
     selected,
   }: NodeProps<BranchNode1>) => {
     const isExecutionLog = useIsExecutionLogsRoute();
+    const { getNodes } = useReactFlow();
+    const [searchParams] = useSearchParams();
+    const subflowCallerId = searchParams.get("ci") || "";
 
     const { branchStats, showBranchStats, executionMap, nodeToParentStack, activeIteration } =
       useExecutionStore();
-    const liveStatus = useLiveExecutionStore((state) =>
-      nodeData?.isDisabled ? undefined : state.liveExecutionMap[nodeId],
+    const { liveExecutionMap, nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
+      useShallow((state) => ({
+        liveExecutionMap: state.liveExecutionMap,
+        nodeLogHistory: state.nodeLogHistory,
+        liveActiveIteration: state.liveActiveIteration,
+      })),
     );
+    const liveStatus = nodeData?.isDisabled
+      ? undefined
+      : liveExecutionMap[nodeId];
+    const liveIndex = buildLiveLoopIndex(nodeLogHistory, getNodes());
+    const branchActive = isLiveBranchNodeActive(
+      liveIndex,
+      subflowCallerId,
+      nodeId,
+      liveActiveIteration,
+    );
+    const selectedLiveStatus = branchActive ? liveStatus : undefined;
 
     // Collaboration: branch nodes render outside NodeContainer, so apply the same
     // lock protection here (block interaction + overlay) when another user holds the lock.
@@ -52,11 +73,11 @@ export const BranchNode1 = memo(
     const pillBorderClass =
       !nodeData?.isDisabled && isExecutionLog && isActiveInPath
         ? "border-green-500"
-        : liveStatus === "running"
+        : selectedLiveStatus === "running"
           ? "border-blue-500"
-          : liveStatus === "success"
+          : selectedLiveStatus === "success"
             ? "border-green-500"
-            : liveStatus === "failed"
+            : selectedLiveStatus === "failed"
               ? "border-red-500"
               : "border-slate-400";
 

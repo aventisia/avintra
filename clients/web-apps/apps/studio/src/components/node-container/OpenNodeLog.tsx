@@ -1,9 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
 import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
 import React from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { useReactFlow } from "@xyflow/react";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { buildLiveLoopIndex, getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
 import { NODE_DETAIL_PANEL_ID } from "@/features/execution-logs/constants";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
@@ -26,6 +30,9 @@ export default function OpenNodeLog({
   showBorder = true,
   isDisabled = false,
 }: OpenNodeLogProps) {
+  const { getNodes } = useReactFlow();
+  const [searchParams] = useSearchParams();
+  const subflowCallerId = searchParams.get("ci") || "";
   const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
     useExecutionStore();
 
@@ -49,6 +56,19 @@ export default function OpenNodeLog({
   const liveStatus = useLiveExecutionStore((state) =>
     isDisabled ? undefined : state.liveExecutionMap[nodeId],
   );
+  const { nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
+    useShallow((state) => ({
+      nodeLogHistory: state.nodeLogHistory,
+      liveActiveIteration: state.liveActiveIteration,
+    })),
+  );
+  const liveNodeLog = getLiveNodeLog(
+    buildLiveLoopIndex(nodeLogHistory, getNodes()),
+    subflowCallerId,
+    nodeId,
+    liveActiveIteration,
+  );
+  const selectedLiveStatus = liveNodeLog ? liveStatus : undefined;
 
   // Attempt history for the currently active execution, ordered by retry sequence.
   // Used only for the retry badge count; the panel resolves its data reactively.
@@ -114,21 +134,21 @@ export default function OpenNodeLog({
           )}
           {children}
         </div>
-      ) : liveStatus ? (
+      ) : selectedLiveStatus ? (
         <div
           className={cn(
             "relative border rounded-lg",
-            liveStatus === "running" && showBorder && "border-blue-500",
-            liveStatus === "success" && showBorder && "border-green-500",
-            liveStatus === "failed" && showBorder && "border-red-500",
+            selectedLiveStatus === "running" && showBorder && "border-blue-500",
+            selectedLiveStatus === "success" && showBorder && "border-green-500",
+            selectedLiveStatus === "failed" && showBorder && "border-red-500",
             className,
           )}
         >
           {showIcon && (
             <>
-              {liveStatus === "running" ? (
+              {selectedLiveStatus === "running" ? (
                 <Loader2 className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] animate-spin text-blue-600" />
-              ) : liveStatus === "success" ? (
+              ) : selectedLiveStatus === "success" ? (
                 <CheckCircle2Icon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-green-600" />
               ) : (
                 <CircleXIcon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-red-500" />
