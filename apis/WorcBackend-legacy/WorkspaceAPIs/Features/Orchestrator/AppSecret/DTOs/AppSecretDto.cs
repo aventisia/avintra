@@ -89,4 +89,12 @@ public class AppSecretDto
     public string? CorsairStatus { get; set; }
 
     public string? CorsairStatusReason { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of space IDs this credential should be created in.
+    /// When creating, one credential record is created per space so the credential
+    /// is available in every selected space. The current space is always included
+    /// by default. For request use only.
+    /// </summary>
+    public List<Guid>? SpaceIds { get; set; }
 }
