@@ -208,8 +208,9 @@ public class FlowExecutionContext
 
     /// <summary>
     /// Converts an evaluated object to its string representation.
-    /// DynamicJson / ExpandoObject / dictionary-backed dynamic objects are serialized as JSON
-    /// because their default ToString() returns the class name.
+    /// DynamicJson / ExpandoObject / dictionary-backed dynamic objects and enumerables
+    /// (lists/arrays) are serialized as JSON because their default ToString() returns the
+    /// class name (e.g. "System.Collections.Generic.List`1[ExecutorLibrary.FlowProcessor.DynamicJson]").
     /// </summary>
     private static string ObjectToString(object? value)
     {
@@ -219,7 +220,10 @@ public class FlowExecutionContext
         if (value is string s)
             return s;
 
-        if (value is DynamicJson || value is ExpandoObject || value is IDictionary<string, object?>)
+        if (value is DynamicJson
+            || value is ExpandoObject
+            || value is IDictionary<string, object?>
+            || (value is IEnumerable enumerable && value is not string))
         {
             try
             {

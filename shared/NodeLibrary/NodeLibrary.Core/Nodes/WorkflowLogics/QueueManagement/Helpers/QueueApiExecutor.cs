@@ -76,6 +76,16 @@ public static class QueueApiExecutor
             catch (JsonException)
             {
                 // Non-JSON body (e.g. plain-text middleware/nginx error) — keep HTTP status.
+                // Surface a short plain-text body (e.g. the backend's handled error
+                // messages like "No available work items found." or "This queue does
+                // not support automatic next-item claiming.") instead of a generic
+                // "400 (Bad Request)".
+                if (string.IsNullOrWhiteSpace(message) &&
+                    responseContent.Length <= 255 &&
+                    !responseContent.Contains('<'))
+                {
+                    message = responseContent.Trim();
+                }
             }
         }
 

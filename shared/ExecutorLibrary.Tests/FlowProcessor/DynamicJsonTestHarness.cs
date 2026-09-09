@@ -148,6 +148,26 @@ public static class DynamicJsonTestHarness
             AssertTrue(result is List<string> list && list.Count == 2 && list[0] == "C:\\a.pdf" && list[1] == "C:\\b.pdf");
         });
 
+        // Regression: a List<DynamicJson> (e.g. {{DeserializedToken.line_items}}) must serialize
+        // as JSON, not fall through to ToString() which yields the class name
+        // "System.Collections.Generic.List`1[ExecutorLibrary.FlowProcessor.DynamicJson]".
+        failures += Run("ListOfDynamicJsonResolvesToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            var lineItems = new List<DynamicJson>
+            {
+                new() { ["item"] = "A", ["qty"] = 2L },
+                new() { ["item"] = "B", ["qty"] = 3L }
+            };
+            ctx.Set("DeserializedToken", new DynamicJson { ["line_items"] = lineItems });
+            var result = ctx.ResolveTemplate("{{DeserializedToken.line_items}}");
+            if (result.Contains("System.Collections.Generic.List"))
+                throw new InvalidOperationException($"Got class name instead of JSON: {result}");
+            using var doc = JsonDocument.Parse(result);
+            AssertEqual(JsonValueKind.Array, doc.RootElement.ValueKind);
+            AssertEqual(2, doc.RootElement.GetArrayLength());
+        });
+
         Console.WriteLine($"\nResults: {(failures == 0 ? "ALL PASSED" : $"{failures} FAILED")}");
         return failures;
     }

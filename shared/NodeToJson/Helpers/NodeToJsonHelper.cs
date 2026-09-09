@@ -29,6 +29,7 @@ public static class NodeToJsonHelper
         { NodeFieldTypeEnum.ModelSelect, "model-select" },
         { NodeFieldTypeEnum.CredentialsSelect, "credentials-select" },
         { NodeFieldTypeEnum.QueueSelect, "queue-select" },
+        { NodeFieldTypeEnum.QueueStatusSelect, "queue-status-select" },
         { NodeFieldTypeEnum.JsonEditor, "json-editor" },
         { NodeFieldTypeEnum.CodeEditor, "code-editor" },
         { NodeFieldTypeEnum.ConfigPanelModelOutput, "config-panel-model-output" }

@@ -14,6 +14,7 @@ public class GetNextQueueWorkItemNode : BaseNode
 
     [DisplayName("Status")]
     [Description("Select the status of the work items to retrieve. Custom statuses defined on the queue are supported.")]
+    [NodeFieldType(NodeFieldTypeEnum.QueueStatusSelect)]
     public InArgument<string> Status { get; set; } = new InArgument<string>();
 
     [DisplayName("Sort By")]
