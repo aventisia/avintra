@@ -213,12 +213,16 @@ pipeline {
 
                                     // Push the whole project, excluding local artifacts
                                     // and secrets so each server keeps its own .env.local.
+                                    // Include dist/ so seed:tools:prod can run without rebuilding on the server.
                                     echo "Transferring to ${server}..."
-                                    sh "rsync -avz --exclude 'node_modules' --exclude 'dist' --exclude '.env.local' --exclude '.git' --exclude 'Jenkinsfile' --delete ${WORKSPACE}/apis/corsair/ admin@${server}:${deployPath}/"
+                                    sh "rsync -avz --exclude 'node_modules' --exclude '.env.local' --exclude '.git' --exclude 'Jenkinsfile' --delete ${WORKSPACE}/apis/corsair/ admin@${server}:${deployPath}/"
 
                                     echo "Installing production dependencies..."
                                     // --force: same zod peer conflict as the build step.
                                     sh "ssh admin@${server} 'cd ${deployPath} && npm ci --omit=dev --force'"
+
+                                    echo "Seeding Corsair tools into Workspace database..."
+                                    sh "ssh admin@${server} 'cd ${deployPath} && npm run seed:tools:prod'"
 
                                     echo "Restarting the service..."
                                     sh "ssh admin@${server} 'sudo systemctl restart corsair_apis.service'"

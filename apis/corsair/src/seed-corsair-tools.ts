@@ -130,7 +130,7 @@ async function seedCorsairTools(): Promise<void> {
     const AUTH_TYPE_NONE = "None";
 
     for (const tool of generatedTools) {
-      const toolName = `Corsair ${toPascalCase(tool.id)}`;
+      const toolName = `${toPascalCase(tool.id)}`;
       const toolId = deterministicGuid(`corsair-tool-${toolName}`);
 
       try {
