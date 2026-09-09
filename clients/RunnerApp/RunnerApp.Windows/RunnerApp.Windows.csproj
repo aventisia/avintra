@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>RunnerApp</AssemblyName>
     <RootNamespace>RunnerApp</RootNamespace>
-    <Version>0.2.27</Version>
-    <InformationalVersion>0.2.27</InformationalVersion>
+    <Version>0.2.29</Version>
+    <InformationalVersion>0.2.29</InformationalVersion>
 
     <!--
       Self-contained publish.

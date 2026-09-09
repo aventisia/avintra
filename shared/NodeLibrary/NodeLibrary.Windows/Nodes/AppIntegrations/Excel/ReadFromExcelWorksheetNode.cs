@@ -223,9 +223,19 @@ public class ReadFromExcelWorksheetNode : BaseNode
 
         if (rawValue2 is not object[,] values)
         {
-            // Single-cell range: return a one-cell table honoring the text flag.
-            dataTable.Columns.Add("Value");
-            dataTable.Rows.Add(getContentsAsText ? (range.Text ?? DBNull.Value) : (rawValue2 ?? DBNull.Value));
+            // Single-cell range. When the first line contains column names,
+            // treat the single value as the header and emit no data rows.
+            if (firstLineContainsColumnNames)
+            {
+                var header = rawValue2?.ToString();
+                var columnName = !string.IsNullOrWhiteSpace(header) ? header : "Value";
+                dataTable.Columns.Add(MakeUniqueColumnName(columnName, new HashSet<string>(StringComparer.OrdinalIgnoreCase)));
+            }
+            else
+            {
+                dataTable.Columns.Add("Value");
+                dataTable.Rows.Add(getContentsAsText ? (range.Text ?? DBNull.Value) : (rawValue2 ?? DBNull.Value));
+            }
             return dataTable;
         }
 
