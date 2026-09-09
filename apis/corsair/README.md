@@ -116,18 +116,19 @@ The generation orchestrator is:
 
 Copy .env.example to .env.local and set real values before running the service.
 
-| Variable | Purpose |
-| --- | --- |
-| PORT | Internal sidecar port. Default is 3456. |
-| APP_URL | Internal base URL used by the consent and callback flow. |
-| WORKSPACE_APP_URL | Workspace API public URL used for redirecting OAuth results. |
-| CORSAIR_KEK | 32-byte hex encryption key used for token storage. |
-| POSTGRESQL_HOST | Postgres host for the sidecar database. |
-| POSTGRESQL_PORT | Postgres port. Default 5432. |
-| POSTGRESQL_USERNAME | Postgres username. |
-| POSTGRESQL_PASSWORD | Postgres password. |
-| POSTGRESQL_DATABASE | Postgres database name. Default is CorsairDb. |
-| CORSAIR_REDIRECT_URI | Optional explicit redirect URI override for OAuth callbacks. |
+| Variable                 | Purpose                                                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| PORT                     | Internal sidecar port. Default is 4006.                                                                           |
+| CORSAIR_KEK              | 32-byte hex encryption key used for token storage.                                                                |
+| APP_BASE_URL             | Public app base domain (without scheme). Used to derive the workspace app URL used for redirecting OAuth results. |
+| POSTGRESQL_HOST          | Postgres host for the sidecar database.                                                                           |
+| POSTGRESQL_PORT          | Postgres port. Default 5432.                                                                                      |
+| POSTGRESQL_USERNAME      | Postgres username.                                                                                                |
+| POSTGRESQL_PASSWORD      | Postgres password.                                                                                                |
+| ACCOUNTS_API_BASE_URL    | Accounts API base URL (informational, kept in sync with other services).                                          |
+| WORKSPACE_API_BASE_URL   | Workspace API base URL. Used as the base for the OAuth consent and callback flows.                                |
+| LLMPIPELINE_API_BASE_URL | LLM pipeline API base URL (informational).                                                                        |
+| CORSAIR_REDIRECT_URI     | Optional explicit redirect URI override for OAuth callbacks (default derived from `WORKSPACE_API_BASE_URL`).      |
 
 ## Local development
 
@@ -160,7 +161,7 @@ When deploying the Corsair sidecar, follow this order:
    - Corsair database: `POSTGRESQL_HOST`, `POSTGRESQL_PORT`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
    - Workspace database: `WORKSPACE_POSTGRES_HOST`, `WORKSPACE_POSTGRES_PORT`, `WORKSPACE_POSTGRES_USERNAME`, `WORKSPACE_POSTGRES_PASSWORD`
    - Admin user: `ON_PREM_ADMIN_EMAIL`
-   - Sidecar config: `PORT`, `APP_URL`, `WORKSPACE_APP_URL`, `CORSAIR_KEK`
+   - Sidecar config: `PORT`, `APP_BASE_URL`, `CORSAIR_KEK`
 
 2. Build and deploy:
    ```sh
