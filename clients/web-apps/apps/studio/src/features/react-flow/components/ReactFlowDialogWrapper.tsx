@@ -2,7 +2,6 @@ import { memo } from "react";
 
 import { NodeSelector } from "@/features/action-selector/components";
 import AddInputsOutputsDialog from "@/features/add-input-output/components/AddInputsOutputsDialog";
-import { DCPDialog } from "@/features/dynamic-config-panel";
 import { FlowBlockCrudDialog } from "@/features/flow-block/components/flow-block-crud-dialog";
 import { FlowSettings } from "@/features/flow-settings/components";
 import ImportFlow from "@/features/import-flow/components/ImportFlow";
@@ -22,7 +21,6 @@ export const ReactFlowDialogWrapper = memo(() => {
       <FlowBlockCrudDialog />
       <SaveAsTemplateDialog />
       <ShortcutsDialog />
-      <DCPDialog />
       <ImportFlow />
     </>
   );

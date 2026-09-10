@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { MARKER_ARROW_PREFIX } from "@/constants";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
@@ -13,13 +13,15 @@ import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
 export const useAddNodeFromEdge = () => {
   // Get state and actions from the DynamicConfigPanel store
-  const { setNodeId, setShowDialog, setNodeData } = useDynamicConfigPanelStore(
+  const { openNodeConfig } = useDynamicConfigPanelStore(
     useShallow((state) => ({
-      setNodeId: state.setNodeId,
-      setShowDialog: state.setShowDialog,
-      setNodeData: state.setNodeData,
+      openNodeConfig: state.openNodeConfig,
     })),
   );
+
+  // Guarded: inserting a node while another node's edits are unsaved confirms
+  // discard before the panel switches (graph insert itself is not reverted)
+  const guardNavigation = useDCPNavigationGuard();
 
   // Auto layout the flow
   const autoLayout = useDagreAutoLayout();
@@ -91,9 +93,7 @@ export const useAddNodeFromEdge = () => {
         const finalEdges = [...cleanedEdges, ...newEdges, newToNextEdge, updatedTempEdge];
 
         // Show config panel
-        setNodeData(nodeData);
-        setShowDialog(true);
-        setNodeId(newNodes[0]?.id);
+        guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
 
         autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
         return;
@@ -150,14 +150,12 @@ export const useAddNodeFromEdge = () => {
       ];
 
       // Open Config dialog when new node added
-      setNodeData(nodeData);
-      setShowDialog(true);
-      setNodeId(newNodes[0]?.id);
+      guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
 
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
     },
-    [setNodeData, setShowDialog, setNodeId, autoLayout],
+    [openNodeConfig, guardNavigation, autoLayout],
   );
 
   // Return the handler

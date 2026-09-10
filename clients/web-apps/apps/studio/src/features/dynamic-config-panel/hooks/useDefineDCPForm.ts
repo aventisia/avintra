@@ -115,6 +115,16 @@ export const useDefineDCPForm = () => {
   // Destructor form values and methods
   const { watch } = form;
 
+  // Publish dirty state for the navigation guard (X / Escape / node switch).
+  // Reading formState.isDirty during render subscribes to dirty updates.
+  const isFormDirtyNow = form.formState.isDirty;
+  useEffect(() => {
+    useDynamicConfigPanelStore.getState().setIsFormDirty(isFormDirtyNow);
+    return () => {
+      useDynamicConfigPanelStore.getState().setIsFormDirty(false);
+    };
+  }, [isFormDirtyNow]);
+
   // Return form and methods
   return {
     form,

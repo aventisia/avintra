@@ -88,7 +88,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         <div
           ref={ref}
           className={cn(
-            "fixed z-40 overflow-clip rounded-lg border-l border-r border-border bg-background",
+            "fixed shadow-xl z-40 overflow-clip rounded-xl border-l border-r border-border bg-background",
             "translate-x-0 transform transition-transform duration-300 ease-in-out",
             appBanner
               ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height)+0.5rem)]"

@@ -82,6 +82,9 @@ const CallAgentConfigForm = () => {
       console.error("Node id is undefined. Cannot update node data.");
     }
 
+    // Re-baseline so the navigation guard sees a clean form after save
+    form.reset(form.getValues());
+
     // Close the dialog
     setShowDialog(false);
   };
