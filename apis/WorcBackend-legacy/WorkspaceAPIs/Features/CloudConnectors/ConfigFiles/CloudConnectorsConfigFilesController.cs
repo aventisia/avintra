@@ -32,7 +32,15 @@ public class CloudConnectorsConfigFilesController : ControllerBase
             ? Path.GetFullPath(corsairRoot)
             : codebaseRoot;
 
-        var fullPath = Path.GetFullPath(Path.Combine(root, filePath ?? ""));
+        // The filePath already carries the "Corsair/" prefix (e.g.
+        // "Corsair/Openai/ModelsListConnector.json"). corsairRoot IS the Corsair
+        // folder, so strip the prefix before combining to avoid a double
+        // "Corsair/Corsair/" path.
+        var relativePath = isCorsairPath && root != codebaseRoot
+            ? filePath!.Substring("Corsair/".Length)
+            : filePath ?? "";
+
+        var fullPath = Path.GetFullPath(Path.Combine(root, relativePath));
         if (!fullPath.StartsWith(root) || !System.IO.File.Exists(fullPath))
             return NotFound();
 
