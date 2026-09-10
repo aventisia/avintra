@@ -404,32 +404,25 @@ public class AppSecretService : IAppSecretService
                 serviceResponse.Message = validateData.Remark;
                 return serviceResponse;
             }
-
             // Resolve the target spaces for this credential.
-            // The current space is always included by default; additional spaces may be
-            // supplied via SpaceIds. Guid.Empty represents the Central space (SpaceId == null).
-            var currentSpaceId = _currentTenantService.CurrentSpaceId;
             var targetSpaces = new List<Guid?>();
 
             if (appSecretDto.SpaceIds != null && appSecretDto.SpaceIds.Any())
             {
-                // Normalize: Guid.Empty entries map to Central (null SpaceId).
+                // Filter out null and empty space IDs, and ensure uniqueness
                 targetSpaces = appSecretDto.SpaceIds
-                    .Select(s => s == Guid.Empty ? (Guid?)null : s)
+                    .Where(s => s != Guid.Empty)
+                    .Select(s => s)
                     .Distinct()
+                    .Cast<Guid?>()
                     .ToList();
-
-                // Ensure the current space is always included.
-                var currentSpace = currentSpaceId == Guid.Empty ? (Guid?)null : currentSpaceId;
-                if (!targetSpaces.Contains(currentSpace))
-                {
-                    targetSpaces.Add(currentSpace);
-                }
             }
-            else
+            
+            // If no spaces are specified and the credential is not tenant-wide, return an error.
+            if (!targetSpaces.Any())
             {
-                // No spaces supplied -> create only in the current space (Central when Guid.Empty).
-                targetSpaces.Add(currentSpaceId == Guid.Empty ? (Guid?)null : currentSpaceId);
+                serviceResponse.Message = "At least one target space must be specified for the credential.";
+                return serviceResponse;
             }
 
             // Validate duplicates per space. The global SpaceId query filter scopes queries to

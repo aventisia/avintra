@@ -96,11 +96,9 @@ export interface VaultsTableDto {
   /**
    * Gets or sets the list of space IDs this credential should be created in.
    * One credential record is created per selected space so the credential is
-   * available in every selected space. The current space is always included
-   * by default. For create requests only.
-   *
-   * The Central space is represented by the all-zero GUID
-   * ("00000000-0000-0000-0000-000000000000").
+   * available in every selected space. Only the spaces the user explicitly
+   * selected are included — the current space is not added automatically.
+   * For create requests only.
    */
   spaceIds?: string[];
 }
