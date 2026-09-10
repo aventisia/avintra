@@ -1,0 +1,39 @@
+meta {
+  name: Update flow type change rejected
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+
+  }
+}
+
+script:pre-request {
+  // Negative case: flow type is frozen after creation.
+  // FLOW_ID points to a flow created with type "Agent" (see insert-flow, seq 3),
+  // so sending "ChatAgent" must be rejected with 409.
+  const { faker } = require('@faker-js/faker');
+
+  req.setBody({
+    id: bru.getGlobalEnvVar("FLOW_ID"),
+    type: "ChatAgent",
+    name: faker.commerce.product(),
+    description: faker.lorem.paragraph(),
+    isDisabled: false
+  })
+}
+
+script:post-response {
+  test("type change is rejected with 409", function() {
+    expect(res.getStatus()).to.equal(409);
+    expect(res.getBody().message).to.equal("Agent type cannot be changed after creation.");
+  });
+}
