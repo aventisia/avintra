@@ -5,17 +5,13 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger/{{TIME_TRIGGER_ID}}
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/time-trigger/{{TIME_TRIGGER_ID}}
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("TIME_TRIGGER_ID"),
-  })
+body:json {
+  "id": "{{TIME_TRIGGER_ID}}"
 }
 
 script:post-response {

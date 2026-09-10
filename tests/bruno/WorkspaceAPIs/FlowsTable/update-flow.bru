@@ -5,25 +5,15 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/flow
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_ID"),
-    type: "AutomationAgent",
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-    isDisabled: true
-  })
+  "id": "{{FLOW_ID}}",
+  "type": "AutomationAgent",
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "isDisabled": true
 }

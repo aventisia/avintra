@@ -5,29 +5,30 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/message-trigger
+  url: {{WORKSPACE_API_BASE_URL}}/message-trigger
   body: json
   auth: bearer
 }
 
 body:json {
-  {
-    "name": "Test",
-    "timezone": "Asia/Kolkata",
-    "reference": "contact@aventisia.com",
-    "source": "/chats/getAllMessages",
-    "expiryDateTime": "2026-03-26T10:30:00Z",
-    "resubscribeEnabled": true,
-    "resubscribeFrequency": "90",
-    "credentialName": "DUMMY",
-    "provider": "M365",
-    "agents": [
-      {
-        "id": "4ab51170-f1aa-423f-a9cd-0a0f51ce528c",
-        "name": "Display Message",
-        "versionNumber": 1
-      }
-    ]
+  [
+    {
+      "name": "Test",
+      "timezone": "Asia/Kolkata",
+      "reference": "contact@aventisia.com",
+      "source": "/chats/getAllMessages",
+      "expiryDateTime": "2026-03-26T10:30:00Z",
+      "resubscribeEnabled": true,
+      "resubscribeFrequency": "90",
+      "credentialName": "DUMMY",
+      "provider": "M365",
+      "agents": [
+        {
+          "id": "4ab51170-f1aa-423f-a9cd-0a0f51ce528c",
+          "name": "Display Message",
+          "versionNumber": 1
+        }
+  ]
   }
   
 }

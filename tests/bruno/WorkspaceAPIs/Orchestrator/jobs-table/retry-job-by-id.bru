@@ -5,16 +5,12 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/job/{{JOB_ID}}/retry
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/job/{{JOB_ID}}/retry
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("JOB_ID"),
-    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID")
-  })
+body:json {
+  "id": "{{JOB_ID}}",
+  "flowVersionId": "{{FLOW_VERSION_ID}}"
 }

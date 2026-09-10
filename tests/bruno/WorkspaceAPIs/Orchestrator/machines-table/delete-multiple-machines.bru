@@ -5,24 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/machine/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/machine/delete-multiple
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
+  [
+    "{{MACHINE_ID}}"
+  ]
 }
-
-script:pre-request {
-  // Set machineIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("MACHINE_ID")}"]`)
-  )
-}
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

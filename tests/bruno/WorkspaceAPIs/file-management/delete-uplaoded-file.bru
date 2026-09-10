@@ -5,15 +5,11 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/file/delete?fileUrl={{FILE_PATH}}
+  url: {{WORKSPACE_API_BASE_URL}}/file/delete?fileUrl={{FILE_PATH}}
   body: none
   auth: none
 }
 
 params:query {
   fileUrl: {{FILE_PATH}}
-}
-
-script:pre-request {
-   
 }

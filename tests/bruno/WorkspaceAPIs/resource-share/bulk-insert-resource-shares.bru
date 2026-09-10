@@ -5,21 +5,22 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/resource-share/bulk
+  url: {{WORKSPACE_API_BASE_URL}}/resource-share/bulk
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "resourceType": "AppSecret",
-    "resourceId": "{{APP_SECRET_ID}}",
-    "users": [
-      {
-        "accessLevel": "View",
-        "userId": "{{USER_ID}}"   
-      }
-    ]
+  [
+    {
+      "resourceType": "AppSecret",
+      "resourceId": "{{APP_SECRET_ID}}",
+      "users": [
+        {
+          "accessLevel": "View",
+          "userId": "{{USER_ID}}"   
+        }
+  ]
   }
 }
 

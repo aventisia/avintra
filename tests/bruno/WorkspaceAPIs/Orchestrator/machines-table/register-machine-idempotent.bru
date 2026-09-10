@@ -1,11 +1,11 @@
 meta {
-  name: Register machine duplicate
+  name: Register machine idempotent
   type: http
   seq: 11
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/machine-auth/register
+  url: {{WORKSPACE_API_BASE_URL}}/machine-auth/register
   body: json
   auth: none
 }

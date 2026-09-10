@@ -5,27 +5,28 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/chat/completions
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "provider": "openai",
-    "model": "gpt-4o-mini",
-    "input": "Give me top 3 benefits of daily exercise",
-    "files": null,
-    "tool_config": [
-      {
-        "tool": "translate_text",
-        "credential_name": "DUMMY",
-        "actions": [
-          {
-            "approval": "human", // "auto"
-            "action": "send_email"
-          }
-        ]
+  [
+    {
+      "provider": "openai",
+      "model": "gpt-4o-mini",
+      "input": "Give me top 3 benefits of daily exercise",
+      "files": null,
+      "tool_config": [
+        {
+          "tool": "translate_text",
+          "credential_name": "DUMMY",
+          "actions": [
+            {
+              "approval": "human", // "auto"
+              "action": "send_email"
+            }
+  ]
       }
     ],
     "skill_names": ["sql_generator"],

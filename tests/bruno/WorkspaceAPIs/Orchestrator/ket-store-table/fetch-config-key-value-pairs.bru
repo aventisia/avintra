@@ -5,15 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/fetch
+  url: {{WORKSPACE_API_BASE_URL}}/key-store/fetch
   body: json
   auth: none
 }
 
 body:json {
   [
-    "personal_key_name",
-    "shared_key_name",
+    [
+      "personal_key_name",
+      "shared_key_name",
   ]
 }
 

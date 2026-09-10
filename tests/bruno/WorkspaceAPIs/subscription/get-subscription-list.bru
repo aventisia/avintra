@@ -5,16 +5,12 @@ meta {
 }
 
 get {
-  url: {{WORKSPACE_APIS_BASE_URL}}/subscription/
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/subscription/
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    planId: bru.getGlobalEnvVar("PLAN_ID"),
-    userId: bru.getGlobalEnvVar("USER_ID")
-  })
+body:json {
+  "planId": "{{PLAN_ID}}",
+  "userId": "{{USER_ID}}"
 }

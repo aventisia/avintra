@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/chat/completions
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions
   body: json
   auth: bearer
 }
@@ -15,21 +15,22 @@ auth:bearer {
 }
 
 body:json {
-  {
-    "provider": "openai",
-    "model": "gpt-4o-mini",
-    "input": "List open issues in the appointment-dashborad repository owned by bvaibhav23",
-    "files": null,
-    "tool_config": [
-      {
-        "tool": "github",
-        "credential_id": "73bd9857-bac7-4b97-8b7f-4ab261d39b7e",
-        "actions": [
-          {
-            "approval": "auto",
-            "action": "api.issues.list"
-          }
-        ]
+  [
+    {
+      "provider": "openai",
+      "model": "gpt-4o-mini",
+      "input": "List open issues in the appointment-dashborad repository owned by bvaibhav23",
+      "files": null,
+      "tool_config": [
+        {
+          "tool": "github",
+          "credential_id": "73bd9857-bac7-4b97-8b7f-4ab261d39b7e",
+          "actions": [
+            {
+              "approval": "auto",
+              "action": "api.issues.list"
+            }
+  ]
       }
     ],
     "skill_names": [],

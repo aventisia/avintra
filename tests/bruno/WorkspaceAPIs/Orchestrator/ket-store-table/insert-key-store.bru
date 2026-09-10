@@ -5,21 +5,17 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/key-store
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/key-store
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-    type: "CREDENTIAL",
-    value: faker.lorem.paragraph(),
-    accessLevel: "PUBLIC"
-  })
+body:json {
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "type": "CREDENTIAL",
+  "value": "{{$randomLoremParagraph}}",
+  "accessLevel": "PUBLIC"
 }
 
 script:post-response {

@@ -5,16 +5,11 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/upload-file
+  url: {{WORKSPACE_API_BASE_URL}}/upload-file
   body: multipartForm
   auth: none
 }
 
 body:multipart-form {
   file: @file(/home/nikhil20/Documents/employee.json)
-}
-
-script:pre-request {
-  
-   
 }
