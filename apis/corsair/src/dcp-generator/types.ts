@@ -107,6 +107,13 @@ export type PluginMetadata = {
 export type GenerateDcpOptions = {
   /** Absolute path to the Cloud Connectors ConfigFiles root. */
   outputDir: string;
+  /**
+   * Absolute path to the per-plugin Corsair config root. When set (e.g. a
+   * deploy dir on the server), per-plugin configs and OpenAPI specs are written
+   * here. When unset, they fall back to <c>outputDir/Corsair</c> (local dev).
+   * The mapping and sibling artifacts always go to <c>outputDir</c>.
+   */
+  configRoot?: string;
   /** Corsair plugin objects (from src/corsair.ts). */
   plugins: readonly unknown[];
   /** The corsair instance used to introspect schemas in-process. */
@@ -117,9 +124,8 @@ export type GenerateDcpOptions = {
   baseUrlMap?: Record<string, string>;
   /**
    * Absolute path to the global Cloud Connector action-selector mapping file
-   * (owned by the Workspace API codebase). When Corsair configs are written to
-   * a shared path (CORSAIR_CONFIG_DIR), the global mapping still lives in the
-   * Workspace API codebase, so the cleanup must target that file. Defaults to
+   * (owned by the Workspace API codebase). It lives in the same ConfigFiles
+   * folder as the Corsair configs, so the cleanup targets that file. Defaults to
    * <c>outputDir/CloudConnectorActionSelectorMappingFile.json</c>.
    */
   globalMappingFile?: string;

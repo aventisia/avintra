@@ -10,12 +10,12 @@
  *   npm run generate:configs
  *
  * Output location:
- *   - Default (local dev): the Workspace API ConfigFiles folder so the app can
- *     serve them without extra setup.
- *   - Deploy: set CORSAIR_CONFIG_DIR to a dedicated shared path (e.g.
- *     /var/www/aventisia.com/files/config/corsair) so the configs live outside
- *     the Workspace API codebase and a Corsair change does not force a main app
- *     rebuild. The Workspace API reads from that shared path at runtime.
+ *   - The mapping and small sibling artifacts always go to the Workspace API
+ *     codebase ConfigFiles folder (Features/CloudConnectors/ConfigFiles).
+ *   - The thousands of per-plugin configs go to CORSAIR_CONFIG_DIR when set
+ *     (server deploy dir, e.g. /var/www/aventisia.com/files/configs/Corsair);
+ *     otherwise they fall back to the codebase ConfigFiles/Corsair folder for
+ *     local development.
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,29 +25,29 @@ import { generateDcpFiles } from "./dcp-generator/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Output root for Corsair config artifacts. Defaults to the Workspace API
-// ConfigFiles folder for local dev; override with CORSAIR_CONFIG_DIR in deploy
-// to write to a dedicated shared path outside the main app codebase.
+// Output root for the mapping and sibling artifacts. Always the Workspace API
+// codebase ConfigFiles folder — the same folder the Workspace API serves and
+// reads the committed artifacts from.
 const repoRoot = path.resolve(__dirname, "../../..");
-const defaultOutputDir = path.join(
+const outputDir = path.join(
   repoRoot,
   "apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles",
 );
-const outputDir = process.env.CORSAIR_CONFIG_DIR
-  ? path.resolve(process.env.CORSAIR_CONFIG_DIR)
-  : defaultOutputDir;
 
-// The global Cloud Connector mapping is owned by the Workspace API codebase.
-// Even when Corsair configs go to a shared path (CORSAIR_CONFIG_DIR), the
-// global mapping stays in the Workspace API codebase so the cleanup targets
-// the real file. Override with CORSAIR_GLOBAL_MAPPING_FILE when the Workspace
-// API codebase is not present (e.g. in the sidecar container).
-const globalMappingFile = process.env.CORSAIR_GLOBAL_MAPPING_FILE
-  ? path.resolve(process.env.CORSAIR_GLOBAL_MAPPING_FILE)
-  : path.join(
-      repoRoot,
-      "apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles/CloudConnectorActionSelectorMappingFile.json",
-    );
+// Per-plugin config root. When CORSAIR_CONFIG_DIR is set (Jenkins/server deploy)
+// the thousands of per-plugin configs are written there so they do not bloat the
+// codebase. When unset (local dev) they fall back to the codebase ConfigFiles/
+// Corsair folder, which every dev shares.
+const configRoot = process.env.CORSAIR_CONFIG_DIR
+  ? path.resolve(process.env.CORSAIR_CONFIG_DIR)
+  : path.join(outputDir, "Corsair");
+
+// The global Cloud Connector mapping is owned by the Workspace API codebase and
+// lives in the same ConfigFiles folder.
+const globalMappingFile = path.join(
+  repoRoot,
+  "apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles/CloudConnectorActionSelectorMappingFile.json",
+);
 
 // Build a self-contained corsair instance for schema introspection. No database
 // is required for `listOperations`/`getStructuredSchema`; a placeholder kek is
@@ -59,10 +59,12 @@ const corsair = createCorsair({
   kek: "0000000000000000000000000000000000000000000000000000000000000000",
 });
 
-console.log(`[corsair:generate] Writing config artifacts to ${outputDir}`);
+console.log(`[corsair:generate] Writing mapping/sibling artifacts to ${outputDir}`);
+console.log(`[corsair:generate] Writing per-plugin configs to ${configRoot}`);
 
 generateDcpFiles({
   outputDir,
+  configRoot,
   plugins,
   corsair,
   globalMappingFile,
