@@ -352,6 +352,11 @@ public class QueueWorkItemService : IQueueWorkItemService
 
                 if (!workItems.Any())
                 {
+                    // No work items remaining — return a successful response with empty
+                    // values so the Get Next Work Item node can handle it gracefully
+                    // instead of surfacing a generic 400 error.
+                    serviceResponse.Data = null;
+                    serviceResponse.StatusCode = 200;
                     serviceResponse.Message = "No available work items found.";
                     return serviceResponse;
                 }
@@ -422,6 +427,11 @@ public class QueueWorkItemService : IQueueWorkItemService
 
                 if (nextWorkItem == null)
                 {
+                    // No work item matched the criteria — return a successful response with
+                    // empty values so the Get Next Work Item node can handle it gracefully
+                    // instead of surfacing a generic 400 error.
+                    serviceResponse.Data = null;
+                    serviceResponse.StatusCode = 200;
                     serviceResponse.Message = "No work item matched the provided criteria.";
                     return serviceResponse;
                 }
