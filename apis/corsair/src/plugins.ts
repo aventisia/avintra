@@ -15,6 +15,9 @@
  * corsairdev/corsair monorepo (packages/ directory). To add/remove a plugin,
  * edit the imports below and the `plugins` array, then run `npm install`.
  */
+// Polyfill Node < 20 globals (File/Blob) before any plugin module is loaded.
+// Some plugins reference `File` at module-load time; the server runs Node 18.
+import "./polyfills.js";
 import { ably } from "@corsair-dev/ably";
 import { abstract } from "@corsair-dev/abstract";
 import { abuseipdb } from "@corsair-dev/abuseipdb";
