@@ -67,7 +67,20 @@ public class GetNextQueueWorkItemNode : BaseNode
 
             Result.Set(context, nextWorkItem);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, "Next work item retrieved successfully.");
+
+            // When the queue has no work items available, the backend returns a
+            // successful response with null/empty data. Surface that as a success
+            // with empty values rather than an error message.
+            if (nextWorkItem.ValueKind == JsonValueKind.Null
+                || nextWorkItem.ValueKind == JsonValueKind.Undefined
+                || (nextWorkItem.ValueKind == JsonValueKind.Object && !nextWorkItem.EnumerateObject().Any()))
+            {
+                StatusMessage.Set(context, "No work items available. Retrieved empty result.");
+            }
+            else
+            {
+                StatusMessage.Set(context, "Next work item retrieved successfully.");
+            }
         }
         catch (Exception ex)
         {
