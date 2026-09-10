@@ -1,18 +1,17 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { Form, InputField, SwitchField } from "@avplatform/ui/form";
+import { Form, InputField, MultiSelectField, SwitchField } from "@avplatform/ui/form";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
 
-import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 import { RenderField, shouldRenderField } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
 import { useFetchSpaceOptions } from "@/features/05-tenant-admin/spaces/hooks/useFetchSpaceOptions";
-import { CENTRAL_SPACE_VALUE, useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import {
@@ -40,10 +39,12 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const { data: spaceOptionsData } = useFetchSpaceOptions();
   const spaceOptions = spaceOptionsData?.data ?? [];
 
-  // The current space is always selected by default. Central (null) is
-  // represented by the all-zero GUID sentinel so the multi-select can render it.
+  // The current space is always selected by default. The store represents
+  // Central as null, so resolve the actual Central space ID from the fetched
+  // space options to always send real backend IDs.
   const { currentSpace } = useCurrentSpaceStore();
-  const currentSpaceId = currentSpace?.id ?? CENTRAL_SPACE_VALUE;
+  const currentSpaceId =
+    currentSpace?.id ?? spaceOptions.find((option) => option.isDefault)?.value ?? "";
 
   const {
     form,
@@ -91,38 +92,31 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const isOAuthCredential = Boolean(isType && OAUTH_CREDENTIAL_TYPES.has(isType));
 
   // Resolve the selected spaces into the backend's space-id contract.
-  // The "central" sentinel maps to the all-zero GUID (Central space).
-  // The current space is always included by default.
+  // Only the spaces the user explicitly selected are included — if the user
+  // deselects the current space, it is NOT added back automatically.
   const resolveSpaceIds = (selected: string[] | undefined): string[] => {
-    const normalized = (selected ?? [])
-      .map((id) => (id === CENTRAL_SPACE_VALUE ? "00000000-0000-0000-0000-000000000000" : id))
-      .filter(Boolean);
+    const spaceIds = new Set<string>();
 
-    const current = currentSpaceId === CENTRAL_SPACE_VALUE
-      ? "00000000-0000-0000-0000-000000000000"
-      : currentSpaceId;
+    (selected ?? []).forEach((spaceId) => {
+      if (spaceId) {
+        spaceIds.add(spaceId);
+      }
+    });
 
-    if (current && !normalized.includes(current)) {
-      normalized.push(current);
-    }
-
-    return Array.from(new Set(normalized));
+    return Array.from(spaceIds);
   };
 
-  // Space options for the multi-select. Central is always the first, default option.
-  const spaceSelectOptions = [
-    { value: CENTRAL_SPACE_VALUE, label: "Central", isDefault: true },
-    ...spaceOptions
-      .filter((option) => !option.isDefault)
-      .map((option) => ({ value: option.value, label: option.label })),
-  ];
+  // Space options for the multi-select, built directly from the fetched
+  // spaces. The current space is marked as the default selection.
+  const spaceSelectOptions = spaceOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+    isDefault: option.value === currentSpaceId,
+  }));
 
   // Pre-select the current space by default when creating a credential.
-  // The form stores the same sentinel values as the select options ("central"
-  // for Central) so badges render correctly; resolveSpaceIds converts them to
-  // the backend contract (all-zero GUID) at submit time.
   useEffect(() => {
-    if (action !== "create" || !isFormReady) return;
+    if (action !== "create" || !isFormReady || !currentSpaceId) return;
 
     const existing = (form.getValues("spaceIds") as string[] | undefined) ?? [];
     if (!existing.includes(currentSpaceId)) {
