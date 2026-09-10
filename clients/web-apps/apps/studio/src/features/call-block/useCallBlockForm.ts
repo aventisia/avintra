@@ -199,6 +199,14 @@ export const useCallBlockForm = () => {
     watch,
   } = form;
 
+  // Publish dirty state for the navigation guard (X / Escape / node switch)
+  useEffect(() => {
+    useDynamicConfigPanelStore.getState().setIsFormDirty(isDirty);
+    return () => {
+      useDynamicConfigPanelStore.getState().setIsFormDirty(false);
+    };
+  }, [isDirty]);
+
   return {
     form,
     isDirty,

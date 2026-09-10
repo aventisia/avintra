@@ -86,6 +86,10 @@ export const DCPForm = () => {
       console.error("Node id is undefined. Cannot update node data.");
     }
 
+    // Re-baseline the form so a subsequent X / Escape / node switch does not
+    // prompt for changes that were just saved (Test tab keeps the panel open)
+    form.reset(form.getValues());
+
     if (selectedTab !== "Test") {
       // Close the dialog
       setShowDialog(false);
@@ -96,11 +100,11 @@ export const DCPForm = () => {
   return (
     <>
       {isLoading ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex h-full items-center justify-center gap-2 text-sm">
           <LoadingSpinner className="h-5 w-5 text-primary" />
         </div>
       ) : !isFormReady ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex h-full items-center justify-center gap-2 text-sm">
           <SearchCodeIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>

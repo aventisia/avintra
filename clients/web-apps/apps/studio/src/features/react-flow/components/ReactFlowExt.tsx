@@ -1,7 +1,14 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange, useReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  OnSelectionChangeParams,
+  ReactFlow,
+  useOnViewportChange,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -12,14 +19,15 @@ import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
+import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
 import {
   broadcastCursorEvent,
   useCollaboration,
 } from "@/features/collaboration/hooks/useCollaboration";
-import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
+import { DCPDialog } from "@/features/dynamic-config-panel";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -329,6 +337,9 @@ export const ReactFlowExt = () => {
           </ReactFlow>
           <ReactFlowContextMenu />
           <CanvasNodeDetailPanel />
+          {/* Non-modal node config drawer — canvas-level mount next to the other
+              fixed panels so it shares their stacking context. */}
+          <DCPDialog />
           <FlowActionLockBanner />
           {isLoading && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">

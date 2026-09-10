@@ -12,7 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 
@@ -72,15 +72,15 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     elevenlabs: "Elevenlabs",
   };
 
-  const { setShowDialog, setNodeId, setNodeData, setSelectedTab } = useDynamicConfigPanelStore(
+  const { openNodeConfig, setSelectedTab } = useDynamicConfigPanelStore(
     useShallow((state) => ({
-      showDialog: state.showDialog,
-      setNodeId: state.setNodeId,
-      setShowDialog: state.setShowDialog,
-      setNodeData: state.setNodeData,
+      openNodeConfig: state.openNodeConfig,
       setSelectedTab: state.setSelectedTab,
     })),
   );
+
+  // Guarded: switching nodes with unsaved edits confirms discard first
+  const guardNavigation = useDCPNavigationGuard();
 
   return (
     <>
@@ -92,12 +92,13 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
             (connectedNodeData?.data?.isCut as NodeDataType) && "border-red-400 opacity-60",
           )}
           onDoubleClick={() => {
-            setShowDialog(true);
-            setNodeId(connectedNodeId);
-            setNodeData(connectedNodeData?.data as NodeDataType);
-            setTimeout(() => {
-              setSelectedTab("Models");
-            }, 100);
+            if (!connectedNodeId || !connectedNodeData?.data) return;
+            guardNavigation(() => {
+              openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
+              setTimeout(() => {
+                setSelectedTab("Models");
+              }, 100);
+            });
           }}
         >
           <NodeImage
