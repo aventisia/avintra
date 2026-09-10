@@ -5,24 +5,19 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-role
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-role
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("ROLE_ID"),
-    fullName: faker.person.jobType(),
-    description: faker.lorem.lines(),
-    rolePermissions: [
-      {
-        permissionType: "Roles",
-        accesses: ["FullAccess", "Delete","Edit"]
-      },
-    ]
-  })
-  
+body:json {
+  "id": "{{ROLE_ID}}",
+  "fullName": "{{$randomJobTitle}}",
+  "description": "{{$randomLoremSentences}}",
+  "rolePermissions": [
+    {
+      "permissionType": "Roles",
+      "accesses": ["FullAccess", "Delete", "Edit"]
+    }
+  ]
 }

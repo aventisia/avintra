@@ -5,22 +5,18 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/Flow-log
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/Flow-log
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({ 
-    flowId: bru.getGlobalEnvVar("FLOW_ID"), 
-    id: bru.getGlobalEnvVar("FLOW_LOG_ID"),
-    startTime: new Date(),
-    status: "Failed1",
-    duration: 1234,
-    remark: faker.commerce.product(),
-    version: faker.number.float(),
-    flowName: faker.commerce.product(),
-  })
+body:json {
+  "flowId": "{{FLOW_ID}}",
+  "id": "{{FLOW_LOG_ID}}",
+  "startTime": "{{$isoTimestamp}}",
+  "status": "Failed1",
+  "duration": 1234,
+  "remark": "{{$randomProductName}}",
+  "version": "{{$randomFloat}}",
+  "flowName": "{{$randomProductName}}"
 }

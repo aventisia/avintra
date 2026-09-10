@@ -5,22 +5,18 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/key-store
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/key-store
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("CONFIG_ITEM_ID"),
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-    isDisabled: false,
-    type: "TEXT",
-    value: faker.lorem.paragraph(),
-    isEncrypted: false,
-    accessLevel: "PUBLIC"
-  })
+body:json {
+  "id": "{{CONFIG_ITEM_ID}}",
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "isDisabled": false,
+  "type": "TEXT",
+  "value": "{{$randomLoremParagraph}}",
+  "isEncrypted": false,
+  "accessLevel": "PUBLIC"
 }

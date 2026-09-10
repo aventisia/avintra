@@ -5,19 +5,15 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/ai-model/document
+  url: {{LLMPIPELINE_API_BASE_URL}}/ai-model/document
   body: multipartForm
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    model_id: bru.getGlobalEnvVar("MLMODEL_ID"),
-    file_path: "/files/default-files/57292118-0dfb-4925-9c8a-40b014a0b7b7.pdf",
-    content: "",
-    user_id: bru.getGlobalEnvVar("USER_ID"),
-    timestamp: null,
-  })
+body:json {
+  "model_id": "{{MLMODEL_ID}}",
+  "file_path": "/files/default-files/57292118-0dfb-4925-9c8a-40b014a0b7b7.pdf",
+  "content": "",
+  "user_id": "{{USER_ID}}",
+  "timestamp": null
 }

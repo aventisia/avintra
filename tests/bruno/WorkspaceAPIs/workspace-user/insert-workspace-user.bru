@@ -5,30 +5,17 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/user
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/user
+  body: json
   auth: none
 }
 
 body:json {
-  {
-    
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("ACCOUNT_USER_ID"),
-    userName: faker.internet.email(),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    avatarSrc: faker.image.url()
-  })
-  
-  
-    
+  "id": "{{ACCOUNT_USER_ID}}",
+  "userName": "{{$randomEmail}}",
+  "firstName": "{{$randomFirstName}}",
+  "lastName": "{{$randomLastName}}",
+  "avatarSrc": "{{$randomImageUrl}}"
 }
 
 script:post-response {

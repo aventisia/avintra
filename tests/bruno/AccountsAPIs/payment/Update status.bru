@@ -5,16 +5,12 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/payment/update-status
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/payment/update-status
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("PAYMENT_ID"),
-    paymentStatus: "Successful",
-  })
+body:json {
+  "id": "{{PAYMENT_ID}}",
+  "paymentStatus": "Successful"
 }

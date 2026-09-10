@@ -5,29 +5,30 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/m365/invoke
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/m365/invoke
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "agentId": "00000000-0000-0000-0000-000000000000",
-    "agentName": "Test",
-    "provider": "M365",
-    "action": "AppendRangeToExcelWorksheet",
-    "credentialName": "32202153-a0b8-4be6-8a0c-24e8b2828a04",
-    "payload": {
-      "driveId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfIll",
-      "itemId": "013AXKAIIGU4FKNYO5ZJFFIWR055JSZJAUW",
-      "worksheetName": "My New Sheet",
-      "startingColumn": "A",
-      "firstRowHasHeaders": false,
-      "dataRows": [
-        ["John", "28", "New York"],
-        ["Jane", "32", "London"],
-        ["Sam", "25", "Tokyo"]
-      ]
+  [
+    {
+      "agentId": "00000000-0000-0000-0000-000000000000",
+      "agentName": "Test",
+      "provider": "M365",
+      "action": "AppendRangeToExcelWorksheet",
+      "credentialName": "32202153-a0b8-4be6-8a0c-24e8b2828a04",
+      "payload": {
+        "driveId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfIll",
+        "itemId": "013AXKAIIGU4FKNYO5ZJFFIWR055JSZJAUW",
+        "worksheetName": "My New Sheet",
+        "startingColumn": "A",
+        "firstRowHasHeaders": false,
+        "dataRows": [
+          ["John", "28", "New York"],
+          ["Jane", "32", "London"],
+          ["Sam", "25", "Tokyo"]
+  ]
     }
   }
 }

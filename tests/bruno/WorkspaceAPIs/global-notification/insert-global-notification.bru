@@ -5,25 +5,15 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/notification/global/
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/notification/global/
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    message: faker.lorem.paragraph(),
-    type: "Information",
-    actionUrl: faker.image.url()
-  })
+  "message": "{{$randomLoremParagraph}}",
+  "type": "Information",
+  "actionUrl": "{{$randomImageUrl}}"
 }
 
 script:post-response {

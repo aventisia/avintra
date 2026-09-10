@@ -5,23 +5,19 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/user
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/user
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
-    twoFactorEnabled: false,
-    userRoles: [
+body:json {
+  "firstName": "{{$randomFirstName}}",
+  "lastName": "{{$randomLastName}}",
+  "email": "{{$randomEmail}}",
+  "twoFactorEnabled": false,
+  "userRoles": [
       "Tenant user"
     ]
-  })
 }
 
 script:post-response {

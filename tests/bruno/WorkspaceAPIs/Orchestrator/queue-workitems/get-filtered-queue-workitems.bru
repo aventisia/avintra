@@ -5,30 +5,31 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem/list
+  url: {{WORKSPACE_API_BASE_URL}}/queue/workitem/list
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "queueId": "82abab2e-79ca-41ae-af70-9312327b9867",
-    "status": "Pending",
-    "top": 1,
-    "skip": 0,
-    "queuePriority": [
-      {
-        "field": "Location",
-        "OrderBy": "Descending"
-      }
-    ],
-    "conditions": [
-      {
-        "field": "Id",
-        "comparisonOperator": "GreaterThan",
-        "value": "0"
-      }
-    ]
+  [
+    {
+      "queueId": "82abab2e-79ca-41ae-af70-9312327b9867",
+      "status": "Pending",
+      "top": 1,
+      "skip": 0,
+      "queuePriority": [
+        {
+          "field": "Location",
+          "OrderBy": "Descending"
+        }
+      ],
+      "conditions": [
+        {
+          "field": "Id",
+          "comparisonOperator": "GreaterThan",
+          "value": "0"
+        }
+  ]
   }
   
 }

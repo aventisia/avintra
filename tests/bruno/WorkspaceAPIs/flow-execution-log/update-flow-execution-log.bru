@@ -5,28 +5,24 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-execution-log/update
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/flow-execution-log/update
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("EXECUTION_LOG_ID"),
-    flowId: "b6f680a0-31ec-4128-96df-55b84e1daf2b",//bru.getGlobalEnvVar("FLOW_ID"),
-    flowVersionId:"81363bc4-eee0-4a30-90c8-362f5486fdf8",
-    name: faker.person.firstName(),
-    startTime: new Date(),
-    endTime: new Date(),
-    retryCount: 1,
-    version : 1,
-    duration:200,
-    status:"Succeeded",
-    errorMessage:"No error",
-    executionType: "Scheduler"
-  })
+body:json {
+  "id": "{{EXECUTION_LOG_ID}}",
+  "flowId": "b6f680a0-31ec-4128-96df-55b84e1daf2b",
+  "flowVersionId": "81363bc4-eee0-4a30-90c8-362f5486fdf8",
+  "name": "{{$randomFirstName}}",
+  "startTime": "{{$isoTimestamp}}",
+  "endTime": "{{$isoTimestamp}}",
+  "retryCount": 1,
+  "version": 1,
+  "duration": 200,
+  "status": "Succeeded",
+  "errorMessage": "No error",
+  "executionType": "Scheduler"
 }
 
 script:post-response {
@@ -36,4 +32,8 @@ script:post-response {
           res.getBody().data.id
       );
   }
+}
+
+docs {
+  > bru.getGlobalEnvVar("FLOW_ID")
 }

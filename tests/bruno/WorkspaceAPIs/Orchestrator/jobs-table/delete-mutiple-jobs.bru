@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/job/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/job/delete-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set jobIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("JOB_ID")}"]`)
-  )
+body:json {
+  [
+    "{{JOB_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

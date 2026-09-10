@@ -5,30 +5,31 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/list
+  url: {{WORKSPACE_API_BASE_URL}}/queue-transaction/list
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "queueId": "{{QUEUE_ID}}",
-    "queuePriority": [{
-      "field": "Name",
-      "OrderBy": "Ascending"
-    }],
-    "conditions": [
-      {
-        "field": "Id",
-        "comparisonOperator": "GreaterThan",
-        "value": "5"
-      },
-      {
-        "field": "Location",
-        "comparisonOperator": "NotEqualTo",
-        "value": "Washington"
-      }
-    ]
+  [
+    {
+      "queueId": "{{QUEUE_ID}}",
+      "queuePriority": [{
+        "field": "Name",
+        "OrderBy": "Ascending"
+      }],
+      "conditions": [
+        {
+          "field": "Id",
+          "comparisonOperator": "GreaterThan",
+          "value": "5"
+        },
+        {
+          "field": "Location",
+          "comparisonOperator": "NotEqualTo",
+          "value": "Washington"
+        }
+  ]
   }
   
 }
