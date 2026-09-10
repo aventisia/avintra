@@ -33,9 +33,17 @@ import { createCorsair } from "corsair";
 import { plugins } from "./plugins.js";
 import { generateToolMetadata } from "./generate-tool-metadata.js";
 
-// Load defaults first, then allow .env.local to override with real local values.
+// --- Variable selection precedence ---
+// Config is resolved in this order (highest wins):
+//   1. System environment variables (server: systemd Environment=/EnvironmentFile=;
+//      local: setx /M or $env:). These are authoritative.
+//   2. .env.local  (local dev overrides, gitignored)
+//   3. .env        (committed defaults)
+// dotenv never overrides an already-set variable, so anything present in the
+// process environment wins over both .env files. This keeps the server and
+// local dev on the same config source.
 dotenv.config({ path: ".env" });
-dotenv.config({ path: ".env.local", override: true });
+dotenv.config({ path: ".env.local" });
 
 const { Pool } = pg;
 
