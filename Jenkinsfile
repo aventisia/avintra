@@ -242,6 +242,11 @@ pipeline {
                                     // --force: same zod peer conflict as the build step.
                                     sh "ssh admin@${server} 'cd ${deployPath} && npm ci --omit=dev --force'"
 
+                                    echo "Running Corsair database migration..."
+                                    // Idempotent: creates CorsairDb + applies migration.sql. Explicit here
+                                    // so migration is deterministic regardless of the systemd ExecStart.
+                                    sh "ssh admin@${server} 'cd ${deployPath} && npm run migrate:prod'"
+
                                     echo "Seeding Corsair tools into Workspace database..."
                                     sh "ssh admin@${server} 'cd ${deployPath} && npm run seed:tools:prod'"
 
