@@ -201,6 +201,19 @@ pipeline {
                         }
                     }
                 }
+                stage('Generate - Corsair Configs') {
+                    steps {
+                        dir('apis/corsair') {
+                            echo 'Generating Corsair config artifacts...'
+                            // The mapping + small sibling artifacts are written into the Workspace API
+                            // codebase ConfigFiles folder and committed. The thousands of per-plugin
+                            // configs are written to CORSAIR_CONFIG_DIR (a build-local dir) and are
+                            // rsynced to the shared server files path in the Corsair Deploy stage,
+                            // so they do not bloat the codebase.
+                            sh 'CORSAIR_CONFIG_DIR=${WORKSPACE}/apis/corsair/generated-configs npm run generate:configs'
+                        }
+                    }
+                }
                 stage('Deploy - Corsair API') {
                     steps {
                         script {
@@ -216,6 +229,14 @@ pipeline {
                                     // Include dist/ so seed:tools:prod can run without rebuilding on the server.
                                     echo "Transferring to ${server}..."
                                     sh "rsync -avz --exclude 'node_modules' --exclude '.env.local' --exclude '.git' --exclude 'Jenkinsfile' --delete ${WORKSPACE}/apis/corsair/ admin@${server}:${deployPath}/"
+
+                                    // The thousands of per-plugin Corsair configs are generated into
+                                    // apis/corsair/generated-configs (see the Generate - Corsair Configs
+                                    // stage) and are transferred with the project above. Rsync them to
+                                    // the shared server files path so the Workspace API can serve them
+                                    // without bloating the codebase.
+                                    sh "ssh admin@${server} 'mkdir -p /var/www/aventisia.com/files/configs/Corsair'"
+                                    sh "ssh admin@${server} 'rsync -avz --delete ${deployPath}/generated-configs/ /var/www/aventisia.com/files/configs/Corsair/'"
 
                                     echo "Installing production dependencies..."
                                     // --force: same zod peer conflict as the build step.

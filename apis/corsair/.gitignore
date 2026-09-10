@@ -5,6 +5,11 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Generated per-plugin Corsair configs (deployed to the server files path,
+# not committed). The mapping + sibling artifacts go to the Workspace API
+# codebase ConfigFiles folder and ARE committed.
+generated-configs/
+
 # Runtime data
 corsair.db
 *.db-journal

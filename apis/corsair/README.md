@@ -94,15 +94,18 @@ This script reads the in-process Corsair plugin registry and writes generated fi
 
 ### Output location
 
-By default the generator writes into the Workspace API ConfigFiles folder (for local dev). In deployment, set `CORSAIR_CONFIG_DIR` to a dedicated shared path so the configs live **outside** the Workspace API codebase:
+The generator splits its output between the Workspace API codebase ConfigFiles folder and a deploy dir:
 
 ```sh
-CORSAIR_CONFIG_DIR=/var/www/aventisia.com/files/config/corsair npm run generate:configs
+npm run generate:configs
 ```
 
-The Workspace API reads Corsair configs from `<UploadDirectory>/config/corsair` at runtime (falling back to the codebase ConfigFiles folder for local dev). This keeps the sidecar fully decoupled: a Corsair config change does **not** force a Workspace API rebuild.
+- **Mapping + sibling artifacts** always go to the Workspace API codebase ConfigFiles folder: `Features/CloudConnectors/ConfigFiles/` (`CorsairActionSelectorMappingFile.json`, `CorsairActionMap.json`, `CorsairIntegrationCatalog.json`, `CorsairVaultTypeToPluginId.json`). These are committed and deploy with the Workspace API.
+- **Per-plugin configs** (the thousands of `{Plugin}/{Action}.json` files + OpenAPI specs) go to `CORSAIR_CONFIG_DIR` when set (server deploy dir, e.g. `/var/www/aventisia.com/files/configs/Corsair`). When unset (local dev) they fall back to `Features/CloudConnectors/ConfigFiles/Corsair/`, which every dev shares. The per-plugin configs are **not** committed — they are rsynced to the shared server files path by Jenkins.
 
-The global `CloudConnectorActionSelectorMappingFile.json` (owned by the Workspace API) is always cleaned in the Workspace API codebase, regardless of `CORSAIR_CONFIG_DIR`.
+The Workspace API serves per-plugin configs from `Corsair:ConfigRoot` (server path) when present, falling back to the codebase folder locally. The committed sibling artifacts are always read from the codebase ConfigFiles folder.
+
+The global `CloudConnectorActionSelectorMappingFile.json` (owned by the Workspace API) is cleaned of any stale Corsair entries in the same folder.
 
 The generator entry point is:
 
@@ -166,22 +169,33 @@ When deploying the Corsair sidecar, follow this order:
 2. Build and deploy:
    ```sh
    npm run build              # Compile TypeScript
+   npm run generate:configs   # Generate config artifacts (mapping/siblings committed; per-plugin configs to CORSAIR_CONFIG_DIR)
    npm run migrate:prod       # Create Corsair database schema
    npm run seed:tools:prod    # Seed Corsair tools into Workspace database (explicit CI/CD step)
-   npm start                  # The prestart hook runs: migrate → generate:configs → start server
+   npm start                  # The prestart hook runs: migrate → start server
    ```
 
-**Important — `seed:tools` is intentionally NOT part of `prestart`.** It is a
-separate, explicit deployment step because it writes into the **Workspace
-database** (`ws_Tools`), which is owned by the Workspace API — not the sidecar.
-The sidecar's runtime (OAuth, `/api/corsair/invoke`) does not depend on the
-seeded tools, so coupling the seed to startup would block the sidecar if the
-Workspace DB is temporarily unavailable.
+   The mapping + sibling config artifacts are committed and deploy with the
+   Workspace API. The thousands of per-plugin configs are generated into
+   `CORSAIR_CONFIG_DIR` (set by Jenkins) and rsynced to the shared server files
+   path (`/var/www/aventisia.com/files/configs/Corsair`). They are not generated
+   inside the sidecar container at runtime.
 
-- `prestart` runs only sidecar-local steps: `migrate` (Corsair DB) and
-  `generate:configs` (static config files). These never touch the Workspace DB.
-- `seed:tools` must be run explicitly in CI/CD **after** the Workspace database
-  is up and migrated.
+**Important — `generate:configs` and `seed:tools` are intentionally NOT part of
+`prestart`.** Config generation is an explicit CI/CD step (Jenkins `Generate -
+Corsair Configs` stage) because the per-plugin configs are deployed to the shared
+server files path, not generated at runtime. `seed:tools` is also explicit
+because it writes into the **Workspace database** (`ws_Tools`), which is owned by
+the Workspace API — not the sidecar. The sidecar's runtime (OAuth,
+`/api/corsair/invoke`) does not depend on either, so coupling them to startup
+would block the sidecar if the Workspace DB is temporarily unavailable.
+
+- `prestart` runs only sidecar-local steps: `migrate` (Corsair DB). It never
+touches the Workspace DB and does not regenerate configs.
+- `predev` (local dev only) runs `migrate` + `generate:configs` so a single
+`npm run dev` is enough.
+- `generate:configs` and `seed:tools` must be run explicitly in CI/CD **after**
+the Workspace database is up and migrated.
 
 All seeding steps are idempotent and safe to run repeatedly.
 
