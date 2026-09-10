@@ -25,7 +25,12 @@ import dotenv from "dotenv";
 import pg from "pg";
 import crypto from "node:crypto";
 import { createCorsair } from "corsair";
-import { plugins } from "./corsair.js";
+// Import plugins directly from plugins.js (NOT corsair.js). corsair.js eagerly
+// calls createCorsair({ kek: process.env.CORSAIR_KEK! }) at module load, which
+// throws CorsairKekMissingError when CORSAIR_KEK is not set (e.g. the seed step
+// on the server). The seed only needs the plugin list and builds its own
+// self-contained corsair instance below.
+import { plugins } from "./plugins.js";
 import { generateToolMetadata } from "./generate-tool-metadata.js";
 
 // Load defaults first, then allow .env.local to override with real local values.
