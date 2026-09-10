@@ -116,8 +116,20 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof flowZodSchema>) => {
+    // Flow type is frozen after creation: always send the stored original on update
+    // so a tampered/enabled select cannot change it.
+    let type = formData.type;
+    if (crudAction === "update") {
+      const flowsData = queryClient.getQueryData<{
+        data: FlowsTableDto[];
+      }>(queryKey);
+      const originalType = flowsData?.data.find((item) => item.id === rowId)?.type;
+      if (originalType) type = originalType;
+    }
+
     return {
       ...formData,
+      type,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

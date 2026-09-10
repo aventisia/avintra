@@ -282,6 +282,18 @@ public class FlowsTableService : IFlowsTableService
             }
 
 
+            // Guard: Flow type is selected once at creation and cannot be changed afterwards
+            if (flowsTableDto.Type != flow.Type)
+            {
+                _logger.LogWarning(
+                    "Flow type change denied. FlowId: {FlowId}, ExistingType: {ExistingType}, RequestedType: {RequestedType}",
+                    flow.Id, flow.Type, flowsTableDto.Type
+                );
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Agent type cannot be changed after creation.";
+                return serviceResponse;
+            }
+
             // Guard: Prevent disabling a flow that has published versions
             if (flowsTableDto.IsDisabled == true && flow.FlowVersions?.Any(v => v.IsPublished) == true)
             {
