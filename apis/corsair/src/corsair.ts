@@ -26,18 +26,33 @@ export const pool = new Pool({
 
 export const plugins = registeredPlugins;
 
+// Public workspace app URL used to build browser-facing OAuth URLs. The browser
+// must be able to reach these, so they use the public APP_BASE_URL (proxied by
+// nginx through the generic "integration" path), never the internal sidecar or
+// the internal WORKSPACE_API_BASE_URL.
+const workspaceAppUrl = process.env.APP_BASE_URL
+  ? `https://${process.env.APP_BASE_URL}/workspace`
+  : process.env.WORKSPACE_API_BASE_URL;
+
+// Explicit override, kept in sync with the backend's CORSAIR_REDIRECT_URI. When
+// unset, derive the public callback from APP_BASE_URL so it matches the Workspace
+// API proxy route /api/integration/oauth-callback.
+const corsairRedirectUri =
+  process.env.CORSAIR_REDIRECT_URI ??
+  `${workspaceAppUrl}/api/integration/oauth-callback`;
+
 export const corsair = createCorsair({
   multiTenancy: true,
   plugins,
   database: pool,
   kek: process.env.CORSAIR_KEK!,
   manual: {
-    // Consent/callback URLs are proxied by the Workspace API (WORKSPACE_API_BASE_URL),
-    // so the browser only ever talks to the public "integration" path, never the
-    // internal sidecar. baseUrl points at the generic connect endpoint and
+    // Consent/callback URLs are proxied by the Workspace API under the generic
+    // "integration" path, so the browser only ever talks to the public URL, never
+    // the internal sidecar. baseUrl points at the generic connect endpoint and
     // redirectUri at the OAuth callback for the configured backend.
-    baseUrl: `${process.env.WORKSPACE_API_BASE_URL}/api/integration/connect`,
-    redirectUri: `${process.env.WORKSPACE_API_BASE_URL}/api/oauth/callback`,
+    baseUrl: `${workspaceAppUrl}/api/integration/connect`,
+    redirectUri: corsairRedirectUri,
   },
 });
 

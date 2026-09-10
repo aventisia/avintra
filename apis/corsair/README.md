@@ -67,6 +67,7 @@ The sidecar runs as an internal Express service and exposes the following backen
 - POST /connect/status: check whether a tenant is connected
 - GET /connect: resolve the OAuth consent state and redirect to the provider
 - GET /api/oauth/callback: complete the OAuth authorization flow and store tokens
+  (reached by the browser via the Workspace API proxy at /api/integration/oauth-callback)
 - POST /api/corsair/invoke: execute a plugin tool via the Workspace API boundary
 - GET /api/corsair/tools: introspect available operations for debugging and generation
 
@@ -129,9 +130,9 @@ Copy .env.example to .env.local and set real values before running the service.
 | POSTGRESQL_USERNAME      | Postgres username.                                                                                                |
 | POSTGRESQL_PASSWORD      | Postgres password.                                                                                                |
 | ACCOUNTS_API_BASE_URL    | Accounts API base URL (informational, kept in sync with other services).                                          |
-| WORKSPACE_API_BASE_URL   | Workspace API base URL. Used as the base for the OAuth consent and callback flows.                                |
-| LLMPIPELINE_API_BASE_URL | LLM pipeline API base URL (informational).                                                                        |
-| CORSAIR_REDIRECT_URI     | Optional explicit redirect URI override for OAuth callbacks (default derived from `WORKSPACE_API_BASE_URL`).      |
+| WORKSPACE_API_BASE_URL   | Internal Workspace API base URL (backend-to-backend calls). Browser-facing OAuth URLs are derived from `APP_BASE_URL`, never from this value. |
+| LLMPIPELINE_API_BASE_URL | LLM pipeline API base URL (informational).                                                                                                |
+| CORSAIR_REDIRECT_URI     | Optional explicit public redirect URI for OAuth callbacks. Must match the backend's `CORSAIR_REDIRECT_URI` and the Workspace API proxy route `/api/integration/oauth-callback`. Default derived from `APP_BASE_URL`. |
 
 ## Local development
 

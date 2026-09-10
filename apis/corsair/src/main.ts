@@ -321,14 +321,9 @@ app.post("/credentials", async (req, res) => {
         }[field.replaceAll("_", "").toLowerCase()] ?? field;
       const setter = keyManager[`set_${normalizedField}`];
       if (typeof setter !== "function") {
-        if (
-          pluginId === "gemini" &&
-          field.replaceAll("_", "").toLowerCase() === "host"
-        )
-          continue;
-        return res
-          .status(400)
-          .json({ error: `Unsupported credential field: ${field}` });
+        // Non-credential config fields (base URL, org ID, etc.) have no key-manager
+        // setter. Skip them rather than failing the whole mirror.
+        continue;
       }
       await setter(value);
     }
