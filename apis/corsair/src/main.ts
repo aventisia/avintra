@@ -64,15 +64,17 @@ if (proxyAgent) {
 
 const app = express();
 const port = Number(process.env.PORT || 4006);
-// Internal base used for self-referenced URLs and as a fallback when the public
-// workspace app URL cannot be derived.
-const appUrl = process.env.WORKSPACE_API_BASE_URL || `http://localhost:${port}`;
-// Public workspace app URL used to redirect the browser after OAuth completes
+// INTERNAL base used for self-referenced URLs and as a fallback when the public
+// workspace app URL cannot be derived. This is the sidecar's OWN API URL
+// (CORSAIR_SIDECAR_URL), used only by the .NET backend — never by the browser.
+const internalSidecarUrl =
+  process.env.WORKSPACE_API_BASE_URL || `http://localhost:${port}`;
+// PUBLIC workspace app URL used to redirect the browser after OAuth completes
 // and to scope CORS. Derive it from APP_BASE_URL (single source of truth),
 // falling back to the backend base URL only when APP_BASE_URL is unset.
-const workspaceAppUrl = process.env.APP_BASE_URL
+const publicWorkspaceBaseUrl = process.env.APP_BASE_URL
   ? `https://${process.env.APP_BASE_URL}/workspace`
-  : appUrl;
+  : internalSidecarUrl;
 
 // REQUIRED: express.json() must run BEFORE the Corsair route.
 app.use(express.json());
@@ -81,7 +83,7 @@ app.use(express.json());
 // The sidecar is internal-only. Browser-facing OAuth endpoints are reached via
 // top-level navigation (redirects), not XHR, so CORS is not required for them.
 // For any XHR, only allow the configured workspace origin.
-const allowedOrigin = workspaceAppUrl;
+const allowedOrigin = publicWorkspaceBaseUrl;
 app.use((req, res, next) => {
   const origin = req.get("origin");
   if (origin && origin === allowedOrigin) {
@@ -156,7 +158,7 @@ app.get("/api/oauth/callback", async (req, res) => {
     const result = await corsair.manage.connect.oauthCallback({ code, state });
     const pluginId = result.plugin;
     const tenantId = result.tenantId;
-    const redirectUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_success=true&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
+    const redirectUrl = `${publicWorkspaceBaseUrl}/configure/vault/oauth-callback?oauth_success=true&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
     res.redirect(redirectUrl);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -171,7 +173,7 @@ app.get("/api/oauth/callback", async (req, res) => {
     } catch {
       // ignore state decode errors; we already have the failure message
     }
-    const redirectUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_error=${encodeURIComponent(message)}&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
+    const redirectUrl = `${publicWorkspaceBaseUrl}/configure/vault/oauth-callback?oauth_error=${encodeURIComponent(message)}&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
     res.redirect(redirectUrl);
   }
 });
@@ -499,5 +501,8 @@ app.use(
 
 app.listen(port, async () => {
   await provision();
-  console.log(`Corsair APIs listening on ${appUrl}`);
+  // Log the sidecar's OWN listen address (the internal CORSAIR_SIDECAR_URL),
+  // not WORKSPACE_API_BASE_URL. internalSidecarUrl is only a fallback for
+  // self-referenced URLs when APP_BASE_URL is unset.
+  console.log(`Corsair APIs listening on http://localhost:${port}`);
 });
