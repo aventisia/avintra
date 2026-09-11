@@ -69,6 +69,13 @@ public interface ICorsairSidecarService
     Task<CorsairInvokeResult> InvokeAsync(Guid connectionId, string plugin, string action, object? payload, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Checks whether the Corsair sidecar is reachable and healthy.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The sidecar health status and the configured sidecar URL.</returns>
+    Task<CorsairHealthResult> GetHealthAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Proxies the browser-facing OAuth consent page. The provider redirects the
     /// browser here with a signed <c>state</c>; the sidecar resolves it to the
     /// provider's authorization URL and redirects the browser onward.
@@ -135,5 +142,20 @@ public sealed class CorsairConnectionStatus
 public sealed class CorsairCredentialTestResult
 {
     public string Status { get; set; } = "Unknown";
+    public string? Reason { get; set; }
+}
+
+/// <summary>
+/// Health status of the Corsair sidecar as seen from the Workspace API.
+/// </summary>
+public sealed class CorsairHealthResult
+{
+    /// <summary>Sidecar-reported status ("ok") or "unreachable" when the call failed.</summary>
+    public string Status { get; set; } = "Unknown";
+
+    /// <summary>The configured sidecar base URL (CORSAIR_SIDECAR_URL).</summary>
+    public string SidecarUrl { get; set; } = string.Empty;
+
+    /// <summary>Human-readable detail, e.g. the exception message when unreachable.</summary>
     public string? Reason { get; set; }
 }

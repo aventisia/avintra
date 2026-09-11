@@ -22,10 +22,12 @@ namespace WorkspaceAPIs.Controllers;
 public class CorsairController : BaseApiController
 {
     private readonly ICorsairInvokeService _corsairInvokeService;
+    private readonly ICorsairSidecarService _corsairSidecarService;
 
-    public CorsairController(ICorsairInvokeService corsairInvokeService)
+    public CorsairController(ICorsairInvokeService corsairInvokeService, ICorsairSidecarService corsairSidecarService)
     {
         _corsairInvokeService = corsairInvokeService;
+        _corsairSidecarService = corsairSidecarService;
     }
 
     /// <summary>
@@ -35,5 +37,23 @@ public class CorsairController : BaseApiController
     public async Task<ActionResult<ServiceResponse<CorsairInvokeResDto>>> Invoke([FromBody] CorsairInvokeReqDto request)
     {
         return ResultHelper(await _corsairInvokeService.InvokeAsync(request));
+    }
+
+    /// <summary>
+    /// Reports whether the Corsair sidecar is reachable and healthy, plus the
+    /// configured sidecar URL. Intended for diagnostics/testing (e.g. Bruno).
+    /// Requires an authenticated session; it does not expose credentials.
+    /// Always returns the JSON envelope so callers can read <c>data.status</c>
+    /// and <c>data.sidecarUrl</c> regardless of health.
+    /// </summary>
+    [HttpGet("health")]
+    public async Task<ActionResult<ServiceResponse<CorsairHealthResult>>> Health()
+    {
+        var result = await _corsairSidecarService.GetHealthAsync();
+        var ok = string.Equals(result.Status, "ok", StringComparison.OrdinalIgnoreCase);
+        return Ok(ServiceResponse<CorsairHealthResult>.Create(
+            ok ? "Corsair sidecar is healthy." : "Corsair sidecar is unreachable.",
+            200,
+            result));
     }
 }
