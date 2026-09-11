@@ -4,16 +4,19 @@
   "description": "Updates the fields or status of an existing work item.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
       "type": "text",
-      "name": "WorkItemId",
-      "label": "WorkItem ID",
-      "description": "Enter the unique identifier of the work item you want to update.",
+      "name": "SourceWorkItemId",
+      "label": "Source Work Item ID",
+      "description": "Enter the source work item identifier of the work item you want to update.",
       "defaultValue": "",
       "required": true
     },
@@ -60,6 +63,15 @@
           }
         ]
       }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RetryTime",
+      "label": "Retry Time",
+      "description": "Optional future date and time after which this work item becomes eligible for processing again. Leave empty to keep the current value. Text value in ISO 8601 format (e.g. 2026-09-12T14:30:00Z).",
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",

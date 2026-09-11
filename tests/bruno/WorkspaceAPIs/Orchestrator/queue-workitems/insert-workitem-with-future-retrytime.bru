@@ -1,0 +1,37 @@
+meta {
+  name: Insert workitem with future retryTime (scheduled)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "workItemData": "{\n  \"Id\": 50,\n  \"Name\": \"ScheduledRetry\",\n  \"Location\": \"Oslo\",\n  \"Date\": \"2025-08-07\"\n}",
+    "retryTime": "2099-01-01T00:00:00.000Z"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "QUEUE_WORKITEM_SCHEDULED_ID",
+          res.getBody().data.id
+      );
+      bru.setGlobalEnvVar(
+          "QUEUE_WORKITEM_SCHEDULED_RETRYCOUNT",
+          res.getBody().data.retryCount
+      );
+      bru.setGlobalEnvVar(
+          "QUEUE_WORKITEM_SCHEDULED_SOURCEWORKITEMID",
+          res.getBody().data.sourceWorkItemId
+      );
+  }
+}

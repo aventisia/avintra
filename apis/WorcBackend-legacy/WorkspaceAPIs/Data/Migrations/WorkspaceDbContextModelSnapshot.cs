@@ -1861,7 +1861,13 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("QueueId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("SourceQueueTransactionId")
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("RetryTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SourceWorkItemId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Status")
@@ -1875,6 +1881,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("FlowVersionId");
 
                     b.HasIndex("QueueId");
+
+                    b.HasIndex("SourceWorkItemId", "RetryCount")
+                        .IsUnique();
 
                     b.ToTable("QueueTransactions");
                 });

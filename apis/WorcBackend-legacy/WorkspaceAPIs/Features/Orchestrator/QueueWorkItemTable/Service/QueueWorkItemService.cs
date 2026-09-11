@@ -74,7 +74,8 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            // Query the workitems for the specified queue
+            // Query the workitems for the specified queue. Transactions whose RetryTime is set to a
+            // future time are not eligible for processing yet and are excluded.
             var queueWorkitems = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w =>
                     w.QueueId == queueId
@@ -130,7 +131,8 @@ public class QueueWorkItemService : IQueueWorkItemService
             var workitems = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w =>
                     w.QueueId == queue.Id &&
-                    (queueFilterRequestDto.Status == null || w.Status == queueFilterRequestDto.Status)
+                    (queueFilterRequestDto.Status == null || w.Status == queueFilterRequestDto.Status) &&
+                    (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
                 )
                 .Include(i => i.Queue)
                 .AsNoTracking()
@@ -346,7 +348,9 @@ public class QueueWorkItemService : IQueueWorkItemService
                         w.QueueId == queue.Id &&
                         w.Status == QueueTransactionStatusTypesEnum.Pending.ToString() &&
                         (queueFilterRequestDto.Status == null ||
-                         w.Status == queueFilterRequestDto.Status))
+                         w.Status == queueFilterRequestDto.Status) &&
+                        (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
+                    )
                     .Include(w => w.Queue)
                     .ToListAsync();
 
@@ -582,6 +586,15 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }
             }
 
+            // Validate RetryTime: when provided it must be a future time. Allowing a past or equal
+            // time would immediately make the item eligible, defeating the scheduling purpose.
+            if (queueWorkItemDto.RetryTime.HasValue &&
+                queueWorkItemDto.RetryTime.Value.ToUniversalTime() <= DateTimeOffset.UtcNow)
+            {
+                serviceResponse.Message = "RetryTime must be a future date and time.";
+                return serviceResponse;
+            }
+
             // Validate input: ensure WorkItemData is not null, empty, or whitespace
             if (string.IsNullOrWhiteSpace(queueWorkItemDto.WorkItemData))
             {
@@ -628,6 +641,53 @@ public class QueueWorkItemService : IQueueWorkItemService
             var enrichedPayloadData = new JArray(); // To hold validated/enriched payload
             var newWorkItems = new List<QueueTransaction>(); // To hold valid workitem entities
             var isValidationFailed = false;
+
+            // The request's SourceWorkItemId acts as the logical work item identifier when supplied.
+            // A supplied SourceWorkItemId that already exists means this create is a retry: we
+            // generate a fresh primary key and take the latest attempt count + 1. When no SourceWorkItemId is
+            // supplied, each item is treated as a brand-new work item with a generated identity.
+            // Computation is serialized under the semaphore so concurrent create/retry requests
+            // cannot compute the same next RetryCount; the unique (SourceWorkItemId, RetryCount) index
+            // remains the safety net.
+
+            bool explicitId = queueWorkItemDto.SourceWorkItemId != Guid.Empty;
+            bool isRetry = false;
+            int? nextRetryCount = null;
+
+            if (explicitId)
+            {
+                await _semaphore.WaitAsync();
+                try
+                {
+                    // Retry is keyed on the logical SourceWorkItemId alone, matching the unique
+                    // (SourceWorkItemId, RetryCount) index which is NOT scoped by queue. Never
+                    // filter by QueueId here: if the same SourceWorkItemId already exists in a
+                    // different queue, a queue-scoped check would report "not a retry" and insert
+                    // with RetryCount=0 -> duplicate key on (SourceWorkItemId, 0).
+                    isRetry = await _unitOfWork.QueueTransactionRepo
+                        .GetByConditionAsync(w => w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
+                        .IgnoreQueryFilters()
+                        .AnyAsync();
+
+                    if (isRetry)
+                    {
+                        // Compute the next attempt from the same query scope as the retry detection
+                        // (IgnoreQueryFilters) so a row hidden by the tenant/space filter can never
+                        // make us recompute RetryCount=0 and collide with an existing attempt 0.
+                        var latestRetryCount = await _unitOfWork.QueueTransactionRepo
+                            .GetByConditionAsync(w => w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
+                            .IgnoreQueryFilters()
+                            .Select(w => (int?)w.RetryCount)
+                            .MaxAsync();
+
+                        nextRetryCount = (latestRetryCount ?? -1) + 1;
+                    }
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
+            }
 
             // Begin validating each workitem object
             foreach (var dataItem in dataArray)
@@ -710,8 +770,24 @@ public class QueueWorkItemService : IQueueWorkItemService
                         serializedPayload = _stringEncryptionService.EncryptString(serializedPayload);
                     }
 
-                    // Map DTO to entity and populate fields
+                    // Map DTO to entity and populate fields. Identity is assigned per item:
+                    //  - First attempt (RetryCount = 0) -> fresh primary key; SourceWorkItemId
+                    //    always equals the newly created item's own Id (self-referential).
+                    //  - Retry -> fresh primary key; SourceWorkItemId is the source/root work
+                    //    item's Id (existing), attempt = latest + 1.
                     var newWorkItem = queueWorkItemDto.Adapt<QueueTransaction>();
+                    if (isRetry)
+                    {
+                        newWorkItem.SourceWorkItemId = queueWorkItemDto.SourceWorkItemId;
+                        newWorkItem.RetryCount = nextRetryCount!.Value;
+                    }
+                    else
+                    {
+                        newWorkItem.Id = Guid.NewGuid();
+                        newWorkItem.SourceWorkItemId = newWorkItem.Id;
+                        newWorkItem.RetryCount = 0;
+                    }
+                    newWorkItem.RetryTime = queueWorkItemDto.RetryTime;
                     newWorkItem.PayloadData = serializedPayload;
                     newWorkItem.QueueId = queue.Id;
                     newWorkItem.Status = QueueTransactionStatusTypesEnum.Pending.ToString();
@@ -968,6 +1044,18 @@ public class QueueWorkItemService : IQueueWorkItemService
                 queueWorkItem.IsUserModified = queueWorkItemDto.IsUserModified;
             }
 
+            // Apply RetryTime when the request provides a value (schedules the item to become
+            // eligible again in the future); a null value means "leave unchanged".
+            if (queueWorkItemDto.RetryTime.HasValue)
+            {
+                if (queueWorkItemDto.RetryTime.Value.ToUniversalTime() <= DateTimeOffset.UtcNow)
+                {
+                    serviceResponse.Message = "RetryTime must be a future date and time.";
+                    return serviceResponse;
+                }
+                queueWorkItem.RetryTime = queueWorkItemDto.RetryTime;
+            }
+
             // Set the last modified timestamp
             queueWorkItem.LastModifiedOn = DateTimeOffset.UtcNow;
 
@@ -1107,15 +1195,21 @@ public class QueueWorkItemService : IQueueWorkItemService
         var payloadArray = new JArray(JObject.Parse(existingWorkItem.PayloadData));
 
         // Prepare the new work item that will be inserted into the destination queue.
+        // The routed item starts a fresh attempt chain (RetryCount = 0), so its
+        // SourceWorkItemId must be its own primary key rather than the source item's Id;
+        // otherwise a source work item routed twice would collide on the unique
+        // (SourceWorkItemId, RetryCount) index. The source relationship is preserved by
+        // the QueueTransactionRouted / Closed events.
         var routedQueueTransaction = new QueueTransaction()
         {
+            Id = Guid.NewGuid(),
             QueueId = destinationQueue.Id,
-            SourceQueueTransactionId = existingWorkItem.Id,
             Description = existingWorkItem.Description,
             Status = QueueTransactionStatusTypesEnum.Pending.ToString(),
             FileUrls = existingWorkItem.FileUrls,
             CreatedBy = _username
         };
+        routedQueueTransaction.SourceWorkItemId = routedQueueTransaction.Id;
         var hasErrors = false;
 
         // Validate and transform the payload

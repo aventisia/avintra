@@ -49,10 +49,12 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            // Query the transactions for the specified queue
+            // Query the transactions for the specified queue. Transactions whose RetryTime is set
+            // to a future time are not eligible for processing yet and are excluded.
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w =>
-                    w.QueueId == queueId
+                    w.QueueId == queueId &&
+                    (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
                 )
                 .Include(i => i.Queue)
                 .OrderBy(o => o.CreatedOn)
@@ -99,7 +101,10 @@ public class QueueTransactionService : IQueueTransactionService
             await _semaphore.WaitAsync();
 
             var transactions = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.QueueId == queue.Id)
+                .GetByConditionAsync(w =>
+                    w.QueueId == queue.Id &&
+                    (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
+                )
                 .Include(i => i.Queue)
                 .AsNoTracking()
                 .ToListAsync();
