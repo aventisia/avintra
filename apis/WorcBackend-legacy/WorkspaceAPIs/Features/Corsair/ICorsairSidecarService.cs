@@ -153,7 +153,7 @@ public sealed class CorsairHealthResult
     /// <summary>Sidecar-reported status ("ok") or "unreachable" when the call failed.</summary>
     public string Status { get; set; } = "Unknown";
 
-    /// <summary>The configured sidecar base URL (CORSAIR_SIDECAR_URL).</summary>
+    /// <summary>The configured sidecar base URL (CORSAIR_API_BASE_URL).</summary>
     public string SidecarUrl { get; set; } = string.Empty;
 
     /// <summary>Human-readable detail, e.g. the exception message when unreachable.</summary>

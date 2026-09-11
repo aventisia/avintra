@@ -18,7 +18,7 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
         _httpClient = httpClientFactory.CreateClient("Corsair");
         _logger = logger;
 
-        var sidecarUrl = environmentConfig.CorsairSidecarUrl;
+        var sidecarUrl = environmentConfig.CorsairApiBaseUrl;
 
         if (!string.IsNullOrEmpty(sidecarUrl))
         {

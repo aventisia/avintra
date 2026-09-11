@@ -66,9 +66,9 @@ const app = express();
 const port = Number(process.env.PORT || 4006);
 // INTERNAL base used for self-referenced URLs and as a fallback when the public
 // workspace app URL cannot be derived. This is the sidecar's OWN API URL
-// (CORSAIR_SIDECAR_URL), used only by the .NET backend — never by the browser.
+// (CORSAIR_API_BASE_URL), used only by the .NET backend — never by the browser.
 const internalSidecarUrl =
-  process.env.WORKSPACE_API_BASE_URL || `http://localhost:${port}`;
+  process.env.CORSAIR_API_BASE_URL || `http://localhost:${port}`;
 // PUBLIC workspace app URL used to redirect the browser after OAuth completes
 // and to scope CORS. Derive it from APP_BASE_URL (single source of truth),
 // falling back to the backend base URL only when APP_BASE_URL is unset.
@@ -501,8 +501,8 @@ app.use(
 
 app.listen(port, async () => {
   await provision();
-  // Log the sidecar's OWN listen address (the internal CORSAIR_SIDECAR_URL),
+  // Log the sidecar's OWN listen address (the internal CORSAIR_API_BASE_URL),
   // not WORKSPACE_API_BASE_URL. internalSidecarUrl is only a fallback for
   // self-referenced URLs when APP_BASE_URL is unset.
-  console.log(`Corsair APIs listening on http://localhost:${port}`);
+  console.log(`Corsair APIs listening on ${internalSidecarUrl}`);
 });

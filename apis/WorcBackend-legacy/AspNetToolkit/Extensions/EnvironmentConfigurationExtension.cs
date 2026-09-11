@@ -75,7 +75,7 @@ public static class EnvironmentConfigurationExtension
         var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
         var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
-        var CORSAIR_SIDECAR_URL = Environment.GetEnvironmentVariable("CORSAIR_SIDECAR_URL") ?? config["EnvironmentConfig:CorsairSidecarUrl"] ?? "http://corsair:4006";
+        var CORSAIR_API_BASE_URL = Environment.GetEnvironmentVariable("CORSAIR_API_BASE_URL") ?? config["EnvironmentConfig:CorsairApiBaseUrl"] ?? "http://corsair:4006";
         // Public OAuth redirect URI must use the generic "integration" proxy path so end users
         // never see the internal "corsair" service name in browser URLs.
         var configuredCorsairRedirectUri = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"];
@@ -196,7 +196,7 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CamelApiBaseUrl", CAMEL_API_BASE_URL.TrimEnd('/') },
-                    { "EnvironmentConfig:CorsairSidecarUrl", CORSAIR_SIDECAR_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:CorsairApiBaseUrl", CORSAIR_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CorsairRedirectUri", CORSAIR_REDIRECT_URI },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
