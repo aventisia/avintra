@@ -1,5 +1,5 @@
-import { Button } from "@avplatform/ui/buttons";
 import { Badge } from "@avplatform/ui/badge";
+import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { ArrowLeftIcon } from "lucide-react";
@@ -238,9 +238,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
               const hasCorsairAction = item.actions?.some((action) =>
                 action.name?.includes("Corsair"),
               );
-              const hasCamelAction = item.actions?.some((action) =>
-                action.name?.includes("Camel"),
-              );
+              const hasCamelAction = item.actions?.some((action) => action.name?.includes("Camel"));
               return (
                 <button
                   key={item.label}
@@ -266,7 +264,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
                     ? iconMapper[item.icon]
                     : item.img && <FallbackImageIcon className="h-5 w-5" src={item.img} />}
                   {item.label}
-                  {hasCorsairAction && (
+                  {import.meta.env.MODE !== "production" && hasCorsairAction && (
                     <Badge
                       variant="outline"
                       className="bg-muted text-3xs font-medium text-muted-foreground "
@@ -274,7 +272,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
                       Corsair
                     </Badge>
                   )}
-                  {hasCamelAction && (
+                  {import.meta.env.MODE !== "production" && hasCamelAction && (
                     <Badge
                       variant="outline"
                       className="bg-muted text-3xs font-medium text-muted-foreground "

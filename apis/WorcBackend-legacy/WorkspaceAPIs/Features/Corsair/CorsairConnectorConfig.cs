@@ -5,7 +5,9 @@ namespace WorkspaceAPIs.Features.Corsair;
 /// <summary>
 /// Deserialized shape of a generated Corsair config file
 /// (<c>&lt;Plugin&gt;/&lt;Action&gt;Connector.json</c>). These files are deployed to the
-/// shared server path (<c>Corsair:ConfigRoot</c>) and fall back to the codebase
+/// shared server path derived from the configured upload directory
+/// (<c>AppDefaultConfig:FileUploadConfig:UploadDirectory</c> →
+/// <c>.../files/configs/Corsair</c>) and fall back to the codebase
 /// <c>Features/CloudConnectors/ConfigFiles/Corsair/</c> folder locally.
 ///
 /// These files follow the Studio DCP schema (name/description/fields) only.
