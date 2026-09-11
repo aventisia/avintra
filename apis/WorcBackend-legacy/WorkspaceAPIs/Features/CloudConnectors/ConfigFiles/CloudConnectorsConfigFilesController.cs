@@ -5,28 +5,39 @@ public class CloudConnectorsConfigFilesController : ControllerBase
 {
     private readonly IWebHostEnvironment _env;
     private readonly IConfiguration _configuration;
+    private readonly AppDefaultConfig _appDefaultConfig;
 
     public CloudConnectorsConfigFilesController(
         IWebHostEnvironment env,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        AppDefaultConfig appDefaultConfig)
     {
         _env = env;
         _configuration = configuration;
+        _appDefaultConfig = appDefaultConfig;
     }
 
     [HttpGet("{*filePath}")]
     public IActionResult GetConfigFile(string filePath)
     {
         // The thousands of per-plugin Corsair configs are deployed to a shared
-        // server path (Corsair:ConfigRoot) so they do not bloat the codebase.
-        // Everything else (Camel, in-house connectors, the global Cloud Connector
-        // mapping, and the small Corsair sibling artifacts) lives in the codebase
-        // ConfigFiles folder.
+        // server path (derived from the upload directory) so they do not bloat
+        // the codebase. Everything else (Camel, in-house connectors, the global
+        // Cloud Connector mapping, and the small Corsair sibling artifacts) lives
+        // in the codebase ConfigFiles folder.
         var codebaseRoot = Path.Combine(_env.ContentRootPath, "Features", "CloudConnectors", "ConfigFiles");
 
         // Route Corsair per-plugin configs to the server path when configured and
         // present; otherwise fall back to the codebase folder (local development).
         var corsairRoot = _configuration["Corsair:ConfigRoot"];
+        if (string.IsNullOrWhiteSpace(corsairRoot))
+        {
+            var uploadDirectory = _appDefaultConfig.FileUploadConfig.UploadDirectory;
+            if (!string.IsNullOrWhiteSpace(uploadDirectory))
+            {
+                corsairRoot = Path.Combine(uploadDirectory, "configs", "Corsair");
+            }
+        }
         var isCorsairPath = filePath?.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase) == true;
         var root = isCorsairPath && !string.IsNullOrWhiteSpace(corsairRoot) && Directory.Exists(corsairRoot)
             ? Path.GetFullPath(corsairRoot)

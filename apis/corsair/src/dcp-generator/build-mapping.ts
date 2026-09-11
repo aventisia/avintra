@@ -54,8 +54,6 @@ export function buildPluginCategory(
     img: plugin.img,
     listType: null,
     actions,
-    // Corsair nodes are not production-ready yet — hide them in production.
-    doNotRenderIf: ["production"],
   };
 }
 
