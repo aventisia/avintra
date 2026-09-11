@@ -77,7 +77,11 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
-            // Get users as Queryable
+            // Get users as Queryable. A user is listed when they hold no role in the requesting
+            // app (so an admin can still grant them access) or when every role they hold in that
+            // app is one the requester is allowed to manage. Users holding an app role the
+            // requester cannot manage stay hidden, because an update would otherwise silently
+            // drop that role (rolesAfterUpdate only preserves roles of other apps).
             var users = await _userManager.Users
                 .Include(i => i.UserRoles)
                 .ThenInclude(i => i.Role)
@@ -85,16 +89,37 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => w1.Role != null && w1.Role.AppCode == appCode && allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
-                .ProjectToType<AccountUsersTableDto>()
+                    !w.UserRoles.Any(ur =>
+                        ur.Role != null &&
+                        ur.Role.AppCode == appCode &&
+                        !allowedRoles.Contains(ur.Role.Name)))
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
+
+            // Map the users to DTOs
+            var userDtos = users.Adapt<List<AccountUsersTableDto>>();
+
+            // Keep only the requesting app's roles for each user. A user without any role in
+            // this app still appears in the list, but with an empty roles collection.
+            var appRoleFullNamesByUser = users.ToDictionary(
+                u => u.Id,
+                u => (u.UserRoles ?? new List<AccountUserRole>())
+                    .Where(ur => ur.Role != null && ur.Role.AppCode == appCode)
+                    .Select(ur => ur.Role!.FullName!)
+                    .ToList());
+
+            foreach (var userDto in userDtos)
+            {
+                userDto.UserRoles = appRoleFullNamesByUser.TryGetValue(userDto.Id, out var roleFullNames)
+                    ? roleFullNames
+                    : new List<string>();
+            }
 
             // Populate the Spaces property for each user by querying the SpaceUser table.
             // NOTE: We return space IDs (not names) because the frontend form's spaces
             // multi-select stores option values (space IDs) and resolves labels from the
             // spaces-to-select options. The table column maps these IDs back to names.
-            var userIds = users.Select(u => u.Id).ToList();
+            var userIds = userDtos.Select(u => u.Id).ToList();
             var spaceUsers = await _unitOfWork.SpaceUserRepo
                 .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId && userIds.Contains(w.UserId))
                 .Include(i => i.Space)
@@ -107,13 +132,13 @@ public class AccountUsersTableService : IAccountUsersTableService
                     g => g.Key,
                     g => g.Select(s => s.SpaceId.ToString()).Distinct().OrderBy(n => n).ToList());
 
-            foreach (var user in users)
+            foreach (var userDto in userDtos)
             {
-                user.Spaces = spaceIdsByUser.TryGetValue(user.Id, out var ids) ? ids : new List<string>();
+                userDto.Spaces = spaceIdsByUser.TryGetValue(userDto.Id, out var ids) ? ids : new List<string>();
             }
 
             // Task successful
-            serviceResponse.Data = users.Adapt<IEnumerable<AccountUsersTableDto>>();
+            serviceResponse.Data = userDtos;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }
@@ -285,7 +310,9 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
-            // Try to get user to validate its existence
+            // Try to get user to validate its existence. Mirrors the list query: the user is
+            // manageable when they hold no role in the requesting app or when every app role
+            // they hold is one the requester is allowed to manage.
             var user = await _userManager.Users
                 .Include(i => i.UserRoles)
                 .ThenInclude(i => i.Role)
@@ -294,7 +321,10 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                    !w.UserRoles.Any(ur =>
+                        ur.Role != null &&
+                        ur.Role.AppCode == platformApp.ToAppCode() &&
+                        !allowedRoles.Contains(ur.Role.Name)))
                 .SingleOrDefaultAsync();
 
             // User does not exist
@@ -325,6 +355,18 @@ public class AccountUsersTableService : IAccountUsersTableService
             if (!_userManagementGuardService.IsAllowedToManageAccountsDbUser(rolesToAssign, accountUsersTableDto.Id))
             {
                 // Message is already logged in IsAllowedToManageUser method
+                serviceResponse.Message = "You're not allowed to manage user";
+                return serviceResponse;
+            }
+
+            // Safety guard: if the user holds any app role the requester cannot manage, refuse
+            // the update. This should already be enforced by the list filter, but rejecting here
+            // prevents accidental data loss if that filter ever changes.
+            var unmanagedAppRoles = currentRoleNames
+                .Where(roleName => appRoleNameSet.Contains(roleName) && !allowedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+            if (unmanagedAppRoles.Count > 0)
+            {
                 serviceResponse.Message = "You're not allowed to manage user";
                 return serviceResponse;
             }
@@ -394,8 +436,15 @@ public class AccountUsersTableService : IAccountUsersTableService
                 if (!updateUserInOtherDbsResult) return serviceResponse;
             }
 
+            // Return only the requesting app's roles so the response stays consistent with the list
+            var updatedUserDto = user.Adapt<AccountUsersTableDto>();
+            updatedUserDto.UserRoles = user.UserRoles
+                .Where(ur => ur.Role != null && appRoleNameSet.Contains(ur.Role.Name))
+                .Select(ur => ur.Role!.FullName!)
+                .ToList();
+
             // Task successful
-            serviceResponse.Data = user.Adapt<AccountUsersTableDto>();
+            serviceResponse.Data = updatedUserDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User updated successfully";
         }
@@ -426,7 +475,9 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
-            // Try to get user to validate its existence
+            // Try to get user to validate its existence. Mirrors the list query: the user is
+            // manageable when they hold no role in the requesting app or when every app role
+            // they hold is one the requester is allowed to manage.
             var user = await _userManager.Users
                 .Include(i => i.UserRoles)
                 .ThenInclude(i => i.Role)
@@ -435,7 +486,10 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => w1.Role != null && w1.Role.AppCode == appCode && allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                    !w.UserRoles.Any(ur =>
+                        ur.Role != null &&
+                        ur.Role.AppCode == appCode &&
+                        !allowedRoles.Contains(ur.Role.Name)))
                 .SingleOrDefaultAsync();
 
             // User does not exist
