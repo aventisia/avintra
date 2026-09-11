@@ -6,6 +6,7 @@ public class UserManagementGuardService : IUserManagementGuardService
     private readonly Guid _userId;
     private readonly string _userName;
     private readonly List<string> _userRoles;
+    private readonly string? _appContextHeader;
 
 
     public UserManagementGuardService(
@@ -18,27 +19,52 @@ public class UserManagementGuardService : IUserManagementGuardService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userName = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? "Unknown";
         _userRoles = httpContextAccessor.HttpContext?.User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(s => s.Value).ToList() ?? new List<string>();
+
+        // Set the raw X-App-Context header value. Used to scope the allowed roles to the requesting app.
+        _appContextHeader = httpContextAccessor.HttpContext?.Request.Headers[PlatformAppHeaderUtil.HeaderName].FirstOrDefault();
     }
 
-    // Retrieves the list of allowed roles to manage a user.
+    // Retrieves the list of allowed roles to manage a user for the requesting platform app.
+    // The role each manager can assign is decided explicitly below: a manager gets their own role
+    // and every less privileged role of the same app. Adding or removing a manager role later is a
+    // one-line change here, so the rules stay easy to read and maintain.
     public List<string> GetAllowedRoleListToManageUser()
     {
-        // Get current user's top level role. FirstOrDefault is enough since we are already sorting the roles in ascending order while creating the Jwt
-        var currentUserTopRole = _userRoles.FirstOrDefault();
+        // Determine the requesting app from the X-App-Context header. Defaults to workspace when absent.
+        var platformApp = PlatformAppHeaderUtil.TryParseAppCode(_appContextHeader, out var parsedPlatformApp)
+            ? parsedPlatformApp
+            : PlatformAppsEnum.Workspace;
 
-        // Get allowed roles list based on current user's top level role
-        var allowedRolesList = new List<string>();
-        switch (currentUserTopRole)
+        // Get the current user's top level role for the requesting app. The first match is enough
+        // since the JWT orders a user's roles by Seq (ascending), and each app's roles restart at 0.
+        // Enum.IsDefined guards against numeric/unknown claim values that Enum.TryParse would accept.
+        var currentUserTopRole = _userRoles
+            .Select(roleName => Enum.TryParse<CustomRolesEnum>(roleName, ignoreCase: true, out var role) && Enum.IsDefined(role)
+                ? role
+                : (CustomRolesEnum?)null)
+            .FirstOrDefault(role => role.HasValue && role.Value.ToPlatformApp() == platformApp);
+
+        // No role of the requesting app means the user cannot manage any of its roles
+        if (!currentUserTopRole.HasValue) return new List<string>();
+
+        // Explicit role rules per manager role. Each entry lists exactly which roles of the
+        // requesting app that manager may assign. To add a new manager role in future, add a case
+        // below and list its manageable roles; no other code needs to change.
+        var allowedRolesList = currentUserTopRole.Value switch
         {
-            case "SA":
-                allowedRolesList = Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>().Select(s => s.ToString()).ToList();
-                break;
-            case "TA":
-                allowedRolesList = new List<string>() { "TA", "OM", "TD", "TU", };
-                break;
-        }
+            // Workspace: super admin manages every workspace role; tenant admin manages itself and below
+            CustomRolesEnum.SA => new List<CustomRolesEnum> { CustomRolesEnum.SA, CustomRolesEnum.TA, CustomRolesEnum.OM, CustomRolesEnum.TD, CustomRolesEnum.TU },
+            CustomRolesEnum.TA => new List<CustomRolesEnum> { CustomRolesEnum.TA, CustomRolesEnum.OM, CustomRolesEnum.TD, CustomRolesEnum.TU },
 
-        return allowedRolesList;
+            // CRM: super admin manages every CRM role; tenant admin manages itself and below
+            CustomRolesEnum.CSA => new List<CustomRolesEnum> { CustomRolesEnum.CSA, CustomRolesEnum.CTA, CustomRolesEnum.CSR, CustomRolesEnum.CRP },
+            CustomRolesEnum.CTA => new List<CustomRolesEnum> { CustomRolesEnum.CTA, CustomRolesEnum.CSR, CustomRolesEnum.CRP },
+
+            // Any other role cannot manage users
+            _ => new List<CustomRolesEnum>(),
+        };
+
+        return allowedRolesList.Select(role => role.ToString()).ToList();
     }
 
     // Checks if the current user is allowed to manage the accounts database user.

@@ -1,4 +1,4 @@
-namespace AccountsAPIs.Enums;
+namespace AspNetToolkit.Enums;
 
 /// <summary>
 /// List of platform apps that share the accounts user management and JWT.
