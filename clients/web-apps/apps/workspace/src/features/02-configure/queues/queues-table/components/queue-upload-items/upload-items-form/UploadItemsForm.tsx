@@ -1,4 +1,4 @@
-import { Input, Textarea } from "@avplatform/ui";
+import { Input, LoadingSpinner, Textarea } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Label } from "@avplatform/ui/label";
 import { cn } from "@avplatform/ui/lib";
@@ -167,8 +167,19 @@ export const UploadItemsForm = ({
         <Textarea value={remark} onChange={(e) => setRemark(e.target.value)} />
       </div>
       <div className="!mt-5 flex w-full justify-end">
-        <Button disabled={isPending} className={cn("min-w-[5rem]")} onClick={onSubmit}>
-          {isPending ? "Uploading..." : "Upload"}
+        <Button
+          disabled={isPending}
+          className={cn("min-w-[5rem] gap-2")}
+          onClick={onSubmit}
+        >
+          {isPending ? (
+            <>
+              <LoadingSpinner className="h-4 w-4" />
+              Uploading...
+            </>
+          ) : (
+            "Upload"
+          )}
         </Button>
       </div>
     </div>

@@ -297,7 +297,7 @@ Disposition statuses are always terminal (end) states.`}
         name="credentialName"
         label="Credential"
         disabled={isReadMode}
-        description="Optional Microsoft 365 credential used by this queue. Leave empty if the queue does not need to access M365 resources."
+        description="Optional credential used by this queue. Leave empty if the queue does not need to access external resources."
       />
 
       {/* Is Disabled */}
