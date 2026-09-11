@@ -17,10 +17,20 @@ public class CreateWorkItemNode : BaseNode
     [DefaultValue("")]
     public InArgument<string> Description { get; set; } = new InArgument<string>();
 
+    [DisplayName("Source Work Item ID")]
+    [Description("Optional source work item identifier for the work item. Leave empty to generate a new work item id; provide an existing source work item id (SourceWorkItemId) to schedule a retry (a new attempt is created for it).")]
+    [NodeFieldType(NodeFieldTypeEnum.Text)]
+    public InArgument<Guid?> SourceWorkItemId { get; set; } = new InArgument<Guid?>();
+
     [DisplayName("Work Item Data")]
     [Description("Provide the data for the work item in JSON format.")]
     [NodeFieldType(NodeFieldTypeEnum.JsonEditor)]
     public required InArgument<string> WorkItemData { get; set; }
+
+    [DisplayName("Retry Time")]
+    [Description("Optional future date and time after which this work item becomes eligible for processing. Leave empty for immediate processing. Text value in ISO 8601 format (e.g. 2026-09-12T14:30:00Z).")]
+    [NodeFieldType(NodeFieldTypeEnum.DateTime)]
+    public InArgument<DateTimeOffset?> RetryTime { get; set; } = new InArgument<DateTimeOffset?>();
 
     [DisplayName("File URLs")]
     [Description("Optional URLs of files associated with the work item, separated by commas.")]
@@ -38,6 +48,8 @@ public class CreateWorkItemNode : BaseNode
             var workItemData = WorkItemData.Get(context);
             var description = Description.Get(context);
             var fileUrls = FileUrls.Get(context);
+            var retryTime = RetryTime.Get(context);
+            var sourceWorkItemId = SourceWorkItemId.Get(context);
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
             var accessToken = callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required");
@@ -47,6 +59,10 @@ public class CreateWorkItemNode : BaseNode
 
             if (string.IsNullOrWhiteSpace(workItemData))
                 throw new ArgumentException("Work Item Data cannot be null or empty.");
+
+            // RetryTime must be a future date and time.
+            if (retryTime.HasValue && retryTime.Value.ToUniversalTime() <= DateTimeOffset.UtcNow)
+                throw new ArgumentException("Retry Time must be a future date and time.");
 
             try
             {
@@ -59,12 +75,19 @@ public class CreateWorkItemNode : BaseNode
 
             var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
+            // Optional source work item id: when provided it acts as the SourceWorkItemId on the
+            // backend, which creates the attempt (a new work item or the next retry for that id).
+            // When left empty the backend generates a fresh id (SourceWorkItemId = new transaction Id).
+            var sourceWorkItemIdParsed = sourceWorkItemId;
+
             var payload = new
             {
                 queueName = queueName,
+                sourceWorkItemId = sourceWorkItemIdParsed,
                 workItemData = workItemData,
                 description = description,
-                fileUrls = fileUrlsArray
+                fileUrls = fileUrlsArray,
+                retryTime = retryTime
             };
 
             var createdWorkItem = await QueueApiExecutor.ExecuteAsync(

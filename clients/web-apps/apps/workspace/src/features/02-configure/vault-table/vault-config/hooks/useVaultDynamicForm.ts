@@ -22,7 +22,7 @@ import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useTableTab } from "../../hooks/useTableTab";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 import {
-  customApiToolVaultSchema,
+  getCustomApiToolVaultSchema,
   getCustomApiToolDefaultValues,
   mapCustomApiToolDataToFormValues,
 } from "../constants/custom-api-tool-schema";
@@ -82,7 +82,7 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
     // CustomApiTool uses a dedicated form schema; skip dynamic config loading.
     if (isCustomApiTool) {
       setVaultConfig([]);
-      setVaultConfigZodSchema(customApiToolVaultSchema);
+      setVaultConfigZodSchema(getCustomApiToolVaultSchema(crudAction));
       return;
     }
 
@@ -99,10 +99,17 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
               name: z.string().min(1, { message: reqError("Name") }),
               ...generateZodSchema(config).shape,
               isDisabled: z.boolean().optional(),
-              spaceIds: z
-                .array(z.string())
-                .min(1, { message: "At least one space must be selected." })
-                .default([]),
+              // Space IDs are required on create only (multi-select rendered).
+              // On update the multi-select is not rendered and spaceIds resets
+              // to [], so enforcing min(1) here would make Save silently fail.
+              ...(crudAction === "create"
+                ? {
+                    spaceIds: z
+                      .array(z.string())
+                      .min(1, { message: "At least one space must be selected." })
+                      .default([]),
+                  }
+                : { spaceIds: z.array(z.string()).optional().default([]) }),
             }),
           );
         }

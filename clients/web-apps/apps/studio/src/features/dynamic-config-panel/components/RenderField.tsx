@@ -49,6 +49,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "text":
     case "textarea":
       return <ConfigPanelAutosizeTextareaField {...baseProps} minHeight={0} />;
+    case "datetime":
+      return <InputField {...baseProps} type="text" fieldSize="sm" />;
     case "select":
       return (
         <SelectField

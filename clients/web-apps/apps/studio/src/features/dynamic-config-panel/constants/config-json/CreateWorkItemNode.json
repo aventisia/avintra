@@ -4,7 +4,10 @@
   "description": "Creates a new work item in the specified queue.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
@@ -28,12 +31,30 @@
     },
     {
       "direction": "Input",
+      "type": "text",
+      "name": "SourceWorkItemId",
+      "label": "Source Work Item ID",
+      "description": "Optional source work item identifier for the work item. Leave empty to generate a new work item id; provide an existing source work item id (SourceWorkItemId) to schedule a retry (a new attempt is created for it).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
       "type": "json-editor",
       "name": "WorkItemData",
       "label": "Work Item Data",
       "description": "Provide the data for the work item in JSON format.",
       "defaultValue": "",
       "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RetryTime",
+      "label": "Retry Time",
+      "description": "Optional future date and time after which this work item becomes eligible for processing. Leave empty for immediate processing. Text value in ISO 8601 format (e.g. 2026-09-12T14:30:00Z).",
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",

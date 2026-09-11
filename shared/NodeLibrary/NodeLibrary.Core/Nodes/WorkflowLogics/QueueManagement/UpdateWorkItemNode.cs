@@ -7,10 +7,10 @@ namespace NodeLibrary.QueueManagementNodes;
 [NodeMetadata(icon: "/assets/Queue.svg")]
 public class UpdateWorkItemNode : BaseNode
 {
-    [DisplayName("WorkItem ID")]
-    [Description("Enter the unique identifier of the work item you want to update.")]
+    [DisplayName("Source Work Item ID")]
+    [Description("Enter the source work item identifier of the work item you want to update.")]
     [DefaultValue("")]
-    public required InArgument<string> WorkItemId { get; set; }
+    public required InArgument<Guid?> SourceWorkItemId { get; set; }
 
     [DisplayName("Status")]
     [Description("Select the new status to assign to the work item. Custom statuses defined on the work item's queue are validated at runtime.")]
@@ -34,6 +34,11 @@ public class UpdateWorkItemNode : BaseNode
     [RenderIfCondition(nameof(ShouldUpdateWorkItemData), true)]
     public InArgument<string> WorkItemData { get; set; } = new InArgument<string>();
 
+    [DisplayName("Retry Time")]
+    [Description("Optional future date and time after which this work item becomes eligible for processing again. Leave empty to keep the current value. Text value in ISO 8601 format (e.g. 2026-09-12T14:30:00Z).")]
+    [NodeFieldType(NodeFieldTypeEnum.DateTime)]
+    public InArgument<DateTimeOffset?> RetryTime { get; set; } = new InArgument<DateTimeOffset?>();
+
     [DisplayName("File URLs")]
     [Description("Optional URLs of files associated with the work item, separated by commas.")]
     public InArgument<string> FileUrls { get; set; } = new InArgument<string>();
@@ -46,27 +51,28 @@ public class UpdateWorkItemNode : BaseNode
     {
         try
         {
-            var workItemId = WorkItemId.Get(context);
+            var sourceWorkItemId = SourceWorkItemId.Get(context);
             var status = Status.Get(context);
             var description = Description.Get(context);
             var shouldUpdateData = ShouldUpdateWorkItemData.Get(context);
             var workItemData = shouldUpdateData ? WorkItemData.Get(context) : null;
             var fileUrls = FileUrls.Get(context);
+            var retryTime = RetryTime.Get(context);
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
             var accessToken = callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required");
 
-            if (string.IsNullOrWhiteSpace(workItemId))
-                throw new ArgumentException("Work Item ID cannot be null or empty.");
+            if (!sourceWorkItemId.HasValue)
+                throw new ArgumentException("Source Work Item ID cannot be null or empty.");
 
-            // The backend binds the work item id to a Guid. Resolve the string to a
-            // Guid up front so a malformed value fails here with a clear message
-            // instead of surfacing as a generic 400 model-binding error.
-            if (!Guid.TryParse(workItemId.Trim(), out var workItemGuid))
-                throw new ArgumentException($"Work Item ID '{workItemId}' is not a valid GUID. Provide the work item's 'id' value (e.g. from the Result of a Get Work Items / Get Next Work Item node).");
+            var workItemGuid = sourceWorkItemId.Value;
 
             if (shouldUpdateData && string.IsNullOrWhiteSpace(workItemData))
                 throw new ArgumentException("Work Item Data cannot be null or empty when 'Should Update Work Item Data' is true.");
+
+            // RetryTime must be a future date and time.
+            if (retryTime.HasValue && retryTime.Value.ToUniversalTime() <= DateTimeOffset.UtcNow)
+                throw new ArgumentException("Retry Time must be a future date and time.");
 
             if (workItemData != null)
             {
@@ -88,7 +94,8 @@ public class UpdateWorkItemNode : BaseNode
                 status = status,
                 workItemData = shouldUpdateData ? workItemData : null,
                 description = description,
-                fileUrls = fileUrlsArray
+                fileUrls = fileUrlsArray,
+                retryTime = retryTime
             };
 
             var updatedWorkItem = await QueueApiExecutor.ExecuteAsync(

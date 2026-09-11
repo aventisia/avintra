@@ -1,0 +1,28 @@
+meta {
+  name: Insert workitem with past retryTime (expect 400)
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "queueId": "{{QUEUE_ID}}",
+    "queueName": "",
+    "workItemData": "{\n  \"Id\": 52,\n  \"Name\": \"InvalidRetry\",\n  \"Location\": \"Oslo\",\n  \"Date\": \"2025-08-07\"\n}",
+    "retryTime": "2000-01-01T00:00:00.000Z"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 400){
+      bru.pass("Past retryTime correctly rejected with 400");
+  } else {
+      bru.fail("Expected 400 for past retryTime, got " + res.getStatus());
+  }
+}
