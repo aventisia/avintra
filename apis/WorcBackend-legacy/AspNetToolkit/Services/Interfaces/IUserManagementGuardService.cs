@@ -3,8 +3,13 @@ namespace AspNetToolkit.Services;
 public interface IUserManagementGuardService
 {
     /// <summary>
-    /// Retrieves the list of allowed roles to manage a user.
+    /// Retrieves the list of allowed roles to manage a user for the requesting platform app.
     /// </summary>
+    /// <remarks>
+    /// Note: The requesting app is taken from the X-App-Context header (workspace when absent).
+    /// The manageable roles for each manager role are listed explicitly in the implementation,
+    /// so supporting a new manager role is a one-line change there.
+    /// </remarks>
     /// <returns>A list of strings representing the allowed roles which current user can assign.</returns>
     List<string> GetAllowedRoleListToManageUser();
 

@@ -1,4 +1,4 @@
-namespace AccountsAPIs.Helpers;
+namespace AspNetToolkit.Utils;
 
 public static class PlatformAppHeaderUtil
 {
