@@ -407,18 +407,20 @@ public class AppSecretService : IAppSecretService
             // Resolve the target spaces for this credential.
             var targetSpaces = new List<Guid?>();
 
+            // TODO: Temporary fix — allow Guid.Empty (the Central space contract) to be treated
+            // as a valid target and map it to null (Central SpaceId) so a record is created for
+            // Central. Replace with a proper long-term fix that resolves the default space server-side.
             if (appSecretDto.SpaceIds != null && appSecretDto.SpaceIds.Any())
             {
-                // Filter out null and empty space IDs, and ensure uniqueness
+                // Normalize: Guid.Empty entries map to Central (null SpaceId), and ensure uniqueness
                 targetSpaces = appSecretDto.SpaceIds
-                    .Where(s => s != Guid.Empty)
-                    .Select(s => s)
+                    .Select(s => s == Guid.Empty ? (Guid?)null : s)
                     .Distinct()
-                    .Cast<Guid?>()
                     .ToList();
             }
             
-            // If no spaces are specified and the credential is not tenant-wide, return an error.
+            // TODO: Temporary fix — this empty check is retained to fail fast when no valid space
+            // was selected at all. If the target list is empty after normalization, no record can be created.
             if (!targetSpaces.Any())
             {
                 serviceResponse.Message = "At least one target space must be specified for the credential.";
