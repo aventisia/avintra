@@ -46,6 +46,14 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const currentSpaceId =
     currentSpace?.id ?? spaceOptions.find((option) => option.isDefault)?.value ?? "";
 
+  // TODO: Temporary fix — the Central space is stored in WorkspaceAPIs with a null
+  // SpaceId (request contract = Guid.Empty), but the AccountsAPIs space options give
+  // Central a real UUID. Map the Central option (identified by its isDefault flag) to
+  // Guid.Empty here so the backend can create the Central record. Replace this mapping
+  // with a proper long-term fix (resolve the default space server-side).
+  const centralSpaceId = spaceOptions.find((option) => option.isDefault)?.value;
+  const CENTRAL_EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
   const {
     form,
     inputKeys,
@@ -94,13 +102,16 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   // Resolve the selected spaces into the backend's space-id contract.
   // Only the spaces the user explicitly selected are included — if the user
   // deselects the current space, it is NOT added back automatically.
+
+  // TODO: Temporary fix — the Central space's UUID is replaced with Guid.Empty so the
+  // backend can create the Central record. Replace with a proper long-term fix.
   const resolveSpaceIds = (selected: string[] | undefined): string[] => {
     const spaceIds = new Set<string>();
 
     (selected ?? []).forEach((spaceId) => {
-      if (spaceId) {
-        spaceIds.add(spaceId);
-      }
+      if (!spaceId) return;
+      // Normalize the Central space (isDefault option) to the empty GUID contract.
+      spaceIds.add(spaceId === centralSpaceId ? CENTRAL_EMPTY_GUID : spaceId);
     });
 
     return Array.from(spaceIds);
