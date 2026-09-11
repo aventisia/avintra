@@ -1,0 +1,27 @@
+meta {
+  name: Health Check (via Workspace API)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/corsair/health
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "sidecarUrl"
+}
+
+docs {
+  > Requires a valid `ACCESS_TOKEN` (run the Workspace API login request first).
+  > Returns the Corsair sidecar health status and the configured sidecar URL.
+  > `data.status` is "ok" when reachable, "unreachable" when the Workspace API
+  > cannot connect to the sidecar.
+}
