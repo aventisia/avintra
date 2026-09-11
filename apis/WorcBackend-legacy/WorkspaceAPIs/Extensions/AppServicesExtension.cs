@@ -210,7 +210,7 @@ public static class AppServicesExtension
         services.AddSingleton<CamelConfigPaths>();
         services.AddScoped<ICamelSeedingService, CamelSeedingService>();
         services.AddScoped<CamelMappingFilesGenerator>();
-        services.AddHostedService<CamelStartupHostedService>();
+        //services.AddHostedService<CamelStartupHostedService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();

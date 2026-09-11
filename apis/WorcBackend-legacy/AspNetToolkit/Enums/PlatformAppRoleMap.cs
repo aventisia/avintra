@@ -1,4 +1,4 @@
-namespace AccountsAPIs.Helpers;
+namespace AspNetToolkit.Enums;
 
 /// <summary>
 /// Maps the fixed developer roles to the platform app whose user management lists them.
