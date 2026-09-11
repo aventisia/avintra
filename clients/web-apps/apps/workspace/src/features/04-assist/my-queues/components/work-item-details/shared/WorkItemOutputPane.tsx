@@ -100,10 +100,10 @@ export const WorkItemOutputPane = ({
     const typeKey = type?.toLowerCase();
 
     return (
-      <div key={path} className="flex items-start gap-2">
+      <div key={path} className="flex w-full items-start gap-2">
         <label
-          className={`shrink-0 truncate pt-2 text-right text-xs font-medium text-foreground ${
-            depth > 0 ? "w-24" : "w-32"
+          className={`shrink-0 line-clamp-2 break-words pt-2 text-left text-xs font-medium text-foreground ${
+            depth > 0 ? "w-1/3" : "w-1/3"
           }`}
         >
           {label}
@@ -223,7 +223,7 @@ export const WorkItemOutputPane = ({
           ) : (
             <div className="rounded-lg border border-input bg-background p-3">
               {(inputSchema ?? []).length > 0 ? (
-                <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-x-4 gap-y-3">
                   {inputSchema?.map((field) =>
                     renderNode(
                       field.name,
