@@ -36,7 +36,7 @@ export const plugins = registeredPlugins;
 
 // --- URL domains (two distinct ones) ---
 //
-// 1. INTERNAL sidecar URL (CORSAIR_SIDECAR_URL, e.g. http://corsair:4006).
+// 1. INTERNAL sidecar URL (CORSAIR_API_BASE_URL, e.g. http://corsair:4006).
 //    This is the sidecar's OWN API base. It is used ONLY by the .NET backend
 //    (WorkspaceAPIs) for backend-to-backend calls (/api/corsair/invoke,
 //    /api/oauth/callback, /connect/link, ...). It is never exposed to the

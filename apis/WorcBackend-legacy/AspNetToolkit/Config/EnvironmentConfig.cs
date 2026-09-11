@@ -64,7 +64,7 @@ public class EnvironmentConfig
     public string AccountsApiBaseUrl { get; set; } = string.Empty;
     public string WorkspaceApiBaseUrl { get; set; } = string.Empty;
     public string LlmPipelineApiBaseUrl { get; set; } = string.Empty;
-    public string CorsairSidecarUrl { get; set; } = string.Empty;
+    public string CorsairApiBaseUrl { get; set; } = string.Empty;
     public string CorsairRedirectUri { get; set; } = string.Empty;
 
     // Apache Camel connector harness (internal)
