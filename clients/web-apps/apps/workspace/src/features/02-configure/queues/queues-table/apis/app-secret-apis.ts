@@ -7,9 +7,9 @@ import { CredSelectDto } from "../dtos/cred-select-dto.ts";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/app-secret`;
 
-const getCredSelectOptions = (query?: string) => {
+const getCredSelectOptions = (type = "M365") => {
   // Build URL with optional query
-  const queryURL = query ? `option-to-select?type=${query}` : `option-to-select`;
+  const queryURL = type ? `option-to-select?type=${type}` : `option-to-select`;
 
   return axiosInstance
     .get<IHttpResponse<CredSelectDto[]>>(`${baseAPIURL}/${queryURL}`, {

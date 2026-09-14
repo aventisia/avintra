@@ -13,9 +13,10 @@ export const useUploadItemMutation = () => {
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
-  const { setUploadedItems } = useQueueUploadItemsStore(
+  const { setUploadedItems, setShowDialog } = useQueueUploadItemsStore(
     useShallow((state) => ({
       setUploadedItems: state.setUploadedItems,
+      setShowDialog: state.setShowDialog,
     })),
   );
   return useMutation({
@@ -30,6 +31,7 @@ export const useUploadItemMutation = () => {
       queryClient.invalidateQueries({ queryKey: queryKey });
       // queryClient.invalidateQueries({ queryKey: ["archive-flows"] });
       setUploadedItems(JSON.parse(httpResponse.data.payloadData || "[]"));
+      setShowDialog(false);
     },
 
     // Called on mutation error

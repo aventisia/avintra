@@ -431,8 +431,11 @@ public class QueueTableService : IQueueTableService
 
             queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
-            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
-            queuesTableDto.CredentialId = await ResolveCredentialIdAsync(queuesTableDto.CredentialName, queuesTableDto.CredentialId);
+            // Normalize an empty credential name to null so the database stays clean.
+            if (queuesTableDto.CredentialName == string.Empty)
+            {
+                queuesTableDto.CredentialName = null;
+            }
 
             // Default mapping
             var newQueue = queuesTableDto.Adapt<Queue>();
@@ -600,15 +603,15 @@ public class QueueTableService : IQueueTableService
                 queue.RouteToQueues = queuesTableDto.RouteToQueues;
             }
 
-            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
-            if (!string.IsNullOrWhiteSpace(queuesTableDto.CredentialName))
+            // Normalize an empty credential name to null so the database stays clean.
+            if (queuesTableDto.CredentialName == string.Empty)
             {
-                queuesTableDto.CredentialId = await ResolveCredentialIdAsync(queuesTableDto.CredentialName, queuesTableDto.CredentialId);
+                queuesTableDto.CredentialName = null;
             }
 
-            if (queuesTableDto.CredentialId != null && queue.CredentialId != queuesTableDto.CredentialId)
+            if (queue.CredentialName != queuesTableDto.CredentialName)
             {
-                queue.CredentialId = queuesTableDto.CredentialId;
+                queue.CredentialName = queuesTableDto.CredentialName;
             }
 
             if (queuesTableDto.IsDisabled.HasValue && queue.IsDisabled != queuesTableDto.IsDisabled.Value)
@@ -1210,17 +1213,4 @@ public class QueueTableService : IQueueTableService
         return serviceResponse;
     }
 
-    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
-    // otherwise the explicitly provided ID is returned unchanged.
-    private async Task<Guid?> ResolveCredentialIdAsync(string? credentialName, Guid? existingCredentialId)
-    {
-        if (string.IsNullOrWhiteSpace(credentialName))
-            return existingCredentialId;
-
-        var credential = await _unitOfWork.AppSecretRepo
-            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
-            .FirstOrDefaultAsync();
-
-        return credential?.Id ?? existingCredentialId;
-    }
 }

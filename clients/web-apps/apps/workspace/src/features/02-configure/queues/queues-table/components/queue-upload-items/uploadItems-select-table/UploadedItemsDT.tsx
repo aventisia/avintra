@@ -17,7 +17,11 @@ const UploadedItemsDT = ({
 
   return (
     <div className="space-y-3">
-      <DataTable table={table} columnsLength={columns.length} />
+      {/* Match the dialog's fixed width so the table fills it; DataTable's own
+          ScrollArea shows a horizontal scrollbar when columns exceed it. */}
+      <div className="max-w-[57rem]">
+        <DataTable table={table} columnsLength={columns.length} />
+      </div>
       <DTPagination table={table} />
     </div>
   );

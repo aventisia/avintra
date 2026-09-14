@@ -1679,8 +1679,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CredentialId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("CredentialName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
