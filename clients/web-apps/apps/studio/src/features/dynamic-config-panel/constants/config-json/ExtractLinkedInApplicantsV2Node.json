@@ -1,9 +1,9 @@
 {
-  "name": "ExtractLinkedInApplicants",
-  "label": "Extract LinkedIn Applicants",
-  "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+  "name": "ExtractLinkedInApplicantsV2Node",
+  "label": "Extract LinkedIn Applicants - v2",
+  "description": "Extracts LinkedIn applicants from a job posting using the new LinkedIn applicants UI, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",

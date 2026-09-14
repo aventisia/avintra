@@ -1,9 +1,9 @@
 {
-  "name": "CloseWebBrowser",
+  "name": "CloseWebBrowserNode",
   "label": "Close Web Browser",
   "description": "Closes a web browser instance or all instances if needed.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -23,7 +23,7 @@
       "name": "CloseAllInstances",
       "label": "Close All Instances",
       "description": "If true, closes all open browser windows and disposes of the driver.",
-      "defaultValue": "",
+      "defaultValue": false,
       "required": false
     }
   ]

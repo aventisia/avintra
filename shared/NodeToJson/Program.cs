@@ -21,9 +21,50 @@ internal class Program
         "GetWorkItemNode",
     };
 
+    // Force-load every NodeLibrary.* assembly found next to this binary.
+    // Without this, platform-specific assemblies (e.g. NodeLibrary.Windows) are never
+    // loaded because nothing in this project references a concrete type from them.
+    static void ForceLoadNodeLibraryAssemblies(string directory)
+    {
+        try
+        {
+            var binDirectory = Directory.Exists(directory) ? directory : ".";
+            foreach (var dll in Directory.GetFiles(binDirectory, "NodeLibrary.*.dll"))
+            {
+                try
+                {
+                    var name = Path.GetFileNameWithoutExtension(dll);
+                    // Skip if already loaded
+                    if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == name))
+                    {
+                        continue;
+                    }
+
+                    Assembly.LoadFrom(dll);
+                    Console.WriteLine($"Loaded node library assembly: {name}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load node library assembly {Path.GetFileName(dll)}: {ex.Message}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to enumerate node library assemblies: {ex.Message}");
+        }
+    }
+
     static void Main(string[] args)
     {
-        // Load node library assemblies (Core + platform extensions)
+        // Load node library assemblies (Core + platform extensions).
+        // .NET loads assemblies lazily: NodeToJson statically references NodeLibrary.Core types
+        // (the metadata attributes), so Core is loaded automatically. Windows-specific nodes
+        // live in NodeLibrary.Windows (referenced via a conditional ProjectReference); that
+        // assembly is only copied next to this binary and is NOT referenced by any concrete
+        // type here, so it must be force-loaded or its nodes would be silently skipped.
+        ForceLoadNodeLibraryAssemblies(AppDomain.CurrentDomain.BaseDirectory);
+
         var nodeLibraryAssemblies = AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => a.GetName().Name?.StartsWith("NodeLibrary", StringComparison.OrdinalIgnoreCase) == true)
             .ToList();

@@ -1,9 +1,9 @@
 {
-  "name": "SwitchToIframe",
+  "name": "SwitchToIframeNode",
   "label": "Switch To Iframe",
   "description": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -23,7 +23,7 @@
       "name": "IframeLocatorType",
       "label": "Iframe Locator Type",
       "description": "The type of locator used to identify the iframe. Supported values: Id, Name, XPath, Css, or Index.",
-      "defaultValue": "",
+      "defaultValue": "Id",
       "required": true,
       "selectOptions": [
         {
