@@ -53,25 +53,25 @@ public enum CustomRolesEnum
     /// <summary>
     /// CRM Super Admin. This role has full access to all features of the CRM app.
     /// </summary>
-    [Description("0; Super admin; This role has full access to all features of the CRM app.")]
+    [Description("0; CRM -Super administrator; This role has full access to all features of the CRM app.")]
     CSA,
 
 
     /// <summary>
     /// CRM Tenant Admin. This role manages users, settings, and data for one specific tenant in the CRM app.
     /// </summary>
-    [Description("1; Tenant admin; This role manages users, settings, and data for one specific tenant in the CRM app.")]
+    [Description("1; CRM - Tenant administrator; This role manages users, settings, and data for one specific tenant in the CRM app.")]
     CTA,
 
     /// <summary>
     /// CRM Sales Representative. This role is for users who manage CRM records such as leads, deals, and customers.
     /// </summary>
-    [Description("2; Sales representative; This role is for users who manage CRM records such as leads, deals, and customers.")]
+    [Description("2; CRM - Sales representative; This role is for users who manage CRM records such as leads, deals, and customers.")]
     CSR,
 
     /// <summary>
     /// CRM Referral Partner. This role is for partners who refer customers to the CRM app.
     /// </summary>
-    [Description("3; Referral partner; This role is for partners who refer customers to the CRM app.")]
+    [Description("3; CRM - Referral partner; This role is for partners who refer customers to the CRM app.")]
     CRP,
 }

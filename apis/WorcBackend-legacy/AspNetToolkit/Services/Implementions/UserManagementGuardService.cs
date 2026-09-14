@@ -26,8 +26,9 @@ public class UserManagementGuardService : IUserManagementGuardService
 
     // Retrieves the list of allowed roles to manage a user for the requesting platform app.
     // The role each manager can assign is decided explicitly below: a manager gets their own role
-    // and every less privileged role of the same app. Adding or removing a manager role later is a
-    // one-line change here, so the rules stay easy to read and maintain.
+    // and every less privileged role of the same app (a super admin is the exception and gets every
+    // role). Adding or removing a manager role later is a one-line change here, so the rules stay
+    // easy to read and maintain.
     public List<string> GetAllowedRoleListToManageUser()
     {
         // Determine the requesting app from the X-App-Context header. Defaults to workspace when absent.
@@ -35,14 +36,18 @@ public class UserManagementGuardService : IUserManagementGuardService
             ? parsedPlatformApp
             : PlatformAppsEnum.Workspace;
 
-        // Get the current user's top level role for the requesting app. The first match is enough
-        // since the JWT orders a user's roles by Seq (ascending), and each app's roles restart at 0.
         // Enum.IsDefined guards against numeric/unknown claim values that Enum.TryParse would accept.
-        var currentUserTopRole = _userRoles
+        var parsedUserRoles = _userRoles
             .Select(roleName => Enum.TryParse<CustomRolesEnum>(roleName, ignoreCase: true, out var role) && Enum.IsDefined(role)
                 ? role
-                : (CustomRolesEnum?)null)
-            .FirstOrDefault(role => role.HasValue && role.Value.ToPlatformApp() == platformApp);
+                : (CustomRolesEnum?)null);
+
+        // Super admin is app-agnostic: when the user holds SA it is always the top role, so it is
+        // resolved before (and without) the per-app lookup below. Only when SA is absent do we fall
+        // back to finding the top role of the requesting app. The first match is enough since the JWT
+        // orders a user's roles by Seq (ascending), and each app's roles restart at 0.
+        var currentUserTopRole = parsedUserRoles.FirstOrDefault(role => role == CustomRolesEnum.SA)
+            ?? parsedUserRoles.FirstOrDefault(role => role.HasValue && role.Value.ToPlatformApp() == platformApp);
 
         // No role of the requesting app means the user cannot manage any of its roles
         if (!currentUserTopRole.HasValue) return new List<string>();
@@ -52,8 +57,8 @@ public class UserManagementGuardService : IUserManagementGuardService
         // below and list its manageable roles; no other code needs to change.
         var allowedRolesList = currentUserTopRole.Value switch
         {
-            // Workspace: super admin manages every workspace role; tenant admin manages itself and below
-            CustomRolesEnum.SA => new List<CustomRolesEnum> { CustomRolesEnum.SA, CustomRolesEnum.TA, CustomRolesEnum.OM, CustomRolesEnum.TD, CustomRolesEnum.TU },
+            // Workspace: super admin manages every role defined in the system; tenant admin manages itself and below
+            CustomRolesEnum.SA => Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>().ToList(),
             CustomRolesEnum.TA => new List<CustomRolesEnum> { CustomRolesEnum.TA, CustomRolesEnum.OM, CustomRolesEnum.TD, CustomRolesEnum.TU },
 
             // CRM: super admin manages every CRM role; tenant admin manages itself and below
