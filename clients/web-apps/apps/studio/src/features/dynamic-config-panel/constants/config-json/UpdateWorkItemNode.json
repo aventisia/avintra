@@ -19,7 +19,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "queue-status-select",
       "name": "Status",
       "label": "Status",
       "description": "Select the new status to assign to the work item. Custom statuses defined on the work item\u0027s queue are validated at runtime.",

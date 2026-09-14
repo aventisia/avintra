@@ -44,7 +44,7 @@ export const processingModeProps: SelectFieldProps = {
   label: "Processing Mode",
   isRequired: true,
   description:
-    "How items are picked for processing:\n\n- **Flexible** — items can be picked in any order.\n- **Fifo** — items are processed in first-in, first-out order.\n\n> **Note:** Agent queues are locked to **Flexible**.",
+    "How items are picked for processing:\n\n- **Flexible** — items can be picked in any order.\n- **Fifo** — items are processed in first-in, first-out order.",
   selectOptions: [
     { label: "Flexible", value: QueueProcessingModeEnum.Manual },
     { label: "Fifo", value: QueueProcessingModeEnum.Fifo },

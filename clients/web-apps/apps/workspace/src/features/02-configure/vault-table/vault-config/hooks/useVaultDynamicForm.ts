@@ -99,6 +99,10 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
               name: z.string().min(1, { message: reqError("Name") }),
               ...generateZodSchema(config).shape,
               isDisabled: z.boolean().optional(),
+              spaceIds: z
+                .array(z.string())
+                .min(1, { message: "At least one space must be selected." })
+                .default([]),
             }),
           );
         }
@@ -201,6 +205,7 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
       selectedType: selectedTypeOption,
       name: name,
       isDisabled: vaultData?.isDisabled,
+      spaceIds: [],
       ...getDefaultValuesForForm(
         vaultConfig,
         convertFromObject(savedData) as unknown as NodeInputType[],

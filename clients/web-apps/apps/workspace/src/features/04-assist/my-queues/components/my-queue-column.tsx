@@ -10,6 +10,26 @@ import { WorkItemRow } from "../types/my-queue-types";
 import { WorkItemsTableCellLink } from "./work-item-table/WorkItemsTableCellLink";
 import { WorkItemActions } from "./work-item-table/work-item-row-actions/WorkItemRowActions";
 
+/**
+ * Safely converts a dynamic cell value to a readable string for display.
+ * Primitives (string/number/boolean) are rendered as-is; objects and arrays are
+ * serialized to JSON so nested content shows its actual value instead of
+ * "[object Object]". Null/undefined render as the fallback value.
+ */
+const formatDynamicCell = (value: unknown, fallback: string): string => {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === "string") return value === "" ? fallback : value;
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value);
+  }
+  // Objects and arrays -> readable JSON.
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+};
+
 export const generateDTColumns = (fields: InputSchemaField[]): ColumnDef<WorkItemRow>[] =>
   fields.map((field) => ({
     accessorKey: field.name,
@@ -23,7 +43,9 @@ export const generateDTColumns = (fields: InputSchemaField[]): ColumnDef<WorkIte
       />
     ),
     cell: (info) => (
-      <div className="w-40 truncate font-medium">{String(info.getValue() ?? FALLBACK_VALUE)}</div>
+      <div className="w-40 truncate font-medium">
+        {formatDynamicCell(info.getValue(), FALLBACK_VALUE)}
+      </div>
     ),
   }));
 

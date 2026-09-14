@@ -14,6 +14,7 @@ public class GetNextQueueWorkItemNode : BaseNode
 
     [DisplayName("Status")]
     [Description("Select the status of the work items to retrieve. Custom statuses defined on the queue are supported.")]
+    [NodeFieldType(NodeFieldTypeEnum.QueueStatusSelect)]
     public InArgument<string> Status { get; set; } = new InArgument<string>();
 
     [DisplayName("Sort By")]
@@ -66,7 +67,20 @@ public class GetNextQueueWorkItemNode : BaseNode
 
             Result.Set(context, nextWorkItem);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, "Next work item retrieved successfully.");
+
+            // When the queue has no work items available, the backend returns a
+            // successful response with null/empty data. Surface that as a success
+            // with empty values rather than an error message.
+            if (nextWorkItem.ValueKind == JsonValueKind.Null
+                || nextWorkItem.ValueKind == JsonValueKind.Undefined
+                || (nextWorkItem.ValueKind == JsonValueKind.Object && !nextWorkItem.EnumerateObject().Any()))
+            {
+                StatusMessage.Set(context, "No work items available. Retrieved empty result.");
+            }
+            else
+            {
+                StatusMessage.Set(context, "Next work item retrieved successfully.");
+            }
         }
         catch (Exception ex)
         {
