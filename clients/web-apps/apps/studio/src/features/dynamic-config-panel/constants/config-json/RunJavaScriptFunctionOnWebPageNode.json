@@ -1,9 +1,9 @@
 {
-  "name": "RunJavaScriptFunctionOnWebPage",
+  "name": "RunJavaScriptFunctionOnWebPageNode",
   "label": "Run JavaScript Function on Web Page",
   "description": "Executes a custom JavaScript function in the context of the current web page.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -22,7 +22,7 @@
       "type": "text",
       "name": "JavaScriptFunction",
       "label": "JavaScript Function",
-      "description": "The JavaScript function to execute (e.g., \u0027document.getElementById(\u0022myId\u0022).value = \u0022test\u0022;\u0027 or \u0027return document.title\u0027)",
+      "description": "The JavaScript function to execute (e.g., \u0027return document.title\u0027).",
       "defaultValue": "",
       "required": true
     },
@@ -32,7 +32,7 @@
       "name": "ScriptArguments",
       "label": "Arguments",
       "description": "Optional arguments to pass to the script function.",
-      "defaultValue": "",
+      "defaultValue": [],
       "required": false
     },
     {

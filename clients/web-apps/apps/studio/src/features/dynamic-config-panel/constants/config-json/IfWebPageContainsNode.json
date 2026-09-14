@@ -1,9 +1,9 @@
 {
-  "name": "IfWebPageContains",
+  "name": "IfWebPageContainsNode",
   "label": "If Web Page Contains",
   "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -24,7 +24,7 @@
       "label": "Check Condition",
       "description": "Specifies what condition to check (e.g., contains element, contains text).",
       "defaultValue": "ContainsElement",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "Contains Element",
@@ -159,7 +159,7 @@
         }
       ],
       "renderIf": {
-        "op": "AND",
+        "op": 0,
         "conditions": [
           {
             "field": "CheckCondition",
@@ -177,11 +177,11 @@
       "type": "text",
       "name": "ValueToFind",
       "label": "Value To Find",
-      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=email]\u0027).",
       "defaultValue": "",
       "required": false,
       "renderIf": {
-        "op": "AND",
+        "op": 0,
         "conditions": [
           {
             "field": "CheckCondition",
@@ -215,12 +215,12 @@
         {
           "label": "Enabled",
           "value": "Enabled",
-          "description": "Specifies that the element should be enabled."
+          "description": "UI element must be enabled."
         },
         {
           "label": "Disabled",
           "value": "Disabled",
-          "description": "Specifies that the element should be disabled."
+          "description": "UI element must be disabled."
         }
       ],
       "renderIf": {
@@ -261,12 +261,12 @@
         {
           "label": "Body",
           "value": "Body",
-          "description": "Searches within the visible text of the page."
+          "description": "Searches in the page body text."
         },
         {
           "label": "Title",
           "value": "Title",
-          "description": "Searches within the title of the web page."
+          "description": "Searches in the page title."
         }
       ]
     },

@@ -1,9 +1,9 @@
 {
-  "name": "PressButtonOnWebPage",
-  "label": "Press Button on Web Page",
-  "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
+  "name": "GetCheckboxValueNode",
+  "label": "Get Checkbox Value",
+  "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -24,7 +24,7 @@
       "label": "Find Type",
       "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
       "defaultValue": "XPath",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "XPath",
@@ -133,76 +133,38 @@
       "type": "text",
       "name": "ValueToFind",
       "label": "Value To Find",
-      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=email]\u0027).",
       "defaultValue": "",
       "required": true
     },
     {
       "direction": "Input",
       "type": "switch",
-      "name": "WaitForPageLoad",
-      "label": "Wait for Page Load",
-      "description": "If true, waits for the next page to load after pressing the button.",
-      "defaultValue": true,
+      "name": "WaitForElement",
+      "label": "Wait For Element",
+      "description": "If true, waits for the checkbox to appear before retrieving the value.",
+      "defaultValue": false,
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "TimeoutForPageLoad",
-      "label": "Timeout for Page Load",
-      "description": "Maximum time in seconds to wait for the page to load.",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds to wait for the element before failing.",
       "defaultValue": 60,
       "required": false
     },
     {
-      "direction": "Input",
-      "type": "select",
-      "name": "IfDialogAppears",
-      "label": "Handle Dialog",
-      "description": "Specifies what to do if a dialog appears after the click.",
-      "defaultValue": "DoNothing",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Close It",
-          "value": "CloseIt",
-          "description": "Automatically close any pop-up dialog that appears."
-        },
-        {
-          "label": "Press a Button",
-          "value": "PressAButton",
-          "description": "Press a specified button on the dialog."
-        },
-        {
-          "label": "Do Nothing",
-          "value": "DoNothing",
-          "description": "Ignore any pop-up dialog."
-        },
-        {
-          "label": "Close It / Press a Button",
-          "value": "CloseOrPress",
-          "description": "Close or press a button on the dialog."
-        },
-        {
-          "label": "Accept Alert",
-          "value": "AcceptAlert",
-          "description": "Accept the alert dialog that appears."
-        },
-        {
-          "label": "Dismiss Alert",
-          "value": "DismissAlert",
-          "description": "Dismiss the alert dialog that appears."
-        }
-      ]
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "DialogButtonToPress",
-      "label": "Dialog Button to Press",
-      "description": "The name of the button to press if a dialog appears (e.g., \u0027Ok\u0027, \u0027Cancel\u0027).",
-      "defaultValue": "Ok",
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "IsChecked",
+      "label": "Is Checked",
+      "description": "Returns true if the checkbox is checked, false otherwise.",
+      "defaultValue": {
+        "value": "IsChecked",
+        "enabled": true
+      },
       "required": false
     }
   ]

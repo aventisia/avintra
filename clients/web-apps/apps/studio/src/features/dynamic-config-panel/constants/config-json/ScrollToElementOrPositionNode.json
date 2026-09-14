@@ -1,9 +1,9 @@
 {
-  "name": "GetElementAttributeValue",
-  "label": "Get Element Attribute Value",
-  "description": "Retrieves the value of an element\u0027s attribute from a web page.",
+  "name": "ScrollToElementOrPositionNode",
+  "label": "Scroll To Element or Position",
+  "description": "Scrolls the browser window to a specified element or coordinates.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -13,9 +13,30 @@
       "type": "text",
       "name": "WebBrowserInstance",
       "label": "Web Browser Instance",
-      "description": "The existing web browser instance (e.g., IWebDriver) to interact with.",
+      "description": "Enter or choose the variable that contains the web browser instance to work with.",
       "defaultValue": "",
       "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ScrollMode",
+      "label": "Scroll Mode",
+      "description": "Specifies how to scroll: by element or by coordinates.",
+      "defaultValue": "ByElement",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "By Element",
+          "value": "ByElement",
+          "description": "Scrolls to a specific UI element on the page."
+        },
+        {
+          "label": "By Coordinates",
+          "value": "ByCoordinates",
+          "description": "Scrolls to a specific (X,Y) position on the page."
+        }
+      ]
     },
     {
       "direction": "Input",
@@ -24,7 +45,7 @@
       "label": "Find Type",
       "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
       "defaultValue": "XPath",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "XPath",
@@ -126,33 +147,74 @@
           "value": "AutomationId",
           "description": "Find by element\u0027s automation ID (for WPF/UWP apps)"
         }
-      ]
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ScrollMode",
+            "equals": "ByElement"
+          }
+        ]
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "ValueToFind",
       "label": "Value To Find",
-      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=email]\u0027).",
       "defaultValue": "",
-      "required": true
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ScrollMode",
+            "equals": "ByElement"
+          }
+        ]
+      }
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "AttributeName",
-      "label": "Attribute Name",
-      "description": "The name of the attribute whose value should be retrieved (e.g., \u0027value\u0027, \u0027href\u0027, \u0027src\u0027).",
-      "defaultValue": "",
-      "required": true
+      "name": "XCoordinate",
+      "label": "X Coordinate",
+      "description": "Horizontal scroll position. Only used in \u0027By Coordinates\u0027 mode.",
+      "defaultValue": 0,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ScrollMode",
+            "equals": "ByCoordinates"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "YCoordinate",
+      "label": "Y Coordinate",
+      "description": "Vertical scroll position. Only used in \u0027By Coordinates\u0027 mode.",
+      "defaultValue": 0,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ScrollMode",
+            "equals": "ByCoordinates"
+          }
+        ]
+      }
     },
     {
       "direction": "Input",
       "type": "switch",
       "name": "WaitForElement",
       "label": "Wait For Element",
-      "description": "If true, waits for the element to appear before retrieving the attribute value.",
-      "defaultValue": "",
+      "description": "If true, waits for the element to be present before scrolling.",
+      "defaultValue": false,
       "required": false
     },
     {
@@ -165,15 +227,12 @@
       "required": false
     },
     {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Attribute Value Output",
-      "description": "Returns the value of the attribute from the found web element.",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      },
+      "direction": "Input",
+      "type": "switch",
+      "name": "SmoothScroll",
+      "label": "Smooth Scroll",
+      "description": "If true, scrolls smoothly instead of jumping to the target.",
+      "defaultValue": false,
       "required": false
     }
   ]

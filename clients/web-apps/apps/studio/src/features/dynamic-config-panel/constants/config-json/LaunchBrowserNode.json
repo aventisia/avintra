@@ -1,9 +1,9 @@
 {
-  "name": "LaunchBrowser",
+  "name": "LaunchBrowserNode",
   "label": "Launch Browser",
   "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -15,7 +15,7 @@
       "label": "Browser Type",
       "description": "Specifies which browser to launch (Microsoft Edge, Google Chrome).",
       "defaultValue": "MicrosoftEdge",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "Microsoft Edge",

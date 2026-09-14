@@ -1,9 +1,9 @@
 {
-  "name": "GetDetailsOfWebPage",
+  "name": "GetDetailsOfWebPageNode",
   "label": "Get Details of Web Page",
   "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -24,7 +24,7 @@
       "label": "Detail Type",
       "description": "Specifies which detail to retrieve from the web page.",
       "defaultValue": "WebPageTitle",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "Web Page Description",

@@ -1,9 +1,9 @@
 {
-  "name": "ExtractDataFromWebPage",
-  "label": "Extract Data From Web Page",
-  "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
+  "name": "SetDropDownListValueOnWebPageNode",
+  "label": "Set Drop-Down List Value on Web Page",
+  "description": "Sets or clears the value of a drop-down list element on a web page.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -132,120 +132,130 @@
       "direction": "Input",
       "type": "text",
       "name": "ValueToFind",
-      "label": "Value To Find",
-      "description": "The selector used to locate the link or button on the web page.",
+      "label": "Search Keywords",
+      "description": "The value used to locate the drop-down list (e.g., \u0027country\u0027, \u0027//select[@id=country]\u0027).",
       "defaultValue": "",
-      "required": false
+      "required": true
     },
     {
       "direction": "Input",
       "type": "select",
-      "name": "ExtractionMode",
-      "label": "Extraction Mode",
-      "description": "Specifies what type of data to extract (e.g., single value, list, table).",
-      "defaultValue": "SingleValue",
+      "name": "Operation",
+      "label": "Operation",
+      "description": "Specifies whether to select by name, index, or clear selection.",
+      "defaultValue": "SelectOptionsByName",
       "required": false,
       "selectOptions": [
         {
-          "label": "Single Value",
-          "value": "SingleValue",
-          "description": "Extracts a single text value from the web page."
+          "label": "Clear All Options",
+          "value": "ClearAllOptions",
+          "description": "Clears all selected values from the drop-down list."
         },
         {
-          "label": "Handpicked Values",
-          "value": "HandpickedValues",
-          "description": "Extracts manually selected values from multiple elements."
+          "label": "Select Options by Name",
+          "value": "SelectOptionsByName",
+          "description": "Selects one or more options by their display text."
         },
         {
-          "label": "List",
-          "value": "List",
-          "description": "Extracts a list of items from repeated elements."
-        },
-        {
-          "label": "Table",
-          "value": "Table",
-          "description": "Extracts tabular data from a web table."
-        },
-        {
-          "label": "Entire HTML Table",
-          "value": "EntireHtmlTable",
-          "description": "Extracts the complete HTML table structure."
+          "label": "Select Options by Index",
+          "value": "SelectOptionsByIndex",
+          "description": "Selects one or more options by their index position."
         }
       ]
     },
     {
       "direction": "Input",
-      "type": "switch",
-      "name": "UsePaging",
-      "label": "Use Paging",
-      "description": "If true, processes multiple pages by navigating through pagination.",
+      "type": "text",
+      "name": "OptionNames",
+      "label": "Option Names",
+      "description": "Comma-separated option names to select. Only first is used if not multi-select.",
       "defaultValue": "",
       "required": false
     },
     {
       "direction": "Input",
       "type": "switch",
-      "name": "GetAllWebPages",
-      "label": "Get All Web Pages",
-      "description": "If true, extracts data from all available pages. Otherwise, only the first page is used.",
-      "defaultValue": "",
+      "name": "UseRegularExpressions",
+      "label": "Use Regular Expressions",
+      "description": "If true, matches option names using regular expressions.",
+      "defaultValue": false,
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "MaxWebPagesToProcess",
-      "label": "Max Web Pages To Process",
-      "description": "The maximum number of web pages to process when using \u0027Use Paging\u0027.",
-      "defaultValue": 10,
-      "required": false
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "PageCssSelector",
-      "label": "Page CSS Selector",
-      "description": "CSS selector used to locate the next page navigation element.",
+      "name": "OptionIndices",
+      "label": "Option Indices",
+      "description": "Comma-separated indices of options to select.",
       "defaultValue": "",
       "required": false
     },
     {
       "direction": "Input",
       "type": "switch",
-      "name": "SendPhysicalClickForNextPage",
-      "label": "Send Physical Click for Next Page",
-      "description": "If true, simulates physical mouse click to navigate to the next page.",
-      "defaultValue": "",
-      "required": false
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "ProcessDataUponExtraction",
-      "label": "Process Data Upon Extraction",
-      "description": "If true, processes the data to match visual display (e.g., handles hidden elements). Not recommended for large datasets.",
-      "defaultValue": "",
+      "name": "WaitForPageLoad",
+      "label": "Wait for Page Load",
+      "description": "If true, waits for the page to load after setting the dropdown value.",
+      "defaultValue": true,
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "Timeout",
-      "label": "Timeout Seconds",
-      "description": "Maximum time in seconds to wait for an element before failing.",
+      "name": "TimeoutForPageLoad",
+      "label": "Timeout for Page Load",
+      "description": "Maximum time in seconds to wait for the page to load.",
       "defaultValue": 60,
       "required": false
     },
     {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "DataFromWebPageOutput",
-      "label": "Data From Web Page Output",
-      "description": "Returns the extracted data as a single value, list, data row, or data table.",
-      "defaultValue": {
-        "value": "DataFromWebPageOutput",
-        "enabled": true
-      },
+      "direction": "Input",
+      "type": "select",
+      "name": "IfDialogAppears",
+      "label": "Handle Dialog",
+      "description": "Specifies what to do if a dialog appears after setting the dropdown value.",
+      "defaultValue": "DoNothing",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Close It",
+          "value": "CloseIt",
+          "description": "Automatically close any pop-up dialog that appears."
+        },
+        {
+          "label": "Press a Button",
+          "value": "PressAButton",
+          "description": "Press a specified button on the dialog."
+        },
+        {
+          "label": "Do Nothing",
+          "value": "DoNothing",
+          "description": "Ignore any pop-up dialog."
+        },
+        {
+          "label": "Close It / Press a Button",
+          "value": "CloseOrPress",
+          "description": "Close or press a button on the dialog."
+        },
+        {
+          "label": "Accept Alert",
+          "value": "AcceptAlert",
+          "description": "Accept the alert dialog that appears."
+        },
+        {
+          "label": "Dismiss Alert",
+          "value": "DismissAlert",
+          "description": "Dismiss the alert dialog that appears."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogButtonToPress",
+      "label": "Dialog Button to Press",
+      "description": "The button to press if a dialog appears (e.g., \u0027Ok\u0027, \u0027Cancel\u0027).",
+      "defaultValue": "Ok",
       "required": false
     }
   ]

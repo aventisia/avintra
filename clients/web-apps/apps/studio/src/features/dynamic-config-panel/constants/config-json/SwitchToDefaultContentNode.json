@@ -1,12 +1,12 @@
 {
-  "name": "SwitchToDefaultContent",
+  "name": "SwitchToDefaultContentNode",
   "label": "Switch To Default Content",
   "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
-  "version": null,
-  "auther": null,
+  "version": "1.0.0",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
-  "errorHandling": null,
-  "testScreenType": null,
+  "errorHandling": "standard",
+  "testScreenType": "standard",
   "fields": [
     {
       "direction": "Input",
@@ -22,7 +22,7 @@
       "type": "config-panel-output",
       "name": "Switched",
       "label": "Switched",
-      "description": "Indicates whether the switch to the iframe was successful (true) or failed (false).",
+      "description": "Indicates whether the switch to the default content was successful (true) or failed (false).",
       "defaultValue": {
         "value": "Switched",
         "enabled": true
