@@ -1,7 +1,7 @@
 import { CopyableText, LoadingSpinner, Separator } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { Form, InputField, SwitchField } from "@avplatform/ui/form";
+import { Form, InputField, MultiSelectField, SwitchField } from "@avplatform/ui/form";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,6 +10,8 @@ import { z } from "zod";
 
 import { RenderField, shouldRenderField } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
+import { useFetchSpaceOptions } from "@/features/05-tenant-admin/spaces/hooks/useFetchSpaceOptions";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import {
@@ -37,6 +39,25 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   // the dialog must remain busy until consent completes.
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { onCloseConfirmed } = useCrudDialogDirty();
+
+  // Fetch the spaces the current user can assign the credential to.
+  const { data: spaceOptionsData } = useFetchSpaceOptions();
+  const spaceOptions = spaceOptionsData?.data ?? [];
+
+  // The current space is always selected by default. The store represents
+  // Central as null, so resolve the actual Central space ID from the fetched
+  // space options to always send real backend IDs.
+  const { currentSpace } = useCurrentSpaceStore();
+  const currentSpaceId =
+    currentSpace?.id ?? spaceOptions.find((option) => option.isDefault)?.value ?? "";
+
+  // TODO: Temporary fix — the Central space is stored in WorkspaceAPIs with a null
+  // SpaceId (request contract = Guid.Empty), but the AccountsAPIs space options give
+  // Central a real UUID. Map the Central option (identified by its isDefault flag) to
+  // Guid.Empty here so the backend can create the Central record. Replace this mapping
+  // with a proper long-term fix (resolve the default space server-side).
+  const centralSpaceId = spaceOptions.find((option) => option.isDefault)?.value;
+  const CENTRAL_EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
   const {
     form,
@@ -83,6 +104,43 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const isCustomApiToolSelected = isType === "CustomApiTool" || vaultData?.type === "CustomApiTool";
   const isOAuthCredential = Boolean(isType && OAUTH_CREDENTIAL_TYPES.has(isType));
 
+  // Resolve the selected spaces into the backend's space-id contract.
+  // Only the spaces the user explicitly selected are included — if the user
+  // deselects the current space, it is NOT added back automatically.
+
+  // TODO: Temporary fix — the Central space's UUID is replaced with Guid.Empty so the
+  // backend can create the Central record. Replace with a proper long-term fix.
+  const resolveSpaceIds = (selected: string[] | undefined): string[] => {
+    const spaceIds = new Set<string>();
+
+    (selected ?? []).forEach((spaceId) => {
+      if (!spaceId) return;
+      // Normalize the Central space (isDefault option) to the empty GUID contract.
+      spaceIds.add(spaceId === centralSpaceId ? CENTRAL_EMPTY_GUID : spaceId);
+    });
+
+    return Array.from(spaceIds);
+  };
+
+  // Space options for the multi-select, built directly from the fetched
+  // spaces. The current space is marked as the default selection.
+  const spaceSelectOptions = spaceOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+    isDefault: option.value === currentSpaceId,
+  }));
+
+  // Pre-select the current space by default when creating a credential.
+  useEffect(() => {
+    if (action !== "create" || !isFormReady || !currentSpaceId) return;
+
+    const existing = (form.getValues("spaceIds") as string[] | undefined) ?? [];
+    if (!existing.includes(currentSpaceId)) {
+      form.setValue("spaceIds", [currentSpaceId], { shouldDirty: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, isFormReady, currentSpaceId]);
+
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
     // Keep the loader visible for the whole submit lifecycle (API + OAuth consent).
@@ -103,6 +161,10 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
 
       const customValues = parsed.data;
 
+      // spaceIds lives on the vault form schema (not the base customApiToolSchema),
+      // so read it from the live form values.
+      const rawSpaceIds = (rawValues as { spaceIds?: string[] }).spaceIds;
+
       const payload = {
         id: crudAction === "update" ? rowId : undefined,
         type: VaultAppsEnum[VaultAppsEnum.CustomApiTool],
@@ -110,6 +172,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
         description: customValues.description?.trim(),
         data: buildCustomApiToolPayload(customValues),
         isDisabled: customValues.isDisabled ?? false,
+        spaceIds: action === "create" ? resolveSpaceIds(rawSpaceIds) : undefined,
       };
 
       if (action === "create") {
@@ -131,6 +194,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
         data: convertToObject(inputs) as unknown as {
           [key: string]: string | number | boolean | null;
         },
+        spaceIds: resolveSpaceIds(formData.spaceIds),
       });
     } else if (action == "update") {
       updateMutation({
@@ -190,6 +254,16 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
             crudAction={crudAction}
             onNameChange={handleInputChange}
             availabilityMessage={availabilityMessage}
+          />
+        )}
+        {isType && action === "create" && (
+          <MultiSelectField
+            name="spaceIds"
+            label="Spaces"
+            isRequired
+            description="Select the spaces where this credential should be available. The current space is selected by default; you can add more spaces as needed."
+            placeholder="Select spaces"
+            selectOptions={spaceSelectOptions}
           />
         )}
         {isType && !isCustomApiToolSelected ? (

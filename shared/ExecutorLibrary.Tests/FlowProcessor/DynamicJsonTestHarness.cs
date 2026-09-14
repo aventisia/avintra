@@ -55,19 +55,15 @@ public static class DynamicJsonTestHarness
             AssertEqual("numeric-key-value", result);
         });
 
-        failures += Run("MissingStringIndexerThrows", () =>
+        failures += Run("MissingStringIndexerLeavesPlaceholder", () =>
         {
+            // A missing key must NOT fail the whole node: ResolvePlaceholdersToString
+            // catches KeyNotFoundException and leaves the original placeholder in place
+            // so users see the template as-is.
             var ctx = new FlowExecutionContext();
             ctx.Set("data", JsonDocument.Parse("""{"present":"yes"}""").RootElement);
-            try
-            {
-                ctx.ResolveTemplate("""{{data["missing"]}}""");
-                throw new InvalidOperationException("Expected KeyNotFoundException");
-            }
-            catch (KeyNotFoundException)
-            {
-                // Expected
-            }
+            var result = ctx.ResolveTemplate("""{{data["missing"]}}""");
+            AssertEqual("""{{data["missing"]}}""", result);
         });
 
         failures += Run("ExpandoObjectRoundTrip", () =>
@@ -146,6 +142,218 @@ public static class DynamicJsonTestHarness
             var csv = "C:\\a.pdf,C:\\b.pdf";
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(csv, typeof(List<string>));
             AssertTrue(result is List<string> list && list.Count == 2 && list[0] == "C:\\a.pdf" && list[1] == "C:\\b.pdf");
+        });
+
+        // Regression: a List<DynamicJson> (e.g. {{DeserializedToken.line_items}}) must serialize
+        // as JSON, not fall through to ToString() which yields the class name
+        // "System.Collections.Generic.List`1[ExecutorLibrary.FlowProcessor.DynamicJson]".
+        failures += Run("ListOfDynamicJsonResolvesToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            var lineItems = new List<DynamicJson>
+            {
+                new() { ["item"] = "A", ["qty"] = 2L },
+                new() { ["item"] = "B", ["qty"] = 3L }
+            };
+            ctx.Set("DeserializedToken", new DynamicJson { ["line_items"] = lineItems });
+            var result = ctx.ResolveTemplate("{{DeserializedToken.line_items}}");
+            if (result.Contains("System.Collections.Generic.List"))
+                throw new InvalidOperationException($"Got class name instead of JSON: {result}");
+            using var doc = JsonDocument.Parse(result);
+            AssertEqual(JsonValueKind.Array, doc.RootElement.ValueKind);
+            AssertEqual(2, doc.RootElement.GetArrayLength());
+        });
+
+        // ------------------------------------------------------------------
+        // Coverage for the four supported value types handled by
+        // ObjectToString / NodeArgumentHelper.ConvertToType:
+        //   1. DynamicJson
+        //   2. ExpandoObject
+        //   3. IDictionary<string, object?>
+        //   4. IEnumerable (excluding string)
+        // Each must serialize to JSON without throwing.
+        // ------------------------------------------------------------------
+
+        // --- 1. DynamicJson ---
+        failures += Run("DynamicJsonSimpleSerializesToJson", () =>
+        {
+            var dyn = new DynamicJson { ["x"] = 1, ["y"] = "two" };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dyn, typeof(string));
+            AssertEqual("""{"x":1,"y":"two"}""", result);
+        });
+
+        failures += Run("DynamicJsonNestedWithArraySerializesToJson", () =>
+        {
+            var dyn = new DynamicJson
+            {
+                ["name"] = "Aventisia",
+                ["tags"] = new List<object?> { "rpa", "automation" },
+                ["meta"] = new DynamicJson { ["active"] = true }
+            };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dyn, typeof(string));
+            AssertEqual("""{"name":"Aventisia","tags":["rpa","automation"],"meta":{"active":true}}""", result);
+        });
+
+        failures += Run("DynamicJsonEmptySerializesToEmptyObject", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new DynamicJson(), typeof(string));
+            AssertEqual("{}", result);
+        });
+
+        // --- 2. ExpandoObject ---
+        failures += Run("ExpandoObjectSimpleSerializesToJson", () =>
+        {
+            dynamic expando = new ExpandoObject();
+            expando.Key = "value";
+            expando.Count = 3;
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType((object)expando, typeof(string));
+            AssertEqual("""{"Key":"value","Count":3}""", result);
+        });
+
+        failures += Run("ExpandoObjectNestedSerializesToJson", () =>
+        {
+            dynamic outer = new ExpandoObject();
+            outer.Name = "Aventisia";
+            dynamic inner = new ExpandoObject();
+            inner.Count = 5;
+            inner.Enabled = true;
+            outer.Details = inner;
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType((object)outer, typeof(string));
+            AssertEqual("""{"Name":"Aventisia","Details":{"Count":5,"Enabled":true}}""", result);
+        });
+
+        failures += Run("ExpandoObjectEmptySerializesToEmptyObject", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new ExpandoObject(), typeof(string));
+            AssertEqual("{}", result);
+        });
+
+        // --- 3. IDictionary<string, object?> ---
+        failures += Run("DictionarySimpleSerializesToJson", () =>
+        {
+            var dict = new Dictionary<string, object?>
+            {
+                ["First Name"] = "Jane",
+                ["Last Name"] = "Doe"
+            };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dict, typeof(string));
+            AssertEqual("""{"First Name":"Jane","Last Name":"Doe"}""", result);
+        });
+
+        failures += Run("DictionaryNestedSerializesToJson", () =>
+        {
+            var dict = new Dictionary<string, object?>
+            {
+                ["user"] = new Dictionary<string, object?> { ["id"] = 42L, ["role"] = "admin" },
+                ["active"] = true
+            };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dict, typeof(string));
+            AssertEqual("""{"user":{"id":42,"role":"admin"},"active":true}""", result);
+        });
+
+        failures += Run("DictionaryMixedValuesSerializesToJson", () =>
+        {
+            var dict = new Dictionary<string, object?>
+            {
+                ["int"] = 7,
+                ["double"] = 1.5,
+                ["bool"] = false,
+                ["null"] = null,
+                ["str"] = "text"
+            };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dict, typeof(string));
+            AssertEqual("""{"int":7,"double":1.5,"bool":false,"null":null,"str":"text"}""", result);
+        });
+
+        failures += Run("DictionaryEmptySerializesToEmptyObject", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new Dictionary<string, object?>(), typeof(string));
+            AssertEqual("{}", result);
+        });
+
+        // --- 4. IEnumerable (excluding string) ---
+        failures += Run("ListOfStringsSerializesToJsonArray", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new List<string> { "a", "b", "c" }, typeof(string));
+            AssertEqual("""["a","b","c"]""", result);
+        });
+
+        failures += Run("ListOfDynamicJsonSerializesToJsonArray", () =>
+        {
+            var list = new List<DynamicJson>
+            {
+                new() { ["item"] = "A", ["qty"] = 2L },
+                new() { ["item"] = "B", ["qty"] = 3L }
+            };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(list, typeof(string));
+            AssertEqual("""[{"item":"A","qty":2},{"item":"B","qty":3}]""", result);
+        });
+
+        failures += Run("IntArraySerializesToJsonArray", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new[] { 1, 2, 3 }, typeof(string));
+            AssertEqual("""[1,2,3]""", result);
+        });
+
+        failures += Run("HashSetOfIntsSerializesToJsonArray", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new HashSet<int> { 1, 2, 3 }, typeof(string));
+            AssertEqual("""[1,2,3]""", result);
+        });
+
+        failures += Run("ListOfMixedObjectsSerializesToJsonArray", () =>
+        {
+            var list = new List<object?> { 1, "two", true, null };
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(list, typeof(string));
+            AssertEqual("""[1,"two",true,null]""", result);
+        });
+
+        failures += Run("EmptyListSerializesToEmptyArray", () =>
+        {
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new List<object?>(), typeof(string));
+            AssertEqual("[]", result);
+        });
+
+        failures += Run("PlainStringIsNotTreatedAsEnumerable", () =>
+        {
+            // A string is IEnumerable<char> but must NOT be serialized as a JSON array.
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType("hello", typeof(string));
+            AssertEqual("hello", result);
+        });
+
+        // --- End-to-end: template resolution renders each type as JSON ---
+        failures += Run("TemplateResolvesDynamicJsonToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            ctx.Set("data", new DynamicJson { ["name"] = "Aventisia", ["count"] = 2L });
+            var result = ctx.ResolveTemplate("{{data}}");
+            AssertEqual("""{"name":"Aventisia","count":2}""", result);
+        });
+
+        failures += Run("TemplateResolvesExpandoObjectToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            dynamic expando = new ExpandoObject();
+            expando.Key = "value";
+            ctx.Set("obj", (object)expando);
+            var result = ctx.ResolveTemplate("{{obj}}");
+            AssertEqual("""{"Key":"value"}""", result);
+        });
+
+        failures += Run("TemplateResolvesDictionaryToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            ctx.Set("person", new Dictionary<string, object?> { ["First Name"] = "Jane", ["Last Name"] = "Doe" });
+            var result = ctx.ResolveTemplate("{{person}}");
+            AssertEqual("""{"First Name":"Jane","Last Name":"Doe"}""", result);
+        });
+
+        failures += Run("TemplateResolvesListToJson", () =>
+        {
+            var ctx = new FlowExecutionContext();
+            ctx.Set("items", new List<string> { "a", "b" });
+            var result = ctx.ResolveTemplate("{{items}}");
+            AssertEqual("""["a","b"]""", result);
         });
 
         Console.WriteLine($"\nResults: {(failures == 0 ? "ALL PASSED" : $"{failures} FAILED")}");

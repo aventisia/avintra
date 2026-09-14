@@ -80,6 +80,10 @@ export type CustomApiToolFormValues = z.infer<typeof customApiToolSchema>;
  */
 export const customApiToolVaultSchema = customApiToolBaseSchema.extend({
   selectedType: z.object({ label: z.string(), value: z.string() }).optional(),
+  spaceIds: z
+    .array(z.string())
+    .min(1, { message: "At least one space must be selected." })
+    .default([]),
 });
 
 export type CustomApiToolVaultFormValues = z.infer<typeof customApiToolVaultSchema>;
@@ -103,6 +107,7 @@ export const getCustomApiToolDefaultValues = (
     apiKeyQueryValue: "",
     isDisabled: false,
     selectedType: undefined,
+    spaceIds: [],
   };
 
   return { ...values, ...overrides };

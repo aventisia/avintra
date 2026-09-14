@@ -310,6 +310,9 @@ public class WorkspaceDbContext : DbContext
 
         // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
         // When in a specific space (not Central), new records are assigned to that space.
+        // Only stamp when the entity does not already have an explicit SpaceId so that
+        // multi-space creation (e.g. a credential created in several spaces at once) can
+        // assign a different SpaceId per record.
         if (CurrentSpaceId != Guid.Empty)
         {
             foreach (var entry in ChangeTracker.Entries().ToList())
@@ -319,7 +322,28 @@ public class WorkspaceDbContext : DbContext
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
                     {
-                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        // TODO: Temporary fix — preserve an explicitly-set SpaceId (including
+                        // Central, SpaceId == null) when the same batch also contains a same-type
+                        // sibling with a non-null SpaceId (multi-space creation). Without this,
+                        // the Central record's null would be stamped with the current space,
+                        // producing two rows with the same (SpaceId, Name) and violating
+                        // IX_AppSecrets_TenantId_SpaceId_EnvType_Name (Npgsql 23505).
+                        // Remove this heuristic once spaces are properly fixed (explicit marker).
+                        if (spaceIdProp.GetValue(entry.Entity) == null)
+                        {
+                            var hasSiblingWithSpace = ChangeTracker.Entries().Any(e =>
+                                e.Entity != entry.Entity &&
+                                e.Entity.GetType() == entry.Entity.GetType() &&
+                                e.State == EntityState.Added &&
+                                e.Entity.GetType().GetProperty("SpaceId") is { } otherProp &&
+                                otherProp.GetValue(e.Entity) is Guid otherId &&
+                                otherId != Guid.Empty);
+
+                            if (!hasSiblingWithSpace)
+                            {
+                                spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                            }
+                        }
                     }
                 }
             }
@@ -349,6 +373,9 @@ public class WorkspaceDbContext : DbContext
 
         // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
         // When in a specific space (not Central), new records are assigned to that space.
+        // Only stamp when the entity does not already have an explicit SpaceId so that
+        // multi-space creation (e.g. a credential created in several spaces at once) can
+        // assign a different SpaceId per record.
         if (CurrentSpaceId != Guid.Empty)
         {
             foreach (var entry in ChangeTracker.Entries().ToList())
@@ -358,7 +385,28 @@ public class WorkspaceDbContext : DbContext
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
                     {
-                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                        // TODO: Temporary fix — preserve an explicitly-set SpaceId (including
+                        // Central, SpaceId == null) when the same batch also contains a same-type
+                        // sibling with a non-null SpaceId (multi-space creation). Without this,
+                        // the Central record's null would be stamped with the current space,
+                        // producing two rows with the same (SpaceId, Name) and violating
+                        // IX_AppSecrets_TenantId_SpaceId_EnvType_Name (Npgsql 23505).
+                        // Remove this heuristic once spaces are properly fixed (explicit marker).
+                        if (spaceIdProp.GetValue(entry.Entity) == null)
+                        {
+                            var hasSiblingWithSpace = ChangeTracker.Entries().Any(e =>
+                                e.Entity != entry.Entity &&
+                                e.Entity.GetType() == entry.Entity.GetType() &&
+                                e.State == EntityState.Added &&
+                                e.Entity.GetType().GetProperty("SpaceId") is { } otherProp &&
+                                otherProp.GetValue(e.Entity) is Guid otherId &&
+                                otherId != Guid.Empty);
+
+                            if (!hasSiblingWithSpace)
+                            {
+                                spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                            }
+                        }
                     }
                 }
             }
