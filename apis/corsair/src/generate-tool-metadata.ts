@@ -98,7 +98,7 @@ export async function generateToolMetadata(
       id: meta.id,
       pluginId: meta.id,
       name: meta.providerName,
-      description: `${meta.providerName} connector (from Corsair sidecar)`,
+      description: `${meta.providerName} connector`,
       baseUrl,
       openApiSpec: JSON.stringify(openApiSpec),
     });

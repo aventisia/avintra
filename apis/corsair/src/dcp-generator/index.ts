@@ -108,6 +108,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     iconMap = DEFAULT_ICON_MAP,
     baseUrlMap = DEFAULT_BASE_URL_MAP,
     globalMappingFile,
+    configRoot,
   } = options;
 
   if (!corsair) {
@@ -117,12 +118,14 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   const pluginMetas = toPluginMetadataList(plugins, iconMap);
   const tools = listTools(corsair);
 
-  const configRoot = path.join(outputDir, "Corsair");
+  // Per-plugin configs + OpenAPI specs go to the explicit config root when
+  // provided (server deploy dir); otherwise they fall back to outputDir/Corsair
+  // (local dev). The mapping and sibling artifacts always go to outputDir.
+  const configRootResolved = configRoot ?? path.join(outputDir, "Corsair");
   const corsairMappingFile = path.join(outputDir, "CorsairActionSelectorMappingFile.json");
-  // The global mapping is owned by the Workspace API codebase. When Corsair
-  // configs are written to a shared path (CORSAIR_CONFIG_DIR), the global
-  // mapping still lives in the Workspace API codebase, so cleanup must target
-  // that file. Defaults to outputDir/CloudConnectorActionSelectorMappingFile.json.
+  // The global mapping is owned by the Workspace API codebase and lives in the
+  // same ConfigFiles folder as the Corsair configs, so cleanup targets that file.
+  // Defaults to outputDir/CloudConnectorActionSelectorMappingFile.json.
   const globalMappingFileResolved = globalMappingFile
     ?? path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
   const actionMapFile = path.join(outputDir, "CorsairActionMap.json");
@@ -132,7 +135,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     moduleDir,
     "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-table/vault-config/constants/corsair-integration-catalog.json",
   );
-  const openApiDir = path.join(configRoot, "openapi");
+  const openApiDir = path.join(configRootResolved, "openapi");
 
   const categories: ActionSelectorCategory[] = [];
   const invocations: CorsairActionInvocation[] = [];
@@ -163,7 +166,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
 
       const { config, invocation } = buildActionConfig(meta, action, description, tool.input, tool.output);
       const actionSegment = config.name.split("/").pop() ?? action;
-      const configPath = path.join(configRoot, meta.id.charAt(0).toUpperCase() + meta.id.slice(1), `${actionSegment}.json`);
+      const configPath = path.join(configRootResolved, meta.id.charAt(0).toUpperCase() + meta.id.slice(1), `${actionSegment}.json`);
       writeJson(configPath, config);
 
       invocations.push(invocation);
@@ -214,7 +217,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   console.log(
     `Generated ${categories.reduce((n, c) => n + c.actions.length, 0)} Corsair action configs across ${categories.length} categories.`,
   );
-  console.log(`Configs: ${configRoot}`);
+  console.log(`Configs: ${configRootResolved}`);
   console.log(`Corsair mapping: ${corsairMappingFile}`);
   console.log(`Action map: ${actionMapFile}`);
   console.log(`Integration catalog: ${integrationCatalogFile}`);

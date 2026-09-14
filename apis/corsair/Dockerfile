@@ -14,18 +14,11 @@ FROM node:22-slim
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3456
+ENV PORT=4006
 ENV PYTHONUNBUFFERED=1
-# Generated config artifacts are written here at startup. Mount this as a
-# shared volume so the Workspace API can read them from its own
-# <UploadDirectory>/config/corsair path.
-ENV CORSAIR_CONFIG_DIR=/app/config/corsair
-# The global Cloud Connector mapping is owned by the Workspace API codebase,
-# which is not present in this container. Point cleanup at the shared volume.
-ENV CORSAIR_GLOBAL_MAPPING_FILE=/app/config/corsair/CloudConnectorActionSelectorMappingFile.json
 
 # Runtime configuration is injected via environment variables at deploy time
-# (see .env.example). APP_URL, CORSAIR_KEK and the
+# (see .env.example). APP_BASE_URL, CORSAIR_KEK and the
 # POSTGRESQL_* values must be provided by the orchestrator/deployment.
 
 COPY package.json package-lock.json* ./
@@ -37,7 +30,12 @@ COPY --from=builder /build/dist ./dist
 # compiled file, which sits at /app/dist/migrate.js -> /app/migration.sql).
 COPY migration.sql ./
 
-EXPOSE 3456
+EXPOSE 4006
 
-# Run the (idempotent) migration, generate config artifacts, then start the app.
-CMD ["sh", "-c", "node dist/migrate.js && node dist/generate-corsair-configs.js && node dist/main.js"]
+# Run the (idempotent) migration, then start the app.
+# NOTE: Corsair config artifacts are generated in the monorepo (npm run
+# generate:configs). The mapping + sibling artifacts are committed into the
+# Workspace API codebase ConfigFiles folder and deploy with the Workspace API;
+# the thousands of per-plugin configs are rsynced to the shared server files
+# path by Jenkins. The sidecar container does not generate them at runtime.
+CMD ["sh", "-c", "node dist/migrate.js && node dist/main.js"]

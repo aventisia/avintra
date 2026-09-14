@@ -18,11 +18,40 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
         _httpClient = httpClientFactory.CreateClient("Corsair");
         _logger = logger;
 
-        var sidecarUrl = environmentConfig.CorsairSidecarUrl;
+        var sidecarUrl = environmentConfig.CorsairApiBaseUrl;
 
         if (!string.IsNullOrEmpty(sidecarUrl))
         {
             _httpClient.BaseAddress = new Uri(sidecarUrl.TrimEnd('/'));
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<CorsairHealthResult> GetHealthAsync(CancellationToken cancellationToken = default)
+    {
+        var sidecarUrl = _httpClient.BaseAddress?.ToString().TrimEnd('/') ?? string.Empty;
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/health");
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var body = await response.Content.ReadAsStringAsync(cancellationToken);
+            var status = response.IsSuccessStatusCode ? "ok" : $"http_{((int)response.StatusCode)}";
+            return new CorsairHealthResult
+            {
+                Status = status,
+                SidecarUrl = sidecarUrl,
+                Reason = response.IsSuccessStatusCode ? null : body,
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Corsair sidecar health check failed.");
+            return new CorsairHealthResult
+            {
+                Status = "unreachable",
+                SidecarUrl = sidecarUrl,
+                Reason = ex.Message,
+            };
         }
     }
 

@@ -63804,7 +63804,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Gmail",
         "description": "Gmail",
         "icon": null,
         "img": "/brand-img/gmail.svg",
@@ -64141,7 +64141,7 @@
         ]
       },
       {
-        "label": "Googleaddressvalidation",
+        "label": "Google Address Validation",
         "description": "Google Address Validation",
         "icon": null,
         "img": "/brand-img/googleaddressvalidation.svg",
@@ -64179,7 +64179,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google BigQuery",
         "description": "Google BigQuery",
         "icon": null,
         "img": "/brand-img/googlebigquery.svg",
@@ -64997,7 +64997,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google Calendar",
         "description": "Google calendar",
         "icon": null,
         "img": "/brand-img/googlecalendar.svg",
@@ -65087,7 +65087,7 @@
         ]
       },
       {
-        "label": "Googlecloudvision",
+        "label": "Google Cloud Vision",
         "description": "Google Cloud Vision",
         "icon": null,
         "img": "/brand-img/googlecloudvision.svg",
@@ -65476,7 +65476,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google Docs",
         "description": "Google Docs",
         "icon": null,
         "img": "/brand-img/googledocs.svg",
@@ -65943,7 +65943,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google Drive",
         "description": "Google drive",
         "icon": null,
         "img": "/brand-img/googledrive.svg",
@@ -66241,7 +66241,7 @@
         ]
       },
       {
-        "label": "Googlemaps",
+        "label": "Google Maps",
         "description": "GoogleMaps",
         "icon": null,
         "img": "/brand-img/googlemaps.svg",
@@ -66539,7 +66539,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google Meet",
         "description": "Google Meet",
         "icon": null,
         "img": "/brand-img/googlemeet.svg",
@@ -66785,7 +66785,7 @@
         ]
       },
       {
-        "label": "Google",
+        "label": "Google Sheets",
         "description": "Google sheets",
         "icon": null,
         "img": "/brand-img/googlesheets.svg",
@@ -106158,7 +106158,7 @@
         ]
       },
       {
-        "label": "Youtube",
+        "label": "YouTube",
         "description": "Youtube",
         "icon": null,
         "img": "/brand-img/youtube.svg",
