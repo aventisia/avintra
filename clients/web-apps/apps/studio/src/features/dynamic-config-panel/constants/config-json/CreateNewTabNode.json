@@ -1,9 +1,9 @@
 {
-  "name": "CreateNewTab",
+  "name": "CreateNewTabNode",
   "label": "Create New Tab",
   "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",

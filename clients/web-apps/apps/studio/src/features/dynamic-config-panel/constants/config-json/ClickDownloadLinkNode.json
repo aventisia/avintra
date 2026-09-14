@@ -1,9 +1,9 @@
 {
-  "name": "GetCheckboxValue",
-  "label": "Get Checkbox Value",
-  "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
+  "name": "ClickDownloadLinkNode",
+  "label": "Click Download Link on Web Page",
+  "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -24,7 +24,7 @@
       "label": "Find Type",
       "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
       "defaultValue": "XPath",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "XPath",
@@ -133,36 +133,53 @@
       "type": "text",
       "name": "ValueToFind",
       "label": "Value To Find",
-      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "description": "The selector (XPath, ID, etc.) used to locate the download link on the page.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DestinationFolder",
+      "label": "Destination Folder",
+      "description": "The full path of the folder where the downloaded file will be saved.",
       "defaultValue": "",
       "required": true
     },
     {
       "direction": "Input",
       "type": "switch",
-      "name": "WaitForElement",
-      "label": "Wait For Element",
-      "description": "If true, waits for the checkbox to appear before retrieving the value.",
-      "defaultValue": "",
+      "name": "WaitForDownload",
+      "label": "Wait for File to Download",
+      "description": "If true, waits until the file appears in the destination folder.",
+      "defaultValue": false,
       "required": false
     },
     {
       "direction": "Input",
       "type": "text",
-      "name": "TimeoutSeconds",
-      "label": "Timeout Seconds",
-      "description": "Maximum time in seconds to wait for the element before failing.",
-      "defaultValue": 60,
-      "required": false
+      "name": "MaxWaitTime",
+      "label": "Maximum Wait Time (Seconds)",
+      "description": "The maximum time to wait for the file to appear in the destination folder.",
+      "defaultValue": 30,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "WaitForDownload",
+            "equals": true
+          }
+        ]
+      }
     },
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "IsChecked",
-      "label": "Is Checked",
-      "description": "Returns true if the checkbox is checked, false otherwise.",
+      "name": "DownloadedFile",
+      "label": "Downloaded File Output",
+      "description": "Returns the full path of the downloaded file.",
       "defaultValue": {
-        "value": "IsChecked",
+        "value": "DownloadedFile",
         "enabled": true
       },
       "required": false

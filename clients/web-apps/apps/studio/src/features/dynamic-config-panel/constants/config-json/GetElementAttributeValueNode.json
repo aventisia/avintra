@@ -1,9 +1,9 @@
 {
-  "name": "GetElementSiblings",
-  "label": "Get Element Siblings",
-  "description": "Finds and returns all sibling elements of the specified web element.",
+  "name": "GetElementAttributeValueNode",
+  "label": "Get Element Attribute Value",
+  "description": "Retrieves the value of an element\u0027s attribute from a web page.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -13,7 +13,7 @@
       "type": "text",
       "name": "WebBrowserInstance",
       "label": "Web Browser Instance",
-      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "description": "The existing web browser instance (e.g., IWebDriver) to interact with.",
       "defaultValue": "",
       "required": true
     },
@@ -24,7 +24,7 @@
       "label": "Find Type",
       "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
       "defaultValue": "XPath",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "XPath",
@@ -133,7 +133,16 @@
       "type": "text",
       "name": "ValueToFind",
       "label": "Value To Find",
-      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=\u0027email\u0027]\u0027).",
+      "description": "The value used to locate the element (e.g., \u0027username\u0027, \u0027//input[@id=email]\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "AttributeName",
+      "label": "Attribute Name",
+      "description": "The name of the attribute whose value should be retrieved (e.g., \u0027value\u0027, \u0027href\u0027, \u0027src\u0027).",
       "defaultValue": "",
       "required": true
     },
@@ -142,8 +151,8 @@
       "type": "switch",
       "name": "WaitForElement",
       "label": "Wait For Element",
-      "description": "If true, waits for the element to appear before retrieving its siblings.",
-      "defaultValue": "",
+      "description": "If true, waits for the element to appear before retrieving the attribute value.",
+      "defaultValue": false,
       "required": false
     },
     {
@@ -158,11 +167,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "SiblingElements",
-      "label": "Sibling Elements",
-      "description": "Returns a collection of sibling elements of the found element.",
+      "name": "Result",
+      "label": "Attribute Value Output",
+      "description": "Returns the value of the attribute from the found web element.",
       "defaultValue": {
-        "value": "SiblingElements",
+        "value": "Result",
         "enabled": true
       },
       "required": false

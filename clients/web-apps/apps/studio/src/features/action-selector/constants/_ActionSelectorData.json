@@ -2890,7 +2890,7 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "CheckElementStateActivity",
+            "name": "CheckElementStateNode",
             "label": "Check Element State",
             "description": "Verifies if an element is visible, enabled, or selected.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2899,7 +2899,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ClickDownloadLinkActivity",
+            "name": "ClickDownloadLinkNode",
             "label": "Click Download Link on Web Page",
             "description": "Simulates clicking a download link on a web page and saves the file to the specified folder.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2908,7 +2908,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ClickLinkOnWebPageActivity",
+            "name": "ClickLinkOnWebPageNode",
             "label": "Click on Web Page",
             "description": "Simulates clicking a UI element (e.g., link, button) on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2917,7 +2917,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CloseWebBrowserActivity",
+            "name": "CloseWebBrowserNode",
             "label": "Close Web Browser",
             "description": "Closes a web browser instance or all instances if needed.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2926,7 +2926,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CloseWebBrowserTabActivity",
+            "name": "CloseWebBrowserTabNode",
             "label": "Close Web Browser Tab",
             "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
             "img": "/assets/BrowserAutomation.svg",
@@ -2935,7 +2935,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CreateNewTabActivity",
+            "name": "CreateNewTabNode",
             "label": "Create New Tab",
             "description": "Creates a new tab in the web browser and optionally navigates to a specified URL.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2944,16 +2944,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ExtractLinkedInApplicantsActivity",
-            "label": "Extract LinkedIn Applicants",
-            "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
-            "img": "/assets/BrowserAutomation.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "ExtractDataFromWebPageActivity",
+            "name": "ExtractDataFromWebPageNode",
             "label": "Extract Data From Web Page",
             "description": "Extracts data from a specified UI element on a web page using configurable parameters.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2962,7 +2953,25 @@
           },
           {
             "type": "activityNode",
-            "name": "FocusTextFieldActivity",
+            "name": "ExtractLinkedInApplicantsNode",
+            "label": "Extract LinkedIn Applicants",
+            "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+            "img": "/assets/BrowserAutomation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractLinkedInApplicantsV2Node",
+            "label": "Extract LinkedIn Applicants - v2",
+            "description": "Extracts LinkedIn applicants from a job posting using the new LinkedIn applicants UI, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+            "img": "/assets/BrowserAutomation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "FocusTextFieldNode",
             "label": "Focus on Web Page",
             "description": "Focuses a specific text field in a web browser. Optionally waits for page load and handles dialogs.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2971,7 +2980,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetCheckboxValueActivity",
+            "name": "GetCheckboxValueNode",
             "label": "Get Checkbox Value",
             "description": "Retrieves the current value (checked/unchecked) of a checkbox element on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2980,7 +2989,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetDetailsOfElementActivity",
+            "name": "GetDetailsOfElementNode",
             "label": "Get Details of Element on Web Page",
             "description": "Retrieves the value of a specified attribute from a selected UI element in a web browser.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2989,7 +2998,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetDetailsOfWebPageActivity",
+            "name": "GetDetailsOfWebPageNode",
             "label": "Get Details of Web Page",
             "description": "Retrieves specific information about a web page such as title, description, URL, or source code.",
             "img": "/assets/BrowserAutomation.svg",
@@ -2998,7 +3007,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetElementAttributeValueActivity",
+            "name": "GetElementAttributeValueNode",
             "label": "Get Element Attribute Value",
             "description": "Retrieves the value of an element\u0027s attribute from a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3007,7 +3016,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetElementSiblingsActivity",
+            "name": "GetElementSiblingsNode",
             "label": "Get Element Siblings",
             "description": "Finds and returns all sibling elements of the specified web element.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3016,7 +3025,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetParentElementActivity",
+            "name": "GetParentElementNode",
             "label": "Get Parent Element",
             "description": "Finds and returns the parent element of the specified web element.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3025,7 +3034,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GoToWebPageActivity",
+            "name": "GoToWebPageNode",
             "label": "Go To Web Page",
             "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3034,7 +3043,7 @@
           },
           {
             "type": "activityNode",
-            "name": "HoverMouseOverElementActivity",
+            "name": "HoverMouseOverElementNode",
             "label": "Hover Over Element on Web Page",
             "description": "Moves the mouse cursor over a specified element on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3043,7 +3052,7 @@
           },
           {
             "type": "activityNode",
-            "name": "IfWebPageContainsActivity",
+            "name": "IfWebPageContainsNode",
             "label": "If Web Page Contains",
             "description": "Checks if a web page contains a specific UI element or text. Optionally checks if the element is enabled or disabled.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3052,7 +3061,7 @@
           },
           {
             "type": "activityNode",
-            "name": "LaunchBrowserActivity",
+            "name": "LaunchBrowserNode",
             "label": "Launch Browser",
             "description": "Launches a web browser instance of Microsoft Edge or Google Chrome.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3061,16 +3070,16 @@
           },
           {
             "type": "activityNode",
-            "name": "PopulatePasswordFieldActivity",
+            "name": "PopulatePasswordFieldNode",
             "label": "Populate Password Field on Web Page",
-            "description": "Fills a password field in a web browser with a secure password value using the method you choose.",
+            "description": "Fills a specified password field in a web browser with a secure password value.",
             "img": "/assets/BrowserAutomation.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
-            "name": "PopulateTextFieldActivity",
+            "name": "PopulateTextFieldNode",
             "label": "Populate Text Field on Web Page",
             "description": "Fills a specified text field in a web browser with provided text. Supports plain or encrypted input.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3079,7 +3088,7 @@
           },
           {
             "type": "activityNode",
-            "name": "PressButtonOnWebPageActivity",
+            "name": "PressButtonOnWebPageNode",
             "label": "Press Button on Web Page",
             "description": "Simulates clicking a UI button element on a web page. Optionally waits for the new page to load and handles pop-up dialogs.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3088,7 +3097,7 @@
           },
           {
             "type": "activityNode",
-            "name": "RunJavaScriptFunctionOnWebPageActivity",
+            "name": "RunJavaScriptFunctionOnWebPageNode",
             "label": "Run JavaScript Function on Web Page",
             "description": "Executes a custom JavaScript function in the context of the current web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3097,7 +3106,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ScrollToElementOrPositionActivity",
+            "name": "ScrollToElementOrPositionNode",
             "label": "Scroll To Element or Position",
             "description": "Scrolls the browser window to a specified element or coordinates.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3106,7 +3115,7 @@
           },
           {
             "type": "activityNode",
-            "name": "SelectRadioButtonOnWebPageActivity",
+            "name": "SelectRadioButtonOnWebPageNode",
             "label": "Select Radio Button on Web Page",
             "description": "Simulates selecting a radio button element on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3115,7 +3124,7 @@
           },
           {
             "type": "activityNode",
-            "name": "SetCheckboxStateOnWebPageActivity",
+            "name": "SetCheckboxStateOnWebPageNode",
             "label": "Set Checkbox State on Web Page",
             "description": "Sets the state (checked/unchecked) of a checkbox element on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3124,7 +3133,7 @@
           },
           {
             "type": "activityNode",
-            "name": "SetDropDownListValueOnWebPageActivity",
+            "name": "SetDropDownListValueOnWebPageNode",
             "label": "Set Drop-Down List Value on Web Page",
             "description": "Sets or clears the value of a drop-down list element on a web page.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3133,7 +3142,7 @@
           },
           {
             "type": "activityNode",
-            "name": "SetElementAttributeValueActivity",
+            "name": "SetElementAttributeValueNode",
             "label": "Set Element Attribute Value",
             "description": "Sets the value of a specified attribute of a web element.",
             "img": "/assets/BrowserAutomation.svg",
@@ -3142,16 +3151,16 @@
           },
           {
             "type": "activityNode",
-            "name": "SwitchToDefaultContentActivity",
+            "name": "SwitchToDefaultContentNode",
             "label": "Switch To Default Content",
             "description": "Switches the Selenium WebDriver context back to the main document or top window (exiting all frames/iframe contexts).",
-            "img": "/function.png",
+            "img": "/assets/BrowserAutomation.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]
           },
           {
             "type": "activityNode",
-            "name": "SwitchToIframeActivity",
+            "name": "SwitchToIframeNode",
             "label": "Switch To Iframe",
             "description": "Switches the browser context to a specified iframe using the provided locator type and value (e.g., ID, Name, XPath, or CSS Selector).",
             "img": "/assets/BrowserAutomation.svg",
@@ -3160,9 +3169,9 @@
           },
           {
             "type": "activityNode",
-            "name": "SwitchToTabActivity",
+            "name": "SwitchToTabNode",
             "label": "Switch To Tab",
-            "description": "Switches control to a browser tab using index, title, or partial URL.",
+            "description": "Switches the browser context to a different tab by index, title, or URL fragment.",
             "img": "/assets/BrowserAutomation.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]
@@ -3181,6 +3190,24 @@
         "description": "Automate Microsoft Word document operations.",
         "img": "/assets/Word.svg",
         "actions": [
+          {
+            "type": "activityNode",
+            "name": "ExtractTextFromDocxFileNode",
+            "label": "Extract Text From DOCX File",
+            "description": "Reads text content from a .docx document using Open XML SDK.",
+            "img": "/assets/Word.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceInDocxFileNode",
+            "label": "Find And Replace In DOCX File",
+            "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
+            "img": "/assets/Word.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
           {
             "type": "activityNode",
             "name": "AttachToRunningWordNode",
@@ -3258,24 +3285,6 @@
             "name": "WriteToWordDocumentNode",
             "label": "Write To Word Document",
             "description": "Writes or appends text to a Word file.",
-            "img": "/assets/Word.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "ExtractTextFromDocxFileNode",
-            "label": "Extract Text From DOCX File",
-            "description": "Reads text content from a .docx document using Open XML SDK.",
-            "img": "/assets/Word.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "FindAndReplaceInDocxFileNode",
-            "label": "Find And Replace In DOCX File",
-            "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
             "img": "/assets/Word.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]

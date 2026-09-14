@@ -1,9 +1,9 @@
 {
-  "name": "CloseWebBrowserTab",
+  "name": "CloseWebBrowserTabNode",
   "label": "Close Web Browser Tab",
   "description": "Closes web browser tabs based on various conditions (current, by title/URL, all except main, timeout-based).",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -54,7 +54,7 @@
       "name": "MatchType",
       "label": "Match Type",
       "description": "Select whether to match by URL or Title when using \u0027ByTitleOrUrl\u0027 mode.",
-      "defaultValue": "",
+      "defaultValue": "Title",
       "required": false,
       "renderIf": {
         "conditions": [

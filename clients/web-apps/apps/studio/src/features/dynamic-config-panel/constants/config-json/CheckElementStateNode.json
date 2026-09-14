@@ -1,9 +1,9 @@
 {
-  "name": "GetParentElement",
-  "label": "Get Parent Element",
-  "description": "Finds and returns the parent element of the specified web element.",
+  "name": "CheckElementStateNode",
+  "label": "Check Element State",
+  "description": "Verifies if an element is visible, enabled, or selected.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -24,7 +24,7 @@
       "label": "Find Type",
       "description": "Specifies how to find the element (e.g., ID, XPath, CssSelector).",
       "defaultValue": "XPath",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "XPath",
@@ -139,11 +139,37 @@
     },
     {
       "direction": "Input",
+      "type": "select",
+      "name": "StateToCheck",
+      "label": "State To Check",
+      "description": "Specifies which state to verify: Visible, Enabled, Selected.",
+      "defaultValue": "Visible",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Visible",
+          "value": "Visible",
+          "description": "Checks if the element is displayed on the page."
+        },
+        {
+          "label": "Enabled",
+          "value": "Enabled",
+          "description": "Checks if the element is enabled (clickable/interactable)."
+        },
+        {
+          "label": "Selected",
+          "value": "Selected",
+          "description": "Checks if the element is selected (e.g., checkbox/radio button)."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
       "type": "switch",
       "name": "WaitForElement",
       "label": "Wait For Element",
-      "description": "If true, waits for the element to appear before retrieving its parent.",
-      "defaultValue": "",
+      "description": "If true, waits for the element to appear before checking its state.",
+      "defaultValue": false,
       "required": false
     },
     {
@@ -158,11 +184,11 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "ParentElement",
-      "label": "Parent Element",
-      "description": "Returns the parent IWebElement of the found element.",
+      "name": "IsStateMet",
+      "label": "Is State Met",
+      "description": "Returns true if the element meets the specified state condition.",
       "defaultValue": {
-        "value": "ParentElement",
+        "value": "IsStateMet",
         "enabled": true
       },
       "required": false

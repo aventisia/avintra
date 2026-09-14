@@ -1,9 +1,9 @@
 {
-  "name": "SwitchToTab",
+  "name": "SwitchToTabNode",
   "label": "Switch To Tab",
-  "description": "Switches control to a browser tab using index, title, or partial URL.",
+  "description": "Switches the browser context to a different tab by index, title, or URL fragment.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -12,8 +12,8 @@
       "direction": "Input",
       "type": "text",
       "name": "WebBrowserInstance",
-      "label": "Web Browser Instance",
-      "description": "Enter or choose the variable that contains the web browser instance to work with.",
+      "label": "Browser Instance",
+      "description": "The active IWebDriver instance representing the browser.",
       "defaultValue": "",
       "required": true
     },
@@ -22,24 +22,24 @@
       "type": "select",
       "name": "SwitchMode",
       "label": "Switch Mode",
-      "description": "Specifies how to locate the tab: by index, title, or URL fragment.",
+      "description": "The strategy for switching tabs: ByIndex, ByTitle, or ByUrlFragment.",
       "defaultValue": "ByIndex",
-      "required": true,
+      "required": false,
       "selectOptions": [
         {
           "label": "By Index",
           "value": "ByIndex",
-          "description": "Switch to tab by its position (1-based)."
+          "description": "Switch to a tab by its zero-based index."
         },
         {
           "label": "By Title",
           "value": "ByTitle",
-          "description": "Switch to tab by its full or partial title."
+          "description": "Switch to a tab whose title contains the specified text."
         },
         {
           "label": "By URL Fragment",
           "value": "ByUrlFragment",
-          "description": "Switch to tab whose URL contains the specified text."
+          "description": "Switch to a tab whose URL contains the specified fragment."
         }
       ]
     },
@@ -48,8 +48,8 @@
       "type": "text",
       "name": "TabIndex",
       "label": "Tab Index",
-      "description": "The index (1-based) of the tab to switch to.",
-      "defaultValue": "",
+      "description": "The zero-based index of the tab to switch to (used when Switch Mode is ByIndex).",
+      "defaultValue": 0,
       "required": false,
       "renderIf": {
         "conditions": [
@@ -65,7 +65,7 @@
       "type": "text",
       "name": "TabTitle",
       "label": "Tab Title",
-      "description": "The title of the tab to switch to.",
+      "description": "The title (or partial title) of the tab to switch to (used when Switch Mode is ByTitle).",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -82,7 +82,7 @@
       "type": "text",
       "name": "UrlFragment",
       "label": "URL Fragment",
-      "description": "A partial URL (e.g., \u0027example.com\u0027) to match the tab.",
+      "description": "A fragment of the URL to match when switching tabs (used when Switch Mode is ByUrlFragment).",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -98,8 +98,8 @@
       "direction": "Input",
       "type": "text",
       "name": "TimeoutSeconds",
-      "label": "Timeout Seconds",
-      "description": "Maximum time in seconds to wait for the tab to become available.",
+      "label": "Timeout (Seconds)",
+      "description": "Maximum time (in seconds) to wait for the tab to become available.",
       "defaultValue": 60,
       "required": false
     },
@@ -108,7 +108,7 @@
       "type": "config-panel-output",
       "name": "CurrentTabTitle",
       "label": "Current Tab Title",
-      "description": "Returns the title of the tab after switching.",
+      "description": "The title of the tab after switching.",
       "defaultValue": {
         "value": "CurrentTabTitle",
         "enabled": true
@@ -120,7 +120,7 @@
       "type": "config-panel-output",
       "name": "CurrentTabUrl",
       "label": "Current Tab URL",
-      "description": "Returns the current URL after switching tabs.",
+      "description": "The URL of the tab after switching.",
       "defaultValue": {
         "value": "CurrentTabUrl",
         "enabled": true
