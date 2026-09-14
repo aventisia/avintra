@@ -1,3 +1,4 @@
+import { ISelectOption } from "@avplatform/ui/types";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
@@ -11,6 +12,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
 
+import { getCredSelectOptions } from "../apis/app-secret-apis";
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
@@ -125,7 +127,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       statuses: defaultStatuses,
       routeToQueues: [],
       processingMode: "Manual",
-      credentialName: null,
+      credentialName: "",
       // outputDataSchemaFile: undefined,
 
       isDisabled: false,
@@ -144,6 +146,25 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   // queryKey already includes the current space id.
   const { queryKey } = useTableTab();
+
+  // Credential select options state
+  const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
+  const [isOptionsLoading, setIsOptionsLoading] = useState(true);
+
+  // Fetch M365 credentials list once when the dialog opens.
+  useEffect(() => {
+    setIsOptionsLoading(true);
+
+    getCredSelectOptions("M365")
+      .then((data) => {
+        setSelectOptions(data?.data as ISelectOption[]);
+        setIsOptionsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch credentials", err);
+        setIsOptionsLoading(false);
+      });
+  }, []);
 
   // Fetch queue data when rowId changes
   useEffect(() => {
@@ -167,13 +188,14 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
       processingMode: queueData?.processingMode || "Manual",
-      credentialName: queueData?.credentialName || queueData?.credentialId || null,
+      credentialName: queueData?.credentialName || "",
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
       // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
       // maximumRetryAttempts: queueData?.maximumRetryAttempts,
-      inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema),
+      inputSchema:
+        JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema, null, 2),
       statuses: JSON.stringify(queueData?.statuses, null, 2) ?? defaultStatuses,
       // outputDataSchemaFile: undefined,
 
@@ -185,7 +207,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
         queueData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: queueData?.lastModifiedOn ? new Date(queueData?.lastModifiedOn) : new Date(),
     });
-  }, [rowId, form, queryClient, userSession, crudAction, queryKey]);
+  }, [rowId, form, queryClient, userSession, crudAction, queryKey, selectOptions, isOptionsLoading]);
 
   // Get check availability state and methods
   const {
@@ -236,5 +258,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
+    selectOptions,
+    isOptionsLoading,
   };
 };

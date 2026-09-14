@@ -103,9 +103,11 @@ public class Queue : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential used to access resources associated with the queue.
+    /// Gets or sets the name of the credential used to access resources associated with the queue.
+    /// The Agent Builder stores and submits the resource NAME; the backend persists it directly.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    [MaxLength(255)]
+    public string? CredentialName { get; set; }
 
     /// <summary>
     /// Configures the many-to-many relationship between queue transactions and queues.

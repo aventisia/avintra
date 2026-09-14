@@ -11,14 +11,12 @@ import {
   TextareaField,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { ISelectOption } from "@avplatform/ui/types";
 import { type CrudActionType } from "@avplatform/ui/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { z } from "zod";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
-import { getCredSelectOptions } from "../../apis/app-secret-apis";
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import {
   descriptionProps,
@@ -56,28 +54,8 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
     isCheckPending,
     handleInputChange,
     refineFormData,
+    selectOptions,
   } = useDefineQueueForm({ rowId, crudAction });
-
-  // const jData = form.watch("inputSchema");
-  const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
-
-  const [, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    // Set loading state
-    setLoading(true);
-
-    // Fetch credentials list.
-    getCredSelectOptions()
-      .then((data) => {
-        setSelectOptions(data?.data as ISelectOption[]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch ", err);
-        setLoading(false);
-      });
-  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -303,6 +281,7 @@ Disposition statuses are always terminal (end) states.`}
         name="credentialName"
         label="Credential"
         disabled={isReadMode}
+        description="Optional credential used by this queue. Leave empty if the queue does not need to access external resources."
       />
 
       {/* Is Disabled */}
