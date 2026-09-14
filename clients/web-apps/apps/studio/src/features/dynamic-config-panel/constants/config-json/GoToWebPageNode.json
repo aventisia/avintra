@@ -1,9 +1,9 @@
 {
-  "name": "GoToWebPage",
+  "name": "GoToWebPageNode",
   "label": "Go To Web Page",
   "description": "Navigates a web browser instance to a specified URL, back, forward, or reload.",
   "version": "1.0.0",
-  "auther": "@aventisia",
+  "author": "@aventisia",
   "supportedPlatforms": ["windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
@@ -71,7 +71,7 @@
       "name": "WaitForPageToLoad",
       "label": "Wait for Page to Load",
       "description": "If true, waits for the page to fully load before continuing.",
-      "defaultValue": "",
+      "defaultValue": true,
       "required": false
     },
     {
