@@ -25,12 +25,25 @@ import dotenv from "dotenv";
 import pg from "pg";
 import crypto from "node:crypto";
 import { createCorsair } from "corsair";
-import { plugins } from "./corsair.js";
+// Import plugins directly from plugins.js (NOT corsair.js). corsair.js eagerly
+// calls createCorsair({ kek: process.env.CORSAIR_KEK! }) at module load, which
+// throws CorsairKekMissingError when CORSAIR_KEK is not set (e.g. the seed step
+// on the server). The seed only needs the plugin list and builds its own
+// self-contained corsair instance below.
+import { plugins } from "./plugins.js";
 import { generateToolMetadata } from "./generate-tool-metadata.js";
 
-// Load defaults first, then allow .env.local to override with real local values.
+// --- Variable selection precedence ---
+// Config is resolved in this order (highest wins):
+//   1. System environment variables (server: systemd Environment=/EnvironmentFile=;
+//      local: setx /M or $env:). These are authoritative.
+//   2. .env.local  (local dev overrides, gitignored)
+//   3. .env        (committed defaults)
+// dotenv never overrides an already-set variable, so anything present in the
+// process environment wins over both .env files. This keeps the server and
+// local dev on the same config source.
 dotenv.config({ path: ".env" });
-dotenv.config({ path: ".env.local", override: true });
+dotenv.config({ path: ".env.local" });
 
 const { Pool } = pg;
 
@@ -130,7 +143,7 @@ async function seedCorsairTools(): Promise<void> {
     const AUTH_TYPE_NONE = "None";
 
     for (const tool of generatedTools) {
-      const toolName = `Corsair ${toPascalCase(tool.id)}`;
+      const toolName = `${toPascalCase(tool.id)}`;
       const toolId = deterministicGuid(`corsair-tool-${toolName}`);
 
       try {

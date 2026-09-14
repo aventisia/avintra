@@ -245,7 +245,7 @@ def _sidecar_headers() -> dict[str, str]:
 
 
 def _sidecar_base_url() -> str:
-    url = settings.CORSAIR_SIDECAR_URL or "http://localhost:3456"
+    url = settings.CORSAIR_API_BASE_URL or "http://localhost:4006"
     return url.rstrip("/")
 
 
@@ -271,7 +271,7 @@ async def invoke_corsair_tool(
     """
     base_url = _sidecar_base_url()
     if not base_url:
-        raise CorsairSidecarServiceError("CORSAIR_SIDECAR_URL is not configured")
+        raise CorsairSidecarServiceError("CORSAIR_API_BASE_URL is not configured")
 
     plugin, action = parse_corsair_tool_name(tool_name)
     sidecar_action = to_sidecar_action(action)

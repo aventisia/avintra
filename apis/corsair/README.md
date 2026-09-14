@@ -67,6 +67,7 @@ The sidecar runs as an internal Express service and exposes the following backen
 - POST /connect/status: check whether a tenant is connected
 - GET /connect: resolve the OAuth consent state and redirect to the provider
 - GET /api/oauth/callback: complete the OAuth authorization flow and store tokens
+  (reached by the browser via the Workspace API proxy at /api/integration/oauth-callback)
 - POST /api/corsair/invoke: execute a plugin tool via the Workspace API boundary
 - GET /api/corsair/tools: introspect available operations for debugging and generation
 
@@ -94,15 +95,18 @@ This script reads the in-process Corsair plugin registry and writes generated fi
 
 ### Output location
 
-By default the generator writes into the Workspace API ConfigFiles folder (for local dev). In deployment, set `CORSAIR_CONFIG_DIR` to a dedicated shared path so the configs live **outside** the Workspace API codebase:
+The generator splits its output between the Workspace API codebase ConfigFiles folder and a deploy dir:
 
 ```sh
-CORSAIR_CONFIG_DIR=/var/www/aventisia.com/files/config/corsair npm run generate:configs
+npm run generate:configs
 ```
 
-The Workspace API reads Corsair configs from `<UploadDirectory>/config/corsair` at runtime (falling back to the codebase ConfigFiles folder for local dev). This keeps the sidecar fully decoupled: a Corsair config change does **not** force a Workspace API rebuild.
+- **Mapping + sibling artifacts** always go to the Workspace API codebase ConfigFiles folder: `Features/CloudConnectors/ConfigFiles/` (`CorsairActionSelectorMappingFile.json`, `CorsairActionMap.json`, `CorsairIntegrationCatalog.json`, `CorsairVaultTypeToPluginId.json`). These are committed and deploy with the Workspace API.
+- **Per-plugin configs** (the thousands of `{Plugin}/{Action}.json` files + OpenAPI specs) go to `CORSAIR_CONFIG_DIR` when set (server deploy dir, e.g. `/var/www/aventisia.com/files/configs/Corsair`). When unset (local dev) they fall back to `Features/CloudConnectors/ConfigFiles/Corsair/`, which every dev shares. The per-plugin configs are **not** committed — they are rsynced to the shared server files path by Jenkins.
 
-The global `CloudConnectorActionSelectorMappingFile.json` (owned by the Workspace API) is always cleaned in the Workspace API codebase, regardless of `CORSAIR_CONFIG_DIR`.
+The Workspace API serves per-plugin configs from the shared server path derived from the configured upload directory (`AppDefaultConfig:FileUploadConfig:UploadDirectory` → `.../files/configs/Corsair`) when present, falling back to the codebase folder locally. The committed sibling artifacts are always read from the codebase ConfigFiles folder.
+
+The global `CloudConnectorActionSelectorMappingFile.json` (owned by the Workspace API) is cleaned of any stale Corsair entries in the same folder.
 
 The generator entry point is:
 
@@ -116,18 +120,19 @@ The generation orchestrator is:
 
 Copy .env.example to .env.local and set real values before running the service.
 
-| Variable | Purpose |
-| --- | --- |
-| PORT | Internal sidecar port. Default is 3456. |
-| APP_URL | Internal base URL used by the consent and callback flow. |
-| WORKSPACE_APP_URL | Workspace API public URL used for redirecting OAuth results. |
-| CORSAIR_KEK | 32-byte hex encryption key used for token storage. |
-| POSTGRESQL_HOST | Postgres host for the sidecar database. |
-| POSTGRESQL_PORT | Postgres port. Default 5432. |
-| POSTGRESQL_USERNAME | Postgres username. |
-| POSTGRESQL_PASSWORD | Postgres password. |
-| POSTGRESQL_DATABASE | Postgres database name. Default is CorsairDb. |
-| CORSAIR_REDIRECT_URI | Optional explicit redirect URI override for OAuth callbacks. |
+| Variable                 | Purpose                                                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| PORT                     | Internal sidecar port. Default is 4006.                                                                           |
+| CORSAIR_KEK              | 32-byte hex encryption key used for token storage.                                                                |
+| APP_BASE_URL             | Public app base domain (without scheme). Used to derive the workspace app URL used for redirecting OAuth results. |
+| POSTGRESQL_HOST          | Postgres host for the sidecar database.                                                                           |
+| POSTGRESQL_PORT          | Postgres port. Default 5432.                                                                                      |
+| POSTGRESQL_USERNAME      | Postgres username.                                                                                                |
+| POSTGRESQL_PASSWORD      | Postgres password.                                                                                                |
+| ACCOUNTS_API_BASE_URL    | Accounts API base URL (informational, kept in sync with other services).                                          |
+| WORKSPACE_API_BASE_URL   | Internal Workspace API base URL (backend-to-backend calls). Browser-facing OAuth URLs are derived from `APP_BASE_URL`, never from this value. |
+| LLMPIPELINE_API_BASE_URL | LLM pipeline API base URL (informational).                                                                                                |
+| CORSAIR_REDIRECT_URI     | Optional explicit public redirect URI for OAuth callbacks. Must match the backend's `CORSAIR_REDIRECT_URI` and the Workspace API proxy route `/api/integration/oauth-callback`. Default derived from `APP_BASE_URL`. |
 
 ## Local development
 
@@ -160,27 +165,38 @@ When deploying the Corsair sidecar, follow this order:
    - Corsair database: `POSTGRESQL_HOST`, `POSTGRESQL_PORT`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
    - Workspace database: `WORKSPACE_POSTGRES_HOST`, `WORKSPACE_POSTGRES_PORT`, `WORKSPACE_POSTGRES_USERNAME`, `WORKSPACE_POSTGRES_PASSWORD`
    - Admin user: `ON_PREM_ADMIN_EMAIL`
-   - Sidecar config: `PORT`, `APP_URL`, `WORKSPACE_APP_URL`, `CORSAIR_KEK`
+   - Sidecar config: `PORT`, `APP_BASE_URL`, `CORSAIR_KEK`
 
 2. Build and deploy:
    ```sh
    npm run build              # Compile TypeScript
+   npm run generate:configs   # Generate config artifacts (mapping/siblings committed; per-plugin configs to CORSAIR_CONFIG_DIR)
    npm run migrate:prod       # Create Corsair database schema
    npm run seed:tools:prod    # Seed Corsair tools into Workspace database (explicit CI/CD step)
-   npm start                  # The prestart hook runs: migrate → generate:configs → start server
+   npm start                  # The prestart hook runs: migrate → start server
    ```
 
-**Important — `seed:tools` is intentionally NOT part of `prestart`.** It is a
-separate, explicit deployment step because it writes into the **Workspace
-database** (`ws_Tools`), which is owned by the Workspace API — not the sidecar.
-The sidecar's runtime (OAuth, `/api/corsair/invoke`) does not depend on the
-seeded tools, so coupling the seed to startup would block the sidecar if the
-Workspace DB is temporarily unavailable.
+   The mapping + sibling config artifacts are committed and deploy with the
+   Workspace API. The thousands of per-plugin configs are generated into
+   `CORSAIR_CONFIG_DIR` (set by Jenkins) and rsynced to the shared server files
+   path (`/var/www/aventisia.com/files/configs/Corsair`). They are not generated
+   inside the sidecar container at runtime.
 
-- `prestart` runs only sidecar-local steps: `migrate` (Corsair DB) and
-  `generate:configs` (static config files). These never touch the Workspace DB.
-- `seed:tools` must be run explicitly in CI/CD **after** the Workspace database
-  is up and migrated.
+**Important — `generate:configs` and `seed:tools` are intentionally NOT part of
+`prestart`.** Config generation is an explicit CI/CD step (Jenkins `Generate -
+Corsair Configs` stage) because the per-plugin configs are deployed to the shared
+server files path, not generated at runtime. `seed:tools` is also explicit
+because it writes into the **Workspace database** (`ws_Tools`), which is owned by
+the Workspace API — not the sidecar. The sidecar's runtime (OAuth,
+`/api/corsair/invoke`) does not depend on either, so coupling them to startup
+would block the sidecar if the Workspace DB is temporarily unavailable.
+
+- `prestart` runs only sidecar-local steps: `migrate` (Corsair DB). It never
+touches the Workspace DB and does not regenerate configs.
+- `predev` (local dev only) runs `migrate` + `generate:configs` so a single
+`npm run dev` is enough.
+- `generate:configs` and `seed:tools` must be run explicitly in CI/CD **after**
+the Workspace database is up and migrated.
 
 All seeding steps are idempotent and safe to run repeatedly.
 

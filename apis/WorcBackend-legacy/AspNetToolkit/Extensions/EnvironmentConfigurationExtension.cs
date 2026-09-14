@@ -75,11 +75,11 @@ public static class EnvironmentConfigurationExtension
         var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
         var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
-        var CORSAIR_SIDECAR_URL = Environment.GetEnvironmentVariable("CORSAIR_SIDECAR_URL") ?? config["EnvironmentConfig:CorsairSidecarUrl"] ?? "http://corsair:3456";
+        var CORSAIR_API_BASE_URL = Environment.GetEnvironmentVariable("CORSAIR_API_BASE_URL") ?? config["EnvironmentConfig:CorsairApiBaseUrl"] ?? "http://corsair:4006";
         // Public OAuth redirect URI must use the generic "integration" proxy path so end users
         // never see the internal "corsair" service name in browser URLs.
         var configuredCorsairRedirectUri = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"];
-        var CORSAIR_REDIRECT_URI = configuredCorsairRedirectUri ?? "https://local-avintra.aventisia.com/workspace/api/integration/oauth-callback";
+        var CORSAIR_REDIRECT_URI = configuredCorsairRedirectUri ?? $"https://{APP_BASE_URL}/workspace/api/integration/oauth-callback";
         if (!isLocalhostEnvironment && string.IsNullOrWhiteSpace(configuredCorsairRedirectUri))
         {
             Console.Error.WriteLine("CORSAIR_REDIRECT_URI is not configured; using the local development OAuth callback.");
@@ -196,7 +196,7 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CamelApiBaseUrl", CAMEL_API_BASE_URL.TrimEnd('/') },
-                    { "EnvironmentConfig:CorsairSidecarUrl", CORSAIR_SIDECAR_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:CorsairApiBaseUrl", CORSAIR_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CorsairRedirectUri", CORSAIR_REDIRECT_URI },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },

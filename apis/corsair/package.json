@@ -10,7 +10,7 @@
     "seed:tools": "tsx src/seed-corsair-tools.ts",
     "seed:tools:prod": "node dist/seed-corsair-tools.js",
     "predev": "npm run migrate && npm run generate:configs",
-    "prestart": "npm run migrate && npm run generate:configs",
+    "prestart": "npm run migrate",
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
     "generate:configs": "tsx src/generate-corsair-configs.ts",
