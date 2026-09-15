@@ -31,15 +31,6 @@
     },
     {
       "direction": "Input",
-      "type": "text",
-      "name": "SourceWorkItemId",
-      "label": "Source Work Item ID",
-      "description": "Optional source work item identifier for the work item. Leave empty to generate a new work item id; provide an existing source work item id (SourceWorkItemId) to schedule a retry (a new attempt is created for it).",
-      "defaultValue": "",
-      "required": false
-    },
-    {
-      "direction": "Input",
       "type": "json-editor",
       "name": "WorkItemData",
       "label": "Work Item Data",
@@ -49,12 +40,46 @@
     },
     {
       "direction": "Input",
+      "type": "switch",
+      "name": "IsRetry",
+      "label": "Is Retry",
+      "description": "Enable for retry mode. When ON, this node creates the next attempt for an existing work item instead of a brand new item, and the Source Work Item ID and Retry Time fields are shown. When OFF, a new work item is created with a freshly generated identifier and processed immediately.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceWorkItemId",
+      "label": "Source Work Item ID",
+      "description": "The identifier of the existing work item this retry continues. Required when \u0027Is Retry\u0027 is ON so the backend can create the next attempt (with an incremented retry count) for that work item. Leave empty for a brand new item; the backend generates the identifier for you. This field is only applicable if \u0027Is Retry\u0027 is set to true.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "IsRetry",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
       "type": "text",
       "name": "RetryTime",
       "label": "Retry Time",
-      "description": "Optional future date and time after which this work item becomes eligible for processing. Leave empty for immediate processing. Text value in ISO 8601 format (e.g. 2026-09-12T14:30:00Z).",
+      "description": "Optional. The date and time after which this work item becomes eligible for processing. Leave empty to make the work item available immediately. When set, it must be a future date and time, in ISO 8601 format (e.g. 2026-09-12T14:30:00Z). This field is only applicable if \u0027Is Retry\u0027 is set to true.",
       "defaultValue": "",
-      "required": false
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "IsRetry",
+            "equals": true
+          }
+        ]
+      }
     },
     {
       "direction": "Input",

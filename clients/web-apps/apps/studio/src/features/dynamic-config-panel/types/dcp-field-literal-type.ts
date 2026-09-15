@@ -18,7 +18,6 @@
  * - `"switch"`: A toggle switch input.
  * - `"radio-group"`: A group of radio buttons.
  * - `"date"`: A date picker input.
- * - `"datetime"`: A date + time picker input.
  * - `"slider"`: A slider input for selecting a value or range.
  * - `"textarea"`: A multi-line text input.
  */
@@ -40,7 +39,6 @@ export type DCPControlType =
   | "switch"
   | "radio-group"
   | "date"
-  | "datetime"
   | "slider"
   | "textarea"
   | "condition-groups"
