@@ -122,7 +122,12 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // provided (server deploy dir); otherwise they fall back to outputDir/Corsair
   // (local dev). The mapping and sibling artifacts always go to outputDir.
   const configRootResolved = configRoot ?? path.join(outputDir, "Corsair");
-  const corsairMappingFile = path.join(outputDir, "CorsairActionSelectorMappingFile.json");
+  // The dedicated Corsair action-selector mapping is a Corsair artifact. On the
+  // server it lives alongside the per-plugin configs in the deploy dir; locally
+  // it falls back to the codebase ConfigFiles root.
+  const corsairMappingFile = configRoot
+    ? path.join(configRoot, "CorsairActionSelectorMappingFile.json")
+    : path.join(outputDir, "CorsairActionSelectorMappingFile.json");
   // The global mapping is owned by the Workspace API codebase and lives in the
   // same ConfigFiles folder as the Corsair configs, so cleanup targets that file.
   // Defaults to outputDir/CloudConnectorActionSelectorMappingFile.json.

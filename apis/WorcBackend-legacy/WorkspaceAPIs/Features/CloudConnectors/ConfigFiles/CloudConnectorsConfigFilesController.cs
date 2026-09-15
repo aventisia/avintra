@@ -27,8 +27,12 @@ public class CloudConnectorsConfigFilesController : ControllerBase
         // in the codebase ConfigFiles folder.
         var codebaseRoot = Path.Combine(_env.ContentRootPath, "Features", "CloudConnectors", "ConfigFiles");
 
-        // Route Corsair per-plugin configs to the server path when configured and
-        // present; otherwise fall back to the codebase folder (local development).
+        // Route Corsair artifacts (per-plugin configs under "Corsair/" and the
+        // dedicated action-selector mapping file) to the Corsair root. On the
+        // server this is the shared path derived from the configured upload
+        // directory (e.g. /var/www/aventisia.com/files/configs/Corsair). Locally
+        // it falls back to the codebase ConfigFiles/Corsair folder, which holds
+        // the generated per-plugin configs and mapping file.
         var corsairRoot = _configuration["Corsair:ConfigRoot"];
         if (string.IsNullOrWhiteSpace(corsairRoot))
         {
@@ -38,18 +42,30 @@ public class CloudConnectorsConfigFilesController : ControllerBase
                 corsairRoot = Path.Combine(uploadDirectory, "configs", "Corsair");
             }
         }
-        var isCorsairPath = filePath?.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase) == true;
-        var root = isCorsairPath && !string.IsNullOrWhiteSpace(corsairRoot) && Directory.Exists(corsairRoot)
+        if (string.IsNullOrWhiteSpace(corsairRoot) || !Directory.Exists(corsairRoot))
+        {
+            // Local development: the server path is absent, so use the codebase
+            // ConfigFiles/Corsair folder where the generator writes the configs.
+            corsairRoot = Path.Combine(codebaseRoot, "Corsair");
+        }
+
+        // Corsair artifacts are the per-plugin configs under "Corsair/" and the
+        // dedicated action-selector mapping file ("CorsairActionSelectorMappingFile.json").
+        var isCorsairPath = filePath?.StartsWith("Corsair", StringComparison.OrdinalIgnoreCase) == true;
+        var root = isCorsairPath && Directory.Exists(corsairRoot)
             ? Path.GetFullPath(corsairRoot)
             : codebaseRoot;
 
-        // The filePath already carries the "Corsair/" prefix (e.g.
-        // "Corsair/Openai/ModelsListConnector.json"). corsairRoot IS the Corsair
-        // folder, so strip the prefix before combining to avoid a double
-        // "Corsair/Corsair/" path.
-        var relativePath = isCorsairPath && root != codebaseRoot
-            ? filePath!.Substring("Corsair/".Length)
-            : filePath ?? "";
+        // corsairRoot IS the Corsair folder. Per-plugin configs carry the
+        // "Corsair/" prefix (e.g. "Corsair/Openai/ModelsListConnector.json"), so
+        // strip it before combining to avoid a double "Corsair/Corsair/" path.
+        // The mapping file name is used as-is.
+        var relativePath = filePath ?? "";
+        if (isCorsairPath && root != codebaseRoot
+            && filePath!.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase))
+        {
+            relativePath = filePath.Substring("Corsair/".Length);
+        }
 
         var fullPath = Path.GetFullPath(Path.Combine(root, relativePath));
         if (!fullPath.StartsWith(root) || !System.IO.File.Exists(fullPath))

@@ -101,8 +101,8 @@ The generator splits its output between the Workspace API codebase ConfigFiles f
 npm run generate:configs
 ```
 
-- **Mapping + sibling artifacts** always go to the Workspace API codebase ConfigFiles folder: `Features/CloudConnectors/ConfigFiles/` (`CorsairActionSelectorMappingFile.json`, `CorsairActionMap.json`, `CorsairIntegrationCatalog.json`, `CorsairVaultTypeToPluginId.json`). These are committed and deploy with the Workspace API.
-- **Per-plugin configs** (the thousands of `{Plugin}/{Action}.json` files + OpenAPI specs) go to `CORSAIR_CONFIG_DIR` when set (server deploy dir, e.g. `/var/www/aventisia.com/files/configs/Corsair`). When unset (local dev) they fall back to `Features/CloudConnectors/ConfigFiles/Corsair/`, which every dev shares. The per-plugin configs are **not** committed — they are rsynced to the shared server files path by Jenkins.
+- **Small sibling artifacts** always go to the Workspace API codebase ConfigFiles folder: `Features/CloudConnectors/ConfigFiles/` (`CorsairActionMap.json`, `CorsairIntegrationCatalog.json`, `CorsairVaultTypeToPluginId.json`). These are committed and deploy with the Workspace API.
+- **Corsair action-selector mapping + per-plugin configs** (the thousands of `{Plugin}/{Action}.json` files + OpenAPI specs) go to `CORSAIR_CONFIG_DIR` when set (server deploy dir, e.g. `/var/www/aventisia.com/files/configs/Corsair`). When unset (local dev) the mapping file falls back to `Features/CloudConnectors/ConfigFiles/` and the per-plugin configs to `Features/CloudConnectors/ConfigFiles/Corsair/`, which every dev shares. These are **not** committed — they are rsynced to the shared server files path by Jenkins.
 
 The Workspace API serves per-plugin configs from the shared server path derived from the configured upload directory (`AppDefaultConfig:FileUploadConfig:UploadDirectory` → `.../files/configs/Corsair`) when present, falling back to the codebase folder locally. The committed sibling artifacts are always read from the codebase ConfigFiles folder.
 
