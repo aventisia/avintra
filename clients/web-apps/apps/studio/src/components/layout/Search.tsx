@@ -13,7 +13,7 @@ const SearchCommandTrigger = () => {
   );
 
   return (
-    <div>
+    <div className="hidden md:flex">
       <Tooltip content="Search">
         <Button
           size="icon8"
