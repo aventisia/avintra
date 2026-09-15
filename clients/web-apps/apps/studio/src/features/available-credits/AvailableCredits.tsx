@@ -15,7 +15,7 @@ const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
 
   return (
-    <Badge variant={"outline"} className="border-none bg-[#322D74] px-4 py-2">
+    <Badge variant={"outline"} className="border-none hidden md:flex bg-[#322D74] px-4 py-2">
       <p className="flex items-center gap-1 text-xs font-semibold text-white">
         Credits <span className="font-normal opacity-60">-</span>{" "}
         {isLoading ? (

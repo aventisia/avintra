@@ -17,15 +17,20 @@ const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
     }, [value, placeholder]);
 
     return (
-      <div className="relative inline-block">
+      <div
+        className={
+          "relative min-w-0 py-1 flex-1 overflow-hidden rounded border border-transparent px-1.5 transition-colors " +
+          "focus-within:border-white/40 focus-within:bg-white/10"
+        }
+      >
         {/* Hidden span to measure text width */}
         <span ref={spanRef} className="invisible absolute whitespace-pre p-0 text-xs" />
         <input
           ref={ref}
           value={value}
           placeholder={placeholder}
-          className={`rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0 ${className}`}
-          style={{ width }}
+          className={`block min-w-0 max-w-full truncate rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0 ${className}`}
+          style={{ width, maxWidth: "100%" }}
           {...props}
         />
       </div>

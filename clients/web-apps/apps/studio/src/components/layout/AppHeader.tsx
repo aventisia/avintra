@@ -59,14 +59,14 @@ const AppHeader: React.FC = () => {
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
     <HeaderContainer className="bg-slate-200">
-      <Header className="grid p-0 grid-cols-[1fr_auto_1fr]">
-        <div className="flex items-center gap-3 min-w-0 text-white">
+      <Header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-0">
+        <div className="flex min-w-0 items-center gap-3 text-white">
           {/* Back Button */}
           <Tooltip content="Back to Workspace">
             <Button
               size="icon8"
               variant="ghost"
-              className="hover:bg-white/10"
+              className="shrink-0 hover:bg-white/10"
               onClick={() => goBack()}
             >
               <ArrowLeftIcon className="h-4 w-4 text-white/80" />
@@ -86,11 +86,11 @@ const AppHeader: React.FC = () => {
           {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
-        <div className="flex items-center justify-center ">
+        <div className="flex min-w-0 shrink-0 items-center justify-center">
           {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}{" "}
         </div>
         {!isAgentHistory && !isExecutionLog ? (
-          <div className="flex items-center  justify-end">
+          <div className="flex min-w-0 items-center justify-end">
             {/* <div>
               {isIndividualUser ? (
                 <Avatar className={cn("flex h-7 w-7")}>
@@ -100,7 +100,7 @@ const AppHeader: React.FC = () => {
                 </Avatar>
               ) : null}
             </div> */}
-            <div className="mx-4 flex items-center gap-1 text-white">
+            <div className="mx-4 flex min-w-0 items-center gap-1 text-white">
               <PresenceAvatars />
 
               <ExecuteFlow />
@@ -120,13 +120,13 @@ const AppHeader: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-1 justify-end">
+          <div className="flex min-w-0 items-center justify-end gap-1">
             <SearchCommandTrigger />
             <Button
               variant={"ghost"}
               size={"xs"}
               className={
-                "group flex h-7 max-w-[15rem] gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
+                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
               }
             >
               View Only

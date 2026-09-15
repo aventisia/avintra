@@ -28,7 +28,7 @@ export const ChatTrigger = () => {
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
           "relative hover:bg-white/10",
-          isChatOpen && "hidden bg-white/10 mlg:flex",
+          isChatOpen && "hidden bg-white/10 md:flex",
         )}
         onClick={() => setChatOpen(!isChatOpen)}
       >
