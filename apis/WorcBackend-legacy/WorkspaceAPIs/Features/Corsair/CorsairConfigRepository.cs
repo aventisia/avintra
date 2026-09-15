@@ -229,10 +229,22 @@ public class CorsairConfigRepository
     /// </summary>
     private string? ResolveArtifactPath(string fileName)
     {
+        // Sibling artifacts (action map, integration catalog, vault‑type map) are
+        // always present in the codebase ConfigFiles folder, but during local
+        // development we also want to serve them from the same server‑side
+        // Corsair root used for per‑plugin configs when that root is
+        // configured. This mirrors the behaviour added to the controller for
+        // the per‑plugin files.
         var codebaseRoot = ResolveCodebaseConfigRoot();
-        var candidates = new[]
+        var corsairRoot = ResolveConfigRoot(); // may be server path or fallback
+
+        var candidates = new List<string>
         {
+            // Prefer the server‑side location if it exists.
+            Path.Combine(corsairRoot, fileName),
+            // Fallback to the codebase location.
             Path.Combine(codebaseRoot, fileName),
+            // Also check the parent of the codebase root (historical fallback).
             Path.Combine(Directory.GetParent(codebaseRoot)?.FullName ?? codebaseRoot, fileName),
         };
 

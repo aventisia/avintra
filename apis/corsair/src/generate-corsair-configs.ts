@@ -10,12 +10,13 @@
  *   npm run generate:configs
  *
  * Output location:
- *   - The mapping and small sibling artifacts always go to the Workspace API
- *     codebase ConfigFiles folder (Features/CloudConnectors/ConfigFiles).
- *   - The thousands of per-plugin configs go to CORSAIR_CONFIG_DIR when set
- *     (server deploy dir, e.g. /var/www/aventisia.com/files/configs/Corsair);
- *     otherwise they fall back to the codebase ConfigFiles/Corsair folder for
- *     local development.
+ *   - The small sibling artifacts (action map, integration catalog, vault-type
+ *     map) always go to the Workspace API codebase ConfigFiles folder
+ *     (Features/CloudConnectors/ConfigFiles).
+ *   - The Corsair action-selector mapping file and the thousands of per-plugin
+ *     configs go to CORSAIR_CONFIG_DIR when set (server deploy dir, e.g.
+ *     /var/www/aventisia.com/files/configs/Corsair); otherwise they fall back to
+ *     the codebase ConfigFiles folder for local development.
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";

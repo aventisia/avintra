@@ -109,9 +109,11 @@ export type GenerateDcpOptions = {
   outputDir: string;
   /**
    * Absolute path to the per-plugin Corsair config root. When set (e.g. a
-   * deploy dir on the server), per-plugin configs and OpenAPI specs are written
-   * here. When unset, they fall back to <c>outputDir/Corsair</c> (local dev).
-   * The mapping and sibling artifacts always go to <c>outputDir</c>.
+   * deploy dir on the server), per-plugin configs, OpenAPI specs, and the
+   * dedicated Corsair action-selector mapping file are written here. When
+   * unset, they fall back to <c>outputDir</c> (local dev). The small sibling
+   * artifacts (action map, integration catalog, vault-type map) always go to
+   * <c>outputDir</c>.
    */
   configRoot?: string;
   /** Corsair plugin objects (from src/corsair.ts). */
