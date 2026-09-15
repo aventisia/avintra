@@ -418,9 +418,6 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
   switch (field.type) {
     case "number":
       return applyFieldOptions(z.number(), field);
-    case "datetime":
-      // DateTime fields render as a plain text input, so keep the raw string value.
-      return z.string().nullable().optional();
     case "checkbox":
     case "switch":
       return applyFieldOptions(z.boolean(), field);

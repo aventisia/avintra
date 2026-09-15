@@ -19,6 +19,7 @@ export const WorkItemsTableCellLink = ({ rowId, children }: WorkItemsTableCellLi
   return (
     <NavLink
       to={getWorkItemUrl(rowId)}
+      title={typeof children === "string" ? children : rowId}
       className={cn(
         buttonVariants({ variant: "link" }),
         "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",

@@ -42,11 +42,14 @@ export const generateDTColumns = (fields: InputSchemaField[]): ColumnDef<WorkIte
         className="max-w-40"
       />
     ),
-    cell: (info) => (
-      <div className="w-40 truncate font-medium">
-        {formatDynamicCell(info.getValue(), FALLBACK_VALUE)}
-      </div>
-    ),
+    cell: (info) => {
+      const value = formatDynamicCell(info.getValue(), FALLBACK_VALUE);
+      return (
+        <div title={value} className="w-40 truncate font-medium">
+          {value}
+        </div>
+      );
+    },
   }));
 
 export const generateColumnsDisplayName = (fields: InputSchemaField[]): KeyValueLookupType[] =>
@@ -82,11 +85,14 @@ export const buildColumns = (
       header: ({ column }) => (
         <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Assignee" />
       ),
-      cell: ({ row }) => (
-        <div className="w-32 truncate font-medium">
-          {row.original.assignee ?? FALLBACK_VALUE}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const value = row.original.assignee ?? FALLBACK_VALUE;
+        return (
+          <div title={value} className="w-32 truncate font-medium">
+            {value}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "createdOn",
@@ -96,10 +102,11 @@ export const buildColumns = (
       cell: ({ row }) => {
         const value = row.original.createdOn;
         if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
+        const formatted = new Date(value).toLocaleString();
         return (
-          <div className="w-40 truncate font-medium">
-            {new Date(value).toLocaleString()}
-          </div>
+          <span className="inline-block w-40 truncate font-medium" title={formatted}>
+            {formatted}
+          </span>
         );
       },
     },
@@ -114,10 +121,14 @@ export const buildColumns = (
             cell: ({ row }: { row: { original: WorkItemRow } }) => {
               const value = row.original.closedOn;
               if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
+              const formatted = new Date(value).toLocaleString();
               return (
-                <div className="w-40 truncate font-medium">
-                  {new Date(value).toLocaleString()}
-                </div>
+                <span
+                  className="inline-block w-40 truncate font-medium"
+                  title={formatted}
+                >
+                  {formatted}
+                </span>
               );
             },
           },

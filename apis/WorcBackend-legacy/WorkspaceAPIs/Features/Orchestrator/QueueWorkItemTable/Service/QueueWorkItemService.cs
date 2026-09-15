@@ -85,8 +85,22 @@ public class QueueWorkItemService : IQueueWorkItemService
                 .AsNoTracking()
                 .ToListAsync();
 
+            // Resolve the names of array-typed fields from the queue schema so they can be
+            // removed from the payload before delivery (their stored value may be null, not an
+            // actual JSON array, so schema lookup is required to identify them).
+            var arrayFieldNames = GetArrayFieldNames(queueWorkitems.FirstOrDefault()?.Queue);
+
+            // Sanitize WorkItemData before sending to the client: string values longer than
+            // 50 characters are truncated, and array/list fields (identified either by their
+            // actual JSON value or by the queue schema) are removed entirely.
+            var dtos = queueWorkitems.Adapt<List<QueueWorkItemDto>>();
+            foreach (var dto in dtos)
+            {
+                dto.WorkItemData = SanitizeWorkItemData(dto.WorkItemData, arrayFieldNames);
+            }
+
             // On success, populate the response with the data
-            serviceResponse.Data = queueWorkitems.Adapt<IEnumerable<QueueWorkItemDto>>();
+            serviceResponse.Data = dtos;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue workitems.";
         }
@@ -96,6 +110,99 @@ public class QueueWorkItemService : IQueueWorkItemService
         }
 
         return serviceResponse;
+    }
+
+    // Extracts the set of field names whose schema type is "Array" (case-insensitive) from the
+    // queue's InputSchema. These fields are always removed from the WorkItemData payload.
+    private static HashSet<string> GetArrayFieldNames(Queue? queue)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        if (queue == null || string.IsNullOrWhiteSpace(queue.InputSchema))
+        {
+            return names;
+        }
+
+        try
+        {
+            var schema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
+                queue.InputSchema,
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                ?? [];
+
+            foreach (var field in schema)
+            {
+                if (string.Equals(field.Type, "Array", StringComparison.OrdinalIgnoreCase))
+                {
+                    names.Add(field.Name);
+                }
+            }
+        }
+        catch
+        {
+            // Malformed schema — fall back to value-based detection only.
+        }
+
+        return names;
+    }
+
+    // Sanitizes the WorkItemData JSON payload before it is delivered to the client:
+    // string values longer than 50 characters are truncated to 50, array/list fields
+    // (by value or by schema type) are removed entirely, and all other values are unchanged.
+    private static string? SanitizeWorkItemData(string? workItemData, HashSet<string> arrayFieldNames)
+    {
+        if (string.IsNullOrWhiteSpace(workItemData))
+        {
+            return workItemData;
+        }
+
+        JToken token;
+        try
+        {
+            token = JToken.Parse(workItemData);
+        }
+        catch (JsonReaderException)
+        {
+            // Not valid JSON — leave the payload untouched.
+            return workItemData;
+        }
+
+        return token switch
+        {
+            // The payload itself is an array/list — drop the value entirely.
+            JArray => null,
+            _ => SanitizeToken(token, arrayFieldNames)?.ToString(Formatting.None)
+        };
+    }
+
+    private static JToken SanitizeToken(JToken token, HashSet<string> arrayFieldNames)
+    {
+        switch (token)
+        {
+            case JObject obj:
+                foreach (var prop in obj.Properties().ToList())
+                {
+                    // Array/list fields are removed completely (property and value): either the
+                    // value is an actual JSON array, or the queue schema declares the field as
+                    // type "Array" (stored value may be null).
+                    if (prop.Value is JArray || arrayFieldNames.Contains(prop.Name))
+                    {
+                        prop.Remove();
+                        continue;
+                    }
+
+                    prop.Value = SanitizeToken(prop.Value, arrayFieldNames);
+                }
+                return obj;
+            case JValue value when value.Type == JTokenType.String &&
+                                     value.Value is string s && s.Length > 50:
+                // Truncate to the first 47 characters and append "..." so the final
+                // value stays at the 50-character cap while clearly indicating truncation.
+                return new JValue(s.Substring(0, 47) + "...");
+            default:
+                // All other types (numbers, booleans, null, nested objects, short strings) are unchanged.
+                return token;
+        }
     }
 
     // Retrieve all workitems for a specific queue using provided filter criteria
