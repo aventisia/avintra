@@ -53,7 +53,6 @@ import { BackgroundExt } from "./BackgroundExt";
 import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
 import { MiniMapExt } from "./MiniMapExt";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
-import { TestChatAgent } from "./TestChatAgent";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ViewControls } from "./view-controls";
 
@@ -71,7 +70,6 @@ export const ReactFlowExt = () => {
     onConnect,
     setViewport,
     flowType,
-    isTestChatOpen,
   } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -82,7 +80,6 @@ export const ReactFlowExt = () => {
       onConnect: state.onConnect,
       setViewport: state.setViewport,
       flowType: state.flowType,
-      isTestChatOpen: state.isTestChatOpen,
     })),
   );
 
@@ -100,6 +97,19 @@ export const ReactFlowExt = () => {
   const handleChatRequestComplete = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
   }, [queryClient]);
+
+  // Model label for the always-visible ChatAgent test panel, read from the
+  // Chat AI node's model config so the tester knows what is being exercised.
+  const chatModelLabel = useMemo(() => {
+    if (flowType !== FlowTypesEnum.ChatAgent) return undefined;
+    const chatNode = nodes.find((node) => node.type === "aiNode");
+    const inputs = (
+      chatNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
+    )?.inputs;
+    const modelConfig = inputs?.find((input) => input.key === "__ModelConfig__Conversation")
+      ?.value as { model?: unknown } | undefined;
+    return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
+  }, [flowType, nodes]);
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -303,8 +313,12 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200">
-      <ResizablePanel minSize={"50%"}>
+    <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200 p-1.5">
+      <ResizablePanel
+        defaultSize="60%"
+        minSize="35%"
+        className="overflow-hidden rounded-xl bg-white"
+      >
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <FlowBreadcrumbs />
           <ReactFlow
@@ -333,7 +347,6 @@ export const ReactFlowExt = () => {
             snapToGrid={true}
             snapGrid={[16, 16]}
           >
-            {flowType === FlowTypesEnum.ChatAgent && <TestChatAgent />}
             <AutoFollowExecutingNode />
             <ViewControls />
             <ClearRunResultsPanel />
@@ -356,13 +369,20 @@ export const ReactFlowExt = () => {
 
         <ReactFlowDialogWrapper />
       </ResizablePanel>
-      {flowType === FlowTypesEnum.ChatAgent && isTestChatOpen && (
+      {flowType === FlowTypesEnum.ChatAgent && (
         <>
-          <ResizableHandle withHandle className="bg-slate-300" />
-          <ResizablePanel minSize={"30%"} defaultSize="35%">
+          <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
+          <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
             <AvPlatformAssistantUI
               flowVersionId={currentFlow.versionId}
               mode="temporary"
+              title="Test Chat"
+              badge="Test mode"
+              description={
+                chatModelLabel
+                  ? `Live test · ${chatModelLabel} · history is not saved`
+                  : "Live test · history is not saved"
+              }
               onRequestComplete={handleChatRequestComplete}
               defaultActions={
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []

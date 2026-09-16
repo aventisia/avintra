@@ -122,8 +122,6 @@ type State = {
   /** Type of the flow - Agent, ChatAgent or Block. TODO: we can combine flow meta data like isPublished and flowType into a single object */
   flowType: FlowTypesEnum;
 
-  isTestChatOpen: boolean;
-
   /** Output flow variables */
   flowVariablesObject: FlowVariablesObjectType[] | [];
 
@@ -186,9 +184,6 @@ type Actions = {
   /** To set flow type */
   setFlowType: (flowType: FlowTypesEnum) => void;
 
-  /** To toggle test chat state */
-  setIsTestChatOpen: (isTestChatOpen: boolean) => void;
-
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
@@ -218,7 +213,6 @@ export const useReactFlowExtStore = create<State & Actions>()(
     contextMenuOrigin: null,
     isPublished: false,
     flowType: FlowTypesEnum.Agent,
-    isTestChatOpen: false,
     viewport: { x: 0, y: 0, zoom: 1 },
 
     past: [],
@@ -311,8 +305,7 @@ export const useReactFlowExtStore = create<State & Actions>()(
       }
     },
     setIsPublished: (isPublished: boolean) => set({ isPublished }),
-    setFlowType: (flowType: FlowTypesEnum) => set({ flowType, isTestChatOpen: false }),
-    setIsTestChatOpen: (isTestChatOpen: boolean) => set({ isTestChatOpen }),
+    setFlowType: (flowType: FlowTypesEnum) => set({ flowType }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
       set({ flowVariablesObject: variables }),
     setConfigVariables: (variables: string[]) => set({ configVariables: variables }),

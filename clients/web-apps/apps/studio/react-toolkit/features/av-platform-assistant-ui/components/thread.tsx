@@ -80,7 +80,9 @@ function FollowUps() {
   );
 }
 
-export const Thread = ({ title, description }: { title?: string; description?: string }) => {
+type ThreadHeaderProps = { title?: string; description?: string; badge?: string };
+
+export const Thread = ({ title, description, badge }: ThreadHeaderProps) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
 
@@ -102,7 +104,7 @@ export const Thread = ({ title, description }: { title?: string; description?: s
       >
         {!isDisabled && (
           <AuiIf condition={(s) => s.thread.isEmpty}>
-            <ThreadWelcome title={title} description={description} />
+            <ThreadWelcome title={title} description={description} badge={badge} />
           </AuiIf>
         )}
 
@@ -150,11 +152,17 @@ const ThreadScrollToBottom: FC = () => {
   );
 };
 
-const ThreadWelcome = ({ title, description }: { title?: string; description?: string }) => {
+const ThreadWelcome = ({ title, description, badge }: ThreadHeaderProps) => {
   return (
     <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-[var(--thread-max-width)] grow flex-col">
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
         <div className="aui-thread-welcome-message gap-1 flex size-full flex-col justify-center items-center px-4">
+          {badge && (
+            <span className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+              <span className="size-1.5 rounded-full bg-primary" />
+              {badge}
+            </span>
+          )}
           <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-xl duration-200 capitalize">
             {title ?? "Hello"}
           </h1>
