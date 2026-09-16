@@ -1,14 +1,17 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 export const useReplaceNode = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, setNodes } = useReactFlowExtStore(
+  const { nodes, flowType, setNodes } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
+      flowType: state.flowType,
       setNodes: state.setNodes,
     })),
   );
@@ -16,6 +19,11 @@ export const useReplaceNode = () => {
   // Handler to replace node
   const replaceNodeHandler = useCallback(
     (nodeData: NodeDataType) => {
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
+
       // Get selected node
       const selectedNode = nodes.find((node) => node.selected);
 
@@ -34,7 +42,7 @@ export const useReplaceNode = () => {
       // Update nodes state
       setNodes(updatedNodes);
     },
-    [nodes, setNodes],
+    [nodes, setNodes, flowType],
   );
 
   return replaceNodeHandler;

@@ -18,6 +18,8 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
+import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import { HistoryState } from "@/utils/history-equality-checker";
 
@@ -223,85 +225,92 @@ export const useReactFlowExtStore = create<State & Actions>()(
     future: [],
     isRestoringHistory: false,
     savedSnapshot: null,
-  isApplyingRemote: false,
+    isApplyingRemote: false,
 
-  onNodesChange: (changes: NodeChange[]) => {
-    const nextNodes = applyNodeChanges(changes, get().nodes);
-    set({ nodes: nextNodes });
+    onNodesChange: (changes: NodeChange[]) => {
+      const nextNodes = applyNodeChanges(changes, get().nodes);
+      set({ nodes: nextNodes });
 
-    // Broadcast structural/position changes to collaborators (skip remote-originated).
-    if (!get().isApplyingRemote) {
-      const changed = changes.find((c) => c.type === "position" || c.type === "remove");
-      if (changed && "id" in changed) {
-        const node = nextNodes.find((n) => n.id === changed.id);
-        if (node) scheduleNodeBroadcast(node.id, JSON.stringify(node));
+      // Broadcast structural/position changes to collaborators (skip remote-originated).
+      if (!get().isApplyingRemote) {
+        const changed = changes.find((c) => c.type === "position" || c.type === "remove");
+        if (changed && "id" in changed) {
+          const node = nextNodes.find((n) => n.id === changed.id);
+          if (node) scheduleNodeBroadcast(node.id, JSON.stringify(node));
+        }
       }
-    }
-  },
+    },
 
-  onEdgesChange: (changes: EdgeChange[]) => {
-    const nextEdges = applyEdgeChanges(changes, get().edges);
-    set({ edges: nextEdges });
+    onEdgesChange: (changes: EdgeChange[]) => {
+      const nextEdges = applyEdgeChanges(changes, get().edges);
+      set({ edges: nextEdges });
 
-    if (!get().isApplyingRemote) {
-      const changed = changes.find((c) => c.type === "remove");
-      if (changed && "id" in changed) {
-        scheduleEdgeBroadcast(changed.id, JSON.stringify({ id: changed.id, removed: true }));
+      if (!get().isApplyingRemote) {
+        const changed = changes.find((c) => c.type === "remove");
+        if (changed && "id" in changed) {
+          scheduleEdgeBroadcast(changed.id, JSON.stringify({ id: changed.id, removed: true }));
+        }
       }
-    }
-  },
+    },
 
-  //onConnect triggers only when two nodes are connected manually
-  onConnect: (connection: Connection) => {
-    // Create a unique id for the edge
-    const id = window.crypto.randomUUID();
-    const newEdge = {
-      ...connection,
-      label: "plus",
-      id,
-      markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
-    } as Edge;
-    set({
-      edges: addEdge(newEdge, get().edges),
-    });
-
-    if (!get().isApplyingRemote) {
-      scheduleEdgeBroadcast(id, JSON.stringify(newEdge));
-    }
-  },
-
-  setNodes: (nodes: Node[]) => {
-    const prevNodes = get().nodes;
-    set({ nodes });
-
-    // Broadcast a full-graph snapshot on structural changes (nodes added/removed), since
-    // dagre auto-layout repositions the whole graph. Skip remote-originated changes.
-    if (!get().isApplyingRemote && broadcastGraphChangeFn) {
-      const prevIds = new Set(prevNodes.map((n) => n.id));
-      const hasStructuralChange = nodes.length !== prevNodes.length ||
-        nodes.some((n) => !prevIds.has(n.id)) ||
-        prevNodes.some((n) => !nodes.some((nn) => nn.id === n.id));
-      if (hasStructuralChange) {
-        broadcastGraphChange();
+    //onConnect triggers only when two nodes are connected manually
+    onConnect: (connection: Connection) => {
+      if (get().flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
       }
-    }
-  },
-  setEdges: (edges: Edge[]) => {
-    const prevEdges = get().edges;
-    set({ edges });
 
-    // Broadcast a full-graph snapshot when edges are added/removed structurally.
-    if (!get().isApplyingRemote && broadcastGraphChangeFn) {
-      const prevIds = new Set(prevEdges.map((e) => e.id));
-      const hasStructuralChange = edges.length !== prevEdges.length ||
-        edges.some((e) => !prevIds.has(e.id)) ||
-        prevEdges.some((e) => !edges.some((ee) => ee.id === e.id));
-      if (hasStructuralChange) {
-        broadcastGraphChange();
+      // Create a unique id for the edge
+      const id = window.crypto.randomUUID();
+      const newEdge = {
+        ...connection,
+        label: "plus",
+        id,
+        markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
+      } as Edge;
+      set({
+        edges: addEdge(newEdge, get().edges),
+      });
+
+      if (!get().isApplyingRemote) {
+        scheduleEdgeBroadcast(id, JSON.stringify(newEdge));
       }
-    }
-  },
-  setIsPublished: (isPublished: boolean) => set({ isPublished }),
+    },
+
+    setNodes: (nodes: Node[]) => {
+      const prevNodes = get().nodes;
+      set({ nodes });
+
+      // Broadcast a full-graph snapshot on structural changes (nodes added/removed), since
+      // dagre auto-layout repositions the whole graph. Skip remote-originated changes.
+      if (!get().isApplyingRemote && broadcastGraphChangeFn) {
+        const prevIds = new Set(prevNodes.map((n) => n.id));
+        const hasStructuralChange =
+          nodes.length !== prevNodes.length ||
+          nodes.some((n) => !prevIds.has(n.id)) ||
+          prevNodes.some((n) => !nodes.some((nn) => nn.id === n.id));
+        if (hasStructuralChange) {
+          broadcastGraphChange();
+        }
+      }
+    },
+    setEdges: (edges: Edge[]) => {
+      const prevEdges = get().edges;
+      set({ edges });
+
+      // Broadcast a full-graph snapshot when edges are added/removed structurally.
+      if (!get().isApplyingRemote && broadcastGraphChangeFn) {
+        const prevIds = new Set(prevEdges.map((e) => e.id));
+        const hasStructuralChange =
+          edges.length !== prevEdges.length ||
+          edges.some((e) => !prevIds.has(e.id)) ||
+          prevEdges.some((e) => !edges.some((ee) => ee.id === e.id));
+        if (hasStructuralChange) {
+          broadcastGraphChange();
+        }
+      }
+    },
+    setIsPublished: (isPublished: boolean) => set({ isPublished }),
     setFlowType: (flowType: FlowTypesEnum) => set({ flowType, isTestChatOpen: false }),
     setIsTestChatOpen: (isTestChatOpen: boolean) => set({ isTestChatOpen }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
@@ -317,15 +326,19 @@ export const useReactFlowExtStore = create<State & Actions>()(
     setViewport: (viewport) => set({ viewport }),
 
     hydrateFlow: (nodes, edges, variables) => {
+      const graph =
+        get().flowType === FlowTypesEnum.ChatAgent
+          ? normalizeChatAgentGraph(nodes, edges)
+          : { nodes, edges, flowVariablesObject: variables };
       const baseline: HistoryState = {
-        nodes,
-        edges,
-        flowVariablesObject: variables,
+        nodes: graph.nodes,
+        edges: graph.edges,
+        flowVariablesObject: graph.flowVariablesObject,
       };
       set({
-        nodes,
-        edges,
-        flowVariablesObject: variables,
+        nodes: graph.nodes,
+        edges: graph.edges,
+        flowVariablesObject: graph.flowVariablesObject,
         past: [baseline],
         future: [],
         savedSnapshot: baseline,

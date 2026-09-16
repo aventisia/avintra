@@ -160,7 +160,7 @@ public class FlowVersionService : IFlowVersionService
             newFlowVersion.VersionNumber = versionCount + 1;
 
             // Add initial nodes and edges
-            newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
+            newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges(flow.Type);
 
             //Insert a flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);

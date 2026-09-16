@@ -19,7 +19,7 @@ const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
     return (
       <div
         className={
-          "relative min-w-0 py-1 flex-1 overflow-hidden rounded border border-transparent px-1.5 transition-colors " +
+          "relative w-auto max-w-full min-w-0 flex-none overflow-hidden rounded border border-transparent px-1.5 py-1 transition-colors " +
           "focus-within:border-white/40 focus-within:bg-white/10"
         }
       >

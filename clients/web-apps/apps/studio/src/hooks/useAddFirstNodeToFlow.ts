@@ -1,7 +1,9 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
@@ -10,10 +12,11 @@ import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
 export const useAddFirstNodeToFlow = () => {
   // Get ReactFlowExt store state & actions
-  const { nodes, edges } = useReactFlowExtStore(
+  const { nodes, edges, flowType } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
+      flowType: state.flowType,
     })),
   );
 
@@ -23,6 +26,11 @@ export const useAddFirstNodeToFlow = () => {
   // Handler to add first node to flow
   const addFirstNodeToFlow = useCallback(
     (nodeData: NodeDataType, plusNodeId: string) => {
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
+
       // Get plus node edge
       const plusNodeEdge = edges.find((edge) => edge.target === plusNodeId) as Edge;
 
@@ -69,7 +77,7 @@ export const useAddFirstNodeToFlow = () => {
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
     },
-    [edges, nodes, autoLayout],
+    [edges, nodes, autoLayout, flowType],
   );
 
   // Return the handler
