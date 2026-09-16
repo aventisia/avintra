@@ -54,6 +54,14 @@ const AgentName = ({ className }: { className?: string }) => {
               onBlur={() => {
                 const baseline = (baselineName ?? "").trim();
                 const next = (currentFlow?.name ?? "").trim();
+                // Empty names are not allowed — restore the last saved name
+                // without firing the update mutation.
+                if (next === "") {
+                  if (currentFlow?.name !== baselineName) {
+                    setCurrentFlow({ ...currentFlow, name: baselineName ?? "" });
+                  }
+                  return;
+                }
                 if (baseline !== next)
                   updateFlow(
                     {
