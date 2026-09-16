@@ -248,6 +248,25 @@
     "configFile": "Agenty.json"
   },
   {
+    "pluginId": "agiled",
+    "pluginIds": [
+      "agiled"
+    ],
+    "providerName": "Agiled",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Agiled",
+    "configFile": "Agiled.json"
+  },
+  {
     "pluginId": "agilitycms",
     "pluginIds": [
       "agilitycms"
@@ -762,6 +781,23 @@
     "configFile": "Apisports.json"
   },
   {
+    "pluginId": "appointo",
+    "pluginIds": [
+      "appointo"
+    ],
+    "providerName": "Appointo",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Appointo",
+    "configFile": "Appointo.json"
+  },
+  {
     "pluginId": "asana",
     "pluginIds": [
       "asana"
@@ -815,6 +851,42 @@
     "icon": "/brand-img/asana.svg",
     "vaultType": "Asana",
     "configFile": "Asana.json"
+  },
+  {
+    "pluginId": "ascora",
+    "pluginIds": [
+      "ascora"
+    ],
+    "providerName": "Ascora",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Ascora",
+    "configFile": "Ascora.json"
+  },
+  {
+    "pluginId": "ashby",
+    "pluginIds": [
+      "ashby"
+    ],
+    "providerName": "Ashby",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Ashby",
+    "configFile": "Ashby.json"
   },
   {
     "pluginId": "asindataapi",
@@ -1115,6 +1187,40 @@
     "configFile": "Beeminder.json"
   },
   {
+    "pluginId": "benchmarkemail",
+    "pluginIds": [
+      "benchmarkemail"
+    ],
+    "providerName": "Benchmarkemail",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Benchmarkemail",
+    "configFile": "Benchmarkemail.json"
+  },
+  {
+    "pluginId": "bestbuy",
+    "pluginIds": [
+      "bestbuy"
+    ],
+    "providerName": "Bestbuy",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Bestbuy",
+    "configFile": "Bestbuy.json"
+  },
+  {
     "pluginId": "bettercontact",
     "pluginIds": [
       "bettercontact"
@@ -1342,6 +1448,23 @@
     "configFile": "Bluesky.json"
   },
   {
+    "pluginId": "boldsign",
+    "pluginIds": [
+      "boldsign"
+    ],
+    "providerName": "Boldsign",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/function.png",
+    "vaultType": "Boldsign",
+    "configFile": "Boldsign.json"
+  },
+  {
     "pluginId": "boloforms",
     "pluginIds": [
       "boloforms"
@@ -1375,7 +1498,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/default-provider.svg",
+    "icon": "/function.png",
     "vaultType": "Boltiot",
     "configFile": "Boltiot.json"
   },
@@ -1416,6 +1539,48 @@
     "icon": "/brand-img/bookingmood.svg",
     "vaultType": "Bookingmood",
     "configFile": "Bookingmood.json"
+  },
+  {
+    "pluginId": "borneo",
+    "pluginIds": [
+      "borneo"
+    ],
+    "providerName": "Borneo",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "base_url"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "base_url"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/function.png",
+    "vaultType": "Borneo",
+    "configFile": "Borneo.json"
+  },
+  {
+    "pluginId": "botbaba",
+    "pluginIds": [
+      "botbaba"
+    ],
+    "providerName": "Botbaba",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Botbaba",
+    "configFile": "Botbaba.json"
   },
   {
     "pluginId": "botpress",
@@ -1526,6 +1691,42 @@
     "configFile": "Brandfetch.json"
   },
   {
+    "pluginId": "breathehr",
+    "pluginIds": [
+      "breathehr"
+    ],
+    "providerName": "Breathehr",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Breathehr",
+    "configFile": "Breathehr.json"
+  },
+  {
+    "pluginId": "brevo",
+    "pluginIds": [
+      "brevo"
+    ],
+    "providerName": "Brevo",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/brevo.svg",
+    "vaultType": "Brevo",
+    "configFile": "Brevo.json"
+  },
+  {
     "pluginId": "brex",
     "pluginIds": [
       "brex"
@@ -1572,6 +1773,25 @@
     "configFile": "Brex.json"
   },
   {
+    "pluginId": "brightdata",
+    "pluginIds": [
+      "brightdata"
+    ],
+    "providerName": "Brightdata",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Brightdata",
+    "configFile": "Brightdata.json"
+  },
+  {
     "pluginId": "browseai",
     "pluginIds": [
       "browseai"
@@ -1608,6 +1828,42 @@
     "configFile": "Browserless.json"
   },
   {
+    "pluginId": "browsertool",
+    "pluginIds": [
+      "browsertool"
+    ],
+    "providerName": "Browsertool",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Browsertool",
+    "configFile": "Browsertool.json"
+  },
+  {
+    "pluginId": "bubble",
+    "pluginIds": [
+      "bubble"
+    ],
+    "providerName": "Bubble",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "appName"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Bubble",
+    "configFile": "Bubble.json"
+  },
+  {
     "pluginId": "bugsnag",
     "pluginIds": [
       "bugsnag"
@@ -1623,6 +1879,44 @@
     "icon": "/brand-img/bugsnag.svg",
     "vaultType": "Bugsnag",
     "configFile": "Bugsnag.json"
+  },
+  {
+    "pluginId": "buildkite",
+    "pluginIds": [
+      "buildkite"
+    ],
+    "providerName": "Buildkite",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/buildkite.svg",
+    "vaultType": "Buildkite",
+    "configFile": "Buildkite.json"
+  },
+  {
+    "pluginId": "bunnycdn",
+    "pluginIds": [
+      "bunnycdn"
+    ],
+    "providerName": "Bunnycdn",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Bunnycdn",
+    "configFile": "Bunnycdn.json"
   },
   {
     "pluginId": "cal",
@@ -1657,6 +1951,23 @@
     "icon": "/brand-img/calendly.svg",
     "vaultType": "Calendly",
     "configFile": "Calendly.json"
+  },
+  {
+    "pluginId": "campayn",
+    "pluginIds": [
+      "campayn"
+    ],
+    "providerName": "Campayn",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Campayn",
+    "configFile": "Campayn.json"
   },
   {
     "pluginId": "canva",
@@ -1722,6 +2033,90 @@
     "configFile": "Canvas.json"
   },
   {
+    "pluginId": "capsulecrm",
+    "pluginIds": [
+      "capsulecrm"
+    ],
+    "providerName": "Capsule CRM",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "subdomain"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "subdomain"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Capsule CRM",
+      "authUrl": "https://api.capsulecrm.com/oauth/authorise",
+      "tokenUrl": "https://api.capsulecrm.com/oauth/token",
+      "scopes": [
+        "read write user_preference"
+      ]
+    },
+    "icon": "/function.png",
+    "vaultType": "Capsulecrm",
+    "configFile": "Capsulecrm.json"
+  },
+  {
+    "pluginId": "castingwords",
+    "pluginIds": [
+      "castingwords"
+    ],
+    "providerName": "Castingwords",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Castingwords",
+    "configFile": "Castingwords.json"
+  },
+  {
+    "pluginId": "cdrplatform",
+    "pluginIds": [
+      "cdrplatform"
+    ],
+    "providerName": "Cdrplatform",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Cdrplatform",
+    "configFile": "Cdrplatform.json"
+  },
+  {
+    "pluginId": "certifier",
+    "pluginIds": [
+      "certifier"
+    ],
+    "providerName": "Certifier",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Certifier",
+    "configFile": "Certifier.json"
+  },
+  {
     "pluginId": "chatbotkit",
     "pluginIds": [
       "chatbotkit"
@@ -1739,6 +2134,42 @@
     "icon": "/brand-img/chatbotkit.png",
     "vaultType": "Chatbotkit",
     "configFile": "Chatbotkit.json"
+  },
+  {
+    "pluginId": "chatfai",
+    "pluginIds": [
+      "chatfai"
+    ],
+    "providerName": "Chatfai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Chatfai",
+    "configFile": "Chatfai.json"
+  },
+  {
+    "pluginId": "chmeetings",
+    "pluginIds": [
+      "chmeetings"
+    ],
+    "providerName": "Chmeetings",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Chmeetings",
+    "configFile": "Chmeetings.json"
   },
   {
     "pluginId": "circleci",
@@ -1909,6 +2340,25 @@
     "configFile": "Confluence.json"
   },
   {
+    "pluginId": "connecteam",
+    "pluginIds": [
+      "connecteam"
+    ],
+    "providerName": "Connecteam",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Connecteam",
+    "configFile": "Connecteam.json"
+  },
+  {
     "pluginId": "contentfulgraphql",
     "pluginIds": [
       "contentfulgraphql"
@@ -1944,6 +2394,42 @@
     "icon": "/brand-img/contextsevenmcp.png",
     "vaultType": "Contextsevenmcp",
     "configFile": "Contextsevenmcp.json"
+  },
+  {
+    "pluginId": "convoloai",
+    "pluginIds": [
+      "convoloai"
+    ],
+    "providerName": "Convoloai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Convoloai",
+    "configFile": "Convoloai.json"
+  },
+  {
+    "pluginId": "countdownapi",
+    "pluginIds": [
+      "countdownapi"
+    ],
+    "providerName": "Countdownapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Countdownapi",
+    "configFile": "Countdownapi.json"
   },
   {
     "pluginId": "crowterminal",
@@ -1997,6 +2483,25 @@
     "configFile": "Customgpt.json"
   },
   {
+    "pluginId": "dadataru",
+    "pluginIds": [
+      "dadataru"
+    ],
+    "providerName": "Dadataru",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "secret_key"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Dadataru",
+    "configFile": "Dadataru.json"
+  },
+  {
     "pluginId": "databricks",
     "pluginIds": [
       "databricks"
@@ -2040,6 +2545,25 @@
     "icon": "/brand-img/datadog.svg",
     "vaultType": "Datadog",
     "configFile": "Datadog.json"
+  },
+  {
+    "pluginId": "datarobot",
+    "pluginIds": [
+      "datarobot"
+    ],
+    "providerName": "Datarobot",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Datarobot",
+    "configFile": "Datarobot.json"
   },
   {
     "pluginId": "deepseek",
@@ -2205,6 +2729,25 @@
     "configFile": "Dreamstudio.json"
   },
   {
+    "pluginId": "dripcel",
+    "pluginIds": [
+      "dripcel"
+    ],
+    "providerName": "Dripcel",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Dripcel",
+    "configFile": "Dripcel.json"
+  },
+  {
     "pluginId": "dropbox",
     "pluginIds": [
       "dropbox"
@@ -2267,6 +2810,42 @@
     "configFile": "Dropboxsign.json"
   },
   {
+    "pluginId": "dynapictures",
+    "pluginIds": [
+      "dynapictures"
+    ],
+    "providerName": "Dynapictures",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Dynapictures",
+    "configFile": "Dynapictures.json"
+  },
+  {
+    "pluginId": "emelia",
+    "pluginIds": [
+      "emelia"
+    ],
+    "providerName": "Emelia",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Emelia",
+    "configFile": "Emelia.json"
+  },
+  {
     "pluginId": "epicgames",
     "pluginIds": [
       "epicgames"
@@ -2301,6 +2880,68 @@
     "icon": "/brand-img/exa.svg",
     "vaultType": "Exa",
     "configFile": "Exa.json"
+  },
+  {
+    "pluginId": "exist",
+    "pluginIds": [
+      "exist"
+    ],
+    "providerName": "Exist",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Exist",
+      "authUrl": "https://exist.io/oauth2/authorize",
+      "tokenUrl": "https://exist.io/oauth2/access_token",
+      "scopes": [
+        "activity_read",
+        "productivity_read",
+        "mood_read",
+        "sleep_read",
+        "workouts_read",
+        "events_read",
+        "finance_read",
+        "food_read",
+        "health_read",
+        "location_read",
+        "media_read",
+        "social_read",
+        "weather_read",
+        "symptoms_read",
+        "medication_read",
+        "custom_read",
+        "manual_read",
+        "activity_write",
+        "productivity_write",
+        "mood_write",
+        "sleep_write",
+        "workouts_write",
+        "events_write",
+        "finance_write",
+        "food_write",
+        "health_write",
+        "location_write",
+        "media_write",
+        "social_write",
+        "weather_write",
+        "symptoms_write",
+        "medication_write",
+        "custom_write",
+        "manual_write"
+      ],
+      "requiresRegisteredRedirect": true,
+      "tokenAuthMethod": "body"
+    },
+    "icon": "/function.png",
+    "vaultType": "Exist",
+    "configFile": "Exist.json"
   },
   {
     "pluginId": "facebook",
@@ -2376,6 +3017,37 @@
     "configFile": "Figma.json"
   },
   {
+    "pluginId": "filloutforms",
+    "pluginIds": [
+      "filloutforms"
+    ],
+    "providerName": "Fillout",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "form_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "form_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Fillout",
+      "authUrl": "https://build.fillout.com/authorize/oauth",
+      "tokenUrl": "https://server.fillout.com/public/oauth/accessToken",
+      "scopes": []
+    },
+    "icon": "/function.png",
+    "vaultType": "Filloutforms",
+    "configFile": "Filloutforms.json"
+  },
+  {
     "pluginId": "firecrawl",
     "pluginIds": [
       "firecrawl"
@@ -2408,6 +3080,25 @@
     "icon": "/brand-img/fireflies.png",
     "vaultType": "Fireflies",
     "configFile": "Fireflies.json"
+  },
+  {
+    "pluginId": "flexisign",
+    "pluginIds": [
+      "flexisign"
+    ],
+    "providerName": "Flexisign",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Flexisign",
+    "configFile": "Flexisign.json"
   },
   {
     "pluginId": "formbricks",
@@ -2524,6 +3215,25 @@
     "configFile": "Gitlab.json"
   },
   {
+    "pluginId": "gladia",
+    "pluginIds": [
+      "gladia"
+    ],
+    "providerName": "Gladia",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Gladia",
+    "configFile": "Gladia.json"
+  },
+  {
     "pluginId": "gmail",
     "pluginIds": [
       "gmail",
@@ -2594,6 +3304,36 @@
     "icon": "/brand-img/googleaddressvalidation.svg",
     "vaultType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
+  },
+  {
+    "pluginId": "googleanalytics",
+    "pluginIds": [
+      "googleanalytics"
+    ],
+    "providerName": "Google",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Google",
+      "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/analytics",
+        "https://www.googleapis.com/auth/analytics.edit"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      }
+    },
+    "icon": "/brand-img/googleanalytics.svg",
+    "vaultType": "Googleanalytics",
+    "configFile": "Googleanalytics.json"
   },
   {
     "pluginId": "googlebigquery",
@@ -2925,6 +3665,25 @@
     "icon": "/brand-img/grafana.svg",
     "vaultType": "Grafana",
     "configFile": "Grafana.json"
+  },
+  {
+    "pluginId": "griptape",
+    "pluginIds": [
+      "griptape"
+    ],
+    "providerName": "Griptape",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Griptape",
+    "configFile": "Griptape.json"
   },
   {
     "pluginId": "groqcloud",
@@ -3306,6 +4065,26 @@
     "configFile": "Kaggle.json"
   },
   {
+    "pluginId": "kibana",
+    "pluginIds": [
+      "kibana"
+    ],
+    "providerName": "Kibana",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "base_url",
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/kibana.svg",
+    "vaultType": "Kibana",
+    "configFile": "Kibana.json"
+  },
+  {
     "pluginId": "linear",
     "pluginIds": [
       "linear"
@@ -3464,6 +4243,23 @@
     "icon": "/brand-img/mailtrap.svg",
     "vaultType": "Mailtrap",
     "configFile": "Mailtrap.json"
+  },
+  {
+    "pluginId": "marketstack",
+    "pluginIds": [
+      "marketstack"
+    ],
+    "providerName": "Marketstack",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Marketstack",
+    "configFile": "Marketstack.json"
   },
   {
     "pluginId": "merriamwebsterdict",
@@ -3848,6 +4644,25 @@
     "configFile": "Pagerduty.json"
   },
   {
+    "pluginId": "parseur",
+    "pluginIds": [
+      "parseur"
+    ],
+    "providerName": "Parseur",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Parseur",
+    "configFile": "Parseur.json"
+  },
+  {
     "pluginId": "pdfmonkey",
     "pluginIds": [
       "pdfmonkey"
@@ -3956,6 +4771,25 @@
     "configFile": "Reddit.json"
   },
   {
+    "pluginId": "removebg",
+    "pluginIds": [
+      "removebg"
+    ],
+    "providerName": "Removebg",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Removebg",
+    "configFile": "Removebg.json"
+  },
+  {
     "pluginId": "resend",
     "pluginIds": [
       "resend"
@@ -3998,6 +4832,25 @@
     "configFile": "Retailed.json"
   },
   {
+    "pluginId": "runpod",
+    "pluginIds": [
+      "runpod"
+    ],
+    "providerName": "Runpod",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Runpod",
+    "configFile": "Runpod.json"
+  },
+  {
     "pluginId": "salesforce",
     "pluginIds": [
       "salesforce"
@@ -4034,6 +4887,75 @@
     "configFile": "Salesforce.json"
   },
   {
+    "pluginId": "sapsuccessfactors",
+    "pluginIds": [
+      "sapsuccessfactors"
+    ],
+    "providerName": "SAP SuccessFactors",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "host",
+          "company_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "host",
+          "company_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "SAP SuccessFactors",
+      "authUrl": "https://api10.successfactors.com/oauth/authorize",
+      "tokenUrl": "https://api10.successfactors.com/oauth/token",
+      "scopes": [],
+      "tokenAuthMethod": "body",
+      "requiresRegisteredRedirect": true
+    },
+    "icon": "/function.png",
+    "vaultType": "Sapsuccessfactors",
+    "configFile": "Sapsuccessfactors.json"
+  },
+  {
+    "pluginId": "scaleai",
+    "pluginIds": [
+      "scaleai"
+    ],
+    "providerName": "Scaleai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Scaleai",
+    "configFile": "Scaleai.json"
+  },
+  {
+    "pluginId": "scrapegraphai",
+    "pluginIds": [
+      "scrapegraphai"
+    ],
+    "providerName": "Scrapegraphai",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Scrapegraphai",
+    "configFile": "Scrapegraphai.json"
+  },
+  {
     "pluginId": "securitytrails",
     "pluginIds": [
       "securitytrails"
@@ -4051,6 +4973,25 @@
     "icon": "/brand-img/securitytrails.png",
     "vaultType": "Securitytrails",
     "configFile": "Securitytrails.json"
+  },
+  {
+    "pluginId": "sendgrid",
+    "pluginIds": [
+      "sendgrid"
+    ],
+    "providerName": "Sendgrid",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/brand-img/sendgrid.svg",
+    "vaultType": "Sendgrid",
+    "configFile": "Sendgrid.json"
   },
   {
     "pluginId": "sentry",
@@ -4348,7 +5289,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/studiobyai21labs.png",
+    "icon": "/brand-img/studiobyai21labs.svg",
     "vaultType": "Studiobyai21labs",
     "configFile": "Studiobyai21labs.json"
   },
@@ -4593,6 +5534,42 @@
     "configFile": "Timecamp.json"
   },
   {
+    "pluginId": "timelink",
+    "pluginIds": [
+      "timelink"
+    ],
+    "providerName": "Timelink",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Timelink",
+    "configFile": "Timelink.json"
+  },
+  {
+    "pluginId": "tinyurl",
+    "pluginIds": [
+      "tinyurl"
+    ],
+    "providerName": "Tinyurl",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Tinyurl",
+    "configFile": "Tinyurl.json"
+  },
+  {
     "pluginId": "tisane",
     "pluginIds": [
       "tisane"
@@ -4805,6 +5782,23 @@
     "configFile": "Uniswapapi.json"
   },
   {
+    "pluginId": "uploadcare",
+    "pluginIds": [
+      "uploadcare"
+    ],
+    "providerName": "Uploadcare",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Uploadcare",
+    "configFile": "Uploadcare.json"
+  },
+  {
     "pluginId": "vapi",
     "pluginIds": [
       "vapi"
@@ -4837,6 +5831,23 @@
     "icon": "/brand-img/vercel.svg",
     "vaultType": "Vercel",
     "configFile": "Vercel.json"
+  },
+  {
+    "pluginId": "veriphone",
+    "pluginIds": [
+      "veriphone"
+    ],
+    "providerName": "Veriphone",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Veriphone",
+    "configFile": "Veriphone.json"
   },
   {
     "pluginId": "vestaboard",
@@ -4977,6 +5988,31 @@
     "configFile": "Witai.json"
   },
   {
+    "pluginId": "wix",
+    "pluginIds": [
+      "wix"
+    ],
+    "providerName": "Wix",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "icon": "/brand-img/wix.svg",
+    "vaultType": "Wix",
+    "configFile": "Wix.json"
+  },
+  {
     "pluginId": "wiza",
     "pluginIds": [
       "wiza"
@@ -5030,6 +6066,42 @@
     "icon": "/brand-img/workday.svg",
     "vaultType": "Workday",
     "configFile": "Workday.json"
+  },
+  {
+    "pluginId": "workiom",
+    "pluginIds": [
+      "workiom"
+    ],
+    "providerName": "Workiom",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": [
+          "one"
+        ]
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Workiom",
+    "configFile": "Workiom.json"
+  },
+  {
+    "pluginId": "worldnewsapi",
+    "pluginIds": [
+      "worldnewsapi"
+    ],
+    "providerName": "Worldnewsapi",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
+    "icon": "/function.png",
+    "vaultType": "Worldnewsapi",
+    "configFile": "Worldnewsapi.json"
   },
   {
     "pluginId": "xquik",
@@ -5105,6 +6177,44 @@
     "icon": "/brand-img/zendesk.svg",
     "vaultType": "Zendesk",
     "configFile": "Zendesk.json"
+  },
+  {
+    "pluginId": "zohoinventory",
+    "pluginIds": [
+      "zohoinventory"
+    ],
+    "providerName": "Zoho",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      },
+      {
+        "mode": "managed",
+        "accountFields": [
+          "tenant_external_id"
+        ]
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
+    "oauthConfig": {
+      "providerName": "Zoho",
+      "authUrl": "https://accounts.zoho.com/oauth/v2/auth",
+      "tokenUrl": "https://accounts.zoho.com/oauth/v2/token",
+      "scopes": [
+        "ZohoInventory.FullAccess.all"
+      ],
+      "authParams": {
+        "access_type": "offline",
+        "prompt": "consent"
+      },
+      "tokenAuthMethod": "body"
+    },
+    "icon": "/function.png",
+    "vaultType": "Zohoinventory",
+    "configFile": "Zohoinventory.json"
   },
   {
     "pluginId": "zohomail",

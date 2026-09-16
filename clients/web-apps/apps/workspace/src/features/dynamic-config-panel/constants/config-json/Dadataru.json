@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "secret_key",
+    "label": "Secret_key",
+    "description": "Secret_key for Dadataru.",
+    "defaultValue": "",
+    "required": true
+  }
+]
