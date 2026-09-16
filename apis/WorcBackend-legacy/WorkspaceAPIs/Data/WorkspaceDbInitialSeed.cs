@@ -51,6 +51,10 @@ public static class WorkspaceDbInitialSeed
                 return app;
             }
 
+            // TODO: Need to remove this method after we have a proper migration to update the sourceWorkItemId for existing queue transactions. This is a temporary fix to ensure that the sourceWorkItemId is set correctly for existing queue transactions.
+            // TODO: Temporary updating queue transaction sourceWorkItemId same as id if default or null.
+            UpdateQueueTransactionData(_workspaceDbContext, _logger);
+
             // Seed default platform skills from the llmpipeline skills folder.
             await SeedDefaultSkillsAsync(_workspaceDbContext, _configuration, platformAdmin.Value, _logger);
 
@@ -61,8 +65,47 @@ public static class WorkspaceDbInitialSeed
             return app;
         }
     }
+    // TODO: Need to remove this method after we have a proper migration to update the sourceWorkItemId for existing queue transactions. This is a temporary fix to ensure that the sourceWorkItemId is set correctly for existing queue transactions.
+    // Update queue transaction data to set SourceWorkItemId to match Id for transactions where it is null or default (Guid.Empty).
+    private static void UpdateQueueTransactionData(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    {
+        try
+        {
+            // Update SourceWorkItemId for queue transactions where it is null or default (Guid.Empty)
+            var transactionsToUpdate = workspaceDbContext.QueueTransactions
+                .Where(qt => qt.SourceWorkItemId == Guid.Empty)
+                .IgnoreQueryFilters()
+                .ToList();
+
+            // Log the number of transactions found for update
+            if(transactionsToUpdate.Count == 0)
+            {
+                logger.LogInformation("No queue transactions found that require SourceWorkItemId updates.");
+                return;
+            }
+
+            // Log the number of transactions found for update
+            foreach (var transaction in transactionsToUpdate)
+            {
+                transaction.SourceWorkItemId = transaction.Id;
+            }
+
+            // Save changes to the database
+            workspaceDbContext.SaveChanges();
+
+            logger.LogInformation(
+                "Updated {Count} queue transactions to set SourceWorkItemId to match Id.",
+                transactionsToUpdate.Count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating queue transaction data.");
+            throw;
+        }
+    }
 
     // Apply pending database migrations
+
     private async static Task ApplyMigrationsAsync(WorkspaceDbContext workspaceDbContext)
     {
         try
