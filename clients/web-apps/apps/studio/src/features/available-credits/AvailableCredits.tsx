@@ -1,6 +1,8 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 
+import { cn } from "@/ui/lib";
+
 import { useFetchAvailableCredits } from "./useFetchAvailableCredits";
 
 /**
@@ -22,11 +24,12 @@ const AvailableCredits = () => {
           <LoadingSpinner className="text-primary-300 size-3" />
         ) : (
           <span
-            className={
+            className={cn(
+              "font-mono",
               data?.data?.availableCredits && data?.data?.availableCredits < 0
                 ? "text-destructive"
-                : ""
-            }
+                : "",
+            )}
           >
             {data
               ? data?.data?.availableCredits.toLocaleString("en-US", {

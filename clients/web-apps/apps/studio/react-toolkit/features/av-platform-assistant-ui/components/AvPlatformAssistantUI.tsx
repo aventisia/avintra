@@ -35,6 +35,8 @@ export interface AvPlatformAssistantUIProps {
   archived?: boolean;
   /** Visual thread title. */
   title?: string;
+  /** Small pill rendered above the thread title (e.g. environment/mode). */
+  badge?: string;
   /** Visual thread description. */
   description?: string;
   /** Optional fallback suggestions for empty threads. */
@@ -135,6 +137,7 @@ const RuntimeWrapper = ({
   flowVersionId,
   title,
   description,
+  badge,
   readOnly,
   initialMessages = [],
   defaultActions = [],
@@ -251,7 +254,7 @@ const RuntimeWrapper = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SuggestionsProvider defaultActions={defaultActions}>
-        <Thread title={title} description={description} />
+        <Thread title={title} description={description} badge={badge} />
       </SuggestionsProvider>
     </AssistantRuntimeProvider>
   );
