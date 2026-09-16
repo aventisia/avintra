@@ -209,6 +209,8 @@ export const ReactFlowExt = () => {
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -219,12 +221,14 @@ export const ReactFlowExt = () => {
 
       if (import.meta.env.MODE !== "production") console.log("NODE:", node);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   // Define onEdgeContextMenu handler
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -235,11 +239,13 @@ export const ReactFlowExt = () => {
 
       if (import.meta.env.MODE !== "production") console.log("EDGE:", edge);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -248,7 +254,7 @@ export const ReactFlowExt = () => {
       setSelectedEdge(null);
       setMenu(position);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   const onPaneClick = useCallback(() => {

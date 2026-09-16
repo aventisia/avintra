@@ -1,7 +1,9 @@
 import { Separator } from "@avplatform/ui";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Panel } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 import { FCBContainer } from "./FCBContainer";
@@ -15,10 +17,11 @@ export const FlowControls = () => {
       undoRedo: state.studioPreferences.undoRedo,
     })),
   );
+  const flowType = useReactFlowExtStore((state) => state.flowType);
 
   return (
     <>
-      {undoRedo && (
+      {undoRedo && flowType !== FlowTypesEnum.ChatAgent && (
         <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
           <FCBContainer>
             {/* Undo */}

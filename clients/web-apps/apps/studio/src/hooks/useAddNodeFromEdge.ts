@@ -1,9 +1,11 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
@@ -30,7 +32,11 @@ export const useAddNodeFromEdge = () => {
   const addNodeFromEdge = useCallback(
     (nodeData: NodeDataType, stepEdgeId: string) => {
       // JIT State Fetching: Grab the absolute latest nodes and edges only when clicked
-      const { nodes, edges } = useReactFlowExtStore.getState();
+      const { nodes, edges, flowType } = useReactFlowExtStore.getState();
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
 
       const stepEdge = edges.find((edge) => edge.id === stepEdgeId) as Edge;
       if (!stepEdge) return;

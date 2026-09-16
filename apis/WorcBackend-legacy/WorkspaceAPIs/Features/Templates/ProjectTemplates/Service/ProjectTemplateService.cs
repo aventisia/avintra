@@ -1021,11 +1021,21 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
+                    // Template schemas bypass normal initial graph creation, so normalize
+                    // ChatAgent schemas to the single-node shape before persisting
+                    var templateSchema = projectTemplate.Schema;
+                    if (projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent)
+                    {
+                        templateSchema = ChatAgentGraphHelpers.NormalizeChatAgentSchema(
+                            templateSchema,
+                            WorkspaceAPIs.Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges(FlowTypesEnum.ChatAgent));
+                    }
+
                     // Create corresponding FlowVersion
                     var newFlowVersion = new FlowVersion
                     {
                         FlowId = flowEntity.Id,
-                        ReactFlowObject = projectTemplate.Schema,
+                        ReactFlowObject = templateSchema,
                         VersionNumber = 1,
                         CreatedByUserId = _userId,
                         LastModifiedByUserId = _userId,

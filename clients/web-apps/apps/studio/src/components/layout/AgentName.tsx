@@ -41,7 +41,7 @@ const AgentName = ({ className }: { className?: string }) => {
 
   return (
     <Tooltip content={currentFlow.name ?? viewAgentName}>
-      <div className={cn("flex min-w-16 max-w-60 flex-1 items-center", className)}>
+      <div className={cn("flex w-auto min-w-16 max-w-60 shrink items-center", className)}>
         {!isAgentHistory && !isExecutionLog ? (
           <>
             <AutoSizeInput

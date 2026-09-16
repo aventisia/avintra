@@ -1,5 +1,7 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useEffect } from "react";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 /**
@@ -24,7 +26,11 @@ export const useUndoRedoShortcuts = () => {
       // Undo / Redo (Shift variant) logic
       if (ctrlOrCmd && event.key.toLowerCase() === "z") {
         event.preventDefault();
-        const { undo, redo, past, future } = useReactFlowExtStore.getState();
+        const { undo, redo, past, future, flowType } = useReactFlowExtStore.getState();
+        if (flowType === FlowTypesEnum.ChatAgent) {
+          notifyChatAgentActionNotAllowed();
+          return;
+        }
 
         if (event.shiftKey) {
           if (future.length > 0) redo();
@@ -35,7 +41,11 @@ export const useUndoRedoShortcuts = () => {
 
       if (ctrlOrCmd && event.key.toLowerCase() === "y") {
         event.preventDefault();
-        const { redo, future } = useReactFlowExtStore.getState();
+        const { redo, future, flowType } = useReactFlowExtStore.getState();
+        if (flowType === FlowTypesEnum.ChatAgent) {
+          notifyChatAgentActionNotAllowed();
+          return;
+        }
         if (future.length > 0) redo();
       }
     };
