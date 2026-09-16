@@ -24,12 +24,13 @@ export const ViewControls = memo(() => {
     })),
   );
   const flowType = useReactFlowExtStore((state) => state.flowType);
+  const isChatAgent = flowType === FlowTypesEnum.ChatAgent;
 
   return (
     <Panel position="bottom-left">
       <div className="flex flex-col items-end space-y-4">
         {/* Undo and Redo Controls */}
-        {flowType !== FlowTypesEnum.ChatAgent && <VCBUndoRedo />}
+        {!isChatAgent && <VCBUndoRedo />}
 
         {zoomControls && (
           <VCBContainer>
@@ -54,7 +55,7 @@ export const ViewControls = memo(() => {
           </VCBContainer>
         )}
 
-        {cursorToggle && (
+        {!isChatAgent && cursorToggle && (
           <VCBContainer>
             <VCBToggleCursor />
           </VCBContainer>

@@ -19,6 +19,7 @@ import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
@@ -40,6 +41,9 @@ const AppHeader: React.FC = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+
+  // ChatAgent flows hide search, flow settings, and studio preferences.
+  const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
 
   // Persistent watcher for the publish alert dialog close. The Publish button lives inside
   // a dropdown that unmounts when closed, so this header component watches the alert dialog
@@ -105,13 +109,13 @@ const AppHeader: React.FC = () => {
 
               <ExecuteFlow />
 
-              <SearchCommandTrigger />
+              {!isChatAgent && <SearchCommandTrigger />}
 
               <VersionHistoryTrigger />
 
-              {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
+              {!isChatAgent && import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
-              <StudioPreferences className="mt-0 mlg:mt-4" />
+              {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
               <Chat className="mt-0 mlg:mt-4" />
             </div>
             <SaveFlow />
@@ -121,7 +125,7 @@ const AppHeader: React.FC = () => {
           </div>
         ) : (
           <div className="flex min-w-0 items-center justify-end gap-1">
-            <SearchCommandTrigger />
+            {!isChatAgent && <SearchCommandTrigger />}
             <Button
               variant={"ghost"}
               size={"xs"}
