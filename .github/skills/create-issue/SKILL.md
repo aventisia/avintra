@@ -1,7 +1,7 @@
 ---
 name: create-issue
 disable-model-invocation: true
-argument-hint: "Title and body for the new Gitea issue"
+argument-hint: "Title, body, and optional label(s) for the new Gitea issue"
 description: "Create a Gitea issue to track an investigation outcome, agreed plan, or implementation task. Use after the agent and user have reached a mutual understanding and want to preserve the decision before coding starts."
 ---
 
@@ -19,6 +19,7 @@ Persist a decided plan or investigation outcome as a Gitea issue before implemen
 
 - A clear, action-oriented title.
 - A body that captures the mutual understanding: problem/context, decisions made, and the plan to implement.
+- Optional label(s) to assign to the issue, provided as a comma-separated list.
 - If the user supplied a file path, use the file contents as the body rather than summarizing it.
 
 ## Procedure
@@ -37,19 +38,25 @@ Persist a decided plan or investigation outcome as a Gitea issue before implemen
    - If neither was provided but a plan exists in the conversation, compose the body from the agreed plan and ask the user to confirm or edit before publishing.
    - Preserve Markdown formatting.
 
-4. **Create the issue.**
+4. **Collect optional labels.**
+   - If the user provided one or more labels, preserve them as a comma-separated list for `tea`.
+   - If no labels were provided, create the issue without the `--labels` option.
+
+5. **Create the issue.**
 
    ```bash
-   tea issue create --title "$TITLE" --description "$BODY"
+   tea issue create --title "$TITLE" --description "$BODY" --labels "$LABELS"
    ```
+
+   Omit `--labels "$LABELS"` when no labels were provided.
 
    For multi-line bodies with quotes, prefer writing the body to a temporary file and passing it safely:
 
    ```bash
-   tea issue create --title "$TITLE" --description "$(cat /tmp/issue-body.md)"
+   tea issue create --title "$TITLE" --description "$(cat /tmp/issue-body.md)" --labels "$LABELS"
    ```
 
-5. **Report the result.**
+6. **Report the result.**
    - Share the issue number and URL returned by `tea`.
    - If `tea` is not installed, report the exact command the user can run manually and offer to write the issue body to a file.
 
@@ -57,5 +64,6 @@ Persist a decided plan or investigation outcome as a Gitea issue before implemen
 
 - Title is non-empty, descriptive, and action-oriented.
 - Body reflects the agreed plan or investigation outcome, not a generic summary.
+- Any requested label(s) are assigned using Tea's comma-separated `--labels` option.
 - The issue URL or manual fallback is reported back to the user.
-- No extra fields (labels, assignees, milestones) are invented unless the user explicitly asks for them.
+- No extra fields (assignees, milestones) are invented unless the user explicitly asks for them.
