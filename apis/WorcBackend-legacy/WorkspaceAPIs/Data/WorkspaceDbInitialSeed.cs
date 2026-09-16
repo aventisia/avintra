@@ -66,36 +66,62 @@ public static class WorkspaceDbInitialSeed
         }
     }
     // TODO: Need to remove this method after we have a proper migration to update the sourceWorkItemId for existing queue transactions. This is a temporary fix to ensure that the sourceWorkItemId is set correctly for existing queue transactions.
-    // Update queue transaction data to set SourceWorkItemId to match Id for transactions where it is null or default (Guid.Empty).
+    // Update queue transaction data to set SourceWorkItemId to match Id for transactions where it is null or default (Guid.Empty),
+    // and keep the (SourceWorkItemId, RetryCount) combination unique across ALL queue transactions (including pre-existing non-empty sources).
     private static void UpdateQueueTransactionData(WorkspaceDbContext workspaceDbContext, ILogger logger)
     {
         try
         {
-            // Update SourceWorkItemId for queue transactions where it is null or default (Guid.Empty)
-            var transactionsToUpdate = workspaceDbContext.QueueTransactions
-                .Where(qt => qt.SourceWorkItemId == Guid.Empty)
+            var transactions = workspaceDbContext.QueueTransactions
                 .IgnoreQueryFilters()
                 .ToList();
 
             // Log the number of transactions found for update
-            if(transactionsToUpdate.Count == 0)
+            if (transactions.Count == 0)
             {
                 logger.LogInformation("No queue transactions found that require SourceWorkItemId updates.");
                 return;
             }
 
-            // Log the number of transactions found for update
-            foreach (var transaction in transactionsToUpdate)
+            // Pass 1 - Backfill: transactions with an empty/default SourceWorkItemId become
+            // self-referential (SourceWorkItemId = their own Id) so every first-attempt work
+            // item has a distinct root id. Pre-existing retries keep their root linkage.
+            var backfilled = 0;
+            foreach (var transaction in transactions.Where(t => t.SourceWorkItemId == Guid.Empty))
             {
                 transaction.SourceWorkItemId = transaction.Id;
+                backfilled++;
+            }
+
+            // Pass 2 - Dedup: honor the unique (SourceWorkItemId, RetryCount) index for the
+            // WHOLE table, not just the backfilled rows. Within each logical work item
+            // (grouped by SourceWorkItemId), bump RetryCount of any row whose attempt number
+            // is already taken (by another retry row) until every row in the group has a
+            // distinct RetryCount. This also resolves collisions the backfill itself could
+            // create when an existing retry row already points at the same id + count.
+            var bumped = 0;
+            foreach (var group in transactions
+                .Where(t => t.SourceWorkItemId != Guid.Empty)
+                .GroupBy(t => t.SourceWorkItemId))
+            {
+                var usedRetryCounts = new HashSet<int>();
+                foreach (var transaction in group.OrderBy(t => t.RetryCount))
+                {
+                    while (!usedRetryCounts.Add(transaction.RetryCount))
+                    {
+                        transaction.RetryCount++;
+                        bumped++;
+                    }
+                }
             }
 
             // Save changes to the database
             workspaceDbContext.SaveChanges();
 
             logger.LogInformation(
-                "Updated {Count} queue transactions to set SourceWorkItemId to match Id.",
-                transactionsToUpdate.Count);
+                "Updated queue transactions: {Backfilled} SourceWorkItemId set to own Id, {Bumped} RetryCount value(s) bumped to keep (SourceWorkItemId, RetryCount) unique.",
+                backfilled,
+                bumped);
         }
         catch (Exception ex)
         {
