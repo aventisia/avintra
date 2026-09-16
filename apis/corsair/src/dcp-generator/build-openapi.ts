@@ -38,14 +38,15 @@ export function corsairSchemaToOpenApiSchema(schema: any): any {
 /**
  * Build a per-plugin OpenAPI spec from a set of action descriptors.
  *
+ * Corsair tools are platform tools executed via the sidecar, so the spec has
+ * no provider base URL (no `servers` entry).
+ *
  * @param plugin     normalized plugin metadata
  * @param actions    list of { action, description, input }
- * @param baseUrl    provider base URL
  */
 export function buildOpenApiSpec(
   plugin: PluginMetadata,
   actions: Array<{ action: string; description: string; input: any }>,
-  baseUrl: string,
 ): any {
   const paths: Record<string, any> = {};
   for (const { action, description, input } of actions) {
@@ -74,7 +75,6 @@ export function buildOpenApiSpec(
       title: `Corsair ${plugin.id} connector (from sidecar descriptors)`,
       version: "1.0.0",
     },
-    servers: [{ url: baseUrl }],
     paths,
   };
 }
