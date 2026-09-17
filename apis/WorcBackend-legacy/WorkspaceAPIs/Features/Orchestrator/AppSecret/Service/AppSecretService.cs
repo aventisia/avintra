@@ -169,8 +169,11 @@ public class AppSecretService : IAppSecretService
             // Check if credential with the same name exists (case-insensitive) within the current environment
             var existingAppSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == appSecretName.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             // Credential name already exists
@@ -427,39 +430,28 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Validate duplicates per space. The global SpaceId query filter scopes queries to
-            // the current space only, so we bypass it to check every target space at once.
-            var existingSecrets = await _unitOfWork.AppSecretRepo
+            // Enforce global uniqueness on (TenantId, EnvType, Name): a credential name cannot be
+            // reused in any space under the same tenant and environment. The global SpaceId query
+            // filter scopes queries to the current space only, so we bypass it to check every space.
+            var existingSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == appSecretDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
                 .IgnoreQueryFilters()
-                .Select(w => w.SpaceId)
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
-            var existingSpaceSet = existingSecrets
-                .Where(s => s != null)
-                .Select(s => s!.Value)
-                .ToHashSet();
-            var hasCentralSecret = existingSecrets.Any(s => s == null);
-
-            foreach (var spaceId in targetSpaces)
+            if (existingSecret != null)
             {
-                var alreadyExists = spaceId == null
-                    ? hasCentralSecret
-                    : existingSpaceSet.Contains(spaceId.Value);
-
-                if (alreadyExists)
-                {
-                    var spaceLabel = spaceId == null ? "Central" : spaceId.Value.ToString();
-                    _logger.LogWarning(
-                        "Credential creation aborted. A credential named '{CredentialName}' already exists in space {SpaceId}.",
-                        appSecretDto.Name,
-                        spaceLabel);
-                    serviceResponse.Message = $"A credential named '{appSecretDto.Name}' already exists in the selected space.";
-                    serviceResponse.StatusCode = 409;
-                    return serviceResponse;
-                }
+                _logger.LogWarning(
+                    "Credential creation aborted. A credential named '{CredentialName}' already exists for tenant {TenantId} in environment {EnvType}.",
+                    appSecretDto.Name,
+                    _currentTenantService.CurrentTenantId,
+                    _currentTenantService.CurrentEnvType);
+                serviceResponse.Message = $"A credential named '{appSecretDto.Name}' already exists.";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
             }
 
             // Create one credential record per target space so the credential is available
@@ -610,9 +602,16 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Check for a duplicate credential by name within the current environment
+            // Check for a duplicate credential by name within the current tenant and environment.
+            // The global SpaceId query filter scopes queries to the current space, so bypass it to
+            // enforce the tenant-wide (TenantId, EnvType, Name) uniqueness constraint.
             var duplicateSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType && w.Id != appSecretDto.Id)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == appSecretDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    w.Id != appSecretDto.Id)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             // If a duplicate exists, return a conflict message
@@ -1099,10 +1098,12 @@ public class AppSecretService : IAppSecretService
             // Fetch the credential entity by name within the current environment, including its encrypted key-value pairs
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name == appSecretName &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (appSecret == null)

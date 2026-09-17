@@ -128,8 +128,10 @@ public class ToolService : IToolService
             // Search for an existing tool with the same name (case-insensitive) within the current environment.
             var existingToolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == normalizedName.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (existingToolWithSameName != null)
@@ -294,8 +296,11 @@ public class ToolService : IToolService
             // Ensure the tool name is unique within the current environment.
             var toolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == toolDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (toolWithSameName != null)
@@ -402,7 +407,6 @@ public class ToolService : IToolService
             }
 
             // Apply scalar updates.
-            toolToUpdate.Name = toolDto.Name;
             toolToUpdate.Description = toolDto.Description;
             toolToUpdate.BaseUrl = toolDto.BaseUrl;
             toolToUpdate.AuthenticationType = toolDto.AuthenticationType;

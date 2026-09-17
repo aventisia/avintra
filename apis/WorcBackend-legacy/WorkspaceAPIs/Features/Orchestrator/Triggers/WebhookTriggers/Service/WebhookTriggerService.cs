@@ -191,8 +191,10 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Duplicate name check
             var existing = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == dto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
                 .FirstOrDefaultAsync();
 
             if (existing != null)
@@ -360,7 +362,6 @@ public class WebhookTriggerService : IWebhookTriggerService
                 CallbackUrl = dto.CallbackUrl
             };
 
-            trigger.Name = dto.Name;
             trigger.Timezone = string.Empty;
             trigger.IsDisabled = dto.IsDisabled ?? trigger.IsDisabled;
             trigger.Metadata = SerializeMetadata(updatedModel);
@@ -644,8 +645,11 @@ public class WebhookTriggerService : IWebhookTriggerService
         {
             var exists = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (exists != null)

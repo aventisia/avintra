@@ -133,10 +133,11 @@ public class SkillRegistryService : ISkillRegistryService
             // Check for duplicate name excluding the current skill during updates, within the current environment.
             var existingSkill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId== _currentTenantService.CurrentTenantId&&
                     w.Name.ToLower() == normalizedName &&
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    (skillId == Guid.Empty || skillId == null || w.Id != skillId)
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Determine availability based on whether a matching skill exists.
@@ -326,8 +327,11 @@ public class SkillRegistryService : ISkillRegistryService
             // Check duplicate name within tenant and current environment to avoid conflicts.
             var existingSkill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == skillDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (existingSkill != null)
@@ -452,12 +456,6 @@ public class SkillRegistryService : ISkillRegistryService
                 serviceResponse.Message = "A skill with this name already exists";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
-            }
-
-            // Update modified fields only when changed.
-            if (existingSkill.Name != skillDto.Name)
-            {
-                existingSkill.Name = skillDto.Name;
             }
 
             if (existingSkill.Description != skillDto.Description)
