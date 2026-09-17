@@ -25,7 +25,7 @@ const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
 
   // Render the MemoryConfigField component
   return (
-    <GroupedFieldsWrapper groupName="Configure Memory">
+    <GroupedFieldsWrapper groupName="Memory">
       <div className="hidden">
         <SelectField
           size="sm"

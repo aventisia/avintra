@@ -70,7 +70,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
 
   // Render the KnowledgeBaseConfigField component
   return (
-    <GroupedFieldsWrapper groupName="Configure Knowledge Base">
+    <GroupedFieldsWrapper groupName="Knowledge Base">
       <MultiSelectField
         size="sm"
         name={knowledgeBaseFieldName}

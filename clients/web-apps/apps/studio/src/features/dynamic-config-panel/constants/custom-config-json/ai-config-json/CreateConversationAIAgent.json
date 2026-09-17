@@ -5,17 +5,17 @@
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "desktop"],
-  "errorHandling": "standard",
-  "testScreenType": "llmGenerateRequest",
+  "errorHandling": "none",
+  "testScreenType": "none",
   "fields": [
     {
       "direction": "Input",
-      "type": "prompt-input",
+      "type": "prompt-input-v2",
       "name": "__Prompt__Conversation",
       "required": false,
       "min": 16,
       "defaultValue": "",
-      "category": "Prompt"
+      "category": "System Prompt"
     },
     {
       "direction": "Input",
@@ -32,16 +32,7 @@
         "max_output_tokens": null
       },
       "required": false,
-      "category": "Models"
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "Files",
-      "label": "Files",
-      "defaultValue": "",
-      "required": false,
-      "category": "Models"
+      "category": "Model"
     },
     {
       "direction": "Input",
@@ -97,20 +88,7 @@
         "followUpMessagePrompt": "You are a helpful AI assistant.\n\nReturn only valid JSON that matches the provided schema.\n\nRules:\n- Put the complete response in the \"text\" field.\n- Any question, clarification request, or information request for the user must appear only in the \"text\" field.\n- The \"followup_messages\" field is only for standalone actions the user can take without replying to the assistant.\n- Never include questions, follow-ups, or prompts in \"followup_messages\".\n- If the user must provide additional information to continue, \"followup_messages\" must be an empty array ([]).\n- Include at most 5 recommended actions.\n- Recommended actions should use clear, natural, user-facing language.\n- Do not include code, IDs, internal references, or technical jargon in recommended actions.\n- Return only JSON with no additional text or markdown."
       },
       "required": false,
-      "category": "Other"
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Result",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      },
-      "required": false,
-      "category": "Prompt"
+      "category": "User Prompts"
     }
   ]
 }
