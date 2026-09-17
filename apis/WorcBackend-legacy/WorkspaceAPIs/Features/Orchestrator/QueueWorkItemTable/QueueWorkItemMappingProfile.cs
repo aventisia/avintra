@@ -23,6 +23,8 @@ public class QueueWorkItemMappingProfile : IRegister
 
         config.NewConfig<QueueWorkItemDto, QueueTransaction>()
             .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.SourceWorkItemId)
+            .Ignore(dest => dest.RetryCount)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);

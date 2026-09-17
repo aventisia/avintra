@@ -72,6 +72,13 @@ public class QueueUserService : IQueueUserService
 
             foreach (var dto in queueDtoList)
             {
+                // Remove array-typed fields from the schema before returning to the client:
+                // array/list values are stripped from the payload (see QueueWorkItemService),
+                // so the schema should not advertise properties the client can never receive.
+                dto.InputSchema = dto.InputSchema?
+                    .Where(f => !string.Equals(f.Type, "Array", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
                 var queue = queues.FirstOrDefault(q => q.Id == dto.Id);
                 if (queue?.QueueTransactions == null) continue;
 
@@ -153,6 +160,13 @@ public class QueueUserService : IQueueUserService
 
             foreach (var dto in queueDtoList)
             {
+                // Remove array-typed fields from the schema before returning to the client:
+                // array/list values are stripped from the payload (see QueueWorkItemService),
+                // so the schema should not advertise properties the client can never receive.
+                dto.InputSchema = dto.InputSchema?
+                    .Where(f => !string.Equals(f.Type, "Array", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
                 var queue = queues.FirstOrDefault(q => q.Id == dto.Id);
                 if (queue?.QueueTransactions == null) continue;
 

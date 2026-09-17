@@ -63,6 +63,7 @@ public static class WorkspaceDbInitialSeed
     }
 
     // Apply pending database migrations
+
     private async static Task ApplyMigrationsAsync(WorkspaceDbContext workspaceDbContext)
     {
         try

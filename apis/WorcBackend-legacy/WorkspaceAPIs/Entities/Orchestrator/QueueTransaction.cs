@@ -13,6 +13,25 @@ public class QueueTransaction : IMustHaveTenant
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the source queue transaction from which this transaction was created during a queue routing operation.
+    /// This reference is used to trace the origin of the transaction.
+    /// </summary>
+    public Guid SourceWorkItemId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zero-based retry attempt number for the work item. The first attempt
+    /// is 0; each retry is the latest <see cref="RetryCount"/> incremented by one. Computed by the backend.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the scheduled time after which this transaction becomes eligible for processing.
+    /// When null the transaction is eligible immediately. When set to a future time the transaction
+    /// must not be fetched/claimed until that time has passed.
+    /// </summary>
+    public DateTimeOffset? RetryTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier for the tenant, used for global filtering in a multi-tenant architecture.
     /// </summary>
     public Guid TenantId { get; set; }
@@ -42,12 +61,6 @@ public class QueueTransaction : IMustHaveTenant
     /// Gets or sets the URLs of the files associated with this queue transaction.
     /// </summary>
     public List<string>? FileUrls { get; set; }
-
-    /// <summary>
-    /// Gets or sets the identifier of the source queue transaction from which this transaction was created during a queue routing operation.
-    /// This reference is used to trace the origin of the transaction.
-    /// </summary>
-    public Guid? SourceQueueTransactionId { get; set; }
 
     /// <summary>
     /// Gets or sets the the user who created the record.

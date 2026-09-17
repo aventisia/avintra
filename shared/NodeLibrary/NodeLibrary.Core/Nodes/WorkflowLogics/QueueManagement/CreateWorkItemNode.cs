@@ -20,7 +20,24 @@ public class CreateWorkItemNode : BaseNode
     [DisplayName("Work Item Data")]
     [Description("Provide the data for the work item in JSON format.")]
     [NodeFieldType(NodeFieldTypeEnum.JsonEditor)]
-    public required InArgument<string> WorkItemData { get; set; }
+    public required InArgument<JsonNode> WorkItemData { get; set; }
+
+    [DisplayName("Is Retry")]
+    [Description("Enable for retry mode. When ON, this node creates the next attempt for an existing work item instead of a brand new item, and the Source Work Item ID and Retry Time fields are shown. When OFF, a new work item is created with a freshly generated identifier and processed immediately.")]
+    [DefaultValue(false)]
+    public InArgument<bool> IsRetry { get; set; } = new InArgument<bool>(false);
+
+    [DisplayName("Source Work Item ID")]
+    [Description("The identifier of the existing work item this retry continues. Required when 'Is Retry' is ON so the backend can create the next attempt (with an incremented retry count) for that work item. Leave empty for a brand new item; the backend generates the identifier for you. This field is only applicable if 'Is Retry' is set to true.")]
+    [RenderIfCondition(nameof(IsRetry), true)]
+    [NodeFieldType(NodeFieldTypeEnum.Text)]
+    public InArgument<Guid?> SourceWorkItemId { get; set; } = new InArgument<Guid?>();
+
+    [DisplayName("Retry Time")]
+    [Description("Optional. The date and time after which this work item becomes eligible for processing. Leave empty to make the work item available immediately. When set, it must be a future date and time, in ISO 8601 format (e.g. 2026-09-12T14:30:00Z). This field is only applicable if 'Is Retry' is set to true.")]
+    [RenderIfCondition(nameof(IsRetry), true)]
+    [NodeFieldType(NodeFieldTypeEnum.DateTime)]
+    public InArgument<DateTimeOffset?> RetryTime { get; set; } = new InArgument<DateTimeOffset?>();
 
     [DisplayName("File URLs")]
     [Description("Optional URLs of files associated with the work item, separated by commas.")]
@@ -38,33 +55,36 @@ public class CreateWorkItemNode : BaseNode
             var workItemData = WorkItemData.Get(context);
             var description = Description.Get(context);
             var fileUrls = FileUrls.Get(context);
+            var sourceWorkItemId = SourceWorkItemId.Get(context);
+            var retryTime = RetryTime.Get(context);
+            var isRetry = IsRetry.Get(context);
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
             var accessToken = callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required");
 
             if (string.IsNullOrWhiteSpace(queueName))
                 throw new ArgumentException("Queue Name cannot be null or empty.");
-
-            if (string.IsNullOrWhiteSpace(workItemData))
-                throw new ArgumentException("Work Item Data cannot be null or empty.");
-
-            try
-            {
-                JsonNode.Parse(workItemData);
-            }
-            catch (JsonException)
-            {
-                workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
-            }
-
+            
+            
             var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (isRetry)
+            {
+                if (!sourceWorkItemId.HasValue)
+                    throw new ArgumentException("Source Work Item ID is required when 'Is Retry' is true.");
+
+                if (retryTime.HasValue && retryTime.Value <= DateTimeOffset.UtcNow)
+                    throw new ArgumentException("Retry Time must be a future date and time.");
+            }
 
             var payload = new
             {
                 queueName = queueName,
-                workItemData = workItemData,
+                sourceWorkItemId = sourceWorkItemId,
+                workItemData = JsonSerializer.Serialize(workItemData),
                 description = description,
-                fileUrls = fileUrlsArray
+                fileUrls = fileUrlsArray,
+                retryTime = retryTime
             };
 
             var createdWorkItem = await QueueApiExecutor.ExecuteAsync(
