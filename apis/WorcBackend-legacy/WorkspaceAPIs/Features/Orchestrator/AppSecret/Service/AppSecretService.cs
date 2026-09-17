@@ -407,28 +407,6 @@ public class AppSecretService : IAppSecretService
                 serviceResponse.Message = validateData.Remark;
                 return serviceResponse;
             }
-            // Resolve the target spaces for this credential.
-            var targetSpaces = new List<Guid?>();
-
-            // TODO: Temporary fix — allow Guid.Empty (the Central space contract) to be treated
-            // as a valid target and map it to null (Central SpaceId) so a record is created for
-            // Central. Replace with a proper long-term fix that resolves the default space server-side.
-            if (appSecretDto.SpaceIds != null && appSecretDto.SpaceIds.Any())
-            {
-                // Normalize: Guid.Empty entries map to Central (null SpaceId), and ensure uniqueness
-                targetSpaces = appSecretDto.SpaceIds
-                    .Select(s => s == Guid.Empty ? (Guid?)null : s)
-                    .Distinct()
-                    .ToList();
-            }
-            
-            // TODO: Temporary fix — this empty check is retained to fail fast when no valid space
-            // was selected at all. If the target list is empty after normalization, no record can be created.
-            if (!targetSpaces.Any())
-            {
-                serviceResponse.Message = "At least one target space must be specified for the credential.";
-                return serviceResponse;
-            }
 
             // Enforce global uniqueness on (TenantId, EnvType, Name): a credential name cannot be
             // reused in any space under the same tenant and environment. The global SpaceId query
@@ -454,24 +432,17 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Create one credential record per target space so the credential is available
-            // in every selected space.
-            var createdSecrets = new List<AppSecret>();
+            // Create a single credential record scoped to the current space. The space is
+            // auto-stamped by WorkspaceDbContext on save: when in a specific space the record
+            // is assigned to that space; when in Central it stays in the Central (null) space.
+            var newAppSecret = appSecretDto.Adapt<AppSecret>();
+            newAppSecret.Data = validateData.SanitizedDataJson;
+            newAppSecret.CreatedByUserId = _userId;
+            newAppSecret.LastModifiedByUserId = _userId;
+            newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
 
-            foreach (var spaceId in targetSpaces)
-            {
-                // Create a new credential entity
-                var newAppSecret = appSecretDto.Adapt<AppSecret>();
-                newAppSecret.Data = validateData.SanitizedDataJson;
-                newAppSecret.CreatedByUserId = _userId;
-                newAppSecret.LastModifiedByUserId = _userId;
-                newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
-                newAppSecret.SpaceId = spaceId;
-
-                // Insert the new credential into the repository
-                await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
-                createdSecrets.Add(newAppSecret);
-            }
+            // Insert the new credential into the repository
+            await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
 
             // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -480,20 +451,17 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Add encrypted key-value entries for each created credential record.
-            foreach (var newAppSecret in createdSecrets)
+            // Add encrypted key-value entries for the created credential record.
+            foreach (var kv in validateData.EncryptedValues)
             {
-                foreach (var kv in validateData.EncryptedValues)
+                // Create new key-value entry
+                var newEncryptedValue = new EncryptedKeyValue
                 {
-                    // Create new key-value entry
-                    var newEncryptedValue = new EncryptedKeyValue
-                    {
-                        Name = kv.Key,
-                        Value = kv.Value,
-                        AppSecretId = newAppSecret.Id
-                    };
-                    await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
-                }
+                    Name = kv.Key,
+                    Value = kv.Value,
+                    AppSecretId = newAppSecret.Id
+                };
+                await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
             }
 
             // Save changes
@@ -503,35 +471,28 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Assign ownership for each created credential record.
-            foreach (var newAppSecret in createdSecrets)
+            // Assign ownership for the created credential record.
+            if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
             {
-                if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
-                {
-                    serviceResponse.Message = "Failed assigning ownership.";
-                    _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
-                    return serviceResponse;
-                }
+                serviceResponse.Message = "Failed assigning ownership.";
+                _logger.LogError("Failed to assign owner access for Credential ID: {AppSecretId}", appSecretDto.Id);
+                return serviceResponse;
             }
 
-            // Mirror each credential to the Corsair sidecar for supported API-key plugins.
-            foreach (var newAppSecret in createdSecrets)
-            {
-                await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
+            // Mirror the credential to the Corsair sidecar for supported API-key plugins.
+            await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
-                // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
-                await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
-            }
+            // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
+            await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
-            // Adapt the first created entity to DTO and return success response
-            serviceResponse.Data = createdSecrets.First().Adapt<AppSecretDto>();
+            // Adapt the created entity to DTO and return success response
+            serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
 
             // For OAuth-capable credential types, mint a connect link so the frontend can
             // complete consent immediately after creation.
-            var firstSecret = createdSecrets.First();
-            if (MapAppSecretTypeToCorsairOAuthPlugin(firstSecret.Type) is not null)
+            if (MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type) is not null)
             {
-                var link = await _corsairSidecarService.CreateConnectLinkAsync(firstSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(firstSecret.Type)!);
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(newAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type)!);
                 if (link != null)
                 {
                     serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;
@@ -1100,7 +1061,8 @@ public class AppSecretService : IAppSecretService
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name == appSecretName &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .IgnoreQueryFilters()
