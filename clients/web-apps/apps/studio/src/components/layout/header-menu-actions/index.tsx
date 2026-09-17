@@ -135,14 +135,16 @@ export const HeaderActionMenu: React.FC = () => {
           />
         ) : null}
 
-        <SimpleDDMenuItem
-          size="md"
-          Icon={KeyboardIcon}
-          content="Keyboard Shortcuts"
-          onClick={() => {
-            keyboardDialog(true);
-          }}
-        />
+        {!isChatAgent ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={KeyboardIcon}
+            content="Keyboard Shortcuts"
+            onClick={() => {
+              keyboardDialog(true);
+            }}
+          />
+        ) : null}
 
         {import.meta.env.MODE !== "production" ? (
           <>
