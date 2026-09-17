@@ -57,7 +57,7 @@ const SkillsConfigField = ({ name }: SkillsConfigFieldProps) => {
   }, [getValues, skillsFieldName, setValue]);
 
   return (
-    <GroupedFieldsWrapper groupName="Configure Skills">
+    <GroupedFieldsWrapper groupName="Skills">
       <MultiSelectField
         size="sm"
         name={skillsFieldName}

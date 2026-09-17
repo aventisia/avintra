@@ -253,7 +253,11 @@ export const DCPForm = () => {
                 {selectedTab == "Prompt" && !isAgentHistory && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
-                    name={nodeConfig.fields.find((v) => v.type == "prompt-input")?.name ?? ""}
+                    name={
+                      nodeConfig.fields.find(
+                        (v) => v.type == "prompt-input" || v.type == "prompt-input-v2",
+                      )?.name ?? ""
+                    }
                     form={form}
                   />
                 )}

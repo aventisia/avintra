@@ -50,6 +50,7 @@ export type DCPControlType =
   | "tools-config-select"
   | "voice-config-select"
   | "prompt-input"
+  | "prompt-input-v2"
   | "knowledge-base-config"
   | "skills-config"
   | "memory-config"

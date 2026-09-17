@@ -23,6 +23,7 @@ import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VoiceConfigField } from "./fields-for-form/VoiceConfigField";
+import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
 import { QueuePriorityGroupsField } from "./queue-condition-groups/QueuePriorityGroupsField";
@@ -83,6 +84,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <VoiceConfigField name={field.name} />;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
+    case "prompt-input-v2":
+      return <PromptConfigFieldV2 {...baseProps} />;
     case "multi-selector":
       return <MultiSelectField {...baseProps} selectOptions={field.selectOptions || []} />;
     case "slider":
