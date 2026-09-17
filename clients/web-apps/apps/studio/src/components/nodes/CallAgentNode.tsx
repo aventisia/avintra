@@ -91,7 +91,19 @@ export const CallAgentNode = memo(
       const currentFlowId = searchParams.get("f") || currentFlow.id;
       const currentVersionId = searchParams.get("v") || currentFlow.versionId;
       const currentJobId = searchParams.get("j");
-      const currentRunVersionId = searchParams.get("rv") || currentFlow.runVersionId;
+      // On the execution-log page `currentFlow` is empty, so fall back to the `v` param —
+      // that IS the root run version there. Without this, `rv` would be dropped and the
+      // sub-flow view would refetch the log list against the sub-flow's own version.
+      const currentRunVersionId =
+        searchParams.get("rv") ||
+        currentFlow.runVersionId ||
+        (isExecutionLog ? searchParams.get("v") : undefined);
+      // `f`/`v` always describe the current (sub-)flow, so the root flow id must be carried
+      // separately — otherwise it is lost as soon as the user enters a sub-flow.
+      const currentRunFlowId =
+        searchParams.get("rf") ||
+        currentFlow.runFlowId ||
+        (isExecutionLog ? searchParams.get("f") : undefined);
       const showRunResults = searchParams.get("showRunResults") === "1";
       const currentFlowName = isExecutionLog ? name : currentFlow.name;
 
@@ -102,6 +114,7 @@ export const CallAgentNode = memo(
           name: currentFlowName || "Main Flow",
           jobId: currentJobId || undefined,
           runVersionId: currentRunVersionId || undefined,
+          runFlowId: currentRunFlowId || undefined,
         });
       }
 
@@ -112,6 +125,7 @@ export const CallAgentNode = memo(
           showRunResults,
           jobId: currentJobId || undefined,
           runVersionId: currentRunVersionId || undefined,
+          runFlowId: currentRunFlowId || undefined,
         }),
       );
     };

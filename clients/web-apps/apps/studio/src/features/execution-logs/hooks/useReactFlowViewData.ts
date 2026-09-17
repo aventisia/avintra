@@ -5,7 +5,9 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { useBreadcrumbStore } from "@/stores/breadcrumb-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 
@@ -18,6 +20,11 @@ export const useReactFlowViewData = () => {
 
   const jobId = searchParams.get("j");
   const flowId = searchParams.get("f");
+  const versionId = searchParams.get("v") || undefined;
+  // Root flow id / version of the run (`f`/`v` always describe the current flow, so the root
+  // run context is carried separately as `rf`/`rv`).
+  const runFlowId = searchParams.get("rf") || undefined;
+  const runVersionId = searchParams.get("rv") || undefined;
 
   const setFlowId = (id: string) => {
     const params = new URLSearchParams(searchParams);
@@ -49,6 +56,17 @@ export const useReactFlowViewData = () => {
 
   const { initLogs } = useExecutionStore();
 
+  // The breadcrumb trail is persisted in sessionStorage and shared with the design canvas.
+  // Drop any trail that belongs to a different job so the execution-log page never shows a
+  // stale trail from a previously viewed run.
+  const { trail, resetBreadcrumbs } = useBreadcrumbStore();
+
+  useEffect(() => {
+    if (!jobId || trail.length === 0) return;
+    if (trail.some((crumb) => crumb.jobId === jobId)) return;
+    resetBreadcrumbs();
+  }, [jobId, trail, resetBreadcrumbs]);
+
   // Get react flow hook to set viewport
   const { fitView } = useReactFlow();
 
@@ -59,6 +77,43 @@ export const useReactFlowViewData = () => {
     enabled: !!jobId,
     refetchOnMount: "always",
     select: (res) => res.data,
+  });
+
+  // `belongsToThisJob` answers "is the current view part of the selected job's run?". A
+  // sub-flow reached from this job keeps `rf`/`rv` pointing at this job's root, so it stays
+  // true. If it is false the run context is a leftover from another run, and the sub-flow
+  // branch is suppressed so the selected job's logs are never mapped onto a stale graph.
+  // (The list panel is hidden while inside a sub-flow, so the job cannot normally change
+  // there — this is a safety net.)
+  const belongsToThisJob =
+    !!data &&
+    (runFlowId === data.flowId ||
+      runVersionId === data.flowVersionId ||
+      (flowId === data.flowId && versionId === data.flowVersionId));
+
+  // The job detail always carries the ROOT flow's graph. When the user navigates into a
+  // sub-flow (call-block / call-agent), `f`/`v` point at the sub-flow version, so we load
+  // that version's graph instead and map the SAME job node logs onto it — the sub-flow's
+  // node logs are already part of the root job's log list.
+  const isSubFlowView =
+    !!data &&
+    !!flowId &&
+    belongsToThisJob &&
+    (flowId !== (runFlowId ?? data.flowId) ||
+      (!!versionId && versionId !== data.flowVersionId));
+
+  const {
+    data: subFlowData,
+    isFetching: isSubFlowFetching,
+    isFetched: isSubFlowFetched,
+  } = useQuery({
+    queryKey: ["flow", flowId, versionId],
+    queryFn: () => getFlowToLoad(flowId!, versionId),
+    enabled: isSubFlowView,
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Clear canvas whenever jobId is absent (list is still loading/auto-selecting)
@@ -76,19 +131,28 @@ export const useReactFlowViewData = () => {
       setFlowId(data.flowId);
     }
 
+    // While the sub-flow graph is still loading, keep the previous canvas instead of
+    // flashing the root flow's graph. If the fetch failed, fall back to the root graph.
+    if (isSubFlowView && !isSubFlowFetched) return;
+
+    const subFlowGraph = isSubFlowView ? subFlowData?.data : undefined;
+    const graphSource = subFlowGraph?.reactFlowObject ?? data.reactFlowObject;
+
     setVersionMeta({
-      name: data.name ?? "",
-      versionNumber: data.versionNumber ?? 0,
+      name: subFlowGraph?.name ?? data.name ?? "",
+      versionNumber: subFlowGraph?.versionNumber ?? data.versionNumber ?? 0,
     });
     // Parse react flow object
-    const flow = deepParse(data?.reactFlowObject ?? JSON.stringify([])) as unknown as {
+    const flow = deepParse(graphSource ?? JSON.stringify([])) as unknown as {
       nodes: Node[];
       edges: Edge[];
       viewport: Viewport;
     };
 
     // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(data?.flowVariablesObject ?? JSON.stringify([]));
+    const flowVarObjs = JSON.parse(
+      (subFlowGraph?.flowVariablesObject ?? data.flowVariablesObject) ?? JSON.stringify([]),
+    );
 
     if (flow) {
       setNodes(flow?.nodes);
@@ -114,7 +178,7 @@ export const useReactFlowViewData = () => {
       setEdges([]);
       setFlowVariablesObject([]);
     }
-  }, [data]);
+  }, [data, subFlowData, isSubFlowView, isSubFlowFetched]);
 
-  return { isPending, isLoading, isFetching };
+  return { isPending, isLoading, isFetching: isFetching || isSubFlowFetching, isSubFlowView };
 };

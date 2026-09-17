@@ -8,6 +8,7 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { ReadOnlyEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { FlowBreadcrumbs } from "@/features/react-flow/components/FlowBreadcrumbs";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { PANEL_ID } from "../constants";
@@ -32,7 +33,7 @@ export const ReactFlowViewOnly = () => {
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 
-  const { isPending, isLoading, isFetching } = useReactFlowViewData();
+  const { isPending, isLoading, isFetching, isSubFlowView } = useReactFlowViewData();
 
   const { openPanel, closePanel } = usePanelStore(
     useShallow((state) => ({
@@ -41,8 +42,13 @@ export const ReactFlowViewOnly = () => {
     })),
   );
 
+  // The execution list is only meaningful for the root flow of a run. Inside a sub-flow the
+  // job cannot change (the sub-flow's logs are part of the selected job), so the list is
+  // replaced with an explanatory message instead of letting the user pick another job.
+  // Returning to the root flow via the breadcrumb restores the list.
   useEffect(() => {
     openPanel(PANEL_ID, "left");
+
     return () => {
       closePanel(PANEL_ID);
     };
@@ -50,7 +56,7 @@ export const ReactFlowViewOnly = () => {
 
   return (
     <>
-      <ExecutionLogPanel />
+      <ExecutionLogPanel isSubFlowView={isSubFlowView} />
 
       <div className="relative h-full ml-[21.5rem] w-[calc(100%-21.5rem)]">
         {isPending || isLoading || isFetching ? (
@@ -92,6 +98,8 @@ export const ReactFlowViewOnly = () => {
           >
             {/* Keep navigation controls */}
             <ViewControls />
+            {/* Breadcrumb trail so the user can navigate back out of a sub-flow */}
+            <FlowBreadcrumbs />
           </ReactFlow>
         )}
       </div>

@@ -11,6 +11,8 @@
  * - `rv` (runVersionId) — the root flow version that owns the persisted logs. Sub-flow node
  *   logs are stored under the root version (the engine logs every node under the job's flow
  *   version), so the panel must restore against `rv`, not the sub-flow's own `v`.
+ * - `rf` (runFlowId) — the root flow id. `f`/`v` always describe the *current* (sub-)flow,
+ *   so the root flow id would otherwise be lost on navigation.
  *
  * The read-only execution-log view already passes `j`; this helper normalises the same
  * behaviour for the design canvas so sub-flow logs appear in both places.
@@ -21,6 +23,7 @@ export const buildSubFlowNavigationParams = (params: {
   showRunResults?: boolean;
   jobId?: string;
   runVersionId?: string;
+  runFlowId?: string;
 }): Record<string, string> => {
   const nextParams: Record<string, string> = {
     f: params.targetFlowId,
@@ -32,6 +35,9 @@ export const buildSubFlowNavigationParams = (params: {
   }
   if (params.runVersionId) {
     nextParams.rv = params.runVersionId;
+  }
+  if (params.runFlowId) {
+    nextParams.rf = params.runFlowId;
   }
   if (params.showRunResults) {
     nextParams.showRunResults = "1";
