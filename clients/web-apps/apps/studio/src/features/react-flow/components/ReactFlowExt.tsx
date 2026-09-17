@@ -376,6 +376,7 @@ export const ReactFlowExt = () => {
             <AvPlatformAssistantUI
               flowVersionId={currentFlow.versionId}
               mode="temporary"
+              allowNewSession
               title="Test Chat"
               badge="Test mode"
               description={
