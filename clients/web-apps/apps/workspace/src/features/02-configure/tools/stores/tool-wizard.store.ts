@@ -45,7 +45,9 @@ export const useToolWizardStore = create<ToolWizardState>((set) => ({
   ...initialState,
   setCurrentStep: (step) => set({ currentStep: step }),
   setCrudAction: (action) => set({ crudAction: action }),
-  setDraftTool: (tool) => set({ draftTool: tool }),
+  // Any change to the draft invalidates the "already saved" state so the
+  // wizard's save button re-triggers the create/update API call on finish.
+  setDraftTool: (tool) => set({ draftTool: tool, isDraftSaved: false }),
   setDraftSaved: (saved) => set({ isDraftSaved: saved }),
   setSpecText: (text) => set({ specText: text }),
   setSpecFile: (file) => set({ specFile: file }),

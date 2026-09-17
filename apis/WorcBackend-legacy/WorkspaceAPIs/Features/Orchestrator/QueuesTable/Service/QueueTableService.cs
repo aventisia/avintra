@@ -518,7 +518,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -711,7 +711,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueId && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Id == queueId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -795,11 +795,10 @@ public class QueueTableService : IQueueTableService
         {
             // Validate flows existence
             var queues = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
-                                                w.EnvType == _currentTenantService.CurrentEnvType &&
-                                                queueIds.Contains(w.Id))
-                                            .ToListAsync();
+                .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    queueIds.Contains(w.Id))
+                .ToListAsync();
 
             // Flows do not exist
             if (queues.Count == 0)
