@@ -12,7 +12,10 @@ import { getAgentsExecutionLogs } from "../apis/job-execution-log-apis";
 export const useFetchExecutionLogsList = () => {
   const [searchParams] = useSearchParams();
 
-  const currVersionId = searchParams.get("v") || "";
+  // Sub-flow node logs are persisted under the ROOT flow version that owns the run, so when
+  // the user navigates into a sub-flow (`rv` present) the list must stay keyed on that root
+  // version. Using the sub-flow's own `v` would return an empty list and blank the panel.
+  const currVersionId = searchParams.get("rv") || searchParams.get("v") || "";
 
   // Get flows using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({

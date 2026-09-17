@@ -2,6 +2,7 @@ import { Panel } from "@xyflow/react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { Breadcrumb, useBreadcrumbStore } from "@/stores/breadcrumb-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
@@ -13,6 +14,8 @@ export const FlowBreadcrumbs = () => {
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const name = useReactFlowViewStore(useShallow((state) => state.name));
 
+  const isExecutionLog = useIsExecutionLogsRoute();
+
   if (trail.length === 0) return null;
 
   const handleCrumbClick = (crumb: Breadcrumb, index: number) => {
@@ -21,6 +24,7 @@ export const FlowBreadcrumbs = () => {
     if (crumb.versionId) params.set("v", crumb.versionId);
     if (crumb.jobId) params.set("j", crumb.jobId); // Preserve job execution context
     if (crumb.runVersionId) params.set("rv", crumb.runVersionId); // Preserve run-log owner version
+    if (crumb.runFlowId) params.set("rf", crumb.runFlowId); // Preserve run-log owner flow
     // Preserve the run-results flag so returning to a parent flow keeps the execution-log
     // panel alive. Without this, `showRunResults` is dropped and the panel + per-node logs
     // stop rendering even though the colored node borders remain (those live in the store).
@@ -32,8 +36,13 @@ export const FlowBreadcrumbs = () => {
     sliceBreadcrumb(index);
   };
 
-  // Fallback to name for the execution log view
-  const activeFlowName = currentFlow?.name || name || "Unknown Flow";
+  // On the execution-log page `currentFlow` is stale (it still holds the flow the user came
+  // from in the design canvas), so it must not be used here — it would render the parent
+  // flow's name as the active crumb, duplicating the last trail entry. The view store's
+  // `name` is set from the job detail / sub-flow graph and is the correct source there.
+  const activeFlowName = isExecutionLog
+    ? name || "Unknown Flow"
+    : currentFlow?.name || name || "Unknown Flow";
 
   return (
     <Panel position="top-left">
