@@ -8,6 +8,7 @@ import {
   MessagePrimitive,
   SuggestionPrimitive,
   ThreadPrimitive,
+  useAui,
   useAuiState,
 } from "@assistant-ui/react";
 import { Button } from "@avplatform/ui/buttons";
@@ -25,6 +26,7 @@ import {
   LoaderCircleIcon,
   MoreHorizontalIcon,
   PencilIcon,
+  Plus,
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
@@ -80,9 +82,21 @@ function FollowUps() {
   );
 }
 
-type ThreadHeaderProps = { title?: string; description?: string; badge?: string };
+type ThreadHeaderProps = {
+  title?: string;
+  description?: string;
+  badge?: string;
+  allowNewSession?: boolean;
+  onNewSession?: () => void;
+};
 
-export const Thread = ({ title, description, badge }: ThreadHeaderProps) => {
+export const Thread = ({
+  title,
+  description,
+  badge,
+  allowNewSession,
+  onNewSession,
+}: ThreadHeaderProps) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
 
@@ -95,6 +109,13 @@ export const Thread = ({ title, description, badge }: ThreadHeaderProps) => {
         ["--composer-padding" as string]: "10px",
       }}
     >
+      {/* Persistent header with the new-session action; hidden while the thread is empty. */}
+      {!isDisabled && allowNewSession && (
+        <AuiIf condition={(s) => !s.thread.isEmpty}>
+          <ThreadHeader title={title} badge={badge} onNewSession={onNewSession} />
+        </AuiIf>
+      )}
+
       <ThreadPrimitive.Viewport
         turnAnchor="top"
         scrollToBottomOnRunStart
@@ -118,6 +139,47 @@ export const Thread = ({ title, description, badge }: ThreadHeaderProps) => {
         </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
+  );
+};
+
+const ThreadHeader = ({
+  title,
+  badge,
+  onNewSession,
+}: Pick<ThreadHeaderProps, "title" | "badge" | "onNewSession">) => {
+  const aui = useAui();
+  const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
+
+  // Stop the streaming response and any pending tool calls, then clear the session.
+  const handleNewSession = () => {
+    aui.thread.cancelRun();
+    cancelAll();
+    onNewSession?.();
+  };
+
+  return (
+    <div className="aui-thread-header flex w-full shrink-0 items-center justify-between gap-2 border-b px-4 py-2">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="truncate text-sm font-medium">{title ?? "Chat"}</span>
+        {badge && (
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            <span className="size-1.5 rounded-full bg-primary" />
+            {badge}
+          </span>
+        )}
+      </div>
+      <TooltipIconButton
+        tooltip="New chat"
+        side="left"
+        variant="ghost"
+        size="icon8"
+        className="aui-thread-new-session size-8 shrink-0 rounded-md"
+        aria-label="Start new chat"
+        onClick={handleNewSession}
+      >
+        <Plus className="size-4 text-[var(--icon-color)]" />
+      </TooltipIconButton>
+    </div>
   );
 };
 
