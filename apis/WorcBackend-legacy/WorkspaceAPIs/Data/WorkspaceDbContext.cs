@@ -114,7 +114,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Vault>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<AppSecret>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
-
+        modelBuilder.Entity<QueueTransaction>().HasIndex(e => new { e.SourceWorkItemId, e.RetryCount }).IsUnique();
+        
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
         modelBuilder.Entity<Notification>().Property(e => e.SourceType).HasConversion(new EnumToStringConverter<NotificationSourceEnum>());

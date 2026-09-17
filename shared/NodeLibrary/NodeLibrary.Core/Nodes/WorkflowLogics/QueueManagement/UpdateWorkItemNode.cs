@@ -32,7 +32,7 @@ public class UpdateWorkItemNode : BaseNode
     [Description("Provide the updated data for the work item in JSON format. This field is required if 'Should Update Work Item Data' is set to true.")]
     [NodeFieldType(NodeFieldTypeEnum.JsonEditor)]
     [RenderIfCondition(nameof(ShouldUpdateWorkItemData), true)]
-    public InArgument<string> WorkItemData { get; set; } = new InArgument<string>();
+    public InArgument<JsonNode?> WorkItemData { get; set; } = new InArgument<JsonNode?>();
 
     [DisplayName("File URLs")]
     [Description("Optional URLs of files associated with the work item, separated by commas.")]
@@ -65,28 +65,13 @@ public class UpdateWorkItemNode : BaseNode
             if (!Guid.TryParse(workItemId.Trim(), out var workItemGuid))
                 throw new ArgumentException($"Work Item ID '{workItemId}' is not a valid GUID. Provide the work item's 'id' value (e.g. from the Result of a Get Work Items / Get Next Work Item node).");
 
-            if (shouldUpdateData && string.IsNullOrWhiteSpace(workItemData))
-                throw new ArgumentException("Work Item Data cannot be null or empty when 'Should Update Work Item Data' is true.");
-
-            if (workItemData != null)
-            {
-                try
-                {
-                    JsonNode.Parse(workItemData);
-                }
-                catch (JsonException)
-                {
-                    workItemData = Regex.Replace(workItemData, @"(?<!\\)\\(?![\\""/bfnrtu])", @"\\");
-                }
-            }
-
             var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             var payload = new
             {
                 id = workItemGuid,
                 status = status,
-                workItemData = shouldUpdateData ? workItemData : null,
+                workItemData = shouldUpdateData ? JsonSerializer.Serialize(workItemData) : null,
                 description = description,
                 fileUrls = fileUrlsArray
             };
