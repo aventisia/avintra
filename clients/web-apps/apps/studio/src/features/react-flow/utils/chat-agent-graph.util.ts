@@ -238,6 +238,14 @@ export const validateChatAgentGraph = (nodes: Node[], edges: Edge[]): string | n
   return null;
 };
 
+/**
+ * Returns true when a graph matches the ChatAgent single-node shape.
+ * A generic agent may also contain the Chat AI action, so the shape (the absence
+ * of structural nodes) is the reliable discriminator between the two flow types.
+ */
+export const isChatAgentGraph = (nodes: Node[], edges: Edge[]): boolean =>
+  validateChatAgentGraph(nodes, edges) === null;
+
 /** Builds flow variables from the enabled Chat AI outputs. */
 const getChatFlowVariables = (chatNode: Node): FlowVariablesObjectType[] => {
   /** Only enabled Chat AI outputs should be exposed as flow variables. */
