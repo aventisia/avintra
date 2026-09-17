@@ -49,8 +49,11 @@ public class KeyStoreService : IKeyStoreService
             // Check if a key store with the same name already exists within the current environment
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a message indicating it's unavailable
@@ -348,9 +351,11 @@ public class KeyStoreService : IKeyStoreService
             // Check if a key store with the same name already exists within the current environment
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a conflict response

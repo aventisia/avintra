@@ -40,10 +40,13 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
-                                                        w.EnvType == _currentTenantService.CurrentEnvType)
-                                                     .FirstOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
 
             // Queue already exists
             if (queueAlreadyExists != null)
@@ -425,7 +428,12 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => 
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == queuesTableDto.Name.ToLower() && 
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -570,12 +578,6 @@ public class QueueTableService : IQueueTableService
             queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
             // Update only the properties whose values have changed to avoid unnecessary modifications.
-
-            if (queue.Name != queuesTableDto.Name)
-            {
-                queue.Name = queuesTableDto.Name;
-            }
-
             if (queue.Description != queuesTableDto.Description)
             {
                 queue.Description = queuesTableDto.Description;

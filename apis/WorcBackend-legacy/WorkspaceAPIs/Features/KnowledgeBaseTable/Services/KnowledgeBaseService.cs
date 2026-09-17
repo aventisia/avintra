@@ -197,8 +197,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             // Check for duplicate name within the current environment
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(kb =>
+                    kb.TenantId == _currentTenantService.CurrentTenantId &&
                     kb.Name.ToLower() == normalizedName &&
-                    kb.EnvType == _currentTenantService.CurrentEnvType)
+                    kb.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             var isAvailable = existingKB == null;
@@ -337,8 +340,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             // Check if name already exists in this tenant within the current environment
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(kb =>
+                    kb.TenantId == _currentTenantService.CurrentTenantId &&
                     kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower() &&
-                    kb.EnvType == _currentTenantService.CurrentEnvType)
+                    kb.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (existingKB != null)
