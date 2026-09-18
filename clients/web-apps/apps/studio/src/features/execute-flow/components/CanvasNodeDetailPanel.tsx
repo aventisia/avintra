@@ -227,7 +227,7 @@ export const CanvasNodeDetailPanel = () => {
   }
 
   return (
-    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[36rem]" closeOnEscape>
+    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[30rem]" closeOnEscape>
       <PanelContent className="overflow-hidden py-2 pl-2">
         <ScrollArea className="h-full w-full">
           <ViewContainer className="pt-1">

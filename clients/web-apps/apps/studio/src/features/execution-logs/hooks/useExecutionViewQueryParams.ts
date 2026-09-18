@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { useExecutionStore } from "../stores/execution-log-store";
 
@@ -74,8 +75,23 @@ const findInnermostLoopId = (nodeToParentStack: Record<string, string[]>): strin
 export const useExecutionViewQueryParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { activeIteration, activeCallerId, nodeToParentStack, loopRegistry, setIteration, setCaller } =
-    useExecutionStore();
+  const {
+    activeIteration,
+    activeCallerId,
+    nodeToParentStack,
+    loopRegistry,
+    setIteration,
+    setCaller,
+  } = useExecutionStore(
+    useShallow((state) => ({
+      activeIteration: state.activeIteration,
+      activeCallerId: state.activeCallerId,
+      nodeToParentStack: state.nodeToParentStack,
+      loopRegistry: state.loopRegistry,
+      setIteration: state.setIteration,
+      setCaller: state.setCaller,
+    })),
+  );
 
   // The mirror effect below must not run before hydration has applied the URL values,
   // otherwise it would immediately delete the very params we are restoring.

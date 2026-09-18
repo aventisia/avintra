@@ -10,7 +10,10 @@ import { OutputHandle } from "@/components/handles/OutputHandle";
 import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import { buildLiveLoopIndex, isLiveBranchNodeActive } from "@/features/execute-flow/utils/live-loop-index";
+import {
+  buildLiveLoopIndex,
+  isLiveBranchNodeActive,
+} from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -35,7 +38,15 @@ export const BranchNode1 = memo(
     const subflowCallerId = searchParams.get("ci") || "";
 
     const { branchStats, showBranchStats, executionMap, nodeToParentStack, activeIteration } =
-      useExecutionStore();
+      useExecutionStore(
+        useShallow((state) => ({
+          branchStats: state.branchStats,
+          showBranchStats: state.showBranchStats,
+          executionMap: state.executionMap,
+          nodeToParentStack: state.nodeToParentStack,
+          activeIteration: state.activeIteration,
+        })),
+      );
     const { liveExecutionMap, nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
       useShallow((state) => ({
         liveExecutionMap: state.liveExecutionMap,
@@ -43,9 +54,7 @@ export const BranchNode1 = memo(
         liveActiveIteration: state.liveActiveIteration,
       })),
     );
-    const liveStatus = nodeData?.isDisabled
-      ? undefined
-      : liveExecutionMap[nodeId];
+    const liveStatus = nodeData?.isDisabled ? undefined : liveExecutionMap[nodeId];
     const liveIndex = buildLiveLoopIndex(nodeLogHistory, getNodes());
     const branchActive = isLiveBranchNodeActive(
       liveIndex,
@@ -91,12 +100,7 @@ export const BranchNode1 = memo(
               showBorder={false}
               isDisabled={nodeData?.isDisabled}
             >
-              <div
-                className={cn(
-                  "relative",
-                  lockedByOther && "pointer-events-none opacity-70",
-                )}
-              >
+              <div className={cn("relative", lockedByOther && "pointer-events-none opacity-70")}>
                 <OpenNodeConfig {...{ nodeData, nodeId }}>
                   <div
                     className={cn(

@@ -1,4 +1,5 @@
 import { useHotkeys } from "react-hotkeys-hook";
+import { useShallow } from "zustand/react/shallow";
 
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
@@ -9,7 +10,9 @@ import { useFlowOperations } from "./useFlowOperations";
  */
 export const useCopyPasteShortcuts = () => {
   const { copyNodes, cutNodes, pasteNodes } = useFlowOperations();
-  const { selectedNode } = useContextMenuActionsStore();
+  const { selectedNode } = useContextMenuActionsStore(
+    useShallow((state) => ({ selectedNode: state.selectedNode })),
+  );
   //  Prevent intercepting shortcuts while typing in inputs or textarea
   const activeElement = document.activeElement as HTMLElement;
 

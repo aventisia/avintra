@@ -74,8 +74,12 @@ export const CallAgentNode = memo(
 
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const pushBreadcrumb = useBreadcrumbStore((state) => state.pushBreadcrumb);
-    const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+    const { pushBreadcrumb } = useBreadcrumbStore(
+      useShallow((state) => ({ pushBreadcrumb: state.pushBreadcrumb })),
+    );
+    const { currentFlow } = useCurrentFlowStore(
+      useShallow((state) => ({ currentFlow: state.currentFlow })),
+    );
     const name = useReactFlowViewStore(useShallow((state) => state.name));
 
     const handleOpenSubFlow = () => {

@@ -23,7 +23,7 @@ export const ViewControls = memo(() => {
 
   return (
     <Panel position="bottom-left">
-      <div className="flex flex-col items-end space-y-4">
+      <div className="flex   items-end gap-2">
         {/* Iteration browsing for loops that live outside the loaded graph (sub-flow in a loop).
             Kept in its own group so it is not visually mixed with the zoom controls. */}
         <VCExternalLoopSelector />

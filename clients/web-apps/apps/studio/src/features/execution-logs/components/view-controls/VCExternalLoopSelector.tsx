@@ -1,6 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ChevronLeftIcon, ChevronRightIcon, RepeatIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useExecutionStore } from "../../stores/execution-log-store";
 import { VCBContainer } from "./VCBContainer";
@@ -18,7 +19,14 @@ import { VCBContainer } from "./VCBContainer";
  * its own badge for them.
  */
 export const VCExternalLoopSelector = () => {
-  const { loopRegistry, nodeTypes, activeIteration, setIteration } = useExecutionStore();
+  const { loopRegistry, nodeTypes, activeIteration, setIteration } = useExecutionStore(
+    useShallow((state) => ({
+      loopRegistry: state.loopRegistry,
+      nodeTypes: state.nodeTypes,
+      activeIteration: state.activeIteration,
+      setIteration: state.setIteration,
+    })),
+  );
 
   const externalLoops = Object.entries(loopRegistry).filter(
     ([loopId, { total }]) => total > 0 && !nodeTypes[loopId],
@@ -32,7 +40,7 @@ export const VCExternalLoopSelector = () => {
         const current = activeIteration[loopId] ?? 0;
 
         return (
-          <div key={loopId} className="flex items-center gap-0.5 px-0.5 py-0.5">
+          <div key={loopId} className="flex items-center gap-0.5 ">
             <Tooltip content="Previous iteration" side="right">
               <Button
                 size="icon6"

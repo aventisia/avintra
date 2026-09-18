@@ -1,9 +1,9 @@
 import { cn } from "@avplatform/ui/lib";
+import { useReactFlow } from "@xyflow/react";
 import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
 import React from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { useReactFlow } from "@xyflow/react";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
@@ -34,7 +34,14 @@ export default function OpenNodeLog({
   const [searchParams] = useSearchParams();
   const subflowCallerId = searchParams.get("ci") || "";
   const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
-    useExecutionStore();
+    useExecutionStore(
+      useShallow((state) => ({
+        executionMap: state.executionMap,
+        executionHistoryMap: state.executionHistoryMap,
+        nodeToParentStack: state.nodeToParentStack,
+        activeIteration: state.activeIteration,
+      })),
+    );
 
   const parents = nodeToParentStack[nodeId] || [];
   const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
@@ -47,7 +54,7 @@ export default function OpenNodeLog({
   const isError = log?.isSuccess === false;
 
   const isExecutionLog = useIsExecutionLogsRoute();
-  const { openPanel } = usePanelStore();
+  const { openPanel } = usePanelStore(useShallow((state) => ({ openPanel: state.openPanel })));
 
   // Live status for a running local (unpublished) flow, driven by the RunnerApp over the
   // Tauri WebSocket. Only shows on the design canvas (not the execution-log route).

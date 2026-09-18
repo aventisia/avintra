@@ -44,8 +44,12 @@ export const BlockNode = memo(
     const { updateNodeData } = useReactFlow();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const { pushBreadcrumb } = useBreadcrumbStore();
-    const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+    const { pushBreadcrumb } = useBreadcrumbStore(
+      useShallow((state) => ({ pushBreadcrumb: state.pushBreadcrumb })),
+    );
+    const { currentFlow } = useCurrentFlowStore(
+      useShallow((state) => ({ currentFlow: state.currentFlow })),
+    );
     const name = useReactFlowViewStore(useShallow((state) => state.name));
 
     const { isSavePending } = useReactFlowExtStore(

@@ -82,7 +82,14 @@ const cloneEdgeObj = (original: Edge, source: string, target: string): Edge => (
 // ─── Hook ─────────────────────────────────────────────────────────────────
 
 export const useFlowOperations = () => {
-  const { nodes, setFlowVariablesObject, setNodes, setEdges } = useReactFlowExtStore();
+  const { nodes, setFlowVariablesObject, setNodes, setEdges } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      setFlowVariablesObject: state.setFlowVariablesObject,
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+    })),
+  );
 
   const { updateNodeData } = useReactFlow();
 
@@ -102,7 +109,12 @@ export const useFlowOperations = () => {
   );
 
   const autoLayout = useDagreAutoLayout();
-  const { setClipboard, clearClipboard } = useClipboardStore();
+  const { setClipboard, clearClipboard } = useClipboardStore(
+    useShallow((state) => ({
+      setClipboard: state.setClipboard,
+      clearClipboard: state.clearClipboard,
+    })),
+  );
   const { showDefaultAlertDialog } = useShowAlertHandler();
   const orderedSelectedIds = useOrderedSelection(nodes);
 

@@ -55,7 +55,13 @@ export const useReactFlowViewData = () => {
     })),
   );
 
-  const { initLogs, activeCallerId, setCaller } = useExecutionStore();
+  const { initLogs, activeCallerId, setCaller } = useExecutionStore(
+    useShallow((state) => ({
+      initLogs: state.initLogs,
+      activeCallerId: state.activeCallerId,
+      setCaller: state.setCaller,
+    })),
+  );
 
   // Persist/restore the loop iteration + caller selection in the URL so a refresh keeps the
   // user on the same iteration/caller they were inspecting.
@@ -64,7 +70,12 @@ export const useReactFlowViewData = () => {
   // The breadcrumb trail is persisted in sessionStorage and shared with the design canvas.
   // Drop any trail that belongs to a different job so the execution-log page never shows a
   // stale trail from a previously viewed run.
-  const { trail, resetBreadcrumbs } = useBreadcrumbStore();
+  const { trail, resetBreadcrumbs } = useBreadcrumbStore(
+    useShallow((state) => ({
+      trail: state.trail,
+      resetBreadcrumbs: state.resetBreadcrumbs,
+    })),
+  );
 
   useEffect(() => {
     if (!jobId || trail.length === 0) return;
@@ -104,8 +115,7 @@ export const useReactFlowViewData = () => {
     !!data &&
     !!flowId &&
     belongsToThisJob &&
-    (flowId !== (runFlowId ?? data.flowId) ||
-      (!!versionId && versionId !== data.flowVersionId));
+    (flowId !== (runFlowId ?? data.flowId) || (!!versionId && versionId !== data.flowVersionId));
 
   const {
     data: subFlowData,
@@ -165,7 +175,7 @@ export const useReactFlowViewData = () => {
 
     // Parse Flow Variables Object
     const flowVarObjs = JSON.parse(
-      (subFlowGraph?.flowVariablesObject ?? data.flowVariablesObject) ?? JSON.stringify([]),
+      subFlowGraph?.flowVariablesObject ?? data.flowVariablesObject ?? JSON.stringify([]),
     );
 
     if (flow) {

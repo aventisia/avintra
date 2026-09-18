@@ -1,7 +1,14 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange, useReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  OnSelectionChangeParams,
+  ReactFlow,
+  useOnViewportChange,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -12,14 +19,14 @@ import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
+import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
 import {
   broadcastCursorEvent,
   useCollaboration,
 } from "@/features/collaboration/hooks/useCollaboration";
-import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -170,7 +177,13 @@ export const ReactFlowExt = () => {
   );
 
   // Setter functions for context menu node
-  const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore();
+  const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore(
+    useShallow((state) => ({
+      setSelectedNode: state.setSelectedNode,
+      setSelectedEdge: state.setSelectedEdge,
+      setMenu: state.setMenu,
+    })),
+  );
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
