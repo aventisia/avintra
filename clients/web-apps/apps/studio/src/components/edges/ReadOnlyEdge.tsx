@@ -1,6 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { memo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
@@ -35,7 +36,13 @@ export const ReadOnlyEdge = memo(
 
     const isExecutionLog = useIsExecutionLogsRoute();
 
-    const { traversedEdges, nodeToParentStack, activeIteration } = useExecutionStore();
+    const { traversedEdges, nodeToParentStack, activeIteration } = useExecutionStore(
+      useShallow((state) => ({
+        traversedEdges: state.traversedEdges,
+        nodeToParentStack: state.nodeToParentStack,
+        activeIteration: state.activeIteration,
+      })),
+    );
 
     const parents = nodeToParentStack[target] || [];
     const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";

@@ -2,11 +2,17 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { FlagIcon, FlagOffIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useExecutionStore } from "../../stores/execution-log-store";
 
 export const VCBranchStatsButton = () => {
-  const { showBranchStats, toggleBranchStats } = useExecutionStore();
+  const { showBranchStats, toggleBranchStats } = useExecutionStore(
+    useShallow((state) => ({
+      showBranchStats: state.showBranchStats,
+      toggleBranchStats: state.toggleBranchStats,
+    })),
+  );
 
   // Render action button
   return (

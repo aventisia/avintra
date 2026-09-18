@@ -3,13 +3,14 @@ import { Button } from "@avplatform/ui/buttons";
 import { Node, NodeProps, Position } from "@xyflow/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { buildLiveLoopIndex } from "@/features/execute-flow/utils/live-loop-index";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 
@@ -22,11 +23,26 @@ export const ForLoopNode = memo(
     const isExecutionLog = useIsExecutionLogsRoute();
     // 1. Destructure executionMap and nodeToParentStack from the store
     const { loopRegistry, activeIteration, setIteration, executionMap, nodeToParentStack } =
-      useExecutionStore();
+      useExecutionStore(
+        useShallow((state) => ({
+          loopRegistry: state.loopRegistry,
+          activeIteration: state.activeIteration,
+          setIteration: state.setIteration,
+          executionMap: state.executionMap,
+          nodeToParentStack: state.nodeToParentStack,
+        })),
+      );
 
     const { nodeLogHistory, liveActiveIteration, setLiveIteration, liveExecutionMap } =
-      useLiveExecutionStore();
-    const { nodes } = useReactFlowExtStore();
+      useLiveExecutionStore(
+        useShallow((state) => ({
+          nodeLogHistory: state.nodeLogHistory,
+          liveActiveIteration: state.liveActiveIteration,
+          setLiveIteration: state.setLiveIteration,
+          liveExecutionMap: state.liveExecutionMap,
+        })),
+      );
+    const { nodes } = useReactFlowExtStore(useShallow((state) => ({ nodes: state.nodes })));
 
     const liveExecutionData = buildLiveLoopIndex(nodeLogHistory, nodes);
 

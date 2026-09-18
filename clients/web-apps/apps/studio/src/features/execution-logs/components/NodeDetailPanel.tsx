@@ -3,6 +3,7 @@ import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { LogsIcon, X } from "lucide-react";
 import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Panel, PanelClose, PanelContent } from "@/components/panel/components/Panel";
 import { buildNodeLogPayload } from "@/utils/node-log-payload";
@@ -23,7 +24,14 @@ import { useNodeDetailStore } from "../stores/node-detail-store";
 export const NodeDetailPanel = () => {
   const selectedNodeId = useNodeDetailStore((state) => state.selectedNodeId);
 
-  const { executionMap, nodeToParentStack, activeIteration, nodeTypes } = useExecutionStore();
+  const { executionMap, nodeToParentStack, activeIteration, nodeTypes } = useExecutionStore(
+    useShallow((state) => ({
+      executionMap: state.executionMap,
+      nodeToParentStack: state.nodeToParentStack,
+      activeIteration: state.activeIteration,
+      nodeTypes: state.nodeTypes,
+    })),
+  );
 
   const nodeId = selectedNodeId;
 
@@ -43,7 +51,7 @@ export const NodeDetailPanel = () => {
   if (!nodeId) return null;
 
   return (
-    <Panel id={NODE_DETAIL_PANEL_ID} side="right" width="w-[36rem]" closeOnEscape>
+    <Panel id={NODE_DETAIL_PANEL_ID} side="right" width="w-[30rem]" closeOnEscape>
       <PanelContent className="overflow-hidden py-2 pl-2">
         <ScrollArea className="h-full w-full">
           <ViewContainer className="pt-1">

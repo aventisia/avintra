@@ -9,7 +9,12 @@ import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 
 export const FlowBreadcrumbs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { trail, sliceBreadcrumb } = useBreadcrumbStore();
+  const { trail, sliceBreadcrumb } = useBreadcrumbStore(
+    useShallow((state) => ({
+      trail: state.trail,
+      sliceBreadcrumb: state.sliceBreadcrumb,
+    })),
+  );
 
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const name = useReactFlowViewStore(useShallow((state) => state.name));
