@@ -16,7 +16,7 @@ import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundViewOnly } from "./BackgroundViewOnly";
-import { NodePopover } from "./FELInputOutput/NodePopover";
+import { NodeDetailPanel } from "./NodeDetailPanel";
 import { ExecutionLogPanel } from "./execution-log-panel/ExecutionLogPanel";
 import { ViewControls } from "./view-controls";
 
@@ -104,7 +104,7 @@ export const ReactFlowViewOnly = () => {
         )}
       </div>
       <BackgroundViewOnly />
-      <NodePopover />
+      <NodeDetailPanel />
     </>
   );
 };

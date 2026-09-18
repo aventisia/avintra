@@ -25,6 +25,12 @@ export const FlowBreadcrumbs = () => {
     if (crumb.jobId) params.set("j", crumb.jobId); // Preserve job execution context
     if (crumb.runVersionId) params.set("rv", crumb.runVersionId); // Preserve run-log owner version
     if (crumb.runFlowId) params.set("rf", crumb.runFlowId); // Preserve run-log owner flow
+    // Preserve the selected loop iterations so returning to a parent flow keeps the user on
+    // the same iteration. The caller id (`ci`) is intentionally NOT preserved: it identifies
+    // the sub-flow invocation we are leaving, so keeping it would scope the parent flow's
+    // logs to a caller that does not exist there.
+    const loopIterations = searchParams.get("li");
+    if (loopIterations) params.set("li", loopIterations);
     // Preserve the run-results flag so returning to a parent flow keeps the execution-log
     // panel alive. Without this, `showRunResults` is dropped and the panel + per-node logs
     // stop rendering even though the colored node borders remain (those live in the store).

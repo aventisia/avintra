@@ -24,6 +24,11 @@ export const buildSubFlowNavigationParams = (params: {
   jobId?: string;
   runVersionId?: string;
   runFlowId?: string;
+  /**
+   * The caller node (block/callAgent) being entered. Persisted as `ci` so the execution-log
+   * view can scope the sub-flow's logs to this invocation and restore it on refresh.
+   */
+  callerId?: string;
 }): Record<string, string> => {
   const nextParams: Record<string, string> = {
     f: params.targetFlowId,
@@ -38,6 +43,9 @@ export const buildSubFlowNavigationParams = (params: {
   }
   if (params.runFlowId) {
     nextParams.rf = params.runFlowId;
+  }
+  if (params.callerId) {
+    nextParams.ci = params.callerId;
   }
   if (params.showRunResults) {
     nextParams.showRunResults = "1";

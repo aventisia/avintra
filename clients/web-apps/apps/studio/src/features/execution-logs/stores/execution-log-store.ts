@@ -10,27 +10,38 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
   loopRegistry: {},
   nodeToParentStack: {},
   activeIteration: {},
+  activeCallerId: null,
   nodeTypes: {},
   routerConfig: {},
-  routerVisits: {},
-  routerTruePaths: {},
+  traversedEdges: {},
   showBranchStats: false,
-  initLogs: (logs, nodes, edges) => {
-    const data = mapLogsToFlow(logs, nodes, edges);
-    const indices: Record<string, number> = {};
-    Object.keys(data.loopRegistry).forEach((id) => (indices[id] = 0));
+  initLogs: (logs, nodes, edges, callerId) => {
+    const data = mapLogsToFlow(logs, nodes, edges, callerId);
 
     const nodeTypes: Record<string, string> = {};
     nodes?.forEach((n) => {
       nodeTypes[n.id] = n.type ?? "";
     });
 
-    set({ ...data, activeIteration: indices, nodeTypes });
+    set((state) => {
+      // Preserve the user's selected iteration for loops that still exist — e.g. when
+      // navigating from the parent flow into a sub-flow invoked from inside that loop — and
+      // clamp it to the newly computed total so a stale index can never point past the end.
+      const indices: Record<string, number> = {};
+      Object.entries(data.loopRegistry).forEach(([id, { total }]) => {
+        const previous = state.activeIteration[id];
+        indices[id] =
+          typeof previous === "number" ? Math.min(previous, Math.max(0, total - 1)) : 0;
+      });
+
+      return { ...data, activeIteration: indices, nodeTypes };
+    });
   },
 
   setIteration: (id, idx) =>
     set((state) => ({
       activeIteration: { ...state.activeIteration, [id]: idx },
     })),
+  setCaller: (callerId) => set({ activeCallerId: callerId }),
   toggleBranchStats: () => set((state) => ({ showBranchStats: !state.showBranchStats })),
 }));
