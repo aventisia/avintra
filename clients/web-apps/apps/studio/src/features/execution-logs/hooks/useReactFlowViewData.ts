@@ -14,6 +14,7 @@ import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 import { getAgentsExecutionLogsById } from "../apis/job-execution-log-apis";
 import { useExecutionStore } from "../stores/execution-log-store";
 import { NodeExecutionLogType } from "../types/execution-log-types";
+import { useExecutionViewQueryParams } from "./useExecutionViewQueryParams";
 
 export const useReactFlowViewData = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,7 +55,11 @@ export const useReactFlowViewData = () => {
     })),
   );
 
-  const { initLogs } = useExecutionStore();
+  const { initLogs, activeCallerId, setCaller } = useExecutionStore();
+
+  // Persist/restore the loop iteration + caller selection in the URL so a refresh keeps the
+  // user on the same iteration/caller they were inspecting.
+  useExecutionViewQueryParams();
 
   // The breadcrumb trail is persisted in sessionStorage and shared with the design canvas.
   // Drop any trail that belongs to a different job so the execution-log page never shows a
@@ -116,6 +121,15 @@ export const useReactFlowViewData = () => {
     refetchOnReconnect: false,
   });
 
+  // Clear the caller selection when viewing the root flow. The caller id identifies a
+  // sub-flow invocation, so it is meaningless (and would wrongly scope the logs) outside a
+  // sub-flow. Gated on `data` so the initial render — before the job detail resolves and
+  // `isSubFlowView` can be computed — does not wipe a caller restored from the URL.
+  useEffect(() => {
+    if (!data) return;
+    if (!isSubFlowView && activeCallerId) setCaller(null);
+  }, [data, isSubFlowView, activeCallerId, setCaller]);
+
   // Clear canvas whenever jobId is absent (list is still loading/auto-selecting)
   // so stale nodes from a previous session are not shown.
   useEffect(() => {
@@ -163,7 +177,17 @@ export const useReactFlowViewData = () => {
           ? data.nodeExecutionLogs
           : (deepParse(data.nodeExecutionLogs) as unknown as NodeExecutionLogType[]);
 
-        initLogs(parsedLogs as NodeExecutionLogType[], flow?.nodes, flow?.edges);
+        // The job-execution-log API returns `nodeDisplayName`, while the local (IndexedDB)
+        // logs use `nodeName`. Normalise so downstream consumers see a single field
+        // regardless of which source produced the log.
+        const normalisedLogs = (parsedLogs as NodeExecutionLogType[]).map((log) => ({
+          ...log,
+          nodeName: log.nodeName ?? log.nodeDisplayName ?? "",
+        }));
+
+        // Scope to the selected caller when inside a sub-flow so two invocations of the same
+        // sub-flow do not overwrite each other's per-path logs.
+        initLogs(normalisedLogs, flow?.nodes, flow?.edges, activeCallerId);
       }
 
       setFlowVariablesObject(flowVarObjs || []);
@@ -178,7 +202,7 @@ export const useReactFlowViewData = () => {
       setEdges([]);
       setFlowVariablesObject([]);
     }
-  }, [data, subFlowData, isSubFlowView, isSubFlowFetched]);
+  }, [data, subFlowData, isSubFlowView, isSubFlowFetched, activeCallerId]);
 
   return { isPending, isLoading, isFetching: isFetching || isSubFlowFetching, isSubFlowView };
 };

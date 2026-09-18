@@ -1,8 +1,6 @@
 import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
-import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { formatDate } from "@avplatform/ui/utils";
 import { LogsIcon, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -19,42 +17,12 @@ import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-lo
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
+import { buildNodeLogPayload } from "@/utils/node-log-payload";
 
 type NodeTiming = {
   startedAt?: Date;
   endedAt?: Date;
   duration?: number;
-};
-
-/** Convert key/value pairs from the stored node log into a plain JSON object. */
-const kvArrayToObject = (
-  entries?: { key: string; value: unknown }[],
-): Record<string, unknown> | undefined => {
-  if (!entries || entries.length === 0) return undefined;
-  return Object.fromEntries(entries.map((entry) => [entry.key, entry.value]));
-};
-
-/** Build the full LAST NODE LOG style payload from a node log plus timing data. */
-const buildNodeLogPayload = (
-  nodeLog: NodeExecutionLogType | null,
-  nodeData: NodeDataType,
-  timing: NodeTiming,
-): Record<string, unknown> => {
-  const inputs = kvArrayToObject(nodeLog?.inputs);
-  const outputs = kvArrayToObject(nodeLog?.outputs);
-
-  return {
-    nodeExecutionId: nodeLog?.nodeExecutionId ?? FALLBACK_VALUE,
-    retryAttempt: nodeLog?.retryAttempt ?? 0,
-    nodeId: nodeLog?.nodeId ?? FALLBACK_VALUE,
-    nodeDisplayName: nodeData.label || nodeData.name || nodeLog?.nodeName || FALLBACK_VALUE,
-    nodeUniqueName: nodeLog?.nodeUniqueName ?? nodeData.type ?? FALLBACK_VALUE,
-    isSuccess: nodeLog?.isSuccess ?? false,
-    duration: nodeLog?.duration ?? timing.duration ?? 0,
-    executedAt: timing.endedAt ? formatDate(timing.endedAt, true) : FALLBACK_VALUE,
-    inputs: inputs ?? {},
-    outputs: outputs ?? {},
-  };
 };
 
 export const CanvasNodeDetailPanel = () => {
@@ -188,7 +156,11 @@ export const CanvasNodeDetailPanel = () => {
 
   const nodeLogPayload = useMemo<Record<string, unknown> | undefined>(() => {
     if (!nodeData || !selectedNode) return undefined;
-    return buildNodeLogPayload(nodeLog, nodeData, nodeTiming ?? {});
+    return buildNodeLogPayload(nodeLog, {
+      displayName: nodeData.label || nodeData.name,
+      nodeType: nodeData.type,
+      executedAt: nodeTiming?.endedAt,
+    });
   }, [nodeData, nodeLog, nodeTiming, selectedNode]);
 
   // Auto-open the panel when a single colored node is selected.

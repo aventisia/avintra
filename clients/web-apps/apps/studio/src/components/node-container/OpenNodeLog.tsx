@@ -1,11 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
 import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
-import React, { useRef } from "react";
+import React from "react";
 
+import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { NODE_DETAIL_PANEL_ID } from "@/features/execution-logs/constants";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
-import { useNodePopoverStore } from "@/features/execution-logs/stores/node-popover-store";
+import { useNodeDetailStore } from "@/features/execution-logs/stores/node-detail-store";
 
 interface OpenNodeLogProps {
   nodeId: string;
@@ -38,7 +40,7 @@ export default function OpenNodeLog({
   const isError = log?.isSuccess === false;
 
   const isExecutionLog = useIsExecutionLogsRoute();
-  const { openPopover, closePopover } = useNodePopoverStore();
+  const { openPanel } = usePanelStore();
 
   // Live status for a running local (unpublished) flow, driven by the RunnerApp over the
   // Tauri WebSocket. Only shows on the design canvas (not the execution-log route).
@@ -48,10 +50,8 @@ export default function OpenNodeLog({
     isDisabled ? undefined : state.liveExecutionMap[nodeId],
   );
 
-  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // Attempt history for the currently active execution, ordered by retry sequence.
-  // Used only for the retry badge count; the popover resolves its data reactively.
+  // Used only for the retry badge count; the panel resolves its data reactively.
   const attemptsForSameExecution = log
     ? pathHistory
         .filter((entry) => entry.nodeExecutionId === log.nodeExecutionId)
@@ -64,22 +64,14 @@ export default function OpenNodeLog({
       ? attemptsForSameExecution.length - 1
       : 0;
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Opens the docked node-log panel for this node. Replaces the old hover popover so the
+  // full log metadata stays visible while the user inspects values.
+  const handleOpenLog = () => {
     if (!isExecutionLog) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    hoverTimeout.current = setTimeout(() => {
-      if (!executionMap[nodeId]?.[pathKey]) return;
-      openPopover(nodeId, rect);
-    }, 200);
-  };
+    if (!executionMap[nodeId]?.[pathKey]) return;
 
-  const handleMouseLeave = () => {
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    setTimeout(() => {
-      if (!useNodePopoverStore.getState().isHoveringPopover) {
-        closePopover();
-      }
-    }, 100);
+    useNodeDetailStore.getState().openNodeDetail(nodeId);
+    openPanel(NODE_DETAIL_PANEL_ID, "right");
   };
 
   return (
@@ -90,10 +82,10 @@ export default function OpenNodeLog({
             "relative border rounded-lg",
             isExecutionLog && isSuccess && showBorder && "border-green-500",
             isExecutionLog && isError && showBorder && "border-red-500",
+            log && "cursor-pointer",
             className,
           )}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onClick={handleOpenLog}
         >
           {showIcon && log && (
             <>

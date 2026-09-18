@@ -19,7 +19,6 @@ export const ReadOnlyEdge = memo(
     sourcePosition,
     targetPosition,
     markerEnd,
-    source,
     target,
   }: EdgeProps) => {
     const { getNode, getEdge } = useReactFlow();
@@ -36,35 +35,20 @@ export const ReadOnlyEdge = memo(
 
     const isExecutionLog = useIsExecutionLogsRoute();
 
-    const {
-      executionMap,
-      nodeToParentStack,
-      activeIteration,
-      routerConfig,
-      routerVisits,
-      routerTruePaths,
-    } = useExecutionStore();
+    const { traversedEdges, nodeToParentStack, activeIteration } = useExecutionStore();
 
     const parents = nodeToParentStack[target] || [];
     const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
 
-    let isActive = false;
-    const isTargetRouterBranch = routerConfig[source];
-
-    if (isTargetRouterBranch) {
-      if (target === isTargetRouterBranch.defaultId) {
-        // --- Default Path Inference Logic ---
-        const visited = routerVisits[source]?.has(pathKey);
-        const conditionalsTrue = routerTruePaths[source]?.has(pathKey);
-        isActive = !!visited && !conditionalsTrue;
-      } else {
-        // --- Conditional Branch Edge ---
-        isActive = executionMap[target]?.[pathKey]?.outputs?.ConditionsResult === "True";
-      }
-    } else {
-      // --- Standard Edge ---
-      isActive = !!executionMap[target]?.[pathKey]?.isSuccess == true;
-    }
+    // An edge is green only when the execution actually followed it in the selected path.
+    //
+    // This is deliberately keyed by EDGE, not by the target node. Several edges converge on
+    // the same node — every branchEndNode points at the router's merge node — so checking
+    // "did the target run?" lit up every converging edge as soon as the shared target ran,
+    // including the branches that were never taken. The parser reconstructs the traversed
+    // edges from log adjacency, mirroring the live canvas which receives the exact edge id
+    // from the runner.
+    const isActive = traversedEdges[id]?.[pathKey] === true;
 
     const stroke = isExecutionLog && isActive ? "#22c55e" : "#94a3b8";
     const statusClass = isExecutionLog && isActive ? "edge-success" : "";

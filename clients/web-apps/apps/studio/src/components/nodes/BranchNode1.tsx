@@ -28,7 +28,8 @@ export const BranchNode1 = memo(
   }: NodeProps<BranchNode1>) => {
     const isExecutionLog = useIsExecutionLogsRoute();
 
-    const { branchStats, showBranchStats } = useExecutionStore();
+    const { branchStats, showBranchStats, executionMap, nodeToParentStack, activeIteration } =
+      useExecutionStore();
     const liveStatus = useLiveExecutionStore((state) =>
       nodeData?.isDisabled ? undefined : state.liveExecutionMap[nodeId],
     );
@@ -37,10 +38,19 @@ export const BranchNode1 = memo(
     // lock protection here (block interaction + overlay) when another user holds the lock.
     const { lockedByOther } = useNodeLockedByOther(nodeId);
 
+    // Resolve this branch's path coordinate so the highlight reflects the SELECTED iteration.
+    // `branchStats` is a total across every iteration, so using it for the border kept the
+    // branch green whenever it ran in ANY iteration — including iterations the user is not
+    // currently viewing. It is still used for the hit-count badge, which is intentionally a
+    // total.
+    const parents = nodeToParentStack[nodeId] || [];
+    const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
+    const isActiveInPath = !!executionMap[nodeId]?.[pathKey];
+
     const totalHits = branchStats[nodeId] || 0;
 
     const pillBorderClass =
-      !nodeData?.isDisabled && isExecutionLog && branchStats[nodeId]
+      !nodeData?.isDisabled && isExecutionLog && isActiveInPath
         ? "border-green-500"
         : liveStatus === "running"
           ? "border-blue-500"

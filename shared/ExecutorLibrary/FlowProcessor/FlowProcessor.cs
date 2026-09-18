@@ -356,12 +356,21 @@ public class FlowProcessor
         log.NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label;
         log.NodeUniqueName = node.Data?.Name ?? node.Type;
 
-        // Generated support-node logs (trigger/plus/branchStart/merge/branchEnd) carry the active
-        // runtime caller/loop context. Loop/branch result logs already stamp their own explicit
-        // loop fields (see CreateLoopLog), so we do not clobber those.
-        if (resultLog is null)
+        // Stamp the active runtime caller/loop context onto the log.
+        //
+        // Only the LOOP node's own log sets these explicitly (see CreateLoopLog, which
+        // attributes the log to the loop itself). Router and branch result logs do NOT set
+        // them, so they must be stamped here — otherwise a router/branch inside a loop loses
+        // its iteration context and the UI cannot scope its highlight to the active iteration
+        // (every branch would appear green in every iteration). The empty checks preserve the
+        // loop node's own explicit values instead of clobbering them.
+        if (string.IsNullOrEmpty(log.CallerReferenceId))
         {
             log.CallerReferenceId = flowExecutionContext.CallerReferenceId;
+        }
+
+        if (string.IsNullOrEmpty(log.LoopReferenceId))
+        {
             log.LoopReferenceId = flowExecutionContext.LoopReferenceId;
             log.LoopIterationIndex = flowExecutionContext.LoopIterationIndex;
         }

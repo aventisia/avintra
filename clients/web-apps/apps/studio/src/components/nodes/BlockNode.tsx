@@ -122,6 +122,8 @@ export const BlockNode = memo(
           jobId: currentJobId || undefined,
           runVersionId: currentRunVersionId || undefined,
           runFlowId: currentRunFlowId || undefined,
+          // This node IS the caller of the sub-flow being entered.
+          callerId: id,
         }),
       );
     };
