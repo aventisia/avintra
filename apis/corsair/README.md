@@ -173,8 +173,12 @@ When deploying the Corsair sidecar, follow this order:
    npm run generate:configs   # Generate config artifacts (mapping/siblings committed; per-plugin configs to CORSAIR_CONFIG_DIR)
    npm run migrate:prod       # Create Corsair database schema
    npm run seed:tools:prod    # Seed Corsair tools into Workspace database (explicit CI/CD step)
-   npm start                  # The prestart hook runs: migrate → start server
+   npm run start:prod         # Run the compiled server (node dist/main.js)
    ```
+
+   > **Do not use `npm start` in production.** `start` runs `tsx src/main.ts`, and
+   > `tsx` is a devDependency that is not installed by `npm ci --omit=dev`.
+   > `start:prod` runs the compiled `dist/main.js` instead.
 
    The mapping + sibling config artifacts are committed and deploy with the
    Workspace API. The thousands of per-plugin configs are generated into

@@ -13,6 +13,7 @@
     "prestart": "npm run migrate",
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
+    "start:prod": "node dist/main.js",
     "generate:configs": "tsx src/generate-corsair-configs.ts",
     "test:dcp": "tsx src/dcp-generator/generator.test.ts",
     "test:validation": "tsx src/validation.test.ts",
