@@ -351,12 +351,17 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Retrieve the queue matching the specified name within the current environment for the current user.
+            // Retrieve the queue matching the specified name within the current environment.
+            // Filter explicitly by the current tenant and bypass the global tenant/space query
+            // filters so runner/node-originated calls (which have no space context) can resolve
+            // queues scoped to the executing flow's tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == queueName.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
+                .IgnoreQueryFilters()
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.QueueUsers)
                 .Include(i => i.CreatedByUser)
