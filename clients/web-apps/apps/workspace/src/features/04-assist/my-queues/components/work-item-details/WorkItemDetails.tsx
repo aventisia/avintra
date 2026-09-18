@@ -19,6 +19,7 @@ import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { QueueTransactionEventEnum } from "../../enums/queue-transaction-event-enum";
 import { QueueTransactionStatusTypesEnum } from "../../enums/queue-work-item-status-enum";
+import { useFetchQueueByName } from "../../hooks/useFetchQueueByName";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useFetchQueuesWorkItemData } from "../../hooks/useFetchQueuesWorkItemData";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
@@ -61,6 +62,12 @@ export const WorkItemDetails = () => {
   // opened from agent queues, so we must query the agent-queue endpoint to
   // resolve the queue's credentialName (needed to download the file/PDF).
   const { data: myQueues } = useFetchQueues({ onlyUserQueues: true, queueType });
+
+  // The my-queues list endpoints strip array-typed fields (e.g. `line_items`) from
+  // the input schema, so the form would never render them. Resolve the complete
+  // schema from the queue details endpoint (by name) instead.
+  const resolvedQueueName = workItemData?.data.queueName ?? queueName;
+  const { data: queueByName } = useFetchQueueByName(resolvedQueueName);
 
   const { mutate: addEvent } = useInsertQueueWorkItemEvent();
 
@@ -127,6 +134,10 @@ export const WorkItemDetails = () => {
     return () => {};
   }, [myQueues?.data, queueId]);
 
+  // Prefer the queue details payload (complete schema) over the list payload,
+  // which omits array-typed fields such as `line_items`.
+  const inputSchema = queueByName?.data?.inputSchema ?? myCurrentQueue?.inputSchema;
+
   // On Load of WorkItem detail if it is in pending state move to in progress.
   // This auto-claim only applies in Manual mode, where users free-pick items.
   // In FIFO mode items are claimed exclusively via the "Get Next Item" button,
@@ -176,7 +187,7 @@ export const WorkItemDetails = () => {
         extractedData={extractedData}
         setExtractedData={setExtractedData}
         credentialName={myCurrentQueue?.credentialName}
-        inputSchema={myCurrentQueue?.inputSchema}
+        inputSchema={inputSchema}
         readOnly={isViewOnly}
       />
     );
