@@ -5,6 +5,7 @@ using AspNetToolkit.Enums;
 using Microsoft.EntityFrameworkCore;
 using WorkspaceAPIs.Entities;
 using WorkspaceAPIs.Features.Corsair;
+using WorkspaceAPIs.Features.Corsair.Helpers;
 using WorkspaceAPIs.Repos;
 using WorkspaceAPIs.Services;
 
@@ -133,11 +134,18 @@ public class CorsairInvokeService : ICorsairInvokeService
                 return serviceResponse;
             }
 
+            // The node payload carries every configured field as a string, including
+            // empty optional fields and UI-only fields. Refine it against the generated
+            // config so only declared inputs with a value are forwarded, coerced to the
+            // type the sidecar schema expects.
+            var config = _configRepository.GetConfig(plugin, request.Action);
+            var payload = CorsairPayloadHelper.Refine(request.Payload, config);
+
             var result = await _corsairSidecarService.InvokeAsync(
                 appSecret.Id,
                 plugin,
                 dottedAction,
-                request.Payload);
+                payload);
 
             serviceResponse.Data = new CorsairInvokeResDto
             {
