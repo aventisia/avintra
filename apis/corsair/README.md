@@ -206,11 +206,58 @@ All seeding steps are idempotent and safe to run repeatedly.
 
 ## Adding a new plugin
 
-1. Add the plugin package to the Corsair dependency set in package.json.
-2. Register it in the plugin list in src/corsair.ts or the relevant plugin bundle.
-3. Confirm the provider supports the expected OAuth or API-key flow.
-4. Run the config generator so the metadata and action definitions are refreshed.
-5. Ensure the Workspace API reads generated metadata if it is present and otherwise continues gracefully.
+Corsair is an evolving upstream project (`corsairdev/corsair`). New integration
+plugins are added to its `packages/` directory over time. The onboarding tool
+(`src/check-new-plugins.ts`) compares the upstream plugin set against the
+plugins this sidecar depends on and provisions new ones end-to-end.
+
+### Check for new upstream plugins
+
+```sh
+cd apis/corsair
+npm run plugins:check
+```
+
+This fetches the live upstream `packages/` listing from the GitHub API, diffs it
+against the `@corsair-dev/*` dependencies in `package.json`, and prints the NEW
+plugins our codebase does not have yet.
+
+### Onboard a plugin
+
+```sh
+# Onboard a single plugin
+npm run plugins:onboard -- <plugin-id>
+
+# Onboard every missing plugin
+npm run plugins:onboard -- --all
+```
+
+> **Note:** the `--` before the plugin id is required — it tells npm to pass the
+> arguments through to the script. Without it, npm may swallow the flags.
+
+The onboard command provisions a plugin:
+
+1. **package.json** — adds the `@corsair-dev/<id>` dependency (alphabetical).
+2. **src/plugins.ts** — registers the import + factory instantiation.
+
+No base URL is added. Corsair tools are platform tools (the test/playground is
+hidden for them) and execution goes through the Corsair sidecar, so a base URL
+is unnecessary and would only introduce false data.
+
+Config regeneration and tool seeding are **not** part of onboarding — they are
+separate scripts you run explicitly afterwards:
+
+```sh
+npm run generate:configs   # regenerate action configs, mapping, action map, catalog, OpenAPI
+npm run seed:tools         # seed the tools into the Workspace ws_Tools database
+```
+
+### After onboarding
+
+1. **Run `npm install`** (with `--legacy-peer-deps`) if new deps were added.
+2. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
+3. **Run `npm run seed:tools`** to seed the tools into `ws_Tools`.
+4. **Commit** the generated artifacts + the new plugin registration.
 
 ## Verification
 

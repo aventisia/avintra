@@ -10,17 +10,13 @@ import { listOperations, getStructuredSchema } from "corsair";
 import type { PluginMetadata } from "./dcp-generator/types.js";
 import { toPluginMetadataList } from "./dcp-generator/plugin-metadata.js";
 import { buildOpenApiSpec } from "./dcp-generator/build-openapi.js";
-import {
-  DEFAULT_BASE_URL_MAP,
-  DEFAULT_ICON_MAP,
-} from "./dcp-generator/plugin-metadata.js";
+import { DEFAULT_ICON_MAP } from "./dcp-generator/plugin-metadata.js";
 
 export interface GeneratedToolMetadata {
   id: string;
   pluginId: string;
   name: string;
   description: string;
-  baseUrl: string;
   openApiSpec: string;
 }
 
@@ -57,14 +53,12 @@ function listTools(corsair: unknown): CorsairTool[] {
  * @param plugins Corsair plugin instances
  * @param corsair Corsair instance for schema introspection
  * @param iconMap Optional icon URL map per plugin
- * @param baseUrlMap Optional base URL map per plugin
  * @returns Array of generated tool metadata
  */
 export async function generateToolMetadata(
   plugins: readonly unknown[],
   corsair: unknown,
   iconMap = DEFAULT_ICON_MAP,
-  baseUrlMap = DEFAULT_BASE_URL_MAP,
 ): Promise<GeneratedToolMetadata[]> {
   if (!corsair) {
     throw new Error("generateToolMetadata requires a corsair instance to introspect schemas.");
@@ -91,15 +85,13 @@ export async function generateToolMetadata(
       return { action, description, input: tool.input };
     });
 
-    const baseUrl = baseUrlMap[meta.id] ?? "https://api.example.com";
-    const openApiSpec = buildOpenApiSpec(meta, openApiActions, baseUrl);
+    const openApiSpec = buildOpenApiSpec(meta, openApiActions);
 
     generatedTools.push({
       id: meta.id,
       pluginId: meta.id,
       name: meta.providerName,
       description: `${meta.providerName} connector`,
-      baseUrl,
       openApiSpec: JSON.stringify(openApiSpec),
     });
   }

@@ -19,7 +19,6 @@ import type {
   GenerateDcpOptions,
 } from "./types.js";
 import {
-  DEFAULT_BASE_URL_MAP,
   DEFAULT_ICON_MAP,
   toPluginMetadataList,
 } from "./plugin-metadata.js";
@@ -106,7 +105,6 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     plugins,
     corsair,
     iconMap = DEFAULT_ICON_MAP,
-    baseUrlMap = DEFAULT_BASE_URL_MAP,
     globalMappingFile,
     configRoot,
   } = options;
@@ -181,8 +179,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
 
     categories.push(buildPluginCategory(meta, actions));
 
-    const baseUrl = baseUrlMap[meta.id] ?? "https://api.example.com";
-    openApiByPlugin[meta.id] = buildOpenApiSpec(meta, openApiActions, baseUrl);
+    openApiByPlugin[meta.id] = buildOpenApiSpec(meta, openApiActions);
   }
 
   // Write the dedicated Corsair action-selector mapping. Studio merges this
