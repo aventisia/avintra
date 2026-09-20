@@ -85,7 +85,13 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "prompt-input-v2":
-      return <PromptConfigFieldV2 {...baseProps} />;
+      return (
+        <PromptConfigFieldV2
+          {...baseProps}
+          showTokenCount={field.showTokenCount}
+          showVariables={field.showVariables}
+        />
+      );
     case "multi-selector":
       return <MultiSelectField {...baseProps} selectOptions={field.selectOptions || []} />;
     case "slider":
