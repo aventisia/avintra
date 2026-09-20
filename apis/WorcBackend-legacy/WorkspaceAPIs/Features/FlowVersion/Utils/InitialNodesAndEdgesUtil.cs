@@ -100,7 +100,8 @@ public static class InitialNodesAndEdgesUtil
                     model = "gpt-4o-mini",
                     temperature = 1,
                     top_p = 1,
-                    max_output_tokens = (int?)null
+                    max_output_tokens = (int?)null,
+                    reasoning_effort = "medium"
                 }
             },
             new { Key = "Files", Value = (object?)"" },

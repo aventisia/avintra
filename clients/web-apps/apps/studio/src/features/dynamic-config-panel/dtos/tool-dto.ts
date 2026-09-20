@@ -41,6 +41,11 @@ export interface UsableToolDto {
   name: string;
 
   /**
+   * Brand icon path for platform tools; undefined for custom/unknown tools.
+   */
+  icon?: string;
+
+  /**
    * Description of the tool.
    */
   description?: string;

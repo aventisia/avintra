@@ -3,9 +3,11 @@ import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { RenderField, shouldRenderField, useDefineDCPForm } from "..";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
@@ -20,6 +22,13 @@ export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
 
   const isAgentHistory = useIsVersionHistoryRoute();
+
+  // ChatAgent renders its prompt action in the prompt editor header instead of the tab footer.
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
+    })),
+  );
 
   // Define form
   const {
@@ -214,9 +223,9 @@ export const DCPForm = () => {
             ))}
 
             {/* Prompt helpers / history notice. Changes auto-commit at panel boundaries. */}
-            {selectedTab !== "Test" && (promptField || isAgentHistory) && (
+            {selectedTab !== "Test" && (isAgentHistory || (promptField && !isChatAgent)) && (
               <DCPTabsFooterWrapper className={cn("justify-between")}>
-                {promptField && !isAgentHistory && (
+                {promptField && !isAgentHistory && !isChatAgent && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
                     name={promptField.name}
