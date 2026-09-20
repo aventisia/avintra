@@ -17,7 +17,7 @@ export const OpenNodeConfig = ({ nodeId, nodeData, children }: OpenNodeConfigPro
     })),
   );
 
-  // Guarded: switching nodes with unsaved edits confirms discard first
+  // Guarded: switching nodes flushes pending edits first, aborts on validation errors
   const guardNavigation = useDCPNavigationGuard();
 
   return (
@@ -27,7 +27,7 @@ export const OpenNodeConfig = ({ nodeId, nodeData, children }: OpenNodeConfigPro
       onDoubleClick={() => {
         // Always open (never toggle): double-clicking another node while the
         // panel is open must switch content, not close the panel.
-        guardNavigation(() => openNodeConfig(nodeId, nodeData));
+        void guardNavigation(() => openNodeConfig(nodeId, nodeData));
       }}
     >
       {children}

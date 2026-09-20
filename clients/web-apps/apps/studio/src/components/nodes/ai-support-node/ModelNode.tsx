@@ -79,7 +79,7 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     })),
   );
 
-  // Guarded: switching nodes with unsaved edits confirms discard first
+  // Guarded: switching nodes flushes pending edits first, aborts on validation errors
   const guardNavigation = useDCPNavigationGuard();
 
   return (
@@ -93,7 +93,7 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
           )}
           onDoubleClick={() => {
             if (!connectedNodeId || !connectedNodeData?.data) return;
-            guardNavigation(() => {
+            void guardNavigation(() => {
               openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
               setTimeout(() => {
                 setSelectedTab("Models");

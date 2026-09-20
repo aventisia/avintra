@@ -69,11 +69,15 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
     }
   }, [showDialog, openPanel, closePanel]);
 
-  // Reverse sync: safety net for panel-store-only closes. (X and the guarded
-  // Escape below close both stores explicitly.)
+  // Reverse sync: safety net for panel-store-only closes. (The header X and the
+  // guarded Escape below close both stores explicitly.)
   const wasPanelOpenRef = useRef(isPanelOpen);
   useEffect(() => {
     if (wasPanelOpenRef.current && !isPanelOpen && showDialog) {
+      // Commit any pending form edits before the panel disappears. Always
+      // persists — including incomplete/invalid edits — so a panel-store-only
+      // close never drops mid-edit state.
+      void useDynamicConfigPanelStore.getState().flushForm?.();
       clearAllFiles();
       setShowDialog(false);
     }
@@ -94,9 +98,10 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
     }
   }, [nodeId, showDialog, setShowViewer, clearAllFiles]);
 
-  // Guarded Escape: Panel's own closeOnEscape stays off so dirty edits confirm
-  // ("Discard changes?") instead of vanishing. Disabled while the confirm is
-  // open so Escape dismisses the confirm, not the panel behind it.
+  // Guarded Escape: Panel's own closeOnEscape stays off so dirty edits flush
+  // (always persisted, even incomplete/invalid) instead of vanishing, and the
+  // panel still closes. Disabled while
+  // the confirm is open so Escape dismisses the confirm, not the panel behind it.
   const guardNavigation = useDCPNavigationGuard();
   const isAlertDialogOpen = useAlertDialogStore((s) => s.isAlertDialogOpen);
   useHotkeys(
@@ -109,7 +114,7 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
       if (target?.closest?.("[data-radix-popper-content-wrapper]")) return;
       if (useVariableSelectorStore.getState().isOpen) return;
 
-      guardNavigation(() => {
+      void guardNavigation(() => {
         clearAllFiles();
         closeNodeConfig();
         closePanel(DCP_PANEL_ID);

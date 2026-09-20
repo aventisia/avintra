@@ -99,7 +99,7 @@ export const useAddNodeFromEdge = () => {
         const finalEdges = [...cleanedEdges, ...newEdges, newToNextEdge, updatedTempEdge];
 
         // Show config panel
-        guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
+        void guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
 
         autoLayout({ newNodes: updatedNodes, newEdges: finalEdges });
         return;
@@ -156,7 +156,7 @@ export const useAddNodeFromEdge = () => {
       ];
 
       // Open Config dialog when new node added
-      guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
+      void guardNavigation(() => openNodeConfig(newNodes[0]?.id, nodeData));
 
       // Auto organize node & edge
       autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges2 });
