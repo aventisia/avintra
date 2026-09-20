@@ -2,7 +2,7 @@ import { LoadingSpinner } from "@avplatform/ui";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -55,6 +55,19 @@ export const DCPForm = () => {
 
     setShowOutputFields(Number(renderedOutputFields?.map((field) => field.name)?.length) > 0);
   }, [nodeConfig?.fields, isFormReady, nodeConfig, watchedValues]);
+
+  // The renderable prompt field on the currently selected tab. Used to offer
+  // the Improve with AI action without hard-coding the tab name.
+  const promptField = useMemo(
+    () =>
+      nodeConfig?.fields?.find(
+        (field) =>
+          (field.type === "prompt-input" || field.type === "prompt-input-v2") &&
+          (field.category ?? "Inputs") === selectedTab &&
+          shouldRenderField("Input", field, watchedValues),
+      ),
+    [nodeConfig?.fields, selectedTab, watchedValues],
+  );
 
   // Return the form
   return (
@@ -206,16 +219,12 @@ export const DCPForm = () => {
             ))}
 
             {/* Prompt helpers / history notice. Changes auto-commit at panel boundaries. */}
-            {selectedTab !== "Test" && (selectedTab == "Prompt" || isAgentHistory) && (
+            {selectedTab !== "Test" && (promptField || isAgentHistory) && (
               <DCPTabsFooterWrapper className={cn("justify-between")}>
-                {selectedTab == "Prompt" && !isAgentHistory && (
+                {promptField && !isAgentHistory && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
-                    name={
-                      nodeConfig.fields.find(
-                        (v) => v.type == "prompt-input" || v.type == "prompt-input-v2",
-                      )?.name ?? ""
-                    }
+                    name={promptField.name}
                     form={form}
                   />
                 )}

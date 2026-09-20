@@ -119,7 +119,7 @@ const Form = <T extends FieldValues>({
   return (
     <FormProvider {...methods}>
       <form className="w-full" onSubmit={onSubmit}>
-        <fieldset disabled={disabled} className={cn("w-full space-y-3.5", className)}>
+        <fieldset disabled={disabled} className={cn("flex w-full flex-col gap-3.5", className)}>
           {children}
         </fieldset>
       </form>

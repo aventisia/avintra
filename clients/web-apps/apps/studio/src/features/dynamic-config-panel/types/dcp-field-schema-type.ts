@@ -20,6 +20,8 @@ import { DCPControlType, RenderIfType } from "..";
  * @property max - Maximum value for number fields.
  * @property minLength - Minimum length for string fields.
  * @property maxLength - Maximum length for string fields.
+ * @property showTokenCount - If true, show the token count in the prompt field footer.
+ * @property showVariables - If true, show variable chips/helpers in the prompt field footer.
  */
 export type DCPFieldSchemaType = {
   type: DCPControlType;
@@ -39,6 +41,8 @@ export type DCPFieldSchemaType = {
   max?: number;
   minLength?: number;
   maxLength?: number;
+  showTokenCount?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
+  showVariables?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   renderIf?: RenderIfType; // Not a html attribute
   serviceType?: string;
   category?: string; // By default category's value is 'Inputs' else whatever is set

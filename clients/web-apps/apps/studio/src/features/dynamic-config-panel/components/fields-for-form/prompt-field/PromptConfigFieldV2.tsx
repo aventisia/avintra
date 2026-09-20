@@ -13,6 +13,8 @@ const FILL_HEIGHT = "calc(100vh - 13.25rem - var(--header-height) - var(--header
 interface PromptConfigFieldV2Props {
   name: string;
   disabled?: boolean;
+  showTokenCount?: boolean;
+  showVariables?: boolean;
 }
 
 // Extract the unique variable names referenced as {{name}} in the prompt.
@@ -24,7 +26,12 @@ const extractVariables = (value: string) => {
   return Array.from(variables);
 };
 
-const PromptConfigFieldV2 = ({ name, disabled }: PromptConfigFieldV2Props) => {
+const PromptConfigFieldV2 = ({
+  name,
+  disabled,
+  showTokenCount = false,
+  showVariables = false,
+}: PromptConfigFieldV2Props) => {
   const { control } = useFormContext();
   const { field } = useController({ name, control });
 
@@ -34,8 +41,12 @@ const PromptConfigFieldV2 = ({ name, disabled }: PromptConfigFieldV2Props) => {
   const value = typeof field.value === "string" ? field.value : "";
 
   const lineCount = useMemo(() => Math.max(value.split("\n").length, 1), [value]);
-  const variables = useMemo(() => extractVariables(value), [value]);
+  const variables = useMemo(
+    () => (showVariables ? extractVariables(value) : []),
+    [value, showVariables],
+  );
   const tokenCount = useMemo(() => Math.round(value.length / CHARS_PER_TOKEN), [value]);
+  const showFooter = showTokenCount || showVariables;
 
   // Keep the line-number gutter scrolled in step with the textarea.
   const syncScroll = useCallback(() => {
@@ -99,43 +110,52 @@ const PromptConfigFieldV2 = ({ name, disabled }: PromptConfigFieldV2Props) => {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-start justify-between gap-3 border-t border-input bg-muted/40 px-3 py-2 text-xs">
-          <div className="flex shrink-0 items-center gap-2 font-mono text-muted-foreground">
-            <span>
-              ~<span className="font-medium text-foreground mr-0.5">{tokenCount}</span> tokens
-            </span>
-            <span className="block rounded-full size-[0.2rem] bg-slate-400" />
-            <span>
-              <span className="font-medium text-foreground mr-0.5">{variables.length}</span>{" "}
-              variables
-            </span>
-          </div>
-
-          {variables.length > 0 ? (
-            <div className="flex min-w-0 flex-wrap justify-end gap-1">
-              {variables.map((variable) => (
-                <span
-                  key={variable}
-                  className="rounded bg-primary-100 px-1.5 py-0.5 font-mono text-3xs text-primary-700"
-                >
-                  {variable}
+        {showFooter && (
+          <div className="flex shrink-0 items-start justify-between gap-3 border-t border-input bg-muted/40 px-3 py-2 text-xs">
+            <div className="flex shrink-0 items-center gap-2 font-mono text-muted-foreground">
+              {showTokenCount && (
+                <span>
+                  ~<span className="font-medium text-foreground mr-0.5">{tokenCount}</span> tokens
                 </span>
-              ))}
+              )}
+              {showTokenCount && showVariables && (
+                <span className="block rounded-full size-[0.2rem] bg-slate-400" />
+              )}
+              {showVariables && (
+                <span>
+                  <span className="font-medium text-foreground mr-0.5">{variables.length}</span>{" "}
+                  variables
+                </span>
+              )}
             </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              Use{" "}
-              <button
-                type="button"
-                onClick={insertVariable}
-                className="rounded bg-primary-100 px-1 font-mono text-primary-700"
-              >
-                {"{{ }}"}
-              </button>{" "}
-              to insert a variable.
-            </p>
-          )}
-        </div>
+
+            {showVariables &&
+              (variables.length > 0 ? (
+                <div className="flex min-w-0 flex-wrap justify-end gap-1">
+                  {variables.map((variable) => (
+                    <span
+                      key={variable}
+                      className="rounded bg-primary-100 px-1.5 py-0.5 font-mono text-3xs text-primary-700"
+                    >
+                      {variable}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Use{" "}
+                  <button
+                    type="button"
+                    onClick={insertVariable}
+                    className="rounded bg-primary-100 px-1 font-mono text-primary-700"
+                  >
+                    {"{{ }}"}
+                  </button>{" "}
+                  to insert a variable.
+                </p>
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );
