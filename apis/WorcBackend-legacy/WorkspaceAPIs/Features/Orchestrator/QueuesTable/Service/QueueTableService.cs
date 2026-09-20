@@ -355,6 +355,7 @@ public class QueueTableService : IQueueTableService
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .Include(i => i.QueueTransactions)
+                .Include(i => i.QueueUsers)
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
@@ -380,7 +381,13 @@ public class QueueTableService : IQueueTableService
                 }
             );
 
-            if (!canView)
+            // A user can also be associated with a queue through a legacy QueueUser
+            // record (used by the Assist "my queues" screen and agent queues), which
+            // is not represented as a ResourceShare. Mirror the list endpoints so
+            // those users can resolve the queue's full schema.
+            var hasQueueUserAccess = queue.QueueUsers?.Any(a => a.UserId == _userId) == true;
+
+            if (!canView && !hasQueueUserAccess)
             {
                 _logger.LogWarning(
                     "Unauthorized queue access. User {UserId}, Queue {QueueName}",
