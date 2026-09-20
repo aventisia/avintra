@@ -85,14 +85,9 @@ export const DCPForm = () => {
         <DCPTabsWrapper setTabValue={handleTabChange} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys
-                ?.filter((key) => import.meta.env.MODE !== "production" || key !== "Tools")
-                ?.map((key) => (
-                  <DCPTabsTrigger
-                    tabValue={key}
-                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                  />
-                ))}
+              {tabKeys?.map((key) => (
+                <DCPTabsTrigger tabValue={key} children={key.replace(/([a-z])([A-Z])/g, "$1 $2")} />
+              ))}
             </DCPTabsList>
             {!isAgentHistory ? (
               import.meta.env.MODE !== "production" ? (

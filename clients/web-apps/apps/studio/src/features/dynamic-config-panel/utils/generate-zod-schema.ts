@@ -149,7 +149,7 @@ function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
   const toolConfigSchema = z.object({
     tool: z.string().min(1, "Tool is required"),
-    credential_name: z.string().min(1, "Credential is required"),
+    credential_name: z.string(),
     actions: z.array(actionItemSchema).min(1, "At least one action must be selected"),
   });
 

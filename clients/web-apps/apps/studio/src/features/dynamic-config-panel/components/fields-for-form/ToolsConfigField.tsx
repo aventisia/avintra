@@ -4,15 +4,18 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { Grip, PencilIcon, Trash2 } from "lucide-react";
+import { Grip, PencilIcon, Trash2, TriangleAlert, Wrench } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
+import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
-import { APPROVAL_OPTIONS, TOOLS, TOOL_ACTIONS } from "../../stores/platform-tools";
+import { useUsableToolOperations, useUsableTools } from "../../hooks/useTools.hook";
+import { APPROVAL_OPTIONS } from "../../stores/platform-tools";
+import { normalizeToolOperations } from "../../utils/normalize-tool-operations.util";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
@@ -61,30 +64,77 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   const currentActions = useWatch({ control, name: fieldNames.actions }) || [];
   const currentApproval = useWatch({ control, name: fieldNames.approval }) || "human";
 
+  // Load the live list of usable tools from the registry
+  const { data: usableToolsResponse, isLoading: isUsableToolsLoading } = useUsableTools();
+  const usableTools = useMemo(() => usableToolsResponse?.data ?? [], [usableToolsResponse]);
+
+  // Resolve the selected tool's registry entry
+  const selectedUsableTool = useMemo(
+    () => usableTools.find((tool) => tool.name === currentTool),
+    [usableTools, currentTool],
+  );
+
+  // Fetch the selected tool's operations and credential type on demand
+  const { data: toolOperationsResponse, isLoading: isToolOperationsLoading } =
+    useUsableToolOperations(selectedUsableTool?.id);
+  const availableOperations = useMemo(
+    () => normalizeToolOperations(toolOperationsResponse?.data?.operations),
+    [toolOperationsResponse],
+  );
+  const credentialType = toolOperationsResponse?.data?.credentialType;
+
+  // Tool select options; inject the raw value as a temporary option when editing a stale entry
+  const toolOptions = useMemo(() => {
+    const options = usableTools.map((tool) => ({ label: tool.name, value: tool.name }));
+    if (currentTool && !options.some((option) => option.value === currentTool)) {
+      options.push({ label: currentTool, value: currentTool });
+    }
+    return options;
+  }, [usableTools, currentTool]);
+
+  // Actions are keyed by operationId; the summary is shown as the label when available
+  const availableActionsForTool = useMemo(
+    () =>
+      availableOperations.map((operation) => ({
+        label: operation.summary || operation.operationId,
+        value: operation.operationId,
+      })),
+    [availableOperations],
+  );
+
+  // Lookup map for rendering the configured list
+  const toolByName = useMemo(
+    () => new Map(usableTools.map((tool) => [tool.name, tool])),
+    [usableTools],
+  );
+
   const prevToolRef = useRef(currentTool);
 
-  // Clear dependent fields (credentials and actions) if the parent tool selection changes
+  // Clear dependent fields (credential and actions) if the parent tool selection changes.
+  // The credential is pre-filled from the selected tool's default when available.
   useEffect(() => {
     if (prevToolRef.current !== currentTool) {
       // Only clear if adding a new tool OR if editing but the user explicitly changed the tool type
       if (editingIndex === null || (editingIndex !== null && currentTool !== initialEditTool)) {
-        setValue(fieldNames.credential_name, "", { shouldValidate: true });
+        setValue(fieldNames.credential_name, selectedUsableTool?.credentialName ?? "", {
+          shouldValidate: true,
+        });
         setValue(fieldNames.actions, [], { shouldValidate: true });
       }
       prevToolRef.current = currentTool;
     }
-  }, [currentTool, editingIndex, initialEditTool, setValue, fieldNames]);
+  }, [currentTool, editingIndex, initialEditTool, selectedUsableTool, setValue, fieldNames]);
 
   // Hide the duplicate error message as soon as the user changes the tool or approval method
   useEffect(() => {
     setDuplicateAttempted(false);
   }, [currentTool, currentApproval]);
 
-  // Derive available actions based on the currently selected tool
-  const availableActionsForTool = useMemo(() => {
-    if (!currentTool) return [];
-    return TOOL_ACTIONS[currentTool] || [];
-  }, [currentTool]);
+  // A credential is required unless the selected tool requires no authentication.
+  // Stale (unresolved) tools keep the credential requirement.
+  const requiresCredential =
+    !selectedUsableTool ||
+    selectedUsableTool.authenticationType !== ToolAuthenticationTypeEnum.None;
 
   // Validation: Check if the user is trying to add an exact duplicate (same tool + same approval type)
   const isDuplicate = useMemo(() => {
@@ -98,7 +148,8 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   }, [fields, currentTool, currentApproval, editingIndex]);
 
   // Validation: Ensure required builder fields are populated (Duplicate check excluded so they can click the button to see the error)
-  const isAddDisabled = !currentTool || !currentCredential || currentActions.length === 0;
+  const isAddDisabled =
+    !currentTool || (requiresCredential && !currentCredential) || currentActions.length === 0;
 
   // Validation: Check if the builder form has unsaved data (used to trigger discard warnings)
   const isFieldDirty = Boolean(
@@ -208,15 +259,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     });
   };
 
-  const toolIconMapper: Record<string, string> = {
-    googlegemini: "/brand-img/gemini.svg",
-    outlook: "/brand-img/m365.svg",
-    twilio: "/brand-img/twilio.svg",
-    github: "/brand-img/github.svg",
-  };
-
-  const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
-
   return (
     <GroupedFieldsWrapper groupName="Configure Tools">
       {/* Field Section */}
@@ -224,17 +266,19 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
         <SearchableSelectField
           name={fieldNames.tool}
           label="Select Tool"
-          selectOptions={TOOLS}
+          selectOptions={toolOptions}
           size="sm"
           placeholder="Select Tool"
+          isLoading={isUsableToolsLoading}
+          disabled={isUsableToolsLoading}
         />
 
         <CredentialsSelectField
           name={fieldNames.credential_name}
           label="Select Credential"
           size="sm"
-          modelProvider={currentTool == "outlook" ? "m365" : currentTool}
-          disabled={!currentTool}
+          modelProvider={credentialType}
+          disabled={!currentTool || isToolOperationsLoading}
           placeholder="Select Credential"
         />
 
@@ -245,13 +289,20 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           placeholder="Select Actions"
           isRequired
           fieldSize="sm"
-          disabled={!currentTool || availableActionsForTool.length === 0}
+          disabled={!currentTool || isToolOperationsLoading || availableActionsForTool.length === 0}
           actionSelect={{
             options: APPROVAL_OPTIONS,
             value: currentApproval,
             onChange: (val) => setValue(fieldNames.approval, val, { shouldValidate: true }),
           }}
         />
+
+        {/* Inform the user when the selected tool exposes no operations */}
+        {currentTool && !isToolOperationsLoading && availableActionsForTool.length === 0 && (
+          <p className="text-2xs ml-1.5 font-medium text-muted-foreground">
+            No operations found for this tool.
+          </p>
+        )}
 
         {/* Inline Error displays only when the user attempts to save a duplicate */}
         {duplicateAttempted && isDuplicate && (
@@ -297,7 +348,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           />
         ) : (
           fields.map((field: any, index) => {
-            const toolConfigInfo = TOOLS.find((t) => t.value === field.tool);
+            const toolConfigInfo = toolByName.get(field.tool);
             const actionNames = field.actions.map((a: any) => a.action);
             const approval = field.actions[0]?.approval || "human";
             const credentialName = field.credential_name || "";
@@ -315,16 +366,20 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                 )}
               >
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <img
-                    className="flex h-6 w-6 items-center justify-center object-contain"
-                    src={basePath + toolIconMapper[field.tool]}
-                    alt={field.tool}
-                  />
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted">
+                    <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
                   <div className="flex min-w-0 flex-col">
                     <div className="flex items-center gap-2">
                       <h4 className="truncate text-2xs font-medium ">
-                        {toolConfigInfo?.label || field.tool}
+                        {toolConfigInfo?.name || field.tool}
                       </h4>
+                      {!toolConfigInfo && (
+                        <Badge className="shrink-0 gap-1 rounded-full px-2 py-px text-[0.625rem] font-medium bg-destructive/10 text-destructive">
+                          <TriangleAlert className="h-3 w-3" />
+                          Unavailable
+                        </Badge>
+                      )}
                       <Badge className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium  bg-muted text-muted-foreground">
                         {credentialName}
                       </Badge>

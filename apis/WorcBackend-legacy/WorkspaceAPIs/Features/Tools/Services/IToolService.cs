@@ -15,6 +15,21 @@ public interface IToolService
     Task<ServiceResponse<IEnumerable<ToolDto>>> GetToolsAsync(bool isPersonal);
 
     /// <summary>
+    /// Gets the platform, personal, shared and tenant-wide tools the current user can use,
+    /// within the current environment and space.
+    /// </summary>
+    /// <returns>A collection of usable tools.</returns>
+    Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync();
+
+    /// <summary>
+    /// Gets the operations exposed by a usable tool, together with the credential type
+    /// required to invoke it.
+    /// </summary>
+    /// <param name="toolId">The tool identifier.</param>
+    /// <returns>The tool's operations and credential type.</returns>
+    Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId);
+
+    /// <summary>
     /// Checks whether a tool name is available.
     /// </summary>
     /// <param name="checkAvailabilityDto">The availability check request.</param>
