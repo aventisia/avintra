@@ -1,17 +1,13 @@
 import { LoadingSpinner } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { toast } from "@avplatform/ui/sonner";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { z } from "zod";
 
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
-import { RenderField, shouldRenderField, useDefineDCPForm, useUpdateNodeDataIO } from "..";
-import { refineSubmittedIO } from "../utils/refine-submitted-io";
+import { RenderField, shouldRenderField, useDefineDCPForm } from "..";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
 import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
@@ -29,16 +25,12 @@ export const DCPForm = () => {
   const {
     form,
     watch,
+    flushNow,
     nodeConfig,
     isFormReady,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    nodeConfigZodSchema,
-    nodeId,
     nodeUniqueName,
     inputKeys,
     outputKeys,
-    nodeLabel,
-    setShowDialog,
     isLoading,
     selectedTab,
     setSelectedTab,
@@ -48,8 +40,12 @@ export const DCPForm = () => {
   // Watch all form values
   const watchedValues = watch();
 
-  // Get handlers to update node inputs and outputs
-  const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
+  // Commit the current tab's edits before switching to another tab so the Test
+  // tab always sees the latest values. Always persists, even incomplete/invalid.
+  const handleTabChange = (tab: string) => {
+    void flushNow();
+    setSelectedTab(tab);
+  };
 
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
@@ -59,42 +55,6 @@ export const DCPForm = () => {
 
     setShowOutputFields(Number(renderedOutputFields?.map((field) => field.name)?.length) > 0);
   }, [nodeConfig?.fields, isFormReady, nodeConfig, watchedValues]);
-
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
-    // Extract node inputs and outputs from formData
-    const { inputs, outputs } = refineSubmittedIO(nodeUniqueName, formData, inputKeys, outputKeys);
-
-    // Update node data inputs and outputs
-    if (nodeId) {
-      updateNodeDataIO(nodeId, inputs, outputs, nodeLabel);
-
-      // Update flow variables object from real outputs or from SetVariableNode's dynamic variable name
-      const variableName = formData["VariableName"]?.toString();
-      if (nodeUniqueName === "SetVariableNode" && variableName) {
-        updateFlowVariablesObject(nodeId, [
-          {
-            key: variableName,
-            value: { value: variableName, enabled: true },
-          },
-        ]);
-      } else if (outputs.length > 0) {
-        updateFlowVariablesObject(nodeId, outputs);
-      }
-    } else {
-      toast.error("Node id is undefined. Cannot update node data");
-      console.error("Node id is undefined. Cannot update node data.");
-    }
-
-    // Re-baseline the form so a subsequent X / Escape / node switch does not
-    // prompt for changes that were just saved (Test tab keeps the panel open)
-    form.reset(form.getValues());
-
-    if (selectedTab !== "Test") {
-      // Close the dialog
-      setShowDialog(false);
-    }
-  };
 
   // Return the form
   return (
@@ -109,7 +69,7 @@ export const DCPForm = () => {
           Configuration not found for this node.
         </div>
       ) : (
-        <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
+        <DCPTabsWrapper setTabValue={handleTabChange} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
               {tabKeys
@@ -130,7 +90,7 @@ export const DCPForm = () => {
                         tabValue="Test"
                         className="flex items-center gap-1 text-primary hover:text-primary"
                         handleClick={() => {
-                          onSubmit(form.getValues());
+                          void flushNow();
                         }}
                       >
                         <PlayIcon className="h-3 w-3" />
@@ -144,7 +104,7 @@ export const DCPForm = () => {
                         tabValue="Test"
                         className="flex items-center gap-1 text-primary hover:text-primary"
                         handleClick={() => {
-                          onSubmit(form.getValues());
+                          void flushNow();
                         }}
                       >
                         <FlaskConical className="h-3.5 w-3.5" />
@@ -160,7 +120,7 @@ export const DCPForm = () => {
                       tabValue="Test"
                       className="flex items-center gap-1 text-primary hover:text-primary"
                       handleClick={() => {
-                        onSubmit(form.getValues());
+                        flushNow();
                       }}
                     >
                       <FlaskConical className="h-3.5 w-3.5" />
@@ -176,7 +136,7 @@ export const DCPForm = () => {
             methods={form}
             onSubmit={(e) => {
               e.preventDefault();
-              onSubmit(form.getValues());
+              void flushNow();
             }}
           >
             {tabKeys?.map((tab, tabNo) => (
@@ -245,11 +205,9 @@ export const DCPForm = () => {
               </DCPTabsContent>
             ))}
 
-            {/* Save button */}
-            {selectedTab !== "Test" && (
-              <DCPTabsFooterWrapper
-                className={cn((selectedTab == "Prompt" || isAgentHistory) && "justify-between")}
-              >
+            {/* Prompt helpers / history notice. Changes auto-commit at panel boundaries. */}
+            {selectedTab !== "Test" && (selectedTab == "Prompt" || isAgentHistory) && (
+              <DCPTabsFooterWrapper className={cn("justify-between")}>
                 {selectedTab == "Prompt" && !isAgentHistory && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
@@ -268,14 +226,6 @@ export const DCPForm = () => {
                     <span className="mt-0.5 text-xs">Changes will not be saved</span>
                   </div>
                 ) : null}
-                <Button
-                  size={"sm"}
-                  disabled={isAgentHistory}
-                  type="submit"
-                  className="min-w-[5rem]"
-                >
-                  Save
-                </Button>
               </DCPTabsFooterWrapper>
             )}
           </Form>

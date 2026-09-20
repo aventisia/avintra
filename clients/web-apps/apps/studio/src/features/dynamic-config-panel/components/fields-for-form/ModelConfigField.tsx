@@ -51,7 +51,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
 
   // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
@@ -236,7 +236,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         }
       }
     }
-  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames, enabledConfigByProvider]);
+  }, [
+    is_byok_enabled,
+    providerValue,
+    isInitialized,
+    setValue,
+    fieldNames,
+    enabledConfigByProvider,
+  ]);
 
   // 6. Fetch BYOK Models on Credential Change
   useEffect(() => {
@@ -265,17 +272,32 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         return;
       }
 
+      // Snapshot before blanking so a failed fetch can restore the selection.
+      // Blanking first means a flush during the async gap below never persists
+      // a new credential alongside a stale model.
+      const previousModel = getValues(fieldNames.model) as string | undefined;
+      setValue(fieldNames.model, "", { shouldDirty: true });
+
       try {
         setIsLoading(true);
         const provider = PROVIDER_MAP[providerValue];
         if (provider) {
           const res = await getProviderModels(provider, credentialsValue);
-          setByokModels((res?.data as Model[]) || []);
-          setValue(fieldNames.model, "", { shouldDirty: true });
+          const models = (res?.data as Model[]) || [];
+          setByokModels(models);
+          // Keep the previous selection when the new credential still offers it.
+          if (previousModel && models.some((m) => m.value === previousModel)) {
+            setValue(fieldNames.model, previousModel, { shouldDirty: true });
+          }
         }
       } catch {
         toast.error("Error fetching provider models");
         setByokModels([]);
+        // IMPORTANT NOTE: restore the snapshot so a failed fetch never leaves a
+        // blank model that the next flush would persist over a valid selection.
+        if (previousModel) {
+          setValue(fieldNames.model, previousModel, { shouldDirty: true });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -283,7 +305,15 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
     const timer = setTimeout(fetchModels, 150);
     return () => clearTimeout(timer);
-  }, [credentialsValue, providerValue, is_byok_enabled, isInitialized, setValue, fieldNames]);
+  }, [
+    credentialsValue,
+    providerValue,
+    is_byok_enabled,
+    isInitialized,
+    setValue,
+    getValues,
+    fieldNames,
+  ]);
 
   // 7. Render Helpers
   const availableModels = useMemo(() => {

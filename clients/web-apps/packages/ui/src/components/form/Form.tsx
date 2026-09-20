@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { type FieldValues, FormProvider, type UseFormReturn } from "react-hook-form";
-import { useBlocker, useNavigate } from "react-router-dom";
+import { useBlocker, useLocation, useNavigate } from "react-router-dom";
 
 import { useIsInsideCrudDialog } from "@/ui/components/data-table/CrudDialogContext";
 import { useShowAlertHandler } from "@/ui/hooks";
@@ -33,7 +33,16 @@ interface DirtyFormBlockerProps {
 function DirtyFormBlocker({ isDirty, checkDirtyForm }: DirtyFormBlockerProps) {
   const isBlockingRef = useRef(checkDirtyForm);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // Re-arm after a confirmed navigation or once the form is clean again, so
+  // every dirty navigation prompts instead of only the first one.
+  // IMPORTANT NOTE: confirmActionFn below disarms the blocker to let the
+  // pending navigation through; without this effect it would stay disarmed.
+  useEffect(() => {
+    isBlockingRef.current = checkDirtyForm;
+  }, [pathname, checkDirtyForm, isDirty]);
 
   useBlocker(({ currentLocation, nextLocation }) => {
     // If form is dirty, show alert dialog
@@ -46,7 +55,7 @@ function DirtyFormBlocker({ isDirty, checkDirtyForm }: DirtyFormBlockerProps) {
       showDefaultAlertDialog({
         confirmActionFn: () => {
           isBlockingRef.current = false;
-          navigate(nextLocation.pathname);
+          navigate(nextLocation.pathname + nextLocation.search + nextLocation.hash);
         },
         alertType: "unsaved",
       });

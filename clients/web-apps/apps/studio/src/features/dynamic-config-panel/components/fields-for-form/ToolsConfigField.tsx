@@ -11,6 +11,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
+import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
 import { APPROVAL_OPTIONS, TOOLS, TOOL_ACTIONS } from "../../stores/platform-tools";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
@@ -145,6 +146,16 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
     handleResetField();
   };
+
+  // Commit an in-progress builder entry when the form is flushed at a boundary
+  // (panel close / node switch / before Save). No-op unless the builder holds a
+  // new entry; edit-mode and incomplete entries are skipped (the original array
+  // item / nothing is persisted, so nothing is lost).
+  useRegisterPendingFieldFlush(() => {
+    if (!isFieldDirty) return false;
+    handleSaveConfig();
+    return true;
+  });
 
   // Helper: Populates the builder inputs with data from a specific array index
   const executeEdit = (index: number) => {

@@ -8,7 +8,7 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { DCPDialog } from "@/features/dynamic-config-panel";
+import { DCPDialog, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { PANEL_ID } from "../constants";
@@ -45,6 +45,11 @@ export const ReactFlowViewOnly = () => {
 
   useEffect(() => {
     openPanel(PANEL_ID, "right");
+
+    // The node-config editor belongs to the editable /agent route. Its store
+    // persists across routes, so close it on entry — otherwise the stale panel
+    // overlays the Change History panel (both dock on the right).
+    useDynamicConfigPanelStore.getState().closeNodeConfig();
 
     return () => {
       closePanel(PANEL_ID);

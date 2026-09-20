@@ -35,12 +35,12 @@ const DCPDialogHeader = () => {
   const clearAllFiles = useLocalFileStore((s) => s.clearAllFiles);
   const guardNavigation = useDCPNavigationGuard();
 
-  // Explicit close: clear staged files and close both stores synchronously.
-  // Guarded — prompts when the form has unsaved edits. (Escape only touches
-  // panel-store via the panel hotkey; DCPDialog's reverse-sync propagates that
-  // path as a safety net.)
+  // Explicit close: flush pending edits, then clear staged files and close both
+  // stores. Guarded — aborts (panel stays open) when the form is invalid.
+  // (Escape only touches panel-store via the panel hotkey; DCPDialog's
+  // reverse-sync propagates that path as a safety net.)
   const handleClose = () => {
-    guardNavigation(() => {
+    void guardNavigation(() => {
       clearAllFiles();
       closeNodeConfig();
       closePanel(DCP_PANEL_ID);

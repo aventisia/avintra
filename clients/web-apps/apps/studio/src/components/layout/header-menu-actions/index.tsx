@@ -20,6 +20,7 @@ import {
 import { useShallow } from "zustand/react/shallow";
 
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
+import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/useDirtyNodeConfigGuard";
 import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
@@ -57,6 +58,9 @@ export const HeaderActionMenu: React.FC = () => {
   );
 
   const { exportFlow, exportFlowTrimmed } = useExportFlow();
+
+  // Flush a dirty node-config form before export/template actions read the canvas.
+  const guardDirtyNodeConfig = useDirtyNodeConfigGuard();
 
   const { isChatAgent } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -115,7 +119,7 @@ export const HeaderActionMenu: React.FC = () => {
           Icon={UploadIcon}
           content="Export"
           onClick={() => {
-            exportFlow();
+            void guardDirtyNodeConfig(exportFlow);
           }}
         />
 
@@ -123,7 +127,7 @@ export const HeaderActionMenu: React.FC = () => {
           size="md"
           Icon={BookCopyIcon}
           content="Save As Template"
-          onClick={() => setSATDialog(true)}
+          onClick={() => void guardDirtyNodeConfig(() => setSATDialog(true))}
         />
 
         {!isChatAgent ? (
@@ -153,7 +157,7 @@ export const HeaderActionMenu: React.FC = () => {
               Icon={UploadIcon}
               content="Export (Trimmed)"
               onClick={() => {
-                exportFlowTrimmed();
+                void guardDirtyNodeConfig(exportFlowTrimmed);
               }}
             />
 

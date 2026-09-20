@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, UseFormReturn, useForm } from "react-hook-form";
 import { ZodTypeAny, z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -13,26 +13,28 @@ import {
 } from "..";
 import { onErrorFieldsJson } from "../constants/OnErrorFields";
 import { NodeConfigSchemaType } from "../types/node-config-schema-type";
+import { useFlushNodeConfig } from "./useFlushNodeConfig";
+import { useRegisterFormFlush } from "./useRegisterFormFlush";
 
+/**
+ * Defines the generic node config form: loads the node-type schema, builds
+ * validation, and publishes dirty state for the panel boundary guards.
+ */
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData, nodeLabel, setShowDialog, selectedTab, setSelectedTab } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        nodeId: state.nodeId,
-        nodeData: state.nodeData,
-        nodeLabel: state.nodeLabel,
-        setShowDialog: state.setShowDialog,
+  const { nodeId, nodeData, nodeLabel, selectedTab, setSelectedTab } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeId: state.nodeId,
+      nodeData: state.nodeData,
+      nodeLabel: state.nodeLabel,
 
-        selectedTab: state.selectedTab,
-        setSelectedTab: state.setSelectedTab,
-      })),
-    );
+      selectedTab: state.selectedTab,
+      setSelectedTab: state.setSelectedTab,
+    })),
+  );
 
-  // Get name (activityName), inputs and outputs from nodeData
+  // Get name (activityName) from nodeData
   const nodeUniqueName = nodeData?.name ?? "activityName";
-  const inputs = nodeData?.inputs ?? [];
-  const outputs = nodeData?.outputs ?? [];
 
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<NodeConfigSchemaType>({
@@ -96,7 +98,9 @@ export const useDefineDCPForm = () => {
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
     if (nodeConfig.fields.length > 0 && Object.keys(nodeConfigZodSchema.shape).length > 0) {
-      form.reset(getDefaultValuesForForm(nodeConfig.fields, inputs, outputs));
+      form.reset(
+        getDefaultValuesForForm(nodeConfig.fields, nodeData?.inputs ?? [], nodeData?.outputs ?? []),
+      );
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
 
@@ -115,9 +119,28 @@ export const useDefineDCPForm = () => {
   // Destructor form values and methods
   const { watch } = form;
 
+  // The node name is stored in the DCP store, not in react-hook-form, so a
+  // rename alone never makes formState dirty. Track it explicitly.
+  const isLabelDirty = !!nodeLabel && nodeLabel !== nodeData?.label;
+
+  /** Commits the open config form into the canvas store at panel boundaries. */
+  const { flushNow } = useFlushNodeConfig({
+    form: form as unknown as UseFormReturn<FieldValues>,
+    nodeId,
+    nodeUniqueName,
+    inputKeys,
+    outputKeys,
+    nodeLabel,
+    isLabelDirty,
+  });
+
+  // Expose the latest flush to boundary handlers (panel close / node switch /
+  // tab switch / before Test / before Save).
+  useRegisterFormFlush(flushNow);
+
   // Publish dirty state for the navigation guard (X / Escape / node switch).
   // Reading formState.isDirty during render subscribes to dirty updates.
-  const isFormDirtyNow = form.formState.isDirty;
+  const isFormDirtyNow = form.formState.isDirty || isLabelDirty;
   useEffect(() => {
     useDynamicConfigPanelStore.getState().setIsFormDirty(isFormDirtyNow);
     return () => {
@@ -129,15 +152,12 @@ export const useDefineDCPForm = () => {
   return {
     form,
     watch,
+    flushNow,
     nodeConfig,
     isFormReady,
-    nodeConfigZodSchema,
-    nodeId,
     nodeUniqueName,
     inputKeys,
     outputKeys,
-    nodeLabel,
-    setShowDialog,
     isLoading,
     tabKeys,
     selectedTab,
