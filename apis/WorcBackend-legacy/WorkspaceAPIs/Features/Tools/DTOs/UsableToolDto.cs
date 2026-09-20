@@ -17,6 +17,12 @@ public class UsableToolDto
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the brand icon path for platform tools, resolved from the
+    /// integration catalog. Null for custom tools and unknown integrations.
+    /// </summary>
+    public string? Icon { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the tool.
     /// </summary>
     public string? Description { get; set; }

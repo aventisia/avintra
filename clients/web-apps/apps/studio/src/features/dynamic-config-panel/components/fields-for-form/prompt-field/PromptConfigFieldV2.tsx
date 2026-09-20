@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useController, useFormContext } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+import { ChatAgentPromptAction } from "./ChatAgentPromptAction";
 
 const VARIABLE_PATTERN = /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g;
 
@@ -34,6 +39,12 @@ const PromptConfigFieldV2 = ({
 }: PromptConfigFieldV2Props) => {
   const { control } = useFormContext();
   const { field } = useController({ name, control });
+
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
+    })),
+  );
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
@@ -157,6 +168,12 @@ const PromptConfigFieldV2 = ({
           </div>
         )}
       </div>
+
+      {isChatAgent && (
+        <div className="mt-2 flex items-center justify-start">
+          <ChatAgentPromptAction name={name} disabled={disabled} />
+        </div>
+      )}
     </div>
   );
 };

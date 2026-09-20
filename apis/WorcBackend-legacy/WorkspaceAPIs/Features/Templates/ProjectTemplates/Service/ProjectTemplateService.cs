@@ -1095,12 +1095,20 @@ namespace WorkspaceAPIs.Services
                 return serviceResponse;
             }
 
-            // Determine the prompt file name based on the RefType of the GenerateProjectInstructionRequestDto
-            var promptFileName = genereateProjectInstructionRequestDto.RefType switch
+            // Determine the prompt file name from the requested target, falling back to the
+            // RefType-based template prompts.
+            var promptFileName = genereateProjectInstructionRequestDto.PromptTarget switch
             {
-                UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
-                UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
-                _ => "NA"
+                PromptGenerationTargetsEnum.ChatAgentSystemPrompt =>
+                    string.IsNullOrWhiteSpace(genereateProjectInstructionRequestDto.Payload)
+                        ? "GenerateChatAgentPromptInstructions.txt"
+                        : "ImproveChatAgentPromptInstructions.txt",
+                _ => genereateProjectInstructionRequestDto.RefType switch
+                {
+                    UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
+                    UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
+                    _ => "NA"
+                }
             };
 
             // Build the full path to the prompt file using the current directory and subdirectories
@@ -1123,10 +1131,16 @@ namespace WorkspaceAPIs.Services
                 return serviceResponse;
             }
 
-            var prompt = promptTemplate.Replace("{{PAYLOAD_CONTENT}}", genereateProjectInstructionRequestDto.Payload);
+            var prompt = promptTemplate.Replace(
+                "{{PAYLOAD_CONTENT}}",
+                genereateProjectInstructionRequestDto.Payload ?? string.Empty);
             var model = "gpt-4o-mini";
             var provider = "openai";
-            var temperature = 1;
+            // ChatAgent prompt work is more deterministic so intent and formatting hold.
+            var temperature = genereateProjectInstructionRequestDto.PromptTarget
+                == PromptGenerationTargetsEnum.ChatAgentSystemPrompt
+                ? 0.4
+                : 1;
 
             try
             {

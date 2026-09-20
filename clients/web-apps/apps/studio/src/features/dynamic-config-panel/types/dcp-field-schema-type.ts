@@ -22,7 +22,7 @@ import { DCPControlType, RenderIfType } from "..";
  * @property maxLength - Maximum length for string fields.
  * @property showTokenCount - If true, show the token count in the prompt field footer.
  * @property showVariables - If true, show variable chips/helpers in the prompt field footer.
- * @property showJsonOutput - If true, show the JSON output toggle in the model settings popover.
+ * @property showJsonOutput - If true, show the JSON output toggle in the model settings.
  */
 export type DCPFieldSchemaType = {
   type: DCPControlType;

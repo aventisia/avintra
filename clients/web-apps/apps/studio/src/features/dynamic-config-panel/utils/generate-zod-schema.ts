@@ -98,6 +98,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const voiceSchema = z.string().optional();
   const isJsonOutputSchema = z.boolean().optional();
   const maxOutputTokenSchema = z.number();
+  const reasoningEffortSchema = z.string().optional().default("medium");
 
   // Check if field.defaultValue is an object and contains all expected properties
   if (field.defaultValue && typeof field.defaultValue === "object") {
@@ -138,6 +139,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     voice: voiceSchema,
     is_json_output: isJsonOutputSchema,
     max_output_tokens: maxOutputTokenSchema,
+    reasoning_effort: reasoningEffortSchema,
   });
 }
 

@@ -23,6 +23,28 @@ interface ToolsConfigFieldProps {
   name: string;
 }
 
+/**
+ * Renders a tool's brand icon, falling back to the generic wrench when the tool
+ * has no icon or its asset fails to load. Only one of the two is ever shown.
+ */
+const ToolBrandIcon = ({ icon }: { icon?: string }) => {
+  const [hasError, setHasError] = useState(false);
+  const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
+
+  if (!icon || hasError) {
+    return <Wrench className="h-3.5 w-3.5 text-muted-foreground" />;
+  }
+
+  return (
+    <img
+      src={basePath + icon}
+      alt=""
+      className="h-6 w-6 rounded object-contain"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   // Connect to the parent form context
   const { control, setValue } = useFormContext();
@@ -85,9 +107,13 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
   // Tool select options; inject the raw value as a temporary option when editing a stale entry
   const toolOptions = useMemo(() => {
-    const options = usableTools.map((tool) => ({ label: tool.name, value: tool.name }));
+    const options = usableTools.map((tool) => ({
+      label: tool.name,
+      value: tool.name,
+      icon: tool.icon,
+    }));
     if (currentTool && !options.some((option) => option.value === currentTool)) {
-      options.push({ label: currentTool, value: currentTool });
+      options.push({ label: currentTool, value: currentTool, icon: undefined });
     }
     return options;
   }, [usableTools, currentTool]);
@@ -367,7 +393,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted">
-                    <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
+                    <ToolBrandIcon icon={toolConfigInfo?.icon} />
                   </div>
                   <div className="flex min-w-0 flex-col">
                     <div className="flex items-center gap-2">

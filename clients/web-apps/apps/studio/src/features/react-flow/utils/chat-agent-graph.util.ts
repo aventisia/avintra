@@ -59,6 +59,7 @@ const createDefaultChatAgentData = (): NodeDataType => ({
         temperature: 1,
         top_p: 1,
         max_output_tokens: null,
+        reasoning_effort: "medium",
       },
     },
     { key: "Files", value: "" },

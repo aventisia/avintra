@@ -1,4 +1,5 @@
 using System.Text.Json;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using WorkspaceAPIs.Features.Corsair;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
@@ -14,6 +15,8 @@ public class ToolService : IToolService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly CorsairConfigRepository _corsairConfigRepository;
+    private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
+    private readonly CorsairIntegrationCatalogRepository _corsairIntegrationCatalogRepository;
     private readonly Guid _currentUserId;
     private readonly string _accessToken;
 
@@ -25,7 +28,9 @@ public class ToolService : IToolService
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
-        CorsairConfigRepository corsairConfigRepository)
+        CorsairConfigRepository corsairConfigRepository,
+        CamelConnectorCatalogRepository camelConnectorCatalogRepository,
+        CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -35,6 +40,8 @@ public class ToolService : IToolService
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _corsairConfigRepository = corsairConfigRepository;
+        _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
+        _corsairIntegrationCatalogRepository = corsairIntegrationCatalogRepository;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
@@ -127,6 +134,12 @@ public class ToolService : IToolService
             // tenant-agnostic platform tools (TenantId = Guid.Empty) are visible to every tenant.
             // Only slim columns are projected so the large OpenApiSpec/ParsedSchema payloads are
             // not loaded for the whole library.
+            // Resolve brand icons for platform tools from the Camel and Corsair
+            // catalogs. Custom tools and unknown integrations fall back to null.
+            var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
+            ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
+
             var usableTools = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
                 .OrderBy(o => o.Name)
@@ -144,6 +157,12 @@ public class ToolService : IToolService
                     IsDisabled = w.IsDisabled,
                 })
                 .ToListAsync();
+
+            // Icons are resolved in memory because the catalog lookup is not translatable.
+            foreach (var tool in usableTools)
+            {
+                tool.Icon = ToolIconHelpers.ResolveIcon(tool.Name, iconLookup);
+            }
 
             return serviceResponse.Update(
                 "Usable tools retrieved successfully.",

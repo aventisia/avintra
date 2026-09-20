@@ -15,6 +15,7 @@ import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
+import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 export const ModelNode = memo(({ id, data }: NodeProps) => {
   const { updateNodeData } = useReactFlow();
@@ -56,14 +57,6 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     return value?.provider;
   }
 
-  const vaultAppIconMapper: Record<string, string> = {
-    openai: "/brand-img/openai.svg",
-    googlegemini: "/brand-img/gemini.svg",
-    openrouter: "/brand-img/openrouter.svg",
-    anthropic: "/brand-img/anthropic.svg",
-    elevenlabs: "/brand-img/elevenlabs.svg",
-  };
-
   const providerLabelMapper: Record<string, string> = {
     openai: "OpenAI",
     googlegemini: "Google Gemini",
@@ -96,14 +89,14 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
             void guardNavigation(() => {
               openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
               setTimeout(() => {
-                setSelectedTab("Models");
+                setSelectedTab("Model");
               }, 100);
             });
           }}
         >
           <NodeImage
             className="!opacity-100  h-7 w-7 "
-            src={vaultAppIconMapper[data?.label as string]}
+            src={getProviderBrandIcon(data?.label as string)}
           />
         </div>
         <NodeHeading className=" w-16">{providerLabelMapper[data?.label as string]}</NodeHeading>
