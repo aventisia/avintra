@@ -278,6 +278,7 @@ public class StreamingChatService : IStreamingChatService
         var kbConfig = GetObjectProperty(nodeConfig, "__KbConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__KbConfig__");
         var toolsConfig = GetArrayProperty(nodeConfig, "__ToolsConfig__Conversation") ?? GetArrayProperty(nodeConfig, "__ToolsConfig__");
         var skillsConfig = GetObjectProperty(nodeConfig, "__SkillsConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__SkillsConfig__");
+        var memoryConfig = GetObjectProperty(nodeConfig, "__MemoryConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__MemoryConfig__");
         var actionsConfig = GetObjectProperty(nodeConfig, "__RecommendedActionsConfig__Conversation");
 
         var enableDynamicActions = GetBoolProperty(actionsConfig, "enableDynamicActions") ?? false;
@@ -290,7 +291,7 @@ public class StreamingChatService : IStreamingChatService
         var messages = new List<object>();
         if (!string.IsNullOrWhiteSpace(prompt))
             messages.Add(new { role = "system", content = prompt });
-        if (!string.IsNullOrWhiteSpace(followUpMessagePrompt))
+        if (enableDynamicActions && !string.IsNullOrWhiteSpace(followUpMessagePrompt))
             messages.Add(new { role = "system", content = followUpMessagePrompt });
 
         if (request.ThreadMessages is { Count: > 0 })
@@ -344,6 +345,9 @@ public class StreamingChatService : IStreamingChatService
             : null;
         var hasKbNames = kbNames is { Count: > 0 };
         var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
+        var sourceThreshold = hasKbNames ? GetDoubleProperty(kbConfig, "sourceThreshold") : null;
+        var maxOutputTokens = GetIntProperty(modelConfig, "max_output_tokens");
+        var maxShortTermTurns = GetIntProperty(memoryConfig, "maxDataStored");
 
         return new
         {
@@ -362,9 +366,12 @@ public class StreamingChatService : IStreamingChatService
             reasoning_effort = modelConfig?.TryGetPropertyValue("reasoning_effort", out var reEffort) == true && reEffort?.GetValueKind() == System.Text.Json.JsonValueKind.String ? reEffort?.GetValue<string>() : null,
             is_byok_enabled = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true,
             credential_name = ReadCredentialProperty(modelConfig),
+            max_output_tokens = maxOutputTokens,
             kb_names = kbNames,
             top_k = topK,
+            source_threshold = sourceThreshold,
             skill_names = hasSkillNames ? skillNames : null,
+            max_short_term_turns = maxShortTermTurns,
             ref_type = "Agent",
             ref_id = flowVersion.FlowId.ToString(),
             ref_name = flowVersion.Flow?.Name ?? string.Empty,
@@ -441,6 +448,18 @@ public class StreamingChatService : IStreamingChatService
         {
             System.Text.Json.JsonValueKind.Number when value is JsonValue => value.GetValue<int>(),
             System.Text.Json.JsonValueKind.String when int.TryParse(value.GetValue<string>(), out var parsed) => parsed,
+            _ => null,
+        };
+    }
+
+    private static double? GetDoubleProperty(JsonNode? node, string key)
+    {
+        if (node is not JsonObject obj || !obj.TryGetPropertyValue(key, out var value) || value is null)
+            return null;
+        return value.GetValueKind() switch
+        {
+            System.Text.Json.JsonValueKind.Number when value is JsonValue => value.GetValue<double>(),
+            System.Text.Json.JsonValueKind.String when double.TryParse(value.GetValue<string>(), out var parsed) => parsed,
             _ => null,
         };
     }

@@ -302,6 +302,7 @@ def _create_dynamic_model_node(
         return await create_model_node(
             model=node_model,
             skill_prompt=skill_prompt,
+            max_short_term_turns=llm_request.max_short_term_turns,
         )(state)
 
     return model_node_factory

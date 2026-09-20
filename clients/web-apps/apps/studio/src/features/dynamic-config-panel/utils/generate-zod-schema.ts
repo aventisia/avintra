@@ -96,7 +96,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const temperatureSchema = z.number();
   const topPSchema = z.number();
   const voiceSchema = z.string().optional();
-  const isJsonOutputSchema = z.boolean();
+  const isJsonOutputSchema = z.boolean().optional();
   const maxOutputTokenSchema = z.number();
 
   // Check if field.defaultValue is an object and contains all expected properties
@@ -266,7 +266,7 @@ function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
     return [];
   }, z.array(z.string()));
-  const retrievalTypeSchema = z.string();
+  const retrievalTypeSchema = z.string().optional();
   const sourceThresholdSchema = z.number();
   const numberOfChunksSchema = z.number();
 

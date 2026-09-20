@@ -58,7 +58,6 @@ const createDefaultChatAgentData = (): NodeDataType => ({
         model: "gpt-4o-mini",
         temperature: 1,
         top_p: 1,
-        is_json_output: false,
         max_output_tokens: null,
       },
     },
@@ -67,7 +66,6 @@ const createDefaultChatAgentData = (): NodeDataType => ({
       key: "__KbConfig__Conversation",
       value: {
         knowledgeBase: [],
-        retrievalType: "Basic",
         sourceThreshold: 0.1,
         numberOfChunks: 5,
       },
@@ -80,7 +78,7 @@ const createDefaultChatAgentData = (): NodeDataType => ({
       key: "__MemoryConfig__Conversation",
       value: {
         memoryProvider: "Memory Provider 1",
-        maxDataStored: 4,
+        maxDataStored: 20,
       },
     },
     { key: "__ToolsConfig__Conversation", value: [] },
