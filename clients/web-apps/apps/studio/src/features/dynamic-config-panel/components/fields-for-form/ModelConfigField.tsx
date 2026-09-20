@@ -27,6 +27,8 @@ import { CredentialsSelectField } from "./CredentialsSelectField";
 interface ModelConfigFieldProps {
   /** The name of the form field. */
   name: string;
+  /** If true, show the JSON output toggle in the model settings popover. */
+  showJsonOutput?: boolean;
 }
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -46,7 +48,7 @@ const PROVIDER_MAP: Record<string, string> = {
 // fetched dynamically via a credential (e.g. Ollama On-prem).
 const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
 
-const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
+const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps) => {
   const [byokModels, setByokModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -424,12 +426,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                 )}
               />
 
-              <SwitchField
-                size="sm"
-                name={fieldNames.is_json_output}
-                label="Is JSON Output"
-                description="Output results in JSON format."
-              />
+              {showJsonOutput && (
+                <SwitchField
+                  size="sm"
+                  name={fieldNames.is_json_output}
+                  label="Is JSON Output"
+                  description="Output results in JSON format."
+                />
+              )}
 
               <InputField
                 name={fieldNames.max_output_tokens}

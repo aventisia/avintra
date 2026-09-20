@@ -50,12 +50,12 @@ const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
         {...maxDataStoredField}
         render={({ field }) => (
           <SliderField
-            label="Max. messages stored as Short-term Memory"
+            label="Max. conversation turns stored as Short-term Memory"
             name={field.name}
             trackColor="bg-muted"
             min={0}
-            max={10}
-            step={0.1}
+            max={50}
+            step={1}
             className="resize-none text-sm"
           />
         )}

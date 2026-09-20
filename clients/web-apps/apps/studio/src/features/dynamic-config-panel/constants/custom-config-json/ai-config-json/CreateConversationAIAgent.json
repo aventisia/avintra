@@ -30,10 +30,10 @@
         "model": "gpt-4o-mini",
         "temperature": 1,
         "top_p": 1,
-        "is_json_output": false,
         "max_output_tokens": null
       },
       "required": false,
+      "showJsonOutput": false,
       "category": "Model"
     },
     {
@@ -43,7 +43,6 @@
       "label": "Knowledge Base(s)",
       "defaultValue": {
         "knowledgeBase": [],
-        "retrievalType": "Basic",
         "sourceThreshold": 0.1,
         "numberOfChunks": 5
       },
@@ -67,7 +66,7 @@
       "name": "__MemoryConfig__Conversation",
       "defaultValue": {
         "memoryProvider": "Memory Provider 1",
-        "maxDataStored": 4
+        "maxDataStored": 20
       },
       "required": false,
       "category": "Context"

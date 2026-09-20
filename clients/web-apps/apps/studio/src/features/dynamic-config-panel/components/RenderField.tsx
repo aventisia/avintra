@@ -77,7 +77,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "config-panel-model-output":
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
-      return <ModelConfigField name={field.name} />;
+      return <ModelConfigField name={field.name} showJsonOutput={field.showJsonOutput} />;
     case "tools-config-select":
       return <ToolsConfigField name={field.name} />;
     case "voice-config-select":

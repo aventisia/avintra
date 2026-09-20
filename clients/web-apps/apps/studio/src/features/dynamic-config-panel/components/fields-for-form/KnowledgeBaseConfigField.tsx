@@ -1,4 +1,4 @@
-import { InputField, MultiSelectField, SelectField } from "@avplatform/ui/form";
+import { InputField, MultiSelectField } from "@avplatform/ui/form";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Controller, FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
@@ -17,7 +17,6 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
   // Set names for the fields
   const knowledgeBaseFieldName = `${name}.knowledgeBase` as FieldPath<FieldValues>;
   const numberOfChunksFieldName = `${name}.numberOfChunks` as FieldPath<FieldValues>;
-  const retrievalTypeFieldName = `${name}.retrievalType` as FieldPath<FieldValues>;
   const sourceThresholdFieldName = `${name}.sourceThreshold` as FieldPath<FieldValues>;
 
   // Get the form context
@@ -85,27 +84,6 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
         label="Number Of Chunks"
         fieldSize="sm"
       />
-
-      {/* TODO: Once we have different retrieval types, we can show this field and make it dynamic based on the retrieval type selected */}
-      <div className="hidden grid-cols-2 gap-2">
-        <SelectField
-          size="sm"
-          name={retrievalTypeFieldName}
-          selectOptions={[
-            {
-              label: "Basic",
-              value: "Basic",
-              description: "",
-            },
-            {
-              label: "Advance",
-              value: "Advance",
-              description: "",
-            },
-          ]}
-          label="Retrieval Type"
-        />
-      </div>
 
       <Controller
         {...sourceThresholdField}

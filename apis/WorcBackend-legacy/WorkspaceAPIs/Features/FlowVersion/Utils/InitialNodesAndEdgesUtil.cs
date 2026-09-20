@@ -100,7 +100,6 @@ public static class InitialNodesAndEdgesUtil
                     model = "gpt-4o-mini",
                     temperature = 1,
                     top_p = 1,
-                    is_json_output = false,
                     max_output_tokens = (int?)null
                 }
             },
@@ -111,7 +110,6 @@ public static class InitialNodesAndEdgesUtil
                 Value = (object?)new
                 {
                     knowledgeBase = Array.Empty<object>(),
-                    retrievalType = "Basic",
                     sourceThreshold = 0.1,
                     numberOfChunks = 5
                 }
@@ -127,7 +125,7 @@ public static class InitialNodesAndEdgesUtil
                 Value = (object?)new
                 {
                     memoryProvider = "Memory Provider 1",
-                    maxDataStored = 4
+                    maxDataStored = 20
                 }
             },
             new { Key = "__ToolsConfig__Conversation", Value = (object?)Array.Empty<object>() },
