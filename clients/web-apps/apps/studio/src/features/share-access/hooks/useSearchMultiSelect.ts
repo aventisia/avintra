@@ -1,5 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -18,10 +19,12 @@ export const useSearchMultiSelect = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const { currentFlow } = useCurrentFlowStore((state) => ({
-    currentFlow: state.currentFlow,
-  }));
-  const { setView } = useShareStore((state) => ({ setView: state.setView }));
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
+  );
+  const { setView } = useShareStore(useShallow((state) => ({ setView: state.setView })));
 
   const { data: searchData, isLoading, isError } = useSearchUserList(debouncedSearchTerm);
 
