@@ -290,7 +290,12 @@ def _build_catalog(
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
 ) -> "ToolSkillCatalog":
-    """Build a name/description catalog from the live registries."""
+    """Build a name/description catalog from the live registries.
+
+    When ``allowed_skill_names`` is provided the skill catalog is restricted
+    to those names; an empty list restricts it to no skills. ``None`` means
+    no explicit attachment context and leaves the full registry visible.
+    """
 
     tools = [
         {
@@ -308,7 +313,7 @@ def _build_catalog(
         for skill in skill_registry.get_active_for_tenant(tenant_id)
     ]
 
-    if allowed_skill_names:
+    if allowed_skill_names is not None:
         allowed = {
             name.strip().lower()
             for name in allowed_skill_names
