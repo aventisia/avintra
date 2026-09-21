@@ -181,7 +181,7 @@ def _create_agent_selector_node(
             tool_registry=tool_registry,
             skill_registry=skill_registry,
             tenant_id=tenant_id,
-            allowed_skill_names=explicit_skill_names,
+            allowed_skill_names=list(explicit_skill_names or []),
         )
 
         selected_skill_names = selection.skill_names
