@@ -481,12 +481,31 @@ class ChatService:
                         output_messages,
                         fallback=graph_response,
                     )
-                    # NOTE: skills/tools are NOT surfaced here. A skill being
-                    # configured (or selected) does not mean the agent actually
-                    # used it for this request. Only genuine runtime actions
-                    # (e.g. on_tool_start -> "Running tool: X") should appear in
-                    # the reasoning chain, so a simple "Hi" does not claim the
-                    # agent used skills/tools it never invoked.
+                    # Surface the skills the planner actually selected for this
+                    # request. Unlike mere configuration, a selection means the
+                    # skill instructions were injected into the model prompt.
+                    if node_name == "agent_selector":
+                        selected_skills = (output.get("metadata") or {}).get(
+                            "selected_skills"
+                        ) or []
+                        for skill in selected_skills:
+                            skill_name = (
+                                skill.get("name")
+                                if isinstance(skill, dict)
+                                else getattr(skill, "name", None)
+                            )
+                            if skill_name:
+                                yield LLMChunkResponse(
+                                    provider=request.provider,
+                                    model=request.model,
+                                    output=f"Using skill: {skill_name}",
+                                    type="status",
+                                    conversation_id=conversation_id,
+                                )
+                    # NOTE: only genuine runtime actions are surfaced in the
+                    # reasoning chain: tool calls ("Running tool: X") and
+                    # planner-selected skills ("Using skill: X"). A simple "Hi"
+                    # claims neither.
                     if (
                         not request.is_temp_chat
                         and db_session is not None

@@ -181,6 +181,7 @@ def _create_agent_selector_node(
             tool_registry=tool_registry,
             skill_registry=skill_registry,
             tenant_id=tenant_id,
+            allowed_skill_names=explicit_skill_names,
         )
 
         selected_skill_names = selection.skill_names
@@ -366,6 +367,7 @@ async def _build_corsair_tools_for_names(
     from app.features.llm_providers.services.corsair_sidecar_service import (
         fetch_corsair_schemas,
         parse_corsair_tool_name,
+        to_corsair_action,
     )
 
     configs = llm_request.tool_config or []
@@ -377,11 +379,19 @@ async def _build_corsair_tools_for_names(
         else:
             tool = config.tool
             actions = {a.action for a in config.actions}
-        allowed.setdefault(tool, set()).update(actions)
+        plugin = (tool or "").strip().lower()
+        allowed.setdefault(plugin, set()).update(
+            to_corsair_action(plugin, action) for action in actions if action
+        )
 
     fetch_configs = []
+    wanted: set[str] = set()
     for name in tool_names:
         plugin, action = parse_corsair_tool_name(name)
+        plugin = plugin.strip().lower()
+        action = to_corsair_action(plugin, action)
+        wanted.add(f"{plugin}.{action}")
+
         if action in allowed.get(plugin, set()):
             fetch_configs.append({"tool": plugin, "actions": [{"action": action}]})
         else:
@@ -402,7 +412,6 @@ async def _build_corsair_tools_for_names(
         return []
 
     # Filter schemas to only the requested names so the returned list is tight.
-    wanted = set(tool_names)
     schemas = [s for s in schemas if s.get("name") in wanted]
 
     return build_corsair_tools_from_schemas(schemas)
@@ -490,12 +499,11 @@ def _build_kb_directive(llm_request: LLMRequest) -> str | None:
 
 
 def _build_tool_instruction(tools: list[BaseTool]) -> str | None:
-    """Return a system instruction that forces the model to use bound tools."""
+    """Return a system instruction that guides the model to use bound tools."""
 
     if not tools:
         return None
 
-    names = [tool.name for tool in tools]
     descriptions = []
     for tool in tools:
         desc = getattr(tool, "description", "") or ""
@@ -507,15 +515,14 @@ def _build_tool_instruction(tools: list[BaseTool]) -> str | None:
             descriptions.append(f"- {tool.name}")
 
     return (
-        "You have access to the following tools. "
-        "When the user's request can be fulfilled by one of these tools, "
-        "you MUST call the tool instead of answering with plain text or apologizing. "
-        "Do not say you cannot perform the action; use the tool directly.\n\n"
-        "Available tools:\n"
+        "You have access to the following tools:\n"
         + "\n".join(descriptions)
         + "\n\n"
-        "Important: Only call a tool when it is clearly needed to satisfy the request. "
-        "If the user asks for something unrelated, answer normally."
+        "Call a tool only when the user explicitly requests that exact action. "
+        "If the request can be answered with text (writing, drafting, rewriting, "
+        "explaining, summarizing, or general questions), do not call any tool. "
+        "Never call a tool to explore or verify. Do not claim you are unable to "
+        "perform an action that a tool supports; call the tool."
     )
 
 

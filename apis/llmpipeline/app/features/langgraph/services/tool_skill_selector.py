@@ -12,6 +12,9 @@ from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
+from app.features.llm_providers.services.corsair_sidecar_service import (
+    to_corsair_tool_path,
+)
 
 
 PLANNER_SYSTEM_PROMPT = """\
@@ -31,6 +34,7 @@ async def select_tools_and_skills(
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
+    allowed_skill_names: list[str] | None = None,
 ) -> "ToolSkillSelectionResponse":
     """
     Ask a small planner LLM which tools and skills are relevant for ``request``.
@@ -43,12 +47,15 @@ async def select_tools_and_skills(
     Args:
         tenant_id: When provided, the catalog includes tenant-specific user
             skills in addition to global skills.
+        allowed_skill_names: When provided, the planner can only choose from
+            these skills (e.g. the skills explicitly attached to an agent).
     """
 
     catalog = _build_catalog(
         tool_registry=tool_registry,
         skill_registry=skill_registry,
         tenant_id=tenant_id,
+        allowed_skill_names=allowed_skill_names,
     )
 
     if not catalog.tools and not catalog.skills:
@@ -216,8 +223,10 @@ def _expand_tool_config(tool_config: list[Any]) -> list[str]:
     Corsair LangGraph name: "github.api.issues.create"
 
     For Corsair, the Studio ``tool`` field is the plugin root (e.g. ``github``)
-    and the action is the remaining dotted path (e.g. ``api.issues.create``),
-    so the emitted LangGraph name is ``<tool>.<action>``.
+    and the action is either the remaining dotted path (e.g.
+    ``api.issues.create``) or the seeded OpenAPI operationId (e.g.
+    ``openai.models.list``). Both are normalized to the canonical sidecar path
+    ``<plugin>.api.<action>``.
 
     For legacy platform tools, the action is a single capability word (e.g.
     ``send_email``) and the emitted name remains ``<tool>_<action>``.
@@ -238,9 +247,11 @@ def _expand_tool_config(tool_config: list[Any]) -> list[str]:
         for action in actions:
             action_name = getattr(action, "action", None) or action.get("action", "")
             if tool and action_name:
-                # Dotted actions like "api.issues.create" identify Corsair tools.
+                # Dotted actions identify Corsair tools. Studio sends the seeded
+                # OpenAPI operationId (e.g. "openai.models.list"); normalize it
+                # to the canonical sidecar path (e.g. "openai.api.models.list").
                 if "." in action_name:
-                    names.append(f"{tool}.{action_name}")
+                    names.append(to_corsair_tool_path(tool, action_name))
                 else:
                     names.append(f"{tool}_{action_name}")
         if not actions and tool:
@@ -277,6 +288,7 @@ def _build_catalog(
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
+    allowed_skill_names: list[str] | None = None,
 ) -> "ToolSkillCatalog":
     """Build a name/description catalog from the live registries."""
 
@@ -295,6 +307,23 @@ def _build_catalog(
         }
         for skill in skill_registry.get_active_for_tenant(tenant_id)
     ]
+
+    if allowed_skill_names:
+        allowed = {
+            name.strip().lower()
+            for name in allowed_skill_names
+            if name and name.strip()
+        }
+        available = {skill["name"].lower() for skill in skills}
+        missing = sorted(allowed - available)
+        if missing:
+            logger.warning(
+                "Attached skills not found in the registry: %s",
+                missing,
+            )
+        skills = [
+            skill for skill in skills if skill["name"].lower() in allowed
+        ]
 
     return ToolSkillCatalog(tools=tools, skills=skills)
 
