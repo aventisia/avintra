@@ -206,7 +206,12 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == messageTriggerDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => 
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == messageTriggerDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -432,7 +437,6 @@ public class MessageTriggerService : IMessageTriggerService
             }
 
             // Update basic fields
-            messageTrigger.Name = messageTriggerDto.Name;
             messageTrigger.Timezone = messageTriggerDto.Timezone;
 
             // JSON serializer configuration
@@ -831,7 +835,12 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => 
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && 
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)

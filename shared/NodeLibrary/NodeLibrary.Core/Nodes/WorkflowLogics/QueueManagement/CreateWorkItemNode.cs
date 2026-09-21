@@ -23,21 +23,27 @@ public class CreateWorkItemNode : BaseNode
     public required InArgument<JsonNode> WorkItemData { get; set; }
 
     [DisplayName("Is Retry")]
-    [Description("Enable for retry mode. When ON, this node creates the next attempt for an existing work item instead of a brand new item, and the Source Work Item ID and Retry Time fields are shown. When OFF, a new work item is created with a freshly generated identifier and processed immediately.")]
+    [Description("Specifies whether to re-attempt an existing work item. When enabled, creates a subsequent attempt linked to the source item with an incremented attempt count, calculated delay, and execution lineage.")]
     [DefaultValue(false)]
     public InArgument<bool> IsRetry { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Source Work Item ID")]
-    [Description("The identifier of the existing work item this retry continues. Required when 'Is Retry' is ON so the backend can create the next attempt (with an incremented retry count) for that work item. Leave empty for a brand new item; the backend generates the identifier for you. This field is only applicable if 'Is Retry' is set to true.")]
+    [Description("The unique identifier (GUID) of the original work item to retry. Required to maintain execution lineage and history.")]
     [RenderIfCondition(nameof(IsRetry), true)]
     [NodeFieldType(NodeFieldTypeEnum.Text)]
     public InArgument<Guid?> SourceWorkItemId { get; set; } = new InArgument<Guid?>();
 
-    [DisplayName("Retry Time")]
-    [Description("Optional. The date and time after which this work item becomes eligible for processing. Leave empty to make the work item available immediately. When set, it must be a future date and time, in ISO 8601 format (e.g. 2026-09-12T14:30:00Z). This field is only applicable if 'Is Retry' is set to true.")]
+    [DisplayName("Retry Time Unit")]
+    [Description("The unit of time (Minutes, Hours, or Days) used to delay processing for this retry attempt.")]
     [RenderIfCondition(nameof(IsRetry), true)]
-    [NodeFieldType(NodeFieldTypeEnum.DateTime)]
-    public InArgument<DateTimeOffset?> RetryTime { get; set; } = new InArgument<DateTimeOffset?>();
+    public InArgument<RetryTimeUnitEnum> RetryTimeUnit { get; set; } = new InArgument<RetryTimeUnitEnum>(RetryTimeUnitEnum.Minutes);
+
+    [DisplayName("Retry Time Value")]
+    [Description("The delay duration in selected time units before this retry attempt becomes available for processing. Must be 1 or greater.")]
+    [RenderIfCondition(nameof(IsRetry), true)]
+    [NodeFieldType(NodeFieldTypeEnum.Number)]
+    [DefaultValue(1)]
+    public InArgument<double> RetryTimeValue { get; set; } = new InArgument<double>(1);
 
     [DisplayName("File URLs")]
     [Description("Optional URLs of files associated with the work item, separated by commas.")]
@@ -56,7 +62,8 @@ public class CreateWorkItemNode : BaseNode
             var description = Description.Get(context);
             var fileUrls = FileUrls.Get(context);
             var sourceWorkItemId = SourceWorkItemId.Get(context);
-            var retryTime = RetryTime.Get(context);
+            var retryTimeUnit = RetryTimeUnit.Get(context);
+            var retryTimeValue = RetryTimeValue.Get(context);
             var isRetry = IsRetry.Get(context);
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
@@ -64,17 +71,28 @@ public class CreateWorkItemNode : BaseNode
 
             if (string.IsNullOrWhiteSpace(queueName))
                 throw new ArgumentException("Queue Name cannot be null or empty.");
-            
-            
+
             var fileUrlsArray = fileUrls?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Calculate the retry time by adding the configured duration (Time Unit + Value)
+            // to the current date and time, in the DateTimeOffset format required by the API.
+            DateTimeOffset? retryTime = null;
 
             if (isRetry)
             {
                 if (!sourceWorkItemId.HasValue)
                     throw new ArgumentException("Source Work Item ID is required when 'Is Retry' is true.");
 
-                if (retryTime.HasValue && retryTime.Value <= DateTimeOffset.UtcNow)
-                    throw new ArgumentException("Retry Time must be a future date and time.");
+                if (retryTimeValue < 1)
+                    throw new ArgumentException("Retry Time Value must be at least 1.");
+
+                retryTime = retryTimeUnit switch
+                {
+                    RetryTimeUnitEnum.Minutes => DateTimeOffset.UtcNow.AddMinutes(retryTimeValue),
+                    RetryTimeUnitEnum.Hours => DateTimeOffset.UtcNow.AddHours(retryTimeValue),
+                    RetryTimeUnitEnum.Days => DateTimeOffset.UtcNow.AddDays(retryTimeValue),
+                    _ => throw new ArgumentException($"Unsupported Retry Time Unit '{retryTimeUnit}'.")
+                };
             }
 
             var payload = new
@@ -105,5 +123,17 @@ public class CreateWorkItemNode : BaseNode
             StatusMessage.Set(context, $"Error creating work item: {ex.Message}");
             throw;
         }
+    }
+
+    public enum RetryTimeUnitEnum
+    {
+        [Display(Name = "Minutes", Description = "Schedules the retry delay in minutes from the current time.")]
+        Minutes,
+
+        [Display(Name = "Hours", Description = "Schedules the retry delay in hours from the current time.")]
+        Hours,
+
+        [Display(Name = "Days", Description = "Schedules the retry delay in days from the current time.")]
+        Days
     }
 }

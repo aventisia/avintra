@@ -77,35 +77,17 @@ export type CustomApiToolFormValues = z.infer<typeof customApiToolSchema>;
 /**
  * Vault form schema for CustomApiTool. Includes the app selector field used by
  * the shared vault form wrapper.
- *
- * Space IDs are required on create only. On update the multi-select is not
- * rendered, so requiring at least one space would make the Save button
- * silently fail zod validation (spaceIds resets to [] on update).
  */
 export const customApiToolVaultSchema = customApiToolBaseSchema.extend({
   selectedType: z.object({ label: z.string(), value: z.string() }).optional(),
-  spaceIds: z
-    .array(z.string())
-    .min(1, { message: "At least one space must be selected." })
-    .default([]),
 });
 
 /**
- * Action-aware vault form schema for CustomApiTool.
- *
- * - create: `spaceIds` requires at least one entry (multi-select is rendered).
- * - update/read/other: `spaceIds` is optional (multi-select is not rendered).
+ * Vault form schema for CustomApiTool.
  */
-export const getCustomApiToolVaultSchema = (action: "create" | "read" | "update" | "delete" | "delete-multiple") =>
+export const getCustomApiToolVaultSchema = () =>
   customApiToolBaseSchema.extend({
     selectedType: z.object({ label: z.string(), value: z.string() }).optional(),
-    spaceIds:
-      action === "create"
-        ? z
-            .array(z.string())
-            .min(1, { message: "At least one space must be selected." })
-            .default([])
-        : z.array(z.string()).optional().default([]),
   });
 
 export type CustomApiToolVaultFormValues = z.infer<typeof customApiToolVaultSchema>;
@@ -129,7 +111,6 @@ export const getCustomApiToolDefaultValues = (
     apiKeyQueryValue: "",
     isDisabled: false,
     selectedType: undefined,
-    spaceIds: [],
   };
 
   return { ...values, ...overrides };
