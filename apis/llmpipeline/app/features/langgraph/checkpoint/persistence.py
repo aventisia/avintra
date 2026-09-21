@@ -180,8 +180,7 @@ async def save_message(
             tenant_id=tenant_id,
             conversation_id=conversation_uuid,
             role=_message_role(message),
-            # content=_message_content(message),
-            content = str(message),
+            content=_message_content(message),
             message_metadata=metadata if metadata else None,
             created_on=datetime.now(timezone.utc),
         )
