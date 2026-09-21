@@ -34,7 +34,9 @@ public class CloudConnectorsVaultService : ICloudConnectorsVaultService
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
+                
             if (vaultCredential == null) return null;
 
             // Decrypt and merge key-value pairs into the VaultCredentialObj's data object

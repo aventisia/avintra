@@ -102,25 +102,4 @@ public static class QueueApiExecutor
             ? dataEl.Clone()
             : doc.RootElement.Clone();
     }
-
-    /// <summary>
-    /// Converts a text value (e.g. an ISO 8601 string or a free-form datetime) into a
-    /// <see cref="DateTimeOffset"/>. Returns null when the value is null/whitespace or cannot be parsed.
-    /// </summary>
-    public static DateTimeOffset? ConvertToDateTimeOffset(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return null;
-
-        if (DateTimeOffset.TryParse(
-                value.Trim(),
-                System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.RoundtripKind,
-                out var parsed))
-        {
-            return parsed;
-        }
-
-        return null;
-    }
 }

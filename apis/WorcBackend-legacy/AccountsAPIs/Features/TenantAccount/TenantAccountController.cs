@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Controllers;
 
-[Authorize(Roles = "TA")]
+[Authorize]
 [Route("tenant-account")]
 [ApiController]
 public class TenantAccountController : BaseApiController
@@ -20,6 +20,7 @@ public class TenantAccountController : BaseApiController
     // acccounts-api/tenant/delete-user/
 
     // Retrieves the current organization details of the tenant.
+    [Authorize(Roles = "TA")]
     [HttpGet("detail")]
     public async Task<ActionResult<ServiceResponse<TenantOrganizationBillingDto>>> GetTenantOrganizationDetails()
     {
@@ -27,6 +28,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Updates the tenant's organization details based on the provided data.
+    [Authorize(Roles = "TA")]
     [HttpPut("detail")]
     public async Task<ActionResult<ServiceResponse<TenantOrganizationBillingDto>>> UpdateTenantOrganizationDetails(TenantOrganizationBillingDto tenantOrganizationBillingDto)
     {
@@ -34,6 +36,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Retrieves the current preferences of the tenant.
+    [Authorize(Roles = "TA")]
     [HttpGet("preferences")]
     public async Task<ActionResult<ServiceResponse<TenantPreferenceDto>>> GetTenantPreferences()
     {
@@ -41,6 +44,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Updates the tenant's preferences based on the provided data.
+    [Authorize(Roles = "TA")]
     [HttpPut("preferences")]
     public async Task<ActionResult<ServiceResponse<TenantPreferenceDto>>> UpdateTenantPreferences(TenantPreferenceDto tenantPreferenceDto)
     {
@@ -48,6 +52,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Retrieves the current automatic notification settings of the tenant.
+    [Authorize(Roles = "TA")]
     [HttpGet("notification-settings")]
     public async Task<ActionResult<ServiceResponse<NotificationSettingsDto>>> GetNotificationSettings()
     {
@@ -55,6 +60,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Updates the automatic notification settings of the tenant.
+    [Authorize(Roles = "TA")]
     [HttpPut("notification-settings")]
     public async Task<ActionResult<ServiceResponse<NotificationSettingsDto>>> UpdateNotificationSettings(NotificationSettingsDto settingsDto)
     {
@@ -62,6 +68,7 @@ public class TenantAccountController : BaseApiController
     }
 
     // Searches for account users matching the specified search key.
+    [Authorize]
     [HttpGet("users/search/{searchKey}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AppUserBaseDto>>>> SearchAccountUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
     {
