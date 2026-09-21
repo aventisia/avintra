@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { DATA_QUERY_KEY } from "../constants/constants";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
@@ -15,10 +16,12 @@ export const useOpenSupportTicket = (rowId: string) => {
   const navigate = useNavigate();
 
   // Get support tickets store state and actions
-  const { filteredData, setSupportTicketsState } = useSupportTicketsTableStore((state) => ({
-    filteredData: state.filteredData,
-    setSupportTicketsState: state.setSupportTicketsState,
-  }));
+  const { filteredData, setSupportTicketsState } = useSupportTicketsTableStore(
+    useShallow((state) => ({
+      filteredData: state.filteredData,
+      setSupportTicketsState: state.setSupportTicketsState,
+    })),
+  );
 
   // Get query client
   const queryClient = useQueryClient();

@@ -1,3 +1,5 @@
+import { useShallow } from "zustand/react/shallow";
+
 import { ADD_ON_PRICING } from "../constants/add-on-pricing";
 import { currencyToPricePer500Credits } from "../constants/credit-price-map";
 import { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
@@ -8,11 +10,13 @@ export const useChargeSummary = (
   plan?: SubscriptionPlanDTO | undefined,
   planFrequency?: PlanFrequency,
 ) => {
-  const { billingCountry, topUp, currency } = useUpgradePlanDialogStore((state) => ({
-    billingCountry: state.billingCountry,
-    topUp: state.topUp,
-    currency: state.currency,
-  }));
+  const { billingCountry, topUp, currency } = useUpgradePlanDialogStore(
+    useShallow((state) => ({
+      billingCountry: state.billingCountry,
+      topUp: state.topUp,
+      currency: state.currency,
+    })),
+  );
 
   const isTaxApplicable = billingCountry === "India";
 
