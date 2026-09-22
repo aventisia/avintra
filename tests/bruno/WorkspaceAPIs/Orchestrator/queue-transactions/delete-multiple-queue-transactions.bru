@@ -5,18 +5,9 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue-transaction/{{QUEUE_TRANSACTION_ID}}
+  url: {{WORKSPACE_API_BASE_URL}}/queue-transaction/{{QUEUE_TRANSACTION_ID}}
   body: none
   auth: none
-}
-
-script:pre-request {
-  if(res.getStatus() == 200){
-      bru.setGlobalEnvVar(
-        "QUEUE_TRANSACTION_ID", 
-        "00000000-0000-0000-0000-000000000000"
-      );
-  }
 }
 
 script:post-response {

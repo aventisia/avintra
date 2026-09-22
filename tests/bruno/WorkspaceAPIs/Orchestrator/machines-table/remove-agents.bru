@@ -5,14 +5,13 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/machine/{{MACHINE_ID}}/remove-agents
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/machine/{{MACHINE_ID}}/remove-agents
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set agentId in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("FLOW_VERSION_ID")}"]`)
-  )
+body:json {
+  [
+    "{{FLOW_VERSION_ID}}"
+  ]
 }

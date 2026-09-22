@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceUserDto } from "../../dtos/workspace-user-dto";
 import { useAgentUsersStore } from "../../stores/agent-users-store";
@@ -14,10 +15,12 @@ export const useSearchUserMultiSelect = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const { setView, flowVersionId } = useAgentUsersStore((state) => ({
-    setView: state.setView,
-    flowVersionId: state.flowVersionId,
-  }));
+  const { setView, flowVersionId } = useAgentUsersStore(
+    useShallow((state) => ({
+      setView: state.setView,
+      flowVersionId: state.flowVersionId,
+    })),
+  );
 
   const { data: searchData, isLoading, isError } = useSearchUsersList(debouncedSearchTerm);
 

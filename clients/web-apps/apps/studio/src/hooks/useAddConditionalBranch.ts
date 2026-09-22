@@ -1,6 +1,8 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { createConditionalBranchNodeObj } from "@/utils/create-nodes/conditional/create-conditional-branch-node-obj";
@@ -17,7 +19,11 @@ export const useAddConditionalBranch = () => {
   const addConditionalBranch = useCallback(
     (nodeData: ConditionalNodeDataType, switchNodeId: string) => {
       // JIT State Fetching: Get latest state instantly without subscribing
-      const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore.getState();
+      const { nodes, edges, flowType, setNodes, setEdges } = useReactFlowExtStore.getState();
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
 
       const sourceNode = nodes.find((node) => node.id === switchNodeId);
       if (!sourceNode) return;

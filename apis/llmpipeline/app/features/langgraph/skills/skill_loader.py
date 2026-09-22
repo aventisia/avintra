@@ -214,8 +214,8 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
     Build a ``SkillConfig`` from a database ``Skill`` row.
 
     The SKILL.md content is expected to be stored as one of the attached
-    ``SkillFile`` rows with the file name ``SKILL.md``. Its YAML front-matter
-    is parsed and merged with the row-level name/description so that user
+    ``SkillFile`` rows with the file name ``SKILL.md``. Row-level values win;
+    the YAML front-matter name/description act as fallbacks so that user
     skills behave identically to filesystem skills in the registry.
     """
 
@@ -241,6 +241,8 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
     providers: list[str] = []
     license_block: dict[str, Any] = {}
     references: list[dict[str, Any]] = []
+    frontmatter_name = ""
+    frontmatter_description = ""
 
     if skill_md and skill_md.content:
         try:
@@ -250,6 +252,8 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
                 if len(parts) >= 3:
                     parsed = yaml.safe_load(parts[1]) or {}
                     if isinstance(parsed, dict):
+                        frontmatter_name = parsed.get("name") or ""
+                        frontmatter_description = parsed.get("description") or ""
                         tags = parsed.get("tags") or []
                         providers = parsed.get("providers") or []
                         license_block = parsed.get("license") or {}
@@ -296,8 +300,8 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
     ]
 
     return SkillConfig(
-        name=skill.name,
-        description=skill.description or "",
+        name=skill.name or frontmatter_name,
+        description=(skill.description or "").strip() or frontmatter_description,
         is_active=skill.is_active,
         metadata=metadata,
         license=license_obj,

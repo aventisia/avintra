@@ -5,29 +5,19 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/block
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/block
+  body: json
   auth: none
 }
 
 body:json {
-  {
-    
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_BLOCK_ID"),
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-    reactFlowObject: "",
-    flowVariablesObject: "",
-    inputOutputObject: "",
-    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
-    type: "TenantLevel",
-    isDisabled: false  
-  })
+  "id": "{{FLOW_BLOCK_ID}}",
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "reactFlowObject": "",
+  "flowVariablesObject": "",
+  "inputOutputObject": "",
+  "flowVersionId": "{{FLOW_VERSION_ID}}",
+  "type": "TenantLevel",
+  "isDisabled": false
 }

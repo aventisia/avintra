@@ -5,14 +5,12 @@ meta {
 }
 
 delete {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/delete-account
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/me/delete-account
+  body: json
   auth: none
 }
 
-script:pre-request {
-  req.setBody({
-    verificationCodeId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    secretCode: "string"
-  })
+body:json {
+  "verificationCodeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "secretCode": "string"
 }

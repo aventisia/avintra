@@ -5,15 +5,11 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/upload-file?fileUrl=/files/b2b0b7d5-5203-4faa-a4e9-1298ff4e0a03.json
+  url: {{WORKSPACE_API_BASE_URL}}/upload-file?fileUrl=/files/b2b0b7d5-5203-4faa-a4e9-1298ff4e0a03.json
   body: none
   auth: none
 }
 
 params:query {
   fileUrl: /files/b2b0b7d5-5203-4faa-a4e9-1298ff4e0a03.json
-}
-
-script:pre-request {
-   
 }

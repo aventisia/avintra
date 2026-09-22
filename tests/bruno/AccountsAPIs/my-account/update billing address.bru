@@ -5,20 +5,16 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/my-company/update-billing-address
+  url: {{ACCOUNTS_API_BASE_URL}}/my-company/update-billing-address
   body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({ 
-    addressLine1:faker.location.streetAddress(),
-    addressLine2:faker.location.streetAddress(),
-    country:faker.location.country(),
-    stateOrProvince:faker.location.state(),
-    city:faker.location.city(),
-    zipOrPostalCode:faker.location.zipCode(),
-  })
+body:json {
+  "addressLine1": "{{$randomStreetAddress}}",
+  "addressLine2": "{{$randomStreetAddress}}",
+  "country": "{{$randomCountry}}",
+  "stateOrProvince": "{{$randomState}}",
+  "city": "{{$randomCity}}",
+  "zipOrPostalCode": "{{$randomZipCode}}"
 }

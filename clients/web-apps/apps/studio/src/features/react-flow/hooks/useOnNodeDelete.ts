@@ -1,7 +1,9 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { OnNodesDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
@@ -13,22 +15,35 @@ import {
 } from "../utils/node-deletion-utils";
 
 export const useOnNodeDelete = () => {
-  const { nodes, edges, setNodes, setEdges, flowVariablesObject, setFlowVariablesObject } =
-    useReactFlowExtStore(
-      useShallow((state) => ({
-        nodes: state.nodes,
-        edges: state.edges,
-        setNodes: state.setNodes,
-        setEdges: state.setEdges,
-        flowVariablesObject: state.flowVariablesObject,
-        setFlowVariablesObject: state.setFlowVariablesObject,
-      })),
-    );
+  const {
+    nodes,
+    edges,
+    flowType,
+    setNodes,
+    setEdges,
+    flowVariablesObject,
+    setFlowVariablesObject,
+  } = useReactFlowExtStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      flowType: state.flowType,
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+      flowVariablesObject: state.flowVariablesObject,
+      setFlowVariablesObject: state.setFlowVariablesObject,
+    })),
+  );
 
   const autoLayout = useDagreAutoLayout();
 
   const onNodesDelete: OnNodesDelete = useCallback(
     (deletedNodes) => {
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
+
       try {
         let updatedNodes = [...nodes];
         let updatedEdges = [...edges];
@@ -111,7 +126,7 @@ export const useOnNodeDelete = () => {
         console.warn((err as Error).message);
       }
     },
-    [nodes, edges, flowVariablesObject, autoLayout],
+    [nodes, edges, flowType, flowVariablesObject, autoLayout],
   );
 
   return { onNodesDelete };

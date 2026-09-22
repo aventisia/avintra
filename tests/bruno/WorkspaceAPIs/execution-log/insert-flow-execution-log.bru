@@ -5,20 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/execution-log/create
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/execution-log/create
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    flowExecutionLogId: bru.getGlobalEnvVar("EXECUTION_LOG_ID"),
-    actionName: faker.system.commonFileName(),
-    inputData: faker.lorem.sentence(),
-    outputData: faker.lorem.sentence()
-  })
+body:json {
+  "flowExecutionLogId": "{{EXECUTION_LOG_ID}}",
+  "actionName": "{{$randomCommonFileName}}",
+  "inputData": "{{$randomLoremSentence}}",
+  "outputData": "{{$randomLoremSentence}}"
 }
 
 script:post-response {

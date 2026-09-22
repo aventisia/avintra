@@ -1,0 +1,30 @@
+meta {
+  name: Get usable tools
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tools/usable
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const body = res.getBody();
+  const tools = body?.data ?? [];
+
+  if (res.getStatus() === 200 && tools.length) {
+    bru.setGlobalEnvVar("USABLE_TOOL_ID", tools[0].id);
+  }
+
+  test("returns usable tools without inline operations", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(tools).to.be.an("array");
+    tools.forEach((tool) => {
+      expect(tool).to.have.property("id");
+      expect(tool).to.have.property("name");
+      expect(tool).to.not.have.property("operations");
+    });
+  });
+}

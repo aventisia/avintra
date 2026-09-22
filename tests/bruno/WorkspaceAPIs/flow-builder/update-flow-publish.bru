@@ -5,40 +5,23 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow/publish
+  url: {{WORKSPACE_API_BASE_URL}}/flow/publish
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "id": "d93542a1-6625-470b-a115-b4e9a40c5bab",
-    "flowId": "bf93db05-de54-491c-8425-4f76f707fa64",
-    "name": "Towels",
-    "reactFlowObject": "{\"nodes\":[{\"id\":\"7c71a1b7-da25-4994-9690-f521054744c4\",\"type\":\"triggerNode\",\"data\":{\"type\":\"triggerNode\",\"category\":\"Triggers\",\"name\":\"manualTrigger\",\"label\":\"Manual trigger\",\"description\":\"Start your flow clicking the execute button\",\"icon\":\"ManualTriggerIcon\"},\"position\":{\"x\":0,\"y\":0},\"sourcePosition\":\"bottom\",\"deletable\":false,\"dragHandle\":\".custom-drag-handle\"},{\"id\":\"58a0d6c3-da41-449a-93c2-d4e7ceac4445\",\"type\":\"plusFirstNode\",\"position\":{\"x\":0,\"y\":150},\"deletable\":false,\"draggable\":true}],\"edges\":[{\"id\":\"097019d9-25f7-4d1e-bfcd-f860527da031\",\"type\":\"customStepEdge\",\"source\":\"7c71a1b7-da25-4994-9690-f521054744c4\",\"target\":\"58a0d6c3-da41-449a-93c2-d4e7ceac4445\",\"deletable\":false,\"selectable\":false,\"style\":{\"strokeDasharray\":\"5,5\",\"strokeWidth\":1.5}}],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}",
-    "flowVariablesObject": null,
-    "inputOutputObject": null,
-    "isLocked": false,
-    "isDraft": false,
-    "isPublished": true,
-    "isArchived": false,
-    "type": "AutomationAgent",
-    "description": "Fugiat acervus teres. Aggredior cauda decerno cinis cognatus. Suspendo suspendo celebrer cursus claustrum ullus vomer recusandae collum."
-  }
+  "id": "{{FLOW_VERSION_ID}}",
+  "flowId": "bf93db05-de54-491c-8425-4f76f707fa64",
+  "name": "{{$randomCompanyName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "reactFlowObject": "{{$guid}}",
+  "accessType": "TenantLevel",
+  "type": "Agent",
+  "thumbnail": "none",
+  "isPublished": true
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
-    flowId: "bf93db05-de54-491c-8425-4f76f707fa64", //bru.getGlobalEnvVar("FLOW_ID"),
-    name: faker.company.name(),
-    description: faker.lorem.paragraph(),
-    reactFlowObject: faker.string.alphanumeric(255),
-    accessType: "TenantLevel",
-    type: "Agent",
-    thumbnail: "none",
-    isPublished: true  
-  })
+docs {
+  > bru.getGlobalEnvVar("FLOW_ID")
 }

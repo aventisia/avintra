@@ -332,6 +332,16 @@ public class FlowBuilderService : IFlowBuilderService
             if (flowVersion.IsPublished == true)
                 return serviceResponse.Update("Flow is already published.", 400);
 
+            // Validate: ChatAgent versions must satisfy the single-node shape so invalid
+            // client payloads (e.g. trigger/end/plus nodes, missing Chat AI node) cannot be published
+            if (flowVersion.Flow.Type == FlowTypesEnum.ChatAgent)
+            {
+                var parsedChatFlow = ChatAgentGraphHelpers.TryParseFlow(flowVersion.ReactFlowObject);
+
+                if (ChatAgentGraphHelpers.ValidateChatAgentGraph(parsedChatFlow) is string chatValidationError)
+                    return serviceResponse.Update(chatValidationError, 400);
+            }
+
             // TODO: Bug When there is a call block or call agent node exists then parsed flow is empty
             // Validate flow graph for unpublished flow versions
             // if (flowVersion.IsPublished == false)

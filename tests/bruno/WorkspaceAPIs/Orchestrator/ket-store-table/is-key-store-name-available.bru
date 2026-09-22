@@ -5,15 +5,11 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/is-available
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/key-store/is-available
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    userInput: faker.company.name(),
-  })
+body:json {
+  "userInput": "{{$randomCompanyName}}"
 }

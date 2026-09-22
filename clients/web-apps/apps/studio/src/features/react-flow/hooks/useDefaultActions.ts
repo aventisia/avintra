@@ -15,7 +15,7 @@ type RecommendActions = {
 export const useDefaultActions = () => {
   return useReactFlowExtStore(
     useShallow((state) => {
-      if (!state.isTestChatOpen || state.flowType !== FlowTypesEnum.ChatAgent) {
+      if (state.flowType !== FlowTypesEnum.ChatAgent) {
         return undefined;
       }
 

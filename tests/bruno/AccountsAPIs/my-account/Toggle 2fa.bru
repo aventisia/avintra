@@ -5,15 +5,13 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/toggle-2fa
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/me/toggle-2fa
+  body: json
   auth: none
 }
 
-script:pre-request {
-  req.setBody({
-     twoFactorEnabled: true,
-    verificationCodeId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    secretCode: "string"
-  })
+body:json {
+  "twoFactorEnabled": true,
+  "verificationCodeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "secretCode": "string"
 }

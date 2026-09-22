@@ -1,9 +1,5 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
-import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { toast } from "@avplatform/ui/sonner";
-import { Settings2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
@@ -14,6 +10,7 @@ import {
   modelProviders,
 } from "@/features/dynamic-config-panel/constants/model-providers";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
+import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
@@ -27,6 +24,8 @@ import { CredentialsSelectField } from "./CredentialsSelectField";
 interface ModelConfigFieldProps {
   /** The name of the form field. */
   name: string;
+  /** If true, show the JSON output toggle in the model settings. */
+  showJsonOutput?: boolean;
 }
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -46,12 +45,12 @@ const PROVIDER_MAP: Record<string, string> = {
 // fetched dynamically via a credential (e.g. Ollama On-prem).
 const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
 
-const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
+const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps) => {
   const [byokModels, setByokModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues, watch } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
 
   // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
@@ -132,6 +131,17 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     () => ["__ModelConfig__Inferencing", "__ModelConfig__Conversation"].includes(name),
     [name],
   );
+
+  // Reasoning effort has no explicit "unset" state, so fall back to the default
+  // "medium" for ChatAgent nodes that stored a null/empty value or pre-date the
+  // field. Scoped to the conversation model so other model configs are untouched.
+  const reasoningEffortValue = watch(fieldNames.reasoning_effort);
+  useEffect(() => {
+    if (name !== "__ModelConfig__Conversation") return;
+    if (reasoningEffortValue == null || reasoningEffortValue === "") {
+      setValue(fieldNames.reasoning_effort, "medium", { shouldDirty: false });
+    }
+  }, [name, reasoningEffortValue, setValue, fieldNames]);
 
   // Whether the currently selected provider has at least one model enabled for
   // this tenant. When BYOK is ON, the provider / credentials dropdowns must not
@@ -236,7 +246,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         }
       }
     }
-  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames, enabledConfigByProvider]);
+  }, [
+    is_byok_enabled,
+    providerValue,
+    isInitialized,
+    setValue,
+    fieldNames,
+    enabledConfigByProvider,
+  ]);
 
   // 6. Fetch BYOK Models on Credential Change
   useEffect(() => {
@@ -265,17 +282,32 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         return;
       }
 
+      // Snapshot before blanking so a failed fetch can restore the selection.
+      // Blanking first means a flush during the async gap below never persists
+      // a new credential alongside a stale model.
+      const previousModel = getValues(fieldNames.model) as string | undefined;
+      setValue(fieldNames.model, "", { shouldDirty: true });
+
       try {
         setIsLoading(true);
         const provider = PROVIDER_MAP[providerValue];
         if (provider) {
           const res = await getProviderModels(provider, credentialsValue);
-          setByokModels((res?.data as Model[]) || []);
-          setValue(fieldNames.model, "", { shouldDirty: true });
+          const models = (res?.data as Model[]) || [];
+          setByokModels(models);
+          // Keep the previous selection when the new credential still offers it.
+          if (previousModel && models.some((m) => m.value === previousModel)) {
+            setValue(fieldNames.model, previousModel, { shouldDirty: true });
+          }
         }
       } catch {
         toast.error("Error fetching provider models");
         setByokModels([]);
+        // IMPORTANT NOTE: restore the snapshot so a failed fetch never leaves a
+        // blank model that the next flush would persist over a valid selection.
+        if (previousModel) {
+          setValue(fieldNames.model, previousModel, { shouldDirty: true });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -283,7 +315,15 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
     const timer = setTimeout(fetchModels, 150);
     return () => clearTimeout(timer);
-  }, [credentialsValue, providerValue, is_byok_enabled, isInitialized, setValue, fieldNames]);
+  }, [
+    credentialsValue,
+    providerValue,
+    is_byok_enabled,
+    isInitialized,
+    setValue,
+    getValues,
+    fieldNames,
+  ]);
 
   // 7. Render Helpers
   const availableModels = useMemo(() => {
@@ -329,6 +369,62 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   );
 
   const currentProviderLabel = filteredProviders.find((p) => p.value === providerValue)?.label;
+  const providerIcon = getProviderBrandIcon(providerValue);
+  const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
+
+  // Models inherit the selected provider's brand icon so it shows in both the
+  // trigger and the option list of the Model select.
+  const modelSelectOptions = useMemo(
+    () => availableModels.map((model) => ({ ...model, icon: providerIcon })),
+    [availableModels, providerIcon],
+  );
+
+  const modelAdvancedSettings = (
+    <>
+      <Controller
+        {...temperatureField}
+        render={({ field }) => (
+          <SliderField label="Temperature" name={field.name} min={0} max={1.2} step={0.1} />
+        )}
+      />
+
+      <Controller
+        {...topPField}
+        render={({ field }) => (
+          <SliderField label="TopP" name={field.name} min={0} max={1.2} step={0.1} />
+        )}
+      />
+
+      {showJsonOutput && (
+        <SwitchField
+          size="sm"
+          name={fieldNames.is_json_output}
+          label="Is JSON Output"
+          description="Output results in JSON format."
+        />
+      )}
+
+      <InputField
+        name={fieldNames.max_output_tokens}
+        type="number"
+        label="Max Output Token"
+        fieldSize="sm"
+        description="Maximum number of tokens the model may generate in its reply. Leave empty to use the model default; values must be greater than 0 (0 is invalid)."
+      />
+
+      <SelectField
+        size="sm"
+        name={fieldNames.reasoning_effort}
+        selectOptions={[
+          { value: "low", label: "Low" },
+          { value: "medium", label: "Medium" },
+          { value: "high", label: "High" },
+        ]}
+        label="Reasoning Effort"
+        description="Controls how much internal reasoning the model performs before answering. Higher effort can improve accuracy on complex tasks at the cost of speed and tokens. Not supported by all models."
+      />
+    </>
+  );
 
   return (
     <div className="w-full space-y-3.5">
@@ -339,12 +435,19 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         description="Use your own provider API key instead of platform-hosted models."
       />
 
-      <SelectField
-        size="sm"
-        name={fieldNames.provider}
-        selectOptions={filteredProviders}
-        label="Model Provider"
-      />
+      <div className="flex items-end gap-2">
+        {providerIcon && (
+          <img src={basePath + providerIcon} alt="" className="mb-1 h-5 w-5 shrink-0" />
+        )}
+        <div className="flex-grow">
+          <SelectField
+            size="sm"
+            name={fieldNames.provider}
+            selectOptions={filteredProviders}
+            label="Model Provider"
+          />
+        </div>
+      </div>
 
       {is_byok_enabled && currentProviderHasEnabledModels && (
         <CredentialsSelectField
@@ -355,74 +458,22 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         />
       )}
 
-      <div className="flex items-end gap-1">
-        <div className="flex-grow">
-          <SearchableSelectField
-            size="sm"
-            name={fieldNames.model}
-            selectOptions={availableModels}
-            label="Model"
-            primaryText="Models"
-            isLoading={isLoading}
-            disabled={
-              !isInitialized ||
-              (is_byok_enabled &&
-                !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) &&
-                !credentialsValue)
-            }
-          />
-        </div>
+      <SearchableSelectField
+        size="sm"
+        name={fieldNames.model}
+        selectOptions={modelSelectOptions}
+        label="Model"
+        primaryText="Models"
+        isLoading={isLoading}
+        disabled={
+          !isInitialized ||
+          (is_byok_enabled &&
+            !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) &&
+            !credentialsValue)
+        }
+      />
 
-        {enableModelSetup && (
-          <Popover>
-            <PopoverTrigger className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}>
-              <Settings2Icon className="h-3 w-3" />
-            </PopoverTrigger>
-
-            <PopoverContent className="mr-6 w-[25rem] space-y-3.5 p-2">
-              <Controller
-                {...temperatureField}
-                render={({ field }) => (
-                  <SliderField label="Temperature" name={field.name} min={0} max={1.2} step={0.1} />
-                )}
-              />
-
-              <Controller
-                {...topPField}
-                render={({ field }) => (
-                  <SliderField label="TopP" name={field.name} min={0} max={1.2} step={0.1} />
-                )}
-              />
-
-              <SwitchField
-                size="sm"
-                name={fieldNames.is_json_output}
-                label="Is JSON Output"
-                description="Output results in JSON format."
-              />
-
-              <InputField
-                name={fieldNames.max_output_tokens}
-                type="number"
-                label="Max Output Token"
-                fieldSize="sm"
-              />
-
-              <SelectField
-                size="sm"
-                name={fieldNames.reasoning_effort}
-                selectOptions={[
-                  { value: "low", label: "Low" },
-                  { value: "medium", label: "Medium" },
-                  { value: "high", label: "High" },
-                ]}
-                label="Reasoning Effort"
-                description="Control how much reasoning the model does (OpenAI reasoning models)."
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
+      {enableModelSetup && <div className="space-y-3.5">{modelAdvancedSettings}</div>}
 
       {currentModel?.voices?.length ? (
         <SelectField

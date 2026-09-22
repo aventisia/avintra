@@ -1,4 +1,5 @@
 import { Separator } from "@avplatform/ui";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import {
   ArrowDown,
   ArrowLeft,
@@ -19,6 +20,7 @@ import { memo, useCallback, useEffect, useRef } from "react";
 import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
 import { useClipboardStore } from "../../stores/useClipboardStore";
@@ -27,6 +29,7 @@ import MenuItem from "./MenuItem";
 export const ReactFlowContextMenu = memo(() => {
   const { menu, setMenu, selectedNode, selectedEdge, setSelectedEdge, setSelectedNode } =
     useContextMenuActionsStore();
+  const flowType = useReactFlowExtStore((state) => state.flowType);
   const { copyNodes, cutNodes, pasteNodes, deleteNode, disableNode, cancelCut } =
     useFlowOperations();
   const { groupNodes, ungroupNodes } = useNodeGrouping();
@@ -50,6 +53,8 @@ export const ReactFlowContextMenu = memo(() => {
     setSelectedEdge(null);
   }, [setMenu, setSelectedEdge, setSelectedNode]);
   if (!menu) return null;
+  // ChatAgent has no canvas actions — never show custom menu.
+  if (flowType === FlowTypesEnum.ChatAgent) return null;
 
   const isPaneMode = !selectedNode && !selectedEdge;
   const restrictedTypes = [

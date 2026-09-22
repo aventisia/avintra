@@ -5,54 +5,55 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue
+  url: {{WORKSPACE_API_BASE_URL}}/queue
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "name": "test",
-    "description": "",
-    "isUniqueReferencesEnforced": false,
-    "isStoredEncrypted": false,
-    "shouldRetryFailedItems": false,
-    "shouldRetryAbandonedItems": false,
-    "maximumRetryAttempts": 5,
-    "inputSchema": [
-      {
-        "name": "Id",
-        "description": "",
-        "lebel": "",
-        "type": "int",
-        "isRequired": true,
-        "isUsedForUniqueIdentifier": true
-      },
-      {
-        "name": "Name",
-        "description": "",
-        "lebel": "",
-        "type": "string",
-        "isRequired": true,
-        "isUsedForUniqueIdentifier": true
-      },
-      {
-        "name": "Date",
-        "description": "",
-        "lebel": "",
-        "type": "Date",
-        "isRequired": true,
-        "isUsedForUniqueIdentifier": false
-      },
-      {
-        "name": "Location",
-        "description": "",
-        "lebel": "",
-        "type": "string",
-        "isRequired": false,
-        "isUsedForUniqueIdentifier": false
-      }
-    ]
+  [
+    {
+      "name": "test",
+      "description": "",
+      "isUniqueReferencesEnforced": false,
+      "isStoredEncrypted": false,
+      "shouldRetryFailedItems": false,
+      "shouldRetryAbandonedItems": false,
+      "maximumRetryAttempts": 5,
+      "inputSchema": [
+        {
+          "name": "Id",
+          "description": "",
+          "lebel": "",
+          "type": "int",
+          "isRequired": true,
+          "isUsedForUniqueIdentifier": true
+        },
+        {
+          "name": "Name",
+          "description": "",
+          "lebel": "",
+          "type": "string",
+          "isRequired": true,
+          "isUsedForUniqueIdentifier": true
+        },
+        {
+          "name": "Date",
+          "description": "",
+          "lebel": "",
+          "type": "Date",
+          "isRequired": true,
+          "isUsedForUniqueIdentifier": false
+        },
+        {
+          "name": "Location",
+          "description": "",
+          "lebel": "",
+          "type": "string",
+          "isRequired": false,
+          "isUsedForUniqueIdentifier": false
+        }
+  ]
   }
 }
 

@@ -1,6 +1,8 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 
+import { cn } from "@/ui/lib";
+
 import { useFetchAvailableCredits } from "./useFetchAvailableCredits";
 
 /**
@@ -15,18 +17,19 @@ const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
 
   return (
-    <Badge variant={"outline"} className="border-none bg-[#322D74] px-4 py-2">
+    <Badge variant={"outline"} className="border-none hidden md:flex bg-[#322D74] px-4 py-2">
       <p className="flex items-center gap-1 text-xs font-semibold text-white">
         Credits <span className="font-normal opacity-60">-</span>{" "}
         {isLoading ? (
           <LoadingSpinner className="text-primary-300 size-3" />
         ) : (
           <span
-            className={
+            className={cn(
+              "font-mono",
               data?.data?.availableCredits && data?.data?.availableCredits < 0
                 ? "text-destructive"
-                : ""
-            }
+                : "",
+            )}
           >
             {data
               ? data?.data?.availableCredits.toLocaleString("en-US", {

@@ -5,17 +5,19 @@
   "version": "1.0.0",
   "auther": "@aventisia",
   "supportedPlatforms": ["cloud", "desktop"],
-  "errorHandling": "standard",
-  "testScreenType": "llmGenerateRequest",
+  "errorHandling": "none",
+  "testScreenType": "none",
   "fields": [
     {
       "direction": "Input",
-      "type": "prompt-input",
+      "type": "prompt-input-v2",
       "name": "__Prompt__Conversation",
       "required": false,
       "min": 16,
       "defaultValue": "",
-      "category": "Prompt"
+      "showTokenCount": false,
+      "showVariables": false,
+      "category": "System Prompt"
     },
     {
       "direction": "Input",
@@ -28,20 +30,12 @@
         "model": "gpt-4o-mini",
         "temperature": 1,
         "top_p": 1,
-        "is_json_output": false,
-        "max_output_tokens": null
+        "max_output_tokens": null,
+        "reasoning_effort": "medium"
       },
       "required": false,
-      "category": "Models"
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "Files",
-      "label": "Files",
-      "defaultValue": "",
-      "required": false,
-      "category": "Models"
+      "showJsonOutput": false,
+      "category": "Model"
     },
     {
       "direction": "Input",
@@ -50,7 +44,6 @@
       "label": "Knowledge Base(s)",
       "defaultValue": {
         "knowledgeBase": [],
-        "retrievalType": "Basic",
         "sourceThreshold": 0.1,
         "numberOfChunks": 5
       },
@@ -74,7 +67,7 @@
       "name": "__MemoryConfig__Conversation",
       "defaultValue": {
         "memoryProvider": "Memory Provider 1",
-        "maxDataStored": 4
+        "maxDataStored": 20
       },
       "required": false,
       "category": "Context"
@@ -98,19 +91,6 @@
       },
       "required": false,
       "category": "Other"
-    },
-    {
-      "direction": "Output",
-      "type": "config-panel-output",
-      "name": "Result",
-      "label": "Result",
-      "description": "Result",
-      "defaultValue": {
-        "value": "Result",
-        "enabled": true
-      },
-      "required": false,
-      "category": "Prompt"
     }
   ]
 }

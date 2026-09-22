@@ -5,25 +5,20 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/manage-role
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("ROLE_ID"),
-    tenantId: bru.getGlobalEnvVar("TENANT_ID"),
-    fullName: faker.person.jobType(),
-    description: faker.lorem.lines(),
-    rolePermissions: [
+body:json {
+  "id": "{{ROLE_ID}}",
+  "tenantId": "{{TENANT_ID}}",
+  "fullName": "{{$randomJobTitle}}",
+  "description": "{{$randomLoremSentences}}",
+  "rolePermissions": [
       {
-        permissionType: "Roles",
-        accesses: ["FullAccess", "Delete","Edit"]
-      },
+        "permissionType": "Roles",
+        "accesses": ["FullAccess", "Delete", "Edit"]
+      }
     ]
-  })
-  
 }

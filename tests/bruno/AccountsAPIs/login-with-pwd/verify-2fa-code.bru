@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/verify-2fa-code
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/verify-2fa-code
+  body: json
   auth: none
 }
 
-script:pre-request {
-  req.setBody({
-    email: bru.getGlobalEnvVar("MY_EMAIL"),
-    requestType: "TwoFA",
-    verificationCodeId: bru.getGlobalEnvVar("VERIFICATION_CODE_ID"),
-    secretCode: "000000"
-  })
+body:json {
+  "email": "{{MY_EMAIL}}",
+  "requestType": "TwoFA",
+  "verificationCodeId": "{{VERIFICATION_CODE_ID}}",
+  "secretCode": "000000"
 }
 
 script:post-response {

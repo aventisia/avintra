@@ -5,21 +5,11 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow/is-available
+  url: {{WORKSPACE_API_BASE_URL}}/flow/is-available
   body: json
   auth: none
 }
 
 body:json {
-  {
-      "userInput": "Ergonomic Cotton Mouse"
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    userInput: faker.company.name(),
-  })
+  "userInput": "{{$randomCompanyName}}"
 }
