@@ -29,6 +29,24 @@ export interface QueueWorkItemDto {
   workItemData?: string;
 
   /**
+   * Gets or sets the identifier of the source work item from which this
+   * transaction was created during a queue routing operation.
+   */
+  sourceWorkItemId?: string;
+
+  /**
+   * Gets or sets the zero-based retry attempt number for the work item.
+   * The first attempt is 0; each retry is the previous attempt incremented by one.
+   */
+  retryCount?: number;
+
+  /**
+   * Gets or sets the scheduled time after which this transaction becomes
+   * eligible for processing. When null the transaction is eligible immediately.
+   */
+  retryTime?: Date | string | null;
+
+  /**
    * Gets or sets the identifier for the queue to which this transaction belongs.
    */
 
