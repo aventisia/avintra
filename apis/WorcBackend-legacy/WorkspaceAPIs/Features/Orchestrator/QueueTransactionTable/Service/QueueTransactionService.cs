@@ -8,12 +8,15 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly string _username;
     private readonly string _displayName;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public QueueTransactionService(
         ILogger<QueueTransactionService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService)
+        IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService,
+        IResourceShareService resourceShareService, ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -23,6 +26,8 @@ public class QueueTransactionService : IQueueTransactionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+        _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Returns the user's display name (First Name + Last Name) from the "name" claim,
@@ -49,6 +54,57 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
+            // Resolve the queue with tenant/space filters bypassed, then authorize the caller.
+            // The user must either own the queue (personal) or have access to it as a shared
+            // resource (ResourceShare record, tenant-wide access, or a legacy QueueUser
+            // assignment) before any of its work items are returned.
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    w.Id == queueId)
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (queue == null)
+            {
+                _logger.LogWarning("Queue not found for Queue ID: {QueueId}", queueId);
+                serviceResponse.StatusCode = 404;
+                serviceResponse.Message = "Queue not found.";
+                return serviceResponse;
+            }
+
+            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                queue.Id,
+                ResourceTypeEnum.Queue,
+                queue.CreatedByUserId,
+                queue.IsTenantWideAccess,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.Create);
+
+            // Legacy QueueUser assignments (Assist "my queues") also grant visibility
+            // even when no ResourceShare record exists.
+            if (!hasAccess)
+            {
+                hasAccess = await _unitOfWork.QueueUserRepo
+                    .GetByConditionAsync(w => w.QueueId == queue.Id && w.UserId == _userId)
+                    .AnyAsync();
+            }
+
+            if (!hasAccess)
+            {
+                _logger.LogWarning(
+                    "Unauthorized queue work item list access. User {UserId}, Queue {QueueId}",
+                    _userId, queueId);
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "You do not have access to this queue.";
+                return serviceResponse;
+            }
+
             // Query the transactions for the specified queue. Transactions whose RetryTime is set
             // to a future time are not eligible for processing yet and are excluded.
             var queueTransactions = await _unitOfWork.QueueTransactionRepo
@@ -61,8 +117,17 @@ public class QueueTransactionService : IQueueTransactionService
                 .AsNoTracking()
                 .ToListAsync();
 
-            // On success, populate the response with the data
-            serviceResponse.Data = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
+            // On success, populate the response with the data. The payload is
+            // intentionally stripped from list responses to keep them lightweight;
+            // it remains available through the single work-item get-by-id endpoints
+            // used by the detail views (JSON/form viewer and file viewer).
+            var items = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>().ToList();
+            foreach (var item in items)
+            {
+                item.PayloadData = null;
+            }
+
+            serviceResponse.Data = items;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
         }

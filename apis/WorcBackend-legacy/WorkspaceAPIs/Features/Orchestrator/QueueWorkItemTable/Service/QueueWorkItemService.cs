@@ -667,6 +667,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // have no space context) can resolve the queue scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     (string.IsNullOrEmpty(queueWorkItemDto.QueueName)
                         ? w.Id == queueWorkItemDto.QueueId
