@@ -59,7 +59,7 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
       return (
         <div className="flex  items-center max-w-80 gap-3 ">
           <NavLink
-            to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}`}
+            to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}&tab=${isSharedTab ? "shared" : "personal"}`}
             onClick={(e) => e.stopPropagation()}
             className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
             title="View work items"
