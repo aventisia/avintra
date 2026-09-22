@@ -147,6 +147,23 @@ public class CorsairInvokeService : ICorsairInvokeService
                 dottedAction,
                 payload);
 
+            if (!result.Success)
+            {
+                _logger.LogWarning(
+                    "Corsair {Plugin}.{Action} failed for credential {CredentialName} ({ConnectionId}): errorType={ErrorType} retryable={Retryable} retryAfterMs={RetryAfterMs} needsConnect={NeedsConnect} approvalRequired={ApprovalRequired} error={Error} details={Details}",
+                    plugin,
+                    request.Action,
+                    request.CredentialName,
+                    appSecret.Id,
+                    result.ErrorType,
+                    result.Retryable,
+                    result.RetryAfterMs,
+                    result.NeedsConnect,
+                    result.ApprovalRequired,
+                    result.Error,
+                    result.Details);
+            }
+
             serviceResponse.Data = new CorsairInvokeResDto
             {
                 Success = result.Success,
