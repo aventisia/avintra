@@ -25,6 +25,8 @@ public class QueueTransactionMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.RetryCount)
+            .Ignore(dest => dest.RetryTime.HasValue)
             .IgnoreNullValues(true);
 
     }

@@ -3,6 +3,7 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { NavLink } from "react-router-dom";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -52,16 +53,27 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
-    cell: ({ row }) => (
-      <div className="flex  items-center max-w-80 gap-3 ">
-        <span className="w-auto truncate font-medium">{row.getValue<string>("name")}</span>
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const queueId = row.original.id;
+      const queueName = row.getValue<string>("name") ?? "";
+      return (
+        <div className="flex  items-center max-w-80 gap-3 ">
+          <NavLink
+            to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}`}
+            onClick={(e) => e.stopPropagation()}
+            className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
+            title="View work items"
+          >
+            {row.getValue<string>("name")}
+          </NavLink>
+          {isSharedTab && (
+            <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+            </p>
+          )}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "type",

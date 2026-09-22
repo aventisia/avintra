@@ -17,6 +17,7 @@ import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/K
 import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
 import { QueuesPage } from "./pages/02-configure/queues/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/02-configure/queues/QueuesWorkItemsPage";
+import { QueueWorkItemDetailPage } from "./pages/02-configure/queues/QueueWorkItemDetailPage";
 import { SkillDetailsPage } from "./pages/02-configure/skills/SkillsDetailsPage";
 import { SkillPage } from "./pages/02-configure/skills/SkillsPage";
 import { ToolDetailsPage } from "./pages/02-configure/tools/ToolDetailsPage";
@@ -95,6 +96,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "queues/work-items/:qid",
             element: <QueuesWorkItemsPage />,
+          },
+          {
+            path: "queues/work-items/:qid/wid/:wid",
+            element: <QueueWorkItemDetailPage />,
           },
           {
             path: "triggers",

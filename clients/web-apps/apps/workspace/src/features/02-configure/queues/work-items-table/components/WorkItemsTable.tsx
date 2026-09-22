@@ -4,6 +4,7 @@ import {
   DTViewOptions,
   DataTable,
   DataTableSkeleton,
+  getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable } from "@avplatform/ui/hooks";
 import { useEffect, useMemo } from "react";
@@ -12,6 +13,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useFetchQueues } from "../../queues-table/hooks/useFetchQueues";
 import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
+import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 import { PayloadTableHeading } from "./TableHeading";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
@@ -29,6 +31,10 @@ export const WorkItemsTable = () => {
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
   const navigate = useNavigate();
+
+  // Get data-table preferences from local storage (persisted column visibility,
+  // including the optional Source Work Item Id / Retry columns).
+  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch WorkItems data
   const { data } = useFetchQueuesWorkItems();
@@ -51,13 +57,13 @@ export const WorkItemsTable = () => {
   }, [queue]);
 
   const filteredColumns = useMemo(() => {
-    if (!hasOnlyReadAccess) return workItemsTableColumns;
+    if (!hasOnlyReadAccess) return workItemsTableColumns(name);
 
-    return workItemsTableColumns.filter((column) => column.id !== "actions");
-  }, [hasOnlyReadAccess]);
+    return workItemsTableColumns(name).filter((column) => column.id !== "actions");
+  }, [hasOnlyReadAccess, name]);
 
   // Create a React table for WorkItems data
-  const table = useDataTable(filteredColumns, data?.data || [], {}, [], true);
+  const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
 
   // Return the rendered DataTable component.
   return (
