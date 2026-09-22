@@ -61,8 +61,17 @@ public class QueueTransactionService : IQueueTransactionService
                 .AsNoTracking()
                 .ToListAsync();
 
-            // On success, populate the response with the data
-            serviceResponse.Data = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
+            // On success, populate the response with the data. The payload is
+            // intentionally stripped from list responses to keep them lightweight;
+            // it remains available through the single work-item get-by-id endpoints
+            // used by the detail views (JSON/form viewer and file viewer).
+            var items = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>().ToList();
+            foreach (var item in items)
+            {
+                item.PayloadData = null;
+            }
+
+            serviceResponse.Data = items;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
         }
