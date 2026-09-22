@@ -20,7 +20,7 @@ export const GroupedFieldsWrapper = ({
   return (
     <div className={cn("relative !mt-5 space-y-3 rounded-lg border p-3 first:!mt-1.5", className)}>
       <div className="absolute -top-3 left-2.5">
-        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+        <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-2xs font-medium text-indigo-600">
           {groupName}
         </span>
       </div>

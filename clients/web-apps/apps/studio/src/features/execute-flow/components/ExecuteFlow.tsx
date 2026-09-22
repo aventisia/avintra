@@ -16,6 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -82,7 +83,7 @@ const ExecuteFlow = () => {
     })),
   );
 
-  const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
+  const { isPending: isSaving, saveData } = useSaveFlow();
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
   const { showRunResults, setShowRunResults, setRunContext } = useRunResultsQueryParams();
 
@@ -204,10 +205,12 @@ const ExecuteFlow = () => {
         return;
       }
 
-      if (isSavePending) {
-        const saved = await saveData();
-        if (!saved) return;
-      }
+      // Commit pending config-form edits, then persist the canvas before
+      // running. The flush always persists, including incomplete/invalid edits,
+      // so the user's mid-edit state is not lost.
+      await useDynamicConfigPanelStore.getState().flushForm?.();
+      const saved = await saveData();
+      if (!saved) return;
 
       if (isEmptyFlow(nodes as Node<NodeDataType>[])) {
         toast.error("Flow is empty and cannot be executed.");

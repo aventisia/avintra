@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/user/disable-multiple
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/user/disable-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set userIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("ACCOUNT_USER_ID")}"]`)
-  )
+body:json {
+  [
+    "{{ACCOUNT_USER_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

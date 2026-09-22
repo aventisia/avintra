@@ -215,6 +215,40 @@ public class CorsairConfigRepository
         }
     }
 
+    /// <summary>
+    /// Resolves the vault type for a Corsair plugin id, if any. Used to filter
+    /// credentials to the type a platform tool can be invoked with.
+    /// </summary>
+    public string? GetVaultTypeForPluginId(string pluginId)
+    {
+        if (string.IsNullOrWhiteSpace(pluginId))
+        {
+            return null;
+        }
+
+        var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
+        if (catalogPath == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry>>(
+                File.ReadAllText(catalogPath),
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return catalog?
+                .Where(entry => string.Equals(entry.PluginId, pluginId, StringComparison.OrdinalIgnoreCase))
+                .Select(entry => entry.VaultType)
+                .FirstOrDefault(vaultType => !string.IsNullOrWhiteSpace(vaultType));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse Corsair integration catalog at {Path}.", catalogPath);
+            return null;
+        }
+    }
+
     private static string NormalizeVaultType(string vaultType) => vaultType.Trim() switch
     {
         "Teams" or "Onedrive" or "Sharepoint" => "M365",

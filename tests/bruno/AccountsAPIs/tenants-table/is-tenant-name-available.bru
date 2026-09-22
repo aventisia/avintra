@@ -5,21 +5,11 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/is-available
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant/is-available
+  body: json
   auth: none
 }
 
 body:json {
-  {
-    "userInput": "Sauer - Homenick"
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    userInput: faker.company.name(),
-  })
+  "userInput": "{{$randomCompanyName}}"
 }

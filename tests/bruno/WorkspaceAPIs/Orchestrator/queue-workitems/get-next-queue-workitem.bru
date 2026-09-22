@@ -5,28 +5,29 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue/workitem/next
+  url: {{WORKSPACE_API_BASE_URL}}/queue/workitem/next
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "queueName": "{{QUEUE_NAME}}",
-    "status": "Pending",
-    "queuePriority": [
-      {
-        "field": "Location",
-        "OrderBy": "Descending"
-      }
-    ],
-    "conditions": [
-      {
-        "field": "Id",
-        "comparisonOperator": "GreaterThan",
-        "value": "0"
-      }
-    ]
+  [
+    {
+      "queueName": "{{QUEUE_NAME}}",
+      "status": "Pending",
+      "queuePriority": [
+        {
+          "field": "Location",
+          "OrderBy": "Descending"
+        }
+      ],
+      "conditions": [
+        {
+          "field": "Id",
+          "comparisonOperator": "GreaterThan",
+          "value": "0"
+        }
+  ]
   }
   
 }

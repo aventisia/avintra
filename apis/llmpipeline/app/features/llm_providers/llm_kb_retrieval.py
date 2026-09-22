@@ -169,6 +169,11 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     query=query_text,
                     kb_names=[kb_config["kb_name"]],
                     top_k=llm_request.top_k or 5,
+                    score_threshold=(
+                        llm_request.source_threshold
+                        if llm_request.source_threshold is not None
+                        else 0.1
+                    ),
                     credential_name=store_credential,
                     embedding_credential_name=embedding_credential,
                     ref_type=llm_request.ref_type,

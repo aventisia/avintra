@@ -12,8 +12,8 @@ export const StudioPreferencesTrigger = () => {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
+          "hidden md:flex",
           "hover:bg-white/10",
-          "hidden mlg:flex",
           "aria-[expanded=true]:bg-white/10",
         )}
       >

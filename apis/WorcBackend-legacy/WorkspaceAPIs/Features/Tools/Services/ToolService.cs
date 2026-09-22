@@ -1,4 +1,6 @@
 using System.Text.Json;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
+using WorkspaceAPIs.Features.Corsair;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
@@ -12,6 +14,9 @@ public class ToolService : IToolService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly CorsairConfigRepository _corsairConfigRepository;
+    private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
+    private readonly CorsairIntegrationCatalogRepository _corsairIntegrationCatalogRepository;
     private readonly Guid _currentUserId;
     private readonly string _accessToken;
 
@@ -22,7 +27,10 @@ public class ToolService : IToolService
         IResourceShareService resourceShareService,
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        CorsairConfigRepository corsairConfigRepository,
+        CamelConnectorCatalogRepository camelConnectorCatalogRepository,
+        CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -31,6 +39,9 @@ public class ToolService : IToolService
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
+        _corsairConfigRepository = corsairConfigRepository;
+        _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
+        _corsairIntegrationCatalogRepository = corsairIntegrationCatalogRepository;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
@@ -103,6 +114,172 @@ public class ToolService : IToolService
         }
 
         return serviceResponse;
+    }
+
+    // Retrieves the platform, personal, shared and tenant-wide tools the current user can use,
+    // within the current environment and space.
+    public async Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolDto>>
+        {
+            Message = "Failed to fetch usable tools."
+        };
+
+        try
+        {
+            // Resolve shared resource access for the current user.
+            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
+
+            // Fetch usable tools across every scope. Global tenant/space filters are bypassed so
+            // tenant-agnostic platform tools (TenantId = Guid.Empty) are visible to every tenant.
+            // Only slim columns are projected so the large OpenApiSpec/ParsedSchema payloads are
+            // not loaded for the whole library.
+            // Resolve brand icons for platform tools from the Camel and Corsair
+            // catalogs. Custom tools and unknown integrations fall back to null.
+            var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
+            ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
+
+            var usableTools = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+                .OrderBy(o => o.Name)
+                .IgnoreQueryFilters()
+                .Select(w => new UsableToolDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    Type = w.Type,
+                    AuthenticationType = w.AuthenticationType,
+                    CredentialName = w.CredentialName,
+                    IsActive = w.IsActive,
+                    IsVerified = w.IsVerified,
+                    IsDisabled = w.IsDisabled,
+                })
+                .ToListAsync();
+
+            // Icons are resolved in memory because the catalog lookup is not translatable.
+            foreach (var tool in usableTools)
+            {
+                tool.Icon = ToolIconHelpers.ResolveIcon(tool.Name, iconLookup);
+            }
+
+            return serviceResponse.Update(
+                "Usable tools retrieved successfully.",
+                200,
+                usableTools);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch usable tools.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves the operations exposed by a usable tool, together with the credential
+    // type required to invoke it.
+    public async Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId)
+    {
+        var serviceResponse = new ServiceResponse<UsableToolOperationsDto>
+        {
+            Message = "Failed to fetch usable tool operations."
+        };
+
+        try
+        {
+            // Resolve shared resource access for the current user.
+            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
+
+            // Load the single tool using the same usability scope, including its parsed schema.
+            var tool = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(w => w.Id == toolId);
+
+            if (tool is null)
+            {
+                return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            return serviceResponse.Update(
+                "Usable tool operations retrieved successfully.",
+                200,
+                new UsableToolOperationsDto
+                {
+                    CredentialType = ResolveCredentialType(tool),
+                    Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema),
+                });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch operations for tool {ToolId}.", toolId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Resolves the shared resource access map used to scope usable tools.
+    private Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetUsableToolsResourceAccessAsync() =>
+        _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+            _currentUserId,
+            ResourceTypeEnum.Tool,
+            new[]
+            {
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
+            });
+
+    // Builds the predicate that selects every tool the current user can use across scopes.
+    private Expression<Func<Tool, bool>> BuildUsableToolsPredicate(
+        Dictionary<Guid, ResourceAccessTypeEnum> resourceAccessMap)
+    {
+        var currentTenantId = _currentTenantService.CurrentTenantId;
+        var currentEnvType = _currentTenantService.CurrentEnvType;
+
+        // Central space is represented by a null SpaceId.
+        Guid? targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? null
+            : _currentTenantService.CurrentSpaceId;
+
+        return w =>
+            w.IsActive &&
+            w.IsVerified &&
+            !w.IsDisabled &&
+            (
+                // Platform library tools are tenant-agnostic and available in every environment.
+                (w.Type == ComponentTypeEnum.Platform &&
+                 w.TenantId == Guid.Empty &&
+                 w.SpaceId == null &&
+                 w.IsTenantWideAccess &&
+                 (w.CreatedByUserId == null || w.CreatedByUserId == Guid.Empty))
+                ||
+                // Custom tools scoped to the current tenant, environment and space.
+                (w.Type == ComponentTypeEnum.Custom &&
+                 w.TenantId == currentTenantId &&
+                 w.EnvType == currentEnvType &&
+                 w.SpaceId == targetSpaceId &&
+                 (w.IsTenantWideAccess ||
+                  (w.CreatedByUserId == _currentUserId && !w.IsTenantWideAccess) ||
+                  resourceAccessMap.Keys.Contains(w.Id)))
+            );
+    }
+
+    // Resolves the credential (vault) type a tool is invoked with.
+    private string? ResolveCredentialType(Tool tool)
+    {
+        // Custom tools always use the CustomApiTool credential type.
+        if (tool.Type == ComponentTypeEnum.Custom)
+        {
+            return AppSecretTypesEnum.CustomApiTool.ToString();
+        }
+
+        // Platform Corsair tools map their plugin id to a vault type via the integration catalog.
+        var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
+        return string.IsNullOrWhiteSpace(pluginId)
+            ? null
+            : _corsairConfigRepository.GetVaultTypeForPluginId(pluginId);
     }
 
     // Checks whether a tool name is available for use.

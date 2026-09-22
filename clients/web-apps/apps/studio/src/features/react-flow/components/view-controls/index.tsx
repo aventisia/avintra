@@ -1,10 +1,12 @@
 import { Separator } from "@avplatform/ui";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 import { VCActionButton } from "./VCActionButton";
@@ -21,12 +23,14 @@ export const ViewControls = memo(() => {
       zoomControls: state.studioPreferences.zoomControls,
     })),
   );
+  const flowType = useReactFlowExtStore((state) => state.flowType);
+  const isChatAgent = flowType === FlowTypesEnum.ChatAgent;
 
   return (
     <Panel position="bottom-left">
       <div className="flex flex-col items-end space-y-4">
         {/* Undo and Redo Controls */}
-        <VCBUndoRedo />
+        {!isChatAgent && <VCBUndoRedo />}
 
         {zoomControls && (
           <VCBContainer>
@@ -51,7 +55,7 @@ export const ViewControls = memo(() => {
           </VCBContainer>
         )}
 
-        {cursorToggle && (
+        {!isChatAgent && cursorToggle && (
           <VCBContainer>
             <VCBToggleCursor />
           </VCBContainer>

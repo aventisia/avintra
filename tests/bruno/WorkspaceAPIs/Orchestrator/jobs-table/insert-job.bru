@@ -5,19 +5,15 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/job
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
-    status: "Running",
-    startTime: faker.date.soon(),
-  })
+body:json {
+  "flowVersionId": "{{FLOW_VERSION_ID}}",
+  "status": "Running",
+  "startTime": "{{$randomFutureDate}}"
 }
 
 script:post-response {

@@ -82,7 +82,9 @@ export default function FileViewer() {
   const { Viewer, ControlPanel, PageControl } = VIEWER_REGISTRY[fileType];
 
   return (
-    <div className="h-[calc(100vh-4rem-var(--header-height)-3*var(--header-padding))]">
+    // Fills the viewer column of the fixed DCP Panel (same anchor as the tab
+    // stack: panel height minus the 4rem header row)
+    <div className="h-[calc(100vh-4rem-var(--header-height)-var(--header-padding)-1rem)]">
       <FileViewerHeader
         controlPanel={ControlPanel ? <ControlPanel /> : undefined}
         pageControl={PageControl ? <PageControl /> : undefined}

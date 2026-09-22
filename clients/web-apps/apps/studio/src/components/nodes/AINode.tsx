@@ -1,5 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
@@ -12,7 +13,9 @@ import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNod
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
+import { CHAT_AGENT_NODE_NAME } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { useNodeHover } from "@/hooks/useNodeHover";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 
@@ -62,6 +65,12 @@ export const AINode = memo(
     }
 
     const isExecutionLog = useIsExecutionLogsRoute();
+
+    // ChatAgent flows have a fixed single node — the Chat AI node needs no
+    // output handle since no downstream node can ever be connected.
+    const flowType = useReactFlowExtStore((state) => state.flowType);
+    const isChatAgentNode =
+      flowType === FlowTypesEnum.ChatAgent && data.name === CHAT_AGENT_NODE_NAME;
 
     //Get llm for the selected model
     const llm = data.name.includes("AIAgent")
@@ -154,7 +163,7 @@ export const AINode = memo(
 
         {/* Main Flow Handles */}
         <InputHandle position={targetPosition} id="main-in" />
-        <OutputHandle position={sourcePosition} id="main-out" />
+        {!isChatAgentNode && <OutputHandle position={sourcePosition} id="main-out" />}
 
         <ModelInputHandle isConnectable={!!llm?.length} />
 

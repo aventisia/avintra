@@ -6,18 +6,14 @@ meta {
 
 post {
   url: https://localhost:4001/cloud-connectors/github/create-repo
-  body: none
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    credentialName:"DUMMY",
-     orgUrl: "",
-    repoName: "Mayuri-git",
-    description : "",
-    isPrivate: true, 
-  })
+body:json {
+  "credentialName": "DUMMY",
+  "orgUrl": "",
+  "repoName": "Mayuri-git",
+  "description": "",
+  "isPrivate": true
 }

@@ -1,7 +1,14 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange, useReactFlow } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  OnSelectionChangeParams,
+  ReactFlow,
+  useOnViewportChange,
+  useReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -12,14 +19,15 @@ import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
+import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
 import {
   broadcastCursorEvent,
   useCollaboration,
 } from "@/features/collaboration/hooks/useCollaboration";
-import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
+import { DCPDialog } from "@/features/dynamic-config-panel";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -45,7 +53,6 @@ import { BackgroundExt } from "./BackgroundExt";
 import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
 import { MiniMapExt } from "./MiniMapExt";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
-import { TestChatAgent } from "./TestChatAgent";
 import { ReactFlowContextMenu } from "./context-menu";
 import { ViewControls } from "./view-controls";
 
@@ -63,7 +70,6 @@ export const ReactFlowExt = () => {
     onConnect,
     setViewport,
     flowType,
-    isTestChatOpen,
   } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -74,7 +80,6 @@ export const ReactFlowExt = () => {
       onConnect: state.onConnect,
       setViewport: state.setViewport,
       flowType: state.flowType,
-      isTestChatOpen: state.isTestChatOpen,
     })),
   );
 
@@ -92,6 +97,19 @@ export const ReactFlowExt = () => {
   const handleChatRequestComplete = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
   }, [queryClient]);
+
+  // Model label for the always-visible ChatAgent test panel, read from the
+  // Chat AI node's model config so the tester knows what is being exercised.
+  const chatModelLabel = useMemo(() => {
+    if (flowType !== FlowTypesEnum.ChatAgent) return undefined;
+    const chatNode = nodes.find((node) => node.type === "aiNode");
+    const inputs = (
+      chatNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
+    )?.inputs;
+    const modelConfig = inputs?.find((input) => input.key === "__ModelConfig__Conversation")
+      ?.value as { model?: unknown } | undefined;
+    return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
+  }, [flowType, nodes]);
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -201,6 +219,8 @@ export const ReactFlowExt = () => {
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -211,12 +231,14 @@ export const ReactFlowExt = () => {
 
       if (import.meta.env.MODE !== "production") console.log("NODE:", node);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   // Define onEdgeContextMenu handler
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -227,11 +249,13 @@ export const ReactFlowExt = () => {
 
       if (import.meta.env.MODE !== "production") console.log("EDGE:", edge);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
+      // ChatAgent has no canvas actions — allow browser default menu.
+      if (flowType === FlowTypesEnum.ChatAgent) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -240,7 +264,7 @@ export const ReactFlowExt = () => {
       setSelectedEdge(null);
       setMenu(position);
     },
-    [setSelectedNode, setSelectedEdge, setMenu],
+    [setSelectedNode, setSelectedEdge, setMenu, flowType],
   );
 
   const onPaneClick = useCallback(() => {
@@ -289,8 +313,12 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200">
-      <ResizablePanel minSize={"50%"}>
+    <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200 p-1.5">
+      <ResizablePanel
+        defaultSize="60%"
+        minSize="35%"
+        className="overflow-hidden rounded-xl bg-white"
+      >
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <FlowBreadcrumbs />
           <ReactFlow
@@ -319,7 +347,6 @@ export const ReactFlowExt = () => {
             snapToGrid={true}
             snapGrid={[16, 16]}
           >
-            {flowType === FlowTypesEnum.ChatAgent && <TestChatAgent />}
             <AutoFollowExecutingNode />
             <ViewControls />
             <ClearRunResultsPanel />
@@ -329,6 +356,9 @@ export const ReactFlowExt = () => {
           </ReactFlow>
           <ReactFlowContextMenu />
           <CanvasNodeDetailPanel />
+          {/* Non-modal node config drawer — canvas-level mount next to the other
+              fixed panels so it shares their stacking context. */}
+          <DCPDialog />
           <FlowActionLockBanner />
           {isLoading && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
@@ -339,13 +369,21 @@ export const ReactFlowExt = () => {
 
         <ReactFlowDialogWrapper />
       </ResizablePanel>
-      {flowType === FlowTypesEnum.ChatAgent && isTestChatOpen && (
+      {flowType === FlowTypesEnum.ChatAgent && (
         <>
-          <ResizableHandle withHandle className="bg-slate-300" />
-          <ResizablePanel minSize={"30%"} defaultSize="35%">
+          <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
+          <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
             <AvPlatformAssistantUI
               flowVersionId={currentFlow.versionId}
               mode="temporary"
+              allowNewSession
+              title="Test Chat"
+              badge="Test mode"
+              description={
+                chatModelLabel
+                  ? `Live test · ${chatModelLabel} · history is not saved`
+                  : "Live test · history is not saved"
+              }
               onRequestComplete={handleChatRequestComplete}
               defaultActions={
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []

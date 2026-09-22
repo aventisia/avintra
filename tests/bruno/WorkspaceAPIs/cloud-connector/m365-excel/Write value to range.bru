@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/m365/excel/invoke
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/m365/excel/invoke
   body: json
   auth: none
 }
@@ -15,37 +15,38 @@ headers {
 }
 
 body:json {
-  {
-    "agentId": "00000000-0000-0000-0000-000000000000",
-    "agentName": "Test",
-    "provider": "M365",
-    "action": "WriteValueToRange",
-    "credentialName": "DUMMY",
-    "payload": {
-       "driveAndItemId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl/items/013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
-      "worksheetName": "Sheet1",
-      "rangeAddress": "B10:D13",
-      "values": [
-        [
-          "Name",
-          "Age",
-          "DOB"
-        ],
-        [
-          "User1",
-          20,
-          null
-        ],
-        [
-          "User2",
-          25,
-          "17-Nov-2025"
-        ],
-        [
-          "User3",
-          30,
-          null
-        ]
+  [
+    {
+      "agentId": "00000000-0000-0000-0000-000000000000",
+      "agentName": "Test",
+      "provider": "M365",
+      "action": "WriteValueToRange",
+      "credentialName": "DUMMY",
+      "payload": {
+         "driveAndItemId": "b!whRq9wV6jkCLuzc69oeHCN2hyh95YWZGvw93JX0ogFhC2b21p-fWT5Pie-nRfiLl/items/013AXKAIBJURS5AZBJMRBK77B6DM5GYVJR",
+        "worksheetName": "Sheet1",
+        "rangeAddress": "B10:D13",
+        "values": [
+          [
+            "Name",
+            "Age",
+            "DOB"
+          ],
+          [
+            "User1",
+            20,
+            null
+          ],
+          [
+            "User2",
+            25,
+            "17-Nov-2025"
+          ],
+          [
+            "User3",
+            30,
+            null
+  ]
       ]
     }
   }

@@ -5,26 +5,13 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/deactivate
+  url: {{ACCOUNTS_API_BASE_URL}}/me/deactivate
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "deactivate":true,
-    "password": "{{INDIE_PWD}}",
-    "verificationCodeId": "5c03c827-dbf9-46be-b9df-d5aed395ee02",
-    "secretCode": "512222"
-  }
-}
-
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-     password: faker.internet.email(),
-    verificationCodeId: "{{VERIFICATION_CODE_ID}}",
-    secretCode: "<otp on email>"
-  })
+  "password": "{{$randomEmail}}",
+  "verificationCodeId": "{{VERIFICATION_CODE_ID}}",
+  "secretCode": "<otp on email>"
 }

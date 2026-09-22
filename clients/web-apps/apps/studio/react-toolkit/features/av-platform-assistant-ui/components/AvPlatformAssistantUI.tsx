@@ -35,12 +35,19 @@ export interface AvPlatformAssistantUIProps {
   archived?: boolean;
   /** Visual thread title. */
   title?: string;
+  /** Small pill rendered above the thread title (e.g. environment/mode). */
+  badge?: string;
   /** Visual thread description. */
   description?: string;
   /** Optional fallback suggestions for empty threads. */
   defaultActions?: string[];
   /** Injected historical messages. */
   initialMessages?: readonly ThreadMessageLike[];
+  /**
+   * When true, renders a header action that starts a fresh chat session,
+   * discarding the in-memory messages of the current session.
+   */
+  allowNewSession?: boolean;
   /** Callback fired when a new chat session is allocated lazily. Parent should update the URL/state. */
   onConversationAllocated?: (newConversationId: string) => void;
   /** Callback fired when a workflow execution completes. */
@@ -59,6 +66,7 @@ export const AvPlatformAssistantUI = ({
   conversationId,
   readOnly = false,
   archived = false,
+  allowNewSession = false,
   defaultActions = [],
   className = "flex h-full flex-col w-full bg-background",
   onConversationAllocated,
@@ -94,6 +102,11 @@ export const AvPlatformAssistantUI = ({
     }
   }, [conversationId, activeConversationId]);
 
+  // 3. Re-key the runtime to discard the current in-memory session and start fresh.
+  const handleNewSession = useCallback(() => {
+    setSessionKey(`new-session-${window.crypto.randomUUID()}`);
+  }, []);
+
   return (
     <div className={className}>
       <RuntimeWrapper
@@ -103,8 +116,10 @@ export const AvPlatformAssistantUI = ({
         flowVersionId={flowVersionId}
         readOnly={readOnly}
         archived={archived}
+        allowNewSession={allowNewSession}
         defaultActions={defaultActions}
         onRequestComplete={onRequestComplete}
+        onNewSession={handleNewSession}
         // Bubble the lazy allocation event up, and set it to internal state
         onConversationAllocated={(newId) => {
           setActiveConversationId(newId);
@@ -124,6 +139,8 @@ type RuntimeWrapperProps = Omit<
 > & {
   conversationId?: string;
   onConversationAllocated?: (newId: string) => void;
+  /** Internal handler that re-keys the runtime to start a fresh session. */
+  onNewSession?: () => void;
 };
 
 /**
@@ -135,11 +152,14 @@ const RuntimeWrapper = ({
   flowVersionId,
   title,
   description,
+  badge,
   readOnly,
   initialMessages = [],
+  allowNewSession = false,
   defaultActions = [],
   onRequestComplete,
   onConversationAllocated,
+  onNewSession,
 }: RuntimeWrapperProps) => {
   const activeSuggestionsRef = useRef<string[]>([]);
   const queryClient = useQueryClient();
@@ -251,7 +271,13 @@ const RuntimeWrapper = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SuggestionsProvider defaultActions={defaultActions}>
-        <Thread title={title} description={description} />
+        <Thread
+          title={title}
+          description={description}
+          badge={badge}
+          allowNewSession={allowNewSession}
+          onNewSession={onNewSession}
+        />
       </SuggestionsProvider>
     </AssistantRuntimeProvider>
   );

@@ -5,17 +5,13 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/machine-flow
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/machine-flow
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("MACHINE_FLOW_ID"),
-    flowVersionId: bru.getGlobalEnvVar("FLOW_VERSION_ID"),
-    machineId: bru.getGlobalEnvVar("MACHINE_ID"),
-  })
+body:json {
+  "id": "{{MACHINE_FLOW_ID}}",
+  "flowVersionId": "{{FLOW_VERSION_ID}}",
+  "machineId": "{{MACHINE_ID}}"
 }

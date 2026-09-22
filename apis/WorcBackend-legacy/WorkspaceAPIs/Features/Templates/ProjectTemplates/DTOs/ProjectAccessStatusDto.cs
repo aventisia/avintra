@@ -52,6 +52,11 @@ public class GenereateProjectInstructionRequestDto
     public UsageSourceTypesEnum RefType { get; set; }
 
     /// <summary>
+    /// Gets or sets the target of the prompt-generation request. Defaults to a project template.
+    /// </summary>
+    public PromptGenerationTargetsEnum PromptTarget { get; set; } = PromptGenerationTargetsEnum.Template;
+
+    /// <summary>
     /// Gets or sets the identifier of the specific reference associated with the usage context (e.g., AgentId, ModelId).
     /// </summary>
     public Guid RefId { get; set; }

@@ -5,25 +5,20 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-role
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-role
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    fullName: faker.person.jobType(),
-    description: faker.lorem.lines(),
-    rolePermissions: [
+body:json {
+  "fullName": "{{$randomJobTitle}}",
+  "description": "{{$randomLoremSentences}}",
+  "rolePermissions": [
       {
-        permissionType: "Roles",
-        accesses: ["View", "Delete"]
-      },
+        "permissionType": "Roles",
+        "accesses": ["View", "Delete"]
+      }
     ]
-  })
-  
 }
 
 script:post-response {

@@ -25,13 +25,15 @@ const AgentName = ({ className }: { className?: string }) => {
     useShallow((state) => ({ name: state.name })),
   );
 
-  const [isDirty, setIsDirty] = useState<string>();
+  const [baselineName, setBaselineName] = useState<string>();
 
   const { mutate: updateFlow, isPending } = useUpdateAgentNameMutation();
 
+  // Re-baseline when the flow changes so blur-compare doesn't re-fire after save.
   useEffect(() => {
-    setIsDirty(currentFlow.name);
-  }, []);
+    setBaselineName(currentFlow.name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFlow.id]);
 
   const isAgentHistory = useIsVersionHistoryRoute();
 
@@ -39,32 +41,44 @@ const AgentName = ({ className }: { className?: string }) => {
 
   return (
     <Tooltip content={currentFlow.name ?? viewAgentName}>
-      <div className="flex items-center">
+      <div className={cn("flex w-auto min-w-16 max-w-60 shrink items-center", className)}>
         {!isAgentHistory && !isExecutionLog ? (
           <>
             <AutoSizeInput
               name="label"
-              className={cn(
-                "max-w-80 truncate rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0",
-                className,
-              )}
+              className="min-w-0 max-w-full truncate"
               value={currentFlow.name}
               onChange={(e) => {
                 setCurrentFlow({ ...currentFlow, name: e.target.value });
               }}
               onBlur={() => {
-                if (isDirty?.trim() !== currentFlow?.name?.trim())
-                  updateFlow({
-                    name: currentFlow.name,
-                    id: currentFlow.id,
-                    type: currentFlow.type,
-                  });
+                const baseline = (baselineName ?? "").trim();
+                const next = (currentFlow?.name ?? "").trim();
+                // Empty names are not allowed — restore the last saved name
+                // without firing the update mutation.
+                if (next === "") {
+                  if (currentFlow?.name !== baselineName) {
+                    setCurrentFlow({ ...currentFlow, name: baselineName ?? "" });
+                  }
+                  return;
+                }
+                if (baseline !== next)
+                  updateFlow(
+                    {
+                      name: currentFlow.name,
+                      id: currentFlow.id,
+                      type: currentFlow.type,
+                    },
+                    {
+                      onSuccess: () => setBaselineName(currentFlow.name),
+                    },
+                  );
               }}
             />
             {isPending ? <LoadingSpinner className="h-3 w-3 text-muted-foreground" /> : null}
           </>
         ) : (
-          <span className={cn("mt-0.5 max-w-80 truncate !text-xs", className)}>
+          <span className={cn("mt-0.5 min-w-0 max-w-full truncate !text-xs", className)}>
             {viewAgentName}
           </span>
         )}

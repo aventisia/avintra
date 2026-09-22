@@ -5,25 +5,18 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/audit-log/insert-log
+  url: {{ACCOUNTS_API_BASE_URL}}/audit-log/insert-log
   body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({ 
-      userId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      entityName: "FlowTemplate",
-      entityId: "3fa85f64-5717-4562-b3fc-2c963f66afa3",
-      action: "Update",
-      changes: "modify the property",
-      timestamp: new Date()
-    });
-  
-  
-  
+body:json {
+  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "entityName": "FlowTemplate",
+  "entityId": "3fa85f64-5717-4562-b3fc-2c963f66afa3",
+  "action": "Update",
+  "changes": "modify the property",
+  "timestamp": "{{$isoTimestamp}}"
 }
 
 script:post-response {

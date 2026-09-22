@@ -5,34 +5,35 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger
+  url: {{WORKSPACE_API_BASE_URL}}/time-trigger
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "id": "{{TIME_TRIGGER_ID}}",
-    "name": "TEST6",
-    "timezone": "Asia/Kolkata",
-    "frequency": "Weekly",
-    "interval": 1,
-    "atTime": "23:30:00",
-    "weekdays": [1, 2, 3, 4, 5],
-    "monthDays": [], 
-    "agentIds": [],
-    "effectiveDate": "2025-11-07T09:01:55.770Z",
-    "endDate": "2025-11-07T09:01:55.770Z",
-    "lastTriggeredTime": "2025-11-07T09:01:55.770Z",
-    "nextTriggerTime": "2025-11-07T09:01:55.770Z",
-    "exceptionHours": [
-      2
-    ],
-    "exceptionWeekdays": [
-      "Monday"
-    ],
-    "exceptionDates": [
-      "2025-11-07T09:01:55.770Z"
-    ]
+  [
+    {
+      "id": "{{TIME_TRIGGER_ID}}",
+      "name": "TEST6",
+      "timezone": "Asia/Kolkata",
+      "frequency": "Weekly",
+      "interval": 1,
+      "atTime": "23:30:00",
+      "weekdays": [1, 2, 3, 4, 5],
+      "monthDays": [], 
+      "agentIds": [],
+      "effectiveDate": "2025-11-07T09:01:55.770Z",
+      "endDate": "2025-11-07T09:01:55.770Z",
+      "lastTriggeredTime": "2025-11-07T09:01:55.770Z",
+      "nextTriggerTime": "2025-11-07T09:01:55.770Z",
+      "exceptionHours": [
+        2
+      ],
+      "exceptionWeekdays": [
+        "Monday"
+      ],
+      "exceptionDates": [
+        "2025-11-07T09:01:55.770Z"
+  ]
   }
 }

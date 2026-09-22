@@ -1,14 +1,17 @@
 import { Input } from "@avplatform/ui";
-import { buttonVariants } from "@avplatform/ui/buttons";
-import { DialogClose, DialogDescription, DialogTitle } from "@avplatform/ui/dialog";
+import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { PanelHeader, PanelTitle } from "@/components/panel/components/Panel";
+import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
-import { useDynamicConfigPanelStore } from "../stores/dcp-store";
+import { useDCPNavigationGuard } from "../hooks/useDCPNavigationGuard";
+import { DCP_PANEL_ID, useDynamicConfigPanelStore } from "../stores/dcp-store";
 
 const DCPDialogHeader = () => {
   const [editing, setEditing] = useState(false);
@@ -18,13 +21,31 @@ const DCPDialogHeader = () => {
     nodeData,
     nodeLabel = "Dynamic Config Panel",
     setNodeLabel,
+    closeNodeConfig,
   } = useDynamicConfigPanelStore(
     useShallow((state) => ({
       nodeLabel: state.nodeLabel,
       nodeData: state.nodeData,
       setNodeLabel: state.setNodeLabel,
+      closeNodeConfig: state.closeNodeConfig,
     })),
   );
+
+  const closePanel = usePanelStore((s) => s.closePanel);
+  const clearAllFiles = useLocalFileStore((s) => s.clearAllFiles);
+  const guardNavigation = useDCPNavigationGuard();
+
+  // Explicit close: flush pending edits, then clear staged files and close both
+  // stores. Guarded — aborts (panel stays open) when the form is invalid.
+  // (Escape only touches panel-store via the panel hotkey; DCPDialog's
+  // reverse-sync propagates that path as a safety net.)
+  const handleClose = () => {
+    void guardNavigation(() => {
+      clearAllFiles();
+      closeNodeConfig();
+      closePanel(DCP_PANEL_ID);
+    });
+  };
 
   const isAgentHistory = useIsVersionHistoryRoute();
 
@@ -63,14 +84,10 @@ const DCPDialogHeader = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "flex h-16 items-center justify-between gap-2 border-b pl-4 pr-2 text-lg tracking-wide",
-      )}
-    >
-      {/* Left side - Dialog Heading and description */}
-      <div className="flex flex-col gap-[1px]">
-        <DialogTitle className="flex items-center font-semibold text-foreground">
+    <PanelHeader className="h-16 text-lg">
+      {/* Left side - Panel Heading and description */}
+      <div className="flex min-w-0 flex-col gap-[1px]">
+        <PanelTitle className="flex items-center !text-[0.91rem]">
           {editing ? (
             <Input
               name="label"
@@ -79,6 +96,14 @@ const DCPDialogHeader = () => {
               autoFocus
               onChange={(e) => setNodeLabel(e.target.value)}
               onBlur={() => setEditing(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") setEditing(false);
+                // Don't let panel-level Escape close the panel while renaming
+                if (e.key === "Escape") {
+                  e.stopPropagation();
+                  setEditing(false);
+                }
+              }}
             />
           ) : (
             <div
@@ -93,9 +118,9 @@ const DCPDialogHeader = () => {
               {!isAgentHistory && <PencilIcon className="h-3 w-3 text-muted-foreground" />}
             </div>
           )}
-        </DialogTitle>
+        </PanelTitle>
         <div className="flex gap-1">
-          <DialogDescription
+          <p
             className={cn(
               "!inline !max-w-[24rem] !truncate text-xs tracking-normal text-muted-foreground",
               nodeData?.name === "ConditionalBranchActivity" && "!max-w-[35rem]",
@@ -108,17 +133,23 @@ const DCPDialogHeader = () => {
             {nodeData?.description
               ? nodeData?.description + (nodeData?.description?.endsWith(".") ? "" : ".")
               : "Node Configuration."}
-          </DialogDescription>
+          </p>
           {renderInfoLink()}
         </div>
       </div>
 
-      {/* Right side - Close Dialog action buttons */}
-      <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
+      {/* Right side - explicit Close action */}
+      <Button
+        variant="ghost"
+        size="icon8"
+        onClick={handleClose}
+        aria-label="Close panel"
+        className="shrink-0"
+      >
         <X className="h-5 w-5 text-[--icon-color]" />
         <span className="sr-only">Close</span>
-      </DialogClose>
-    </div>
+      </Button>
+    </PanelHeader>
   );
 };
 

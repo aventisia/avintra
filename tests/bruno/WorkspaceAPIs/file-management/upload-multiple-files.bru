@@ -5,16 +5,11 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/file/upload/multiple
+  url: {{WORKSPACE_API_BASE_URL}}/file/upload/multiple
   body: multipartForm
   auth: none
 }
 
 body:multipart-form {
   files: @file(/home/rahmat/Gitea/Test/Abdul_Rafe_Khan_Resume.pdf|/home/rahmat/Gitea/Test/Bakery_Store_Invoice_Format.pdf)
-}
-
-script:pre-request {
-  
-   
 }

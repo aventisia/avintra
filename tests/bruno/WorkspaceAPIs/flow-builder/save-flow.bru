@@ -5,27 +5,15 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow/save
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/flow/save
+  body: json
   auth: none
 }
 
 body:json {
-  {
-    "id": "{{inserted-flow-id}}",
-    "thumbnail": "string",
-    "reactFlowObject": "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}"
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("FLOW_ID"),
-    thumbnail: "none",
-    reactFlowObject: "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}",
-    inputOutputObject: "",
-    versionId: bru.getGlobalEnvVar("FLOW_VERSION_ID")
-  })
+  "id": "{{FLOW_ID}}",
+  "thumbnail": "none",
+  "reactFlowObject": "{nodes: [], edges: [], viewport: {x: 0, y: 0,zoom: 1}}",
+  "inputOutputObject": "",
+  "versionId": "{{FLOW_VERSION_ID}}"
 }

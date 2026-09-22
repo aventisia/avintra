@@ -5,25 +5,15 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow
+  url: {{WORKSPACE_API_BASE_URL}}/flow
   body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    type: "Agent",
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-  })
+  "type": "Agent",
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}"
 }
 
 script:post-response {
