@@ -11,7 +11,7 @@ import { DataTableSkeleton } from "@avplatform/ui/data-table";
 import { useMemo, useState } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
-import { useFetchQueues } from "../../queues-table/hooks/useFetchQueues";
+import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
 import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
 import { useFetchQueuesWorkItemById } from "../hooks/useFetchQueuesWorkItemById";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
@@ -27,6 +27,10 @@ export const QueueWorkItemDetail = () => {
   const { qid: queueId = "", wid: workItemId = "" } = useParams();
   const [searchParams] = useSearchParams();
   const queueName = searchParams.get("name") ?? "WorkItem";
+  // The originating queues tab (personal/shared) is preserved in links so back
+  // navigation returns to the tab the user came from.
+  const tabParam = searchParams.get("tab");
+  const tabSuffix = tabParam ? `&tab=${tabParam}` : "";
 
   const [extractedData, setExtractedData] = useState<string>();
 
@@ -34,8 +38,10 @@ export const QueueWorkItemDetail = () => {
   const { data: workItemData, isLoading } = useFetchQueuesWorkItemById(workItemId);
 
   // The configure queue list includes the full input schema (with array fields)
-  // and the credential name, both needed by the form and file viewers.
-  const { data: queuesData } = useFetchQueues();
+  // and the credential name, both needed by the form and file viewers. The
+  // detail screen is reachable from both the Personal and Shared queues tab,
+  // so the queue is resolved against both lists.
+  const { data: queuesData } = useFetchAllQueues();
   const queue = useMemo(
     () => queuesData?.data?.find((item) => item.id === queueId),
     [queuesData?.data, queueId],
@@ -84,7 +90,7 @@ export const QueueWorkItemDetail = () => {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <NavLink
-                    to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}`}
+                    to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}${tabSuffix}`}
                   >
                     {queueName}
                   </NavLink>
