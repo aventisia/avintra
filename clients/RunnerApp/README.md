@@ -121,7 +121,7 @@ Operation mode options (`--mode` or interactive prompt):
 Target server options (`--target-servers` or interactive prompt):
 
 1. `uat` → `avuat.aventisia.com`
-2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+2. `prod` → `avweb1.aventisia.com`
 3. `both` → uat + prod
 
 ### macOS (developer machine)
@@ -150,7 +150,7 @@ Jenkins runs on an Ubuntu agent and can no longer build the Windows runner
 because `RunnerApp.Windows` targets `net8.0-windows`. The `Runner App` stage now
 calls `publish-ci.sh` to produce the **Linux** runner and uploads
 `AvintraRunnerApp_*.zip` to the server(s) mapped from the branch
-(`uat` → avuat, `main` → avweb1 + avweb2).
+(`uat` → avuat, `main` → avweb1).
 
 All upload scripts place platform-specific zips in `/var/www/aventisia.com/files/binaries/`. Windows uploads also place `Install-AvintraRunnerService.ps1` in `/var/www/aventisia.com/files/scripts/`. Linux/macOS zips are framework-dependent, so the target machine must have the matching .NET 8 runtime installed.
 

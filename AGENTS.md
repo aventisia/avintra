@@ -5,7 +5,7 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 ## Repository shape
 
 - Polyglot monorepo with one active .NET API generation, Python/FastAPI service, React frontends, shared Node libraries, and an nginx deployment layer.
-- Active branches: `dev`, `uat`, `main`.
+- Active branches: `uat`, `main`.
 - CI/CD: Jenkins (root `Jenkinsfile`). No GitHub Actions or pre-commit hooks.
 
 ## Solution / project boundaries
@@ -105,7 +105,6 @@ Studio depends on external package `@aventisia/ui`, not the local `@avplatform/*
 ```sh
 cd clients/docs
 npm ci
-npm run build:testing    # dev branch build mode in Jenkins
 npm run build:staging    # uat branch build mode
 npm run build:production # main branch build mode
 ```
@@ -142,7 +141,7 @@ Open `tests/bruno` in Bruno. Environments are under `tests/bruno/environments/`.
   - .NET API Dockerfiles expect project root as build context and copy `AspNetToolkit` alongside.
   - Nginx Dockerfile copies the built studio dist (`clients/web-apps/apps/studio/dist`) into the image — build it first.
   - LLMPipeline Dockerfile uses `python:3.12-slim`, port 4003.
-- Environment files: `.env.local` is gitignored. `deploy/.env` contains example/default values for local/dev. Do not commit secrets.
+- Environment files: `.env.local` is gitignored. Do not commit secrets.
 - No unit test suites found in web-apps or .NET projects. `tests/bruno` is the primary API-level verification.
 - EF Core migrations live under `Data/Migrations` in each legacy API project.
 - RunnerApp and UIInspector are Windows-oriented .NET client tools; expect `.csproj` (net8 for RunnerApp, net48 WPF for UIInspector) and `src-tauri` only for the desktop app.
@@ -151,13 +150,11 @@ Open `tests/bruno` in Bruno. Environments are under `tests/bruno/environments/`.
 
 Jenkins stages are branch-aware:
 
-- `dev` → deploy to `avdev.aventisia.com`
 - `uat` → deploy to `avuat.aventisia.com`
-- `main` → deploy to `avweb1.aventisia.com`, `avweb2.aventisia.com`
+- `main` → deploy to `avweb1.aventisia.com`
 
 Build modes for Node apps:
 
-- `dev` → `testing`
 - `uat` → `staging`
 - `main` → `production`
 

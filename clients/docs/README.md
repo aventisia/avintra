@@ -23,7 +23,6 @@ The dev server runs on port `3004`.
 npm run build
 
 # Environment-specific builds
-npm run build:testing
 npm run build:staging
 npm run build:production
 ```
@@ -36,7 +35,6 @@ The `postbuild` step runs [Pagefind](https://pagefind.app/) to generate a static
 | ------------------ | ---------------------------------------- |
 | `dev`              | Start the Next.js dev server (port 3004) |
 | `build`            | Build for production                     |
-| `build:testing`    | Build using `.env.testing`               |
 | `build:staging`    | Build using `.env.staging`               |
 | `build:production` | Build for production environment         |
 | `postbuild`        | Generate Pagefind search index           |
