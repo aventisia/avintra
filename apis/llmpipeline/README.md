@@ -78,7 +78,6 @@ uvicorn app.main:app --reload
 
 ## API Usage
 
-- See the `api_collections/extract_file_text.http` file for example requests.
 - The main endpoint for text extraction is `/extract-file-text`.
 
 ## Project Structure
@@ -90,6 +89,5 @@ app/
   core/              # Core utilities (config, logger, etc.)
   models/            # Pydantic models
   ...
-api_collections/     # HTTP request collections for testing
 requirements.txt     # Python dependencies
 ```

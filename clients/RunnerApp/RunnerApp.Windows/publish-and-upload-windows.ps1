@@ -135,8 +135,8 @@ function Resolve-Servers {
     }
     switch ($normalized) {
         "uat" { return @("avuat.aventisia.com") }
-        "prod" { return @("avweb1.aventisia.com", "avweb2.aventisia.com") }
-        "both" { return @("avuat.aventisia.com", "avweb1.aventisia.com", "avweb2.aventisia.com") }
+        "prod" { return @("avweb1.aventisia.com") }
+        "both" { return @("avuat.aventisia.com", "avweb1.aventisia.com") }
         default { throw "Unsupported server combination: $Choice" }
     }
 }

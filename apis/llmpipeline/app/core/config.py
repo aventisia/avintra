@@ -14,7 +14,7 @@ if sys.version_info.major != 3 or sys.version_info.minor != 12:
         "`py -3.12 -m venv venv` (Windows) or `python3.12 -m venv venv` (Linux/macOS)."
     )
 
-# Load environment-specific .env (e.g., .env.local, .env.development).
+# Load environment-specific .env (e.g., .env.local).
 # We explicitly seed os.environ so libraries like LiteLLM that read env vars
 # directly see the same values pydantic_settings will use. .env.local must
 # override .env because it holds the real (untracked) secrets.
@@ -74,7 +74,7 @@ class Settings(BaseSettings):
     # TODO: Need to adjust later
     OLLAMA_API_URL: str = ""
     OLLAMA_API_KEY: str = ""
-    QDRANT_URL: str = "https://dev-qdrant-db.aventisia.com"
+    QDRANT_URL: str = ""
     QDRANT_API_KEY: str = ""
 
     # TTS/STT

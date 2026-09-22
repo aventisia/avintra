@@ -99,8 +99,8 @@ resolve_servers() {
   local choice="$1"
   case "$choice" in
     uat|1)            echo "avuat.aventisia.com" ;;
-    prod|2)           echo "avweb1.aventisia.com avweb2.aventisia.com" ;;
-    both|3)           echo "avuat.aventisia.com avweb1.aventisia.com avweb2.aventisia.com" ;;
+    prod|2)           echo "avweb1.aventisia.com" ;;
+    both|3)           echo "avuat.aventisia.com avweb1.aventisia.com" ;;
     *)                echo "error: unsupported server combination: $choice" >&2; exit 1 ;;
   esac
 }
