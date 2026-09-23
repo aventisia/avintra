@@ -43,6 +43,12 @@ public class ToolDto
     public JsonDocument? ParsedSchema { get; set; }
 
     /// <summary>
+    /// Gets or sets the manually authored operations. When provided without an
+    /// OpenAPI spec, a spec is synthesized from them before persistence.
+    /// </summary>
+    public List<ManualToolOperationDto>? ManualOperations { get; set; }
+
+    /// <summary>
     /// Gets or sets the authentication method required by the tool.
     /// </summary>
     public ToolAuthenticationTypeEnum? AuthenticationType { get; set; }

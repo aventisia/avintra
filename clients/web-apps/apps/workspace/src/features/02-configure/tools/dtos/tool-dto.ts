@@ -2,6 +2,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 
 import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
+import { ManualToolOperation } from "./manual-tool-operation-dto";
 
 /**
  * Represents a data transfer object (DTO) for a tool entry.
@@ -43,6 +44,12 @@ export interface ToolDto {
    * Parsed LLM-friendly OpenAPI schema as JSON.
    */
   parsedSchema?: object;
+
+  /**
+   * Manually authored operations. Synthesized into an OpenAPI spec by the
+   * backend when no spec is provided.
+   */
+  manualOperations?: ManualToolOperation[];
 
   /**
    * Authentication method required by the tool.
