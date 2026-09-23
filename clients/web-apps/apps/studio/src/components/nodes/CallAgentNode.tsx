@@ -3,8 +3,16 @@ import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { Tooltip } from "@avplatform/ui/tooltip";
 // import { CheckCircleIcon } from "@heroicons/react/24/solid";
+
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
-import { ExpandIcon, ExternalLinkIcon, ShrinkIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  CircleXIcon,
+  ExpandIcon,
+  ExternalLinkIcon,
+  Loader2,
+  ShrinkIcon,
+} from "lucide-react";
 import { memo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -159,6 +167,25 @@ export const CallAgentNode = memo(
             </div>
           </OpenNodeConfig>
           {lockedByOther && <LockedNodeOverlay nodeId={id} className="rounded-full" />}
+          {liveStatus === "running" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <Loader2 className="size-4 animate-spin text-white" />
+            </div>
+          )}
+          {liveStatus === "success" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <CheckCircle2Icon className="size-4 text-green-500" />
+            </div>
+          )}
+          {liveStatus === "failed" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <CircleXIcon className="size-4 text-red-500" />
+            </div>
+          )}
+
+          {subflowProgressNode && liveStatus === "running" && (
+            <SubflowProgressPopup node={subflowProgressNode} />
+          )}
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
             {data?.selectedAgent && (
               <button
