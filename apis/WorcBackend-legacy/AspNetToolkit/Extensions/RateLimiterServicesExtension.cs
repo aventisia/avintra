@@ -2,86 +2,49 @@ namespace AspNetToolkit.Extensions;
 
 public static class RateLimiterServicesExtension
 {
+    /// <summary>
+    /// Binds RateLimiterConfig from configuration (appsettings.json, RateLimiterConfig section) and
+    /// registers it as a singleton consumed by <see cref="AspNetToolkit.Middleware.MethodRateLimitMiddleware"/>.
+    /// All thresholds come from configuration; nothing is hardcoded here.
+    /// </summary>
     public static void SharedRateLimiter(this IServiceCollection services, IConfiguration config)
     {
-        // Load rate limiter configuration from appsettings.json (supports both root and AppDefaultConfig nesting)
-        var rateLimiterConfig = config.GetSection("AppDefaultConfig:RateLimiterConfig").Get<RateLimiterConfig>() ?? new RateLimiterConfig();
+        var rateLimiterConfig = config.GetSection("AppDefaultConfig:RateLimiterConfig").Get<RateLimiterConfig>()
+                                ?? new RateLimiterConfig();
 
-        // Register the global rate limiter
-        services.AddRateLimiter(options =>
-        {
-            // Partitioned rate limiter allows creating a limiter per client (IP/user/endpoint)
-            options.GlobalLimiter =
-                PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                {
-                    // Get client IP address
-                    var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                                ?? context.Connection.RemoteIpAddress?.ToString();
+        services.AddSingleton(rateLimiterConfig);
+    }
 
-                    // Get user ID if the user is authenticated
-                    var userId = context.User?.Identity?.IsAuthenticated == true
-                        ? context.User?.FindFirstValue("uid")
-                        : string.Empty;
+    /// <summary>
+    /// Adds the method-specific rate limiting middleware to the request pipeline.
+    /// Must be placed after UseAuthentication/UseAuthorization so the client id can include the user id.
+    /// </summary>
+    public static IApplicationBuilder UseMethodRateLimiter(this IApplicationBuilder app)
+        => app.UseMiddleware<AspNetToolkit.Middleware.MethodRateLimitMiddleware>();
 
-                    // Get host as a fallback if IP is not available
-                    var host = context?.Request.Host.Host;
+    /// <summary>
+    /// Resolves the effective rate limit rule for a request with strict priority:
+    /// 1) Endpoint-specific override (RateLimiterConfig.Endpoints) — returned immediately on match.
+    /// 2) HTTP-method limit (RateLimiterConfig.HttpMethods) — returned on match.
+    /// 3) Default fallback (RateLimiterConfig.Default) when neither of the above matches.
+    /// Returns the partition scope, permit limit and window in minutes; PermitLimit &lt;= 0 means not throttled.
+    /// </summary>
+    public static (string Scope, int PermitLimit, int WindowMinutes) ResolveRateLimitRule(
+        this RateLimiterConfig config, string basePath, string path, string method)
+    {
+        // Priority 1: endpoint-specific override wins over method and default limits.
+        var endpoint = config.Endpoints.FirstOrDefault(f =>
+            path.Equals(f.Path, StringComparison.OrdinalIgnoreCase) ||
+            basePath.Equals(f.Path, StringComparison.OrdinalIgnoreCase));
 
-                    // Construct the client identifier:
-                    // - Authenticated users: combine IP + userId
-                    // - Unauthenticated users: use IP or host
-                    var clientId = !string.IsNullOrEmpty(userId)
-                        ? $"{ip ?? host}:{userId}"
-                        : $"{ip ?? host ?? "unknown-client"}";
+        if (endpoint != null && endpoint.PermitLimit > 0)
+            return ($"endpoint:{endpoint.Path}", endpoint.PermitLimit, Math.Max(endpoint.WindowInMinutes, 1));
 
-                    // Get request path (ensure lowercase for consistent matching)
-                    var path = context?.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+        // Priority 2: HTTP-method-specific limit; ignored when unconfigured or disabled (PermitLimit <= 0).
+        if (config.HttpMethods.TryGetValue(method, out var methodConfig) && methodConfig.PermitLimit > 0)
+            return ($"method:{method}", methodConfig.PermitLimit, Math.Max(methodConfig.WindowInMinutes, 1));
 
-                    // Find endpoint-specific rate limiting configuration
-                    var endpoint = rateLimiterConfig.Endpoints
-                        .FirstOrDefault(f => path.Equals(f.Path, StringComparison.OrdinalIgnoreCase));
-
-                    // Construct the rate limiter key
-                    // - If endpoint config exists: use clientId + endpoint path
-                    // - Otherwise: use clientId + "default"
-                    var rateLimitKey = endpoint != null ? $"{clientId}:{endpoint.Path}" : $"{clientId}:default";
-
-                    // If there is an endpoint-specific configuration, use its rules
-                    if (endpoint != null)
-                    {
-                        return RateLimitPartition.GetFixedWindowLimiter(
-                            rateLimitKey,
-                            _ => new FixedWindowRateLimiterOptions
-                            {
-                                PermitLimit = endpoint.PermitLimit,
-                                Window = TimeSpan.FromMinutes(endpoint.WindowInMinutes),
-                                AutoReplenishment = true,
-                                QueueLimit = 0
-                            });
-                    }
-
-                    // Default rate limiting configuration
-                    return RateLimitPartition.GetFixedWindowLimiter(
-                        rateLimitKey,
-                        _ => new FixedWindowRateLimiterOptions
-                        {
-                            PermitLimit = rateLimiterConfig.Default.PermitLimit,
-                            Window = TimeSpan.FromMinutes(rateLimiterConfig.Default.WindowInMinutes),
-                            AutoReplenishment = true,
-                            QueueLimit = rateLimiterConfig.Default.QueueLimit,
-                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-                        });
-                });
-
-            // Action to perform when a request is rejected due to rate limiting
-            options.OnRejected = async (context, token) =>
-            {
-                context.HttpContext.Response.StatusCode = 429; // HTTP 429 Too Many Requests
-                context.HttpContext.Response.ContentType = "text/plain";
-                await context.HttpContext.Response.WriteAsync(
-                    "Too many requests. Please try later.",
-                    cancellationToken: token
-                );
-            };
-        });
+        // Priority 3: default fallback for anything not matched above.
+        return ("default", config.Default.PermitLimit, Math.Max(config.Default.WindowInMinutes, 1));
     }
 }
