@@ -128,7 +128,6 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
       setDraftTool({ ...tool, parsedSchema });
       setSpecText(spec);
       setDraftSaved(true);
-      queryClient.setQueryData([...DETAIL_DATA_QUERY_KEY, rowId], { data: tool });
     };
 
     loadTool();
@@ -149,8 +148,17 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     queryKey,
   ]);
 
+  // The synthesized spec gates progress: manual operations are converted to
+  // JSON and stored in openApiSpec client-side, so a valid method set always
+  // yields a non-empty spec.
+  const hasValidManualOperation = Boolean(
+    draftTool?.manualOperations?.length && draftTool?.openApiSpec?.trim(),
+  );
+
   const isIngestValid = Boolean(
-    draftTool?.name?.trim() && draftTool?.baseUrl?.trim() && draftTool?.openApiSpec?.trim(),
+    draftTool?.name?.trim() &&
+    draftTool?.baseUrl?.trim() &&
+    (draftTool?.openApiSpec?.trim() || hasValidManualOperation),
   );
 
   const canProceed = isIngestValid && isNameValidForSubmit;
