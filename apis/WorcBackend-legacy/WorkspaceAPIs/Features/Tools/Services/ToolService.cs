@@ -608,6 +608,23 @@ public class ToolService : IToolService
             {
                 toolToCreate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
             }
+            else if (toolDto.ManualOperations is { Count: > 0 })
+            {
+                // Synthesize an OpenAPI spec from manually authored operations so
+                // manual tools flow through the same flatten/test/execute pipeline.
+                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(toolDto.ManualOperations);
+                if (synthesizedSpec is not null)
+                {
+                    toolToCreate.OpenApiSpec = synthesizedSpec;
+                    toolToCreate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+                }
+                else
+                {
+                    return serviceResponse.Update(
+                        "At least one valid operation (method and endpoint) is required.",
+                        400);
+                }
+            }
 
             // Persist the new tool.
             await _unitOfWork.ToolRepo.InsertAsync(toolToCreate);
@@ -721,6 +738,24 @@ public class ToolService : IToolService
             {
                 toolToUpdate.OpenApiSpec = toolDto.OpenApiSpec;
                 toolToUpdate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
+            }
+            else if (toolDto.ManualOperations is { Count: > 0 } &&
+                     string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
+            {
+                // Regenerate the synthesized spec from the manual operations.
+                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(toolDto.ManualOperations);
+                if (synthesizedSpec is null)
+                {
+                    return serviceResponse.Update(
+                        "At least one valid operation (method and endpoint) is required.",
+                        400);
+                }
+
+                if (toolToUpdate.OpenApiSpec != synthesizedSpec)
+                {
+                    toolToUpdate.OpenApiSpec = synthesizedSpec;
+                    toolToUpdate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+                }
             }
 
             // Persist changes.
