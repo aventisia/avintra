@@ -7,8 +7,25 @@ const modules = {
   ...import.meta.glob("../constants/custom-config-json/**/*.json"),
 };
 
-// In-memory cache for node configs
+// In-memory cache for node configs. Values are the resolved config arrays;
+// promises are stored separately while a fetch is in flight so concurrent
+// callers for the same node share a single request instead of duplicating it.
 const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
+const nodeConfigInFlight: Record<string, Promise<DCPFieldSchemaType[] | unknown> | undefined> = {};
+
+/**
+ * Detects a custom-tool action node name: a GUID tool id followed by a
+ * "." and the OpenAPI operationId (e.g. "3f2c…-a1.get_user").
+ */
+const isCustomToolNodeName = (nodeUniqueName: string): boolean => {
+  const separatorIndex = nodeUniqueName.indexOf(".");
+  if (separatorIndex !== 36) return false;
+  const toolId = nodeUniqueName.slice(0, separatorIndex);
+  const operationId = nodeUniqueName.slice(separatorIndex + 1);
+  const guidPattern =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return guidPattern.test(toolId) && operationId.length > 0;
+};
 
 /**
  * Computes the static JSON file path for a given node unique name.
@@ -41,6 +58,12 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     return nodeConfigCache[nodeUniqueName];
   }
 
+  // Join an in-flight fetch for the same node instead of issuing a duplicate
+  // request (the DCP form mount and other consumers can race on first render).
+  if (nodeConfigInFlight[nodeUniqueName] !== undefined) {
+    return nodeConfigInFlight[nodeUniqueName];
+  }
+
   if (nodeType == "blockNode") {
     const blockConfig = JSON.parse(sessionStorage.getItem("block-config") || "{}");
     return blockConfig[nodeUniqueName];
@@ -50,12 +73,14 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     // For Cloud Connectors (including Corsair connectors, which are named
     // "Corsair/{Plugin}/{Action}Connector"), fetch the config from the
     // WorkspaceAPIs server.
+    const connectorFetch = axiosInstance
+      .get(
+        `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
+      )
+      .then((res) => res.data);
+    nodeConfigInFlight[nodeUniqueName] = connectorFetch;
     try {
-      const connectorConfig = await axiosInstance
-        .get(
-          `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
-        )
-        .then((res) => res.data);
+      const connectorConfig = await connectorFetch;
       if (connectorConfig) {
         // Cache the fetched config
         nodeConfigCache[nodeUniqueName] = connectorConfig;
@@ -63,6 +88,31 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
       }
     } catch (error) {
       console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
+    } finally {
+      delete nodeConfigInFlight[nodeUniqueName];
+    }
+  }
+
+  if (isCustomToolNodeName(nodeUniqueName)) {
+    // Custom-tool action nodes ("{toolId}.{operationId}") have no static
+    // config JSON; their form schema is generated on the server from the
+    // tool's OpenAPI spec (parameters, request body, responses).
+    const customToolFetch = axiosInstance
+      .get(
+        `${import.meta.env.VITE_WORKSPACE_API_PATH}/tools/node-config/${nodeUniqueName}.json`,
+      )
+      .then((res) => res.data);
+    nodeConfigInFlight[nodeUniqueName] = customToolFetch;
+    try {
+      const customToolConfig = await customToolFetch;
+      if (customToolConfig) {
+        nodeConfigCache[nodeUniqueName] = customToolConfig;
+        return customToolConfig;
+      }
+    } catch (error) {
+      console.error(`Custom tool node ${nodeUniqueName} config fetch error:`, error);
+    } finally {
+      delete nodeConfigInFlight[nodeUniqueName];
     }
   }
 
