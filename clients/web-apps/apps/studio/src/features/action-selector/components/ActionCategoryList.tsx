@@ -2,11 +2,15 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { iconMapper } from "@/components/icon-mapper";
+import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/component-type-enum";
+import {
+  useUsableToolCatalog,
+} from "@/features/dynamic-config-panel/hooks/useTools.hook";
 import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
@@ -14,9 +18,16 @@ import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 
 import { triggersList } from "../constants/trigger-data";
+import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
+import {
+  convertToolOperationsToActions,
+  getToolDescription,
+  getToolName,
+} from "../utils/custom-tools-converter";
 import ActionsList from "./ActionsList";
+import { CustomToolIcon } from "./CustomToolIcon";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
 interface ActionCategoryListProps {
@@ -48,6 +59,49 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   );
 
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
+
+  // Custom Tools section: client-defined L1 (injected by
+  // applyCustomToolsL1 in get-action-selector-data.ts). Two-pane layout: L2
+  // lists the custom tools created in workspace (name, description, icon);
+  // selecting one populates L3 with draggable actions generated from the
+  // tool's OpenAPI operations. "+ Add" redirects to the workspace tool-creation
+  // wizard. Inactive in search mode (aggregated L3 search must not be hijacked
+  // by this panel).
+  const isCustomToolsSection = !query && primaryCategoryLabel === CUSTOM_TOOLS_L1_LABEL;
+
+  // Usable-tool catalog (GET /tools/usable/catalog): every tool the user can
+  // use with its operations inlined in a single payload. Filtered to active
+  // custom tools, sorted by name — this is both the L2 directory and the L3
+  // action source (no second round-trip on selection). Unverified entries
+  // remain visible (flagged) so tools can be offered before verification;
+  // the invoke endpoint rejects them at runtime.
+  const { data: catalogResponse, isLoading: isCatalogLoading } = useUsableToolCatalog();
+  const customTools = useMemo(() => {
+    const tools = catalogResponse?.data ?? [];
+    return tools
+      .filter((tool) => tool.type === ComponentTypeEnum.Custom && !tool.isDisabled)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [catalogResponse]);
+
+  // L2 selection state + L3 data: operations come straight from the selected
+  // catalog item and are converted into draggable connector actions. The first
+  // tool is preselected so L3 is populated as soon as the section opens.
+  const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
+  const selectedTool = useMemo(
+    () => customTools.find((tool) => tool.id === selectedToolId) ?? customTools[0] ?? null,
+    [customTools, selectedToolId],
+  );
+
+  const customToolActions = useMemo(
+    () => (selectedTool ? convertToolOperationsToActions(selectedTool, selectedTool.operations) : []),
+    [selectedTool],
+  );
+
+  const handleAddCustomTool = () => {
+    const workspacePath = import.meta.env.VITE_WORKSPACE_PATH ?? "/workspace/";
+    const returnParam = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `${workspacePath}configure/tools?e=tool&ca=create&rid=${crypto.randomUUID()}&return=${returnParam}`;
+  };
 
   const actionCategories = useMemo(() => {
     if (query) {
@@ -202,6 +256,148 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
           isFocusedPane={true}
         />
       </ScrollArea>
+    );
+  }
+
+  // Custom Tools section: two-pane layout matching App Integrations. Rendered
+  // BEFORE the "No actions found" early-return because its single L2 carries no
+  // static actions (the directory is sourced live from usePersonalTools, and
+  // useActionSelectorData strips empty actionCategories).
+  // L2 (left) lists custom tools with name, description and icon; selecting a
+  // tool loads its OpenAPI operations and renders them as draggable actions in
+  // L3 (right). The back button returns to the L1 grid; "+ Add" redirects to
+  // the workspace tool-creation wizard.
+  if (isCustomToolsSection) {
+    return (
+      <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
+        {/* L2 — back header + custom tools directory (left pane) */}
+        <div className="flex min-h-0 flex-col border-r bg-background">
+          <div className="flex shrink-0 items-center border-b p-2">
+            <Button
+              ref={(el) => {
+                backButtonRef.current = el;
+                if (el) firstItemRef.current = el;
+              }}
+              variant="ghost"
+              size="icon8"
+              onClick={() => {
+                setPrimaryCategoryLabel(null);
+                setQuery("");
+                inputRef.current?.focus();
+              }}
+              onKeyDown={handleBackKeyDown}
+              className="mr-2 outline-none focus-visible:bg-accent"
+              aria-label="Go back"
+            >
+              <ArrowLeftIcon className="h-4 w-4" />
+            </Button>
+            <h2 className="truncate text-sm font-medium">{primaryCategoryLabel}</h2>
+            <Button
+              onClick={handleAddCustomTool}
+              className="ml-auto"
+              size="icon8"
+              variant="ghost"
+              aria-label="Add custom tool"
+            >
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {isCatalogLoading ? (
+            <div className="flex flex-1 items-center justify-center">
+              <Loader2Icon
+                className="h-4 w-4 animate-spin text-muted-foreground"
+                aria-hidden="true"
+              />
+            </div>
+          ) : customTools.length === 0 ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
+              <p className="text-sm font-medium">Create your first custom tool</p>
+              <p className="text-sm text-muted-foreground">
+                Custom tools let your agents call your own APIs. Click “+” to open the tool
+                builder.
+              </p>
+            </div>
+          ) : (
+            <ScrollArea className="min-h-0 flex-1">
+              <div className="p-2" role="listbox" aria-label="Custom tools">
+                {customTools.map((tool) => {
+                  const isSelected = tool.id === selectedTool?.id;
+                  return (
+                    <button
+                      key={tool.id}
+                      role="option"
+                      aria-selected={isSelected}
+                      tabIndex={0}
+                      onClick={() => setSelectedToolId(tool.id)}
+                      className={cn(
+                        "mb-1 flex w-full items-start gap-3 rounded-lg p-2 text-left outline-none transition-colors",
+                        isSelected
+                          ? "bg-accent text-accent-foreground"
+                          : "hover:bg-accent hover:text-accent-foreground",
+                      )}
+                    >
+                      <CustomToolIcon icon={tool.icon} className="mt-0.5" />
+                      <div className="grow space-y-0.5 overflow-hidden">
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="truncate text-xs font-medium text-foreground">
+                            {getToolName(tool)}
+                          </h3>
+                          {!tool.isVerified && (
+                            <Badge variant="outline" className="text-3xs">
+                              Unverified
+                            </Badge>
+                          )}
+                        </div>
+                        <p
+                          className="text-2xs text-muted-foreground line-clamp-2"
+                          title={tool.description}
+                        >
+                          {getToolDescription(tool)}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
+        </div>
+
+        {/* L3 — fills the right pane from below the search bar to the bottom */}
+        <div className="flex min-h-0 flex-col overflow-hidden bg-background">
+          {selectedTool ? (
+            customToolActions.length === 0 ? (
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
+                <p className="text-sm font-medium">No actions found</p>
+                <p className="text-sm text-muted-foreground">
+                  This tool’s OpenAPI spec exposes no endpoints yet.
+                </p>
+              </div>
+            ) : (
+              <ScrollArea className="min-h-0 flex-1" role="tabpanel">
+                <div className="p-2" role="listbox" aria-label="Custom tool actions">
+                  <ActionsList
+                    items={customToolActions}
+                    nodeSelectionHandler={handleSelectNode}
+                    rightRefs={rightRefs}
+                    rightIndex={rightIndex}
+                    handleRightPaneKeyDown={handleRightPaneKeyDown}
+                    isFocusedPane={false}
+                  />
+                </div>
+              </ScrollArea>
+            )
+          ) : (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
+              <p className="text-sm font-medium">Select a tool</p>
+              <p className="text-sm text-muted-foreground">
+                Choose a custom tool on the left to see its available actions.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 
