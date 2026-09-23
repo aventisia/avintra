@@ -12,7 +12,6 @@ import { VCBContainer } from "./VCBContainer";
 import { VCBToggleCursor } from "./VCBToggleCursor";
 import { VCBUndoRedo } from "./VCBUndoRedo";
 import { VCBZoomTo } from "./VCBZoomTo";
-import { VCLiveExternalLoopSelector } from "./VCLiveExternalLoopSelector";
 
 export const ViewControls = memo(() => {
   // Get Studio Preferences store state
@@ -26,10 +25,6 @@ export const ViewControls = memo(() => {
   return (
     <Panel position="bottom-left">
       <div className="flex items-center gap-2">
-        {/* Iteration browsing for loops that live outside the loaded graph (sub-flow in a loop).
-            Kept in its own group so it is not visually mixed with the zoom controls. */}
-        <VCLiveExternalLoopSelector />
-
         {/* Undo and Redo Controls */}
         <VCBUndoRedo />
 

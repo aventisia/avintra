@@ -10,7 +10,6 @@ import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBranchStatsButton } from "./VCBranchStatsButton";
-import { VCExternalLoopSelector } from "./VCExternalLoopSelector";
 
 export const ViewControls = memo(() => {
   // Get Studio Preferences store state
@@ -24,10 +23,6 @@ export const ViewControls = memo(() => {
   return (
     <Panel position="bottom-left">
       <div className="flex   items-end gap-2">
-        {/* Iteration browsing for loops that live outside the loaded graph (sub-flow in a loop).
-            Kept in its own group so it is not visually mixed with the zoom controls. */}
-        <VCExternalLoopSelector />
-
         {zoomControls && (
           <VCBContainer>
             <VCBranchStatsButton />
