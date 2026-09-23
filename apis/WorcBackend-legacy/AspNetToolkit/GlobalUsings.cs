@@ -8,6 +8,7 @@ global using AspNetToolkit.Config;
 global using AspNetToolkit.Services;
 global using AspNetToolkit.Utils;
 global using AspNetToolkit.Endpoints;
+global using AspNetToolkit.Extensions;
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
@@ -23,7 +24,6 @@ global using System.Globalization;
 global using System.Reflection;
 global using System.Net.Http.Headers;
 global using System.Net.Http.Json;
-global using System.Threading.RateLimiting;
 global using System.Text.Json.Serialization;
 global using System.Security.Cryptography;
 

@@ -97,11 +97,13 @@ app.UseRouting();
 
 app.UseCors();
 
-app.UseRateLimiter();
-
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// Method-specific rate limiting (thresholds from appsettings.json RateLimiterConfig:HttpMethods).
+// Placed after UseAuthorization so the client id can include the authenticated user id.
+app.UseMethodRateLimiter();
 
 app.UseMiddleware<SessionValidator>();
 
