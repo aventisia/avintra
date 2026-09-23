@@ -30,6 +30,12 @@ public interface IToolService
     Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId);
 
     /// <summary>
+    /// Gets the usable tools together with their enriched operations in a single payload.
+    /// </summary>
+    /// <returns>The usable tool catalog.</returns>
+    Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync();
+
+    /// <summary>
     /// Checks whether a tool name is available.
     /// </summary>
     /// <param name="checkAvailabilityDto">The availability check request.</param>
