@@ -10,14 +10,11 @@ import { useExecutionStore } from "../stores/execution-log-store";
  * - `li` — loop iterations, encoded as `loopId:index` pairs joined by `,` (e.g. `loopA:1,loopB:0`).
  *   A single param holds every loop so NESTED loops (a loop inside a loop) round-trip correctly;
  *   each loop keeps its own index and the parser resolves the nested pathKey from them.
- * - `it` — the active iteration index of the innermost loop, as a plain readable number (0, 1, 2…).
- *   Redundant with `li` but human-friendly when inspecting/sharing a URL.
  * - `ci` — the selected sub-flow caller node id (block/callAgent).
  *
- * All are optional and only written when applicable, so a plain top-level run keeps a clean URL.
+ * Both are optional and only written when applicable, so a plain top-level run keeps a clean URL.
  */
 const LOOP_ITERATIONS_PARAM = "li";
-const ITERATION_INDEX_PARAM = "it";
 const CALLER_PARAM = "ci";
 
 /** Parses `loopId:index,loopId:index` into a record, ignoring malformed entries. */
@@ -47,25 +44,6 @@ const serialiseLoopIterations = (iterations: Record<string, number>): string =>
     .join(",");
 
 /**
- * Finds the innermost (deepest-nested) loop id from the parent stacks. Used for the readable
- * `it` param: with nested loops the innermost one is the iteration the user is actually
- * stepping through, so it is the most meaningful single number to surface.
- */
-const findInnermostLoopId = (nodeToParentStack: Record<string, string[]>): string | null => {
-  let innermost: string | null = null;
-  let maxDepth = 0;
-
-  Object.values(nodeToParentStack).forEach((parents) => {
-    if (parents.length > maxDepth) {
-      maxDepth = parents.length;
-      innermost = parents[parents.length - 1];
-    }
-  });
-
-  return innermost;
-};
-
-/**
  * Keeps the execution-log view state (loop iterations + selected caller) in the URL so a page
  * refresh restores exactly the iteration/caller the user was inspecting.
  *
@@ -75,19 +53,10 @@ const findInnermostLoopId = (nodeToParentStack: Record<string, string[]>): strin
 export const useExecutionViewQueryParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const {
-    activeIteration,
-    activeCallerId,
-    nodeToParentStack,
-    loopRegistry,
-    setIteration,
-    setCaller,
-  } = useExecutionStore(
+  const { activeIteration, activeCallerId, setIteration, setCaller } = useExecutionStore(
     useShallow((state) => ({
       activeIteration: state.activeIteration,
       activeCallerId: state.activeCallerId,
-      nodeToParentStack: state.nodeToParentStack,
-      loopRegistry: state.loopRegistry,
       setIteration: state.setIteration,
       setCaller: state.setCaller,
     })),
@@ -139,18 +108,6 @@ export const useExecutionViewQueryParams = () => {
       params.delete(LOOP_ITERATIONS_PARAM);
     }
 
-    // Readable copy of the innermost loop's index (0, 1, 2…). Falls back to the first known
-    // loop when no node is nested inside one (e.g. an empty loop body), so the param still
-    // reflects the iteration being viewed.
-    const innermostLoopId =
-      findInnermostLoopId(nodeToParentStack) ?? Object.keys(loopRegistry)[0] ?? null;
-    const innermostIndex = innermostLoopId ? activeIteration[innermostLoopId] : undefined;
-    if (typeof innermostIndex === "number" && innermostIndex >= 0) {
-      params.set(ITERATION_INDEX_PARAM, String(innermostIndex));
-    } else {
-      params.delete(ITERATION_INDEX_PARAM);
-    }
-
     if (activeCallerId) {
       params.set(CALLER_PARAM, activeCallerId);
     } else {
@@ -161,5 +118,5 @@ export const useExecutionViewQueryParams = () => {
       setSearchParams(params, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIteration, activeCallerId, nodeToParentStack, loopRegistry]);
+  }, [activeIteration, activeCallerId]);
 };

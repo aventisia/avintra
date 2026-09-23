@@ -108,12 +108,19 @@ export const mapLogsToFlow = (
   logs.forEach((entry) => {
     const { nodeId, outputs } = entry; // nodeName completely ignored
     const node = flowNodes?.find((n) => n.id === nodeId);
-    if (!node) return;
 
     // Scope to the selected caller when viewing a sub-flow. Sub-flow-internal logs carry the
     // caller node id, so this isolates one invocation from another invocation of the same
     // sub-flow. Top-level logs (empty caller) are unaffected when no caller is selected.
-    if (callerId && (entry.callerReferenceId ?? "") !== callerId) return;
+    const belongsToCaller = !callerId || (entry.callerReferenceId ?? "") === callerId;
+
+    // A loop node's own log is recognised by its `LoopStatus` output rather than by node type,
+    // so the enclosing-loop stack stays correct even when the loop node is NOT part of the
+    // loaded graph — e.g. a sub-flow invoked from inside a loop, where the loop node lives in
+    // the parent flow. Without this the outer loop context is dropped and every outer iteration
+    // collapses onto the same pathKey (last-write-wins), so the node log never changes when the
+    // outer iteration is switched.
+    const isLoopLog = node?.type === "forLoopNode" || typeof outputs?.LoopStatus === "string";
 
     // --- LOOP EXIT PROCESSING ---
     // Pop any loops whose merge node is the current node. This handles both the legacy
@@ -129,12 +136,22 @@ export const mapLogsToFlow = (
     }
 
     // --- LOOP NODE PROCESSING ---
-    if (node.type === "forLoopNode") {
+    if (isLoopLog) {
       const loopStatus = outputs?.LoopStatus;
       const isExplicitExit = loopStatus === "exit" || loopStatus === "skip";
       const legacyExit =
         outputs?.ConditionsResult === "False" ||
         (typeof outputs?.Status === "string" && outputs.Status.includes("No more items"));
+
+      // The loop node's own log carries the authoritative iteration index. Prefer it over the
+      // order-based increment: a loop that runs a single iteration per outer pass (e.g. an
+      // inner loop over a one-item list) emits `enter` with index 0 on EVERY outer pass, so
+      // incrementing the stack would drift to 1, 2, … and the inner loop's body logs would be
+      // keyed to a path the outer loop never selects.
+      const ownIteration =
+        typeof entry.loopIterationIndex === "number" && entry.loopIterationIndex >= 0
+          ? entry.loopIterationIndex
+          : null;
 
       if (isExplicitExit || legacyExit) {
         // Exit the loop if it is currently on top of the stack.
@@ -147,9 +164,9 @@ export const mapLogsToFlow = (
         // iteration; otherwise start the first iteration.
         const top = stack[stack.length - 1];
         if (top?.id === nodeId) {
-          top.idx++;
+          top.idx = ownIteration ?? top.idx + 1;
         } else {
-          stack.push({ id: nodeId, idx: 0 });
+          stack.push({ id: nodeId, idx: ownIteration ?? 0 });
         }
         // A loop log means the new iteration has not produced any body logs yet — guard it
         // so the end-of-entry pass does not mark it as started (that would cause the next
@@ -180,6 +197,19 @@ export const mapLogsToFlow = (
       justPushedLoops.add(reenteredLoopId);
       iterationStarted[reenteredLoopId] = false;
     }
+
+    // Mark every active loop as having started its current iteration, except loops that
+    // were just pushed during this same entry (their body-start node comes next).
+    stack.forEach((s) => {
+      if (!justPushedLoops.has(s.id)) {
+        iterationStarted[s.id] = true;
+      }
+    });
+    justPushedLoops.clear();
+
+    // Only logs that belong to the loaded graph AND the selected caller are recorded. The loop
+    // bookkeeping above still ran for the others so enclosing loops stay in sync.
+    if (!node || !belongsToCaller) return;
 
     // Resolve the parent loops for this node. The active loop itself is not its own parent.
     //
@@ -268,15 +298,6 @@ export const mapLogsToFlow = (
         traversedEdges[routerEdgeId][pathKey] = true;
       }
     }
-
-    // Mark every active loop as having started its current iteration, except loops that
-    // were just pushed during this same entry (their body-start node comes next).
-    stack.forEach((s) => {
-      if (!justPushedLoops.has(s.id)) {
-        iterationStarted[s.id] = true;
-      }
-    });
-    justPushedLoops.clear();
   });
 
   // 3. Branch hit counts
