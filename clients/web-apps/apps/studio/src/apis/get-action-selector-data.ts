@@ -1,5 +1,6 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { applyCustomToolsL1 } from "../features/action-selector/constants/custom-tools";
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
 
 // Glob all JSON files in the constants folder (used in web mode)
@@ -149,6 +150,11 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
 
   if (aiIntegrationsModule)
     finalNodeList = mergeActionSelectorData(finalNodeList, aiIntegrationsModule.default);
+
+  // Replace the backend "Custom Nodes" placeholder L1 with the client-defined,
+  // enabled "Custom Tools" category. Done after all merges so the placeholder
+  // never leaks its `disabled: true` state through the label-based merge.
+  finalNodeList = applyCustomToolsL1(finalNodeList);
 
   // Sort finalNodeList.actionCategories by label alphabetically
   finalNodeList.forEach((category) => {
