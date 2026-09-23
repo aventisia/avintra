@@ -3,6 +3,7 @@ using WorkspaceAPIs.Features.CloudConnectors.Camel;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
@@ -220,6 +221,8 @@ public static class AppServicesExtension
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
         services.AddScoped<IVectorConnectorsService, VectorConnectorsService>();
+        // Custom tools: .NET-native REST proxy execution (Q1).
+        services.AddScoped<ICustomToolConnectorService, CustomToolConnectorService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();
