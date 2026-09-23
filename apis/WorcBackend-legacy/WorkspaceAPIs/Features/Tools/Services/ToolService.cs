@@ -222,6 +222,87 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
+    // Retrieves the usable tools together with their enriched operations in a single
+    // payload, for the action-selector catalog. Unverified custom tools are included
+    // and flagged via IsVerified.
+    public async Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>
+        {
+            Message = "Failed to fetch usable tool catalog."
+        };
+
+        try
+        {
+            // Resolve shared resource access for the current user.
+            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
+
+            var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
+            ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
+
+            var usableTools = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+                .OrderBy(o => o.Name)
+                .IgnoreQueryFilters()
+                .Select(w => new UsableToolCatalogItemDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    Type = w.Type,
+                    AuthenticationType = w.AuthenticationType,
+                    CredentialName = w.CredentialName,
+                    IsActive = w.IsActive,
+                    IsVerified = w.IsVerified,
+                    IsDisabled = w.IsDisabled,
+                })
+                .ToListAsync();
+
+            // Icons are resolved in memory because the catalog lookup is not translatable.
+            foreach (var tool in usableTools)
+            {
+                tool.Icon = ToolIconHelpers.ResolveIcon(tool.Name, iconLookup);
+            }
+
+            // Materialize the list so operations can be attached per tool.
+            var catalog = usableTools.ToList();
+
+            // Attach the enriched operations for each tool.
+            foreach (var catalogItem in catalog)
+            {
+                catalogItem.Operations = await GetUsableToolOperationsInternalAsync(catalogItem.Id);
+            }
+
+            return serviceResponse.Update(
+                "Usable tool catalog retrieved successfully.",
+                200,
+                catalog);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch usable tool catalog.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Loads a tool within the usable scope and extracts its enriched operations.
+    private async Task<List<UsableToolOperationDto>> GetUsableToolOperationsInternalAsync(Guid toolId)
+    {
+        var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
+
+        var tool = await _unitOfWork.ToolRepo
+            .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.Id, w.ParsedSchema })
+            .FirstOrDefaultAsync(w => w.Id == toolId);
+
+        return tool?.ParsedSchema is null
+            ? []
+            : ToolOperationHelpers.ExtractOperations(tool.ParsedSchema);
+    }
+
     // Resolves the shared resource access map used to scope usable tools.
     private Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetUsableToolsResourceAccessAsync() =>
         _resourceShareService.GetAccessibleResourcesWithAccessAsync(
@@ -246,9 +327,11 @@ public class ToolService : IToolService
             ? null
             : _currentTenantService.CurrentSpaceId;
 
+        // Unverified custom tools stay visible (flagged via IsVerified) so they can be
+        // selected in flows; the invoke endpoint rejects unverified tools at runtime.
         return w =>
             w.IsActive &&
-            w.IsVerified &&
+            (!w.IsVerified || w.Type == ComponentTypeEnum.Custom) &&
             !w.IsDisabled &&
             (
                 // Platform's default tools are tenant-agnostic and available in every environment.

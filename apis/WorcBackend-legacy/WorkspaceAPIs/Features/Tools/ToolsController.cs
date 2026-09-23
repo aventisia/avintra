@@ -41,6 +41,13 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.GetUsableToolOperationsAsync(toolId));
     }
 
+    // Gets the usable tools together with their enriched operations in a single payload.
+    [HttpGet("usable/catalog")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>>> GetUsableToolCatalog()
+    {
+        return ResultHelper(await _toolService.GetUsableToolCatalogAsync());
+    }
+
     // Checks whether a tool name is available.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsToolNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)

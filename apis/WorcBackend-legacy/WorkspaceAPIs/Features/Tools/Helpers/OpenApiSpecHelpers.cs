@@ -43,6 +43,8 @@ public static class OpenApiSpecHelpers
 
                         operationSummary["parameters"] = ExtractParameters(operationProperty.Value);
                         operationSummary["requestBody"] = ExtractRequestBody(operationProperty.Value);
+                        operationSummary["responses"] = ExtractResponses(operationProperty.Value);
+                        operationSummary["x-agent-node"] = ExtractAgentNode(operationProperty.Value);
 
                         operationsByMethod[operationProperty.Name] = operationSummary;
                     }
@@ -141,11 +143,117 @@ public static class OpenApiSpecHelpers
                 ["in"] = GetStringValue(parameterElement, "in"),
                 ["required"] = JsonValue.Create(parameterElement.TryGetProperty("required", out var requiredElement) && requiredElement.GetBoolean()),
                 ["description"] = GetStringValue(parameterElement, "description"),
+                ["type"] = GetParameterValue(parameterElement),
             };
             result.Add(parameterSummary);
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Extracts the primitive type of a parameter, resolving a bare type or the
+    /// type of a single-item schema or content entry (OpenAPI 3.x styles).
+    /// </summary>
+    private static JsonNode? GetParameterValue(JsonElement parameterElement)
+    {
+        if (parameterElement.TryGetProperty("type", out var typeElement) &&
+            typeElement.ValueKind == JsonValueKind.String)
+        {
+            return JsonValue.Create(typeElement.GetString());
+        }
+
+        if (parameterElement.TryGetProperty("schema", out var schemaElement) &&
+            schemaElement.ValueKind == JsonValueKind.Object &&
+            schemaElement.TryGetProperty("type", out var schemaTypeElement) &&
+            schemaTypeElement.ValueKind == JsonValueKind.String)
+        {
+            return JsonValue.Create(schemaTypeElement.GetString());
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Extracts the preferred (2xx first, then first entry) response metadata.
+    /// </summary>
+    private static JsonNode? ExtractResponses(JsonElement operationElement)
+    {
+        if (!operationElement.TryGetProperty("responses", out var responsesElement) ||
+            responsesElement.ValueKind != JsonValueKind.Object ||
+            !responsesElement.EnumerateObject().Any())
+        {
+            return null;
+        }
+
+        JsonProperty? preferred = null;
+        foreach (var responseProperty in responsesElement.EnumerateObject())
+        {
+            if (preferred is null ||
+                (responseProperty.Name.StartsWith("2", StringComparison.Ordinal) &&
+                 !(preferred.Value.Name.StartsWith("2", StringComparison.Ordinal))))
+            {
+                preferred = responseProperty;
+            }
+        }
+
+        if (preferred is null)
+        {
+            return null;
+        }
+
+        var result = new JsonObject
+        {
+            ["statusCode"] = ParseStatusCode(preferred.Value.Name),
+        };
+
+        if (preferred.Value.Value.TryGetProperty("content", out var contentElement) &&
+            contentElement.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var contentTypeProperty in contentElement.EnumerateObject())
+            {
+                result["contentType"] = JsonValue.Create(contentTypeProperty.Name);
+                if (contentTypeProperty.Value.TryGetProperty("schema", out var schemaElement))
+                {
+                    result["schema"] = ExtractSchemaSummary(schemaElement);
+                }
+
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Parses a response status code key, supporting the literal "default" entry.
+    /// </summary>
+    private static int? ParseStatusCode(string statusCodeName) =>
+        int.TryParse(statusCodeName, out var statusCode) ? statusCode : null;
+
+    /// <summary>
+    /// Extracts the x-agent-node branding extension (icon, color) from an operation.
+    /// </summary>
+    private static JsonNode? ExtractAgentNode(JsonElement operationElement)
+    {
+        if (!operationElement.TryGetProperty("x-agent-node", out var agentNodeElement) ||
+            agentNodeElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var result = new JsonObject();
+        if (agentNodeElement.TryGetProperty("icon", out var iconElement))
+        {
+            result["icon"] = GetStringValue(agentNodeElement, "icon");
+        }
+
+        if (agentNodeElement.TryGetProperty("color", out var colorElement))
+        {
+            result["color"] = GetStringValue(agentNodeElement, "color");
+        }
+
+        return result.Count == 0 ? null : result;
     }
 
     /// <summary>
@@ -180,7 +288,9 @@ public static class OpenApiSpecHelpers
     }
 
     /// <summary>
-    /// Extracts a schema summary, including type and a simplified property list when available.
+    /// Extracts a schema summary: the schema type plus a simplified property list
+    /// with name, type, description and required flags. Array schemas are followed
+    /// into their items schema so element properties are surfaced.
     /// </summary>
     private static JsonNode ExtractSchemaSummary(JsonElement schemaElement)
     {
@@ -189,18 +299,41 @@ public static class OpenApiSpecHelpers
             ["type"] = GetStringValue(schemaElement, "type"),
         };
 
+        // Follow arrays to their item schema so element properties are surfaced.
+        if (schemaElement.TryGetProperty("items", out var itemsElement) &&
+            itemsElement.ValueKind == JsonValueKind.Object)
+        {
+            schemaElement = itemsElement;
+        }
+
         if (schemaElement.TryGetProperty("properties", out var propertiesElement))
         {
-            var propertiesObject = new JsonObject();
+            var requiredNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (schemaElement.TryGetProperty("required", out var requiredArrayElement) &&
+                requiredArrayElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var requiredName in requiredArrayElement.EnumerateArray())
+                {
+                    if (requiredName.ValueKind == JsonValueKind.String)
+                    {
+                        requiredNames.Add(requiredName.GetString()!);
+                    }
+                }
+            }
+
+            var propertiesArray = new JsonArray();
             foreach (var property in propertiesElement.EnumerateObject())
             {
-                propertiesObject[property.Name] = new JsonObject
+                propertiesArray.Add(new JsonObject
                 {
+                    ["name"] = JsonValue.Create(property.Name),
                     ["type"] = GetStringValue(property.Value, "type"),
                     ["description"] = GetStringValue(property.Value, "description"),
-                };
+                    ["required"] = JsonValue.Create(requiredNames.Contains(property.Name)),
+                });
             }
-            result["properties"] = propertiesObject;
+
+            result["properties"] = propertiesArray;
         }
 
         return result;

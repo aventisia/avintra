@@ -200,7 +200,142 @@ public static class ToolOperationHelpers
             Method = resolvedMethod,
             Path = resolvedPath,
             Summary = GetString(element, "summary"),
+            Description = GetString(element, "description"),
+            Parameters = ReadParameters(element),
+            RequestBody = ReadRequestBody(element),
+            Response = ReadResponse(element),
+            Icon = ReadAgentNodeValue(element, "icon"),
+            Color = ReadAgentNodeValue(element, "color"),
         };
+    }
+
+    /// <summary>
+    /// Reads the flattened parameter summaries of an operation.
+    /// </summary>
+    private static List<UsableToolOperationParameterDto>? ReadParameters(JsonElement element)
+    {
+        if (!element.TryGetProperty("parameters", out var parametersElement) ||
+            parametersElement.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var parameters = new List<UsableToolOperationParameterDto>();
+        foreach (var parameterElement in parametersElement.EnumerateArray())
+        {
+            var name = GetString(parameterElement, "name");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                continue;
+            }
+
+            parameters.Add(new UsableToolOperationParameterDto
+            {
+                Name = name,
+                In = GetString(parameterElement, "in"),
+                Required = parameterElement.TryGetProperty("required", out var requiredElement) &&
+                    requiredElement.ValueKind == JsonValueKind.True,
+                Description = GetString(parameterElement, "description"),
+                Type = GetString(parameterElement, "type"),
+            });
+        }
+
+        return parameters;
+    }
+
+    /// <summary>
+    /// Reads the flattened request body summary of an operation.
+    /// </summary>
+    private static UsableToolOperationRequestBodyDto? ReadRequestBody(JsonElement element)
+    {
+        if (!element.TryGetProperty("requestBody", out var requestBodyElement) ||
+            requestBodyElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var requestBody = new UsableToolOperationRequestBodyDto
+        {
+            Required = requestBodyElement.TryGetProperty("required", out var requiredElement) &&
+                requiredElement.ValueKind == JsonValueKind.True,
+            ContentType = GetString(requestBodyElement, "contentType"),
+            Properties = ReadProperties(requestBodyElement),
+        };
+
+        return requestBody;
+    }
+
+    /// <summary>
+    /// Reads the flattened preferred response summary of an operation.
+    /// </summary>
+    private static UsableToolOperationResponseDto? ReadResponse(JsonElement element)
+    {
+        if (!element.TryGetProperty("responses", out var responsesElement) ||
+            responsesElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var response = new UsableToolOperationResponseDto
+        {
+            StatusCode = responsesElement.TryGetProperty("statusCode", out var statusCodeElement) &&
+                statusCodeElement.ValueKind == JsonValueKind.Number
+                    ? statusCodeElement.GetInt32()
+                    : null,
+            ContentType = GetString(responsesElement, "contentType"),
+            Properties = ReadProperties(responsesElement),
+        };
+
+        return response;
+    }
+
+    /// <summary>
+    /// Reads the flattened properties array of a request body or response summary.
+    /// </summary>
+    private static List<UsableToolOperationPropertyDto>? ReadProperties(JsonElement element)
+    {
+        if (!element.TryGetProperty("schema", out var schemaElement) ||
+            schemaElement.ValueKind != JsonValueKind.Object ||
+            !schemaElement.TryGetProperty("properties", out var propertiesElement) ||
+            propertiesElement.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var properties = new List<UsableToolOperationPropertyDto>();
+        foreach (var propertyElement in propertiesElement.EnumerateArray())
+        {
+            var name = GetString(propertyElement, "name");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                continue;
+            }
+
+            properties.Add(new UsableToolOperationPropertyDto
+            {
+                Name = name,
+                Type = GetString(propertyElement, "type"),
+                Description = GetString(propertyElement, "description"),
+                Required = propertyElement.TryGetProperty("required", out var requiredElement) &&
+                    requiredElement.ValueKind == JsonValueKind.True,
+            });
+        }
+
+        return properties;
+    }
+
+    /// <summary>
+    /// Reads a branding value from the flattened x-agent-node extension.
+    /// </summary>
+    private static string? ReadAgentNodeValue(JsonElement element, string propertyName)
+    {
+        if (!element.TryGetProperty("x-agent-node", out var agentNodeElement) ||
+            agentNodeElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        return GetString(agentNodeElement, propertyName);
     }
 
     /// <summary>
