@@ -1,0 +1,38 @@
+meta {
+  name: Invoke custom tool rejects unverified tool
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/custom-tool/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Bruno Custom Tool Unverified Test",
+    "provider": "customtool",
+    "action": "{{UNVERIFIED_CUSTOM_TOOL_ACTION}}",
+    "credentialName": null,
+    "payload": {}
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+
+  test("rejects an unverified tool with a plain-text 400", function() {
+    expect(status).to.equal(400);
+    expect(typeof res.getBody()).to.equal("string");
+    expect(res.getBody()).to.include("unverified");
+  });
+}
+
+tests {
+  // Prereq: UNVERIFIED_CUSTOM_TOOL_ACTION env var = "{toolId}.{operationId}" of a
+  // tool that exists but has IsVerified = false (e.g. a freshly created manual tool
+  // that has not been tested yet).
+}

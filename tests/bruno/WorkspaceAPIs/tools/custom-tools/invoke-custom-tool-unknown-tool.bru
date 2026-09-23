@@ -1,0 +1,32 @@
+meta {
+  name: Invoke custom tool rejects unknown tool
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/custom-tool/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Bruno Custom Tool Unknown Tool Test",
+    "provider": "customtool",
+    "action": "00000000-0000-0000-0000-000000000001.listUsers",
+    "credentialName": null,
+    "payload": {}
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+
+  test("rejects an unknown tool id with a plain-text 400", function() {
+    expect(status).to.equal(400);
+    expect(typeof res.getBody()).to.equal("string");
+    expect(res.getBody()).to.include("was not found");
+  });
+}
