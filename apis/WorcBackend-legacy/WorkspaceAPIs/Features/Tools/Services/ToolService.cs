@@ -1,4 +1,3 @@
-using System.Text.Json;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using WorkspaceAPIs.Features.Corsair;
 using WorkspaceAPIs.Features.Tools.Helpers;
@@ -282,73 +281,6 @@ public class ToolService : IToolService
         }
 
         return serviceResponse;
-    }
-
-    // Retrieves the dynamic-config-panel node config for a custom-tool action
-    // node ("CustomTool/{toolName}.{operationId}"; legacy "{toolId}.{operationId}"
-    // names are still accepted), generated from the tool's parsed OpenAPI schema.
-    // Mirrors the cloud-connector config-file contract: the raw config JSON is
-    // returned without a service-response envelope (the studio DCP reads the body
-    // directly), and null when the node cannot be resolved.
-    public async Task<JsonDocument?> GetCustomToolNodeConfigAsync(string? nodeName)
-    {
-        try
-        {
-            // Remove .json if the name ends with .json (case-insensitive)
-            if (nodeName!.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-            {
-                nodeName = nodeName[..^5];
-            }
-
-            // Strip the "CustomTool/" keyword prefix when present. Bare names are
-            // still accepted for flows saved before the prefix was introduced.
-            if (nodeName!.StartsWith(CustomToolNodeConfigHelpers.NodeNamePrefix, StringComparison.OrdinalIgnoreCase))
-            {
-                nodeName = nodeName[CustomToolNodeConfigHelpers.NodeNamePrefix.Length..];
-            }
-
-            // Resolve the tool from "{toolName}.{operationId}" — tool names may
-            // contain dots, so every split candidate is tried until one matches
-            // (the legacy "{toolId}.{operationId}" GUID form included).
-            var (tool, operationId) = await CustomToolActionHelpers.ResolveToolAsync(
-                _unitOfWork.ToolRepo, _currentTenantService, nodeName);
-            if (tool is null || string.IsNullOrWhiteSpace(operationId))
-            {
-                _logger.LogWarning("Invalid or unresolved custom tool node name '{NodeName}'.", nodeName);
-                return null;
-            }
-
-            var operation = ToolOperationHelpers
-                .ExtractOperations(tool.ParsedSchema)
-                .FirstOrDefault(o => string.Equals(o.OperationId, operationId, StringComparison.OrdinalIgnoreCase));
-
-            if (operation is null)
-            {
-                _logger.LogWarning(
-                    "Operation '{OperationId}' was not found on custom tool '{ToolName}'.",
-                    operationId, tool.Name);
-                return null;
-            }
-
-            var config = CustomToolNodeConfigHelpers.BuildNodeConfig(tool, operation);
-            if (config is null)
-            {
-                _logger.LogWarning(
-                    "Operation '{OperationId}' on custom tool '{ToolName}' has no HTTP method or path.",
-                    operationId, tool.Name);
-                return null;
-            }
-
-            return System.Text.Json.JsonSerializer.SerializeToDocument(config, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch node config for custom tool node {NodeName}.", nodeName);
-            return null;
-        }
     }
 
     // Resolves the shared resource access map used to scope usable tools.
