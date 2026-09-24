@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 import { savePromptTemplateSchema } from "../constants/save-prompt-template-zod-schema";
 import { TemplateAccessTypesEnum } from "../enums/template-access-type-enum";
@@ -85,7 +86,12 @@ export const useDefineSATForm = () => {
     const templateSchema = promptData ? buildPromptTemplateSchema(promptData) : {};
     let icons: string[] = [];
     if (templateSchema) {
-      icons = [`/brand-img/${templateSchema.modelConfig?.provider}.svg`];
+      // Provider values (e.g. "googlegemini", "groq") do not always map 1:1 to a
+      // brand-img file name; resolve through the provider brand icon map.
+      const providerIcon = getProviderBrandIcon(templateSchema.modelConfig?.provider);
+      if (providerIcon) {
+        icons = [providerIcon];
+      }
     }
 
     // if (data?.data) {
