@@ -70,8 +70,7 @@
             "description": "Routes a work item from one queue to another.",
             "img": "/assets/Queue.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["cloud", "windows"],
-            "doNotRenderIf": ["production"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
