@@ -15,14 +15,10 @@ import { useRunResultsQueryParams } from "@/features/execute-flow/hooks/useRunRe
 import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
-import {
-  buildLiveLoopIndex,
-  getLiveNodeLog,
-} from "@/features/execute-flow/utils/live-loop-index";
+import { buildLiveLoopIndex, getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { buildNodeLogPayload } from "@/utils/node-log-payload";
 
 type NodeTiming = {
@@ -48,17 +44,16 @@ export const CanvasNodeDetailPanel = () => {
     })),
   );
 
-  const { liveExecutionMap, nodeLogsMap, nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
-    useShallow((state) => ({
-      liveExecutionMap: state.liveExecutionMap,
-      nodeLogsMap: state.nodeLogsMap,
-      nodeLogHistory: state.nodeLogHistory,
-      liveActiveIteration: state.liveActiveIteration,
-    })),
-  );
-  const { nodes } = useReactFlowExtStore(
-    useShallow((state) => ({ nodes: state.nodes })),
-  );
+  const { liveExecutionMap, nodeLogsMap, nodeLogHistory, liveActiveIteration, liveLoopIndex } =
+    useLiveExecutionStore(
+      useShallow((state) => ({
+        liveExecutionMap: state.liveExecutionMap,
+        nodeLogsMap: state.nodeLogsMap,
+        nodeLogHistory: state.nodeLogHistory,
+        liveActiveIteration: state.liveActiveIteration,
+        liveLoopIndex: state.liveLoopIndex,
+      })),
+    );
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
@@ -120,6 +115,7 @@ export const CanvasNodeDetailPanel = () => {
         liveExecutionMap: map,
         nodeLogsMap: logMap,
         nodeLogHistory: restoredHistory,
+        liveLoopIndex: buildLiveLoopIndex(restoredHistory, useLiveExecutionStore.getState().nodes),
       });
       setNodeTimingMap(timingMap);
       setJob({
@@ -170,21 +166,19 @@ export const CanvasNodeDetailPanel = () => {
   const nodeLog = useMemo(() => {
     if (!selectedNode) return null;
     const scopedLogs = nodeLogHistory.filter((log) =>
-      subflowCallerId
-        ? log.callerReferenceId === subflowCallerId
-        : !log.callerReferenceId,
+      subflowCallerId ? log.callerReferenceId === subflowCallerId : !log.callerReferenceId,
     );
     return [...scopedLogs].reverse().find((log) => log.nodeId === selectedNode.id) ?? null;
   }, [nodeLogHistory, selectedNode, subflowCallerId]);
 
-  const liveExecutionData = useMemo(
-    () => buildLiveLoopIndex(nodeLogHistory, nodes),
-    [nodeLogHistory, nodes],
-  );
+  const liveExecutionData = liveLoopIndex;
 
   const selectedLiveLog = useMemo(() => {
     if (!selectedNode) return nodeLog;
-    return getLiveNodeLog(liveExecutionData, subflowCallerId, selectedNode.id, liveActiveIteration) ?? null;
+    return (
+      getLiveNodeLog(liveExecutionData, subflowCallerId, selectedNode.id, liveActiveIteration) ??
+      null
+    );
   }, [liveActiveIteration, liveExecutionData, nodeLog, selectedNode, subflowCallerId]);
 
   const nodeTiming = useMemo(() => {

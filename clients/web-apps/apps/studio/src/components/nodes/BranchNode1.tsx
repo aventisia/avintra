@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Node, NodeProps, useReactFlow } from "@xyflow/react";
+import { Node, NodeProps } from "@xyflow/react";
 import { GitBranchIcon } from "lucide-react";
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -10,10 +10,7 @@ import { OutputHandle } from "@/components/handles/OutputHandle";
 import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import {
-  buildLiveLoopIndex,
-  isLiveBranchNodeActive,
-} from "@/features/execute-flow/utils/live-loop-index";
+import { isLiveBranchNodeActive } from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -33,7 +30,6 @@ export const BranchNode1 = memo(
     selected,
   }: NodeProps<BranchNode1>) => {
     const isExecutionLog = useIsExecutionLogsRoute();
-    const { getNodes } = useReactFlow();
     const [searchParams] = useSearchParams();
     const subflowCallerId = searchParams.get("ci") || "";
 
@@ -47,17 +43,16 @@ export const BranchNode1 = memo(
           activeIteration: state.activeIteration,
         })),
       );
-    const { liveExecutionMap, nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
+    const { liveExecutionMap, liveActiveIteration, liveLoopIndex } = useLiveExecutionStore(
       useShallow((state) => ({
         liveExecutionMap: state.liveExecutionMap,
-        nodeLogHistory: state.nodeLogHistory,
         liveActiveIteration: state.liveActiveIteration,
+        liveLoopIndex: state.liveLoopIndex,
       })),
     );
     const liveStatus = nodeData?.isDisabled ? undefined : liveExecutionMap[nodeId];
-    const liveIndex = buildLiveLoopIndex(nodeLogHistory, getNodes());
     const branchActive = isLiveBranchNodeActive(
-      liveIndex,
+      liveLoopIndex,
       subflowCallerId,
       nodeId,
       liveActiveIteration,

@@ -1,5 +1,5 @@
 import { BaseEdge, EdgeProps, Position, useEdges, useNodes } from "@xyflow/react";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { findHighestNodePosition } from "@/utils/findHighestNodePosition";
@@ -13,8 +13,15 @@ export const LoopBackEdge = memo(
     const isLiveEdgeActive = useLiveExecutionStore(
       (state) => state.liveTraversedEdges[id] === true,
     );
-    // Use the new utility to find the highest point
-    const posData = findHighestNodePosition(nodes, edges, target);
+    // `findHighestNodePosition` runs a full DFS over all edges (O(N+E)) to route the loop
+    // above the flow. It is recomputed on every render — including every viewport pan/zoom
+    // during live execution (AutoFollowExecutingNode animates the viewport), which made each
+    // loop-back edge do O(edges) work per frame. Memoize on the stable `nodes`/`edges`/`target`
+    // references so it only recomputes when the graph actually changes.
+    const posData = useMemo(
+      () => findHighestNodePosition(nodes, edges, target),
+      [nodes, edges, target],
+    );
     const targetXWithSpace = targetX;
     const targetYWithDepth = targetY;
 

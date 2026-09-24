@@ -140,6 +140,23 @@ export const useLocalExecutionWebSocket = () => {
     // of a loop inside the sub-flow).
     const subflowNodeMetaByNodeId = new Map<string, { nodeName: string; nodeType: string }>();
 
+    // Buffer of pending per-node status/log updates, flushed once per animation frame so a
+    // burst of progress messages (the tail of a large flow) collapses into a single store
+    // update and a single re-render cascade instead of one per node. WebSocket `onmessage`
+    // events are separate macrotasks, so React's automatic batching does not coalesce them.
+    const pendingUpdates = new Map<
+      string,
+      { nodeId: string; status: NodeProgressStatus; log?: NodeExecutionLogType }
+    >();
+    let flushScheduled = false;
+    const flushPendingUpdates = () => {
+      flushScheduled = false;
+      if (pendingUpdates.size === 0) return;
+      const updates = Array.from(pendingUpdates.values());
+      pendingUpdates.clear();
+      useLiveExecutionStore.getState().applyBatch(updates);
+    };
+
     const connect = async () => {
       let port: number | null = null;
       try {
@@ -167,8 +184,6 @@ export const useLocalExecutionWebSocket = () => {
         if (message.jobId !== jobId) return;
 
         if (message.type === "nodeProgress") {
-          useLiveExecutionStore.getState().setNodeStatus(message.nodeId, message.status);
-
           // Sub-flow-internal node detection: a progress node whose id is NOT present in the
           // currently loaded canvas belongs to a sub-flow the user has not navigated into. We
           // track its metadata so the block/call-agent node can show "Processing: <name>"
@@ -197,11 +212,30 @@ export const useLocalExecutionWebSocket = () => {
               nodeName: message.nodeLog.nodeName || message.nodeId,
               nodeType: message.nodeLog.nodeUniqueName || "",
             });
-            useLiveExecutionStore.getState().setNodeLog(message.nodeId, mappedLog);
+            // Buffer the status + log and flush once per frame (see `flushPendingUpdates`).
+            pendingUpdates.set(message.nodeId, {
+              nodeId: message.nodeId,
+              status: message.status,
+              log: mappedLog,
+            });
+          } else {
+            pendingUpdates.set(message.nodeId, {
+              nodeId: message.nodeId,
+              status: message.status,
+            });
+          }
+
+          if (!flushScheduled) {
+            flushScheduled = true;
+            requestAnimationFrame(flushPendingUpdates);
           }
         } else if (message.type === "edgeTraversed") {
           useLiveExecutionStore.getState().markEdgeTraversed(message.edgeId);
         } else if (message.type === "jobCompleted") {
+          // Flush any buffered per-node updates before applying the final log set, so the
+          // last nodes' statuses are not lost when `setNodeLogHistory` overwrites the maps.
+          flushPendingUpdates();
+
           // Local (desktop) runs do not get a backend SignalR JobCompleted notification
           // (the runner only calls the REST CloseJob endpoint). The runner pushes this
           // message over the WS once the whole job finishes, so reset the execute button

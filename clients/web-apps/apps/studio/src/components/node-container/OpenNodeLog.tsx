@@ -1,5 +1,4 @@
 import { cn } from "@avplatform/ui/lib";
-import { useReactFlow } from "@xyflow/react";
 import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
 import React from "react";
 import { useSearchParams } from "react-router-dom";
@@ -7,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import { buildLiveLoopIndex, getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
+import { getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
 import { NODE_DETAIL_PANEL_ID } from "@/features/execution-logs/constants";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
@@ -30,7 +29,6 @@ export default function OpenNodeLog({
   showBorder = true,
   isDisabled = false,
 }: OpenNodeLogProps) {
-  const { getNodes } = useReactFlow();
   const [searchParams] = useSearchParams();
   const subflowCallerId = searchParams.get("ci") || "";
   const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
@@ -63,18 +61,13 @@ export default function OpenNodeLog({
   const liveStatus = useLiveExecutionStore((state) =>
     isDisabled ? undefined : state.liveExecutionMap[nodeId],
   );
-  const { nodeLogHistory, liveActiveIteration } = useLiveExecutionStore(
+  const { liveActiveIteration, liveLoopIndex } = useLiveExecutionStore(
     useShallow((state) => ({
-      nodeLogHistory: state.nodeLogHistory,
       liveActiveIteration: state.liveActiveIteration,
+      liveLoopIndex: state.liveLoopIndex,
     })),
   );
-  const liveNodeLog = getLiveNodeLog(
-    buildLiveLoopIndex(nodeLogHistory, getNodes()),
-    subflowCallerId,
-    nodeId,
-    liveActiveIteration,
-  );
+  const liveNodeLog = getLiveNodeLog(liveLoopIndex, subflowCallerId, nodeId, liveActiveIteration);
   const selectedLiveStatus = liveNodeLog ? liveStatus : undefined;
 
   // Attempt history for the currently active execution, ordered by retry sequence.
