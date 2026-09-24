@@ -153,11 +153,11 @@ public static class ManualOpenApiSynthesizer
             {
                 ["name"] = parameter.Name,
                 ["in"] = parameterIn,
-                ["required"] = parameter.Required,
+                ["required"] = false,
                 ["description"] = parameter.Description ?? string.Empty,
                 ["schema"] = new JsonObject
                 {
-                    ["type"] = string.IsNullOrWhiteSpace(parameter.Type) ? "string" : parameter.Type,
+                    ["type"] = "string",
                 },
             });
         }
@@ -176,8 +176,8 @@ public static class ManualOpenApiSynthesizer
                 ["name"] = header.Key,
                 ["in"] = "header",
                 ["required"] = false,
-                ["description"] = $"Static header for {operation.Name}.",
-                ["schema"] = new JsonObject { ["type"] = "string", ["default"] = header.Value ?? string.Empty },
+                ["description"] = header.Description ?? string.Empty,
+                ["schema"] = new JsonObject { ["type"] = "string" },
             });
         }
 

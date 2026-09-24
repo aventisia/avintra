@@ -47,16 +47,30 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                 decryptedData[kvp.Name] = decryptedValue;
             }
 
-            // Replace the key-value pairs in the Data property where key matches (if vaultCredential is not null then Data property will not be null)
-            var dataDict = new Dictionary<string, object>();
-            if (!string.IsNullOrEmpty(vaultCredential.Data))
-            {
-                dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(vaultCredential.Data) ?? new Dictionary<string, object>();
-            }
+            // Replace the key-value pairs in the Data property where key matches (if vaultCredential is not null then Data property will not be null).
+            // Credential types differ in where the encrypted values live: Email and most connectors
+            // keep them at the top level, while CustomApiTool nests them under "Parameters". Both
+            // shapes must be handled, otherwise nested secrets are silently dropped (leaving empty
+            // values that downstream credential readers report as missing).
+            var dataNode = (string.IsNullOrEmpty(vaultCredential.Data)
+                ? null
+                : System.Text.Json.Nodes.JsonNode.Parse(vaultCredential.Data)) as System.Text.Json.Nodes.JsonObject
+                ?? new System.Text.Json.Nodes.JsonObject();
+
             foreach (var kvp in decryptedData)
             {
-                if (dataDict.ContainsKey(kvp.Key)) dataDict[kvp.Key] = kvp.Value;
+                if (dataNode["Parameters"] is System.Text.Json.Nodes.JsonObject parameters && parameters.ContainsKey(kvp.Key))
+                {
+                    parameters[kvp.Key] = kvp.Value;
+                }
+                else if (dataNode.ContainsKey(kvp.Key))
+                {
+                    dataNode[kvp.Key] = kvp.Value;
+                }
             }
+
+            var dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dataNode.ToJsonString())
+                ?? new Dictionary<string, object>();
 
             // Return the VaultCredentialObj
             return new VaultCredentialObj

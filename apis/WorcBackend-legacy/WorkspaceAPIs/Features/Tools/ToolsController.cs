@@ -48,6 +48,23 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.GetUsableToolCatalogAsync());
     }
 
+    // Gets the dynamic-config-panel node config for a custom-tool action node
+    // ("CustomTool/{toolName}.{operationId}"; legacy "{toolId}.{operationId}" still accepted). Returns the raw config JSON (no service-response
+    // envelope), matching the cloud-connector config-file contract that the
+    // studio node-config loader consumes. Registered before the generic {toolId}
+    // route so ASP.NET route matching does not swallow it.
+    [HttpGet("node-config/{*nodeName}")]
+    public async Task<ActionResult<JsonDocument?>> GetCustomToolNodeConfig(string nodeName)
+    {
+        var config = await _toolService.GetCustomToolNodeConfigAsync(nodeName);
+        if (config is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(config);
+    }
+
     // Checks whether a tool name is available.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsToolNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)

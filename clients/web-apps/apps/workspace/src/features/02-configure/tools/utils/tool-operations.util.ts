@@ -5,6 +5,7 @@ type ToolOperation = {
   method: string;
   path: string;
   summary?: string;
+  description?: string;
 };
 
 /**
@@ -32,6 +33,7 @@ export const normalizeToolOperations = (tool?: ToolDto): ToolOperation[] => {
         method: method.toUpperCase(),
         path,
         summary: (details.summary as string) || undefined,
+        description: (details.description as string) || undefined,
       });
     }
   }

@@ -7,7 +7,8 @@ namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 
 /// <summary>
 /// Executes custom tool operations .NET-native: resolves the tool and its flattened
-/// OpenAPI operation from the <c>{toolId}.{operationId}</c> action, decrypts the vault
+/// OpenAPI operation from the <c>{toolName}.{operationId}</c> action (legacy
+/// <c>{toolId}.{operationId}</c> references are still accepted), decrypts the vault
 /// credential server-side, builds the HTTP request (path placeholders, query/header
 /// parameters, JSON body) and proxies it to the tool's base URL.
 ///
@@ -58,30 +59,25 @@ public class CustomToolConnectorService : ICustomToolConnectorService
 
         try
         {
-            // Step 1: Parse "{toolId}.{operationId}" from the action.
-            var (toolId, operationId) = ParseAction(request.Action);
-            if (toolId == Guid.Empty || string.IsNullOrWhiteSpace(operationId))
+            // Step 1: Resolve the tool from the "{toolName}.{operationId}" action.
+            // Names may contain dots, so every split candidate is tried until one
+            // matches a real custom tool (legacy "{toolId}.{operationId}" included).
+            var candidates = CustomToolActionHelpers.SplitActionCandidates(request.Action).ToList();
+            if (candidates.Count == 0)
             {
-                serviceResponse.Message = $"Invalid action '{request.Action}'. Expected the '{{toolId}}.{{operationId}}' format.";
+                serviceResponse.Message = $"Invalid action '{request.Action}'. Expected the '{{toolName}}.{{operationId}}' format.";
                 return serviceResponse;
             }
 
-            // Step 2: Load the custom tool within the current tenant/environment.
-            var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w =>
-                    w.Id == toolId &&
-                    w.Type == ComponentTypeEnum.Custom &&
-                    w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync();
-
+            var (tool, operationId) = await CustomToolActionHelpers.ResolveToolAsync(
+                _unitOfWork.ToolRepo, _currentTenantService, request.Action);
             if (tool is null)
             {
-                serviceResponse.Message = $"Custom tool '{toolId}' was not found.";
+                serviceResponse.Message = $"Custom tool '{candidates[0].ToolName}' was not found.";
                 return serviceResponse;
             }
 
+            // Step 2: Reject inactive/disabled tools within the current tenant/environment.
             if (!tool.IsActive || tool.IsDisabled)
             {
                 serviceResponse.Message = $"Custom tool '{tool.Name}' is not active.";
@@ -163,8 +159,8 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 ? "Custom tool invoked successfully."
                 : $"Upstream API responded with status code {statusCode}.";
             _logger.LogInformation(
-                "Custom tool {ToolId}.{OperationId} invoked with upstream status {StatusCode}.",
-                toolId, operationId, statusCode);
+                "Custom tool '{ToolName}' operation '{OperationId}' invoked with upstream status {StatusCode}.",
+                tool.Name, operationId, statusCode);
         }
         catch (Exception ex)
         {
@@ -174,28 +170,6 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         }
 
         return serviceResponse;
-    }
-
-    /// <summary>
-    /// Splits the action into tool id and operation id at the first dot. Tool ids are
-    /// GUIDs so the split is unambiguous even when operation ids contain dots.
-    /// </summary>
-    private static (Guid ToolId, string OperationId) ParseAction(string action)
-    {
-        if (string.IsNullOrWhiteSpace(action))
-        {
-            return (Guid.Empty, string.Empty);
-        }
-
-        var separatorIndex = action.IndexOf('.');
-        if (separatorIndex <= 0 || separatorIndex == action.Length - 1)
-        {
-            return (Guid.Empty, string.Empty);
-        }
-
-        return Guid.TryParse(action[..separatorIndex], out var toolId)
-            ? (toolId, action[(separatorIndex + 1)..])
-            : (Guid.Empty, string.Empty);
     }
 
     /// <summary>

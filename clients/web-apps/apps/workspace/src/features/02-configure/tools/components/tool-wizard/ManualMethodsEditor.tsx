@@ -1,6 +1,8 @@
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
+
 import {
   ManualToolOperation,
   ManualToolOperationHeader,
@@ -10,14 +12,30 @@ import { FieldLabel } from "./FieldLabel";
 
 const METHOD_OPTIONS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
-const PARAMETER_TYPE_OPTIONS = ["string", "integer", "number", "boolean"] as const;
-
 const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
 
 const createEmptyOperation = (): ManualToolOperation => ({
   name: "",
   method: "GET",
   endpoint: "/",
+});
+
+/** The HTTP method + endpoint pair that identifies a route within a tool. */
+interface MethodRoute {
+  method: string;
+  endpoint: string;
+}
+
+/** Normalizes an endpoint for comparison: trims, lowercases and ensures a leading slash. */
+const normalizeEndpoint = (endpoint: string): string => {
+  const trimmed = endpoint.trim().toLowerCase();
+  if (!trimmed) return "";
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+};
+
+const toMethodRoute = (operation: ManualToolOperation): MethodRoute => ({
+  method: operation.method,
+  endpoint: normalizeEndpoint(operation.endpoint),
 });
 
 const inputClass =
@@ -42,6 +60,11 @@ const methodBadgeClass = (method: string): string => {
 
 interface MethodFormProps {
   initialOperation?: ManualToolOperation;
+  /**
+   * Method + endpoint pairs already used by other methods; the pair must be
+   * unique across the tool's methods.
+   */
+  existingRoutes?: MethodRoute[];
   onSubmit: (operation: ManualToolOperation) => void;
   onCancel: () => void;
   submitLabel: string;
@@ -50,13 +73,22 @@ interface MethodFormProps {
 /**
  * Inline form panel for authoring a single method: name, description, method
  * + endpoint, static headers, parameters and an optional JSON payload sample.
- * Renders in the flow of the page (below the add button or below the edited
- * method row) instead of a modal overlay.
+ * The name and endpoint are required, and the HTTP method + endpoint
+ * combination must be unique across the tool's methods. Renders in the flow of
+ * the page (below the add button or below the edited method row) instead of a
+ * modal overlay.
  */
-const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: MethodFormProps) => {
+const MethodForm = ({
+  initialOperation,
+  existingRoutes,
+  onSubmit,
+  onCancel,
+  submitLabel,
+}: MethodFormProps) => {
   const [operation, setOperation] = useState<ManualToolOperation>(
     initialOperation ?? createEmptyOperation(),
   );
+  const [showValidation, setShowValidation] = useState(false);
 
   const updateOperation = (patch: Partial<ManualToolOperation>) =>
     setOperation((previous) => ({ ...previous, ...patch }));
@@ -80,10 +112,19 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
     });
   };
 
-  const isValid = operation.name.trim() && operation.endpoint.trim();
+  const normalizedEndpoint = normalizeEndpoint(operation.endpoint);
+  const isDuplicateRoute = (existingRoutes ?? []).some(
+    (route) =>
+      route.method.toUpperCase() === operation.method.toUpperCase() &&
+      route.endpoint === normalizedEndpoint,
+  );
+  const isValid = Boolean(operation.name.trim() && operation.endpoint.trim()) && !isDuplicateRoute;
 
   const handleSubmit = () => {
-    if (!isValid) return;
+    if (!isValid) {
+      setShowValidation(true);
+      return;
+    }
     onSubmit({
       ...operation,
       endpoint: operation.endpoint.trim().startsWith("/")
@@ -104,6 +145,9 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
             autoFocus
             className={inputClass}
           />
+          {showValidation && !operation.name.trim() && (
+            <p className="text-xs text-destructive">Method name is required.</p>
+          )}
         </div>
 
         <div className="space-y-1.5">
@@ -134,13 +178,22 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
             </select>
           </div>
           <div className="space-y-1.5">
-            <FieldLabel label="Endpoint" />
+            <FieldLabel label="Endpoint" isRequired />
             <input
               value={operation.endpoint}
               onChange={(event) => updateOperation({ endpoint: event.target.value })}
               placeholder="/forecast"
               className={`${inputClass} font-mono`}
             />
+            {showValidation && !operation.endpoint.trim() && (
+              <p className="text-xs text-destructive">Endpoint is required.</p>
+            )}
+            {isDuplicateRoute && operation.endpoint.trim() && (
+              <p className="text-xs text-destructive">
+                {operation.method} {normalizedEndpoint} is already defined. Each method must use a
+                unique HTTP method and endpoint combination.
+              </p>
+            )}
           </div>
         </div>
 
@@ -161,9 +214,11 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
                   className={inputClass}
                 />
                 <input
-                  value={header.value ?? ""}
-                  onChange={(event) => updateHeader(headerIndex, { value: event.target.value })}
-                  placeholder="Value"
+                  value={header.description ?? ""}
+                  onChange={(event) =>
+                    updateHeader(headerIndex, { description: event.target.value })
+                  }
+                  placeholder="Description"
                   className={inputClass}
                 />
                 <button
@@ -175,9 +230,10 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
                       ),
                     })
                   }
-                  className="text-xs text-destructive hover:text-destructive/80"
+                  aria-label="Remove header"
+                  className="rounded p-1 text-destructive hover:bg-destructive/10"
                 >
-                  ✕
+                  <Trash2Icon className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))
@@ -185,7 +241,9 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
           <button
             type="button"
             onClick={() =>
-              updateOperation({ headers: [...(operation.headers ?? []), { key: "", value: "" }] })
+              updateOperation({
+                headers: [...(operation.headers ?? []), { key: "", description: "" }],
+              })
             }
             className="rounded-md border border-dashed border-input px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
           >
@@ -211,41 +269,14 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
                   placeholder="Parameter name"
                   className={inputClass}
                 />
-                <select
-                  value={parameter.in}
+                <input
+                  value={parameter.description ?? ""}
                   onChange={(event) =>
-                    updateParameter(parameterIndex, {
-                      in: event.target.value as "query" | "header",
-                    })
+                    updateParameter(parameterIndex, { description: event.target.value })
                   }
-                  className={`${inputClass} w-24`}
-                >
-                  <option value="query">query</option>
-                  <option value="header">header</option>
-                </select>
-                <select
-                  value={parameter.type ?? "string"}
-                  onChange={(event) =>
-                    updateParameter(parameterIndex, { type: event.target.value })
-                  }
-                  className={`${inputClass} w-24`}
-                >
-                  {PARAMETER_TYPE_OPTIONS.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                <label className="flex items-center gap-1 whitespace-nowrap text-xs">
-                  <input
-                    type="checkbox"
-                    checked={parameter.required ?? false}
-                    onChange={(event) =>
-                      updateParameter(parameterIndex, { required: event.target.checked })
-                    }
-                  />
-                  Required
-                </label>
+                  placeholder="Description"
+                  className={inputClass}
+                />
                 <button
                   type="button"
                   onClick={() =>
@@ -255,9 +286,10 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
                       ),
                     })
                   }
-                  className="text-xs text-destructive hover:text-destructive/80"
+                  aria-label="Remove parameter"
+                  className="rounded p-1 text-destructive hover:bg-destructive/10"
                 >
-                  ✕
+                  <Trash2Icon className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))
@@ -268,7 +300,7 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
               updateOperation({
                 parameters: [
                   ...(operation.parameters ?? []),
-                  { name: "", in: "query", required: false },
+                  { name: "", in: "query", description: "" },
                 ],
               })
             }
@@ -284,12 +316,11 @@ const MethodForm = ({ initialOperation, onSubmit, onCancel, submitLabel }: Metho
             <span className="text-xs text-muted-foreground">optional</span>
           </div>
           {BODY_CAPABLE_METHODS.has(operation.method) ? (
-            <textarea
+            <JsonEditor
               value={operation.jsonPayload ?? ""}
-              onChange={(event) => updateOperation({ jsonPayload: event.target.value })}
+              onChange={(value) => updateOperation({ jsonPayload: value })}
               placeholder={'{\n  "key": "value"\n}'}
-              rows={4}
-              className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 font-mono text-xs shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="min-h-[7rem]"
             />
           ) : (
             <p className="text-xs text-muted-foreground">
@@ -375,21 +406,6 @@ export const ManualMethodsEditor = ({
 
   return (
     <div className="space-y-3">
-      {!disabled && (
-        <button
-          type="button"
-          onClick={() => (isCreateFormOpen ? closeForm() : openFormForCreate())}
-          className="flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-input px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <PlusIcon className="h-4 w-4" />
-          Add method
-        </button>
-      )}
-
-      {isCreateFormOpen && (
-        <MethodForm onSubmit={handleSubmit} onCancel={closeForm} submitLabel="Add method" />
-      )}
-
       {operations.length === 0 ? (
         <p className="text-xs text-muted-foreground">
           No methods added yet. Add at least one method — a request this tool can make.
@@ -437,6 +453,9 @@ export const ManualMethodsEditor = ({
               {isFormOpen && editIndex === index && (
                 <MethodForm
                   initialOperation={operation}
+                  existingRoutes={operations
+                    .filter((_, operationIndex) => operationIndex !== index)
+                    .map(toMethodRoute)}
                   onSubmit={handleSubmit}
                   onCancel={closeForm}
                   submitLabel="Save method"
@@ -445,6 +464,26 @@ export const ManualMethodsEditor = ({
             </div>
           ))}
         </div>
+      )}
+
+      {!disabled && (
+        <button
+          type="button"
+          onClick={() => (isCreateFormOpen ? closeForm() : openFormForCreate())}
+          className="flex w-full items-center justify-center gap-1 rounded-md border border-dashed border-input px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <PlusIcon className="h-4 w-4" />
+          Add method
+        </button>
+      )}
+
+      {isCreateFormOpen && (
+        <MethodForm
+          existingRoutes={operations.map(toMethodRoute)}
+          onSubmit={handleSubmit}
+          onCancel={closeForm}
+          submitLabel="Add method"
+        />
       )}
     </div>
   );

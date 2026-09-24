@@ -3,9 +3,9 @@ using WorkspaceAPIs.DTOs;
 namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 /// <summary>
 /// Runtime invoke endpoint for custom tools, using the shared cloud-connector
-/// request/response contract. The executor's standard cloud-connector
-/// preprocessing routes <c>customtool/{toolId}.{operationId}Connector</c> nodes here
-/// with <c>Provider = "customtool"</c> and <c>Action = "{toolId}.{operationId}"</c>;
+/// request/response contract. The executor's custom-tool preprocessing routes
+/// <c>CustomTool/{toolName}.{operationId}</c> nodes here with
+/// <c>Provider = "customtool"</c> and <c>Action = "{toolName}.{operationId}"</c>;
 /// the service resolves the tool, operation and credential server-side.
 /// </summary>
 [Route("cloud-connector/custom-tool")]
@@ -22,7 +22,8 @@ public class CustomToolConnectorController : BaseApiController
 
     /// <summary>
     /// Invokes a custom tool operation. The action must be the
-    /// <c>{toolId}.{operationId}</c> reference matching the node name convention.
+    /// <c>{toolName}.{operationId}</c> reference matching the node name convention
+    /// (legacy <c>{toolId}.{operationId}</c> references are still accepted).
     /// </summary>
     [HttpPost("invoke")]
     public async Task<ActionResult<ServiceResponse<CloudConnectorResDto>>> InvokeCustomTool(

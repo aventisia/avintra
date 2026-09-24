@@ -45,16 +45,16 @@ export interface ManualToolOperation {
  */
 export interface ManualToolOperationHeader {
   key: string;
-  value?: string;
+  description?: string;
 }
 
 /**
  * Represents a user-defined parameter of a manually authored operation.
+ * Only the name and description are authored; the location defaults to a
+ * query parameter.
  */
 export interface ManualToolOperationParameter {
   name: string;
   in: "query" | "header";
-  required?: boolean;
   description?: string;
-  type?: string;
 }

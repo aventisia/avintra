@@ -32,7 +32,7 @@ script:post-response {
 }
 
 tests {
-  // Prereq: UNVERIFIED_CUSTOM_TOOL_ACTION env var = "{toolId}.{operationId}" of a
+  // Prereq: UNVERIFIED_CUSTOM_TOOL_ACTION env var = "{toolName}.{operationId}" of a
   // tool that exists but has IsVerified = false (e.g. a freshly created manual tool
-  // that has not been tested yet).
+  // that has not been tested yet). Legacy "{toolId}.{operationId}" is still accepted.
 }

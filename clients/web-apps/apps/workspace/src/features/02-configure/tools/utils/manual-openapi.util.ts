@@ -117,13 +117,13 @@ export const synthesizeOpenApiSpec = (
       parameters.push({
         name: parameter.name,
         in: parameter.in,
-        required: parameter.required ?? false,
+        required: false,
         description: parameter.description ?? "",
-        schema: { type: parameter.type || "string" },
+        schema: { type: "string" },
       });
     }
 
-    // Static headers become optional header parameters with defaults.
+    // Static headers become optional header parameters.
     for (const header of operation.headers ?? []) {
       if (!header.key?.trim() || pathParameters.includes(header.key)) {
         continue;
@@ -132,8 +132,8 @@ export const synthesizeOpenApiSpec = (
         name: header.key,
         in: "header",
         required: false,
-        description: `Static header for ${operation.name || "method"}.`,
-        schema: { type: "string", default: header.value ?? "" },
+        description: header.description ?? "",
+        schema: { type: "string" },
       });
     }
 

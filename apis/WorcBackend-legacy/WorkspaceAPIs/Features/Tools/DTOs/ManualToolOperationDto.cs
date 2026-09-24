@@ -59,14 +59,16 @@ public class ManualToolOperationHeaderDto
     public required string Key { get; set; }
 
     /// <summary>
-    /// Gets or sets the header value.
+    /// Gets or sets the header description.
     /// </summary>
-    [StringLength(2000)]
-    public string? Value { get; set; }
+    [StringLength(1000)]
+    public string? Description { get; set; }
 }
 
 /// <summary>
 /// Represents a user-defined parameter of a manually authored operation.
+/// Only the name and description are authored; the location defaults to a
+/// query parameter.
 /// </summary>
 public class ManualToolOperationParameterDto
 {
@@ -80,22 +82,11 @@ public class ManualToolOperationParameterDto
     /// Gets or sets the parameter location (query, header).
     /// </summary>
     [StringLength(50)]
-    public required string In { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the parameter is required.
-    /// </summary>
-    public bool Required { get; set; }
+    public string In { get; set; } = "query";
 
     /// <summary>
     /// Gets or sets the parameter description.
     /// </summary>
     [StringLength(1000)]
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets or sets the primitive type of the parameter (string, integer, number, boolean).
-    /// </summary>
-    [StringLength(50)]
-    public string? Type { get; set; }
 }
