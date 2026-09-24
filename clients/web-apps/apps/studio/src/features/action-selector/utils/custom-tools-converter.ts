@@ -16,6 +16,22 @@ export const DEFAULT_TOOL_NODE_COLOR = "#4f46e5";
 export const CUSTOM_TOOL_CREDENTIAL_FIELD = "__CredentialName__CustomApiTool";
 
 /**
+ * Node-name prefix identifying a custom-tool action node. The runtime executor
+ * and the node-config loader both route on this keyword, so the prefix is part of
+ * the persisted node identity and must not change without a migration.
+ */
+export const CUSTOM_TOOL_NODE_PREFIX = "CustomTool/";
+
+/**
+ * Builds the unique node name for a tool operation: "CustomTool/{toolName}.{operationId}".
+ * The tool name keeps the node human-readable; the backend resolves the tool by
+ * name (with a legacy toolId fallback) so dotted tool names stay unambiguous.
+ */
+export function getCustomToolNodeName(toolName: string, operationId: string): string {
+  return `${CUSTOM_TOOL_NODE_PREFIX}${toolName}.${operationId}`;
+}
+
+/**
  * Minimal structural view of a tool consumed by the L2/L3 converters. Satisfied
  * by both the personal-tools list (`ToolDto`) and the usable-tools view.
  */
@@ -200,9 +216,9 @@ export function convertToolOperationsToActions(
 
     return {
       type: "cloudConnectorNode" as const,
-      // Unique node identity: `${toolId}.${operationId}` so the DCP config
-      // lookup and flow persistence stay collision-free across tools.
-      name: `${tool.id}.${operation.operationId}`,
+      // Unique node identity: "CustomTool/{toolName}.{operationId}" so the runtime
+      // routes on the keyword and the backend resolves the tool by name.
+      name: getCustomToolNodeName(tool.name, operation.operationId),
       label,
       description,
       icon,

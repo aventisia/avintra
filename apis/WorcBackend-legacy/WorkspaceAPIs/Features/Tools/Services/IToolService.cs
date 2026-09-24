@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
@@ -34,6 +36,17 @@ public interface IToolService
     /// </summary>
     /// <returns>The usable tool catalog.</returns>
     Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync();
+
+    /// <summary>
+    /// Gets the dynamic-config-panel node config for a custom-tool action node
+    /// (<c>CustomTool/{toolName}.{operationId}</c>; legacy <c>{toolId}.{operationId}</c> still accepted), generated from the tool's OpenAPI spec.
+    /// Returns the raw config document (no service-response envelope), matching
+    /// the cloud-connector config-file contract; <c>null</c> when the tool or
+    /// operation cannot be resolved.
+    /// </summary>
+    /// <param name="nodeName">The node name reference.</param>
+    /// <returns>The raw node config JSON document.</returns>
+    Task<JsonDocument?> GetCustomToolNodeConfigAsync(string nodeName);
 
     /// <summary>
     /// Checks whether a tool name is available.

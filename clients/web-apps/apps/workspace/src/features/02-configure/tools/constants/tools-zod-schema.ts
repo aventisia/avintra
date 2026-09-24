@@ -21,11 +21,11 @@ export const toolBaseUrlSchema = z
 export const manualToolOperationHeaderSchema = z.object({
   key: z
     .string()
-    .min(1, { message: reqError("Header key") })
-    .max(255, { message: maxLenError("Header key", 255) }),
-  value: z
+    .min(1, { message: reqError("Header name") })
+    .max(255, { message: maxLenError("Header name", 255) }),
+  description: z
     .string()
-    .max(2000, { message: maxLenError("Header value", 2000) })
+    .max(1000, { message: maxLenError("Header description", 1000) })
     .optional(),
 });
 
@@ -35,12 +35,10 @@ export const manualToolOperationParameterSchema = z.object({
     .min(1, { message: reqError("Parameter name") })
     .max(255, { message: maxLenError("Parameter name", 255) }),
   in: z.enum(["query", "header"]),
-  required: z.boolean().optional(),
   description: z
     .string()
     .max(1000, { message: maxLenError("Parameter description", 1000) })
     .optional(),
-  type: z.string().max(50).optional(),
 });
 
 export const manualToolOperationSchema = z.object({
@@ -91,7 +89,21 @@ export const toolZodSchema = z.object({
   baseUrl: toolBaseUrlSchema,
   openApiSpec: z.string().optional(),
   parsedSchema: z.record(z.unknown()).optional(),
-  manualOperations: z.array(manualToolOperationSchema).optional(),
+  manualOperations: z
+    .array(manualToolOperationSchema)
+    .optional()
+    .refine(
+      (operations) => {
+        if (!operations?.length) return true;
+        // Routes are identified by the HTTP method + endpoint pair.
+        const routes = operations.map((operation) => {
+          const endpoint = operation.endpoint.trim().toLowerCase();
+          return `${operation.method.toUpperCase()} ${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+        });
+        return new Set(routes).size === routes.length;
+      },
+      { message: "Each method must use a unique HTTP method and endpoint combination." },
+    ),
   authenticationType: z.nativeEnum(ToolAuthenticationTypeEnum).optional(),
   credentialName: z.string().optional(),
   isTenantWideAccess: z.boolean().default(false),
