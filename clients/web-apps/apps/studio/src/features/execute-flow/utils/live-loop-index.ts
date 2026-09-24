@@ -34,7 +34,32 @@ const scopeKey = (caller: string, nodeId: string) => `${caller || ""}||${nodeId}
  * keyed by `caller||nodeId` so the main flow and a sub-flow can reuse the same node ids
  * without colliding.
  */
+// Module-level memoization cache. `nodeLogHistory` is a fresh array reference on every store
+// update, so reference equality is a safe cache key. Without this, every node/edge component
+// recomputes the full index (O(nodes + logs)) on every render — the primary source of lag on
+// large flows (100+ nodes), where each progress message re-renders every node/edge and each
+// rebuilds the index from scratch.
+//
+// We key on BOTH the `logs` and `nodes` references. All callers now source `nodes` from the
+// single `useReactFlowExtStore` (see the consolidation of `useNodes()`/`getNodes()`), so every
+// caller passes the SAME `nodes` array reference — a single-entry cache is sufficient and
+// cannot thrash. The index is recomputed only when the log batch changes (a new progress
+// message) or the graph actually changes (e.g. navigating into a sub-flow swaps `nodes`).
+let cachedLogs: NodeExecutionLogType[] | null = null;
+let cachedNodes: Node[] | null = null;
+let cachedIndex: LiveLoopIndex | null = null;
+
 export const buildLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): LiveLoopIndex => {
+  if (cachedLogs === logs && cachedNodes === nodes && cachedIndex) {
+    return cachedIndex;
+  }
+  cachedIndex = computeLiveLoopIndex(logs, nodes);
+  cachedLogs = logs;
+  cachedNodes = nodes;
+  return cachedIndex;
+};
+
+const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): LiveLoopIndex => {
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
   const loopRegistry: Record<string, { total: number }> = {};
   const nodeToParentStack: Record<string, string[]> = {};
@@ -45,9 +70,7 @@ export const buildLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]):
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = node.data as any;
     const defaultId = data?.defaultBranchNodeId;
-    const conditionals = (data?.branches || []).filter(
-      (id: string) => id !== defaultId,
-    );
+    const conditionals = (data?.branches || []).filter((id: string) => id !== defaultId);
     if (defaultId) routerConfig[node.id] = { defaultId, conditionals };
   });
 
@@ -131,8 +154,7 @@ export const getLivePathKey = (
   return parents
     .map(
       (loopId) =>
-        liveActiveIteration[loopId] ??
-        Math.max(0, (index.loopRegistry[loopId]?.total ?? 1) - 1),
+        liveActiveIteration[loopId] ?? Math.max(0, (index.loopRegistry[loopId]?.total ?? 1) - 1),
     )
     .join("-");
 };

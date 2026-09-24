@@ -8,10 +8,8 @@ import { useShallow } from "zustand/react/shallow";
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import { buildLiveLoopIndex } from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 
 import BaseNode from "./BaseNode";
@@ -33,18 +31,17 @@ export const ForLoopNode = memo(
         })),
       );
 
-    const { nodeLogHistory, liveActiveIteration, setLiveIteration, liveExecutionMap } =
+    const { liveActiveIteration, setLiveIteration, liveExecutionMap, liveLoopIndex } =
       useLiveExecutionStore(
         useShallow((state) => ({
-          nodeLogHistory: state.nodeLogHistory,
           liveActiveIteration: state.liveActiveIteration,
           setLiveIteration: state.setLiveIteration,
           liveExecutionMap: state.liveExecutionMap,
+          liveLoopIndex: state.liveLoopIndex,
         })),
       );
-    const { nodes } = useReactFlowExtStore(useShallow((state) => ({ nodes: state.nodes })));
 
-    const liveExecutionData = buildLiveLoopIndex(nodeLogHistory, nodes);
+    const liveExecutionData = liveLoopIndex;
 
     const total = loopRegistry[id]?.total || 0;
     const current = activeIteration[id] || 0;
