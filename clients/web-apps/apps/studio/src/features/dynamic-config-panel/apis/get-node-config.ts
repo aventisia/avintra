@@ -1,17 +1,48 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import {
+  buildCustomToolNodeConfig,
+  parseCustomToolNodeReference,
+} from "@/features/action-selector/utils/custom-tools-converter";
+
 import { DCPFieldSchemaType } from "..";
+import { UsableToolCatalogItemDto } from "../dtos/tool-dto";
+import { NodeConfigSchemaType } from "../types/node-config-schema-type";
+import { getUsableToolCatalog } from "./tools-apis";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
   ...import.meta.glob("../constants/custom-config-json/**/*.json"),
 };
 
-// In-memory cache for node configs. Values are the resolved config arrays;
-// promises are stored separately while a fetch is in flight so concurrent
-// callers for the same node share a single request instead of duplicating it.
-const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
-const nodeConfigInFlight: Record<string, Promise<DCPFieldSchemaType[] | unknown> | undefined> = {};
+// Which node config a lookup resolves to: a bare field array (static JSON files)
+// or a whole config object (server-fetched connectors, client-built custom tools).
+type NodeConfigValue = DCPFieldSchemaType[] | NodeConfigSchemaType | undefined;
+
+// In-memory cache for node configs. Values are the resolved configs; promises are
+// stored separately while a fetch is in flight so concurrent callers for the same
+// node share a single request instead of duplicating it.
+const nodeConfigCache: Record<string, NodeConfigValue> = {};
+const nodeConfigInFlight: Record<string, Promise<NodeConfigValue> | undefined> = {};
+
+// Single-flight fetch of the usable-tool catalog, used to enrich custom-tool
+// node configs with the operation schema (declared headers, path/query
+// parameters and request-body properties). A failed fetch resets the promise
+// so a later panel open can retry.
+let usableToolCatalogPromise: Promise<UsableToolCatalogItemDto[] | null> | undefined;
+
+const getUsableToolCatalogOnce = async (): Promise<UsableToolCatalogItemDto[] | null> => {
+  if (!usableToolCatalogPromise) {
+    usableToolCatalogPromise = getUsableToolCatalog()
+      .then((res) => res.data ?? [])
+      .catch((error) => {
+        console.error("Custom tool catalog fetch error:", error);
+        usableToolCatalogPromise = undefined;
+        return null;
+      });
+  }
+  return usableToolCatalogPromise;
+};
 
 /**
  * Node-name prefix identifying a custom-tool action node (see
@@ -55,6 +86,35 @@ const getJsonFilepath = (nodeUniqueName: string): string => {
   }
 
   return `../constants/config-json/${nodeUniqueName}.json`;
+};
+
+/**
+ * Builds a custom-tool node config, mapping the operation schema from the
+ * usable-tool catalog into the JSON editors when the tool and operation can be
+ * resolved. Returns null on a catalog miss (tool not yet in the catalog) so
+ * the caller can skip caching and retry on the next panel open; falls back to
+ * the generic schema-less form when the catalog cannot be fetched.
+ */
+const buildSchemaAwareCustomToolConfig = async (
+  nodeUniqueName: string,
+): Promise<NodeConfigSchemaType | null> => {
+  const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
+  const catalog = await getUsableToolCatalogOnce();
+  if (catalog === null) {
+    // Fetch failed — serve the generic form without caching it, so the next
+    // open retries the catalog.
+    return buildCustomToolNodeConfig(nodeUniqueName);
+  }
+
+  const operation = catalog
+    .find((tool) => tool.name === toolName)
+    ?.operations?.find((candidate) => candidate.operationId === operationId);
+  if (!operation) {
+    // Tool/operation not (yet) in the catalog — serve the generic form
+    // uncached so newly created tools are picked up on the next open.
+    return null;
+  }
+  return buildCustomToolNodeConfig(nodeUniqueName, operation);
 };
 
 /**
@@ -105,23 +165,19 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
 
   if (isCustomToolNodeName(nodeUniqueName)) {
     // Custom-tool action nodes ("CustomTool/{toolName}.{operationId}") have no
-    // static config JSON; their form schema is generated on the server from the
-    // tool's OpenAPI spec (parameters, request body, responses).
-    const customToolFetch = axiosInstance
-      .get(`${import.meta.env.VITE_WORKSPACE_API_PATH}/tools/node-config/${nodeUniqueName}.json`)
-      .then((res) => res.data);
-    nodeConfigInFlight[nodeUniqueName] = customToolFetch;
-    try {
-      const customToolConfig = await customToolFetch;
-      if (customToolConfig) {
-        nodeConfigCache[nodeUniqueName] = customToolConfig;
-        return customToolConfig;
-      }
-    } catch (error) {
-      console.error(`Custom tool node ${nodeUniqueName} config fetch error:`, error);
-    } finally {
-      delete nodeConfigInFlight[nodeUniqueName];
+    // static config JSON: the form is built on the client. When the tool's
+    // parsed OpenAPI schema is available, the operation's declared headers,
+    // path/query parameters and request-body properties are mapped into the
+    // JSON editors as defaults, and the Request Payload editor only appears
+    // for body-capable methods (POST, PUT, PATCH). Catalog fetch failures or
+    // unknown tools fall back to the generic schema-less form, which is not
+    // cached so the next open can retry.
+    const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
+    if (!customToolConfig) {
+      return buildCustomToolNodeConfig(nodeUniqueName);
     }
+    nodeConfigCache[nodeUniqueName] = customToolConfig;
+    return customToolConfig;
   }
 
   // Try the original nodeUniqueName first

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using JsonException = System.Text.Json.JsonException;
 using WorkspaceAPIs.Features.CloudConnectors;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
@@ -117,8 +118,15 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse;
             }
 
-            // Step 6: Resolve + apply the vault credential (secrets never leave the server).
+            // Step 6: Split the payload into the three DCP sections (headers,
+            // parameters, request payload) plus any legacy flat entries. The
+            // executor always emits the sectioned envelope for new flows; legacy
+            // entries remain supported for flows saved before the sectioned form.
+            var sections = CustomToolPayloadSections.From(request.Payload);
+
+            // Step 7: Resolve + apply the vault credential (secrets never leave the server).
             var credentialHeaders = new Dictionary<string, string>();
+            var requestHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             string? credentialQuery = null;
             var hasCredential = !string.IsNullOrWhiteSpace(request.CredentialName) || !string.IsNullOrWhiteSpace(tool.CredentialName);
             if (hasCredential)
@@ -131,28 +139,28 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                     return serviceResponse;
                 }
 
-                foreach (var header in auth.Headers)
-                {
-                    credentialHeaders[header.Key] = header.Value;
-                }
-
+                credentialHeaders = auth.Headers;
                 credentialQuery = auth.Query;
             }
 
-            // Step 7: Build the request URL and content from the operation definition.
-            var payload = request.Payload ?? [];
-            var (requestUrl, remainingPayload) = BuildRequestUrl(baseUri, operation, payload, credentialQuery);
-            var (content, contentType) = BuildRequestContent(operation, remainingPayload);
+            // Step 8: Build the request URL, headers and content. The Headers JSON
+            // editor supplies additional HTTP headers; the Parameters JSON editor
+            // supplies path placeholders, query parameters and header parameters
+            // (mapped by the operation's schema); the Request Payload JSON editor
+            // supplies the request body.
+            var (requestUrl, remainingPayload) = BuildRequestUrl(baseUri, operation, sections, credentialQuery);
+            BuildRequestHeaders(operation, sections, requestHeaders, credentialHeaders);
+            var (content, contentType) = BuildRequestContent(operation, sections, remainingPayload);
 
-            // Step 8: Send the proxied request under the guardrails.
-            var (statusCode, responseText, responseError) = await SendAsync(operation.Method, requestUrl, credentialHeaders, content, contentType);
+            // Step 9: Send the proxied request under the guardrails.
+            var (statusCode, responseText, responseError) = await SendAsync(operation.Method, requestUrl, requestHeaders, content, contentType);
             if (responseError is not null)
             {
                 serviceResponse.Message = responseError;
                 return serviceResponse;
             }
 
-            // Step 9: Parse the upstream response for the executor.
+            // Step 10: Parse the upstream response for the executor.
             serviceResponse.Data.Response = ParseResponseBody(responseText);
             serviceResponse.StatusCode = statusCode >= 200 && statusCode < 300 ? 200 : 502;
             serviceResponse.Message = statusCode >= 200 && statusCode < 300
@@ -330,36 +338,39 @@ public class CustomToolConnectorService : ICustomToolConnectorService
     private static (string RequestUrl, Dictionary<string, object> RemainingPayload) BuildRequestUrl(
         Uri baseUri,
         UsableToolOperationDto operation,
-        Dictionary<string, object> payload,
+        CustomToolPayloadSections sections,
         string? credentialQuery)
     {
-        var remaining = new Dictionary<string, object>(payload, StringComparer.OrdinalIgnoreCase);
+        // Path placeholders and query parameters both resolve from the Parameters
+        // section (plus any legacy top-level entries, which take precedence).
+        var values = sections.BuildParameterValues();
 
-        // Path placeholders come from the path template, not just the declared params.
         var resolvedPath = operation.Path!.TrimStart('/');
         foreach (var placeholder in ExtractPathPlaceholders(operation.Path))
         {
-            if (remaining.TryGetValue(placeholder, out var value))
+            if (values.TryGetValue(placeholder, out var value))
             {
                 resolvedPath = resolvedPath.Replace(
                     $"{{{placeholder}}}",
                     Uri.EscapeDataString(value?.ToString() ?? string.Empty));
-                remaining.Remove(placeholder);
             }
         }
 
         var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
         foreach (var parameter in operation.Parameters ?? [])
         {
-            if (!string.Equals(parameter.In, "query", StringComparison.OrdinalIgnoreCase) ||
+            // Path placeholders were already consumed above; header parameters are
+            // applied later; everything else that declares "query" (or declares no
+            // location at all) becomes a query-string entry.
+            if (string.Equals(parameter.In, "path", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(parameter.In, "header", StringComparison.OrdinalIgnoreCase) ||
                 string.IsNullOrWhiteSpace(parameter.Name) ||
-                !remaining.TryGetValue(parameter.Name, out var queryValue))
+                !values.TryGetValue(parameter.Name, out var queryValue))
             {
                 continue;
             }
 
             query[parameter.Name] = queryValue?.ToString() ?? string.Empty;
-            remaining.Remove(parameter.Name);
         }
 
         if (!string.IsNullOrEmpty(credentialQuery))
@@ -377,7 +388,51 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             pathAndQuery = $"{pathAndQuery}?{queryString}";
         }
 
-        return ($"{baseUri.GetLeftPart(UriPartial.Authority).TrimEnd('/')}/{pathAndQuery}", remaining);
+        // Body candidates come from the legacy/free-form extras only; the Request
+        // Payload section is a JSON object and is applied by BuildRequestContent.
+        var remainingPayload = new Dictionary<string, object>(sections.Extras, StringComparer.OrdinalIgnoreCase);
+        return ($"{baseUri.GetLeftPart(UriPartial.Authority).TrimEnd('/')}/{pathAndQuery}", remainingPayload);
+    }
+
+    /// <summary>
+    /// Applies the request headers: the Headers JSON editor first, then the
+    /// operation's header parameters resolved from the Parameters section, and
+    /// finally the credential headers (which win, since authentication must not
+    /// be overridden by user input).
+    /// </summary>
+    private static void BuildRequestHeaders(
+        UsableToolOperationDto operation,
+        CustomToolPayloadSections sections,
+        Dictionary<string, string> target,
+        Dictionary<string, string> credentialHeaders)
+    {
+        foreach (var header in sections.Headers)
+        {
+            if (string.IsNullOrWhiteSpace(header.Key) || header.Value is null)
+            {
+                continue;
+            }
+
+            target[header.Key] = header.Value.ToString() ?? string.Empty;
+        }
+
+        var values = sections.BuildParameterValues();
+        foreach (var parameter in operation.Parameters ?? [])
+        {
+            if (!string.Equals(parameter.In, "header", StringComparison.OrdinalIgnoreCase) ||
+                string.IsNullOrWhiteSpace(parameter.Name) ||
+                !values.TryGetValue(parameter.Name, out var headerValue))
+            {
+                continue;
+            }
+
+            target[parameter.Name] = headerValue?.ToString() ?? string.Empty;
+        }
+
+        foreach (var header in credentialHeaders)
+        {
+            target[header.Key] = header.Value;
+        }
     }
 
     /// <summary>
@@ -397,12 +452,12 @@ public class CustomToolConnectorService : ICustomToolConnectorService
 
     /// <summary>
     /// Builds the request body for methods that support one. Body properties are
-    /// collected from the payload by the flattened requestBody schema; when the
-    /// operation declares no body schema, every unconsumed payload entry is sent
-    /// as the JSON body so free-form specs still work.
+    /// collected from the Request Payload JSON editor; when the operation declares
+    /// no body schema, the payload is sent as-is so free-form specs still work.
     /// </summary>
     private static (string? Content, string ContentType) BuildRequestContent(
         UsableToolOperationDto operation,
+        CustomToolPayloadSections sections,
         Dictionary<string, object> remainingPayload)
     {
         var method = operation.Method!.ToUpperInvariant();
@@ -412,16 +467,29 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             return (null, "application/json");
         }
 
+        // A raw (non-object) payload supplied by the editor is forwarded verbatim.
+        if (sections.IsRawRequestPayload)
+        {
+            return (sections.RequestPayload, operation.RequestBody?.ContentType ?? "application/json");
+        }
+
         var bodyProperties = operation.RequestBody?.Properties?
             .Where(p => !string.IsNullOrWhiteSpace(p.Name))
             .Select(p => p.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase) ?? [];
 
-        var bodyObject = new Dictionary<string, object>();
+        var bodyObject = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        // A JSON object body is forwarded as-is (its own keys are the body fields).
+        foreach (var kvp in sections.RequestBodyProperties)
+        {
+            bodyObject[kvp.Key] = kvp.Value;
+        }
+
+        // Legacy/free-form payload entries remain supported: with a declared schema
+        // only schema properties belong in the body; without one everything is sent.
         foreach (var kvp in remainingPayload)
         {
-            // With a declared schema only schema properties belong in the body;
-            // without one everything unconsumed is forwarded.
             if (bodyProperties.Count == 0 || bodyProperties.Contains(kvp.Key))
             {
                 bodyObject[kvp.Key] = kvp.Value;

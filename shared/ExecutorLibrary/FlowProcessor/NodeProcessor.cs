@@ -479,6 +479,16 @@ public class NodeProcessor : INodeProcessor
     /// and routes execution to ProcessCustomToolRequestNode. The action is
     /// normalized to the "{toolName}.{operationId}" form the backend expects, and the
     /// tool/operation are resolved server-side from the parsed schema.
+    ///
+    /// The DCP form exposes a credential selector plus three JSON editors. Each
+    /// section is unpacked into the request payload the backend consumes:
+    /// <list type="bullet">
+    /// <item><c>Headers</c> → HTTP request headers (sent alongside the credential headers).</item>
+    /// <item><c>Parameters</c> → path/query/header parameter values, resolved against the tool's schema server-side.</item>
+    /// <item><c>RequestPayload</c> → the JSON request body for body-capable methods.</item>
+    /// </list>
+    /// Any other user input is still merged into the payload for
+    /// backwards compatibility with flows saved before the sectioned form.
     /// </summary>
     private static (string, List<ReactFlowNodeInput>) PreprocessCustomToolNode(
         string rawName,
@@ -498,17 +508,37 @@ public class NodeProcessor : INodeProcessor
 
         foreach (var input in inputs)
         {
-            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
             if (IsSystemInput(input.Key)) continue;
+
+            // Error-handling settings are form-level behavior, not request data.
+            if (input.Key.StartsWith("__OnError__", StringComparison.OrdinalIgnoreCase)) continue;
 
             if (input.Key.Contains("__CredentialName__"))
             {
-                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
+                // Credentials are never part of the payload; they travel separately
+                // so the backend can resolve the vault secret server-side.
+                if (!string.IsNullOrEmpty(input.Value?.ToString()))
+                {
+                    newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
+                }
                 continue;
             }
 
-            // Resolve any template variables before embedding into the payload JSON
+            // Resolve the section (or field) value first — an empty raw value may
+            // still resolve to something usable, and template expressions must be
+            // evaluated against the runtime context.
             var resolvedValue = context.ResolveTemplateObject(input.Value);
+
+            // Unpack the three JSON sections into the payload envelope. The keys are
+            // dropped from the payload so the backend never sees a stray wrapper.
+            if (CustomToolSectionKeys.TryGetValue(input.Key, out var payloadKey))
+            {
+                AddResolvedSection(payloadDict, payloadKey, resolvedValue);
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+
             payloadDict[input.Key] = resolvedValue;
         }
 
@@ -519,6 +549,67 @@ public class NodeProcessor : INodeProcessor
         });
 
         return ("ProcessCustomToolRequestNode", newInputs);
+    }
+
+    /// <summary>
+    /// DCP section field names mapped to their position in the custom-tool request
+    /// payload, mirroring the constants in the studio custom-tools converter.
+    /// </summary>
+    private static readonly Dictionary<string, string> CustomToolSectionKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Headers"] = "headers",
+        ["Parameters"] = "parameters",
+        ["RequestPayload"] = "requestPayload",
+    };
+
+    /// <summary>
+    /// Adds a resolved JSON-editor section to the payload. A section may arrive as
+    /// an already-serialized JSON string (the DCP stores JSON as a string), as a
+    /// JsonElement/JsonNode, or as a CLR object (template resolution can return a
+    /// raw value when the whole field is a single placeholder).
+    /// </summary>
+    private static void AddResolvedSection(Dictionary<string, object?> payload, string key, object? value)
+    {
+        var parsed = ParseSectionJson(value);
+        if (parsed is null) return;
+
+        payload[key] = parsed;
+    }
+
+    /// <summary>
+    /// Normalizes a section value into a JSON-compatible object. Returns
+    /// <c>null</c> when the value is empty, blank, or unparseable so that the
+    /// section is omitted rather than sent as an empty/garbage body.
+    /// </summary>
+    private static object? ParseSectionJson(object? value)
+    {
+        switch (value)
+        {
+            case null:
+                return null;
+
+            case string stringValue:
+                if (string.IsNullOrWhiteSpace(stringValue)) return null;
+                try
+                {
+                    using var document = JsonDocument.Parse(stringValue);
+                    return document.RootElement.Clone();
+                }
+                catch (JsonException)
+                {
+                    // Not valid JSON — fall back to passing the raw string through so
+                    // the backend can decide how to use it.
+                    return stringValue;
+                }
+
+            case JsonElement element:
+                return element.ValueKind == JsonValueKind.Undefined || element.ValueKind == JsonValueKind.Null
+                    ? null
+                    : element.Clone();
+
+            default:
+                return value;
+        }
     }
 
     /// <summary>

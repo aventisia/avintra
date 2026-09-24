@@ -1,9 +1,6 @@
-import {
-  ToolDto,
-  UsableToolOperation,
-  UsableToolParameter,
-  UsableToolSchemaProperty,
-} from "@/features/dynamic-config-panel/dtos/tool-dto";
+import { ToolDto, UsableToolOperation } from "@/features/dynamic-config-panel/dtos/tool-dto";
+import { DCPFieldSchemaType } from "@/features/dynamic-config-panel/types/dcp-field-schema-type";
+import { NodeConfigSchemaType } from "@/features/dynamic-config-panel/types/node-config-schema-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
 /** Icon-mapper key of the shared wrench glyph used when a tool defines no icon. */
@@ -14,6 +11,24 @@ export const DEFAULT_TOOL_NODE_COLOR = "#4f46e5";
 
 /** Form field name carrying the credential selection for custom-tool nodes. */
 export const CUSTOM_TOOL_CREDENTIAL_FIELD = "__CredentialName__CustomApiTool";
+
+/**
+ * Form field name carrying the additional request headers as a JSON object.
+ * The executor forwards the value to the request as HTTP headers.
+ */
+export const CUSTOM_TOOL_HEADERS_FIELD = "Headers";
+
+/**
+ * Form field name carrying the path/query/header parameter values as a JSON
+ * object. The executor forwards the value to the request URL and headers.
+ */
+export const CUSTOM_TOOL_PARAMETERS_FIELD = "Parameters";
+
+/**
+ * Form field name carrying the JSON request body. The executor forwards the
+ * value as the outbound request body for body-capable methods.
+ */
+export const CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD = "RequestPayload";
 
 /**
  * Node-name prefix identifying a custom-tool action node. The runtime executor
@@ -67,91 +82,214 @@ export function getToolName(tool: CustomToolLike): string {
   return tool.name || "Untitled tool";
 }
 
-/**
- * Maps an OpenAPI schema type to the DCP form control type used to render it.
- * Unmapped types fall back to text.
- */
-function mapSchemaTypeToFieldType(type?: string): "text" | "number" | "switch" | "textarea" {
-  switch (type?.toLowerCase()) {
-    case "integer":
-    case "number":
-      return "number";
-    case "boolean":
-      return "switch";
-    case "object":
-      return "textarea";
-    default:
-      return "text";
-  }
-}
+/** HTTP methods that accept a JSON request body. */
+const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
+
+/** Whether the operation's HTTP method can carry a JSON request body. */
+const isBodyCapableMethod = (method?: string): boolean =>
+  BODY_CAPABLE_METHODS.has((method ?? "").toUpperCase());
 
 /**
- * Builds the default value for a form field from its mapped control type:
- * booleans default to false, numbers to 0, everything else to an empty string.
+ * Splits a custom-tool node name ("CustomTool/{toolName}.{operationId}", or the
+ * legacy "{toolId}.{operationId}") into its tool reference and operation id.
  */
-function getDefaultValueForType(type: "text" | "number" | "switch" | "textarea"): unknown {
-  switch (type) {
+export function parseCustomToolNodeReference(nodeUniqueName: string): {
+  toolName: string;
+  operationId: string;
+} {
+  const reference = nodeUniqueName.startsWith(CUSTOM_TOOL_NODE_PREFIX)
+    ? nodeUniqueName.slice(CUSTOM_TOOL_NODE_PREFIX.length)
+    : nodeUniqueName;
+  const separatorIndex = reference.lastIndexOf(".");
+  return {
+    toolName: separatorIndex > 0 ? reference.slice(0, separatorIndex) : reference,
+    operationId: separatorIndex > 0 ? reference.slice(separatorIndex + 1) : "",
+  };
+}
+
+/** Builds a sample value for a simplified schema type, used to scaffold JSON. */
+const sampleValueForType = (type?: string): unknown => {
+  switch ((type ?? "string").toLowerCase()) {
     case "number":
+    case "integer":
       return 0;
-    case "switch":
+    case "boolean":
       return false;
+    case "array":
+      return [];
+    case "object":
+      return {};
     default:
       return "";
   }
-}
+};
 
 /**
- * Converts one OpenAPI parameter into a node input field. Path parameters are
- * always required; query/header/cookie parameters follow the spec's required flag.
+ * Maps an operation's declared header parameters into the Headers JSON default.
+ * Returns "" when the schema declares none (leaving the editor empty).
  */
-function parameterToInput(parameter: UsableToolParameter): NodeInputType {
-  const fieldType = mapSchemaTypeToFieldType(parameter.type);
-  const isRequired = parameter.in === "path" || Boolean(parameter.required);
-
-  return {
-    key: parameter.name,
-    value: getDefaultValueForType(fieldType),
-    in: parameter.in,
-    description: parameter.description,
-    type: parameter.type,
-    required: isRequired,
-  } as unknown as NodeInputType;
-}
+const buildHeadersDefault = (operation?: UsableToolOperation): string => {
+  const headerParameters = (operation?.parameters ?? []).filter(
+    (parameter) => parameter.name && (parameter.in ?? "").toLowerCase() === "header",
+  );
+  if (headerParameters.length === 0) return "";
+  return JSON.stringify(
+    Object.fromEntries(
+      headerParameters.map((parameter): [string, unknown] => [
+        parameter.name,
+        sampleValueForType(parameter.type),
+      ]),
+    ),
+    null,
+    2,
+  );
+};
 
 /**
- * Converts one request-body schema property into a node input field.
+ * Maps an operation's declared path/query parameters into the Parameters JSON
+ * default. Returns "" when the schema declares none.
  */
-function bodyPropertyToInput(property: UsableToolSchemaProperty): NodeInputType {
-  const fieldType = mapSchemaTypeToFieldType(property.type);
-
-  return {
-    key: property.name,
-    value: getDefaultValueForType(fieldType),
-    in: "body",
-    description: property.description,
-    type: property.type,
-    required: property.required === true,
-  } as unknown as NodeInputType;
-}
+const buildParametersDefault = (operation?: UsableToolOperation): string => {
+  const parameterEntries = (operation?.parameters ?? []).filter((parameter) => {
+    if (!parameter.name) return false;
+    const location = (parameter.in ?? "query").toLowerCase();
+    return location === "path" || location === "query";
+  });
+  if (parameterEntries.length === 0) return "";
+  return JSON.stringify(
+    Object.fromEntries(
+      parameterEntries.map((parameter): [string, unknown] => [
+        parameter.name,
+        sampleValueForType(parameter.type),
+      ]),
+    ),
+    null,
+    2,
+  );
+};
 
 /**
- * Converts one response schema property into a node output field.
+ * Maps an operation's declared request-body properties into the Request Payload
+ * JSON default. Returns "" when the method cannot carry a body (only POST, PUT
+ * and PATCH can) or the schema declares no properties (free-form body).
  */
-function responsePropertyToOutput(property: UsableToolSchemaProperty): NodeOutputType {
-  return {
-    key: property.name,
-    value: {
-      value: String(property.name),
-      enabled: true,
+const buildRequestPayloadDefault = (operation?: UsableToolOperation): string => {
+  if (!isBodyCapableMethod(operation?.method)) return "";
+  const properties = operation?.requestBody?.properties ?? [];
+  if (properties.length === 0) return "";
+  return JSON.stringify(
+    Object.fromEntries(
+      properties.map((property): [string, unknown] => [
+        property.name,
+        sampleValueForType(property.type),
+      ]),
+    ),
+    null,
+    2,
+  );
+};
+
+/**
+ * Builds the dynamic-config-panel schema for a custom-tool action node on the
+ * client. The form is a credential selector plus three JSON editors (headers,
+ * parameters, request payload); the backend resolves the tool, operation and
+ * vault credential server-side from the node name. When the catalog operation
+ * schema is available, the declared headers, path/query parameters and
+ * request-body properties are mapped into the matching editors as defaults, and
+ * the Request Payload editor is only added for POST, PUT and PATCH operations.
+ *
+ * @param nodeUniqueName The node name, e.g. "CustomTool/Weather API.get_user".
+ * @param operation The tool's catalog operation schema, when resolvable.
+ * @returns The node config the DCP renders.
+ */
+export function buildCustomToolNodeConfig(
+  nodeUniqueName: string,
+  operation?: UsableToolOperation,
+): NodeConfigSchemaType {
+  // Display-only: the node name carries "{toolName}.{operationId}" (tool names
+  // may contain dots, so the operation is the segment after the final dot).
+  const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
+
+  // Schema-derived defaults: sections the operation's schema declares are
+  // scaffolded into the JSON editors instead of starting blank.
+  const headersDefault = buildHeadersDefault(operation);
+  const parametersDefault = buildParametersDefault(operation);
+  const requestPayloadDefault = buildRequestPayloadDefault(operation);
+
+  const fields: DCPFieldSchemaType[] = [
+    {
+      direction: "Input",
+      type: "credentials-select",
+      name: CUSTOM_TOOL_CREDENTIAL_FIELD,
+      label: "Credential",
+      description: `The ${toolName} credential used to authenticate the request.`,
+      defaultValue: "",
     },
+    {
+      direction: "Input",
+      type: "json-editor",
+      name: CUSTOM_TOOL_HEADERS_FIELD,
+      label: "Headers",
+      description: 'Additional request headers as a JSON object, e.g. { "X-Api-Key": "abc" }.',
+      defaultValue: headersDefault,
+    },
+    {
+      direction: "Input",
+      type: "json-editor",
+      name: CUSTOM_TOOL_PARAMETERS_FIELD,
+      label: "Parameters",
+      description:
+        'Path, query and header parameter values as a JSON object, e.g. { "id": "123" }.',
+      defaultValue: parametersDefault,
+    },
+  ];
+
+  // The Request Payload editor only applies to POST, PUT and PATCH — the
+  // backend ignores the payload section for every other method. When the
+  // operation schema is unknown the editor is always shown (previous behavior).
+  if (!operation || isBodyCapableMethod(operation.method)) {
+    fields.push({
+      direction: "Input",
+      type: "json-editor",
+      name: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD,
+      label: "Request Payload",
+      description: "JSON request body, sent with POST, PUT and PATCH operations.",
+      defaultValue: requestPayloadDefault,
+    });
+  }
+
+  fields.push({
+    direction: "Output",
+    type: "config-panel-output",
+    name: "Result",
+    label: "Result",
+    description: `The response returned by the ${operationId || "custom tool"} operation.`,
+    defaultValue: { value: "Result", enabled: true },
+  });
+
+  return {
+    name: nodeUniqueName,
+    label:
+      operation?.summary?.trim() ||
+      (operationId ? formatOperationId(operationId) : "Custom Tool Action"),
+    description:
+      operation?.description?.trim() ||
+      operation?.summary?.trim() ||
+      "Executes a custom tool operation.",
+    version: "1.0.0",
+    supportedPlatforms: ["cloud", "windows"],
+    errorHandling: "standard",
+    testScreenType: "standard",
+    fields,
   };
 }
 
 /**
  * Converts a tool's server-parsed OpenAPI operations into dynamic
  * cloudConnectorNode action entries for the L3 pane. Each endpoint becomes one
- * node whose inputs/outputs are generated from the spec's parameters, request
- * body and response schema — nothing is hardcoded.
+ * node; the node carries the sectioned custom-tool inputs (credential + headers,
+ * parameters and request-payload JSON editors) and a single `Result` output, all
+ * of which are resolved server-side at execution time.
  */
 export function convertToolOperationsToActions(
   tool: CustomToolLike,
@@ -191,28 +329,31 @@ export function convertToolOperationsToActions(
     // Color: per-operation x-agent-node accent color, else the platform default.
     const color = operation.color || DEFAULT_TOOL_NODE_COLOR;
 
-    // Inputs: credential selector + path/query/header parameters + body properties.
-    const inputs: NodeInputType[] = [
-      { key: CUSTOM_TOOL_CREDENTIAL_FIELD, value: "" },
-      ...(operation.parameters ?? []).map(parameterToInput),
-      ...(operation.requestBody?.properties ?? []).map(bodyPropertyToInput),
-    ];
+    // Inputs: credential selector plus the three JSON editors the DCP renders
+    // (headers, parameters, request payload). Sections the operation's schema
+    // declares are mapped in as the initial values; the Request Payload input
+    // is only added for POST, PUT and PATCH, since the backend ignores the
+    // payload section for every other method.
+    const inputs: NodeInputType[] = [{ key: CUSTOM_TOOL_CREDENTIAL_FIELD, value: "" }];
+    const headersDefault = buildHeadersDefault(operation);
+    const parametersDefault = buildParametersDefault(operation);
+    const requestPayloadDefault = buildRequestPayloadDefault(operation);
+    if (headersDefault) inputs.push({ key: CUSTOM_TOOL_HEADERS_FIELD, value: headersDefault });
+    if (parametersDefault)
+      inputs.push({ key: CUSTOM_TOOL_PARAMETERS_FIELD, value: parametersDefault });
+    if (requestPayloadDefault)
+      inputs.push({ key: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD, value: requestPayloadDefault });
 
-    // Outputs: one output per documented response property when the spec
-    // provides any, otherwise a single Result output carrying the response.
-    const responseProperties = operation.response?.properties ?? [];
-    const outputs: NodeOutputType[] =
-      responseProperties.length > 0
-        ? responseProperties.map(responsePropertyToOutput)
-        : [
-            {
-              key: "Result",
-              value: {
-                value: "Result",
-                enabled: true,
-              },
-            },
-          ];
+    // Output: the upstream response body, exposed as `Result`.
+    const outputs: NodeOutputType[] = [
+      {
+        key: "Result",
+        value: {
+          value: "Result",
+          enabled: true,
+        },
+      },
+    ];
 
     return {
       type: "cloudConnectorNode" as const,

@@ -57,7 +57,7 @@ public class ProcessCustomToolRequestNode : BaseNode
                 provider = "customtool",
                 action = action ?? string.Empty,
                 credentialName = credentialName ?? string.Empty,
-                payload = ParsePayload(payload) // Parse the payload string into camelCase JSON only if it's a valid JSON, otherwise send as string
+                payload = ParsePayload(payload) // Parse the envelope into JSON when valid, else send the raw string
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
@@ -145,6 +145,12 @@ public class ProcessCustomToolRequestNode : BaseNode
             ? GetString(parent, propertyName)
             : null;
 
+    /// <summary>
+    /// Parses the executor-built payload envelope, preserving key casing exactly:
+    /// the DCP JSON editors let the user author the headers, parameter names and
+    /// request body verbatim, and upstream APIs treat body/parameter names as
+    /// case-sensitive. Invalid JSON falls back to the raw string.
+    /// </summary>
     private static object? ParsePayload(string? payloadString)
     {
         if (string.IsNullOrWhiteSpace(payloadString))
@@ -153,27 +159,11 @@ public class ProcessCustomToolRequestNode : BaseNode
         try
         {
             var doc = JsonDocument.Parse(payloadString);
-            return ConvertToCamelCase(doc.RootElement);
+            return doc.RootElement.Clone(); // preserve author casing
         }
         catch
         {
             return payloadString; // fallback: send as string if not valid JSON
         }
-    }
-
-    private static object? ConvertToCamelCase(JsonElement element)
-    {
-        return element.ValueKind switch
-        {
-            JsonValueKind.Object => element.EnumerateObject().ToDictionary(
-                p => char.ToLowerInvariant(p.Name[0]) + p.Name[1..],
-                p => ConvertToCamelCase(p.Value)),
-            JsonValueKind.Array => element.EnumerateArray().Select(ConvertToCamelCase).ToList(),
-            JsonValueKind.String => (object?)element.GetString(),
-            JsonValueKind.Number => element.TryGetInt64(out var l) ? l : element.GetDouble(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            _ => null
-        };
     }
 }
