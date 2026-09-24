@@ -10,7 +10,7 @@
  *   npm run test:validation
  */
 import { ApiError } from "corsair/http";
-import { validatePayload, normalizeInvokeError } from "./validation.js";
+import { validatePayload, normalizeInvokeError, describeError } from "./validation.js";
 
 function assert(cond: boolean, message: string): void {
   if (!cond) throw new Error(`ASSERTION FAILED: ${message}`);
@@ -124,9 +124,43 @@ function testNormalizeInvokeError(): void {
   console.log("PASS: normalizeInvokeError");
 }
 
+function testDescribeError(): void {
+  // Plain Error: name + message.
+  assert(
+    describeError(new Error("boom")) === "Error: boom",
+    "plain error should render name + message",
+  );
+
+  // Node network error: the `code` is what distinguishes DNS from TLS from timeout.
+  const dns = Object.assign(new Error("getaddrinfo ENOTFOUND gmail.googleapis.com"), {
+    code: "ENOTFOUND",
+  });
+  const dnsText = describeError(dns);
+  assert(dnsText.includes("ENOTFOUND"), "node error code should be included");
+  assert(dnsText.includes("gmail.googleapis.com"), "error message should be included");
+
+  // Wrapped error: the `cause` message is surfaced too.
+  const wrapped = new Error("fetch failed", {
+    cause: Object.assign(new Error("connect ECONNREFUSED 127.0.0.1:443"), {
+      code: "ECONNREFUSED",
+    }),
+  });
+  const wrappedText = describeError(wrapped);
+  assert(wrappedText.includes("fetch failed"), "outer message should be included");
+  assert(wrappedText.includes("ECONNREFUSED"), "cause code should be included");
+
+  // Non-Error throwables must not crash the logger.
+  assert(describeError("plain string") === "plain string", "string throwable");
+  assert(describeError(undefined) === "unknown error", "undefined throwable");
+  assert(describeError({ a: 1 }) === '{"a":1}', "object throwable should serialize");
+
+  console.log("PASS: describeError");
+}
+
 function main(): void {
   testValidatePayload();
   testNormalizeInvokeError();
+  testDescribeError();
   console.log("ALL VALIDATION TESTS PASSED");
 }
 

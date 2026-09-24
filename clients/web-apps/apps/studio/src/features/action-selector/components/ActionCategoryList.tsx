@@ -51,14 +51,19 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   const actionCategories = useMemo(() => {
     if (query) {
+      const normalizedQuery = query.toLowerCase();
       const map = new Map<string, ActionCategoryType>();
 
       actionSelectorData.forEach((primary) => {
         primary.actionCategories.forEach((category) => {
-          const matchingActions =
-            category.actions?.filter((action) =>
-              action.label.toLowerCase().includes(query.toLowerCase()),
-            ) ?? [];
+          // If the category name itself matches, surface all of its actions.
+          const categoryMatches = category.label.toLowerCase().includes(normalizedQuery);
+
+          const matchingActions = categoryMatches
+            ? (category.actions ?? [])
+            : (category.actions?.filter((action) =>
+                action.label.toLowerCase().includes(normalizedQuery),
+              ) ?? []);
 
           if (matchingActions.length > 0) {
             map.set(category.label, { ...category, actions: matchingActions });
