@@ -1,5 +1,5 @@
-import catalog from "./corsair-integration-catalog.json";
 import { appToCredentialNameMapper } from "./app-to-credential-name-mapper";
+import catalog from "./corsair-integration-catalog.json";
 
 type CorsairIntegration = (typeof catalog)[number];
 
@@ -20,17 +20,15 @@ export function getCorsairPluginIcon(pluginId: string | undefined): string | und
 export function isCorsairOAuthCredentialType(type: string | undefined): boolean {
   return Boolean(
     getCorsairIntegration(type)?.authModes.some(({ mode }) => mode === "oauth_2") ||
-      (type === "M365" || type === "GoogleWorkspace"),
+    type === "M365" ||
+    type === "GoogleWorkspace",
   );
-}
-
-export function getCorsairVaultIcon(type: string | undefined): string | undefined {
-  return getCorsairIntegration(type)?.icon;
 }
 
 export function getCorsairCredentialName(type: string | undefined): string | undefined {
   const integration = getCorsairIntegration(type);
   return integration
-    ? appToCredentialNameMapper[integration.vaultType] ?? `${integration.vaultType.toLowerCase()}_credentials`
+    ? (appToCredentialNameMapper[integration.vaultType] ??
+        `${integration.vaultType.toLowerCase()}_credentials`)
     : undefined;
 }

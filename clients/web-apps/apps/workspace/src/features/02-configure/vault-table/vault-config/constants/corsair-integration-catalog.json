@@ -262,7 +262,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/agiled.png",
     "vaultType": "Agiled",
     "configFile": "Agiled.json"
   },
@@ -319,7 +319,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/aimlapi.svg",
+    "icon": "/brand-img/aimlapi.png",
     "vaultType": "Aimlapi",
     "configFile": "Aimlapi.json"
   },
@@ -421,7 +421,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/openai.svg",
+    "icon": "/brand-img/allimagesai.png",
     "vaultType": "Allimagesai",
     "configFile": "Allimagesai.json"
   },
@@ -512,7 +512,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/openweathermap.svg",
+    "icon": "/brand-img/ambee.png",
     "vaultType": "Ambee",
     "configFile": "Ambee.json"
   },
@@ -550,7 +550,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/stripe.svg",
+    "icon": "/brand-img/amcards.png",
     "vaultType": "Amcards",
     "configFile": "Amcards.json"
   },
@@ -624,7 +624,7 @@
       }
     ],
     "defaultAuthMode": "oauth_2",
-    "icon": "/brand-img/anthropicadministrator.svg",
+    "icon": "/brand-img/anthropicadministrator.png",
     "vaultType": "Anthropic",
     "configFile": "Anthropic.json"
   },
@@ -759,7 +759,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/apipie.svg",
+    "icon": "/brand-img/apipie.png",
     "vaultType": "Apipie",
     "configFile": "Apipie.json"
   },
@@ -793,7 +793,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/appointo.png",
     "vaultType": "Appointo",
     "configFile": "Appointo.json"
   },
@@ -865,7 +865,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/ascora.png",
     "vaultType": "Ascora",
     "configFile": "Ascora.json"
   },
@@ -884,7 +884,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/ashby.png",
     "vaultType": "Ashby",
     "configFile": "Ashby.json"
   },
@@ -920,7 +920,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/asticaai.svg",
+    "icon": "/brand-img/asticaai.png",
     "vaultType": "Asticaai",
     "configFile": "Asticaai.json"
   },
@@ -1199,7 +1199,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/benchmarkemail.png",
     "vaultType": "Benchmarkemail",
     "configFile": "Benchmarkemail.json"
   },
@@ -1216,7 +1216,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/bestbuy.png",
     "vaultType": "Bestbuy",
     "configFile": "Bestbuy.json"
   },
@@ -1326,7 +1326,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/bigml.svg",
+    "icon": "/brand-img/bigml.png",
     "vaultType": "Bigml",
     "configFile": "Bigml.json"
   },
@@ -1460,7 +1460,7 @@
       }
     ],
     "defaultAuthMode": "oauth_2",
-    "icon": "/function.png",
+    "icon": "/brand-img/boldsign.png",
     "vaultType": "Boldsign",
     "configFile": "Boldsign.json"
   },
@@ -1498,7 +1498,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/boltiot.png",
     "vaultType": "Boltiot",
     "configFile": "Boltiot.json"
   },
@@ -1561,7 +1561,7 @@
       }
     ],
     "defaultAuthMode": "oauth_2",
-    "icon": "/function.png",
+    "icon": "/brand-img/borneo.png",
     "vaultType": "Borneo",
     "configFile": "Borneo.json"
   },
@@ -1578,7 +1578,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/botbaba.png",
     "vaultType": "Botbaba",
     "configFile": "Botbaba.json"
   },
@@ -1705,7 +1705,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/breathehr.png",
     "vaultType": "Breathehr",
     "configFile": "Breathehr.json"
   },
@@ -1787,7 +1787,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/brightdata.png",
     "vaultType": "Brightdata",
     "configFile": "Brightdata.json"
   },
@@ -1823,7 +1823,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/browserless.svg",
+    "icon": "/brand-img/browserless.png",
     "vaultType": "Browserless",
     "configFile": "Browserless.json"
   },
@@ -1840,7 +1840,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/browsertool.png",
     "vaultType": "Browsertool",
     "configFile": "Browsertool.json"
   },
@@ -1859,7 +1859,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/bubble.png",
     "vaultType": "Bubble",
     "configFile": "Bubble.json"
   },
@@ -1914,7 +1914,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/bunnycdn.png",
     "vaultType": "Bunnycdn",
     "configFile": "Bunnycdn.json"
   },
@@ -1965,7 +1965,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/campayn.png",
     "vaultType": "Campayn",
     "configFile": "Campayn.json"
   },
@@ -2061,7 +2061,7 @@
         "read write user_preference"
       ]
     },
-    "icon": "/function.png",
+    "icon": "/brand-img/capsulecrm.png",
     "vaultType": "Capsulecrm",
     "configFile": "Capsulecrm.json"
   },
@@ -2078,7 +2078,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/castingwords.png",
     "vaultType": "Castingwords",
     "configFile": "Castingwords.json"
   },
@@ -2095,7 +2095,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/cdrplatform.png",
     "vaultType": "Cdrplatform",
     "configFile": "Cdrplatform.json"
   },
@@ -2112,7 +2112,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/certifier.png",
     "vaultType": "Certifier",
     "configFile": "Certifier.json"
   },
@@ -2150,7 +2150,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/chatfai.png",
     "vaultType": "Chatfai",
     "configFile": "Chatfai.json"
   },
@@ -2167,7 +2167,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/chmeetings.png",
     "vaultType": "Chmeetings",
     "configFile": "Chmeetings.json"
   },
@@ -2354,7 +2354,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/connecteam.png",
     "vaultType": "Connecteam",
     "configFile": "Connecteam.json"
   },
@@ -2408,7 +2408,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/convoloai.png",
     "vaultType": "Convoloai",
     "configFile": "Convoloai.json"
   },
@@ -2427,7 +2427,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/countdownapi.png",
     "vaultType": "Countdownapi",
     "configFile": "Countdownapi.json"
   },
@@ -2497,7 +2497,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/dadataru.png",
     "vaultType": "Dadataru",
     "configFile": "Dadataru.json"
   },
@@ -2561,7 +2561,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/datarobot.png",
     "vaultType": "Datarobot",
     "configFile": "Datarobot.json"
   },
@@ -2599,7 +2599,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/devinmcp.svg",
+    "icon": "/brand-img/devinmcp.png",
     "vaultType": "Devinmcp",
     "configFile": "Devinmcp.json"
   },
@@ -2618,7 +2618,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/diffbot.svg",
+    "icon": "/brand-img/diffbot.png",
     "vaultType": "Diffbot",
     "configFile": "Diffbot.json"
   },
@@ -2743,7 +2743,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/dripcel.png",
     "vaultType": "Dripcel",
     "configFile": "Dripcel.json"
   },
@@ -2822,7 +2822,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/dynapictures.png",
     "vaultType": "Dynapictures",
     "configFile": "Dynapictures.json"
   },
@@ -2841,7 +2841,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/emelia.png",
     "vaultType": "Emelia",
     "configFile": "Emelia.json"
   },
@@ -2939,7 +2939,7 @@
       "requiresRegisteredRedirect": true,
       "tokenAuthMethod": "body"
     },
-    "icon": "/function.png",
+    "icon": "/brand-img/exist.png",
     "vaultType": "Exist",
     "configFile": "Exist.json"
   },
@@ -3043,7 +3043,7 @@
       "tokenUrl": "https://server.fillout.com/public/oauth/accessToken",
       "scopes": []
     },
-    "icon": "/function.png",
+    "icon": "/brand-img/filloutforms.png",
     "vaultType": "Filloutforms",
     "configFile": "Filloutforms.json"
   },
@@ -3096,7 +3096,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/flexisign.png",
     "vaultType": "Flexisign",
     "configFile": "Flexisign.json"
   },
@@ -3229,7 +3229,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/gladia.png",
     "vaultType": "Gladia",
     "configFile": "Gladia.json"
   },
@@ -3681,7 +3681,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/griptape.png",
     "vaultType": "Griptape",
     "configFile": "Griptape.json"
   },
@@ -4257,7 +4257,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/marketstack.png",
     "vaultType": "Marketstack",
     "configFile": "Marketstack.json"
   },
@@ -4383,7 +4383,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/ocrspace.svg",
+    "icon": "/brand-img/ocrspace.png",
     "vaultType": "Ocrspace",
     "configFile": "Ocrspace.json"
   },
@@ -4402,7 +4402,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/ocrwebservice.svg",
+    "icon": "/brand-img/ocrwebservice.png",
     "vaultType": "Ocrwebservice",
     "configFile": "Ocrwebservice.json"
   },
@@ -4499,7 +4499,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/onepassword.svg",
+    "icon": "/brand-img/onepassword.png",
     "vaultType": "Onepassword",
     "configFile": "Onepassword.json"
   },
@@ -4658,7 +4658,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/parseur.png",
     "vaultType": "Parseur",
     "configFile": "Parseur.json"
   },
@@ -4785,7 +4785,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/removebg.png",
     "vaultType": "Removebg",
     "configFile": "Removebg.json"
   },
@@ -4846,7 +4846,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/runpod.svg",
     "vaultType": "Runpod",
     "configFile": "Runpod.json"
   },
@@ -4917,7 +4917,7 @@
       "tokenAuthMethod": "body",
       "requiresRegisteredRedirect": true
     },
-    "icon": "/function.png",
+    "icon": "/brand-img/sapsuccessfactors.png",
     "vaultType": "Sapsuccessfactors",
     "configFile": "Sapsuccessfactors.json"
   },
@@ -4934,7 +4934,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/scaleai.png",
     "vaultType": "Scaleai",
     "configFile": "Scaleai.json"
   },
@@ -4951,7 +4951,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/scrapegraphai.png",
     "vaultType": "Scrapegraphai",
     "configFile": "Scrapegraphai.json"
   },
@@ -5080,7 +5080,7 @@
         "offline_access"
       ]
     },
-    "icon": "/brand-img/sharepoint.svg",
+    "icon": "/brand-img/sharepoint.png",
     "vaultType": "M365",
     "configFile": "M365.json"
   },
@@ -5289,7 +5289,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/studiobyai21labs.svg",
+    "icon": "/brand-img/studiobyai21labs.png",
     "vaultType": "Studiobyai21labs",
     "configFile": "Studiobyai21labs.json"
   },
@@ -5484,7 +5484,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/textrazor.svg",
+    "icon": "/brand-img/textrazor.png",
     "vaultType": "Textrazor",
     "configFile": "Textrazor.json"
   },
@@ -5548,7 +5548,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/timelink.png",
     "vaultType": "Timelink",
     "configFile": "Timelink.json"
   },
@@ -5565,7 +5565,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/tinyurl.png",
     "vaultType": "Tinyurl",
     "configFile": "Tinyurl.json"
   },
@@ -5582,7 +5582,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/tisane.svg",
+    "icon": "/brand-img/tisane.png",
     "vaultType": "Tisane",
     "configFile": "Tisane.json"
   },
@@ -5722,7 +5722,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/whatsapp.svg",
+    "icon": "/brand-img/twochat.png",
     "vaultType": "Twochat",
     "configFile": "Twochat.json"
   },
@@ -5794,7 +5794,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/uploadcare.png",
     "vaultType": "Uploadcare",
     "configFile": "Uploadcare.json"
   },
@@ -5845,7 +5845,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/veriphone.png",
     "vaultType": "Veriphone",
     "configFile": "Veriphone.json"
   },
@@ -5983,7 +5983,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/brand-img/witai.svg",
+    "icon": "/brand-img/witai.png",
     "vaultType": "Witai",
     "configFile": "Witai.json"
   },
@@ -6082,7 +6082,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/workiom.png",
     "vaultType": "Workiom",
     "configFile": "Workiom.json"
   },
@@ -6099,7 +6099,7 @@
       }
     ],
     "defaultAuthMode": "api_key",
-    "icon": "/function.png",
+    "icon": "/brand-img/worldnewsapi.png",
     "vaultType": "Worldnewsapi",
     "configFile": "Worldnewsapi.json"
   },
@@ -6212,7 +6212,7 @@
       },
       "tokenAuthMethod": "body"
     },
-    "icon": "/function.png",
+    "icon": "/brand-img/zohoinventory.png",
     "vaultType": "Zohoinventory",
     "configFile": "Zohoinventory.json"
   },
