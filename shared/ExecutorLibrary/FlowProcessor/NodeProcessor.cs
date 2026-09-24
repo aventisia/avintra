@@ -414,6 +414,8 @@ public class NodeProcessor : INodeProcessor
     ///
     /// Corsair connectors (rawName "Corsair/{Plugin}/{Action}Connector") are routed to
     /// ProcessCorsairRequestNode with (Plugin, Action, CredentialName, Payload) inputs.
+    /// Custom tool actions (rawName "CustomTool/{toolName}.{operationId}") are routed to
+    /// ProcessCustomToolRequestNode with (Action, CredentialName, Payload) inputs.
     /// </summary>
     private static (string, List<ReactFlowNodeInput>) PreprocessCloudConnectorNode(
         string rawName,
@@ -424,6 +426,12 @@ public class NodeProcessor : INodeProcessor
         if (rawName.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase))
         {
             return PreprocessCorsairNode(rawName, inputs, context);
+        }
+
+        // Custom tool actions are cloudConnectorNode type but invoke the custom-tool adapter.
+        if (rawName.StartsWith("CustomTool", StringComparison.OrdinalIgnoreCase))
+        {
+            return PreprocessCustomToolNode(rawName, inputs, context);
         }
 
         // rawName format: "{provider}/{actionConnector}" e.g. "Google/SendEmailConnector"
@@ -464,6 +472,53 @@ public class NodeProcessor : INodeProcessor
         });
 
         return ("ProcessConnectorRequestNode", newInputs);
+    }
+
+    /// <summary>
+    /// Transforms custom-tool action inputs into (Action, CredentialName, Payload)
+    /// and routes execution to ProcessCustomToolRequestNode. The action is
+    /// normalized to the "{toolName}.{operationId}" form the backend expects, and the
+    /// tool/operation are resolved server-side from the parsed schema.
+    /// </summary>
+    private static (string, List<ReactFlowNodeInput>) PreprocessCustomToolNode(
+        string rawName,
+        List<ReactFlowNodeInput> inputs,
+        FlowExecutionContext context)
+    {
+        // The action is the node name minus the "CustomTool" keyword and its
+        // separator: "CustomTool/{toolName}.{operationId}" → "{toolName}.{operationId}".
+        var action = rawName["CustomTool".Length..].TrimStart('/', '_');
+
+        var newInputs = new List<ReactFlowNodeInput>
+        {
+            new() { Key = "Action", Value = action },
+        };
+
+        var payloadDict = new Dictionary<string, object?>();
+
+        foreach (var input in inputs)
+        {
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+            if (IsSystemInput(input.Key)) continue;
+
+            if (input.Key.Contains("__CredentialName__"))
+            {
+                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
+                continue;
+            }
+
+            // Resolve any template variables before embedding into the payload JSON
+            var resolvedValue = context.ResolveTemplateObject(input.Value);
+            payloadDict[input.Key] = resolvedValue;
+        }
+
+        newInputs.Add(new ReactFlowNodeInput
+        {
+            Key = "Payload",
+            Value = JsonSerializer.Serialize(payloadDict)
+        });
+
+        return ("ProcessCustomToolRequestNode", newInputs);
     }
 
     /// <summary>

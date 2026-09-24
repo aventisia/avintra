@@ -8,8 +8,8 @@ interface OperationListProps {
 
 /**
  * Renders a read-only list of operations parsed from the tool schema.
- * Displays operations in a two-column grid showing the HTTP method badge,
- * action name and description.
+ * Displays operations in a two-column grid showing the operation id and
+ * description.
  */
 export const OperationList = ({ tool, showTitle }: OperationListProps) => {
   const operations = normalizeToolOperations(tool);
@@ -33,17 +33,12 @@ export const OperationList = ({ tool, showTitle }: OperationListProps) => {
         <div className="grid grid-cols-2 gap-3">
           {operations.map((op) => (
             <div key={op.operationId} className="rounded border p-3 bg-muted/30">
-              <div className="flex items-center gap-2">
-                {op.method && (
-                  <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
-                    {op.method}
-                  </span>
-                )}
-                <div className="text-sm font-semibold text-foreground truncate">
-                  {op.operationId}
+              <div className="text-sm font-semibold text-foreground truncate">{op.operationId}</div>
+              {(op.description || op.summary) && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  {op.description || op.summary}
                 </div>
-              </div>
-              {op.summary && <div className="text-xs text-muted-foreground mt-1">{op.summary}</div>}
+              )}
             </div>
           ))}
         </div>

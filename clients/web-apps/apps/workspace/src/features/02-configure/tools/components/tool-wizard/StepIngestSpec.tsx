@@ -153,10 +153,26 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           disabled={crudAction === "read"}
         />
         {crudAction !== "read" &&
-          !draftTool?.manualOperations?.some((op) => op.name.trim() && op.endpoint.trim()) &&
-          touched.openApiSpec && (
+          touched.openApiSpec &&
+          !(draftTool?.manualOperations ?? []).some(
+            (op) => op.name.trim() && op.endpoint.trim(),
+          ) && (
             <p className="text-xs text-destructive">
               At least one method with a name and endpoint is required.
+            </p>
+          )}
+        {crudAction !== "read" &&
+          touched.openApiSpec &&
+          (draftTool?.manualOperations ?? []).some(
+            (op, index, operations) =>
+              operations.findIndex(
+                (other) =>
+                  other.method === op.method &&
+                  other.endpoint.trim().toLowerCase() === op.endpoint.trim().toLowerCase(),
+              ) !== index,
+          ) && (
+            <p className="text-xs text-destructive">
+              Each method must use a unique HTTP method and endpoint combination.
             </p>
           )}
       </div>

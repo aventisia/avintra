@@ -14,17 +14,27 @@ const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
 const nodeConfigInFlight: Record<string, Promise<DCPFieldSchemaType[] | unknown> | undefined> = {};
 
 /**
- * Detects a custom-tool action node name: a GUID tool id followed by a
- * "." and the OpenAPI operationId (e.g. "3f2c…-a1.get_user").
+ * Node-name prefix identifying a custom-tool action node (see
+ * getCustomToolNodeName in the action-selector converters).
+ */
+const CUSTOM_TOOL_NODE_PREFIX = "CustomTool/";
+
+/**
+ * Detects a custom-tool action node name: the "CustomTool/" keyword prefix
+ * followed by "{toolName}.{operationId}" (e.g. "CustomTool/Weather API.get_user").
+ * Legacy fallback: flows saved before the tool-name convention use the bare
+ * "{toolId}.{operationId}" form, so a leading GUID is still accepted.
  */
 const isCustomToolNodeName = (nodeUniqueName: string): boolean => {
-  const separatorIndex = nodeUniqueName.indexOf(".");
-  if (separatorIndex !== 36) return false;
-  const toolId = nodeUniqueName.slice(0, separatorIndex);
+  if (nodeUniqueName.startsWith(CUSTOM_TOOL_NODE_PREFIX)) return true;
+
+  const separatorIndex = nodeUniqueName.lastIndexOf(".");
+  if (separatorIndex <= 0) return false;
+  const toolRef = nodeUniqueName.slice(0, separatorIndex);
   const operationId = nodeUniqueName.slice(separatorIndex + 1);
   const guidPattern =
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-  return guidPattern.test(toolId) && operationId.length > 0;
+  return guidPattern.test(toolRef) && operationId.length > 0;
 };
 
 /**
@@ -94,13 +104,11 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   }
 
   if (isCustomToolNodeName(nodeUniqueName)) {
-    // Custom-tool action nodes ("{toolId}.{operationId}") have no static
-    // config JSON; their form schema is generated on the server from the
+    // Custom-tool action nodes ("CustomTool/{toolName}.{operationId}") have no
+    // static config JSON; their form schema is generated on the server from the
     // tool's OpenAPI spec (parameters, request body, responses).
     const customToolFetch = axiosInstance
-      .get(
-        `${import.meta.env.VITE_WORKSPACE_API_PATH}/tools/node-config/${nodeUniqueName}.json`,
-      )
+      .get(`${import.meta.env.VITE_WORKSPACE_API_PATH}/tools/node-config/${nodeUniqueName}.json`)
       .then((res) => res.data);
     nodeConfigInFlight[nodeUniqueName] = customToolFetch;
     try {
