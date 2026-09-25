@@ -18,6 +18,22 @@ export interface AgentsAssistDto {
    * Gets or sets the name of the agent.
    */
   name: string;
+  /**
+   * Gets or sets the description of the agent.
+   */
+  description?: string;
+  /**
+   * Gets or sets the type of the agent (Agent / ChatAgent).
+   */
+  type?: string;
+  /**
+   * Gets or sets the queues linked to the agent.
+   */
+  queues?: AgentQueueDto[];
+  /**
+   * Gets or sets the distinct AI model names referenced by the agent's workflow.
+   */
+  aiModels?: string[];
 
   status: string;
   /**
@@ -59,4 +75,22 @@ export interface AgentsAssistDto {
    * Gets or sets the list of machine ids the agent is assigned to.
    */
   assignedMachineIds?: string[];
+}
+
+/**
+ * Lightweight data transfer object describing a queue linked to an agent (flow version).
+ */
+export interface AgentQueueDto {
+  /**
+   * Gets or sets the Id of the queue.
+   */
+  id: string;
+  /**
+   * Gets or sets the name of the queue.
+   */
+  name: string;
+  /**
+   * Gets or sets the type of the queue (Agent / User).
+   */
+  type?: string;
 }

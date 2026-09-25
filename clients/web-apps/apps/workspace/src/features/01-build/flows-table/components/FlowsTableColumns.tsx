@@ -8,12 +8,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { getFlowTypeLabel } from "../utils/flow-type-label.util";
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
-
-const flowTypeLabelOverrides: Record<string, string> = {
-  Agent: "Automation Agent",
-  ChatAgent: "Chat Agent",
-};
 
 /**
  * Array of table columns for the flows table.
@@ -70,11 +66,7 @@ export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto
     ),
     cell: ({ row }) => {
       const typeValue = String(row.getValue("type"));
-      return (
-        <div className="w-auto truncate font-medium">
-          {flowTypeLabelOverrides[typeValue] || typeValue}
-        </div>
-      );
+      return <div className="w-auto truncate font-medium">{getFlowTypeLabel(typeValue)}</div>;
     },
   },
   {

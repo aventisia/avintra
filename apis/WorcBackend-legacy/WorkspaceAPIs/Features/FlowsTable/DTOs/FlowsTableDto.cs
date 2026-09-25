@@ -87,4 +87,16 @@ public class FlowsTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the distinct AI model names referenced by the agent's latest workflow.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public List<string>? AiModels { get; set; }
+
+    /// <summary>
+    /// Gets or sets the queues linked to the agent (flow) across its versions.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public List<AgentQueueDto>? Queues { get; set; }
 }
