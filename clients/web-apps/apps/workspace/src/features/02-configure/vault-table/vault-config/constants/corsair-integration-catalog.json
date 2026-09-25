@@ -23,7 +23,7 @@
     "pluginIds": [
       "abstract"
     ],
-    "providerName": "Abstract",
+    "providerName": "Abstract API",
     "authModes": [
       {
         "mode": "api_key",
@@ -44,7 +44,7 @@
     "pluginIds": [
       "abuseipdb"
     ],
-    "providerName": "Abuseipdb",
+    "providerName": "AbuseIPDB",
     "authModes": [
       {
         "mode": "api_key",
@@ -78,7 +78,7 @@
     "pluginIds": [
       "accrediblecertificates"
     ],
-    "providerName": "Accrediblecertificates",
+    "providerName": "Accredible",
     "authModes": [
       {
         "mode": "api_key",
@@ -95,7 +95,7 @@
     "pluginIds": [
       "activecampaign"
     ],
-    "providerName": "Activecampaign",
+    "providerName": "ActiveCampaign",
     "authModes": [
       {
         "mode": "api_key",
@@ -114,7 +114,7 @@
     "pluginIds": [
       "activetrail"
     ],
-    "providerName": "Activetrail",
+    "providerName": "ActiveTrail",
     "authModes": [
       {
         "mode": "api_key",
@@ -131,7 +131,7 @@
     "pluginIds": [
       "addresszen"
     ],
-    "providerName": "Addresszen",
+    "providerName": "AddressZen",
     "authModes": [
       {
         "mode": "api_key",
@@ -148,7 +148,7 @@
     "pluginIds": [
       "aeroleads"
     ],
-    "providerName": "Aeroleads",
+    "providerName": "AeroLeads",
     "authModes": [
       {
         "mode": "api_key",
@@ -184,7 +184,7 @@
     "pluginIds": [
       "agencyzoom"
     ],
-    "providerName": "Agencyzoom",
+    "providerName": "AgencyZoom",
     "authModes": [
       {
         "mode": "api_key",
@@ -201,7 +201,7 @@
     "pluginIds": [
       "agentmail"
     ],
-    "providerName": "Agentmail",
+    "providerName": "AgentMail",
     "authModes": [
       {
         "mode": "api_key",
@@ -218,7 +218,7 @@
     "pluginIds": [
       "agentql"
     ],
-    "providerName": "Agentql",
+    "providerName": "AgentQL",
     "authModes": [
       {
         "mode": "api_key",
@@ -271,7 +271,7 @@
     "pluginIds": [
       "agilitycms"
     ],
-    "providerName": "Agilitycms",
+    "providerName": "Agility CMS",
     "authModes": [
       {
         "mode": "api_key",
@@ -309,7 +309,7 @@
     "pluginIds": [
       "aimlapi"
     ],
-    "providerName": "Aimlapi",
+    "providerName": "AIMLAPI",
     "authModes": [
       {
         "mode": "api_key",
@@ -356,7 +356,7 @@
     "pluginIds": [
       "aivoov"
     ],
-    "providerName": "Aivoov",
+    "providerName": "AIvoov",
     "authModes": [
       {
         "mode": "api_key",
@@ -411,7 +411,7 @@
     "pluginIds": [
       "allimagesai"
     ],
-    "providerName": "Allimagesai",
+    "providerName": "All Images AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -430,7 +430,7 @@
     "pluginIds": [
       "alphavantage"
     ],
-    "providerName": "Alphavantage",
+    "providerName": "Alpha Vantage",
     "authModes": [
       {
         "mode": "api_key",
@@ -466,7 +466,7 @@
     "pluginIds": [
       "alttextai"
     ],
-    "providerName": "Alttextai",
+    "providerName": "AltText.ai",
     "authModes": [
       {
         "mode": "api_key",
@@ -521,7 +521,7 @@
     "pluginIds": [
       "ambientweather"
     ],
-    "providerName": "Ambientweather",
+    "providerName": "Ambient Weather",
     "authModes": [
       {
         "mode": "api_key",
@@ -540,7 +540,7 @@
     "pluginIds": [
       "amcards"
     ],
-    "providerName": "Amcards",
+    "providerName": "AMcards",
     "authModes": [
       {
         "mode": "api_key",
@@ -576,7 +576,7 @@
     "pluginIds": [
       "anchorbrowser"
     ],
-    "providerName": "Anchorbrowser",
+    "providerName": "Anchor Browser",
     "authModes": [
       {
         "mode": "api_key",
@@ -593,7 +593,7 @@
     "pluginIds": [
       "anonyflow"
     ],
-    "providerName": "Anonyflow",
+    "providerName": "AnonyFlow",
     "authModes": [
       {
         "mode": "api_key",
@@ -612,7 +612,7 @@
     "pluginIds": [
       "anthropicadministrator"
     ],
-    "providerName": "Anthropicadministrator",
+    "providerName": "Anthropic",
     "authModes": [
       {
         "mode": "api_key",
@@ -662,7 +662,7 @@
     "pluginIds": [
       "api2pdf"
     ],
-    "providerName": "Api2pdf",
+    "providerName": "API2PDF",
     "authModes": [
       {
         "mode": "api_key",
@@ -679,7 +679,7 @@
     "pluginIds": [
       "apibible"
     ],
-    "providerName": "Apibible",
+    "providerName": "API.Bible",
     "authModes": [
       {
         "mode": "api_key",
@@ -713,7 +713,7 @@
     "pluginIds": [
       "apilabz"
     ],
-    "providerName": "Apilabz",
+    "providerName": "ApiLabz",
     "authModes": [
       {
         "mode": "api_key",
@@ -730,7 +730,7 @@
     "pluginIds": [
       "apininjas"
     ],
-    "providerName": "Apininjas",
+    "providerName": "API Ninjas",
     "authModes": [
       {
         "mode": "api_key",
@@ -749,7 +749,7 @@
     "pluginIds": [
       "apipie"
     ],
-    "providerName": "Apipie",
+    "providerName": "APIpie",
     "authModes": [
       {
         "mode": "api_key",
@@ -768,7 +768,7 @@
     "pluginIds": [
       "apisports"
     ],
-    "providerName": "Apisports",
+    "providerName": "API-Sports",
     "authModes": [
       {
         "mode": "api_key",
@@ -893,7 +893,7 @@
     "pluginIds": [
       "asindataapi"
     ],
-    "providerName": "Asindataapi",
+    "providerName": "ASIN Data API",
     "authModes": [
       {
         "mode": "api_key",
@@ -910,7 +910,7 @@
     "pluginIds": [
       "asticaai"
     ],
-    "providerName": "Asticaai",
+    "providerName": "Astica AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -929,7 +929,7 @@
     "pluginIds": [
       "asyncinterview"
     ],
-    "providerName": "Asyncinterview",
+    "providerName": "Async Interview",
     "authModes": [
       {
         "mode": "api_key",
@@ -1111,7 +1111,7 @@
     "pluginIds": [
       "baselinker"
     ],
-    "providerName": "Baselinker",
+    "providerName": "BaseLinker",
     "authModes": [
       {
         "mode": "api_key",
@@ -1191,7 +1191,7 @@
     "pluginIds": [
       "benchmarkemail"
     ],
-    "providerName": "Benchmarkemail",
+    "providerName": "Benchmark Email",
     "authModes": [
       {
         "mode": "api_key",
@@ -1208,7 +1208,7 @@
     "pluginIds": [
       "bestbuy"
     ],
-    "providerName": "Bestbuy",
+    "providerName": "Best Buy",
     "authModes": [
       {
         "mode": "api_key",
@@ -1225,7 +1225,7 @@
     "pluginIds": [
       "bettercontact"
     ],
-    "providerName": "Bettercontact",
+    "providerName": "BetterContact",
     "authModes": [
       {
         "mode": "api_key",
@@ -1244,7 +1244,7 @@
     "pluginIds": [
       "betterproposals"
     ],
-    "providerName": "Betterproposals",
+    "providerName": "BetterProposals",
     "authModes": [
       {
         "mode": "api_key",
@@ -1263,7 +1263,7 @@
     "pluginIds": [
       "betterstack"
     ],
-    "providerName": "Betterstack",
+    "providerName": "Better Stack",
     "authModes": [
       {
         "mode": "api_key",
@@ -1280,7 +1280,7 @@
     "pluginIds": [
       "bigdatacloud"
     ],
-    "providerName": "Bigdatacloud",
+    "providerName": "BigDataCloud",
     "authModes": [
       {
         "mode": "api_key",
@@ -1299,7 +1299,7 @@
     "pluginIds": [
       "bigmailer"
     ],
-    "providerName": "Bigmailer",
+    "providerName": "BigMailer",
     "authModes": [
       {
         "mode": "api_key",
@@ -1316,7 +1316,7 @@
     "pluginIds": [
       "bigml"
     ],
-    "providerName": "Bigml",
+    "providerName": "BigML",
     "authModes": [
       {
         "mode": "api_key",
@@ -1395,7 +1395,7 @@
     "pluginIds": [
       "blazemeter"
     ],
-    "providerName": "Blazemeter",
+    "providerName": "BlazeMeter",
     "authModes": [
       {
         "mode": "api_key",
@@ -1452,7 +1452,7 @@
     "pluginIds": [
       "boldsign"
     ],
-    "providerName": "Boldsign",
+    "providerName": "BoldSign",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -1469,7 +1469,7 @@
     "pluginIds": [
       "boloforms"
     ],
-    "providerName": "Boloforms",
+    "providerName": "BoloForms",
     "authModes": [
       {
         "mode": "api_key",
@@ -1488,7 +1488,7 @@
     "pluginIds": [
       "boltiot"
     ],
-    "providerName": "Boltiot",
+    "providerName": "Bolt IoT",
     "authModes": [
       {
         "mode": "api_key",
@@ -1659,7 +1659,7 @@
     "pluginIds": [
       "boxhero"
     ],
-    "providerName": "Boxhero",
+    "providerName": "BoxHero",
     "authModes": [
       {
         "mode": "api_key",
@@ -1695,7 +1695,7 @@
     "pluginIds": [
       "breathehr"
     ],
-    "providerName": "Breathehr",
+    "providerName": "Breathe HR",
     "authModes": [
       {
         "mode": "api_key",
@@ -1777,7 +1777,7 @@
     "pluginIds": [
       "brightdata"
     ],
-    "providerName": "Brightdata",
+    "providerName": "Bright Data",
     "authModes": [
       {
         "mode": "api_key",
@@ -1796,7 +1796,7 @@
     "pluginIds": [
       "browseai"
     ],
-    "providerName": "Browseai",
+    "providerName": "Browse AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -1832,7 +1832,7 @@
     "pluginIds": [
       "browsertool"
     ],
-    "providerName": "Browsertool",
+    "providerName": "BrowserTool",
     "authModes": [
       {
         "mode": "api_key",
@@ -1868,7 +1868,7 @@
     "pluginIds": [
       "bugsnag"
     ],
-    "providerName": "Bugsnag",
+    "providerName": "BugSnag",
     "authModes": [
       {
         "mode": "api_key",
@@ -1904,7 +1904,7 @@
     "pluginIds": [
       "bunnycdn"
     ],
-    "providerName": "Bunnycdn",
+    "providerName": "Bunny CDN",
     "authModes": [
       {
         "mode": "api_key",
@@ -1923,7 +1923,7 @@
     "pluginIds": [
       "cal"
     ],
-    "providerName": "Cal",
+    "providerName": "Cal.com",
     "authModes": [
       {
         "mode": "api_key",
@@ -2070,7 +2070,7 @@
     "pluginIds": [
       "castingwords"
     ],
-    "providerName": "Castingwords",
+    "providerName": "CastingWords",
     "authModes": [
       {
         "mode": "api_key",
@@ -2087,7 +2087,7 @@
     "pluginIds": [
       "cdrplatform"
     ],
-    "providerName": "Cdrplatform",
+    "providerName": "CDR Platform",
     "authModes": [
       {
         "mode": "api_key",
@@ -2121,7 +2121,7 @@
     "pluginIds": [
       "chatbotkit"
     ],
-    "providerName": "Chatbotkit",
+    "providerName": "ChatbotKit",
     "authModes": [
       {
         "mode": "api_key",
@@ -2140,7 +2140,7 @@
     "pluginIds": [
       "chatfai"
     ],
-    "providerName": "Chatfai",
+    "providerName": "ChatFAI",
     "authModes": [
       {
         "mode": "api_key",
@@ -2159,7 +2159,7 @@
     "pluginIds": [
       "chmeetings"
     ],
-    "providerName": "Chmeetings",
+    "providerName": "ChMeetings",
     "authModes": [
       {
         "mode": "api_key",
@@ -2176,7 +2176,7 @@
     "pluginIds": [
       "circleci"
     ],
-    "providerName": "Circleci",
+    "providerName": "CircleCI",
     "authModes": [
       {
         "mode": "api_key",
@@ -2193,7 +2193,7 @@
     "pluginIds": [
       "clickhouse"
     ],
-    "providerName": "Clickhouse",
+    "providerName": "ClickHouse",
     "authModes": [
       {
         "mode": "api_key",
@@ -2285,7 +2285,7 @@
     "pluginIds": [
       "collegefootballdata"
     ],
-    "providerName": "Collegefootballdata",
+    "providerName": "College Football Data",
     "authModes": [
       {
         "mode": "api_key",
@@ -2363,7 +2363,7 @@
     "pluginIds": [
       "contentfulgraphql"
     ],
-    "providerName": "Contentfulgraphql",
+    "providerName": "Contentful",
     "authModes": [
       {
         "mode": "api_key",
@@ -2383,7 +2383,7 @@
     "pluginIds": [
       "contextsevenmcp"
     ],
-    "providerName": "Contextsevenmcp",
+    "providerName": "Context7",
     "authModes": [
       {
         "mode": "api_key",
@@ -2400,7 +2400,7 @@
     "pluginIds": [
       "convoloai"
     ],
-    "providerName": "Convoloai",
+    "providerName": "Convolo AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -2417,7 +2417,7 @@
     "pluginIds": [
       "countdownapi"
     ],
-    "providerName": "Countdownapi",
+    "providerName": "Countdown API",
     "authModes": [
       {
         "mode": "api_key",
@@ -2436,7 +2436,7 @@
     "pluginIds": [
       "crowterminal"
     ],
-    "providerName": "Crowterminal",
+    "providerName": "Crow Terminal",
     "authModes": [
       {
         "mode": "api_key",
@@ -2470,7 +2470,7 @@
     "pluginIds": [
       "customgpt"
     ],
-    "providerName": "Customgpt",
+    "providerName": "CustomGPT",
     "authModes": [
       {
         "mode": "api_key",
@@ -2551,7 +2551,7 @@
     "pluginIds": [
       "datarobot"
     ],
-    "providerName": "Datarobot",
+    "providerName": "DataRobot",
     "authModes": [
       {
         "mode": "api_key",
@@ -2570,7 +2570,7 @@
     "pluginIds": [
       "deepseek"
     ],
-    "providerName": "Deepseek",
+    "providerName": "DeepSeek",
     "authModes": [
       {
         "mode": "api_key",
@@ -2589,7 +2589,7 @@
     "pluginIds": [
       "devinmcp"
     ],
-    "providerName": "Devinmcp",
+    "providerName": "Devin",
     "authModes": [
       {
         "mode": "api_key",
@@ -2627,7 +2627,7 @@
     "pluginIds": [
       "digitalocean"
     ],
-    "providerName": "Digitalocean",
+    "providerName": "DigitalOcean",
     "authModes": [
       {
         "mode": "api_key",
@@ -2661,7 +2661,7 @@
     "pluginIds": [
       "dockerhub"
     ],
-    "providerName": "Dockerhub",
+    "providerName": "Docker Hub",
     "authModes": [
       {
         "mode": "api_key",
@@ -2680,7 +2680,7 @@
     "pluginIds": [
       "dodopayments"
     ],
-    "providerName": "Dodopayments",
+    "providerName": "Dodo Payments",
     "authModes": [
       {
         "mode": "api_key",
@@ -2714,7 +2714,7 @@
     "pluginIds": [
       "dreamstudio"
     ],
-    "providerName": "Dreamstudio",
+    "providerName": "DreamStudio",
     "authModes": [
       {
         "mode": "api_key",
@@ -2793,7 +2793,7 @@
     "pluginIds": [
       "dropboxsign"
     ],
-    "providerName": "Dropboxsign",
+    "providerName": "Dropbox Sign",
     "authModes": [
       {
         "mode": "api_key",
@@ -2814,7 +2814,7 @@
     "pluginIds": [
       "dynapictures"
     ],
-    "providerName": "Dynapictures",
+    "providerName": "DynaPictures",
     "authModes": [
       {
         "mode": "api_key",
@@ -2850,7 +2850,7 @@
     "pluginIds": [
       "epicgames"
     ],
-    "providerName": "Epicgames",
+    "providerName": "Epic Games",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -3086,7 +3086,7 @@
     "pluginIds": [
       "flexisign"
     ],
-    "providerName": "Flexisign",
+    "providerName": "FlexiSign",
     "authModes": [
       {
         "mode": "api_key",
@@ -3310,7 +3310,7 @@
     "pluginIds": [
       "googleanalytics"
     ],
-    "providerName": "Google",
+    "providerName": "Google Analytics",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -3690,7 +3690,7 @@
     "pluginIds": [
       "groqcloud"
     ],
-    "providerName": "Groqcloud",
+    "providerName": "Groq Cloud",
     "authModes": [
       {
         "mode": "api_key",
@@ -3728,7 +3728,7 @@
     "pluginIds": [
       "hackernews"
     ],
-    "providerName": "Hackernews",
+    "providerName": "Hacker News",
     "authModes": [
       {
         "mode": "api_key",
@@ -3783,7 +3783,7 @@
     "pluginIds": [
       "here"
     ],
-    "providerName": "Here",
+    "providerName": "HERE",
     "authModes": [
       {
         "mode": "api_key",
@@ -3802,7 +3802,7 @@
     "pluginIds": [
       "heygen"
     ],
-    "providerName": "Heygen",
+    "providerName": "HeyGen",
     "authModes": [
       {
         "mode": "api_key",
@@ -3821,7 +3821,7 @@
     "pluginIds": [
       "htmltoimage"
     ],
-    "providerName": "Htmltoimage",
+    "providerName": "HTML to Image",
     "authModes": [
       {
         "mode": "api_key",
@@ -3882,7 +3882,7 @@
     "pluginIds": [
       "huggingface"
     ],
-    "providerName": "Huggingface",
+    "providerName": "Hugging Face",
     "authModes": [
       {
         "mode": "api_key",
@@ -3907,7 +3907,7 @@
     "pluginIds": [
       "imgbb"
     ],
-    "providerName": "Imgbb",
+    "providerName": "ImgBB",
     "authModes": [
       {
         "mode": "api_key",
@@ -3924,7 +3924,7 @@
     "pluginIds": [
       "insightoai"
     ],
-    "providerName": "Insightoai",
+    "providerName": "Insighto.ai",
     "authModes": [
       {
         "mode": "api_key",
@@ -3949,7 +3949,7 @@
     "pluginIds": [
       "instagram"
     ],
-    "providerName": "Facebook",
+    "providerName": "Instagram",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -3999,7 +3999,7 @@
     "pluginIds": [
       "jigsawstack"
     ],
-    "providerName": "Jigsawstack",
+    "providerName": "JigsawStack",
     "authModes": [
       {
         "mode": "api_key",
@@ -4266,7 +4266,7 @@
     "pluginIds": [
       "merriamwebsterdict"
     ],
-    "providerName": "Merriamwebsterdict",
+    "providerName": "Merriam-Webster",
     "authModes": [
       {
         "mode": "api_key",
@@ -4283,7 +4283,7 @@
     "pluginIds": [
       "monday"
     ],
-    "providerName": "Monday",
+    "providerName": "monday.com",
     "authModes": [
       {
         "mode": "api_key",
@@ -4317,7 +4317,7 @@
     "pluginIds": [
       "nextdns"
     ],
-    "providerName": "Nextdns",
+    "providerName": "NextDNS",
     "authModes": [
       {
         "mode": "api_key",
@@ -4373,7 +4373,7 @@
     "pluginIds": [
       "ocrspace"
     ],
-    "providerName": "Ocrspace",
+    "providerName": "OCR.space",
     "authModes": [
       {
         "mode": "api_key",
@@ -4392,7 +4392,7 @@
     "pluginIds": [
       "ocrwebservice"
     ],
-    "providerName": "Ocrwebservice",
+    "providerName": "OCR Web Service",
     "authModes": [
       {
         "mode": "api_key",
@@ -4491,7 +4491,7 @@
     "pluginIds": [
       "onepassword"
     ],
-    "providerName": "Onepassword",
+    "providerName": "1Password",
     "authModes": [
       {
         "mode": "api_key",
@@ -4508,7 +4508,7 @@
     "pluginIds": [
       "openai"
     ],
-    "providerName": "Openai",
+    "providerName": "OpenAI",
     "authModes": [
       {
         "mode": "api_key",
@@ -4525,7 +4525,7 @@
     "pluginIds": [
       "openrouter"
     ],
-    "providerName": "Openrouter",
+    "providerName": "OpenRouter",
     "authModes": [
       {
         "mode": "api_key",
@@ -4542,7 +4542,7 @@
     "pluginIds": [
       "openweathermap"
     ],
-    "providerName": "Openweathermap",
+    "providerName": "OpenWeather",
     "authModes": [
       {
         "mode": "api_key",
@@ -4631,7 +4631,7 @@
     "pluginIds": [
       "pagerduty"
     ],
-    "providerName": "Pagerduty",
+    "providerName": "PagerDuty",
     "authModes": [
       {
         "mode": "api_key",
@@ -4667,7 +4667,7 @@
     "pluginIds": [
       "pdfmonkey"
     ],
-    "providerName": "Pdfmonkey",
+    "providerName": "PDFMonkey",
     "authModes": [
       {
         "mode": "api_key",
@@ -4686,7 +4686,7 @@
     "pluginIds": [
       "perplexityai"
     ],
-    "providerName": "Perplexityai",
+    "providerName": "Perplexity",
     "authModes": [
       {
         "mode": "api_key",
@@ -4724,7 +4724,7 @@
     "pluginIds": [
       "posthog"
     ],
-    "providerName": "Posthog",
+    "providerName": "PostHog",
     "authModes": [
       {
         "mode": "api_key",
@@ -4775,7 +4775,7 @@
     "pluginIds": [
       "removebg"
     ],
-    "providerName": "Removebg",
+    "providerName": "remove.bg",
     "authModes": [
       {
         "mode": "api_key",
@@ -4836,7 +4836,7 @@
     "pluginIds": [
       "runpod"
     ],
-    "providerName": "Runpod",
+    "providerName": "RunPod",
     "authModes": [
       {
         "mode": "api_key",
@@ -4926,7 +4926,7 @@
     "pluginIds": [
       "scaleai"
     ],
-    "providerName": "Scaleai",
+    "providerName": "Scale AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -4943,7 +4943,7 @@
     "pluginIds": [
       "scrapegraphai"
     ],
-    "providerName": "Scrapegraphai",
+    "providerName": "ScrapeGraphAI",
     "authModes": [
       {
         "mode": "api_key",
@@ -4960,7 +4960,7 @@
     "pluginIds": [
       "securitytrails"
     ],
-    "providerName": "Securitytrails",
+    "providerName": "SecurityTrails",
     "authModes": [
       {
         "mode": "api_key",
@@ -4979,7 +4979,7 @@
     "pluginIds": [
       "sendgrid"
     ],
-    "providerName": "Sendgrid",
+    "providerName": "SendGrid",
     "authModes": [
       {
         "mode": "api_key",
@@ -5015,7 +5015,7 @@
     "pluginIds": [
       "serpapi"
     ],
-    "providerName": "Serpapi",
+    "providerName": "SerpApi",
     "authModes": [
       {
         "mode": "api_key",
@@ -5279,7 +5279,7 @@
     "pluginIds": [
       "studiobyai21labs"
     ],
-    "providerName": "Studiobyai21labs",
+    "providerName": "Studio by AI21 Labs",
     "authModes": [
       {
         "mode": "api_key",
@@ -5328,7 +5328,7 @@
     "pluginIds": [
       "synthflowai"
     ],
-    "providerName": "Synthflowai",
+    "providerName": "Synthflow AI",
     "authModes": [
       {
         "mode": "api_key",
@@ -5381,7 +5381,7 @@
     "pluginIds": [
       "tavilymcp"
     ],
-    "providerName": "Tavilymcp",
+    "providerName": "Tavily MCP",
     "authModes": [
       {
         "mode": "api_key",
@@ -5474,7 +5474,7 @@
     "pluginIds": [
       "textrazor"
     ],
-    "providerName": "Textrazor",
+    "providerName": "TextRazor",
     "authModes": [
       {
         "mode": "api_key",
@@ -5521,7 +5521,7 @@
     "pluginIds": [
       "timecamp"
     ],
-    "providerName": "Timecamp",
+    "providerName": "TimeCamp",
     "authModes": [
       {
         "mode": "api_key",
@@ -5557,7 +5557,7 @@
     "pluginIds": [
       "tinyurl"
     ],
-    "providerName": "Tinyurl",
+    "providerName": "TinyURL",
     "authModes": [
       {
         "mode": "api_key",
@@ -5644,7 +5644,7 @@
     "pluginIds": [
       "twentyonerisk"
     ],
-    "providerName": "Twentyonerisk",
+    "providerName": "TwentyOneRisk",
     "authModes": [
       {
         "mode": "api_key",
@@ -5697,7 +5697,7 @@
     "pluginIds": [
       "twitterapiio"
     ],
-    "providerName": "Twitterapiio",
+    "providerName": "TwitterAPI.io",
     "authModes": [
       {
         "mode": "api_key",
@@ -5714,7 +5714,7 @@
     "pluginIds": [
       "twochat"
     ],
-    "providerName": "Twochat",
+    "providerName": "TwoChat",
     "authModes": [
       {
         "mode": "api_key",
@@ -5748,7 +5748,7 @@
     "pluginIds": [
       "unione"
     ],
-    "providerName": "Unione",
+    "providerName": "UniOne",
     "authModes": [
       {
         "mode": "api_key",
@@ -5767,7 +5767,7 @@
     "pluginIds": [
       "uniswapapi"
     ],
-    "providerName": "Uniswapapi",
+    "providerName": "Uniswap",
     "authModes": [
       {
         "mode": "api_key",
@@ -5873,7 +5873,7 @@
     "pluginIds": [
       "wakatime"
     ],
-    "providerName": "Wakatime",
+    "providerName": "WakaTime",
     "authModes": [
       {
         "mode": "api_key",
@@ -5952,7 +5952,7 @@
     "pluginIds": [
       "whatsapp"
     ],
-    "providerName": "Whatsapp",
+    "providerName": "WhatsApp",
     "authModes": [
       {
         "mode": "api_key",
@@ -5973,7 +5973,7 @@
     "pluginIds": [
       "witai"
     ],
-    "providerName": "Witai",
+    "providerName": "Wit.ai",
     "authModes": [
       {
         "mode": "api_key",
@@ -6091,7 +6091,7 @@
     "pluginIds": [
       "worldnewsapi"
     ],
-    "providerName": "Worldnewsapi",
+    "providerName": "World News API",
     "authModes": [
       {
         "mode": "api_key",
@@ -6128,7 +6128,7 @@
     "pluginIds": [
       "youcom"
     ],
-    "providerName": "Youcom",
+    "providerName": "You.com",
     "authModes": [
       {
         "mode": "api_key",
@@ -6183,7 +6183,7 @@
     "pluginIds": [
       "zohoinventory"
     ],
-    "providerName": "Zoho",
+    "providerName": "Zoho Inventory",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -6221,7 +6221,7 @@
     "pluginIds": [
       "zohomail"
     ],
-    "providerName": "Zoho",
+    "providerName": "Zoho Mail",
     "authModes": [
       {
         "mode": "oauth_2",
@@ -6278,7 +6278,7 @@
     "pluginIds": [
       "zoominfo"
     ],
-    "providerName": "Zoominfo",
+    "providerName": "ZoomInfo",
     "authModes": [
       {
         "mode": "oauth_2",
