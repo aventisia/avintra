@@ -82,9 +82,7 @@ export const workItemsTableColumns = (
       // Unrouted items carry Guid.Empty (all zeros) — treat as no source item.
       const isEmptyGuid = !sourceWorkItemId || sourceWorkItemId.startsWith("00000000-");
       return (
-        <div className="w-auto truncate font-medium">
-          {isEmptyGuid ? "--" : sourceWorkItemId}
-        </div>
+        <div className="w-auto truncate font-medium">{isEmptyGuid ? "--" : sourceWorkItemId}</div>
       );
     },
     enableSorting: false,
@@ -98,7 +96,7 @@ export const workItemsTableColumns = (
       const retryTime = row.original.retryTime;
       return (
         <div className="w-auto truncate font-medium">
-          {retryTime ? formatDate(retryTime as string) : "--"}
+          {retryTime ? formatDate(retryTime as string, true) : "--"}
         </div>
       );
     },
