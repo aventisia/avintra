@@ -82,7 +82,7 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
     // CustomApiTool uses a dedicated form schema; skip dynamic config loading.
     if (isCustomApiTool) {
       setVaultConfig([]);
-      setVaultConfigZodSchema(getCustomApiToolVaultSchema(crudAction));
+      setVaultConfigZodSchema(getCustomApiToolVaultSchema());
       return;
     }
 
@@ -99,17 +99,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
               name: z.string().min(1, { message: reqError("Name") }),
               ...generateZodSchema(config).shape,
               isDisabled: z.boolean().optional(),
-              // Space IDs are required on create only (multi-select rendered).
-              // On update the multi-select is not rendered and spaceIds resets
-              // to [], so enforcing min(1) here would make Save silently fail.
-              ...(crudAction === "create"
-                ? {
-                    spaceIds: z
-                      .array(z.string())
-                      .min(1, { message: "At least one space must be selected." })
-                      .default([]),
-                  }
-                : { spaceIds: z.array(z.string()).optional().default([]) }),
             }),
           );
         }
@@ -212,7 +201,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
       selectedType: selectedTypeOption,
       name: name,
       isDisabled: vaultData?.isDisabled,
-      spaceIds: [],
       ...getDefaultValuesForForm(
         vaultConfig,
         convertFromObject(savedData) as unknown as NodeInputType[],

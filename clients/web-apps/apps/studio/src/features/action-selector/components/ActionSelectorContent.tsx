@@ -54,7 +54,7 @@ export const ActionSelectorContent = () => {
           ref={inputRef}
           name="query"
           className="border-none px-0 pr-1.5 shadow-none placeholder:text-xs focus-visible:ring-0"
-          placeholder="Search nodes..."
+          placeholder="Search nodes and categories..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleInputKeyDown}

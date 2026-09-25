@@ -49,6 +49,7 @@ public class QueueUserService : IQueueUserService
 
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.Type == QueueTypesEnum.User &&
                     (
                         (w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId)) ||
@@ -137,6 +138,7 @@ public class QueueUserService : IQueueUserService
 
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.Type == QueueTypesEnum.Agent &&
                     (
                         (w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId)) ||

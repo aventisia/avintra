@@ -5,22 +5,18 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/user/
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/user/
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("ACCOUNT_USER_ID"),
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
-    twoFactorEnabled: false,
-    userRoles: [
+body:json {
+  "id": "{{ACCOUNT_USER_ID}}",
+  "firstName": "{{$randomFirstName}}",
+  "lastName": "{{$randomLastName}}",
+  "email": "{{$randomEmail}}",
+  "twoFactorEnabled": false,
+  "userRoles": [
       "Tenant user"
     ]
-  })
 }

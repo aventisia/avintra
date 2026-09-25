@@ -5,15 +5,11 @@ meta {
 }
 
 get {
-  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version-history/{{FLOW_VERSION_HISTORY_ID}}
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/flow-version-history/{{FLOW_VERSION_HISTORY_ID}}
+  body: json
   auth: bearer
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
-  })
+body:json {
+  "flowId": "{{FLOW_ID}}"
 }

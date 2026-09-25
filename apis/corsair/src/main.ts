@@ -32,7 +32,7 @@ import {
   isOAuthPlugin,
   getPluginMeta,
 } from "./corsair.js";
-import { validatePayload, normalizeInvokeError } from "./validation.js";
+import { validatePayload, normalizeInvokeError, describeError } from "./validation.js";
 
 // --- Variable selection precedence ---
 // Config is resolved in this order (highest wins):
@@ -448,12 +448,17 @@ app.post("/api/corsair/invoke", async (req, res) => {
   const schema = getStructuredSchema(corsair, `${pluginId}.api.${action}`);
   const validationErrors = validatePayload(schema?.input, payload);
   if (validationErrors.length > 0) {
+    console.error(
+      `[corsair:invoke] ${pluginId}.${action} rejected: invalid_input — ${validationErrors.join("; ")}`,
+    );
     return res.status(400).json({
       success: false,
       error: "Invalid tool input",
       details: validationErrors.join("; "),
     });
   }
+
+  const startedAt = Date.now();
 
   try {
     const result = await fn(payload);
@@ -476,8 +481,11 @@ app.post("/api/corsair/invoke", async (req, res) => {
     const normalized = normalizeInvokeError(err);
     // Log only a sanitized summary — never the raw error object, which can carry
     // the Authorization header / request body containing the live credential.
+    // `describeError` adds the error name/message + Node error code (ENOTFOUND,
+    // ECONNREFUSED, UND_ERR_CONNECT_TIMEOUT, ...) so a 503 network_error can be
+    // told apart from an unexpected plugin exception.
     console.error(
-      `[corsair:invoke] ${pluginId}.${action} failed: ${normalized.body.errorType} (${normalized.status})`,
+      `[corsair:invoke] ${pluginId}.${action} failed: ${normalized.body.errorType} (${normalized.status}) tenant=${connectionId} in ${Date.now() - startedAt}ms — ${describeError(err)}`,
     );
     res.status(normalized.status).json(normalized.body);
   }

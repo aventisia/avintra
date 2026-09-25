@@ -40,10 +40,13 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                                                     .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
-                                                        w.EnvType == _currentTenantService.CurrentEnvType)
-                                                     .FirstOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
 
             // Queue already exists
             if (queueAlreadyExists != null)
@@ -348,13 +351,19 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Retrieve the queue matching the specified name within the current environment for the current user.
+            // Retrieve the queue matching the specified name within the current environment.
+            // Filter explicitly by the current tenant and bypass the global tenant/space query
+            // filters so runner/node-originated calls (which have no space context) can resolve
+            // queues scoped to the executing flow's tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == queueName.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
+                .IgnoreQueryFilters()
                 .Include(i => i.QueueTransactions)
+                .Include(i => i.QueueUsers)
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
@@ -380,7 +389,13 @@ public class QueueTableService : IQueueTableService
                 }
             );
 
-            if (!canView)
+            // A user can also be associated with a queue through a legacy QueueUser
+            // record (used by the Assist "my queues" screen and agent queues), which
+            // is not represented as a ResourceShare. Mirror the list endpoints so
+            // those users can resolve the queue's full schema.
+            var hasQueueUserAccess = queue.QueueUsers?.Any(a => a.UserId == _userId) == true;
+
+            if (!canView && !hasQueueUserAccess)
             {
                 _logger.LogWarning(
                     "Unauthorized queue access. User {UserId}, Queue {QueueName}",
@@ -418,7 +433,12 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => 
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == queuesTableDto.Name.ToLower() && 
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -511,7 +531,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -563,12 +583,6 @@ public class QueueTableService : IQueueTableService
             queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
             // Update only the properties whose values have changed to avoid unnecessary modifications.
-
-            if (queue.Name != queuesTableDto.Name)
-            {
-                queue.Name = queuesTableDto.Name;
-            }
-
             if (queue.Description != queuesTableDto.Description)
             {
                 queue.Description = queuesTableDto.Description;
@@ -704,7 +718,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueId && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Id == queueId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -788,11 +802,10 @@ public class QueueTableService : IQueueTableService
         {
             // Validate flows existence
             var queues = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w =>
-                                                w.CreatedByUserId == _userId &&
-                                                w.EnvType == _currentTenantService.CurrentEnvType &&
-                                                queueIds.Contains(w.Id))
-                                            .ToListAsync();
+                .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    queueIds.Contains(w.Id))
+                .ToListAsync();
 
             // Flows do not exist
             if (queues.Count == 0)

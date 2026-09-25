@@ -43,7 +43,7 @@
       "type": "switch",
       "name": "IsRetry",
       "label": "Is Retry",
-      "description": "Enable for retry mode. When ON, this node creates the next attempt for an existing work item instead of a brand new item, and the Source Work Item ID and Retry Time fields are shown. When OFF, a new work item is created with a freshly generated identifier and processed immediately.",
+      "description": "Specifies whether to re-attempt an existing work item. When enabled, creates a subsequent attempt linked to the source item with an incremented attempt count, calculated delay, and execution lineage.",
       "defaultValue": false,
       "required": false
     },
@@ -52,7 +52,7 @@
       "type": "text",
       "name": "SourceWorkItemId",
       "label": "Source Work Item ID",
-      "description": "The identifier of the existing work item this retry continues. Required when \u0027Is Retry\u0027 is ON so the backend can create the next attempt (with an incremented retry count) for that work item. Leave empty for a brand new item; the backend generates the identifier for you. This field is only applicable if \u0027Is Retry\u0027 is set to true.",
+      "description": "The unique identifier (GUID) of the original work item to retry. Required to maintain execution lineage and history.",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -66,11 +66,45 @@
     },
     {
       "direction": "Input",
-      "type": "text",
-      "name": "RetryTime",
-      "label": "Retry Time",
-      "description": "Optional. The date and time after which this work item becomes eligible for processing. Leave empty to make the work item available immediately. When set, it must be a future date and time, in ISO 8601 format (e.g. 2026-09-12T14:30:00Z). This field is only applicable if \u0027Is Retry\u0027 is set to true.",
-      "defaultValue": "",
+      "type": "select",
+      "name": "RetryTimeUnit",
+      "label": "Retry Time Unit",
+      "description": "The unit of time (Minutes, Hours, or Days) used to delay processing for this retry attempt.",
+      "defaultValue": "Minutes",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Minutes",
+          "value": "Minutes",
+          "description": "Schedules the retry delay in minutes from the current time."
+        },
+        {
+          "label": "Hours",
+          "value": "Hours",
+          "description": "Schedules the retry delay in hours from the current time."
+        },
+        {
+          "label": "Days",
+          "value": "Days",
+          "description": "Schedules the retry delay in days from the current time."
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "IsRetry",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "RetryTimeValue",
+      "label": "Retry Time Value",
+      "description": "The delay duration in selected time units before this retry attempt becomes available for processing. Must be 1 or greater.",
+      "defaultValue": 1,
       "required": false,
       "renderIf": {
         "conditions": [

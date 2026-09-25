@@ -164,7 +164,10 @@ async function seedCorsairTools(): Promise<void> {
           Name: toolName,
           Description: tool.description,
           Type: TOOL_TYPE_PLATFORM,
-          BaseUrl: tool.baseUrl,
+          // Corsair tools are platform tools executed via the sidecar, so they
+          // have no provider base URL. ws_Tools expects a non-null value, so
+          // seed an empty string rather than null.
+          BaseUrl: "",
           OpenApiSpec: tool.openApiSpec,
           ParsedSchema: parsedSchema,
           AuthenticationType: AUTH_TYPE_NONE,
@@ -232,7 +235,7 @@ async function seedCorsairTools(): Promise<void> {
             [
               toolName,
               tool.description,
-              tool.baseUrl,
+              "",
               tool.openApiSpec,
               parsedSchema,
               envType,

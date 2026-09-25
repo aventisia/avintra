@@ -65,7 +65,7 @@ installer if it is not already signed).
 Target servers (`--target-servers` / `-TargetServers`):
 
 1. `uat` → `avuat.aventisia.com`
-2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+2. `prod` → `avweb1.aventisia.com`
 3. `both` → uat + prod
 
 All scripts upload installers and updater signatures to `/var/www/aventisia.com/files/binaries/` (via `ssh admin@<host>`).

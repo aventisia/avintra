@@ -33,6 +33,7 @@ export const QueueRowActions = ({
   return (
     // Dropdown menu for Queue table row action */}
     <DataTableRowActions className="w-36 min-w-36">
+
       {/* Edit Queue details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
 

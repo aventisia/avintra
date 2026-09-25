@@ -14,25 +14,28 @@ import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 
 import { useGetSelectedAgentData } from "./useGetSelectedAgentData";
 
+/**
+ * Defines the CallAgent config form: loads the selected agent's IO schema,
+ * builds validation, and publishes dirty state for the panel boundary guards.
+ */
 export const useCallAgentForm = () => {
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
+  const [, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
 
   const [nodeConfigZodSchema, setNodeConfigZodSchema] = useState<
     z.ZodObject<Record<string, ZodTypeAny>>
   >(() => z.object({}));
 
   // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData, nodeLabel, setShowDialog } = useDynamicConfigPanelStore(
+  const { nodeId, nodeData, nodeLabel } = useDynamicConfigPanelStore(
     useShallow((state) => ({
       nodeId: state.nodeId,
       nodeData: state.nodeData,
       nodeLabel: state.nodeLabel,
-      setShowDialog: state.setShowDialog,
     })),
   );
 
@@ -110,10 +113,6 @@ export const useCallAgentForm = () => {
     };
   }, [selectedAgentId, selectedAgentFlowId]); // ✅ Only primitive deps
 
-  // Get input and output keys (required at the time of form submission)
-  const inputKeys: string[] = nodeConfig.filter((f) => f.direction === "Input").map((f) => f.name);
-  const outputKeys = nodeConfig.filter((f) => f.direction === "Output").map((f) => f.name);
-
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
     if (nodeConfig.length > 0 && Object.keys(nodeConfigZodSchema.shape).length > 0) {
@@ -129,25 +128,30 @@ export const useCallAgentForm = () => {
 
   // Destructor form values and methods
   const {
-    control,
     formState: { isDirty },
     watch,
   } = form;
 
+  // The node name is stored in the DCP store, not in react-hook-form, so a
+  // rename alone never makes formState dirty. Track it explicitly.
+  const isLabelDirty = !!nodeLabel && nodeLabel !== nodeData?.label;
+
+  // Publish dirty state for the navigation guard (X / Escape / node switch)
+  useEffect(() => {
+    useDynamicConfigPanelStore.getState().setIsFormDirty(isDirty || isLabelDirty);
+    return () => {
+      useDynamicConfigPanelStore.getState().setIsFormDirty(false);
+    };
+  }, [isDirty, isLabelDirty]);
+
   return {
     form,
-    isDirty,
-    control,
+    isLabelDirty,
     nodeLabel,
-    setShowDialog,
-    inputKeys,
-    outputKeys,
-    isFormReady,
     nodeId,
     nodeUniqueName,
     watch,
     nodeConfig,
-    nodeConfigZodSchema,
     isLoading,
   };
 };

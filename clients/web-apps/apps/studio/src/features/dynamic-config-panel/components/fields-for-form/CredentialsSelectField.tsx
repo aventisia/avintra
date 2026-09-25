@@ -53,6 +53,14 @@ const CredentialsSelectField = ({
   const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Skip fetching until the field is enabled (a tool is selected) so credentials
+    // are not requested for an unknown provider.
+    if (disabled) {
+      setSelectOptions([]);
+      setLoading(false);
+      return;
+    }
+
     // Set loading state
     setLoading(true);
 
@@ -61,14 +69,15 @@ const CredentialsSelectField = ({
       name.includes("credential_name") ? modelProvider : name.replace("__CredentialName__", ""),
     )
       .then((data) => {
-        setSelectOptions(data?.data);
+        setSelectOptions(data?.data ?? []);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Failed to fetch models", err);
+        setSelectOptions([]);
         setLoading(false);
       });
-  }, [modelProvider, name]);
+  }, [modelProvider, name, disabled]);
 
   return (
     <>

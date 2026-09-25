@@ -5,19 +5,14 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/role/
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/role/
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    FullName: faker.person.jobType(),
-    Description: faker.lorem.sentence(),
-    
-  })
+body:json {
+  "FullName": "{{$randomJobTitle}}",
+  "Description": "{{$randomLoremSentence}}"
 }
 
 script:post-response {

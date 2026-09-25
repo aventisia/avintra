@@ -5,37 +5,38 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/project-template/publish
+  url: {{WORKSPACE_API_BASE_URL}}/project-template/publish
   body: json
   auth: none
 }
 
 body:json {
-  {
-        "name": "Manager",
-        "description": "",
-        "instruction": "This is instruction",
-        "type": "Agent",
-        "accessType": "Public",
-        "spaceId": null,
-        "schema": "{\"nodes\":[{\"id\":\"0762fe9f-be96-4cf9-aac6-e4976a3bb435\",\"type\":\"triggerNode\",\"data\":{\"type\":\"triggerNode\",\"category\":\"Triggers\",\"name\":\"manualTrigger\",\"label\":\"Manual trigger\",\"description\":\"Start your flow clicking the execute button\",\"icon\":\"ManualTriggerIcon\"},\"position\":{\"x\":0,\"y\":0},\"sourcePosition\":\"bottom\",\"deletable\":false,\"dragHandle\":\".custom-drag-handle\"},{\"id\":\"22faeabb-d222-4884-8a03-8252f854448d\",\"type\":\"plusFirstNode\",\"position\":{\"x\":0,\"y\":150},\"deletable\":false,\"draggable\":true}],\"edges\":[{\"id\":\"9730f5a0-b994-4299-83d0-4ba27ffb8370\",\"type\":\"customStepEdge\",\"source\":\"0762fe9f-be96-4cf9-aac6-e4976a3bb435\",\"target\":\"22faeabb-d222-4884-8a03-8252f854448d\",\"deletable\":false,\"selectable\":false,\"style\":{\"strokeDasharray\":\"5,5\",\"strokeWidth\":1.5}}],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}",
-        "refId": "516b6972-bd80-4174-94b1-a00d64d81032",
-        "tags": [
-          "Test",
-          "Tata"
-        ],
-        "icons": null,
-        "resources": [
-          {
-            "id": "4c443dbe-6e3e-4976-a639-fcd1671e5776",
-            "name": "Bakery_Store_Invoice_Format.pdf",
-            "extension": "PDF",
-            "size": 154885,
-            "path": "/files/ff1a4458-f8eb-477c-9560-b8f6614221e8.pdf",
-            "projectTemplateId": "f0ae04eb-172c-4f75-a60a-e1c58d03da4a",
-            "isDisabled": false
-          }
-        ]
+  [
+    {
+          "name": "Manager",
+          "description": "",
+          "instruction": "This is instruction",
+          "type": "Agent",
+          "accessType": "Public",
+          "spaceId": null,
+          "schema": "{\"nodes\":[{\"id\":\"0762fe9f-be96-4cf9-aac6-e4976a3bb435\",\"type\":\"triggerNode\",\"data\":{\"type\":\"triggerNode\",\"category\":\"Triggers\",\"name\":\"manualTrigger\",\"label\":\"Manual trigger\",\"description\":\"Start your flow clicking the execute button\",\"icon\":\"ManualTriggerIcon\"},\"position\":{\"x\":0,\"y\":0},\"sourcePosition\":\"bottom\",\"deletable\":false,\"dragHandle\":\".custom-drag-handle\"},{\"id\":\"22faeabb-d222-4884-8a03-8252f854448d\",\"type\":\"plusFirstNode\",\"position\":{\"x\":0,\"y\":150},\"deletable\":false,\"draggable\":true}],\"edges\":[{\"id\":\"9730f5a0-b994-4299-83d0-4ba27ffb8370\",\"type\":\"customStepEdge\",\"source\":\"0762fe9f-be96-4cf9-aac6-e4976a3bb435\",\"target\":\"22faeabb-d222-4884-8a03-8252f854448d\",\"deletable\":false,\"selectable\":false,\"style\":{\"strokeDasharray\":\"5,5\",\"strokeWidth\":1.5}}],\"viewport\":{\"x\":0,\"y\":0,\"zoom\":1}}",
+          "refId": "516b6972-bd80-4174-94b1-a00d64d81032",
+          "tags": [
+            "Test",
+            "Tata"
+          ],
+          "icons": null,
+          "resources": [
+            {
+              "id": "4c443dbe-6e3e-4976-a639-fcd1671e5776",
+              "name": "Bakery_Store_Invoice_Format.pdf",
+              "extension": "PDF",
+              "size": 154885,
+              "path": "/files/ff1a4458-f8eb-477c-9560-b8f6614221e8.pdf",
+              "projectTemplateId": "f0ae04eb-172c-4f75-a60a-e1c58d03da4a",
+              "isDisabled": false
+            }
+  ]
       }
 }
 

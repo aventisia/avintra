@@ -91,6 +91,36 @@ def to_sidecar_action(action: str) -> str:
     return action
 
 
+def to_corsair_action(plugin: str, action: str) -> str:
+    """Normalize a plugin action to the sidecar's ``api.<action>`` form.
+
+    Studio stores Corsair operations as the seeded OpenAPI ``operationId``
+    (``<plugin>.<action>``, e.g. ``openai.models.list``) while the sidecar
+    exposes them under the plugin's ``api`` root
+    (``openai.api.models.list``). This strips a redundant plugin prefix and
+    ensures the ``api.`` root while preserving the action's original casing.
+    """
+
+    plugin_id = (plugin or "").strip().lower()
+    action_path = (action or "").strip().strip(".")
+
+    prefix = f"{plugin_id}."
+    if plugin_id and action_path.lower().startswith(prefix):
+        action_path = action_path[len(prefix):]
+
+    if action_path and not action_path.lower().startswith("api."):
+        action_path = f"api.{action_path}"
+
+    return action_path
+
+
+def to_corsair_tool_path(plugin: str, action: str) -> str:
+    """Return the canonical dotted sidecar path for a plugin action."""
+
+    plugin_id = (plugin or "").strip().lower()
+    return f"{plugin_id}.{to_corsair_action(plugin, action)}"
+
+
 def _translate_corsair_input_schema(input_schema: Any) -> dict[str, Any]:
     """Translate the Corsair sidecar's custom input format into JSON Schema.
 
@@ -227,7 +257,8 @@ def _resolve_credential_id_by_name(
         )
         return None
 
-    credential_id = credential.get("Id")
+    # The vault API serializes the AppSecret DTO with camelCase keys.
+    credential_id = credential.get("Id") or credential.get("id")
     if not credential_id:
         logger.warning(
             "Credential has no Id for Corsair tool. credential_name=%s",
@@ -278,7 +309,8 @@ async def invoke_corsair_tool(
     credential_id = _resolve_corsair_credential_id(tool_name, llm_request, user)
     if not credential_id:
         raise CorsairSidecarServiceError(
-            f"No credential configured for Corsair tool {tool_name}"
+            f"No credential configured for Corsair tool {tool_name}. "
+            "Re-save the credential in the vault to mirror it to the Corsair sidecar."
         )
 
     endpoint = f"{base_url}/api/corsair/invoke"
@@ -320,6 +352,11 @@ async def invoke_corsair_tool(
             or body.get("message")
             or f"Sidecar returned HTTP {exc.response.status_code}"
         ) if isinstance(body, dict) else f"Sidecar returned HTTP {exc.response.status_code}"
+        if isinstance(body, dict) and body.get("needsConnect"):
+            message = (
+                f"{message}. The credential is not mirrored to Corsair; "
+                "re-save it in the vault to trigger the mirror."
+            )
         logger.exception("Corsair sidecar invocation failed for %s", tool_name)
         raise CorsairSidecarServiceError(
             f"Corsair sidecar error for {tool_name}: {message}",

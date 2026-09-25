@@ -1,0 +1,11 @@
+meta {
+  name: Get payment detail
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/payment-tracker/{{PAYMENT_ID}}
+  body: none
+  auth: inherit
+}

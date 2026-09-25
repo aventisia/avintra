@@ -8,6 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
+import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -157,16 +158,21 @@ export const useFetchFlowToLoad = () => {
     const inputOutputObj = JSON.parse(flowData.inputOutputObject || JSON.stringify([]));
 
     if (flow) {
-      setFlowVariablesObject(flowVarObjs);
+      const graph =
+        flowData.type === FlowTypesEnum.ChatAgent
+          ? normalizeChatAgentGraph(flow.nodes, flow.edges)
+          : { nodes: flow.nodes, edges: flow.edges, flowVariablesObject: flowVarObjs };
+
+      setFlowVariablesObject(graph.flowVariablesObject);
       setInputOutputObject(inputOutputObj);
 
       // Apply layout before hydration
       const { nodes, edges } = autoLayout({
-        newEdges: flow.edges,
-        newNodes: flow.nodes,
+        newEdges: graph.edges,
+        newNodes: graph.nodes,
       });
 
-      hydrateFlow(nodes, edges, flowVarObjs);
+      hydrateFlow(nodes, edges, graph.flowVariablesObject);
 
       // Store viewport reference
       setViewportState(flow.viewport);

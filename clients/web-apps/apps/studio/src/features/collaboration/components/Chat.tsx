@@ -3,6 +3,7 @@ import { PopoverContent, PopoverDefaultHeader } from "@avplatform/ui/popover";
 import { PopoverWrapper } from "@avplatform/ui/popover";
 import { useShallow } from "zustand/react/shallow";
 
+import { useCollaboratorCount } from "../hooks/useCollaboratorCount";
 import { useCollaborationStore } from "../stores/collaboration-store";
 import { ChatPanel } from "./chat/ChatPanel";
 import { ChatTrigger } from "./chat/ChatTrigger";
@@ -26,6 +27,11 @@ export const Chat = ({ className }: ChatProps) => {
       setChatOpen: state.setChatOpen,
     })),
   );
+  const collaboratorCount = useCollaboratorCount();
+
+  // Hide live chat while the local user is alone in the flow; it appears once at least
+  // one other user joins.
+  if (collaboratorCount < 2) return null;
 
   return (
     <PopoverWrapper

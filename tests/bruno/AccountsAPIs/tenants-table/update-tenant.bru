@@ -5,33 +5,28 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  const moment = require('moment');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("TENANT_ID"),
-    name: faker.company.name(),
-    expiresOn: moment().add(1, 'years').toISOString(),
-    isSSOEnabled: false,
-    isPwdEnabled: true,
-    isPwdNeverExpiresEnabled: true,
-    daysBeforePwdExpires: 720,
-    isIdleSessionTimeoutEnabled: true,
-    idleSessionTimeoutMinutes: 20,
-    isTwoFAEnabled: false,
-    ssoConfigJson: "{}",
-    dbOption: "Shared",
-    dbUserId: "",
-    dbPwd: "",
-    dbHost: "",
-    dbPort: 0,
-    dbNamePrefix: "",
-    isDisabled: true,
-  })
+body:json {
+  "id": "{{TENANT_ID}}",
+  "name": "{{$randomCompanyName}}",
+  "expiresOn": "{{$randomFutureDate}}",
+  "isSSOEnabled": false,
+  "isPwdEnabled": true,
+  "isPwdNeverExpiresEnabled": true,
+  "daysBeforePwdExpires": 720,
+  "isIdleSessionTimeoutEnabled": true,
+  "idleSessionTimeoutMinutes": 20,
+  "isTwoFAEnabled": false,
+  "ssoConfigJson": "{}",
+  "dbOption": "Shared",
+  "dbUserId": "",
+  "dbPwd": "",
+  "dbHost": "",
+  "dbPort": 0,
+  "dbNamePrefix": "",
+  "isDisabled": true
 }

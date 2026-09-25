@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "appName",
+    "label": "App Name",
+    "description": "App Name for Bubble.",
+    "defaultValue": "",
+    "required": true
+  }
+]

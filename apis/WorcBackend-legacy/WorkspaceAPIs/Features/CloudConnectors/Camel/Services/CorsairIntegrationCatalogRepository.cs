@@ -60,6 +60,16 @@ public class CorsairIntegrationCatalogRepository
     }
 
     /// <summary>
+    /// Returns the icon map keyed by plugin id, alias plugin ids, and provider
+    /// name. Callers normalize the keys before matching tool names.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> GetIconMap()
+    {
+        EnsureLoaded();
+        return _iconCache ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
     /// Clears the in-memory cache so the next read re-parses the file.
     /// </summary>
     public void InvalidateCache()
@@ -131,7 +141,37 @@ public class CorsairIntegrationCatalogRepository
                             var icon = iconProperty.GetString()?.Trim();
                             if (!string.IsNullOrWhiteSpace(icon))
                             {
+                                // Index by plugin id, alias plugin ids, and provider name so a
+                                // tool can be matched regardless of how its name was stored.
                                 icons[pluginId.ToLowerInvariant()] = icon;
+
+                                if (element.TryGetProperty("pluginIds", out var aliasesProperty)
+                                    && aliasesProperty.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                {
+                                    foreach (var aliasElement in aliasesProperty.EnumerateArray())
+                                    {
+                                        if (aliasElement.ValueKind != System.Text.Json.JsonValueKind.String)
+                                        {
+                                            continue;
+                                        }
+
+                                        var alias = aliasElement.GetString()?.Trim();
+                                        if (!string.IsNullOrWhiteSpace(alias))
+                                        {
+                                            icons[alias.ToLowerInvariant()] = icon;
+                                        }
+                                    }
+                                }
+
+                                if (element.TryGetProperty("providerName", out var providerProperty)
+                                    && providerProperty.ValueKind == System.Text.Json.JsonValueKind.String)
+                                {
+                                    var providerName = providerProperty.GetString()?.Trim();
+                                    if (!string.IsNullOrWhiteSpace(providerName))
+                                    {
+                                        icons[providerName.ToLowerInvariant()] = icon;
+                                    }
+                                }
                             }
                         }
                     }

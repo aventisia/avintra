@@ -12,9 +12,10 @@ import { useShallow } from "zustand/react/shallow";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
+import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 export const ModelNode = memo(({ id, data }: NodeProps) => {
   const { updateNodeData } = useReactFlow();
@@ -56,14 +57,6 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     return value?.provider;
   }
 
-  const vaultAppIconMapper: Record<string, string> = {
-    openai: "/brand-img/openai.svg",
-    googlegemini: "/brand-img/gemini.svg",
-    openrouter: "/brand-img/openrouter.svg",
-    anthropic: "/brand-img/anthropic.svg",
-    elevenlabs: "/brand-img/elevenlabs.svg",
-  };
-
   const providerLabelMapper: Record<string, string> = {
     openai: "OpenAI",
     googlegemini: "Google Gemini",
@@ -72,15 +65,15 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     elevenlabs: "Elevenlabs",
   };
 
-  const { setShowDialog, setNodeId, setNodeData, setSelectedTab } = useDynamicConfigPanelStore(
+  const { openNodeConfig, setSelectedTab } = useDynamicConfigPanelStore(
     useShallow((state) => ({
-      showDialog: state.showDialog,
-      setNodeId: state.setNodeId,
-      setShowDialog: state.setShowDialog,
-      setNodeData: state.setNodeData,
+      openNodeConfig: state.openNodeConfig,
       setSelectedTab: state.setSelectedTab,
     })),
   );
+
+  // Guarded: switching nodes flushes pending edits first, aborts on validation errors
+  const guardNavigation = useDCPNavigationGuard();
 
   return (
     <>
@@ -92,17 +85,18 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
             (connectedNodeData?.data?.isCut as NodeDataType) && "border-red-400 opacity-60",
           )}
           onDoubleClick={() => {
-            setShowDialog(true);
-            setNodeId(connectedNodeId);
-            setNodeData(connectedNodeData?.data as NodeDataType);
-            setTimeout(() => {
-              setSelectedTab("Models");
-            }, 100);
+            if (!connectedNodeId || !connectedNodeData?.data) return;
+            void guardNavigation(() => {
+              openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
+              setTimeout(() => {
+                setSelectedTab("Model");
+              }, 100);
+            });
           }}
         >
           <NodeImage
             className="!opacity-100  h-7 w-7 "
-            src={vaultAppIconMapper[data?.label as string]}
+            src={getProviderBrandIcon(data?.label as string)}
           />
         </div>
         <NodeHeading className=" w-16">{providerLabelMapper[data?.label as string]}</NodeHeading>

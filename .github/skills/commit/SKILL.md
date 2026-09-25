@@ -12,7 +12,7 @@ Format, analyze, and commit the current working-tree changes in one pass.
 ## When to Use
 
 - You have local uncommitted changes and want them formatted and committed.
-- You want a single, logically weighted commit message describing the changes.
+- You want a single, short, precisely worded commit message describing the changes.
 
 ## Procedure
 
@@ -81,11 +81,9 @@ Stage all changed files and create a single commit for them using the format bel
 git add -A
 git commit -m "<type>(<main-scope>): <short description of the Main Change>
 
-<Detailed description of the Main Change, explaining why the primary changes were made and their impact.>
-
 Other changes:
-- <description of other change 1>
-- <description of other change 2>"
+- <short description of other change 1>
+- <short description of other change 2>"
 ```
 
 Omit the `Other changes:` section if all changes belong to the Main Change.
@@ -98,11 +96,9 @@ Omit the `Other changes:` section if all changes belong to the Main Change.
 ```
 <type>(<main-scope>): <short description of the Main Change>
 
-<Detailed description of the Main Change, explaining why the primary changes were made and their impact.>
-
 Other changes:
-- <description of other change 1>
-- <description of other change 2>
+- <short description of other change 1>
+- <short description of other change 2>"
 ```
 
 ### Commit Rules
@@ -112,5 +108,5 @@ Other changes:
 - **Git Command Failure Policy**: If any git command fails for any reason, stop immediately and do not proceed to the next steps.
 - **Weighted Messaging**: The commit subject line and primary body must only reference the Main Change.
 - **Conditional Footer**: Append the `Other changes:` footer only if distinct, unrelated changes are present. If all files belong to the Main Change, omit the footer entirely.
-- **No Model Attribution**: Never append `Co-Authored-By`, "Generated with Claude Code", or any other model attribution to the commit message.
+- **No Model Attribution**: Never append `Co-Authored-By`, "Generated with Codex", or any other model attribution to the commit message.
 - **Automated Execution**: Execute standard git and npx commands autonomously. Pause for user input only if something looks unsafe (e.g. a staged file that may contain secrets).

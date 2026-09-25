@@ -11,13 +11,14 @@ public class QueueWorkItemService : IQueueWorkItemService
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IQueueTransactionEventService _queueTransactionEventService;
     private readonly IQueueStatusService _queueStatusService;
+    private readonly ICurrentTenantService _currentTenantService;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public QueueWorkItemService(
         ILogger<QueueWorkItemService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService, IQueueTransactionEventService queueTransactionEventService,
-        IQueueStatusService queueStatusService)
+        IQueueStatusService queueStatusService, ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -30,6 +31,7 @@ public class QueueWorkItemService : IQueueWorkItemService
         _stringEncryptionService = stringEncryptionService;
         _queueTransactionEventService = queueTransactionEventService;
         _queueStatusService = queueStatusService;
+        _currentTenantService = currentTenantService;
     }
 
     // Returns the user's display name (First Name + Last Name) from the "name" claim,
@@ -217,12 +219,17 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-
+            // Retrieve the queue matching the specified name/id. Filter explicitly by the current
+            // tenant and bypass the global tenant/space query filters so runner/node-originated
+            // calls (which have no space context) can resolve queues scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(q =>
-                    !string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
+                    q.TenantId == _currentTenantService.CurrentTenantId &&
+                    (!string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
                         ? q.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
                         : q.Id == queueFilterRequestDto.QueueId)
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (queue == null)
@@ -237,10 +244,12 @@ public class QueueWorkItemService : IQueueWorkItemService
 
             var workitems = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.QueueId == queue.Id &&
                     (queueFilterRequestDto.Status == null || w.Status == queueFilterRequestDto.Status) &&
                     (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
                 )
+                .IgnoreQueryFilters()
                 .Include(i => i.Queue)
                 .AsNoTracking()
                 .ToListAsync();
@@ -416,12 +425,17 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            // Retrieve the queue based on name or ID
+            // Retrieve the queue based on name or ID. Filter explicitly by the current tenant and
+            // bypass the global tenant/space query filters so runner/node-originated calls (which
+            // have no space context) can resolve queues scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    !string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    (!string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
                         ? w.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
                         : w.Id == queueFilterRequestDto.QueueId)
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (queue == null)
@@ -452,12 +466,14 @@ public class QueueWorkItemService : IQueueWorkItemService
                 // (Completed/Failed) items must be skipped.
                 var workItems = await _unitOfWork.QueueTransactionRepo
                     .GetByConditionAsync(w =>
+                        w.TenantId == _currentTenantService.CurrentTenantId &&
                         w.QueueId == queue.Id &&
                         w.Status == QueueTransactionStatusTypesEnum.Pending.ToString() &&
                         (queueFilterRequestDto.Status == null ||
                          w.Status == queueFilterRequestDto.Status) &&
                         (w.RetryTime == null || w.RetryTime <= DateTimeOffset.UtcNow)
                     )
+                    .IgnoreQueryFilters()
                     .Include(w => w.Queue)
                     .ToListAsync();
 
@@ -601,9 +617,14 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            // Retrieve the specific queue workitem including related data
+            // Retrieve the specific queue workitem including related data. Filter explicitly by the
+            // current tenant and bypass the global tenant/space query filters so runner/node-originated
+            // calls (which have no space context) can resolve the item scoped to the tenant.
             var queueWorkitem = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.Id == queueWorkitemId)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Id == queueWorkitemId)
+                .IgnoreQueryFilters()
                 .Include(i => i.Queue)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
@@ -641,13 +662,18 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            // Retrieve the target queue (by ID or name)
+            // Retrieve the target queue (by ID or name). Filter explicitly by the current tenant and
+            // bypass the global tenant/space query filters so runner/node-originated calls (which
+            // have no space context) can resolve the queue scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    string.IsNullOrEmpty(queueWorkItemDto.QueueName)
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    (string.IsNullOrEmpty(queueWorkItemDto.QueueName)
                         ? w.Id == queueWorkItemDto.QueueId
-                        : w.Name.ToLower() == queueWorkItemDto.QueueName.ToLower()
+                        : w.Name.ToLower() == queueWorkItemDto.QueueName.ToLower())
                 )
+                .IgnoreQueryFilters()
                 .Include(i => i.QueueTransactions)
                 .SingleOrDefaultAsync();
 
@@ -770,9 +796,13 @@ public class QueueWorkItemService : IQueueWorkItemService
                     // (SourceWorkItemId, RetryCount) index which is NOT scoped by queue. Never
                     // filter by QueueId here: if the same SourceWorkItemId already exists in a
                     // different queue, a queue-scoped check would report "not a retry" and insert
-                    // with RetryCount=0 -> duplicate key on (SourceWorkItemId, 0).
+                    // with RetryCount=0 -> duplicate key on (SourceWorkItemId, 0). Scoped to the
+                    // current tenant and bypassing global filters so retry detection stays within
+                    // the tenant even when the executing context has no authenticated space.
                     isRetry = await _unitOfWork.QueueTransactionRepo
-                        .GetByConditionAsync(w => w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
+                        .GetByConditionAsync(w =>
+                            w.TenantId == _currentTenantService.CurrentTenantId &&
+                            w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
                         .IgnoreQueryFilters()
                         .AnyAsync();
 
@@ -782,7 +812,9 @@ public class QueueWorkItemService : IQueueWorkItemService
                         // (IgnoreQueryFilters) so a row hidden by the tenant/space filter can never
                         // make us recompute RetryCount=0 and collide with an existing attempt 0.
                         var latestRetryCount = await _unitOfWork.QueueTransactionRepo
-                            .GetByConditionAsync(w => w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
+                            .GetByConditionAsync(w =>
+                                w.TenantId == _currentTenantService.CurrentTenantId &&
+                                w.SourceWorkItemId == queueWorkItemDto.SourceWorkItemId)
                             .IgnoreQueryFilters()
                             .Select(w => (int?)w.RetryCount)
                             .MaxAsync();
@@ -960,9 +992,15 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // Retrieve the work item with its associated queue from the database (using AsNoTracking for performance)
+            // Retrieve the work item with its associated queue from the database (using AsNoTracking
+            // for performance). Filter explicitly by the current tenant and bypass the global
+            // tenant/space query filters so runner/node-originated calls (which have no space
+            // context) can resolve the item scoped to the tenant.
             var queueWorkItem = await _unitOfWork.QueueTransactionRepo
-               .GetByConditionAsync(w => w.Id == queueWorkItemDto.Id)
+               .GetByConditionAsync(w =>
+                   w.TenantId == _currentTenantService.CurrentTenantId &&
+                   w.Id == queueWorkItemDto.Id)
+               .IgnoreQueryFilters()
                .Include(i => i.Queue)
                .AsNoTracking()
                .SingleOrDefaultAsync();
@@ -1239,9 +1277,15 @@ public class QueueWorkItemService : IQueueWorkItemService
     /// <returns>A tuple indicating success and a human-readable message.</returns>
     private async Task<(bool Success, string Message)> RouteWorkItemToQueueAsync(Guid workItemId, string destinationQueueName)
     {
-        // Retrieve the work item to be moved, including its source queue information
+        // Retrieve the work item to be moved, including its source queue information. Filter
+        // explicitly by the current tenant and bypass the global tenant/space query filters so
+        // runner/node-originated calls (which have no space context) can resolve the item scoped
+        // to the tenant.
         var existingWorkItem = await _unitOfWork.QueueTransactionRepo
-            .GetByConditionAsync(w => w.Id == workItemId)
+            .GetByConditionAsync(w =>
+                w.TenantId == _currentTenantService.CurrentTenantId &&
+                w.Id == workItemId)
+            .IgnoreQueryFilters()
             .Include(i => i.Queue)
             .SingleOrDefaultAsync();
 
@@ -1251,10 +1295,14 @@ public class QueueWorkItemService : IQueueWorkItemService
             return (false, "Work item not found.");
         }
 
-        // Retrieve the destination queue and its existing transactions
+        // Retrieve the destination queue and its existing transactions. Filter explicitly by the
+        // current tenant and bypass the global tenant/space query filters so runner/node-originated
+        // calls can resolve the destination queue scoped to the tenant.
         var destinationQueue = await _unitOfWork.QueueRepo
             .GetByConditionAsync(w =>
+                w.TenantId == _currentTenantService.CurrentTenantId &&
                 w.Name.ToLower() == destinationQueueName.ToLower())
+            .IgnoreQueryFilters()
             .Include(i => i.QueueTransactions)
             .FirstOrDefaultAsync();
 
@@ -1454,9 +1502,14 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         try
         {
-            // Retrieve the workitem to be deleted
+            // Retrieve the workitem to be deleted. Filter explicitly by the current tenant and bypass
+            // the global tenant/space query filters so runner/node-originated calls (which have no
+            // space context) can resolve the item scoped to the tenant.
             var queueWorkItem = await _unitOfWork.QueueTransactionRepo
-                .GetByConditionAsync(w => w.Id == workitemId)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Id == workitemId)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (queueWorkItem == null)

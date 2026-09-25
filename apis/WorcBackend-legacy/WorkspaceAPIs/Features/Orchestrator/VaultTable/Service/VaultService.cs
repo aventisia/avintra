@@ -41,9 +41,11 @@ public class VaultService : IVaultService
             // Check if a vault with the same name already exists for the current user within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    w.CreatedByUserId == _userId)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a message indicating it's unavailable
@@ -294,9 +296,11 @@ public class VaultService : IVaultService
             // Check if a vault with the same name already exists for the user within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == vaultDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    w.CreatedByUserId == _userId)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a conflict response
@@ -401,7 +405,6 @@ public class VaultService : IVaultService
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == vaultDto.Name.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType &&
-                    w.CreatedByUserId == vault.CreatedByUserId &&
                     w.Id != vaultDto.Id)
                 .FirstOrDefaultAsync();
 
@@ -425,6 +428,7 @@ public class VaultService : IVaultService
             }
 
             vaultDto.Adapt(vault);
+
 
             // Update the vault in the repository
             _unitOfWork.VaultRepo.Update(vault);

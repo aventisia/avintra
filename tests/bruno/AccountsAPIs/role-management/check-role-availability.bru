@@ -5,15 +5,11 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/manage-role/is-available/{{TENANT_ID}}
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/manage-role/is-available/{{TENANT_ID}}
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    userInput: "Admin"
-  })
+body:json {
+  "userInput": "Admin"
 }

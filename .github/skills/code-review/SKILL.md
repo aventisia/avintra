@@ -1,59 +1,102 @@
 ---
 name: code-review
 user-invocable: true
-argument-hint: "Target to review (e.g., uncommitted changes, HEAD, specific branch) and the plan file"
-description: 'Review the current changes against the initial development plan and coding standards. Focuses on identifying scope creep (extra code) and categorizing findings by severity (Critical/Medium/Minor). Optimized for iterative local workflows.'
+argument-hint: "Code snippet, diff, commit, or target file to review; optional review focus or constraints"
+description: "Review generated code for standard industry practices, structural integrity, and maintainability. Focuses on architecture, modularity, reuse, documentation, dead code, and maintainability issues."
 ---
 
-# Multi-Axis Code Review
+# Code Review
 
-Review the diff between the current working state and a fixed point along three independent axes: **Spec & Scope**, **Standards**, and **Severity Triage**.
+Review generated code with a strict senior-developer lens. Prioritize standard industry practices, structural integrity, and maintainability over vague explanations or cosmetic polish.
 
-## Process
+## When to Use
 
-### 1. Pin the Fixed Point and Changes
-Identify what needs reviewing. If the user does not specify, default to reviewing **uncommitted changes** (staged and unstaged) or the diff against `HEAD`. Capture the diff via `git diff HEAD` or `git diff <fixed-point>...HEAD`. Confirm the diff is non-empty before proceeding.
+- When asked to perform a code review on a generated code snippet or commit.
+- When asked to evaluate the approach taken by an AI or check code quality.
+- When a solution needs a hard pass/fail review for maintainability and industry-standard structure.
 
-### 2. Identify the Spec (The Plan)
-Instead of searching for remote issue trackers, locate the plan generated at the start of the workflow:
-1. Look for a plan file provided in the prompt (e.g., `plan.md`, `todo.md`).
-2. Look for the most recent conversation context establishing the feature requirements.
-3. If no plan is found, explicitly ask the user to provide the plan or prompt they used to generate the code. 
+## Core Rules
 
-### 3. Evaluate Axis 1: Spec & Scope
-Cross-reference the diff against the plan. Report on:
-- **Missing Requirements:** What was in the plan but is missing in the code?
-- **Scope Creep (Extra Code):** What code was added that serves no clear purpose in fulfilling the plan? Flag speculative generality, unnecessary UI components, or unrequested backend logic.
-- **Incorrect Implementation:** Code that attempts to fulfill the plan but takes the wrong approach.
+### 1. Comment Density and Style
 
-### 4. Evaluate Axis 2: Standards & Code Quality
-Review the code for structural and qualitative issues.
-- **Project Standards:** Check for `CODING_STANDARDS.md` or `.eslintrc`/`.editorconfig` rules. 
-- **Stack-Specific Checks:** Ensure React components handle state and keys correctly, and ASP.NET controllers/services maintain clear data contracts and error handling between the frontend and backend.
-- **Code Smells (Baseline):**
-  - *Mysterious Name:* Rename unclear functions or variables.
-  - *Duplicated Code:* Extract shared logic across files.
-  - *Primitive Obsession:* Replace primitives with domain types where necessary.
-  - *Message Chains:* Hide long property navigations (`a.b.c.d`).
-  - *Feature Envy / Data Clumps:* Group data and the methods that act on it logically.
+- Reject long, sprawling explanations of "what" and "why" inline.
+- For small functions, methods, or components: require JSDoc or a concise summary block.
+- For large functions: demand the logic be divided into labeled chunks inside the method so a reviewer can skim the flow.
+- Require important notes to start strictly with "IMPORTANT NOTE:".
 
-### 5. Evaluate Axis 3: Severity Triage
-Categorize all findings from the Spec and Standards axes into actionable severity levels to streamline the user's manual review:
-- **Critical:** Security flaws, unhandled exceptions, breaking UI errors, or severe deviations from the plan.
-- **Medium:** Performance bottlenecks, missing edge-case handling, or significant code smells.
-- **Minor (Optional/Skip):** Nitpicks on formatting (skip if tooling handles this) or subjective style differences.
+### 2. File Structure and Modularity
+
+- Flag implementations that cram everything into a single file.
+- Enforce separation of concerns.
+- Require distinct files for different components, models, utilities, services, and integrations.
+- Prefer clear domain boundaries and single-responsibility organization.
+
+### 3. Code Reuse
+
+- Identify places where new logic was created instead of reusing existing methods, utilities, hooks, helpers, or libraries.
+- Demand reuse of available project abstractions to reduce duplication and follow DRY principles.
+- Flag copy-pasted implementations that duplicate patterns already used elsewhere.
+
+### 4. Dead Code Elimination
+
+- Check whether recent changes or the new code have left variables, functions, classes, imports, or branches unused or obsolete.
+- Flag dead code for removal, especially if it creates cognitive overhead or breaks maintainability.
+- Do not allow stale scaffolding or temporary logic to remain in production code.
+
+### 5. Critical Issues & Logic Flaws
+
+- Explicitly scan for critical vulnerabilities, logic flaws, race conditions, and unhandled exceptions that could crash the application or cause data loss.
+- Identify potential security risks (e.g., missing authentication/authorization, injection flaws, memory leaks, unhandled promises).
+- Check for breaking changes to state, APIs, or data models that affect production reliability.
+
+## Approach
+
+- Act as a strict senior developer.
+- Review the code for sound engineering decisions, not just correctness.
+- Group the findings into these logical sections:
+  - Critical Issues & Bugs
+  - Architecture/Modularity
+  - Code Reuse
+  - Documentation/Comments
+  - Dead Code
+  - General Quality
+- When reviewing a diff or commit, assess whether the implementation stays consistent with the existing project structure and conventions.
+- Call out concrete issues with file names, code regions, or patterns rather than vague criticism.
+- If the code is missing required context, say what information is needed before a reliable review can be completed.
 
 ## Output Format
-Present the final report using the following structure. Keep descriptions concise and quote the specific hunk or file path.
 
-### 1. Scope Validation
-*Did the code stick strictly to the plan? List missing items and any extra/unnecessary code.*
+Return the review in this structure:
 
-### 2. Critical & Medium Issues
-*List actionable, high-priority issues categorized by severity. Cite the specific file and line.*
+### 1. Critical Issues & Bugs
 
-### 3. Standards & Smells
-*Highlight architectural or code-quality improvements.*
+Highlight any logic flaws, security vulnerabilities, race conditions, unhandled exceptions, or breaking changes. This is the highest priority section.
 
-### 4. Summary
-*Provide a one-sentence verdict on whether the code is ready for final manual review or requires another LLM refactor pass.*
+### 2. Architecture / Modularity
+
+Flag oversized files, poor separation of concerns, unclear responsibilities, and structural problems.
+
+### 3. Code Reuse
+
+Point out duplication, copied logic, or failure to reuse existing project utilities.
+
+### 4. Documentation / Comments
+
+Call out missing summaries, noisy inline comments, or comments that do not add value.
+Require "IMPORTANT NOTE:" for crucial warnings or implementation constraints.
+
+### 5. Dead Code
+
+Identify obsolete imports, temporary branches, unused fields, or stale functions that should be removed.
+
+### 6. General Quality
+
+Highlight naming, edge cases, clarity, maintainability, and any other engineering issues that reduce code quality.
+
+### 7. Verdict
+
+End with a concise recommendation: pass, needs revision, or reject for maintainability or structural issues.
+
+## Review Standard
+
+The review should be exacting but fair. Do not nitpick formatting unless it materially impacts readability or maintenance. Focus on whether the code is robust, modular, readable at a glance, and consistent with standard engineering practices.

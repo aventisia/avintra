@@ -5,24 +5,14 @@ meta {
 }
 
 put {
-  url: {{WORKSPACE_APIS_BASE_URL}}/notification/global/
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/notification/global/
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("GLOBAL_NOTIFICATION_ID"),
-    message: faker.lorem.paragraph(),
-    type: "Alert",
-    actionUrl: faker.image.url()
-  })
+  "id": "{{GLOBAL_NOTIFICATION_ID}}",
+  "message": "{{$randomLoremParagraph}}",
+  "type": "Alert",
+  "actionUrl": "{{$randomImageUrl}}"
 }

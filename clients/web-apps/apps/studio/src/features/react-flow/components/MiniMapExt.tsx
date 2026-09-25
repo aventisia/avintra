@@ -1,7 +1,9 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { MiniMap } from "@xyflow/react";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 export const MiniMapExt = memo(() => {
@@ -11,6 +13,10 @@ export const MiniMapExt = memo(() => {
       miniMap: state.studioPreferences.miniMap,
     })),
   );
+  const flowType = useReactFlowExtStore((state) => state.flowType);
+
+  // ChatAgent has a fixed single node — minimap adds no value.
+  if (flowType === FlowTypesEnum.ChatAgent) return null;
 
   return (
     <>

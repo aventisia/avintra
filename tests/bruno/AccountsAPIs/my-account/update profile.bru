@@ -5,27 +5,23 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/update-profile
+  url: {{ACCOUNTS_API_BASE_URL}}/me/update-profile
   body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-    avatarSrc:faker.image.avatar(),
-    firstName: faker.person.firstName(),
-    lastName:faker.person.lastName(),
-    dateOfBirth:faker.date.birthdate(),
-    phoneNumber:faker.phone.number(),
-    phoneNumberType:"Home",
-    addressLin1:faker.location.streetAddress(),
-    addressLine2:faker.location.streetAddress(),
-    gender:"female",
-    country:faker.location.country(),
-    city:faker.location.city(),
-    stateOrProvince:faker.location.state(),
-    zipOrPostalCode:faker.location.zipCode(),
-  })
+body:json {
+  "avatarSrc": "{{$randomAvatarImage}}",
+  "firstName": "{{$randomFirstName}}",
+  "lastName": "{{$randomLastName}}",
+  "dateOfBirth": "{{$randomPastDate}}",
+  "phoneNumber": "{{$randomPhoneNumber}}",
+  "phoneNumberType": "Home",
+  "addressLin1": "{{$randomStreetAddress}}",
+  "addressLine2": "{{$randomStreetAddress}}",
+  "gender": "female",
+  "country": "{{$randomCountry}}",
+  "city": "{{$randomCity}}",
+  "stateOrProvince": "{{$randomState}}",
+  "zipOrPostalCode": "{{$randomZipCode}}"
 }

@@ -1,11 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { useShallow } from "zustand/react/shallow";
 
-import { useUserSessionStore } from "@avplatform/ui/stores";
-
-import { collaborationColorMapForPresence } from "../utils/collaboration-color";
+import { useCollaboratorCount } from "../hooks/useCollaboratorCount";
 import { useCollaborationStore } from "../stores/collaboration-store";
+import { collaborationColorMapForPresence } from "../utils/collaboration-color";
+import { getUniquePresenceUsers } from "../utils/get-unique-presence";
 
 const getInitials = (name?: string, email?: string) => {
   if (name) {
@@ -22,9 +23,8 @@ const getInitials = (name?: string, email?: string) => {
  * colored ring. Intended to be placed in the studio header bar.
  */
 export const PresenceAvatars = () => {
-  const presence = useCollaborationStore(
-    useShallow((state) => state.presence),
-  );
+  const presence = useCollaborationStore(useShallow((state) => state.presence));
+  const collaboratorCount = useCollaboratorCount();
 
   // Color per user is derived from the presence list so each user is unique and the
   // header avatar matches the canvas cursor color for the same user.
@@ -34,22 +34,18 @@ export const PresenceAvatars = () => {
   const localAvatarSrc = useUserSessionStore((state) => state.userSession?.avatarSrc);
   const localEmail = useUserSessionStore((state) => state.userSession?.email);
 
-  if (presence.length === 0) return null;
+  // Hide the avatar stack while the local user is alone in the flow; it appears once
+  // at least one other user joins.
+  if (collaboratorCount < 2) return null;
 
   // Dedupe by user (email, falling back to userId) so a user with multiple connections
   // (e.g. a lingering presence entry after navigating away and back) shows only one
   // avatar. Presence is keyed by connection id server-side, so the same user can appear
   // more than once in the list.
-  const seen = new Set<string>();
-  const uniquePresence = presence.filter((p) => {
-    const key = p.email ?? p.userId;
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  const uniquePresence = getUniquePresenceUsers(presence);
 
   return (
-    <div className="flex items-center -space-x-2">
+    <div className="hidden md:flex items-center -space-x-2">
       {uniquePresence.map((p) => {
         const displayName = p.displayName ?? p.email ?? "Collaborator";
         const avatarSrc = p.email && p.email === localEmail ? localAvatarSrc : undefined;

@@ -5,19 +5,16 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-role/delete-multiple
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-role/delete-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  let roleId = bru.getGlobalEnvVar("ROLE_ID");
-  
-  req.setBody(
-    JSON.parse(`[ "${roleId}" ]`)
-  );
+body:json {
+  [
+    "{{ROLE_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

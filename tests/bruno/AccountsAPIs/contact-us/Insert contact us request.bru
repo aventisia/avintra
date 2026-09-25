@@ -5,24 +5,14 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/contact-us
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/contact-us
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    phone: faker.phone.number({ style: 'national' }),
-    message: faker.lorem.paragraph()
-  })
+  "name": "{{$randomFullName}}",
+  "email": "{{$randomEmail}}",
+  "phone": "{{$randomPhoneNumber}}",
+  "message": "{{$randomLoremParagraph}}"
 }

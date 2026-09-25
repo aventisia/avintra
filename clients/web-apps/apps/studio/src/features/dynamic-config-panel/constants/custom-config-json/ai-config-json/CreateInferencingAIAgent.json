@@ -19,6 +19,15 @@
     },
     {
       "direction": "Input",
+      "type": "text",
+      "name": "Files",
+      "label": "File (s)",
+      "defaultValue": "",
+      "required": false,
+      "category": "Prompt"
+    },
+    {
+      "direction": "Input",
       "type": "model-config-select",
       "name": "__ModelConfig__Inferencing",
       "defaultValue": {
@@ -32,16 +41,7 @@
         "max_output_tokens": null
       },
       "required": false,
-      "category": "Models"
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "Files",
-      "label": "Files",
-      "defaultValue": "",
-      "required": false,
-      "category": "Models"
+      "category": "Model"
     },
     {
       "direction": "Input",

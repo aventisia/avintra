@@ -5,20 +5,12 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/email-campaign
+  url: {{ACCOUNTS_API_BASE_URL}}/email-campaign
   body: json
   auth: none
 }
 
 body:json {
-  {"cid":"LATGxwWHjZisLXzKdQIi","rid":"XeiooNQ9lPGd2XRCPEXW"}
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    cid: faker.string.alphanumeric({ length: 20 }),
-    rid: faker.string.alphanumeric({ length: 20 })
-  })
+  "cid": "{{$guid}}",
+  "rid": "{{$guid}}"
 }

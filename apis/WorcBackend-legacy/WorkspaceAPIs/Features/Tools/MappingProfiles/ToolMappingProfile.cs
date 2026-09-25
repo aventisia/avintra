@@ -23,6 +23,9 @@ public class ToolMappingProfile : IRegister
                     : null)
             .Map(dest => dest.IsVerified, src => src.IsVerified);
 
+        // Maps Tool to UsableToolDto.
+        config.NewConfig<Tool, UsableToolDto>();
+
         // Maps ToolDto to Tool.
         config.NewConfig<ToolDto, Tool>()
             .Ignore(dest => dest.Id)

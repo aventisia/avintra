@@ -5,18 +5,17 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/transcriptions/from-url
-  body: none
+  url: {{LLMPIPELINE_API_BASE_URL}}/transcriptions/from-url
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    //file_url: "/files/default-files/7ae210ad-78ad-4661-b014-7dbdfa376590.mp3",
-    download: false,
-    lang_code: "en",
-    use_gpu: true
-  })
+body:json {
+  "download": false,
+  "lang_code": "en",
+  "use_gpu": true
+}
+
+docs {
+  > file_url: "/files/default-files/7ae210ad-78ad-4661-b014-7dbdfa376590.mp3"
 }

@@ -42,6 +42,19 @@ public class QueueTransactionDto
     public Guid SourceWorkItemId { get; set; }
 
     /// <summary>
+    /// Gets or sets the zero-based retry attempt number for the work item. The first attempt
+    /// is 0; each retry is the latest <see cref="RetryCount"/> incremented by one. Computed by the backend.
+    /// </summary>
+    public int RetryCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the scheduled time after which this transaction becomes eligible for processing.
+    /// When null the transaction is eligible immediately. When set to a future time the transaction
+    /// must not be fetched/claimed until that time has passed.
+    /// </summary>
+    public DateTimeOffset? RetryTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
     /// </summary>
     public required Guid QueueId { get; set; }

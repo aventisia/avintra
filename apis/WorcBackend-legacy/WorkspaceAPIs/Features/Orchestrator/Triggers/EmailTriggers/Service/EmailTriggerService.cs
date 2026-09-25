@@ -213,9 +213,11 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == emailTriggerDto.Name.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
+                .IgnoreAutoIncludes()
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -442,7 +444,6 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Update basic fields
-            emailTrigger.Name = emailTriggerDto.Name;
             emailTrigger.Timezone = emailTriggerDto.Timezone;
 
             // JSON serializer configuration
@@ -849,7 +850,12 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => 
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)

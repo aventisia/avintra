@@ -9,6 +9,9 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "lastModifiedOn", value: "Last Updated On" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
+  { key: "sourceWorkItemId", value: "Source Work Item Id" },
+  { key: "retryTime", value: "Retry Time" },
+  { key: "retryCount", value: "Retry Count" },
 ];
 
 // Get the column display name for the given column key.

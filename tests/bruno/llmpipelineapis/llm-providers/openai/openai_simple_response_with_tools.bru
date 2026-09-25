@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/llm/generate
+  url: {{LLMPIPELINE_API_BASE_URL}}/llm/generate
   body: json
   auth: bearer
 }
@@ -15,21 +15,22 @@ auth:bearer {
 }
 
 body:json {
-  {
-    "provider": "openai",
-    "model": "gpt-4.1-mini",
-    "input": "Send email to user@domain.com and from user@domain.com with subject Welcome and body Welcome aboard! We're excited to have you with us and look forward to working together",
-    "files": null,
-    "tool_config": [
-      {
-        "tool": "outlook",
-        "credential_name": "DUMMY",
-        "actions": [
-          {
-            "approval": "human", // "auto"
-            "action": "send_email"
-          }
-        ]
+  [
+    {
+      "provider": "openai",
+      "model": "gpt-4.1-mini",
+      "input": "Send email to user@domain.com and from user@domain.com with subject Welcome and body Welcome aboard! We're excited to have you with us and look forward to working together",
+      "files": null,
+      "tool_config": [
+        {
+          "tool": "outlook",
+          "credential_name": "DUMMY",
+          "actions": [
+            {
+              "approval": "human", // "auto"
+              "action": "send_email"
+            }
+  ]
       },
       {
           "tool": "github",

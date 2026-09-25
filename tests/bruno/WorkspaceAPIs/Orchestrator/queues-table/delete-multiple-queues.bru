@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/queue/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/queue/delete-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set queueIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("QUEUE_ID")}"]`)
-  )
+body:json {
+  [
+    "{{QUEUE_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

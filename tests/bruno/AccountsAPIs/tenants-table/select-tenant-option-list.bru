@@ -5,23 +5,13 @@ meta {
 }
 
 get {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant/tenants-to-select
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant/tenants-to-select
+  body: json
   auth: none
 }
 
 body:json {
-  {
-    "name": "{{$randomCompanyName}}"
-  }
-}
-
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.company.name(),
-  })
+  "name": "{{$randomCompanyName}}"
 }
 
 script:post-response {

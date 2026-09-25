@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/key-store/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/key-store/delete-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set configItemIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("CONFIG_ITEM_ID")}"]`)
-  )
+body:json {
+  [
+    "{{CONFIG_ITEM_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

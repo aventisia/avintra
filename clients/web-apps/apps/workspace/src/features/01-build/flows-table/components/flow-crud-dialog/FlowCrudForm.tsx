@@ -75,6 +75,9 @@ export const FlowCrudForm = ({ rowId, crudAction }: FlowCrudFormProps) => {
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
+  // Flow type is selected once at creation and frozen on update.
+  const isTypeFrozen = crudAction === "update";
+
   // Return the form
   return (
     <Form
@@ -93,11 +96,17 @@ export const FlowCrudForm = ({ rowId, crudAction }: FlowCrudFormProps) => {
         nonErrorMessage={availabilityMessage}
       />
 
-      {/* Type. TODO: Select field doesn't update. Applied workaround for now */}
+      {/* Type: frozen after creation, editable only on create */}
       {crudAction === "create" ? (
         <SelectField {...typeProps} />
       ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
+        form.getValues("type") !== "" && (
+          <SelectField
+            {...typeProps}
+            disabled={isTypeFrozen}
+            description="Type cannot be changed after creation."
+          />
+        )
       )}
 
       {/* Description */}

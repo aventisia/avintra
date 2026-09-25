@@ -11,6 +11,25 @@ from app.core.credit_manager import CreditManagerService
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
+_REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+
+
+def _supports_reasoning_effort(model_name: str) -> bool:
+    """
+    Return True when the model is known to accept ``reasoning_effort``.
+
+    Only OpenAI reasoning families (o-series and gpt-5*) support the
+    parameter. Sending it to any other model (e.g. gpt-4o-mini) makes the
+    provider reject the whole request with a 400.
+    """
+
+    normalized = (model_name or "").strip().lower().rsplit("/", 1)[-1]
+
+    if "chat" in normalized:
+        return False
+
+    return normalized.startswith(_REASONING_MODEL_PREFIXES)
+
 
 def create_openai_model(
     llm_request: LLMRequest,
@@ -108,12 +127,14 @@ def create_openai_model(
 
     # Create OpenAI model instance.
     # Tool binding and structured output are applied later inside LangGraph nodes.
-    # For reasoning models (o1/o3/gpt-5) we pass `reasoning_effort` (when set) so
-    # the model emits reasoning content that can be streamed live. Some providers
-    # expect it via `extra_body` rather than as a top-level ChatOpenAI arg, so we
-    # set it on extra_body to be safe across OpenAI-compatible endpoints.
+    # For reasoning models (o1/o3/o4/gpt-5) we pass `reasoning_effort` (when set)
+    # so the model emits reasoning content that can be streamed live. Some
+    # providers expect it via `extra_body` rather than as a top-level ChatOpenAI
+    # arg, so we set it on extra_body to be safe across OpenAI-compatible
+    # endpoints. Non-reasoning models reject the parameter, so it is only
+    # forwarded when the model is known to support it.
     model_kwargs = {}
-    if llm_request.reasoning_effort:
+    if llm_request.reasoning_effort and _supports_reasoning_effort(llm_request.model):
         model_kwargs["reasoning_effort"] = llm_request.reasoning_effort
 
     return ChatOpenAI(
