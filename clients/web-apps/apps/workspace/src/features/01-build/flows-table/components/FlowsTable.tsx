@@ -91,7 +91,7 @@ export const FlowsTable = () => {
           {view === "grid" ? (
             <>
               {table.getRowModel().rows.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
                   {table.getRowModel().rows.map((row) => (
                     <FlowCard key={row.id} flow={row.original} isShared={isShared} />
                   ))}
