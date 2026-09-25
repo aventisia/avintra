@@ -168,10 +168,11 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     // static config JSON: the form is built on the client. When the tool's
     // parsed OpenAPI schema is available, the operation's declared headers,
     // path/query parameters and request-body properties are mapped into the
-    // JSON editors as defaults, and the Request Payload editor only appears
-    // for body-capable methods (POST, PUT, PATCH). Catalog fetch failures or
-    // unknown tools fall back to the generic schema-less form, which is not
-    // cached so the next open can retry.
+    // JSON editors as defaults, and a section editor only appears when the
+    // schema declares entries for it (empty/null sections are omitted from
+    // the form). Catalog fetch failures or unknown tools fall back to the
+    // generic schema-less form, which is not cached so the next open can
+    // retry.
     const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
     if (!customToolConfig) {
       return buildCustomToolNodeConfig(nodeUniqueName);

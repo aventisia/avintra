@@ -2,7 +2,6 @@ import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQueryClient } from "@tanstack/react-query";
-import * as YAML from "js-yaml";
 import { FormEvent, useEffect, useState } from "react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
@@ -14,6 +13,7 @@ import { ToolDto } from "../../dtos/index";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
+import { toManualOperations } from "../../utils/manual-openapi.util";
 import { StepAuthenticate } from "./StepAuthenticate";
 import { StepIngestSpec } from "./StepIngestSpec";
 import { StepPlayground } from "./StepPlayground";
@@ -82,50 +82,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
       if (!tool) return;
 
       const spec = tool.openApiSpec ?? "";
-      let parsedSchema:
-        | {
-            operations: Array<{
-              operationId: string;
-              method: string;
-              path: string;
-              summary?: string;
-            }>;
-          }
-        | undefined;
-      if (spec.trim()) {
-        try {
-          const trimmed = spec.trim();
-          const parsed =
-            trimmed.startsWith("{") || trimmed.startsWith("[")
-              ? JSON.parse(trimmed)
-              : YAML.load(trimmed);
-          const paths = (parsed?.paths ?? {}) as Record<string, unknown>;
-          const operations: Array<{
-            operationId: string;
-            method: string;
-            path: string;
-            summary?: string;
-          }> = [];
-          for (const [path, methods] of Object.entries(paths)) {
-            for (const [method, details] of Object.entries(methods as Record<string, unknown>)) {
-              if (!["get", "post", "put", "patch", "delete"].includes(method.toLowerCase()))
-                continue;
-              const op = details as Record<string, unknown>;
-              operations.push({
-                operationId: (op.operationId as string) ?? `${method}_${path}`,
-                method: method.toUpperCase(),
-                path,
-                summary: op.summary as string | undefined,
-              });
-            }
-          }
-          parsedSchema = { operations };
-        } catch {
-          // ignore parse errors on load
-        }
-      }
-
-      setDraftTool({ ...tool, parsedSchema });
+      setDraftTool({ ...tool, manualOperations: toManualOperations(tool) });
       setSpecText(spec);
       setDraftSaved(true);
     };

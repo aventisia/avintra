@@ -42,6 +42,8 @@ async def load_custom_tools(
         (Tool.space_id.is_(None), 1),
         else_=2,
     )
+    # Verification is tracked per operation, so unverifed tools are not filtered
+    # out here; each operation is filtered below (with a legacy tool-level fallback).
     stmt = (
         select(Tool)
         .where(Tool.tenant_id == tenant_id)
@@ -49,7 +51,6 @@ async def load_custom_tools(
         .where(Tool.name.in_(normalized_tool_names))
         .where(Tool.type == "Custom")
         .where(Tool.is_active == True)
-        .where(Tool.is_verified == True)
         .where(Tool.is_disabled == False)
         # Prefer the request space, then Central, then the oldest other-space row.
         .order_by(space_order, Tool.created_on.asc(), Tool.id.asc())
@@ -73,11 +74,22 @@ async def load_custom_tools(
             from app.features.custom_tools.openapi_parser import parse_openapi_spec
             operations = parse_openapi_spec(operations_data)
         elif isinstance(operations_data, list):
-            operations = [ToolOperation(**op) if isinstance(op, dict) else op for op in operations_data]
+            operations = [_coerce_operation(op) for op in operations_data if isinstance(op, dict)]
+        elif isinstance(operations_data, dict) and isinstance(operations_data.get("operations"), list):
+            operations = [
+                _coerce_operation(op)
+                for op in operations_data["operations"]
+                if isinstance(op, dict)
+            ]
         else:
             continue
 
         for operation in operations:
+            # Per-operation verification, with the tool-level flag as a legacy
+            # fallback for records saved before operation-level tracking existed.
+            if not operation.is_verified and not tool.is_verified:
+                continue
+
             langchain_tools.append(
                 _build_langchain_tool(
                     tool=tool,
@@ -89,6 +101,21 @@ async def load_custom_tools(
             )
 
     return langchain_tools
+
+
+def _coerce_operation(operation: dict) -> ToolOperation:
+    """Normalizes an operation dict (camelCase or snake_case) into a ToolOperation."""
+    return ToolOperation(
+        operation_id=operation.get("operationId") or operation.get("operation_id") or "",
+        method=(operation.get("method") or "GET").upper(),
+        path=operation.get("path") or "/",
+        summary=operation.get("summary"),
+        description=operation.get("description"),
+        parameters=operation.get("parameters") or [],
+        request_body=operation.get("requestBody") or operation.get("request_body"),
+        response_schema=operation.get("response_schema"),
+        is_verified=bool(operation.get("isVerified", operation.get("is_verified", False))),
+    )
 
 
 def _build_langchain_tool(

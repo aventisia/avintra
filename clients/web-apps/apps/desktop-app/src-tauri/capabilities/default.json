@@ -16,6 +16,7 @@
     },
     "core:window:allow-destroy",
     "core:window:allow-close",
+    "core:webview:allow-create-webview-window",
     {
       "identifier": "store:allow-get",
       "allow": [{ "key": "*" }]
