@@ -40,6 +40,8 @@ type NodeDataType = {
   hidden?: boolean;
   doNotRenderIf?: DoNotRenderIfType;
   badge?: string;
+  /** Per-operation verification (L3): unverified actions are disabled. */
+  isVerified?: boolean;
   formType?: "custom" | "dynamic";
   isGroupHead?: boolean;
   groupId?: string;

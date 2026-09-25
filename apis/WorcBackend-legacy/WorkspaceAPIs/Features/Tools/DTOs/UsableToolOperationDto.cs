@@ -61,6 +61,12 @@ public class UsableToolOperationDto
     /// </summary>
     [StringLength(100)]
     public string? Color { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this operation has been verified,
+    /// i.e. its last test call returned an HTTP 200 status code.
+    /// </summary>
+    public bool IsVerified { get; set; }
 }
 
 /// <summary>

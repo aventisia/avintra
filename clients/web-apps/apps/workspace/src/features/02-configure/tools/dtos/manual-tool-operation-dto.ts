@@ -5,6 +5,13 @@
  */
 export interface ManualToolOperation {
   /**
+   * Generated OpenAPI operation identifier, when the operation originated from
+   * an existing schema. Manual tools regenerate this from the tool name and the
+   * operation name, so the value is only preserved for imported specs.
+   */
+  operationId?: string;
+
+  /**
    * Display name of the operation.
    */
   name: string;

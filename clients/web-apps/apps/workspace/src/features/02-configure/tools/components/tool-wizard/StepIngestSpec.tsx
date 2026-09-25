@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
 import { isToolNameAvailable } from "../../apis/tools.apis";
-import { ManualToolOperation } from "../../dtos";
+import { ManualToolOperation, ToolDto } from "../../dtos";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
-import { synthesizeOpenApiSpec, toParsedSchema } from "../../utils/manual-openapi.util";
+import {
+  isSynthesizedSpec,
+  synthesizeOpenApiSpec,
+  toParsedSchema,
+} from "../../utils/manual-openapi.util";
+import { getOperationVerificationMap } from "../../utils/tool-operations.util";
 import { FieldLabel } from "./FieldLabel";
 import { ManualMethodsEditor } from "./ManualMethodsEditor";
 
@@ -72,19 +77,45 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     return null;
   };
 
-  // Editing manual operations regenerates the OpenAPI spec client-side so the
-  // saved tool is a normal spec-based tool.
-  const updateManualOperations = (operations: ManualToolOperation[]) => {
-    updateDraft({
-      manualOperations: operations,
-      openApiSpec:
-        synthesizeOpenApiSpec(operations, {
-          name: draftTool?.name,
-          description: draftTool?.description,
-        }) ?? undefined,
-      parsedSchema: toParsedSchema(operations),
-    });
+  // Rebuilds the derived artifacts (synthesized OpenAPI spec + parsed schema)
+  // from the current manual operations so operation ids stay aligned with the
+  // tool name. New tools and wizard-synthesized specs are regenerated; an
+  // imported spec is preserved as-is while method details are edited separately.
+  const rebuildManualArtifacts = (
+    operations: ManualToolOperation[],
+    overrides: Partial<ToolDto> = {},
+  ) => {
+    const name = overrides.name ?? draftTool?.name;
+    const description = overrides.description ?? draftTool?.description;
+    const shouldSynthesize = isCreate || isSynthesizedSpec(draftTool?.openApiSpec);
+    const synthesizedSpec = shouldSynthesize
+      ? (synthesizeOpenApiSpec(operations, { name, description }) ?? "")
+      : undefined;
+
+    setDraftTool(
+      draftTool
+        ? {
+            ...draftTool,
+            ...overrides,
+            manualOperations: operations,
+            ...(synthesizedSpec !== undefined ? { openApiSpec: synthesizedSpec } : {}),
+            // Preserve per-operation verification for methods that were not edited.
+            // Operations default to unverified unless they carry an explicit flag.
+            parsedSchema: toParsedSchema(
+              operations,
+              getOperationVerificationMap(draftTool.parsedSchema),
+              name,
+              // Imported specs keep their original operation ids; synthesized
+              // specs regenerate them from the tool name and operation name.
+              !shouldSynthesize,
+            ),
+          }
+        : undefined,
+    );
   };
+
+  const updateManualOperations = (operations: ManualToolOperation[]) =>
+    rebuildManualArtifacts(operations);
 
   return (
     <div className="space-y-4">
@@ -98,7 +129,9 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
         />
         <input
           value={draftTool?.name ?? ""}
-          onChange={(e) => updateDraft({ name: e.target.value })}
+          onChange={(e) =>
+            rebuildManualArtifacts(draftTool?.manualOperations ?? [], { name: e.target.value })
+          }
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
           placeholder="My Custom API Tool"
           disabled={crudAction === "update" || crudAction === "read"}

@@ -26,16 +26,48 @@ public static class ManualOpenApiSynthesizer
         "header",
     };
 
-    // Generates an operationId from the operation name, sanitized for OpenAPI keys.
-    public static string GenerateOperationId(string name)
+    // Generates an operationId from the tool name and operation name, sanitized
+    // to uppercase alphanumerics joined by single underscores. The tool-name
+    // prefix keeps operation ids unique across tools.
+    public static string GenerateOperationId(string? toolName, string operationName)
     {
-        var builder = new System.Text.StringBuilder(name.Length);
-        foreach (var character in name.Trim())
+        var toolPart = SanitizeOperationIdPart(toolName);
+        var operationPart = SanitizeOperationIdPart(operationName);
+
+        var combined = string.Join(
+            '_',
+            new[] { toolPart, operationPart }.Where(part => part.Length > 0));
+
+        return combined.Length == 0 ? "operation" : combined;
+    }
+
+    // Normalizes an operationId segment to uppercase alphanumerics joined by
+    // single underscores, trimming leading/trailing separators.
+    private static string SanitizeOperationIdPart(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
         {
-            builder.Append(char.IsWhiteSpace(character) ? '_' : character);
+            return string.Empty;
         }
 
-        return builder.Length == 0 ? "operation" : builder.ToString();
+        var builder = new System.Text.StringBuilder(value.Length);
+        foreach (var character in value.Trim().ToUpperInvariant())
+        {
+            var isAlphanumeric = (character >= 'A' && character <= 'Z') ||
+                                 (character >= '0' && character <= '9');
+            if (isAlphanumeric)
+            {
+                builder.Append(character);
+            }
+            else if (builder.Length > 0 && builder[^1] != '_')
+            {
+                builder.Append('_');
+            }
+        }
+
+        return builder.Length > 0 && builder[^1] == '_'
+            ? builder.ToString(0, builder.Length - 1)
+            : builder.ToString();
     }
 
     /// <summary>
@@ -43,8 +75,11 @@ public static class ManualOpenApiSynthesizer
     /// and manually authored operations.
     /// </summary>
     /// <param name="manualOperations">The manually authored operations.</param>
+    /// <param name="toolName">The tool name, used as the operationId prefix.</param>
     /// <returns>The OpenAPI spec as a JSON string; <c>null</c> when no operations are provided.</returns>
-    public static string? Synthesize(IReadOnlyCollection<ManualToolOperationDto> manualOperations)
+    public static string? Synthesize(
+        IReadOnlyCollection<ManualToolOperationDto> manualOperations,
+        string? toolName = null)
     {
         if (manualOperations.Count == 0)
         {
@@ -77,7 +112,7 @@ public static class ManualOpenApiSynthesizer
             }
 
             var pathParameters = ExtractPathParameters(endpoint);
-            var operationId = GenerateOperationId(operation.Name);
+            var operationId = GenerateOperationId(toolName, operation.Name);
             var operationObject = BuildOperationObject(operation, method, endpoint, operationId, pathParameters);
 
             pathItem[method] = operationObject;
@@ -94,8 +129,11 @@ public static class ManualOpenApiSynthesizer
             ["openapi"] = "3.0.3",
             ["info"] = new JsonObject
             {
-                ["title"] = "Manual Custom Tool",
+                ["title"] = string.IsNullOrWhiteSpace(toolName) ? "Manual Custom Tool" : toolName.Trim(),
                 ["version"] = "1.0.0",
+                // Marks specs synthesized from manual methods so they can be
+                // regenerated on edit without clobbering an imported spec.
+                ["x-manual-tool"] = true,
             },
             ["paths"] = paths,
         };

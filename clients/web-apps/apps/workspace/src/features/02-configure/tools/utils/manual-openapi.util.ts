@@ -1,6 +1,10 @@
 import { ToolDto } from "../dtos";
-import { ManualToolOperation } from "../dtos/manual-tool-operation-dto";
-import { normalizeToolOperations } from "./tool-operations.util";
+import {
+  ManualToolOperation,
+  ManualToolOperationHeader,
+  ManualToolOperationParameter,
+} from "../dtos/manual-tool-operation-dto";
+import { getOperationKey, normalizeToolOperations } from "./tool-operations.util";
 
 interface SynthesizeOptions {
   name?: string;
@@ -14,15 +18,26 @@ const SUPPORTED_METHODS = new Set(["get", "post", "put", "patch", "delete"]);
 
 const PARAMETER_LOCATIONS = new Set(["query", "header"]);
 
-// Generates an operationId from the operation name, mirroring the backend's
-// ManualOpenApiSynthesizer.GenerateOperationId (whitespace becomes underscore).
-export const generateOperationId = (name: string): string => {
-  const sanitized = name
-    .trim()
-    .split("")
-    .map((character) => (/\s/.test(character) ? "_" : character))
-    .join("");
-  return sanitized.length === 0 ? "operation" : sanitized;
+// Normalizes an operationId segment to uppercase alphanumerics joined by single
+// underscores, mirroring the backend's GenerateOperationId sanitization.
+const sanitizeOperationIdPart = (value?: string): string =>
+  (value ?? "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+// Generates an operationId from the tool name and operation name, e.g.
+// ("Product api test", "Get all list data") -> "PRODUCT_API_TEST_GET_ALL_LIST_DATA".
+// The tool-name prefix keeps operation ids unique across tools, and the shared
+// sanitization matches the backend's ManualOpenApiSynthesizer.GenerateOperationId.
+export const generateOperationId = (
+  toolName: string | undefined,
+  operationName: string,
+): string => {
+  const combined = [sanitizeOperationIdPart(toolName), sanitizeOperationIdPart(operationName)]
+    .filter((part) => part.length > 0)
+    .join("_");
+  return combined.length === 0 ? "operation" : combined;
 };
 
 // Infers a JSON schema node from a JSON payload sample, recursing through
@@ -138,7 +153,7 @@ export const synthesizeOpenApiSpec = (
     }
 
     const operationObject: JsonSchemaObject = {
-      operationId: generateOperationId(operation.name),
+      operationId: generateOperationId(options.name, operation.name),
       summary: operation.name,
       description: operation.description ?? "",
     };
@@ -187,9 +202,23 @@ export const synthesizeOpenApiSpec = (
       title: options.name?.trim() || "Manual Custom Tool",
       version: options.version?.trim() || "1.0.0",
       ...(options.description?.trim() ? { description: options.description.trim() } : {}),
+      // Marks specs synthesized from the wizard's manual methods so they can be
+      // safely regenerated on edit without clobbering an imported spec.
+      "x-manual-tool": true,
     },
     paths,
   });
+};
+
+// Indicates whether a stored OpenAPI spec was synthesized from manual methods.
+export const isSynthesizedSpec = (spec?: string): boolean => {
+  if (!spec?.trim()) return false;
+  try {
+    const parsed = JSON.parse(spec) as { info?: Record<string, unknown> };
+    return parsed?.info?.["x-manual-tool"] === true;
+  } catch {
+    return false;
+  }
 };
 
 interface ParsedOperation {
@@ -197,37 +226,92 @@ interface ParsedOperation {
   method: string;
   path: string;
   summary?: string;
+  description?: string;
+  parameters?: ManualToolOperationParameter[];
+  headers?: ManualToolOperationHeader[];
+  jsonPayload?: string;
+  isVerified?: boolean;
 }
 
 /**
  * Builds the wizard's parsed schema shape from manual operations so the
  * playground step and operation lists work before the backend flattens the
- * synthesized spec.
+ * synthesized spec. The optional verification map carries per-operation
+ * verification across method edits, matched on operationId + method + path.
+ * Operation ids combine the tool name and the operation name; an operation's
+ * existing id is only kept when `preserveOperationIds` is set (imported specs).
  */
-export const toParsedSchema = (operations: ManualToolOperation[]): object => ({
+export const toParsedSchema = (
+  operations: ManualToolOperation[],
+  verificationMap?: Record<string, boolean>,
+  toolName?: string,
+  preserveOperationIds = false,
+): object => ({
   operations: operations
     .filter((operation) => operation.name.trim() && operation.endpoint.trim())
-    .map((operation): ParsedOperation => ({
-      operationId: generateOperationId(operation.name),
-      method: operation.method,
-      path: operation.endpoint.startsWith("/") ? operation.endpoint : `/${operation.endpoint}`,
-      summary: operation.description || undefined,
-    })),
+    .map((operation): ParsedOperation => {
+      const operationId =
+        (preserveOperationIds && operation.operationId?.trim()) ||
+        generateOperationId(toolName, operation.name);
+      const path = operation.endpoint.startsWith("/")
+        ? operation.endpoint
+        : `/${operation.endpoint}`;
+      return {
+        operationId,
+        method: operation.method,
+        path,
+        summary: operation.description || undefined,
+        description: operation.description || undefined,
+        parameters: operation.parameters,
+        headers: operation.headers,
+        jsonPayload: operation.jsonPayload ?? undefined,
+        isVerified:
+          verificationMap?.[getOperationKey(operationId, operation.method, path)] ?? false,
+      };
+    }),
 });
 
 /**
  * Resolves the editable method list for a tool draft: persisted manual
  * operations when present, otherwise derived from the parsed schema (e.g. an
- * existing spec-based tool opened for editing).
+ * existing spec-based tool opened for editing). Since operation ids combine the
+ * tool name and the operation name, the tool-name prefix is stripped back off
+ * so the original operation name is restored for editing.
  */
 export const toManualOperations = (tool?: ToolDto): ManualToolOperation[] => {
   if (tool?.manualOperations?.length) {
     return tool.manualOperations;
   }
+
+  const toolPrefix = generateOperationId(tool?.name, "");
+  const deriveOperationName = (operationId: string): string => {
+    const separator = `${toolPrefix}_`;
+    return toolPrefix && operationId.startsWith(separator)
+      ? operationId.slice(separator.length)
+      : operationId;
+  };
+
   return normalizeToolOperations(tool).map((operation) => ({
-    name: operation.operationId,
+    operationId: operation.operationId,
+    name: deriveOperationName(operation.operationId),
     method: operation.method as ManualToolOperation["method"],
     endpoint: operation.path,
-    description: operation.summary,
+    description: operation.description ?? operation.summary,
+    parameters: operation.parameters
+      ?.filter((parameter) => parameter.in === "query")
+      .map((parameter): ManualToolOperationParameter => ({
+        name: parameter.name,
+        in: parameter.in as ManualToolOperationParameter["in"],
+        description: parameter.description,
+      })),
+    headers:
+      operation.headers ??
+      operation.parameters
+        ?.filter((parameter) => parameter.in === "header")
+        .map((parameter): ManualToolOperationHeader => ({
+          key: parameter.name,
+          description: parameter.description,
+        })),
+    jsonPayload: operation.jsonPayload,
   }));
 };

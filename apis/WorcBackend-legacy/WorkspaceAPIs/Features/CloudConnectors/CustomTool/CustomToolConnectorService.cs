@@ -14,8 +14,8 @@ namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 /// parameters, JSON body) and proxies it to the tool's base URL.
 ///
 /// Guardrails (Q10): http/https schemes only, 30-second timeout, 5 MB response cap.
-/// Unverified tools are rejected at runtime even though they stay visible in the
-/// selector (Q8).
+/// Unverified operations are rejected at runtime even though they stay visible in
+/// the selector (Q8); verification is tracked per operation.
 /// </summary>
 public class CustomToolConnectorService : ICustomToolConnectorService
 {
@@ -85,21 +85,22 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse;
             }
 
-            // Step 3: Reject unverified tools at runtime (they remain visible in the selector).
-            if (!tool.IsVerified)
-            {
-                serviceResponse.Message = $"Custom tool '{tool.Name}' is unverified. Test the tool before invoking it.";
-                return serviceResponse;
-            }
-
-            // Step 4: Resolve the operation from the parsed schema.
-            var operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema);
+            // Step 3: Resolve the operation from the parsed schema.
+            var operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified);
             var operation = operations.FirstOrDefault(o =>
                 string.Equals(o.OperationId, operationId, StringComparison.OrdinalIgnoreCase));
 
             if (operation is null)
             {
                 serviceResponse.Message = $"Operation '{operationId}' was not found on custom tool '{tool.Name}'.";
+                return serviceResponse;
+            }
+
+            // Step 4: Reject unverified operations at runtime. Unverified operations
+            // stay visible in the selector (flagged) but cannot be executed.
+            if (!operation.IsVerified)
+            {
+                serviceResponse.Message = $"Operation '{operationId}' on custom tool '{tool.Name}' is unverified. Test it before invoking.";
                 return serviceResponse;
             }
 

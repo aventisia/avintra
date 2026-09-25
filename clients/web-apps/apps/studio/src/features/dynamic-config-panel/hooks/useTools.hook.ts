@@ -48,15 +48,16 @@ export const usePersonalTools = () => {
  * Fetches the usable tools together with their operations in one payload
  * (`GET /tools/usable/catalog`). Used by the flow-builder Custom Tools panel:
  * L2 lists the tools and L3 renders each tool's operations without a second
- * round-trip.
+ * round-trip. `options.enabled` lets callers gate the fetch (e.g. until the
+ * flow finishes loading); defaults to enabled as soon as the session resolves.
  */
-export const useUsableToolCatalog = () => {
+export const useUsableToolCatalog = (options?: { enabled?: boolean }) => {
   const tenantId = useUserSessionStore(useShallow((state) => state.userSession?.tenantId ?? ""));
 
   return useQuery({
     queryKey: [...USABLE_TOOL_CATALOG_QUERY_KEY, tenantId, getStudioSpaceId()],
     queryFn: getUsableToolCatalog,
-    enabled: Boolean(tenantId),
+    enabled: Boolean(tenantId) && (options?.enabled ?? true),
   });
 };
 

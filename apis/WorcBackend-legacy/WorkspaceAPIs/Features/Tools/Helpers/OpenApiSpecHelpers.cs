@@ -42,6 +42,7 @@ public static class OpenApiSpecHelpers
                         };
 
                         operationSummary["parameters"] = ExtractParameters(operationProperty.Value);
+                        operationSummary["headers"] = ExtractHeaders(operationProperty.Value);
                         operationSummary["requestBody"] = ExtractRequestBody(operationProperty.Value);
                         operationSummary["responses"] = ExtractResponses(operationProperty.Value);
                         operationSummary["x-agent-node"] = ExtractAgentNode(operationProperty.Value);
@@ -146,6 +147,36 @@ public static class OpenApiSpecHelpers
                 ["type"] = GetParameterValue(parameterElement),
             };
             result.Add(parameterSummary);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Extracts header parameters into the editable method header shape.
+    /// </summary>
+    private static JsonNode ExtractHeaders(JsonElement operationElement)
+    {
+        var result = new JsonArray();
+        if (!operationElement.TryGetProperty("parameters", out var parametersElement))
+        {
+            return result;
+        }
+
+        foreach (var parameterElement in parametersElement.EnumerateArray())
+        {
+            if (!parameterElement.TryGetProperty("in", out var inElement) ||
+                !string.Equals(inElement.GetString(), "header", StringComparison.OrdinalIgnoreCase) ||
+                !parameterElement.TryGetProperty("name", out var nameElement))
+            {
+                continue;
+            }
+
+            result.Add(new JsonObject
+            {
+                ["key"] = JsonValue.Create(nameElement.GetString()),
+                ["description"] = GetStringValue(parameterElement, "description"),
+            });
         }
 
         return result;

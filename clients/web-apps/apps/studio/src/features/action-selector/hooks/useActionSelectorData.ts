@@ -6,10 +6,12 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
+import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { canWeRenderNodeOrCategory } from "../utils/action-visibilty";
+import { getActiveCustomTools } from "../utils/custom-tools-converter";
 
 /**
  * Fetches and filters action selector data lazily — only after:
@@ -38,9 +40,10 @@ export function useActionSelectorData() {
 
   const deploymentType = userSession?.deploymentType as DeploymentType;
 
-  const { setActionSelectorData } = useNodeSelectorStore(
+  const { setActionSelectorData, setCustomToolNodesCount } = useNodeSelectorStore(
     useShallow((state) => ({
       setActionSelectorData: state.setActionSelectorData,
+      setCustomToolNodesCount: state.setCustomToolNodesCount,
     })),
   );
 
@@ -54,6 +57,31 @@ export function useActionSelectorData() {
     staleTime: Infinity, // never refetch automatically — fetch once per session
     gcTime: Infinity, // keep cached for the lifetime of the session
   });
+
+  /**
+   * Custom Tools L1 badge: total custom-tool nodes — the summed OpenAPI
+   * operations across all active custom tools (each operation renders as one
+   * draggable node in the selector). Fetched right after the flow finishes
+   * loading, in the same gated window as the selector data. Shares the catalog
+   * query key with the Custom Tools section (`useUsableToolCatalog` in
+   * ActionCategoryList), so opening that section is served from cache instead
+   * of a second round-trip.
+   */
+  const { data: catalogResponse } = useUsableToolCatalog({ enabled: !isFlowLoading });
+
+  /**
+   * Sync the custom-tool node count into the store once the catalog arrives.
+   * Stays null while loading so the L1 badge can show a fetching state.
+   */
+  useEffect(() => {
+    const totalNodes = catalogResponse
+      ? getActiveCustomTools(catalogResponse.data).reduce(
+          (sum, tool) => sum + tool.operations.length,
+          0,
+        )
+      : null;
+    setCustomToolNodesCount(totalNodes);
+  }, [catalogResponse, setCustomToolNodesCount]);
 
   /**
    * Sync filtered result into Zustand once raw data arrives.

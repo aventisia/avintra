@@ -1,4 +1,9 @@
-import { ToolDto, UsableToolOperation } from "@/features/dynamic-config-panel/dtos/tool-dto";
+import {
+  ToolDto,
+  UsableToolCatalogItemDto,
+  UsableToolOperation,
+} from "@/features/dynamic-config-panel/dtos/tool-dto";
+import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/component-type-enum";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel/types/dcp-field-schema-type";
 import { NodeConfigSchemaType } from "@/features/dynamic-config-panel/types/node-config-schema-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
@@ -53,6 +58,17 @@ export function getCustomToolNodeName(toolName: string, operationId: string): st
 type CustomToolLike = Pick<ToolDto, "id" | "name" | "description" | "icon">;
 
 /**
+ * Filters the usable-tool catalog down to active custom tools (type=Custom,
+ * not disabled) — the same rule that drives the Custom Tools section's L2
+ * directory. Shared so the L1 count badge and the directory never disagree.
+ */
+export function getActiveCustomTools(
+  tools?: UsableToolCatalogItemDto[],
+): UsableToolCatalogItemDto[] {
+  return (tools ?? []).filter((tool) => tool.type === ComponentTypeEnum.Custom && !tool.isDisabled);
+}
+
+/**
  * Formats an OpenAPI `operationId` into a human-readable label.
  * "get_user_by_id" → "Get User By Id"; "users.create" → "Users Create".
  */
@@ -65,11 +81,6 @@ export function formatOperationId(operationId: string): string {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-/** L2 fallback logic: description shown when the tool has none. */
-export function getToolDescription(tool: CustomToolLike): string {
-  return tool.description || "Custom tool integration";
 }
 
 /** L2 tool icon resolution: custom icon first, then the shared wrench glyph key. */
@@ -191,12 +202,16 @@ const buildRequestPayloadDefault = (operation?: UsableToolOperation): string => 
 
 /**
  * Builds the dynamic-config-panel schema for a custom-tool action node on the
- * client. The form is a credential selector plus three JSON editors (headers,
- * parameters, request payload); the backend resolves the tool, operation and
- * vault credential server-side from the node name. When the catalog operation
- * schema is available, the declared headers, path/query parameters and
- * request-body properties are mapped into the matching editors as defaults, and
- * the Request Payload editor is only added for POST, PUT and PATCH operations.
+ * client. The form is a credential selector plus sectioned JSON editors
+ * (headers, parameters, request payload); the backend resolves the tool,
+ * operation and vault credential server-side from the node name. When the
+ * catalog operation schema is available, the declared headers, path/query
+ * parameters and request-body properties are mapped into the matching editors
+ * as defaults, and a section editor only appears when the schema declares
+ * entries for it — empty/null sections are omitted from the form entirely
+ * (the payload editor additionally requires a body-capable method). When the
+ * schema is unknown, the generic three-editor form is kept so values can
+ * still be supplied manually.
  *
  * @param nodeUniqueName The node name, e.g. "CustomTool/Weather API.get_user".
  * @param operation The tool's catalog operation schema, when resolvable.
@@ -225,37 +240,45 @@ export function buildCustomToolNodeConfig(
       description: `The ${toolName} credential used to authenticate the request.`,
       defaultValue: "",
     },
-    {
-      direction: "Input",
-      type: "json-editor",
-      name: CUSTOM_TOOL_HEADERS_FIELD,
-      label: "Headers",
-      description: 'Additional request headers as a JSON object, e.g. { "X-Api-Key": "abc" }.',
-      defaultValue: headersDefault,
-    },
-    {
-      direction: "Input",
-      type: "json-editor",
-      name: CUSTOM_TOOL_PARAMETERS_FIELD,
-      label: "Parameters",
-      description:
-        'Path, query and header parameter values as a JSON object, e.g. { "id": "123" }.',
-      defaultValue: parametersDefault,
-    },
   ];
 
-  // The Request Payload editor only applies to POST, PUT and PATCH — the
-  // backend ignores the payload section for every other method. When the
-  // operation schema is unknown the editor is always shown (previous behavior).
-  if (!operation || isBodyCapableMethod(operation.method)) {
-    fields.push({
-      direction: "Input",
-      type: "json-editor",
-      name: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD,
-      label: "Request Payload",
-      description: "JSON request body, sent with POST, PUT and PATCH operations.",
-      defaultValue: requestPayloadDefault,
-    });
+  // Section editors: each editor only appears when the operation schema
+  // declares entries for that section — empty/null sections are omitted from
+  // the form entirely. The payload editor additionally requires a
+  // body-capable method (POST, PUT, PATCH); the backend ignores the payload
+  // section for every other method. When the operation schema is unknown the
+  // generic three-editor form is kept so values remain authorable manually.
+  const headersField: DCPFieldSchemaType = {
+    direction: "Input",
+    type: "json-editor",
+    name: CUSTOM_TOOL_HEADERS_FIELD,
+    label: "Headers",
+    description: 'Additional request headers as a JSON object, e.g. { "X-Api-Key": "abc" }.',
+    defaultValue: headersDefault,
+  };
+  const parametersField: DCPFieldSchemaType = {
+    direction: "Input",
+    type: "json-editor",
+    name: CUSTOM_TOOL_PARAMETERS_FIELD,
+    label: "Parameters",
+    description: 'Path, query and header parameter values as a JSON object, e.g. { "id": "123" }.',
+    defaultValue: parametersDefault,
+  };
+  const requestPayloadField: DCPFieldSchemaType = {
+    direction: "Input",
+    type: "json-editor",
+    name: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD,
+    label: "Request Payload",
+    description: "JSON request body, sent with POST, PUT and PATCH operations.",
+    defaultValue: requestPayloadDefault,
+  };
+
+  if (operation) {
+    if (headersDefault) fields.push(headersField);
+    if (parametersDefault) fields.push(parametersField);
+    if (requestPayloadDefault) fields.push(requestPayloadField);
+  } else {
+    fields.push(headersField, parametersField, requestPayloadField);
   }
 
   fields.push({
@@ -303,9 +326,10 @@ export function convertToolOperationsToActions(
   img?: string;
   color?: string;
   supportedPlatforms: string[];
-  badge?: string;
   inputs?: NodeInputType[];
   outputs?: NodeOutputType[];
+  isVerified: boolean;
+  disabled: boolean;
 }[] {
   if (!operations?.length) return [];
 
@@ -366,9 +390,12 @@ export function convertToolOperationsToActions(
       img: undefined,
       color,
       supportedPlatforms: ["cloud", "windows"],
-      badge: method || undefined,
       inputs,
       outputs,
+      // Verification is per operation (L3): unverified actions stay visible but
+      // are disabled in the selector and rejected by the runtime.
+      isVerified: operation.isVerified === true,
+      disabled: operation.isVerified !== true,
     };
   });
 }
