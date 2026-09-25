@@ -274,13 +274,15 @@ const ExecuteFlow = () => {
           ...currentFlow,
           jobId: jobRes.data.id,
           runVersionId: currentFlow.versionId,
+          runFlowId: currentFlow.id,
         });
-        // Set the whole run context atomically so `j`, `rv` and `showRunResults` are all
-        // present in the URL immediately (not only after completion). This lets sub-flow
+        // Set the whole run context atomically so `j`, `rv`, `rf` and `showRunResults` are
+        // all present in the URL immediately (not only after completion). This lets sub-flow
         // navigation retain the live execution log while the run is still in progress.
         setRunContext({
           jobId: jobRes.data.id,
           runVersionId: currentFlow.versionId,
+          runFlowId: currentFlow.id,
           showRunResults: true,
         });
         updateField("startTime", executionStartTime);

@@ -2,12 +2,15 @@ import { cn } from "@avplatform/ui/lib";
 import { Node, NodeProps } from "@xyflow/react";
 import { GitBranchIcon } from "lucide-react";
 import { memo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { isLiveBranchNodeActive } from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -27,26 +30,58 @@ export const BranchNode1 = memo(
     selected,
   }: NodeProps<BranchNode1>) => {
     const isExecutionLog = useIsExecutionLogsRoute();
+    const [searchParams] = useSearchParams();
+    const subflowCallerId = searchParams.get("ci") || "";
 
-    const { branchStats, showBranchStats } = useExecutionStore();
-    const liveStatus = useLiveExecutionStore((state) =>
-      nodeData?.isDisabled ? undefined : state.liveExecutionMap[nodeId],
+    const { branchStats, showBranchStats, executionMap, nodeToParentStack, activeIteration } =
+      useExecutionStore(
+        useShallow((state) => ({
+          branchStats: state.branchStats,
+          showBranchStats: state.showBranchStats,
+          executionMap: state.executionMap,
+          nodeToParentStack: state.nodeToParentStack,
+          activeIteration: state.activeIteration,
+        })),
+      );
+    const { liveExecutionMap, liveActiveIteration, liveLoopIndex } = useLiveExecutionStore(
+      useShallow((state) => ({
+        liveExecutionMap: state.liveExecutionMap,
+        liveActiveIteration: state.liveActiveIteration,
+        liveLoopIndex: state.liveLoopIndex,
+      })),
     );
+    const liveStatus = nodeData?.isDisabled ? undefined : liveExecutionMap[nodeId];
+    const branchActive = isLiveBranchNodeActive(
+      liveLoopIndex,
+      subflowCallerId,
+      nodeId,
+      liveActiveIteration,
+    );
+    const selectedLiveStatus = branchActive ? liveStatus : undefined;
 
     // Collaboration: branch nodes render outside NodeContainer, so apply the same
     // lock protection here (block interaction + overlay) when another user holds the lock.
     const { lockedByOther } = useNodeLockedByOther(nodeId);
 
+    // Resolve this branch's path coordinate so the highlight reflects the SELECTED iteration.
+    // `branchStats` is a total across every iteration, so using it for the border kept the
+    // branch green whenever it ran in ANY iteration — including iterations the user is not
+    // currently viewing. It is still used for the hit-count badge, which is intentionally a
+    // total.
+    const parents = nodeToParentStack[nodeId] || [];
+    const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
+    const isActiveInPath = !!executionMap[nodeId]?.[pathKey];
+
     const totalHits = branchStats[nodeId] || 0;
 
     const pillBorderClass =
-      !nodeData?.isDisabled && isExecutionLog && branchStats[nodeId]
+      !nodeData?.isDisabled && isExecutionLog && isActiveInPath
         ? "border-green-500"
-        : liveStatus === "running"
+        : selectedLiveStatus === "running"
           ? "border-blue-500"
-          : liveStatus === "success"
+          : selectedLiveStatus === "success"
             ? "border-green-500"
-            : liveStatus === "failed"
+            : selectedLiveStatus === "failed"
               ? "border-red-500"
               : "border-slate-400";
 
@@ -60,12 +95,7 @@ export const BranchNode1 = memo(
               showBorder={false}
               isDisabled={nodeData?.isDisabled}
             >
-              <div
-                className={cn(
-                  "relative",
-                  lockedByOther && "pointer-events-none opacity-70",
-                )}
-              >
+              <div className={cn("relative", lockedByOther && "pointer-events-none opacity-70")}>
                 <OpenNodeConfig {...{ nodeData, nodeId }}>
                   <div
                     className={cn(

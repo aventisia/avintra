@@ -28,7 +28,7 @@ export const ViewControls = memo(() => {
 
   return (
     <Panel position="bottom-left">
-      <div className="flex flex-col items-end space-y-4">
+      <div className="flex items-center gap-2">
         {/* Undo and Redo Controls */}
         {!isChatAgent && <VCBUndoRedo />}
 
@@ -38,7 +38,7 @@ export const ViewControls = memo(() => {
             <VCActionButton action="fitView" Icon={Scan} />
 
             {/* Separate from zoom in-out */}
-            <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
+            <Separator orientation="vertical" className="mx-1 w-[0.5px]" />
 
             {/* Zoom out */}
             <VCActionButton action="zoomOut" Icon={MinusIcon} />
@@ -48,7 +48,7 @@ export const ViewControls = memo(() => {
 
             {import.meta.env.MODE !== "production" && (
               <>
-                <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
+                <Separator orientation="vertical" className="mx-1 w-[0.5px]" />
                 <VCBZoomTo />
               </>
             )}

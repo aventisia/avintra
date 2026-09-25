@@ -16,6 +16,8 @@ public static class DynamicJsonTestHarness
     {
         var failures = 0;
 
+        failures += FlowProcessorMatrixTestHarness.Run();
+
         failures += Run("DotNotationOnJsonObject", () =>
         {
             var ctx = new FlowExecutionContext();

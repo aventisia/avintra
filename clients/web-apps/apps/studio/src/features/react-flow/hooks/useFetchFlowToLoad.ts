@@ -24,10 +24,12 @@ export const useFetchFlowToLoad = () => {
   const flowId = searchParams.get("f");
   const versionId = searchParams.get("v") || undefined;
   // Run context carried through sub-flow navigation: `j` is the job id of the run whose
-  // logs we are viewing, and `rv` is the root flow version that owns those logs. Both are
-  // preserved so that opening a sub-flow keeps the execution-log panel and live maps alive.
+  // logs we are viewing, `rv` is the root flow version that owns those logs, and `rf` is
+  // the root flow id (`f`/`v` always describe the current flow). All are preserved so that
+  // opening a sub-flow keeps the execution-log panel and live maps alive.
   const jobId = searchParams.get("j") || undefined;
   const runVersionId = searchParams.get("rv") || undefined;
+  const runFlowId = searchParams.get("rf") || undefined;
 
   const autoLayout = useDagreAutoLayout();
 
@@ -120,6 +122,7 @@ export const useFetchFlowToLoad = () => {
       // the local WebSocket stays subscribed and the execution-log panel keeps working.
       jobId,
       runVersionId,
+      runFlowId,
     });
 
     setIsPublished(flowData.isPublished || false);

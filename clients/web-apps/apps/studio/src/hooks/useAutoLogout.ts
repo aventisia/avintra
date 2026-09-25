@@ -2,6 +2,7 @@ import { logOffFromCurrentSession } from "@avplatform/ui/apis";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { ACTIVITY_EVENTS, IDLE_TIMEOUT_MINUTES } from "@/constants/auto-logout";
 
@@ -9,7 +10,9 @@ import { ACTIVITY_EVENTS, IDLE_TIMEOUT_MINUTES } from "@/constants/auto-logout";
 export function useAutoLogout() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { setUserSession } = useUserSessionStore();
+  const { setUserSession } = useUserSessionStore(
+    useShallow((state) => ({ setUserSession: state.setUserSession })),
+  );
   const navigate = useNavigate();
 
   // Debounce function to delay calling the resetTimer function

@@ -32,7 +32,7 @@ export const VCBUndoRedo = () => {
       </Tooltip>
 
       {/* Separator between Undo and Redo */}
-      <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
+      <Separator orientation="vertical" className="mx-1 w-[0.5px]" />
 
       {/* Redo Button */}
       <Tooltip content="Redo" side="right">

@@ -16,6 +16,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
@@ -28,7 +29,16 @@ import MenuItem from "./MenuItem";
 
 export const ReactFlowContextMenu = memo(() => {
   const { menu, setMenu, selectedNode, selectedEdge, setSelectedEdge, setSelectedNode } =
-    useContextMenuActionsStore();
+    useContextMenuActionsStore(
+      useShallow((state) => ({
+        menu: state.menu,
+        setMenu: state.setMenu,
+        selectedNode: state.selectedNode,
+        selectedEdge: state.selectedEdge,
+        setSelectedEdge: state.setSelectedEdge,
+        setSelectedNode: state.setSelectedNode,
+      })),
+    );
   const flowType = useReactFlowExtStore((state) => state.flowType);
   const { copyNodes, cutNodes, pasteNodes, deleteNode, disableNode, cancelCut } =
     useFlowOperations();

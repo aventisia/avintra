@@ -1,6 +1,9 @@
+import { Node } from "@xyflow/react";
 import { create } from "zustand";
 
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
+import { buildLiveLoopIndex } from "@/features/execute-flow/utils/live-loop-index";
+import type { LiveLoopIndex } from "@/features/execute-flow/utils/live-loop-index";
 
 export type LiveNodeStatus = "running" | "success" | "failed";
 
@@ -18,6 +21,25 @@ type LiveExecutionState = {
    * execution log panel for the selected node.
    */
   nodeLogsMap: Record<string, NodeExecutionLogType>;
+
+  /** Every completed log in execution order, including repeated loop iterations. */
+  nodeLogHistory: NodeExecutionLogType[];
+  liveActiveIteration: Record<string, number>;
+
+  /**
+   * The current canvas graph nodes, mirrored from `useReactFlowExtStore` so the live
+   * execution index can be computed in a single place (this store) instead of being
+   * rebuilt inside every node/edge component. Stable during a run; changes only when the
+   * graph is edited or the user navigates into a sub-flow.
+   */
+  nodes: Node[];
+
+  /**
+   * Pre-computed live execution index (loop paths, router config, per-node logs). Rebuilt
+   * once per store update (in `applyBatch`/`setNodeLogHistory`/`setNodes`) rather than
+   * inside every node/edge component, so all consumers share a single derived value.
+   */
+  liveLoopIndex: LiveLoopIndex;
 
   /**
    * Set of edge ids that the runner explicitly traversed. This is the authoritative source
@@ -45,9 +67,18 @@ export type SubflowProgressNode = {
 };
 
 type LiveExecutionActions = {
-  setNodeStatus: (nodeId: string, status: LiveNodeStatus) => void;
-  setNodeLog: (nodeId: string, log: NodeExecutionLogType) => void;
+  /**
+   * Applies many node status/log updates in a single store update (see implementation).
+   * `log` is optional so a `running` transition can be batched alongside completions.
+   */
+  applyBatch: (
+    updates: Array<{ nodeId: string; status: LiveNodeStatus; log?: NodeExecutionLogType }>,
+  ) => void;
+  setNodeLogHistory: (logs: NodeExecutionLogType[]) => void;
+  setLiveIteration: (loopId: string, index: number) => void;
   markEdgeTraversed: (edgeId: string) => void;
+  /** Mirrors the current canvas nodes so the live index can be computed in this store. */
+  setNodes: (nodes: Node[]) => void;
   resetLiveExecution: () => void;
   /** Append a sub-flow-internal node that started running. */
   pushSubflowProgressNode: (node: SubflowProgressNode) => void;
@@ -59,22 +90,74 @@ type LiveExecutionActions = {
 export const useLiveExecutionStore = create<LiveExecutionState & LiveExecutionActions>((set) => ({
   liveExecutionMap: {},
   nodeLogsMap: {},
+  nodeLogHistory: [],
+  liveActiveIteration: {},
   liveTraversedEdges: {},
   subflowProgressNodes: [],
+  nodes: [],
+  liveLoopIndex: buildLiveLoopIndex([], []),
 
-  setNodeStatus: (nodeId, status) =>
+  /**
+   * Applies many node status/log updates in a SINGLE store update. The WebSocket handler
+   * buffers per-node progress messages and flushes them once per animation frame, so a burst
+   * of completions (e.g. the tail of a 100+ node flow) produces one `set()` and one re-render
+   * cascade instead of one per node. Dedupe is done in a single O(N+M) pass (one filter over
+   * the existing history + one append of all new logs) rather than O(N) per node.
+   */
+  applyBatch: (updates) =>
+    set((state) => {
+      if (updates.length === 0) return state;
+
+      const liveExecutionMap = { ...state.liveExecutionMap };
+      const nodeLogsMap = { ...state.nodeLogsMap };
+
+      const newLogs = updates
+        .filter((u) => u.log !== undefined)
+        .map((u) => u.log as NodeExecutionLogType);
+      const newIds = new Set(newLogs.map((log) => log.nodeExecutionId));
+
+      const nodeLogHistory =
+        newLogs.length > 0
+          ? [
+              ...state.nodeLogHistory.filter((entry) => !newIds.has(entry.nodeExecutionId)),
+              ...newLogs,
+            ]
+          : state.nodeLogHistory;
+
+      for (const { nodeId, status, log } of updates) {
+        liveExecutionMap[nodeId] = status;
+        if (log) nodeLogsMap[nodeId] = log;
+      }
+
+      return {
+        liveExecutionMap,
+        nodeLogsMap,
+        nodeLogHistory,
+        liveLoopIndex: buildLiveLoopIndex(nodeLogHistory, state.nodes),
+      };
+    }),
+
+  setNodeLogHistory: (logs) =>
     set((state) => ({
-      liveExecutionMap: { ...state.liveExecutionMap, [nodeId]: status },
+      nodeLogsMap: Object.fromEntries(logs.map((log) => [log.nodeId, log])),
+      nodeLogHistory: logs,
+      liveLoopIndex: buildLiveLoopIndex(logs, state.nodes),
     })),
 
-  setNodeLog: (nodeId, log) =>
+  setLiveIteration: (loopId, index) =>
     set((state) => ({
-      nodeLogsMap: { ...state.nodeLogsMap, [nodeId]: log },
+      liveActiveIteration: { ...state.liveActiveIteration, [loopId]: index },
     })),
 
   markEdgeTraversed: (edgeId) =>
     set((state) => ({
       liveTraversedEdges: { ...state.liveTraversedEdges, [edgeId]: true },
+    })),
+
+  setNodes: (nodes) =>
+    set((state) => ({
+      nodes,
+      liveLoopIndex: buildLiveLoopIndex(state.nodeLogHistory, nodes),
     })),
 
   pushSubflowProgressNode: (node) =>
@@ -92,10 +175,13 @@ export const useLiveExecutionStore = create<LiveExecutionState & LiveExecutionAc
   clearSubflowProgress: () => set({ subflowProgressNodes: [] }),
 
   resetLiveExecution: () =>
-    set({
+    set((state) => ({
       liveExecutionMap: {},
       nodeLogsMap: {},
+      nodeLogHistory: [],
+      liveActiveIteration: {},
       liveTraversedEdges: {},
       subflowProgressNodes: [],
-    }),
+      liveLoopIndex: buildLiveLoopIndex([], state.nodes),
+    })),
 }));

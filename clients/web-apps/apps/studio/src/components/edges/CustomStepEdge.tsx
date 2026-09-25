@@ -2,8 +2,14 @@
 import { cn } from "@avplatform/ui/lib";
 import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { memo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import {
+  getLiveNodeLog,
+  isLiveRouterBranchActive,
+} from "@/features/execute-flow/utils/live-loop-index";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
@@ -22,13 +28,50 @@ export const CustomStepEdge = memo(
     style,
     markerEnd,
     label,
+    source,
+    target,
   }: EdgeProps) => {
     const { getNode, getEdge } = useReactFlow();
+    const [searchParams] = useSearchParams();
+    const subflowCallerId = searchParams.get("ci") || "";
     const nodeType = getNode(getEdge(id)?.target ?? "")?.type;
 
-    const isLiveEdgeActive = useLiveExecutionStore(
-      (state) => state.liveTraversedEdges[id] === true,
+    const { liveTraversedEdges, nodeLogHistory, liveActiveIteration, liveLoopIndex } =
+      useLiveExecutionStore(
+        useShallow((state) => ({
+          liveTraversedEdges: state.liveTraversedEdges,
+          nodeLogHistory: state.nodeLogHistory,
+          liveActiveIteration: state.liveActiveIteration,
+          liveLoopIndex: state.liveLoopIndex,
+        })),
+      );
+
+    const liveExecutionData = liveLoopIndex;
+    const router = liveExecutionData.routerConfig[source];
+    const liveSourceLog = getLiveNodeLog(
+      liveExecutionData,
+      subflowCallerId,
+      source,
+      liveActiveIteration,
     );
+    const liveTargetLog = getLiveNodeLog(
+      liveExecutionData,
+      subflowCallerId,
+      target,
+      liveActiveIteration,
+    );
+    const isLivePathActive =
+      nodeLogHistory.length > 0
+        ? router
+          ? isLiveRouterBranchActive(
+              liveExecutionData,
+              subflowCallerId,
+              source,
+              target,
+              liveActiveIteration,
+            )
+          : liveSourceLog?.isSuccess === true && liveTargetLog?.isSuccess === true
+        : liveTraversedEdges[id] === true;
 
     const [edgePath, labelX, labelY] = getBezierPath({
       sourceX,
@@ -43,8 +86,8 @@ export const CustomStepEdge = memo(
 
     const isAgentHistory = useIsVersionHistoryRoute();
 
-    const stroke = isLiveEdgeActive ? "#22c55e" : "#94a3b8";
-    const statusClass = isLiveEdgeActive ? "edge-success" : "";
+    const stroke = isLivePathActive ? "#22c55e" : "#94a3b8";
+    const statusClass = isLivePathActive ? "edge-success" : "";
 
     return (
       <>

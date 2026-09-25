@@ -60,7 +60,12 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
     ref,
   ) => {
     // Retrieve panel state and close handler from the store
-    const { panels, closePanel } = usePanelStore();
+    const { panels, closePanel } = usePanelStore(
+      useShallow((state) => ({
+        panels: state.panels,
+        closePanel: state.closePanel,
+      })),
+    );
 
     // Get the appBanner state using shallow equality check for optimization
     const { appBanner } = useBaseLayoutStore(
@@ -254,7 +259,7 @@ interface PanelTriggerProps {
 
 const PanelTrigger = React.forwardRef<HTMLButtonElement, PanelTriggerProps>(
   ({ children, panelId, side = "right", asChild = false, className }, ref) => {
-    const { openPanel } = usePanelStore();
+    const { openPanel } = usePanelStore(useShallow((state) => ({ openPanel: state.openPanel })));
 
     // Memoize click handler for performance
     const handleClick = React.useCallback(() => {
