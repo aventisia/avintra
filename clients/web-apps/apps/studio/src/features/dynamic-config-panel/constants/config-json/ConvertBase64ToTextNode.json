@@ -1,10 +1,10 @@
 {
   "name": "ConvertBase64ToTextNode",
   "label": "Convert Base64 to Text",
-  "description": "Converts a Base64-encoded string to plain text.",
+  "description": "Converts a Base64-encoded string to plain text using the specified text encoding.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["windows"],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
@@ -16,6 +16,42 @@
       "description": "The Base64-encoded string to convert.",
       "defaultValue": "",
       "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TextEncoding",
+      "label": "Encoding",
+      "description": "The character encoding used to decode the Base64 bytes into text.",
+      "defaultValue": "Utf8",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "UTF-8",
+          "value": "Utf8",
+          "description": "Unicode UTF-8 encoding."
+        },
+        {
+          "label": "UTF-16",
+          "value": "Utf16",
+          "description": "Unicode UTF-16 encoding, little-endian."
+        },
+        {
+          "label": "UTF-16 (Big Endian)",
+          "value": "Utf16BE",
+          "description": "Unicode UTF-16 encoding, big-endian."
+        },
+        {
+          "label": "UTF-32",
+          "value": "Utf32",
+          "description": "Unicode UTF-32 encoding, little-endian."
+        },
+        {
+          "label": "ASCII",
+          "value": "Ascii",
+          "description": "7-bit ASCII encoding."
+        }
+      ]
     },
     {
       "direction": "Output",

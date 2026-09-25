@@ -383,9 +383,27 @@
           },
           {
             "type": "activityNode",
+            "name": "ConvertBase64ToTextNode",
+            "label": "Convert Base64 to Text",
+            "description": "Converts a Base64-encoded string to plain text using the specified text encoding.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
             "name": "ConvertNumberToTextNode",
             "label": "Convert Number to Text",
             "description": "Converts a numeric value into text with specified formatting options.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertTextToBase64Node",
+            "label": "Convert Text to Base64",
+            "description": "Encodes a plain text string into a Base64 string using the specified text encoding.",
             "img": "/assets/Text.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
@@ -2569,15 +2587,6 @@
             "name": "ConvertBase64ToFileNode",
             "label": "Convert Base64 to File",
             "description": "Converts a Base64 encoded string to a file and saves it at the specified path.",
-            "img": "/assets/File.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "ConvertBase64ToTextNode",
-            "label": "Convert Base64 to Text",
-            "description": "Converts a Base64-encoded string to plain text.",
             "img": "/assets/File.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]
