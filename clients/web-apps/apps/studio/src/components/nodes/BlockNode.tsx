@@ -44,8 +44,12 @@ export const BlockNode = memo(
     const { updateNodeData } = useReactFlow();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const { pushBreadcrumb } = useBreadcrumbStore();
-    const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+    const { pushBreadcrumb } = useBreadcrumbStore(
+      useShallow((state) => ({ pushBreadcrumb: state.pushBreadcrumb })),
+    );
+    const { currentFlow } = useCurrentFlowStore(
+      useShallow((state) => ({ currentFlow: state.currentFlow })),
+    );
     const name = useReactFlowViewStore(useShallow((state) => state.name));
 
     const { isSavePending } = useReactFlowExtStore(
@@ -87,7 +91,19 @@ export const BlockNode = memo(
       const currentFlowId = searchParams.get("f") || currentFlow.id;
       const currentVersionId = searchParams.get("v") || currentFlow.versionId;
       const currentJobId = searchParams.get("j");
-      const currentRunVersionId = searchParams.get("rv") || currentFlow.runVersionId;
+      // On the execution-log page `currentFlow` is empty, so fall back to the `v` param —
+      // that IS the root run version there. Without this, `rv` would be dropped and the
+      // sub-flow view would refetch the log list against the sub-flow's own version.
+      const currentRunVersionId =
+        searchParams.get("rv") ||
+        currentFlow.runVersionId ||
+        (isExecutionLog ? searchParams.get("v") : undefined);
+      // `f`/`v` always describe the current (sub-)flow, so the root flow id must be carried
+      // separately — otherwise it is lost as soon as the user enters a sub-flow.
+      const currentRunFlowId =
+        searchParams.get("rf") ||
+        currentFlow.runFlowId ||
+        (isExecutionLog ? searchParams.get("f") : undefined);
       const showRunResults = searchParams.get("showRunResults") === "1";
       const currentFlowName = isExecutionLog ? name : currentFlow.name;
 
@@ -98,6 +114,7 @@ export const BlockNode = memo(
           name: currentFlowName || "Main Flow",
           jobId: currentJobId || undefined,
           runVersionId: currentRunVersionId || undefined,
+          runFlowId: currentRunFlowId || undefined,
         });
       }
 
@@ -108,6 +125,9 @@ export const BlockNode = memo(
           showRunResults,
           jobId: currentJobId || undefined,
           runVersionId: currentRunVersionId || undefined,
+          runFlowId: currentRunFlowId || undefined,
+          // This node IS the caller of the sub-flow being entered.
+          callerId: id,
         }),
       );
     };

@@ -1,10 +1,9 @@
 import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
-import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { formatDate } from "@avplatform/ui/utils";
 import { LogsIcon, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { Panel, PanelClose, PanelContent } from "@/components/panel/components/Panel";
@@ -16,9 +15,11 @@ import { useRunResultsQueryParams } from "@/features/execute-flow/hooks/useRunRe
 import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
+import { buildLiveLoopIndex, getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
+import { buildNodeLogPayload } from "@/utils/node-log-payload";
 
 type NodeTiming = {
   startedAt?: Date;
@@ -26,39 +27,10 @@ type NodeTiming = {
   duration?: number;
 };
 
-/** Convert key/value pairs from the stored node log into a plain JSON object. */
-const kvArrayToObject = (
-  entries?: { key: string; value: unknown }[],
-): Record<string, unknown> | undefined => {
-  if (!entries || entries.length === 0) return undefined;
-  return Object.fromEntries(entries.map((entry) => [entry.key, entry.value]));
-};
-
-/** Build the full LAST NODE LOG style payload from a node log plus timing data. */
-const buildNodeLogPayload = (
-  nodeLog: NodeExecutionLogType | null,
-  nodeData: NodeDataType,
-  timing: NodeTiming,
-): Record<string, unknown> => {
-  const inputs = kvArrayToObject(nodeLog?.inputs);
-  const outputs = kvArrayToObject(nodeLog?.outputs);
-
-  return {
-    nodeExecutionId: nodeLog?.nodeExecutionId ?? FALLBACK_VALUE,
-    retryAttempt: nodeLog?.retryAttempt ?? 0,
-    nodeId: nodeLog?.nodeId ?? FALLBACK_VALUE,
-    nodeDisplayName: nodeData.label || nodeData.name || nodeLog?.nodeName || FALLBACK_VALUE,
-    nodeUniqueName: nodeLog?.nodeUniqueName ?? nodeData.type ?? FALLBACK_VALUE,
-    isSuccess: nodeLog?.isSuccess ?? false,
-    duration: nodeLog?.duration ?? timing.duration ?? 0,
-    executedAt: timing.endedAt ? formatDate(timing.endedAt, true) : FALLBACK_VALUE,
-    inputs: inputs ?? {},
-    outputs: outputs ?? {},
-  };
-};
-
 export const CanvasNodeDetailPanel = () => {
   const { showRunResults } = useRunResultsQueryParams();
+  const [searchParams] = useSearchParams();
+  const subflowCallerId = searchParams.get("ci") || "";
   const { panels, closePanel } = usePanelStore(
     useShallow((state) => ({
       panels: state.panels,
@@ -72,12 +44,16 @@ export const CanvasNodeDetailPanel = () => {
     })),
   );
 
-  const { liveExecutionMap, nodeLogsMap } = useLiveExecutionStore(
-    useShallow((state) => ({
-      liveExecutionMap: state.liveExecutionMap,
-      nodeLogsMap: state.nodeLogsMap,
-    })),
-  );
+  const { liveExecutionMap, nodeLogsMap, nodeLogHistory, liveActiveIteration, liveLoopIndex } =
+    useLiveExecutionStore(
+      useShallow((state) => ({
+        liveExecutionMap: state.liveExecutionMap,
+        nodeLogsMap: state.nodeLogsMap,
+        nodeLogHistory: state.nodeLogHistory,
+        liveActiveIteration: state.liveActiveIteration,
+        liveLoopIndex: state.liveLoopIndex,
+      })),
+    );
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
@@ -107,12 +83,13 @@ export const CanvasNodeDetailPanel = () => {
       const latestExecution = executions[executions.length - 1];
       const map: Record<string, "success" | "failed"> = {};
       const logMap: Record<string, NodeExecutionLogType> = {};
+      const restoredHistory: NodeExecutionLogType[] = [];
       const timingMap: Record<string, NodeTiming> = {};
       const baseExecutedOn = new Date(latestExecution.executedOn);
 
       latestExecution.nodes.forEach((node) => {
         map[node.nodeId] = node.isSuccess ? "success" : "failed";
-        logMap[node.nodeId] = {
+        const restoredLog: NodeExecutionLogType = {
           nodeExecutionId: node.nodeExecutionId,
           retryAttempt: node.retryAttempt,
           nodeId: node.nodeId,
@@ -120,16 +97,26 @@ export const CanvasNodeDetailPanel = () => {
           nodeUniqueName: node.nodeUniqueName,
           isSuccess: node.isSuccess,
           duration: node.duration,
+          callerReferenceId: node.callerReferenceId,
+          loopReferenceId: node.loopReferenceId,
+          loopIterationIndex: node.loopIterationIndex,
           inputs: Object.entries(node.inputs).map(([key, value]) => ({ key, value })),
           outputs: Object.entries(node.outputs).map(([key, value]) => ({ key, value })),
         };
+        logMap[node.nodeId] = restoredLog;
+        restoredHistory.push(restoredLog);
 
         const startedAt = baseExecutedOn;
         const endedAt = new Date(startedAt.getTime() + Math.max(0, node.duration) * 1000);
         timingMap[node.nodeId] = { startedAt, endedAt, duration: node.duration };
       });
 
-      useLiveExecutionStore.setState({ liveExecutionMap: map, nodeLogsMap: logMap });
+      useLiveExecutionStore.setState({
+        liveExecutionMap: map,
+        nodeLogsMap: logMap,
+        nodeLogHistory: restoredHistory,
+        liveLoopIndex: buildLiveLoopIndex(restoredHistory, useLiveExecutionStore.getState().nodes),
+      });
       setNodeTimingMap(timingMap);
       setJob({
         status: latestExecution.isSuccess ? JobStatusEnum.Completed : JobStatusEnum.Failed,
@@ -178,8 +165,21 @@ export const CanvasNodeDetailPanel = () => {
 
   const nodeLog = useMemo(() => {
     if (!selectedNode) return null;
-    return nodeLogsMap[selectedNode.id] ?? null;
-  }, [selectedNode, nodeLogsMap]);
+    const scopedLogs = nodeLogHistory.filter((log) =>
+      subflowCallerId ? log.callerReferenceId === subflowCallerId : !log.callerReferenceId,
+    );
+    return [...scopedLogs].reverse().find((log) => log.nodeId === selectedNode.id) ?? null;
+  }, [nodeLogHistory, selectedNode, subflowCallerId]);
+
+  const liveExecutionData = liveLoopIndex;
+
+  const selectedLiveLog = useMemo(() => {
+    if (!selectedNode) return nodeLog;
+    return (
+      getLiveNodeLog(liveExecutionData, subflowCallerId, selectedNode.id, liveActiveIteration) ??
+      null
+    );
+  }, [liveActiveIteration, liveExecutionData, nodeLog, selectedNode, subflowCallerId]);
 
   const nodeTiming = useMemo(() => {
     if (!selectedNode) return null;
@@ -188,8 +188,12 @@ export const CanvasNodeDetailPanel = () => {
 
   const nodeLogPayload = useMemo<Record<string, unknown> | undefined>(() => {
     if (!nodeData || !selectedNode) return undefined;
-    return buildNodeLogPayload(nodeLog, nodeData, nodeTiming ?? {});
-  }, [nodeData, nodeLog, nodeTiming, selectedNode]);
+    return buildNodeLogPayload(selectedLiveLog, {
+      displayName: nodeData.label || nodeData.name,
+      nodeType: nodeData.type,
+      executedAt: nodeTiming?.endedAt,
+    });
+  }, [nodeData, nodeTiming, selectedLiveLog, selectedNode]);
 
   // Auto-open the panel when a single colored node is selected.
   useEffect(() => {
@@ -212,19 +216,19 @@ export const CanvasNodeDetailPanel = () => {
     }
   }, [closePanel, liveExecutionMap, panels, selectedNode]);
 
-  if (!nodeData || !selectedNode || !nodeLog) {
+  if (!nodeData || !selectedNode || !selectedLiveLog) {
     return null;
   }
 
   return (
-    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[36rem]" closeOnEscape>
+    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[30rem]" closeOnEscape>
       <PanelContent className="overflow-hidden py-2 pl-2">
         <ScrollArea className="h-full w-full">
           <ViewContainer className="pt-1">
             {/* Full node log JSON — same design as LAST NODE LOG. Only render once the
                 node has actually completed and produced a log; a running node has no log
                 yet and would otherwise show a card full of fallback placeholders. */}
-            {nodeLog && nodeLogPayload && (
+            {selectedLiveLog && nodeLogPayload && (
               <ViewInfoRowsCard
                 title="Node Log"
                 icon={<LogsIcon className="size-3.5 text-muted-foreground" />}

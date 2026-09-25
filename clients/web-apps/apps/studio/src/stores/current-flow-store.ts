@@ -23,6 +23,11 @@ interface ICurrentFlowDetails {
    * against the parent version (sub-flow logs are stored under the root run version).
    */
   runVersionId?: string;
+  /**
+   * Root flow id of the current local run. `id`/`versionId` always describe the *current*
+   * (sub-)flow, so the root flow id is tracked separately to survive sub-flow navigation.
+   */
+  runFlowId?: string;
   /** ID of the space this flow belongs to (null/undefined = Central). */
   spaceId?: string | null;
 }
@@ -96,6 +101,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     inputOutputObject: "",
     jobId: "",
     runVersionId: "",
+    runFlowId: "",
     spaceId: null,
   },
 

@@ -46,10 +46,15 @@ export const ClearRunResultsPanel = () => {
   const handleClear = () => {
     resetLiveExecution();
     resetJob();
-    setCurrentFlow({ ...currentFlow, jobId: undefined, runVersionId: undefined });
-    // Clear the whole run context atomically (job id, run version and show-run-results
-    // flag) so no stale param is left behind in the URL.
-    setRunContext({ jobId: undefined, runVersionId: undefined, showRunResults: false });
+    setCurrentFlow({ ...currentFlow, jobId: undefined, runVersionId: undefined, runFlowId: undefined });
+    // Clear the whole run context atomically (job id, run version, run flow and
+    // show-run-results flag) so no stale param is left behind in the URL.
+    setRunContext({
+      jobId: undefined,
+      runVersionId: undefined,
+      runFlowId: undefined,
+      showRunResults: false,
+    });
     closePanel(CANVAS_NODE_DETAIL_PANEL_ID);
     // Wipe persisted run results for this flow from IndexedDB so a refresh won't restore them.
     // When inside a sub-flow, logs live under the ROOT run version (`runVersionId`), so we

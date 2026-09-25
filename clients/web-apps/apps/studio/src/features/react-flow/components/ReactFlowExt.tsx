@@ -28,6 +28,7 @@ import { DCPDialog } from "@/features/dynamic-config-panel";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -150,6 +151,12 @@ export const ReactFlowExt = () => {
     return () => setCollaborationBroadcasters(null, null);
   }, [broadcastNodeChange, broadcastEdgeChange, broadcastGraphChange]);
 
+  // Mirror the current canvas nodes into the live-execution store so the live loop index is
+  // computed in a single place (the store) instead of inside every node/edge component.
+  useEffect(() => {
+    useLiveExecutionStore.getState().setNodes(nodes);
+  }, [nodes]);
+
   // Collaboration: release the held node lock when the node configuration panel is
   // closed, since closing it does not necessarily clear the React Flow selection.
   const dcpShowDialog = useDynamicConfigPanelStore((state) => state.showDialog);
@@ -188,7 +195,13 @@ export const ReactFlowExt = () => {
   );
 
   // Setter functions for context menu node
-  const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore();
+  const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore(
+    useShallow((state) => ({
+      setSelectedNode: state.setSelectedNode,
+      setSelectedEdge: state.setSelectedEdge,
+      setMenu: state.setMenu,
+    })),
+  );
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 

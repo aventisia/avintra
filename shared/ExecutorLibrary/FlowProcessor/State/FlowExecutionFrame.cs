@@ -18,6 +18,9 @@ public class FlowExecutionFrame
     /// from the running spinner to the success/failed indicator.
     /// </summary>
     public string CallerNodeId { get; set; } = string.Empty;
+    public NodeExecutionLog? CallerLog { get; set; }
+    public string PreviousLoopReferenceId { get; set; } = string.Empty;
+    public int PreviousLoopIterationIndex { get; set; } = -1;
     public Dictionary<string, ConditionalBranchState> ConditionalStates { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public Dictionary<string, LoopState> LoopStates { get; set; } = new(StringComparer.OrdinalIgnoreCase);
