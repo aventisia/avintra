@@ -99,6 +99,56 @@ public class FlowsTableService : IFlowsTableService
                     : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
+            // Enrich each flow with the AI models referenced by its latest workflow
+            // version (used by the Agents grid cards).
+            var flowById = flows.ToDictionary(flow => flow.Id);
+
+            foreach (var flowDto in flowDtoList)
+            {
+                if (!flowById.TryGetValue(flowDto.Id, out var flowEntity))
+                    continue;
+
+                var latestVersion = flowEntity.FlowVersions?
+                    .OrderByDescending(version => version.VersionNumber)
+                    .FirstOrDefault();
+
+                flowDto.AiModels = AiModelHelper.ExtractModelNames(latestVersion?.ReactFlowObject);
+            }
+
+            // Resolve the queues linked to any version of the returned flows and attach
+            // them to the matching flow DTO.
+            var flowVersionIds = flows
+                .SelectMany(flow => flow.FlowVersions ?? new List<FlowVersion>())
+                .Select(version => version.Id)
+                .ToList();
+
+            if (flowVersionIds.Count > 0)
+            {
+                var queueFlowVersions = await _unitOfWork.QueueFlowVersionRepo
+                    .GetByConditionAsync(qf => flowVersionIds.Contains(qf.FlowVersionId))
+                    .Include(qf => qf.FlowVersion)
+                    .Include(qf => qf.Queue)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                foreach (var flowDto in flowDtoList)
+                {
+                    flowDto.Queues = queueFlowVersions
+                        .Where(qf =>
+                            qf.FlowVersion != null &&
+                            qf.FlowVersion.FlowId == flowDto.Id &&
+                            qf.Queue != null)
+                        .GroupBy(qf => qf.Queue!.Id)
+                        .Select(group => new AgentQueueDto
+                        {
+                            Id = group.Key,
+                            Name = group.First().Queue!.Name,
+                            Type = group.First().Queue!.Type
+                        })
+                        .ToList();
+                }
+            }
+
             // Task successful
             serviceResponse.Data = flowDtoList;
             serviceResponse.StatusCode = 200;

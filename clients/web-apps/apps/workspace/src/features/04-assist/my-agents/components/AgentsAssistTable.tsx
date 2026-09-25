@@ -12,10 +12,9 @@ import { NoAgentsAvailable } from "@/features/04-assist/my-chats/components/NoAg
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSelectTableAgents } from "../hooks/useFetchSelectAgents";
+import { AgentCard } from "./AgentCard";
 import { agentsAssistTableColumns } from "./AgentsAssistTableColumns";
 import { AgentsTableSkeleton } from "./AgentsTableSkeleton";
-import { AgentsListItemActions } from "./assign-agent-item-actions";
-import { ExecutionAction } from "./assign-agent-item-actions/ExecutionAction";
 
 /**
  * Renders a table of configs.
@@ -56,37 +55,11 @@ export const AgentsAssistTable = () => {
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
             </div>
           </div>
-          {/* DT with only rows and custom design */}
+          {/* Agents grid, matching the library card grid */}
           {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-1 gap-3 rounded-lg border bg-white px-2.5 py-3">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
               {table.getRowModel().rows.map((row) => (
-                <div
-                  key={row.id}
-                  className="flex items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:ring-1 hover:ring-border"
-                >
-                  {/* Left icon with rounded border */}
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">{row.getValue("name")}</span>
-                    <span className="text-2xs text-muted-foreground">
-                      Version: {row.getValue("versionNumber") as string}
-                    </span>
-                  </div>
-                  {/* Action trigger */}
-                  <div className="flex items-center gap-2">
-                    <ExecutionAction
-                      executionState={row.original.status}
-                      rowId={row.original.id}
-                      flowName={row.original.name}
-                      flowVersionNumber={row.original.versionNumber}
-                      jobId={row.original.jobId}
-                    />
-                    {/* Actions container */}
-                    <AgentsListItemActions
-                      id={row.original.id || ""}
-                      machineIds={row.original.assignedMachineIds}
-                    />
-                  </div>
-                </div>
+                <AgentCard key={row.id} agent={row.original} />
               ))}
             </div>
           ) : (
