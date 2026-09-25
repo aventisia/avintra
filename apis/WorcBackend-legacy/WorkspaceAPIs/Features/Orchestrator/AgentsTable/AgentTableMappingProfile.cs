@@ -9,6 +9,7 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.RefId, src => src.FlowId)
                 .Map(dest => dest.MachineCount, src => src.FlowVersionMachines != null ? src.FlowVersionMachines.Count() : 0)
                 .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
+                .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
                 .Map(dest => dest.Settings, src => src.Settings == null
                     ? null
                     : System.Text.Json.JsonSerializer.Deserialize<ExecutionSettings>(
