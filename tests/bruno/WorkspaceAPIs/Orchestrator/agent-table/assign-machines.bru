@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/agent/{{FLOW_VERSION_ID}}/assign-machines
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/agent/{{FLOW_VERSION_ID}}/assign-machines
+  body: json
   auth: none
 }
 
-script:pre-request {
-  // Set machineId in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("MACHINE_ID")}"]`)
-  )
+body:json {
+  [
+    "{{MACHINE_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

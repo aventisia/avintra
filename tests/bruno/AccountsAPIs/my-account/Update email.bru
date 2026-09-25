@@ -5,17 +5,13 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/update-email
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/me/update-email
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-     email: faker.internet.email(),
-    verificationCodeId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    secretCode: "string"
-  })
+body:json {
+  "email": "{{$randomEmail}}",
+  "verificationCodeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "secretCode": "string"
 }

@@ -5,16 +5,12 @@ meta {
 }
 
 post {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/me/update-name
+  url: {{ACCOUNTS_API_BASE_URL}}/me/update-name
   body: json
   auth: none
 }
 
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-    firstName: faker.commerce.product(),
-    lastName: faker.commerce.product(),
-  })
+body:json {
+  "firstName": "{{$randomProductName}}",
+  "lastName": "{{$randomProductName}}"
 }

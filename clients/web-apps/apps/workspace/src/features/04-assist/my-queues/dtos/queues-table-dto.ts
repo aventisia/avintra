@@ -169,7 +169,7 @@ export interface InputSchemaField {
   name: string;
   description: string;
   label: string | null;
-  type: "string" | "int" | "Date"; // Extend if more types exist
+  type: "string" | "int" | "Date" | "Array"; // Extend if more types exist
   isRequired: boolean;
   isUsedForUniqueIdentifier: boolean;
 }

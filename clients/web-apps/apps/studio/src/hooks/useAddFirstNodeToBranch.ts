@@ -1,6 +1,8 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
@@ -15,7 +17,11 @@ export const useAddFirstNodeToBranch = () => {
   const addFirstNodeToBranch = useCallback(
     (nodeData: NodeDataType, plusNodeId: string) => {
       // JIT State Fetching: Get latest state instantly without subscribing
-      const { nodes, edges } = useReactFlowExtStore.getState();
+      const { nodes, edges, flowType } = useReactFlowExtStore.getState();
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
 
       const branchStartNodeEdge = edges.find((edge) => edge.target === plusNodeId) as Edge;
 

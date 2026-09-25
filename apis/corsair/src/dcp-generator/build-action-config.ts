@@ -6,7 +6,7 @@ import type { ActionConfig, CorsairActionInvocation, DcpField, PluginMetadata } 
 import { corsairSchemaToDcpFields } from "./schema-to-fields.js";
 
 /** Convert a dotted Corsair action path into a PascalCase action segment. */
-export function actionToPascal(action: string): string {
+function actionToPascal(action: string): string {
   return action
     .split(".")
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1))

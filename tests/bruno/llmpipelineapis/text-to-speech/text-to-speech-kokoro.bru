@@ -5,19 +5,15 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/tts/kokoro/generate
-  body: none
+  url: {{LLMPIPELINE_API_BASE_URL}}/tts/kokoro/generate
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    text: "Our Bank Details This Invoice has been assigned to MODIFI B.V. Please direct all remittances directly to their Bank Account as detailed below Beneficiary",
-    voice: "af_heart",
-    lang_code: "a",
-    speed: "1",
-    use_gpu: false,
-  })
+body:json {
+  "text": "Our Bank Details This Invoice has been assigned to MODIFI B.V. Please direct all remittances directly to their Bank Account as detailed below Beneficiary",
+  "voice": "af_heart",
+  "lang_code": "a",
+  "speed": "1",
+  "use_gpu": false
 }

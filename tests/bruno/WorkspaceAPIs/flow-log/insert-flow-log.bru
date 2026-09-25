@@ -5,36 +5,19 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/Flow-log
+  url: {{WORKSPACE_API_BASE_URL}}/Flow-log
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "flowId": "5f6ade90-a5ec-4280-8eb2-232a754b5cb0",
-    "startTime": "2024-12-09T06:06:06.261Z",
-    "status": "Failed1",
-    "duration": 10,
-    "remark": "string",
-    "version": 0,
-    "flowName": "string"
-  }
-}
-
-script:pre-request {
-  const {faker} = require('@faker-js/faker');
-  
-  req.setBody({
-    flowId: bru.getGlobalEnvVar("FLOW_ID"),
-    startTime: new Date(),
-    status: "Failed1",
-    duration: 1234,
-    remark: faker.commerce.product(),
-    version: faker.number.float(),
-    flowName: faker.commerce.product(),
-  })
+  "flowId": "{{FLOW_ID}}",
+  "startTime": "{{$isoTimestamp}}",
+  "status": "Failed1",
+  "duration": 1234,
+  "remark": "{{$randomProductName}}",
+  "version": "{{$randomFloat}}",
+  "flowName": "{{$randomProductName}}"
 }
 
 script:post-response {

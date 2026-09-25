@@ -5,18 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/time-trigger/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/time-trigger/delete-multiple
+  body: json
   auth: none
 }
 
-script:pre-request {
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("TIME_TRIGGER_ID")}"]`)
-  )
-  
+body:json {
+  [
+    "{{TIME_TRIGGER_ID}}"
+  ]
 }
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

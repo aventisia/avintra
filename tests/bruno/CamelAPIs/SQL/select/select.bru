@@ -5,29 +5,30 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}/connectors/sql
+  url: {{CAMEL_API_BASE_URL}}/connectors/sql
   body: json
   auth: none
 }
 
 body:json {
-  {
-    "connector": "sql",
-    "operation": "select",
-    "configuration": {
-      "query": "SELECT * FROM users WHERE id = ?"
-    },
-    "auth": {
-      "type": "database",
-      "properties": {
-        "url": "jdbc:postgresql://{{POSTGRES_HOST}}:{{POSTGRES_PORT}}/{{POSTGRES_DB}}",
-        "username": "{{POSTGRES_USER}}",
-        "password": "{{POSTGRES_PASSWORD}}"
-      }
-    },
-    "payload": [
-      1
-    ]
+  [
+    {
+      "connector": "sql",
+      "operation": "select",
+      "configuration": {
+        "query": "SELECT * FROM users WHERE id = ?"
+      },
+      "auth": {
+        "type": "database",
+        "properties": {
+          "url": "jdbc:postgresql://{{POSTGRES_HOST}}:{{POSTGRES_PORT}}/{{POSTGRES_DB}}",
+          "username": "{{POSTGRES_USER}}",
+          "password": "{{POSTGRES_PASSWORD}}"
+        }
+      },
+      "payload": [
+        1
+  ]
   }
 }
 

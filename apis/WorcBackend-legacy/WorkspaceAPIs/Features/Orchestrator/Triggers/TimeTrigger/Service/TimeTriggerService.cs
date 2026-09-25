@@ -268,7 +268,12 @@ public class TimeTriggerService(
         {
             // Validate trigger name uniqueness within the current environment
             var triggerAlreadyExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId && 
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Trigger already exists
@@ -326,7 +331,12 @@ public class TimeTriggerService(
 
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == timeTriggerDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == timeTriggerDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)

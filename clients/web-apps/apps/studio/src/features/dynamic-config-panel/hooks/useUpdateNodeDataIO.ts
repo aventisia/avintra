@@ -46,12 +46,19 @@ export const useUpdateNodeDataIO = () => {
   ) => {
     //  node by id and update its inputs and outputs
 
-    // Set nodeData
-    if (nodeData) {
-      setNodeData({ ...nodeData, inputs: newInputs, outputs: newOutputs });
-    }
-    // Set valid node label
+    // Only commit a non-empty label (an empty name would blank the node title)
     const validNodeLabel = typeof nodeLabel === "string" && nodeLabel.length > 0 && nodeLabel;
+
+    // Set nodeData, including the label so the panel's node context re-baselines
+    // after a rename (otherwise a rename would stay "dirty" forever).
+    if (nodeData) {
+      setNodeData({
+        ...nodeData,
+        inputs: newInputs,
+        outputs: newOutputs,
+        ...(validNodeLabel && { label: validNodeLabel }),
+      });
+    }
 
     updateNodeData(nodeId, {
       inputs: newInputs,

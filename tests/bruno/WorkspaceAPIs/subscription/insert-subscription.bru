@@ -5,19 +5,15 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/subscription/
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/subscription/
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    startDate: new Date(),
-    dueDate: new Date(),
-    planId: bru.getGlobalEnvVar("PLAN_ID")
-  })
+body:json {
+  "startDate": "{{$isoTimestamp}}",
+  "dueDate": "{{$isoTimestamp}}",
+  "planId": "{{PLAN_ID}}"
 }
 
 script:post-response {

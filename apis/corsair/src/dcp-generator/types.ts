@@ -122,8 +122,6 @@ export type GenerateDcpOptions = {
   corsair: unknown;
   /** Icon path map: plugin id → /assets/<Icon>.svg. */
   iconMap?: Record<string, string>;
-  /** Base URL map: plugin id → provider base URL (for OpenAPI specs). */
-  baseUrlMap?: Record<string, string>;
   /**
    * Absolute path to the global Cloud Connector action-selector mapping file
    * (owned by the Workspace API codebase). It lives in the same ConfigFiles

@@ -1,0 +1,36 @@
+meta {
+  name: Register machine idempotent
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/machine-auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  X-API-KEY: {{CUSTOM_API_KEY}}
+  X-TENANT-ID: {{TENANT_ID}}
+}
+
+body:json {
+  {
+    "operatingSystem": "Windows",
+    "osID": "bruno-register-test-machine-guid",
+    "hostname": "bruno-register-host-updated",
+    "username": "bruno.register.user",
+    "linkedUserAccountId": "{{ACCOUNT_USER_ID}}"
+  }
+}
+
+script:post-response {
+  // Idempotent: re-registering the same machine must return the existing machine with a fresh JWT
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "MACHINE_ID",
+          res.getBody().data.machineId
+      );
+  }
+}

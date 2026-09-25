@@ -1,6 +1,7 @@
 import { Node } from "@xyflow/react";
 
 import { NodeDataType } from "@/types/node-data-type";
+import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 const DEFAULT_IMAGE = "/function.png";
 const TRIGGER_ICON = "ManualTriggerIcon";
@@ -22,7 +23,10 @@ export function getUniqueFlowImages(nodes: Node<NodeDataType>[]): string[] {
     } else if (node.data?.img) {
       imagePath = node.data.img;
     } else if (node.type == "modelNode") {
-      imagePath = `/brand-img/${node.data.label}.svg`;
+      // Model node labels are provider values (e.g. "googlegemini", "groq"),
+      // which do not always map 1:1 to a brand-img file name. Resolve through
+      // the provider brand icon map so aliases (gemini, groqcloud, ollama) work.
+      imagePath = getProviderBrandIcon(node.data.label as string) ?? null;
     }
 
     if (imagePath && imagePath !== DEFAULT_IMAGE) {

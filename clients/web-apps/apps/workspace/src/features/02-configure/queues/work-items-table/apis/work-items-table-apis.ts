@@ -30,6 +30,20 @@ export const getQueuesWorkItemsList = (id: string) => {
 };
 
 /**
+ * Retrieves a single queue work item (including its full payload) by its ID.
+ * List responses strip the payload; the detail views (JSON/form viewer and file
+ * viewer) fetch the complete work item from this endpoint.
+ */
+export const getQueuesWorkItemById = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<QueueWorkItemDto>>(
+      `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue/workitem/${id}`,
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
  * Inserts a new queue.
  */
 export const insertQueuesWorkItems = (dto: QueueWorkItemDto) => {

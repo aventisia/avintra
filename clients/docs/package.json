@@ -16,7 +16,6 @@
   "scripts": {
     "dev": "next dev --port 3004",
     "build": "next build",
-    "build:testing": "env-cmd -f .env.testing next build",
     "build:staging": "env-cmd -f .env.staging next build",
     "build:production": "next build",
     "postbuild": "pagefind --site .next/server/app --output-path out/_pagefind",

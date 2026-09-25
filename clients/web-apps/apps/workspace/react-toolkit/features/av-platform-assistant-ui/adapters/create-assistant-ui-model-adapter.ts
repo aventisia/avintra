@@ -92,8 +92,10 @@ export const createAssistantUIModelAdapter = ({
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   return {
     async *run(options) {
+      // Persisted chats own their history server-side (checkpoint + DB); only
+      // temporary chats rely on the client sending the prior turns.
       const allMessagesExceptLast = options.messages.slice(0, -1);
-      const threadMessages = mapThreadToLLMMessages(allMessagesExceptLast);
+      const threadMessages = isTempChat ? mapThreadToLLMMessages(allMessagesExceptLast) : [];
 
       const lastMessage = options.messages[options.messages.length - 1];
       const userInputText = lastMessage ? toMessageText(lastMessage.content) : "";
@@ -311,7 +313,10 @@ export const createAssistantUIModelAdapter = ({
           content: [
             {
               type: "text",
-              text: error instanceof Error ? error.message : "An error occurred during the chat request.",
+              text:
+                error instanceof Error
+                  ? error.message
+                  : "An error occurred during the chat request.",
             },
           ],
         };

@@ -45,8 +45,43 @@ export function validatePayload(schema: any, payload: any): string[] {
 }
 
 /**
+ * Build a safe, credential-free description of an unknown thrown value.
+ *
+ * Used for server-side diagnostics ONLY — the result is written to the sidecar
+ * log, never to the HTTP response body. It deliberately extracts just the error
+ * name/message, the Node error `code` (e.g. ENOTFOUND, ECONNREFUSED,
+ * UND_ERR_CONNECT_TIMEOUT) and the `cause` message, which is what distinguishes
+ * a DNS failure from a TLS failure from a socket timeout.
+ */
+export function describeError(err: any): string {
+  if (err === null || err === undefined) return "unknown error";
+  if (typeof err === "string") return err;
+  if (err instanceof Error) {
+    const code = (err as any).code ?? (err as any).cause?.code;
+    const cause = (err as any).cause;
+    const causeMessage =
+      cause instanceof Error ? cause.message : cause ? String(cause) : undefined;
+    return [
+      `${err.name}: ${err.message}`,
+      code ? `code=${code}` : undefined,
+      causeMessage && causeMessage !== err.message
+        ? `cause=${causeMessage}`
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+  }
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+}
+
+/**
  * Normalize a provider error into a consistent, safe response shape. Never
  * includes the raw error object (which may carry credentials) in the response.
+ * The underlying reason is logged separately via {@link describeError}.
  */
 export function normalizeInvokeError(err: any): { status: number; body: Record<string, unknown> } {
   if (err instanceof ApiError) {

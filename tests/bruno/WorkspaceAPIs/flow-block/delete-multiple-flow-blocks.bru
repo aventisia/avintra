@@ -5,24 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/block/delete-multiple
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/block/delete-multiple
+  body: json
   auth: none
 }
 
 body:json {
-  {
-      
-  }
+  [
+    "{{FLOW_BLOCK_ID}}"
+  ]
 }
-
-script:pre-request {
-  // Set flowBlockIds in request body
-  req.setBody(
-    JSON.parse(`["${bru.getGlobalEnvVar("FLOW_BLOCK_ID")}"]`)
-  )
-}
-
 script:post-response {
   if(res.getStatus() == 200){
       bru.setGlobalEnvVar(

@@ -19,8 +19,10 @@ export const DCPTabsContent = ({
     <TabsContent className="mt-0" value={tabValue}>
       <ScrollArea
         className={cn(
-          "h-[calc(100vh-2*4rem-var(--header-height)-3*var(--header-padding))] px-3 pb-2",
-          hasFooter && "h-[calc(100vh-3*4rem-var(--header-height)-3*var(--header-padding))]",
+          // Derived from the wrapper height above: minus tab-list (4rem), and
+          // minus footer (4rem) when present.
+          "h-[calc(100vh-2*4rem-var(--header-height)-var(--header-padding)-1rem)] px-3 pb-2",
+          hasFooter && "h-[calc(100vh-3*4rem-var(--header-height)-var(--header-padding)-1rem)]",
           className,
         )}
       >

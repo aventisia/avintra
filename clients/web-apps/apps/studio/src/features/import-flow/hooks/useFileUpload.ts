@@ -1,8 +1,11 @@
 import { toast } from "@avplatform/ui/sonner";
+import { Edge, Node } from "@xyflow/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { isChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { REQUIRED_JSON_KEYS } from "../constants";
 import { useImportStore } from "../stores/import-flow-store";
@@ -35,6 +38,13 @@ export const useFileUpload = () => {
       upload: state.upload,
       setShowDialog: state.setShowDialog,
       setUpload: state.setUpload,
+    })),
+  );
+
+  // Flow type of the canvas receiving the import
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
     })),
   );
 
@@ -81,6 +91,27 @@ export const useFileUpload = () => {
         // If the parsed data is not valid, show an error
         if (!isValid) {
           toast.error("Please upload valid data");
+          return;
+        }
+
+        // Only allow importing a flow whose type matches the flow being edited
+        const importedNodes = parsed.reactFlowObject.nodes;
+        const importedEdges = parsed.reactFlowObject.edges;
+
+        if (!Array.isArray(importedNodes) || !Array.isArray(importedEdges)) {
+          toast.error("Please upload valid data");
+          return;
+        }
+
+        const importedIsChatAgent = isChatAgentGraph(
+          importedNodes as Node[],
+          importedEdges as Edge[],
+        );
+
+        if (importedIsChatAgent !== isChatAgent) {
+          toast.error(
+            isChatAgent ? "Only Chat Agent flows allowed" : "Chat Agent flow not allowed here",
+          );
           return;
         }
 

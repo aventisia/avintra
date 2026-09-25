@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LoadingSpinner } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
-import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -12,6 +8,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { LLMResponseDto, ProviderLiteral } from "../../dtos/llm-providers-dto";
 import { useImproveWithAIMutation } from "../../hooks/useImproveWithAIMutation";
+import { PromptActionButton } from "./PromptActionButton";
 
 const ImproveWithAIButton = ({
   form,
@@ -108,29 +105,13 @@ const ImproveWithAIButton = ({
   };
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      type="button"
-      disabled={disabled || isPending || !form.watch(name)}
-      className={cn(
-        "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
-        isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",
-      )}
+    <PromptActionButton
+      label="Improve with AI"
+      loadingLabel="Improving…"
+      isPending={isPending}
+      disabled={disabled || !form.watch(name)}
       onClick={handleImproveWithAI}
-    >
-      {isPending ? (
-        <>
-          <LoadingSpinner className="h-4 w-4 animate-spin" />
-          Improving…
-        </>
-      ) : (
-        <>
-          <SparklesIcon className="h-4 w-4" />
-          Improve with AI
-        </>
-      )}
-    </Button>
+    />
   );
 };
 

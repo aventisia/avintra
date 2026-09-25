@@ -13,19 +13,17 @@ import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import { Tooltip } from "@/ui/components/tooltip";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
-import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
-import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
-import { getCorsairVaultIcon } from "../vault-config/constants/corsair-integration-mapper";
+import { getVaultAppIcon } from "../vault-config/constants/vault-app-icon-mapper";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
 import { vaultsTableColumns } from "./VaultsTableColumns";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
-import { Tooltip } from "@/ui/components/tooltip";
 
 /**
  * Renders a table of configs.
@@ -91,12 +89,8 @@ export const VaultTable = () => {
                       <img
                         src={
                           basePath +
-                          (getCorsairVaultIcon(String(row.getValue("type"))) ??
-                            vaultAppIconMapper[
-                              VaultAppsEnum[
-                                row.getValue("type") as keyof typeof VaultAppsEnum
-                              ] as VaultAppsEnum
-                            ])
+                          (getVaultAppIcon(String(row.getValue("type"))) ??
+                            "/brand-img/default-provider.svg")
                         }
                         alt="icon"
                         className="size-6"
@@ -115,23 +109,41 @@ export const VaultTable = () => {
 
                         {row.original.corsairStatus === "Connected" && (
                           <Tooltip content="OAuth connected">
-                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-600" aria-label="OAuth connected" />
-                          </Tooltip>)}
+                            <CheckCircleIcon
+                              className="h-3.5 w-3.5 text-green-600"
+                              aria-label="OAuth connected"
+                            />
+                          </Tooltip>
+                        )}
 
                         {row.original.corsairStatus === "Failed" && (
-                          <Tooltip content={row.original.corsairStatusReason ?? "Connection failed"}>
-                            <AlertCircleIcon className="h-3.5 w-3.5 text-red-600" aria-label="Connection failed" />
-                          </Tooltip>)}
+                          <Tooltip
+                            content={row.original.corsairStatusReason ?? "Connection failed"}
+                          >
+                            <AlertCircleIcon
+                              className="h-3.5 w-3.5 text-red-600"
+                              aria-label="Connection failed"
+                            />
+                          </Tooltip>
+                        )}
 
                         {row.original.corsairStatus === "Expired" && (
                           <Tooltip content="Connection expired; reconnect required">
-                            <AlertCircleIcon className="h-3.5 w-3.5 text-red-600" aria-label="Connection expired" />
-                          </Tooltip>)}
+                            <AlertCircleIcon
+                              className="h-3.5 w-3.5 text-red-600"
+                              aria-label="Connection expired"
+                            />
+                          </Tooltip>
+                        )}
 
                         {row.original.corsairStatus === "Pending" && (
                           <Tooltip content="Connection pending">
-                            <Clock3Icon className="h-3.5 w-3.5 text-amber-600" aria-label="Connection pending" />
-                          </Tooltip>)}
+                            <Clock3Icon
+                              className="h-3.5 w-3.5 text-amber-600"
+                              aria-label="Connection pending"
+                            />
+                          </Tooltip>
+                        )}
 
                         {isShared && (
                           <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">

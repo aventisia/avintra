@@ -3,7 +3,6 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { useQuery } from "@tanstack/react-query";
 import { ArchiveIcon, ArrowLeftIcon, SquarePenIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,15 +11,11 @@ import { useShallow } from "zustand/react/shallow";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 
-import { AssistChatDto } from "../dtos/assist-chat-dto";
 import { useArchiveConversationMutation } from "../hooks/useArchiveConversationMutation";
+import { useFetchChatAgents } from "../hooks/useFetchChatAgents";
 import { AgentIcon } from "./chat-agents-list/AgentIcon";
 
 type LayoutMode = "page" | "popover";
-
-type ChatAgentsResponse = {
-  data: AssistChatDto[];
-};
 
 export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   const isMobile = useIsMobile();
@@ -34,18 +29,14 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   const { mutate: archiveConversation } = useArchiveConversationMutation();
 
   /**
-   * Subscribe to query cache updates.
+   * Subscribe to the chat agents query cache.
    * This component will rerender whenever these queries are invalidated/refetched.
    */
-  const { data: activeAgents } = useQuery<ChatAgentsResponse>({
-    queryKey: ["chat-agents", "active"],
-    enabled: false,
-  });
+  const { active, archived } = useFetchChatAgents();
 
-  const { data: archivedAgents } = useQuery<ChatAgentsResponse>({
-    queryKey: ["chat-agents", "archived"],
-    enabled: false,
-  });
+  const activeAgents = active.data;
+
+  const archivedAgents = archived.data;
 
   /**
    * Find the current flow data from either agent list.

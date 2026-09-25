@@ -5,20 +5,16 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_APIS_BASE_URL}}/vault
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/vault
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    name: faker.commerce.product(),
-    description: faker.lorem.paragraph(),
-    username: faker.lorem.paragraph(),
-    password: faker.lorem.paragraph(),
-  })
+body:json {
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "username": "{{$randomLoremParagraph}}",
+  "password": "{{$randomLoremParagraph}}"
 }
 
 script:post-response {

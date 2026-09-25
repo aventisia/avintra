@@ -27,6 +27,20 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.GetToolsAsync(false));
     }
 
+    // Gets the custom tools the current user can use.
+    [HttpGet("usable")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolDto>>>> GetUsableTools()
+    {
+        return ResultHelper(await _toolService.GetUsableToolsAsync());
+    }
+
+    // Gets the operations exposed by a usable tool.
+    [HttpGet("usable/{toolId}/operations")]
+    public async Task<ActionResult<ServiceResponse<UsableToolOperationsDto>>> GetUsableToolOperations(Guid toolId)
+    {
+        return ResultHelper(await _toolService.GetUsableToolOperationsAsync(toolId));
+    }
+
     // Checks whether a tool name is available.
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsToolNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)

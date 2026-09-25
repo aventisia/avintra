@@ -121,30 +121,45 @@ public class FlowVersionService : IFlowVersionService
             //Try to get flow
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w =>
-                    w.Id == flowVersionDto.FlowId &&
-                    (
-                        w.CreatedByUserId == _userId ||
-                        (
-                            w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                        )
-                    )
+                    w.Id == flowVersionDto.FlowId
                 )
-                .Include(i => i.FlowUsers)
                 .Include(c => c.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
-                w.FlowId == flow.Id &&
-                w.UserId == _userId &&
-                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
+ 
+            // // Check if the user is the creator or has the required access (Owner/Edit)
+            // var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+            //     w.FlowId == flow.Id &&
+            //     w.UserId == _userId &&
+            //     (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
+            // );
+
+            // // Allow access if the user is the creator, else check if they have access
+            // if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            // {
+            //     _logger.LogWarning($"User {_userId} is not authorized to create new flow version.");
+            //     serviceResponse.Message = "You don't have access to create new flow version.";
+            //     return serviceResponse;
+            // }
+            
+            // Validate update permission
+            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.Edit,
+                }
             );
 
-            // Allow access if the user is the creator, else check if they have access
-            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            if (!canEdit)
             {
-                _logger.LogWarning($"User {_userId} is not authorized to create new flow version.");
-                serviceResponse.Message = "You don't have access to create new flow version.";
+                _logger.LogWarning("Unauthorized flow update. User {UserId}, Flow {FlowId}", _userId, flow.Id);
+                serviceResponse.Message = "You do not have access to create new version.";
                 return serviceResponse;
             }
 
@@ -160,7 +175,7 @@ public class FlowVersionService : IFlowVersionService
             newFlowVersion.VersionNumber = versionCount + 1;
 
             // Add initial nodes and edges
-            newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges();
+            newFlowVersion.ReactFlowObject = Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges(flow.Type);
 
             //Insert a flow version
             await _unitOfWork.FlowVersionRepo.InsertAsync(newFlowVersion);
@@ -357,16 +372,9 @@ public class FlowVersionService : IFlowVersionService
             //Try to get version using identifier
             var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
-                w.Id == id &&
-                (
-                    w.CreatedByUserId == _userId ||
-                    (
-                        w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                    )
-                )
+                w.Id == id                
             )
             .Include(i => i.Flow)
-            .ThenInclude(i2 => i2.FlowUsers)
             .SingleOrDefaultAsync();
 
             //Check if version not exists
@@ -389,21 +397,38 @@ public class FlowVersionService : IFlowVersionService
                 serviceResponse.Message = "Published versions cannot be deleted.";
                 return serviceResponse;
             }
-
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
-                w.FlowId == flowVersion.Flow.Id &&
-                w.UserId == _userId &&
-                (w.Type == ProjectUserAccessEnum.Owner)
+            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Flow.Id,
+                ResourceTypeEnum.Flow,
+                flowVersion.Flow.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                }
             );
 
-            // Allow access if the user is the creator, else check if they have access
-            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            if (!canDelete)
             {
-                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
-                serviceResponse.Message = "You don't have access to modify this flow.";
+                serviceResponse.Message = "You do not have access to delete this flow version.";
                 return serviceResponse;
             }
+
+            // // Check if the user is the creator or has the required access (Owner/Edit)
+            // var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+            //     w.FlowId == flowVersion.Flow.Id &&
+            //     w.UserId == _userId &&
+            //     (w.Type == ProjectUserAccessEnum.Owner)
+            // );
+
+            // // Allow access if the user is the creator, else check if they have access
+            // if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            // {
+            //     _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+            //     serviceResponse.Message = "You don't have access to modify this flow.";
+            //     return serviceResponse;
+            // }
 
             //Delete version
             _unitOfWork.FlowVersionRepo.Delete(flowVersion);

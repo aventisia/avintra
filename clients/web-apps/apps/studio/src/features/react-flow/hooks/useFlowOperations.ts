@@ -1,9 +1,11 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { Edge, Node, useReactFlow } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -82,9 +84,10 @@ const cloneEdgeObj = (original: Edge, source: string, target: string): Edge => (
 // ─── Hook ─────────────────────────────────────────────────────────────────
 
 export const useFlowOperations = () => {
-  const { nodes, setFlowVariablesObject, setNodes, setEdges } = useReactFlowExtStore(
+  const { nodes, flowType, setFlowVariablesObject, setNodes, setEdges } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
+      flowType: state.flowType,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setNodes: state.setNodes,
       setEdges: state.setEdges,
@@ -147,7 +150,9 @@ export const useFlowOperations = () => {
             setNodes,
             setEdges,
             flowVariablesObject: currentVariables,
+            flowType: currentFlowType,
           } = useReactFlowExtStore.getState();
+          if (currentFlowType === FlowTypesEnum.ChatAgent) return;
           const oldNodeIds = new Set(clipboardNodes.map((n) => n.id));
 
           if (!currentNodes.some((n) => oldNodeIds.has(n.id))) return;
@@ -383,6 +388,11 @@ export const useFlowOperations = () => {
   );
 
   const copyNodes = useCallback(() => {
+    if (flowType === FlowTypesEnum.ChatAgent) {
+      notifyChatAgentActionNotAllowed();
+      return;
+    }
+
     const targetIds = getTargetIds();
     if (targetIds.length === 0) return;
     cancelCut();
@@ -401,9 +411,14 @@ export const useFlowOperations = () => {
     } else {
       toast.error("Failed to copy nodes.");
     }
-  }, [getTargetIds, cancelCut, extractSubgraphs, setClipboard, resetContextMenu]);
+  }, [getTargetIds, cancelCut, extractSubgraphs, setClipboard, resetContextMenu, flowType]);
 
   const cutNodes = useCallback(() => {
+    if (flowType === FlowTypesEnum.ChatAgent) {
+      notifyChatAgentActionNotAllowed();
+      return;
+    }
+
     const targetIds = getTargetIds();
     if (targetIds.length === 0) return;
 
@@ -443,13 +458,18 @@ export const useFlowOperations = () => {
       });
     }
     resetContextMenu();
-  }, [extractSubgraphs, getTargetIds, resetContextMenu, setClipboard, updateNodeData]);
+  }, [extractSubgraphs, getTargetIds, resetContextMenu, setClipboard, updateNodeData, flowType]);
 
   const pasteNodes = useCallback(
     (
       targetNodeId: string,
       position: "before" | "after" | "branch" | "branch-above" | "branch-below",
     ) => {
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
+
       const clipboard = useClipboardStore.getState().clipboard;
       if (!clipboard || !clipboard.nodes.length) return;
       if (clipboard.operation === "cut" && clipboard.nodes.some((n) => n.id === targetNodeId)) {
@@ -835,11 +855,16 @@ export const useFlowOperations = () => {
       autoLayout({ newNodes: nextNodes, newEdges: nextEdges });
       resetContextMenu();
     },
-    [autoLayout, clearClipboard, resetContextMenu, setFlowVariablesObject],
+    [autoLayout, clearClipboard, resetContextMenu, setFlowVariablesObject, flowType],
   );
 
   const deleteNode = useCallback(
     (nodeId: string) => {
+      if (useReactFlowExtStore.getState().flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return;
+      }
+
       const {
         nodes: currentNodes,
         edges: currentEdges,

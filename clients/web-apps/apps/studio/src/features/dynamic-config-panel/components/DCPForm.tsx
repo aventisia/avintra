@@ -1,17 +1,15 @@
 import { LoadingSpinner } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { toast } from "@avplatform/ui/sonner";
 import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { z } from "zod";
+import { useEffect, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
-import { RenderField, shouldRenderField, useDefineDCPForm, useUpdateNodeDataIO } from "..";
-import { refineSubmittedIO } from "../utils/refine-submitted-io";
+import { RenderField, shouldRenderField, useDefineDCPForm } from "..";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
 import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
 import { DCPTabsList } from "./dcp-tabs/DCPTabsList";
@@ -25,20 +23,23 @@ export const DCPForm = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
 
+  // ChatAgent renders its prompt action in the prompt editor header instead of the tab footer.
+  const { isChatAgent } = useCurrentFlowStore(
+    useShallow((state) => ({
+      isChatAgent: state.isChatAgent,
+    })),
+  );
+
   // Define form
   const {
     form,
     watch,
+    flushNow,
     nodeConfig,
     isFormReady,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    nodeConfigZodSchema,
-    nodeId,
     nodeUniqueName,
     inputKeys,
     outputKeys,
-    nodeLabel,
-    setShowDialog,
     isLoading,
     selectedTab,
     setSelectedTab,
@@ -48,8 +49,12 @@ export const DCPForm = () => {
   // Watch all form values
   const watchedValues = watch();
 
-  // Get handlers to update node inputs and outputs
-  const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
+  // Commit the current tab's edits before switching to another tab so the Test
+  // tab always sees the latest values. Always persists, even incomplete/invalid.
+  const handleTabChange = (tab: string) => {
+    void flushNow();
+    setSelectedTab(tab);
+  };
 
   // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
@@ -60,62 +65,38 @@ export const DCPForm = () => {
     setShowOutputFields(Number(renderedOutputFields?.map((field) => field.name)?.length) > 0);
   }, [nodeConfig?.fields, isFormReady, nodeConfig, watchedValues]);
 
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
-    // Extract node inputs and outputs from formData
-    const { inputs, outputs } = refineSubmittedIO(nodeUniqueName, formData, inputKeys, outputKeys);
-
-    // Update node data inputs and outputs
-    if (nodeId) {
-      updateNodeDataIO(nodeId, inputs, outputs, nodeLabel);
-
-      // Update flow variables object from real outputs or from SetVariableNode's dynamic variable name
-      const variableName = formData["VariableName"]?.toString();
-      if (nodeUniqueName === "SetVariableNode" && variableName) {
-        updateFlowVariablesObject(nodeId, [
-          {
-            key: variableName,
-            value: { value: variableName, enabled: true },
-          },
-        ]);
-      } else if (outputs.length > 0) {
-        updateFlowVariablesObject(nodeId, outputs);
-      }
-    } else {
-      toast.error("Node id is undefined. Cannot update node data");
-      console.error("Node id is undefined. Cannot update node data.");
-    }
-
-    if (selectedTab !== "Test") {
-      // Close the dialog
-      setShowDialog(false);
-    }
-  };
+  // The renderable prompt field on the currently selected tab. Used to offer
+  // the Improve with AI action without hard-coding the tab name.
+  const promptField = useMemo(
+    () =>
+      nodeConfig?.fields?.find(
+        (field) =>
+          (field.type === "prompt-input" || field.type === "prompt-input-v2") &&
+          (field.category ?? "Inputs") === selectedTab &&
+          shouldRenderField("Input", field, watchedValues),
+      ),
+    [nodeConfig?.fields, selectedTab, watchedValues],
+  );
 
   // Return the form
   return (
     <>
       {isLoading ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex h-full items-center justify-center gap-2 text-sm">
           <LoadingSpinner className="h-5 w-5 text-primary" />
         </div>
       ) : !isFormReady ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex h-full items-center justify-center gap-2 text-sm">
           <SearchCodeIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (
-        <DCPTabsWrapper setTabValue={setSelectedTab} tabValue={selectedTab}>
+        <DCPTabsWrapper setTabValue={handleTabChange} tabValue={selectedTab}>
           <DCPTabsListWrapper>
             <DCPTabsList>
-              {tabKeys
-                ?.filter((key) => import.meta.env.MODE !== "production" || key !== "Tools")
-                ?.map((key) => (
-                  <DCPTabsTrigger
-                    tabValue={key}
-                    children={key.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                  />
-                ))}
+              {tabKeys?.map((key) => (
+                <DCPTabsTrigger tabValue={key} children={key.replace(/([a-z])([A-Z])/g, "$1 $2")} />
+              ))}
             </DCPTabsList>
             {!isAgentHistory ? (
               import.meta.env.MODE !== "production" ? (
@@ -126,7 +107,7 @@ export const DCPForm = () => {
                         tabValue="Test"
                         className="flex items-center gap-1 text-primary hover:text-primary"
                         handleClick={() => {
-                          onSubmit(form.getValues());
+                          void flushNow();
                         }}
                       >
                         <PlayIcon className="h-3 w-3" />
@@ -140,7 +121,7 @@ export const DCPForm = () => {
                         tabValue="Test"
                         className="flex items-center gap-1 text-primary hover:text-primary"
                         handleClick={() => {
-                          onSubmit(form.getValues());
+                          void flushNow();
                         }}
                       >
                         <FlaskConical className="h-3.5 w-3.5" />
@@ -156,7 +137,7 @@ export const DCPForm = () => {
                       tabValue="Test"
                       className="flex items-center gap-1 text-primary hover:text-primary"
                       handleClick={() => {
-                        onSubmit(form.getValues());
+                        flushNow();
                       }}
                     >
                       <FlaskConical className="h-3.5 w-3.5" />
@@ -172,7 +153,7 @@ export const DCPForm = () => {
             methods={form}
             onSubmit={(e) => {
               e.preventDefault();
-              onSubmit(form.getValues());
+              void flushNow();
             }}
           >
             {tabKeys?.map((tab, tabNo) => (
@@ -241,15 +222,13 @@ export const DCPForm = () => {
               </DCPTabsContent>
             ))}
 
-            {/* Save button */}
-            {selectedTab !== "Test" && (
-              <DCPTabsFooterWrapper
-                className={cn((selectedTab == "Prompt" || isAgentHistory) && "justify-between")}
-              >
-                {selectedTab == "Prompt" && !isAgentHistory && (
+            {/* Prompt helpers / history notice. Changes auto-commit at panel boundaries. */}
+            {selectedTab !== "Test" && (isAgentHistory || (promptField && !isChatAgent)) && (
+              <DCPTabsFooterWrapper className={cn("justify-between")}>
+                {promptField && !isAgentHistory && !isChatAgent && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
-                    name={nodeConfig.fields.find((v) => v.type == "prompt-input")?.name ?? ""}
+                    name={promptField.name}
                     form={form}
                   />
                 )}
@@ -260,14 +239,6 @@ export const DCPForm = () => {
                     <span className="mt-0.5 text-xs">Changes will not be saved</span>
                   </div>
                 ) : null}
-                <Button
-                  size={"sm"}
-                  disabled={isAgentHistory}
-                  type="submit"
-                  className="min-w-[5rem]"
-                >
-                  Save
-                </Button>
               </DCPTabsFooterWrapper>
             )}
           </Form>

@@ -5,4 +5,8 @@ export const columnVisibilityState = {
   lastUpdatedOn: true,
   createdBy: true,
   createdOn: true,
+  // Optional columns — hidden by default, toggleable via View options.
+  sourceWorkItemId: false,
+  retryTime: false,
+  retryCount: false,
 };

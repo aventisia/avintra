@@ -1,12 +1,10 @@
 // Define a function to get the target servers based on the branch name
 def getTargetServers(branchName) {
     switch(branchName) {
-        case 'dev':
-            return ['avdev.aventisia.com']
         case 'uat':
             return ['avuat.aventisia.com']
         case 'main':
-            return ['avweb1.aventisia.com', 'avweb2.aventisia.com']
+            return ['avweb1.aventisia.com']
         default:
             error "Unsupported branch: ${branchName}"
     }
@@ -15,8 +13,6 @@ def getTargetServers(branchName) {
 // Define a function to get the build mode based on the branch name (for Node.js apps)
 def getBuildMode(branchName) {
     switch(branchName) {
-        case 'dev':
-            return 'testing'
         case 'uat':
             return 'staging'
         case 'main':

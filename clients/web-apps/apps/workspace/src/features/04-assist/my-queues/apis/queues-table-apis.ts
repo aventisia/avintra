@@ -54,6 +54,21 @@ const getMyAgentQueues = (dateRange?: { from?: Date; to?: Date }) => {
 };
 
 /**
+ * Retrieves a single queue (including its complete input schema) by name.
+ *
+ * The my-queues list endpoints strip array-typed fields from the input schema,
+ * so this endpoint is used to resolve the full schema for the work item form.
+ */
+const getQueueByName = (queueName: string) => {
+  return axiosInstance
+    .get<IHttpResponse<QueuesTableDto>>(
+      `${baseAPIURL}/queue/by-name/${encodeURIComponent(queueName)}`,
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves list of queues work items.
  */
 const getQueuesWorkItemsList = (id: string) => {
@@ -111,6 +126,7 @@ export {
   getQueues,
   getMyQueues,
   getMyAgentQueues,
+  getQueueByName,
   getQueuesWorkItemsList,
   getQueueWorkItemById,
   updateQueuesWorkItem,

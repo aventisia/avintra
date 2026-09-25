@@ -1,9 +1,12 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { OnBeforeDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 export const useConfirmDelete = () => {
@@ -13,6 +16,7 @@ export const useConfirmDelete = () => {
       deleteAlert: state.studioPreferences.deleteAlert,
     })),
   );
+  const flowType = useReactFlowExtStore((state) => state.flowType);
 
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
@@ -20,6 +24,16 @@ export const useConfirmDelete = () => {
   // Confirm delete handler
   const onBeforeDelete: OnBeforeDelete = useCallback(
     async ({ nodes, edges }) => {
+      const hasSelectedItems =
+        nodes.some((node) => node.selected) || edges.some((edge) => edge.selected);
+
+      if (!hasSelectedItems) return false;
+
+      if (flowType === FlowTypesEnum.ChatAgent) {
+        notifyChatAgentActionNotAllowed();
+        return false;
+      }
+
       // Get selected & deletable nodes and edges
       const selectedNodes = nodes.filter((node) => node.selected && node.deletable);
       const selectedEdges = edges.filter((edge) => edge.selected && edge.deletable);
@@ -66,7 +80,7 @@ export const useConfirmDelete = () => {
       // Return false if not confirmed
       return false;
     },
-    [deleteAlert, showDefaultAlertDialog],
+    [deleteAlert, flowType, showDefaultAlertDialog],
   );
 
   return { onBeforeDelete };

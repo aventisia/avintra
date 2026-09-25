@@ -5,15 +5,11 @@ meta {
 }
 
 delete {
-  url: {{ACCOUNTS_APIS_BASE_URL}}/role/delete/{{ROLE_ID}}
-  body: none
+  url: {{ACCOUNTS_API_BASE_URL}}/role/delete/{{ROLE_ID}}
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("ROLE_ID"),
-  })
+body:json {
+  "id": "{{ROLE_ID}}"
 }

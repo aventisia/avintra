@@ -1,7 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { json } from "@codemirror/lang-json";
 import CodeMirror from "@uiw/react-codemirror";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface JsonEditorProps {
   value?: string;
@@ -11,6 +11,14 @@ interface JsonEditorProps {
   className?: string;
 }
 
+/**
+ * JSON code editor with display-only pretty-printing.
+ *
+ * Keeps its own display value: user typing flows to the form via onChange,
+ * while formatting (mount / blur) and external resets (form reset, node
+ * switch) only touch the display. Programmatic changes therefore never mark
+ * the form dirty.
+ */
 export const JsonEditor: React.FC<JsonEditorProps> = ({
   value = "{}",
   onChange,
@@ -18,7 +26,11 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   disabled = false,
   className,
 }) => {
-  const formattedOnLoad = useRef(false);
+  // The editor keeps its own display value so pretty-printing is cosmetic and
+  // never marks the form dirty (programmatic CodeMirror changes are not echoed).
+  const [displayValue, setDisplayValue] = useState(value);
+  const lastValueRef = useRef(value);
+  const formattedOnMount = useRef(false);
 
   // json formatter
   const formatJson = (raw?: string) => {
@@ -33,25 +45,45 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     }
   };
 
-  // Format when field first rendered
+  // Pull in external value changes (form reset / node switch) without echoing
   useEffect(() => {
-    if (formattedOnLoad.current) return;
-    setTimeout(() => {
-      const formatted = formatJson(value);
+    if (value !== lastValueRef.current) {
+      lastValueRef.current = value;
+      setDisplayValue(formatJson(value) ?? value);
+    }
+  }, [value]);
 
-      if (formatted && formatted !== value) {
-        formattedOnLoad.current = true; // set formatted true only when the content is present {"":""}.length==7
-        onChange?.(formatted);
-      }
-    }, 100);
-  }, [value, onChange]);
+  // Pretty-print the initial value for display only
+  useEffect(() => {
+    if (formattedOnMount.current) return;
+    formattedOnMount.current = true;
+
+    const formatted = formatJson(value);
+    if (formatted && formatted !== value) {
+      setDisplayValue(formatted);
+    }
+  }, [value]);
+
+  const handleChange = (next: string) => {
+    lastValueRef.current = next;
+    setDisplayValue(next);
+    onChange?.(next);
+  };
+
+  // Format on blur for display only; the form value is only ever changed by the user
+  const handleBlur = () => {
+    const formatted = formatJson(displayValue);
+    if (formatted && formatted !== displayValue) {
+      setDisplayValue(formatted);
+    }
+  };
 
   return (
     <CodeMirror
-      value={value}
+      value={displayValue}
       height={"auto"}
       extensions={[json()]}
-      onChange={onChange}
+      onChange={handleChange}
       editable={!disabled}
       basicSetup={{
         lineNumbers: true,
@@ -65,11 +97,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       theme="light"
       contentEditable={disabled}
       aria-disabled={disabled}
-      onBlur={() => {
-        // Format on blur
-        const formatted = formatJson(value);
-        if (formatted) onChange?.(formatted);
-      }}
+      onBlur={handleBlur}
       className={cn(
         "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
         disabled && "cursor-not-allowed opacity-80 focus-within:border-0 focus-within:ring-0",

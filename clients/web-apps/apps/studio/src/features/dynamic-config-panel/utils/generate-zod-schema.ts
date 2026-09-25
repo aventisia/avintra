@@ -96,8 +96,9 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const temperatureSchema = z.number();
   const topPSchema = z.number();
   const voiceSchema = z.string().optional();
-  const isJsonOutputSchema = z.boolean();
+  const isJsonOutputSchema = z.boolean().optional();
   const maxOutputTokenSchema = z.number();
+  const reasoningEffortSchema = z.string().optional().default("medium");
 
   // Check if field.defaultValue is an object and contains all expected properties
   if (field.defaultValue && typeof field.defaultValue === "object") {
@@ -138,6 +139,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     voice: voiceSchema,
     is_json_output: isJsonOutputSchema,
     max_output_tokens: maxOutputTokenSchema,
+    reasoning_effort: reasoningEffortSchema,
   });
 }
 
@@ -149,7 +151,7 @@ function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
   const toolConfigSchema = z.object({
     tool: z.string().min(1, "Tool is required"),
-    credential_name: z.string().min(1, "Credential is required"),
+    credential_name: z.string(),
     actions: z.array(actionItemSchema).min(1, "At least one action must be selected"),
   });
 
@@ -266,7 +268,7 @@ function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
     return [];
   }, z.array(z.string()));
-  const retrievalTypeSchema = z.string();
+  const retrievalTypeSchema = z.string().optional();
   const sourceThresholdSchema = z.number();
   const numberOfChunksSchema = z.number();
 

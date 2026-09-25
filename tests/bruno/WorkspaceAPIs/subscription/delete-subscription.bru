@@ -5,15 +5,11 @@ meta {
 }
 
 delete {
-  url: {{WORKSPACE_APIS_BASE_URL}}/subscription/
-  body: none
+  url: {{WORKSPACE_API_BASE_URL}}/subscription/
+  body: json
   auth: none
 }
 
-script:pre-request {
-  const { faker } = require('@faker-js/faker');
-  
-  req.setBody({
-    id: bru.getGlobalEnvVar("SUBSCRIPTION_ID"),
-  })
+body:json {
+  "id": "{{SUBSCRIPTION_ID}}"
 }

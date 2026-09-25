@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the **Aventisia WORC Platform** monorepo: a workflow automation / RPA platform with a React + Vite frontend, a legacy ASP.NET Core 8 backend, a Python/FastAPI LLM pipeline, an Apache Camel integration service, a .NET flow-execution engine, and a Tauri desktop runner. The README references a newer `apis/WorcBackend/` solution, but the active, buildable .NET backend is `apis/WorcBackend-legacy/`.
 
-Primary branches: `dev`, `uat`, `main`. Feature PRs target `uat`.
+Primary branches: `uat`, `main`. Feature PRs target `uat`.
 
 CI/CD is Jenkins (root `Jenkinsfile`). There are no GitHub Actions or pre-commit hooks.
 
@@ -85,7 +85,6 @@ Apps `accounts`, `studio`, and `desktop-app` use `--max-warnings 0`. `workspace`
 ```sh
 cd clients/docs
 npm ci
-npm run build:testing    # dev branch
 npm run build:staging    # uat branch
 npm run build:production # main branch
 ```
@@ -212,15 +211,13 @@ Both .NET APIs use EF Core 8 with PostgreSQL (`Npgsql.EntityFrameworkCore.Postgr
 
 Jenkins stages are branch-aware:
 
-- `dev` → `avdev.aventisia.com`
 - `uat` → `avuat.aventisia.com`
-- `main` → `avweb1.aventisia.com`, `avweb2.aventisia.com`
+- `main` → `avweb1.aventisia.com`
 
 Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`, `llmpipeline_api`, `apachecamel_api`, `docs`, `web_apps`, `runner_app`. `web_apps` covers accounts, workspace, studio, and atlas (desktop-app excluded).
 
 Node build modes by branch:
 
-- `dev` → `testing`
 - `uat` → `staging`
 - `main` → `production`
 

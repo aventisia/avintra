@@ -18,7 +18,9 @@ export const DCPTabsWrapper = ({
     <Tabs
       onValueChange={setTabValue}
       className={cn(
-        "h-[calc(100vh-4rem-var(--header-height)-3*var(--header-padding))] w-full rounded-b-xl",
+        // Fits the fixed Panel body: panel height minus the 4rem DCP header.
+        // (Panel root is h-[calc(100vh-var(--header-height)-var(--header-padding)-1rem)].)
+        "h-[calc(100vh-4rem-var(--header-height)-var(--header-padding)-1rem)] w-full rounded-b-xl",
         className,
       )}
       defaultValue={defaultValue}

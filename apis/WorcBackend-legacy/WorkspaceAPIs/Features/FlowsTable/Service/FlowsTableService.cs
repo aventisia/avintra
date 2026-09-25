@@ -261,18 +261,11 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow existence
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == flowsTableDto.Id &&
-                                            (
-                                                w.CreatedByUserId == _userId ||
-                                                (
-                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                                                )
-                                            )
-                                        )
-                                        .Include(i => i.FlowUsers)
-                                        .Include(i => i.FlowVersions)
-                                        .SingleOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.Id == flowsTableDto.Id
+                )
+                .Include(i => i.FlowVersions)
+                .SingleOrDefaultAsync();
 
             // Flow does not exist
             if (flow == null)
@@ -281,6 +274,18 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+
+            // Guard: Flow type is selected once at creation and cannot be changed afterwards
+            if (flowsTableDto.Type != flow.Type)
+            {
+                _logger.LogWarning(
+                    "Flow type change denied. FlowId: {FlowId}, ExistingType: {ExistingType}, RequestedType: {RequestedType}",
+                    flow.Id, flow.Type, flowsTableDto.Type
+                );
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Agent type cannot be changed after creation.";
+                return serviceResponse;
+            }
 
             // Guard: Prevent disabling a flow that has published versions
             if (flowsTableDto.IsDisabled == true && flow.FlowVersions?.Any(v => v.IsPublished) == true)
@@ -314,21 +319,20 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+            // // Check if the user is the creator or has the required access (Owner/Edit)
+            // var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+            //     w.FlowId == flow.Id &&
+            //     w.UserId == _userId &&
+            //     (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
+            // );
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
-                w.FlowId == flow.Id &&
-                w.UserId == _userId &&
-                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
-            );
-
-            // Allow access if the user is the creator, else check if they have access
-            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
-            {
-                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
-                serviceResponse.Message = "You don't have access to modify this flow.";
-                return serviceResponse;
-            }
+            // // Allow access if the user is the creator, else check if they have access
+            // if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            // {
+            //     _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+            //     serviceResponse.Message = "You don't have access to modify this flow.";
+            //     return serviceResponse;
+            // }
 
             // TODO: Uncomment and implement flow name uniqueness check when needed
             // // Validate flow name uniqueness
@@ -393,18 +397,11 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flow existence
             var flow = await _unitOfWork.FlowRepo
-                                        .GetByConditionAsync(w =>
-                                            w.Id == id &&
-                                            (
-                                                w.CreatedByUserId == _userId ||
-                                                (
-                                                    w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                                                )
-                                            )
-                                        )
-                                        .Include(i => i.FlowUsers)
-                                        .Include(i => i.FlowVersions)
-                                        .SingleOrDefaultAsync();
+                .GetByConditionAsync(w =>
+                    w.Id == id
+                )
+                .Include(i => i.FlowVersions)
+                .SingleOrDefaultAsync();
 
             // Flow does not exist
             if (flow == null)
@@ -428,20 +425,20 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
-                w.FlowId == flow.Id &&
-                w.UserId == _userId &&
-                w.Type == ProjectUserAccessEnum.Owner
-            );
+            // // Check if the user is the creator or has the required access (Owner/Edit)
+            // var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+            //     w.FlowId == flow.Id &&
+            //     w.UserId == _userId &&
+            //     w.Type == ProjectUserAccessEnum.Owner
+            // );
 
-            // Allow access if the user is the creator, else check if they have access
-            if (flow.CreatedByUserId != _userId && flowUserAccess == null)
-            {
-                _logger.LogWarning($"User {_userId} is not authorized to delete this flow.");
-                serviceResponse.Message = "You don't have access to delete this flow.";
-                return serviceResponse;
-            }
+            // // Allow access if the user is the creator, else check if they have access
+            // if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+            // {
+            //     _logger.LogWarning($"User {_userId} is not authorized to delete this flow.");
+            //     serviceResponse.Message = "You don't have access to delete this flow.";
+            //     return serviceResponse;
+            // }
 
             var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
@@ -502,18 +499,11 @@ public class FlowsTableService : IFlowsTableService
         {
             // Validate flows existence
             var flows = await _unitOfWork.FlowRepo
-                                            .GetByConditionAsync(w =>
-                                                ids.Contains(w.Id) &&
-                                                (
-                                                    w.CreatedByUserId == _userId ||
-                                                    (
-                                                        w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId)
-                                                    )
-                                                )
-                                            )
-                                            .Include(i => i.FlowUsers)
-                                            .Include(i => i.FlowVersions)
-                                            .ToListAsync();
+                .GetByConditionAsync(w =>
+                    ids.Contains(w.Id)
+                )
+                .Include(i => i.FlowVersions)
+                .ToListAsync();
 
             // Flows do not exist
             if (flows.Count == 0)
@@ -543,11 +533,11 @@ public class FlowsTableService : IFlowsTableService
                     return serviceResponse;
                 }
 
-                var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
-                    w.FlowId == flow.Id &&
-                    w.UserId == _userId &&
-                    (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
-                );
+                // var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
+                //     w.FlowId == flow.Id &&
+                //     w.UserId == _userId &&
+                //     (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
+                // );
 
                 /*
                 * TODO:
@@ -564,13 +554,13 @@ public class FlowsTableService : IFlowsTableService
                     return serviceResponse;
                 }
 
-                // Allow access if the user is the creator, else check if they have access
-                if (flow.CreatedByUserId != _userId && flowUserAccess == null)
-                {
-                    _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
-                    serviceResponse.Message = "You don't have access to modify this flow.";
-                    return serviceResponse;
-                }
+                // // Allow access if the user is the creator, else check if they have access
+                // if (flow.CreatedByUserId != _userId && flowUserAccess == null)
+                // {
+                //     _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
+                //     serviceResponse.Message = "You don't have access to modify this flow.";
+                //     return serviceResponse;
+                // }
             }
 
             // TODO: Check flow relationship with other entities

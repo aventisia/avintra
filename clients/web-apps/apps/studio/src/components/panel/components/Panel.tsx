@@ -12,6 +12,7 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 interface PanelContextValue {
   id: string;
   closePanel: () => void;
+  contained: boolean;
 }
 
 // Create a context to manage individual panel behavior
@@ -34,10 +35,30 @@ interface PanelProps {
   width?: string;
   className?: string;
   closeOnEscape?: boolean;
+  /**
+   * Anchor the panel to its nearest positioned ancestor (e.g. the canvas pane)
+   * instead of the browser viewport. Contained panels are inset vertically and
+   * no longer cover sibling panes.
+   */
+  contained?: boolean;
+  /** When contained, span the full width of the ancestor instead of `side`/`width`. */
+  fill?: boolean;
 }
 
 const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
-  ({ children, id, side = "right", width = "w-96", className, closeOnEscape = true }, ref) => {
+  (
+    {
+      children,
+      id,
+      side = "right",
+      width = "w-96",
+      className,
+      closeOnEscape = true,
+      contained = false,
+      fill = false,
+    },
+    ref,
+  ) => {
     // Retrieve panel state and close handler from the store
     const { panels, closePanel } = usePanelStore(
       useShallow((state) => ({
@@ -75,8 +96,9 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       () => ({
         id,
         closePanel: () => closePanel(id),
+        contained,
       }),
-      [id, closePanel],
+      [id, closePanel, contained],
     );
 
     // Do not render the panel if it’s not open
@@ -84,8 +106,8 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
 
     // Class mapping for side positioning
     const sideClasses = {
-      left: "left-2",
-      right: "right-2",
+      left: "left-0",
+      right: "right-0",
     };
 
     return (
@@ -93,16 +115,24 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         <div
           ref={ref}
           className={cn(
-            "fixed z-40 overflow-clip rounded-lg border-l border-r border-border bg-background",
+            "shadow-xl z-40 overflow-clip rounded-xl bg-background",
             "translate-x-0 transform transition-transform duration-300 ease-in-out",
-            appBanner
-              ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height)+0.5rem)]"
-              : "top-[calc(var(--header-height)+var(--header-padding)+0.5rem)]",
-            appBanner
-              ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height)-1rem)]"
-              : "h-[calc(100vh-var(--header-height)-var(--header-padding)-1rem)]",
-            sideClasses[panelSide],
-            width,
+            contained
+              ? cn(
+                  "absolute inset-y-0 border border-border",
+                  fill ? "inset-x-0 w-auto" : cn(sideClasses[panelSide], width),
+                )
+              : cn(
+                  "fixed border-l border-r border-border",
+                  appBanner
+                    ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height)+0.5rem)]"
+                    : "top-[calc(var(--header-height)+var(--header-padding)+0.5rem)]",
+                  appBanner
+                    ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height)-1rem)]"
+                    : "h-[calc(100vh-var(--header-height)-var(--header-padding)-1rem)]",
+                  sideClasses[panelSide],
+                  width,
+                ),
             className,
           )}
           role="dialog"
@@ -199,10 +229,17 @@ interface PanelContentProps {
 
 const PanelContent = React.forwardRef<HTMLDivElement, PanelContentProps>(
   ({ children, className }, ref) => {
+    const { contained } = usePanelContext();
+
     return (
       <div
         ref={ref}
-        className={cn("h-[calc(100vh-var(--header-height)-3*var(--header-padding))]", className)}
+        className={cn(
+          contained
+            ? "h-[calc(100%-3rem)]"
+            : "h-[calc(100vh-var(--header-height)-3*var(--header-padding))]",
+          className,
+        )}
       >
         {children}
       </div>

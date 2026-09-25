@@ -1,11 +1,15 @@
-from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.logger import logger
 from app.features.langgraph.schemas.graph_state import ChatState
 
 
-def create_model_node(model: BaseChatModel, skill_prompt: str | None = None):
+def create_model_node(
+    model: BaseChatModel,
+    skill_prompt: str | None = None,
+    max_short_term_turns: int | None = None,
+):
     """
     Build an async model invocation node for a LangGraph chat workflow.
 
@@ -19,10 +23,13 @@ def create_model_node(model: BaseChatModel, skill_prompt: str | None = None):
         skill_prompt: Optional system prompt fragment describing selected
             skills. It is merged with the first system message or prepended
             so the model always sees it, including on checkpoint resumes.
+        max_short_term_turns: Optional cap on the number of most recent
+            conversation turns (user+assistant) sent to the model. All system
+            messages are always retained. ``None`` or ``0`` means no limit.
     """
 
     async def call_model(state: ChatState):
-        messages = state["messages"]
+        messages = _apply_short_term_window(state["messages"], max_short_term_turns)
 
         if skill_prompt:
             messages = _inject_skill_prompt(messages, skill_prompt)
@@ -79,3 +86,48 @@ def _inject_skill_prompt(messages, skill_prompt: str) -> list:
     # system message so the skill metadata is still visible to the model.
     messages.insert(0, SystemMessage(content=skill_prompt))
     return messages
+
+
+def _apply_short_term_window(messages, max_short_term_turns: int | None) -> list:
+    """
+    Return a message list limited to the most recent ``max_short_term_turns`` turns.
+
+    A turn starts at a user (``HumanMessage``) message. System messages are always
+    kept but de-duplicated by content, because the system prompt is re-sent on every
+    request and would otherwise accumulate in the checkpoint. Older turns are
+    dropped without summarization. ``None`` or ``0`` means no limit and the original
+    list is returned unchanged.
+    """
+
+    if not max_short_term_turns or max_short_term_turns <= 0:
+        return messages
+
+    messages = list(messages)
+
+    # Keep each distinct system message once, in first-seen order.
+    system_messages = []
+    seen_system_contents = set()
+    for message in messages:
+        if not isinstance(message, SystemMessage):
+            continue
+        content_key = (
+            message.content if isinstance(message.content, str) else str(message.content)
+        )
+        if content_key in seen_system_contents:
+            continue
+        seen_system_contents.add(content_key)
+        system_messages.append(message)
+
+    conversation = [m for m in messages if not isinstance(m, SystemMessage)]
+
+    user_indices = [
+        index for index, message in enumerate(conversation) if isinstance(message, HumanMessage)
+    ]
+
+    # Nothing to trim when the conversation already fits within the window.
+    if len(user_indices) <= max_short_term_turns:
+        return system_messages + conversation
+
+    start = user_indices[-max_short_term_turns]
+
+    return system_messages + conversation[start:]

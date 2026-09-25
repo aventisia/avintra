@@ -149,6 +149,21 @@ export const WorkItemOutputPane = ({
     required: boolean,
     depth: number,
   ) => {
+    // A schema field declared as "Array" may have no value yet (the backend strips
+    // array values from the work item payload). Render it as an empty list group
+    // rather than falling through to a scalar textarea.
+    if (type?.toLowerCase() === "array" && (value == null || !Array.isArray(value))) {
+      return (
+        <div key={path} className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-foreground">{label}</span>
+            <span className="text-xs text-muted-foreground">(0 items)</span>
+          </div>
+          <p className="text-xs text-muted-foreground">No items</p>
+        </div>
+      );
+    }
+
     if (value == null || typeof value !== "object") {
       return renderScalarField(path, label, value, type, required, depth);
     }
@@ -175,10 +190,7 @@ export const WorkItemOutputPane = ({
 
     // Plain object: render each key as a nested field.
     return (
-      <div
-        key={path}
-        className="space-y-2 rounded-lg border border-input/60 bg-muted/30 p-2"
-      >
+      <div key={path} className="space-y-2 rounded-lg border border-input/60 bg-muted/30 p-2">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-foreground">{label}</span>
         </div>
@@ -215,11 +227,7 @@ export const WorkItemOutputPane = ({
           </div>
 
           {viewMode === "json" ? (
-            <JsonEditor
-              onChange={setExtractedData}
-              value={extractedData}
-              disabled={isReadOnly}
-            />
+            <JsonEditor onChange={setExtractedData} value={extractedData} disabled={isReadOnly} />
           ) : (
             <div className="rounded-lg border border-input bg-background p-3">
               {(inputSchema ?? []).length > 0 ? (
