@@ -20,24 +20,6 @@ const createEmptyOperation = (): ManualToolOperation => ({
   endpoint: "/",
 });
 
-/** The HTTP method + endpoint pair that identifies a route within a tool. */
-interface MethodRoute {
-  method: string;
-  endpoint: string;
-}
-
-/** Normalizes an endpoint for comparison: trims, lowercases and ensures a leading slash. */
-const normalizeEndpoint = (endpoint: string): string => {
-  const trimmed = endpoint.trim().toLowerCase();
-  if (!trimmed) return "";
-  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
-};
-
-const toMethodRoute = (operation: ManualToolOperation): MethodRoute => ({
-  method: operation.method,
-  endpoint: normalizeEndpoint(operation.endpoint),
-});
-
 const inputClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -60,11 +42,8 @@ const methodBadgeClass = (method: string): string => {
 
 interface MethodFormProps {
   initialOperation?: ManualToolOperation;
-  /**
-   * Method + endpoint pairs already used by other methods; the pair must be
-   * unique across the tool's methods.
-   */
-  existingRoutes?: MethodRoute[];
+  /** Names already used by other methods; names are unique case-insensitively. */
+  existingNames?: string[];
   onSubmit: (operation: ManualToolOperation) => void;
   onCancel: () => void;
   submitLabel: string;
@@ -73,14 +52,14 @@ interface MethodFormProps {
 /**
  * Inline form panel for authoring a single method: name, description, method
  * + endpoint, static headers, parameters and an optional JSON payload sample.
- * The name and endpoint are required, and the HTTP method + endpoint
- * combination must be unique across the tool's methods. Renders in the flow of
+ * The name and endpoint are required, and method names must be unique across
+ * the tool's methods. Existing method names cannot be changed. Renders in the flow of
  * the page (below the add button or below the edited method row) instead of a
  * modal overlay.
  */
 const MethodForm = ({
   initialOperation,
-  existingRoutes,
+  existingNames,
   onSubmit,
   onCancel,
   submitLabel,
@@ -112,13 +91,10 @@ const MethodForm = ({
     });
   };
 
-  const normalizedEndpoint = normalizeEndpoint(operation.endpoint);
-  const isDuplicateRoute = (existingRoutes ?? []).some(
-    (route) =>
-      route.method.toUpperCase() === operation.method.toUpperCase() &&
-      route.endpoint === normalizedEndpoint,
+  const isDuplicateName = (existingNames ?? []).some(
+    (name) => name.trim().toLowerCase() === operation.name.trim().toLowerCase(),
   );
-  const isValid = Boolean(operation.name.trim() && operation.endpoint.trim()) && !isDuplicateRoute;
+  const isValid = Boolean(operation.name.trim() && operation.endpoint.trim()) && !isDuplicateName;
 
   const handleSubmit = () => {
     if (!isValid) {
@@ -142,11 +118,15 @@ const MethodForm = ({
             value={operation.name}
             onChange={(event) => updateOperation({ name: event.target.value })}
             placeholder="e.g. get_current_weather"
+            disabled={initialOperation !== undefined}
             autoFocus
             className={inputClass}
           />
           {showValidation && !operation.name.trim() && (
             <p className="text-xs text-destructive">Method name is required.</p>
+          )}
+          {isDuplicateName && operation.name.trim() && (
+            <p className="text-xs text-destructive">This method name is already in use.</p>
           )}
         </div>
 
@@ -187,12 +167,6 @@ const MethodForm = ({
             />
             {showValidation && !operation.endpoint.trim() && (
               <p className="text-xs text-destructive">Endpoint is required.</p>
-            )}
-            {isDuplicateRoute && operation.endpoint.trim() && (
-              <p className="text-xs text-destructive">
-                {operation.method} {normalizedEndpoint} is already defined. Each method must use a
-                unique HTTP method and endpoint combination.
-              </p>
             )}
           </div>
         </div>
@@ -453,9 +427,9 @@ export const ManualMethodsEditor = ({
               {isFormOpen && editIndex === index && (
                 <MethodForm
                   initialOperation={operation}
-                  existingRoutes={operations
+                  existingNames={operations
                     .filter((_, operationIndex) => operationIndex !== index)
-                    .map(toMethodRoute)}
+                    .map((operation) => operation.name)}
                   onSubmit={handleSubmit}
                   onCancel={closeForm}
                   submitLabel="Save method"
@@ -479,7 +453,7 @@ export const ManualMethodsEditor = ({
 
       {isCreateFormOpen && (
         <MethodForm
-          existingRoutes={operations.map(toMethodRoute)}
+          existingNames={operations.map((operation) => operation.name)}
           onSubmit={handleSubmit}
           onCancel={closeForm}
           submitLabel="Add method"

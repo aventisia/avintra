@@ -210,7 +210,7 @@ public class ToolService : IToolService
                 new UsableToolOperationsDto
                 {
                     CredentialType = ResolveCredentialType(tool),
-                    Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema),
+                    Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified),
                 });
         }
         catch (Exception ex)
@@ -257,7 +257,9 @@ public class ToolService : IToolService
                     IsActive = w.IsActive,
                     IsVerified = w.IsVerified,
                     IsDisabled = w.IsDisabled,
-                    Operations = w.ParsedSchema == null ? new List<UsableToolOperationDto>() : ToolOperationHelpers.ExtractOperations(w.ParsedSchema)
+                    Operations = w.ParsedSchema == null
+                        ? new List<UsableToolOperationDto>()
+                        : ToolOperationHelpers.ExtractOperations(w.ParsedSchema, w.IsVerified)
                 })
                 .ToListAsync();
 
@@ -373,9 +375,14 @@ public class ToolService : IToolService
             // spaces (the space filter is intentionally bypassed for platform/tool uniqueness).
             var toolNameExists = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    (
+                        w.Type == ComponentTypeEnum.Platform ||
+                        (w.Type == ComponentTypeEnum.Custom &&
+                        w.TenantId == _currentTenantService.CurrentTenantId)
+                    ) &&
                     w.Name.ToLower() == normalizedName.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType
+                )
                 .IgnoreQueryFilters()
                 .AnyAsync();
 
@@ -561,7 +568,11 @@ public class ToolService : IToolService
             // Ensure the tool name is unique within the current environment.
             var toolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    (
+                        w.Type == ComponentTypeEnum.Platform ||
+                        (w.Type == ComponentTypeEnum.Custom &&
+                        w.TenantId == _currentTenantService.CurrentTenantId)
+                    ) &&
                     w.Name.ToLower() == toolDto.Name.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
@@ -582,20 +593,27 @@ public class ToolService : IToolService
             toolToCreate.CreatedOn = DateTimeOffset.UtcNow;
             toolToCreate.LastModifiedOn = DateTimeOffset.UtcNow;
 
-            // Parse OpenAPI spec into an LLM-friendly schema when provided.
+            // Parse OpenAPI spec into an LLM-friendly schema when provided. Retain
+            // the per-operation verification flags the wizard collected before save.
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
             {
-                toolToCreate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
+                toolToCreate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
+                    toolDto.ParsedSchema,
+                    OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec));
             }
             else if (toolDto.ManualOperations is { Count: > 0 })
             {
                 // Synthesize an OpenAPI spec from manually authored operations so
                 // manual tools flow through the same flatten/test/execute pipeline.
-                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(toolDto.ManualOperations);
+                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
+                    toolDto.ManualOperations,
+                    toolDto.Name);
                 if (synthesizedSpec is not null)
                 {
                     toolToCreate.OpenApiSpec = synthesizedSpec;
-                    toolToCreate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+                    toolToCreate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
+                        toolDto.ParsedSchema,
+                        OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec));
                 }
                 else
                 {
@@ -603,6 +621,17 @@ public class ToolService : IToolService
                         "At least one valid operation (method and endpoint) is required.",
                         400);
                 }
+            }
+
+            // Derive the tool-level aggregate from the per-operation flags, keeping
+            // the incoming tool-level flag as the legacy fallback.
+            toolToCreate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
+                toolToCreate.ParsedSchema,
+                toolToCreate.IsVerified);
+
+            if (!HasUniqueOperationNames(toolToCreate.ParsedSchema))
+            {
+                return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
 
             // Persist the new tool.
@@ -712,29 +741,31 @@ public class ToolService : IToolService
                 toolToUpdate.IsDisabled = toolDto.IsDisabled.Value;
             }
 
-            // Re-parse OpenAPI spec when it changes.
+            // Keep the raw OpenAPI specification exactly as supplied. Parsed
+            // method details are stored independently so they can be edited.
+            // Re-flattening must retain the per-operation verification flags the
+            // wizard collected, so they are copied from the incoming schema.
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) && toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
             {
                 toolToUpdate.OpenApiSpec = toolDto.OpenApiSpec;
-                toolToUpdate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
+                toolToUpdate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
+                    toolDto.ParsedSchema,
+                    OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec));
             }
-            else if (toolDto.ManualOperations is { Count: > 0 } &&
-                     string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
+            else if (toolDto.ParsedSchema is not null)
             {
-                // Regenerate the synthesized spec from the manual operations.
-                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(toolDto.ManualOperations);
-                if (synthesizedSpec is null)
-                {
-                    return serviceResponse.Update(
-                        "At least one valid operation (method and endpoint) is required.",
-                        400);
-                }
+                toolToUpdate.ParsedSchema = toolDto.ParsedSchema;
+            }
 
-                if (toolToUpdate.OpenApiSpec != synthesizedSpec)
-                {
-                    toolToUpdate.OpenApiSpec = synthesizedSpec;
-                    toolToUpdate.ParsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
-                }
+            // Derive the tool-level aggregate from the per-operation flags, keeping
+            // the existing tool-level flag as the legacy fallback.
+            toolToUpdate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
+                toolToUpdate.ParsedSchema,
+                toolToUpdate.IsVerified);
+
+            if (!HasUniqueOperationNames(toolToUpdate.ParsedSchema))
+            {
+                return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
 
             // Persist changes.
@@ -1007,15 +1038,19 @@ public class ToolService : IToolService
                 DurationMs = stopwatch.Elapsed.TotalMilliseconds,
             };
 
-            // Mark the tool as verified when the test succeeds and persist immediately.
-            if (testResult.Success)
-            {
-                tool.IsVerified = true;
-                tool.LastModifiedByUserId = _currentUserId;
-                tool.LastModifiedOn = DateTimeOffset.UtcNow;
-                _unitOfWork.ToolRepo.Update(tool);
-                await _unitOfWork.SaveAsync();
-            }
+            // Record per-operation verification (HTTP 200 only, regardless of the
+            // response body) and persist immediately. The tool-level flag is kept
+            // as an aggregate of its operations for the existing L2 surfaces.
+            var isOperationVerified = testResult.StatusCode == 200;
+            tool.ParsedSchema = ToolOperationHelpers.SetOperationVerification(
+                tool.ParsedSchema,
+                testToolDto.OperationId,
+                isOperationVerified);
+            tool.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(tool.ParsedSchema, tool.IsVerified);
+            tool.LastModifiedByUserId = _currentUserId;
+            tool.LastModifiedOn = DateTimeOffset.UtcNow;
+            _unitOfWork.ToolRepo.Update(tool);
+            await _unitOfWork.SaveAsync();
 
             return serviceResponse.Update(
                 testResult.Success ? "Tool test completed successfully." : "Tool test failed.",
@@ -1127,6 +1162,14 @@ public class ToolService : IToolService
         }
 
         return serviceResponse;
+    }
+
+    private static bool HasUniqueOperationNames(JsonDocument? parsedSchema)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        return ToolOperationHelpers.ExtractOperations(parsedSchema)
+            .All(operation => !string.IsNullOrWhiteSpace(operation.OperationId) &&
+                              names.Add(operation.OperationId.Trim()));
     }
 
 

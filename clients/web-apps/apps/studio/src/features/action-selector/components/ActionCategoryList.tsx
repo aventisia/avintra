@@ -2,28 +2,27 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { iconMapper } from "@/components/icon-mapper";
-import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/component-type-enum";
-import {
-  useUsableToolCatalog,
-} from "@/features/dynamic-config-panel/hooks/useTools.hook";
+import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
 import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { triggersList } from "../constants/trigger-data";
 import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools";
+import { triggersList } from "../constants/trigger-data";
+import { useAddCustomTool } from "../hooks/useAddCustomTool.hook";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
 import {
   convertToolOperationsToActions,
-  getToolDescription,
+  getActiveCustomTools,
   getToolName,
 } from "../utils/custom-tools-converter";
 import ActionsList from "./ActionsList";
@@ -62,11 +61,11 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   // Custom Tools section: client-defined L1 (injected by
   // applyCustomToolsL1 in get-action-selector-data.ts). Two-pane layout: L2
-  // lists the custom tools created in workspace (name, description, icon);
-  // selecting one populates L3 with draggable actions generated from the
-  // tool's OpenAPI operations. "+ Add" redirects to the workspace tool-creation
-  // wizard. Inactive in search mode (aggregated L3 search must not be hijacked
-  // by this panel).
+  // lists the custom tools created in workspace (name, icon); selecting one
+  // populates L3 with draggable actions generated from the tool's OpenAPI
+  // operations. "+ Add" opens the workspace tool-creation wizard in a new
+  // window (confirmed same-tab redirect as fallback). Inactive in search mode
+  // (aggregated L3 search must not be hijacked by this panel).
   const isCustomToolsSection = !query && primaryCategoryLabel === CUSTOM_TOOLS_L1_LABEL;
 
   // Usable-tool catalog (GET /tools/usable/catalog): every tool the user can
@@ -76,12 +75,10 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   // remain visible (flagged) so tools can be offered before verification;
   // the invoke endpoint rejects them at runtime.
   const { data: catalogResponse, isLoading: isCatalogLoading } = useUsableToolCatalog();
-  const customTools = useMemo(() => {
-    const tools = catalogResponse?.data ?? [];
-    return tools
-      .filter((tool) => tool.type === ComponentTypeEnum.Custom && !tool.isDisabled)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [catalogResponse]);
+  const customTools = useMemo(
+    () => getActiveCustomTools(catalogResponse?.data).sort((a, b) => a.name.localeCompare(b.name)),
+    [catalogResponse],
+  );
 
   // L2 selection state + L3 data: operations come straight from the selected
   // catalog item and are converted into draggable connector actions. The first
@@ -93,15 +90,17 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   );
 
   const customToolActions = useMemo(
-    () => (selectedTool ? convertToolOperationsToActions(selectedTool, selectedTool.operations) : []),
+    () =>
+      selectedTool ? convertToolOperationsToActions(selectedTool, selectedTool.operations) : [],
     [selectedTool],
   );
 
-  const handleAddCustomTool = () => {
-    const workspacePath = import.meta.env.VITE_WORKSPACE_PATH ?? "/workspace/";
-    const returnParam = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `${workspacePath}configure/tools?e=tool&ca=create&rid=${crypto.randomUUID()}&return=${returnParam}`;
-  };
+  // Opens the workspace Create Tool page: a new window when possible (browser
+  // window on the web, app window in the desktop shell), otherwise a confirmed
+  // same-tab redirect. The builder tab never navigates away on success, and
+  // the usable-tool catalog refetches on window focus (React Query default),
+  // so a tool created in the new window appears here when the user returns.
+  const { addCustomTool: handleAddCustomTool } = useAddCustomTool();
 
   const actionCategories = useMemo(() => {
     if (query) {
@@ -261,12 +260,13 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   // Custom Tools section: two-pane layout matching App Integrations. Rendered
   // BEFORE the "No actions found" early-return because its single L2 carries no
-  // static actions (the directory is sourced live from usePersonalTools, and
-  // useActionSelectorData strips empty actionCategories).
-  // L2 (left) lists custom tools with name, description and icon; selecting a
-  // tool loads its OpenAPI operations and renders them as draggable actions in
-  // L3 (right). The back button returns to the L1 grid; "+ Add" redirects to
-  // the workspace tool-creation wizard.
+  // static actions (the directory is sourced live from useUsableToolCatalog,
+  // and useActionSelectorData strips empty actionCategories).
+  // L2 (left) lists custom tools with name and icon; selecting a tool loads its
+  // OpenAPI operations and renders them as draggable actions in L3 (right).
+  // The back button returns to the L1 grid; "+ Add" opens the workspace
+  // tool-creation wizard in a new window (confirmed same-tab redirect as
+  // fallback).
   if (isCustomToolsSection) {
     return (
       <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
@@ -292,15 +292,17 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <h2 className="truncate text-sm font-medium">{primaryCategoryLabel}</h2>
-            <Button
-              onClick={handleAddCustomTool}
-              className="ml-auto"
-              size="icon8"
-              variant="ghost"
-              aria-label="Add custom tool"
-            >
-              <PlusIcon className="h-4 w-4" />
-            </Button>
+            <Tooltip content="Add custom tool">
+              <Button
+                onClick={handleAddCustomTool}
+                className="ml-auto"
+                size="icon8"
+                variant="ghost"
+                aria-label="Add custom tool"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </Tooltip>
           </div>
 
           {isCatalogLoading ? (
@@ -314,8 +316,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
               <p className="text-sm font-medium">Create your first custom tool</p>
               <p className="text-sm text-muted-foreground">
-                Custom tools let your agents call your own APIs. Click “+” to open the tool
-                builder.
+                Custom tools let your agents call your own APIs. Click “+” to open the tool builder.
               </p>
             </div>
           ) : (
@@ -338,23 +339,12 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
                       )}
                     >
                       <CustomToolIcon icon={tool.icon} className="mt-0.5" />
-                      <div className="grow space-y-0.5 overflow-hidden">
+                      <div className="grow overflow-hidden">
                         <div className="flex items-center gap-1.5">
                           <h3 className="truncate text-xs font-medium text-foreground">
                             {getToolName(tool)}
                           </h3>
-                          {!tool.isVerified && (
-                            <Badge variant="outline" className="text-3xs">
-                              Unverified
-                            </Badge>
-                          )}
                         </div>
-                        <p
-                          className="text-2xs text-muted-foreground line-clamp-2"
-                          title={tool.description}
-                        >
-                          {getToolDescription(tool)}
-                        </p>
                       </div>
                     </button>
                   );

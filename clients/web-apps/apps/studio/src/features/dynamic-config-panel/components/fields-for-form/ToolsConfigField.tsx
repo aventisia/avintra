@@ -11,6 +11,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
+import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
 import { useUsableToolOperations, useUsableTools } from "../../hooks/useTools.hook";
@@ -118,14 +119,19 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     return options;
   }, [usableTools, currentTool]);
 
-  // Actions are keyed by operationId; the summary is shown as the label when available
+  // Actions are keyed by operationId; the summary is shown as the label when
+  // available. Unverified operations of custom tools are not selectable; platform
+  // tools keep their full operation set.
+  const isCustomTool = selectedUsableTool?.type === ComponentTypeEnum.Custom;
   const availableActionsForTool = useMemo(
     () =>
-      availableOperations.map((operation) => ({
-        label: operation.summary || operation.operationId,
-        value: operation.operationId,
-      })),
-    [availableOperations],
+      availableOperations
+        .filter((operation) => !isCustomTool || operation.isVerified)
+        .map((operation) => ({
+          label: operation.summary || operation.operationId,
+          value: operation.operationId,
+        })),
+    [availableOperations, isCustomTool],
   );
 
   // Lookup map for rendering the configured list

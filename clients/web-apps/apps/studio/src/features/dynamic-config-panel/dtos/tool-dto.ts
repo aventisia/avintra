@@ -114,6 +114,12 @@ export interface UsableToolOperation {
    * Optional per-operation accent color (hex) from the spec's `x-agent-node` extension.
    */
   color?: string;
+
+  /**
+   * Indicates whether the operation has been verified (its last test returned
+   * HTTP 200). Unverified operations are not selectable in the action selector.
+   */
+  isVerified: boolean;
 }
 
 /**
