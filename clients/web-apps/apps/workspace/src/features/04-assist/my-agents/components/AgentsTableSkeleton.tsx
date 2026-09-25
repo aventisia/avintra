@@ -9,7 +9,7 @@ export const AgentsTableSkeleton: React.FC = () => {
         <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[15rem]" />
       </div>
       {/* Card grid skeleton, matching the agents grid layout */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
         {new Array(8).fill(null).map((_, index) => (
           <Card
             key={index}
