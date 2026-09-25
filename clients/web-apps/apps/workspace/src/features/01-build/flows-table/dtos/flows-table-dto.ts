@@ -82,4 +82,32 @@ export interface FlowsTableDto {
    * Gets or sets the date and time when the flow record was last modified.
    */
   lastModifiedOn?: Date;
+
+  /**
+   * Gets or sets the distinct AI model names referenced by the agent's latest workflow.
+   */
+  aiModels?: string[];
+
+  /**
+   * Gets or sets the queues linked to the agent (flow).
+   */
+  queues?: FlowQueueDto[];
+}
+
+/**
+ * Lightweight DTO describing a queue linked to an agent (flow).
+ */
+export interface FlowQueueDto {
+  /**
+   * Gets or sets the Id of the queue.
+   */
+  id: string;
+  /**
+   * Gets or sets the name of the queue.
+   */
+  name: string;
+  /**
+   * Gets or sets the type of the queue (Agent / User).
+   */
+  type?: string;
 }

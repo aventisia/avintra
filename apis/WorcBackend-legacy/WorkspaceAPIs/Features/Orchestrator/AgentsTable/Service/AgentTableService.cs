@@ -713,6 +713,36 @@ public class AgentTableService : IAgentTableService
             // Map the flow versions to DTOs.
             var agentDtos = flowVersions.Adapt<List<AgentTableDto>>();
 
+            // Attach the queues linked to each agent (flow version) so the UI can render
+            // them as hyperlinks to the queue's work items.
+            var flowVersionIds = agentDtos.Select(agent => agent.Id).ToList();
+            var queueFlowVersions = await _unitOfWork.QueueFlowVersionRepo
+                .GetByConditionAsync(qf => flowVersionIds.Contains(qf.FlowVersionId))
+                .Include(qf => qf.Queue)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Index each agent's workflow definition so its referenced AI models can be resolved.
+            var reactFlowObjectByVersionId = flowVersions
+                .Where(fv => fv != null)
+                .ToDictionary(fv => fv!.Id, fv => fv!.ReactFlowObject);
+
+            foreach (var agent in agentDtos)
+            {
+                agent.Queues = queueFlowVersions
+                    .Where(qf => qf.FlowVersionId == agent.Id && qf.Queue != null)
+                    .Select(qf => new AgentQueueDto
+                    {
+                        Id = qf.Queue!.Id,
+                        Name = qf.Queue!.Name,
+                        Type = qf.Queue!.Type
+                    })
+                    .ToList();
+
+                agent.AiModels = AiModelHelper.ExtractModelNames(
+                    reactFlowObjectByVersionId.GetValueOrDefault(agent.Id));
+            }
+
             // Enrich each agent with the live status and running job of the machine hosting it.
             var clientStatuses = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 

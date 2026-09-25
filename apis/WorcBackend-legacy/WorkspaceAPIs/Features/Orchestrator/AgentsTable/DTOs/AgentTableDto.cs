@@ -19,6 +19,11 @@ public class AgentTableDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the flow.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the flow.
     /// </summary>
     public required string Type { get; set; }
@@ -129,4 +134,16 @@ public class AgentTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public List<Guid>? AssignedMachineIds { get; set; }
+
+    /// <summary>
+    /// Gets or sets the queues linked to the agent (flow version) via queue flow version assignments.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public List<AgentQueueDto>? Queues { get; set; }
+
+    /// <summary>
+    /// Gets or sets the distinct AI model names referenced by the agent's workflow.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public List<string>? AiModels { get; set; }
 }
