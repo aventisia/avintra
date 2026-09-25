@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@avplatform/ui/cards";
 
 export const AgentsTableSkeleton: React.FC = () => {
   return (
-    <section className="mx-auto max-w-screen-lg space-y-4 pb-4 pt-[17px]">
+    <section className="space-y-4 pb-4 pt-[17px]">
       <div className="flex h-[1.75rem] items-center justify-between">
         <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[8rem]" />
         <Skeleton className="h-6 w-[5rem] rounded-lg mmd:w-[15rem]" />
