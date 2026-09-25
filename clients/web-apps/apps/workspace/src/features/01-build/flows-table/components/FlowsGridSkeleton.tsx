@@ -11,7 +11,7 @@ interface FlowsGridSkeletonProps {
  */
 export const FlowsGridSkeleton = ({ count = 8 }: FlowsGridSkeletonProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
       {new Array(count).fill(null).map((_, index) => (
         <Card
           key={index}
