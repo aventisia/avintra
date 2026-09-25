@@ -43,7 +43,7 @@ export const AgentsAssistTable = () => {
   return (
     <>
       {!isLoading ? (
-        <div className="mx-auto max-w-screen-lg space-y-4 pb-4 pt-[17px]">
+        <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
