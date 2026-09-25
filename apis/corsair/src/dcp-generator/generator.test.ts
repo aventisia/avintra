@@ -14,6 +14,7 @@ import os from "node:os";
 import path from "node:path";
 import { createCorsair } from "corsair";
 import { plugins } from "../plugins.js";
+import { PLUGIN_DISPLAY_NAMES } from "./plugin-metadata.js";
 import { generateDcpFiles } from "./index.js";
 
 const corsair = createCorsair({
@@ -146,6 +147,21 @@ async function main() {
     assert(googleLabels.get("Googlemaps") === "Google Maps", "Google Maps category has no canonical name");
     assert(googleLabels.get("Googleaddressvalidation") === "Google Address Validation", "Google Address Validation category has no canonical name");
     assert(googleLabels.get("Youtube") === "YouTube", "YouTube category has no canonical name");
+
+    // 5c. Every plugin has an explicit, non-empty, unique user-facing name, and
+    //     the generated App Integrations categories never collide.
+    for (const p of plugins) {
+      const id = (p as any).id as string;
+      assert(id in PLUGIN_DISPLAY_NAMES, `plugin '${id}' is missing from PLUGIN_DISPLAY_NAMES`);
+      assert((PLUGIN_DISPLAY_NAMES[id] ?? "").trim().length > 0, `plugin '${id}' has an empty display name`);
+    }
+    const displayNames = Object.values(PLUGIN_DISPLAY_NAMES);
+    assert(new Set(displayNames).size === displayNames.length, "PLUGIN_DISPLAY_NAMES contains duplicate display names");
+    const pluginIds = new Set(plugins.map((p: any) => p.id as string));
+    const unknownIds = Object.keys(PLUGIN_DISPLAY_NAMES).filter((id) => !pluginIds.has(id));
+    assert(unknownIds.length === 0, `PLUGIN_DISPLAY_NAMES has unknown plugin ids: ${unknownIds.join(", ")}`);
+    const categoryLabels = appIntegrations.actionCategories.map((c: any) => c.label);
+    assert(new Set(categoryLabels).size === categoryLabels.length, "App Integrations has duplicate category labels");
 
     const catalog = JSON.parse(fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"));
     const microsoftEntries = catalog.filter((entry: any) =>
