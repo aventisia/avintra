@@ -1,0 +1,42 @@
+meta {
+  name: Approval resume with unknown tool_call_id returns 409
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/approvals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "conversation_id": "{{APPROVAL_CONVERSATION_ID}}",
+    "decisions": [
+      {
+        "tool_call_id": "call_not_in_pending_batch",
+        "decision": "approve"
+      }
+    ]
+  }
+}
+
+docs {
+  > Decisions must target the calls the pause actually surfaced; a stale or
+  > tampered `tool_call_id` is rejected instead of silently ignored (#235 review, TODO 3).
+  >
+  > Prerequisite: run `chat-agent-approval-required` first and keep the conversation
+  > PAUSED (do not run `chat-agent-approval-resume` yet). Set `APPROVAL_CONVERSATION_ID`
+  > from the `approval_required` frame's `conversation_id`.
+  >
+  > Expected response: HTTP 409 (no SSE stream) with detail
+  > "Approval decisions do not match the pending tool calls (unknown: call_not_in_pending_batch). The pause may have changed; please retry the original request."
+  >
+  > The pause is untouched: a follow-up `chat-agent-approval-resume` with the real
+  > `APPROVAL_TOOL_CALL_ID` still succeeds after this rejection.
+}

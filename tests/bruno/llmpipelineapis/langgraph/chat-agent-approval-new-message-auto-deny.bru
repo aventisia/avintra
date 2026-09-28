@@ -1,0 +1,76 @@
+meta {
+  name: New message while approval pending auto-denies the stale pause
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/normalized
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "Actually never mind, just say hello.",
+    "files": null,
+    "tool_config": [
+      {
+        "tool": "translate",
+        "actions": [
+          {
+            "approval": "human",
+            "action": "text"
+          }
+        ]
+      }
+    ],
+    "skill_names": [],
+    "is_temp_chat": true,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": 500,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "0.2",
+    "top_p": "1.0",
+    "stream": true,
+    "conversation_id": "{{APPROVAL_CONVERSATION_ID}}",
+    "ref_type": "Agent",
+    "ref_id": "00000000-0000-0000-0000-000000000001",
+    "ref_name": "Approval Pending Test",
+    "action": "AgentExecution",
+    "is_chat_agent": true,
+    "generate_followup_messages": false
+  }
+}
+
+docs {
+  > A client that lost the approval widget must not dead-end the thread: sending a
+  > new message to a paused conversation auto-denies the stale pending calls (they are
+  > NEVER executed) and the new message is answered normally (#235 review, C6).
+  >
+  > Prerequisite: run `chat-agent-approval-required` first, set
+  > `APPROVAL_CONVERSATION_ID` from its `approval_required` frame, and do NOT resume.
+  > Keep the same `tool_config` and `is_temp_chat: true` so the turn reuses the cached
+  > graph (same cache key) while the pause is still open.
+  >
+  > Expected SSE frames:
+  > - NO replay of `approval_required` for the stale call
+  > - normal `delta` / `status` frames answering "just say hello" and a `done` frame
+  > - (server-side) a `logger` line about clearing stale approvals; the auto-deny
+  >   continuation is persisted silently to the checkpoint, never streamed
+  >
+  > Then `chat-agent-approval-resume` against the same conversation returns HTTP 409
+  > ("No pending tool approval...") because the pause no longer exists.
+  >
+  > Failure path: if the stale pause cannot be cleared after 3 resume rounds the new
+  > turn aborts with an `error` frame instead of re-entering the pause, so the client
+  > never sees a silently ignored message.
+}
