@@ -18,6 +18,12 @@ from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
 from app.features.langgraph.services.request_context import restore_request
+from app.features.langgraph.services.tool_approval import (
+    APPROVAL_EXPIRED,
+    APPROVAL_MARKER_KEY,
+    pending_approval_tool_calls,
+    verify_pause_owner,
+)
 from app.features.langgraph.services.conversation_service import (
     ConversationService,
     conversation_service,
@@ -30,7 +36,7 @@ from app.features.langgraph.skills.skill_loader import load_default_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_default_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.langgraph.services.tool_skill_selector import _expand_tool_config
+from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant as load_custom_tools
 from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
@@ -42,30 +48,6 @@ from app.features.llm_providers.llm_providers_schemas import (
 from app.features.llm_providers.llm_providers_utils import (
     extract_json_from_llm_response,
 )
-
-
-def verify_pause_owner(metadata: dict[str, Any], user: User) -> bool:
-    """Check that a paused approval belongs to ``user``. Fail closed.
-
-    IMPORTANT NOTE: an unresolvable owner in checkpoint metadata rejects the
-    resume (409 upstream). A pause whose ownership cannot be verified is never
-    resumable by another user, even if the conversation id is known.
-    """
-
-    paused_user = metadata.get("user")
-    if isinstance(paused_user, User):
-        paused_user_id = str(paused_user.user_id)
-        paused_tenant_id = str(paused_user.tenant_id)
-    elif isinstance(paused_user, dict):
-        paused_user_id = str(paused_user.get("user_id") or "")
-        paused_tenant_id = str(paused_user.get("tenant_id") or "")
-    else:
-        return False
-
-    return bool(paused_user_id) and bool(paused_tenant_id) and (
-        paused_user_id == str(user.user_id)
-        and paused_tenant_id == str(user.tenant_id)
-    )
 
 
 class ChatService:
@@ -663,7 +645,7 @@ class ChatService:
 
         # Surface pending human-approval tool calls so the client can render the
         # confirmation UI. The graph remains paused until /approvals resumes it.
-        pending_calls = self._pending_approval_tool_calls(state)
+        pending_calls = pending_approval_tool_calls(state)
         if pending_calls:
             self._pending_approval_conversations.add(conversation_id)
         else:
@@ -971,7 +953,7 @@ class ChatService:
     ) -> Any:
         """Retrieve or create a compiled LangGraph instance."""
 
-        explicit_tool_names = _expand_tool_config(request.tool_config or [])
+        explicit_tool_names = expand_tool_config(request.tool_config or [])
         explicit_skill_names = list(request.skill_names or [])
 
         tool_config_key = tuple(sorted(explicit_tool_names))
@@ -1056,25 +1038,6 @@ class ChatService:
             return None
         return self._graphs.get(key)
 
-    @staticmethod
-    def _pending_approval_tool_calls(state: Any) -> list[dict]:
-        """Extract pending human-approval tool calls from a graph snapshot."""
-
-        if state is None:
-            return []
-
-        pending: list[dict] = []
-        for task in getattr(state, "tasks", ()) or ():
-            for item in getattr(task, "interrupts", ()) or ():
-                value = getattr(item, "value", None)
-                if isinstance(value, list):
-                    pending.extend(
-                        call
-                        for call in value
-                        if isinstance(call, dict) and call.get("tool_call_id")
-                    )
-        return pending
-
     async def get_pending_approval(
         self,
         conversation_id: str,
@@ -1101,7 +1064,7 @@ class ChatService:
             )
             return None
 
-        pending = self._pending_approval_tool_calls(state)
+        pending = pending_approval_tool_calls(state)
         if not pending:
             return None
 
@@ -1169,7 +1132,7 @@ class ChatService:
                 )
                 return frames, False
 
-            pending = self._pending_approval_tool_calls(state)
+            pending = pending_approval_tool_calls(state)
             if not pending:
                 return frames, True
 
@@ -1321,7 +1284,7 @@ class ChatService:
                         status="error",
                         # Machine-readable marker (mirrors tool_node denials);
                         # detection must never parse prose.
-                        additional_kwargs={"worc_approval": "expired"},
+                        additional_kwargs={APPROVAL_MARKER_KEY: APPROVAL_EXPIRED},
                     )
                 )
 

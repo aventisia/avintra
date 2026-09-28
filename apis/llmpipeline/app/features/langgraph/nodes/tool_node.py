@@ -5,22 +5,21 @@ import json
 from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import BaseTool
 from langgraph.prebuilt import ToolNode
-from langgraph.types import interrupt
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.services.request_context import restore_request
-from app.features.langgraph.services.tool_skill_selector import (
-    build_tool_approval_map,
+from app.features.langgraph.services.tool_approval import (
+    approval_key,
+    denial_tool_message,
+    request_tool_approvals,
 )
 from app.features.langgraph.tools.outlook.outlook_client import send_email_via_outlook
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
 from app.features.llm_providers.services.corsair_sidecar_service import (
     invoke_corsair_tool,
     is_corsair_tool,
-    parse_corsair_tool_name,
-    to_corsair_tool_path,
 )
 
 
@@ -133,152 +132,6 @@ def _extract_connector_error(result: dict) -> str | None:
         return None
 
 
-def _approval_key(tool_call: dict, index: int) -> str:
-    """Stable batch key for one tool call's approval decision.
-
-    Falls back to a positional key when the model emits a tool call without an
-    id, so unnamed calls cannot collide on the empty-string key.
-    """
-
-    return tool_call.get("id") or f"__approval_idx_{index}"
-
-
-def _normalize_approval_resume(
-    resume_payload,
-    pending_tool_call_ids: list[str],
-) -> dict[str, str]:
-    """Normalize an interrupt resume payload into ``{tool_call_id: approve|deny}``.
-
-    The approvals route sends a flat mapping of approval key to decision
-    (see ``_approval_key``). Anything that is not an explicit "approve" counts
-    as a denial.
-    """
-
-    entries = (
-        [
-            {"tool_call_id": key, "decision": value}
-            for key, value in resume_payload.items()
-        ]
-        if isinstance(resume_payload, dict)
-        else []
-    )
-
-    decisions: dict[str, str] = {}
-    for entry in entries:
-        tool_call_id = entry["tool_call_id"]
-        decision = entry["decision"]
-        if tool_call_id:
-            decisions[str(tool_call_id)] = (
-                "approve"
-                if str(decision).strip().lower() == "approve"
-                else "deny"
-            )
-
-    # Fail closed: a pending call without an explicit approval is denied.
-    for tool_call_id in pending_tool_call_ids:
-        decisions.setdefault(tool_call_id, "deny")
-
-    return decisions
-
-
-def _canonical_tool_name(
-    tool_name: str,
-    corsair_paths: dict[str, str] | None = None,
-) -> str:
-    """Resolve a model-facing tool name to the canonical configured name.
-
-    Corsair tools are bound under an OpenAI-safe name (dots replaced with
-    underscores, e.g. ``openai_api_models_list``) while ``tool_config`` entries
-    use the dotted sidecar path (``openai.api.models.list``). Bound tools carry
-    their original path in ``metadata["corsair_path"]``; when that is not
-    available the sanitized ``_api_`` form is parsed back to the dotted path.
-    """
-
-    if not tool_name:
-        return tool_name
-
-    if corsair_paths and corsair_paths.get(tool_name):
-        return corsair_paths[tool_name]
-
-    if is_corsair_tool(tool_name):
-        try:
-            plugin, action = parse_corsair_tool_name(tool_name)
-            return to_corsair_tool_path(plugin, action)
-        except ValueError:
-            return tool_name
-
-    return tool_name
-
-
-def _request_tool_approvals(
-    tool_calls: list[dict],
-    request: LLMRequest,
-    corsair_paths: dict[str, str] | None = None,
-) -> dict[str, str]:
-    """Pause for user approval on configured actions that require it.
-
-    Returns ``{tool_call_id: "approve"|"deny"}`` for the human-approval calls in
-    this batch. Calls configured with ``approval: "auto"`` are not included. The
-    interrupt happens before anything in the batch executes, so a resume never
-    re-runs already-executed calls.
-    """
-
-    approval_map = build_tool_approval_map(
-        getattr(request, "tool_config", None) or []
-    )
-
-    pending = []
-    for index, tool_call in enumerate(tool_calls):
-        # Model-facing Corsair names are sanitized; configured approval keys are
-        # canonical dotted paths, so compare on the canonical name.
-        lookup_name = _canonical_tool_name(
-            tool_call.get("name", ""),
-            corsair_paths,
-        )
-        # Missing approval fails closed to "human".
-        if approval_map.get(lookup_name, "human") == "auto":
-            continue
-        pending.append(
-            {
-                "tool_call_id": _approval_key(tool_call, index),
-                "name": lookup_name or tool_call.get("name", ""),
-                "args": tool_call.get("args") or {},
-            }
-        )
-
-    if not pending:
-        return {}
-
-    logger.debug(
-        "Pausing for tool approval: %s",
-        [item["name"] for item in pending],
-    )
-
-    resume_payload = interrupt(pending)
-
-    return _normalize_approval_resume(
-        resume_payload, [item["tool_call_id"] for item in pending]
-    )
-
-
-def _denial_message(tool_name: str, tool_call_id: str) -> ToolMessage:
-    """Build the ToolMessage returned to the model when a user denies an action."""
-
-    return ToolMessage(
-        content=(
-            "The user denied this action for the current request, so it did not "
-            "run. Acknowledge the denial and continue without performing the "
-            "action now. If the user explicitly asks later to try again, you may "
-            "call this action again."
-        ),
-        tool_call_id=tool_call_id,
-        name=tool_name,
-        status="error",
-        # Machine-readable marker; retry/dedup detection must never parse prose.
-        additional_kwargs={"worc_approval": "denied"},
-    )
-
-
 def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
     """
     Build an async tool execution node for a LangGraph workflow.
@@ -339,7 +192,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             and current_request is not None
             and getattr(current_request, "is_chat_agent", False)
         ):
-            approval_decisions = _request_tool_approvals(
+            approval_decisions = request_tool_approvals(
                 tool_calls, current_request, corsair_paths
             )
 
@@ -352,13 +205,13 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             tool_name = tool_call.get("name", "")
             # Approval-keyed so unnamed calls cannot collide on the empty id;
             # for calls that have one this is the tool_call_id unchanged.
-            tool_call_id = _approval_key(tool_call, index)
+            tool_call_id = approval_key(tool_call, index)
             args = tool_call.get("args", {})
 
             # A denied human-approval call short-circuits: the model receives a
             # denial ToolMessage and the turn continues without the action.
             if approval_decisions.get(tool_call_id) == "deny":
-                precomputed_results[tool_call_id] = _denial_message(
+                precomputed_results[tool_call_id] = denial_tool_message(
                     tool_name, tool_call_id
                 )
                 continue
@@ -500,7 +353,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         merged_messages = []
         consumed: set[int] = set()
         for index, tool_call in enumerate(tool_calls):
-            tool_call_id = _approval_key(tool_call, index)
+            tool_call_id = approval_key(tool_call, index)
             if tool_call_id in precomputed_results:
                 merged_messages.append(precomputed_results[tool_call_id])
                 continue
