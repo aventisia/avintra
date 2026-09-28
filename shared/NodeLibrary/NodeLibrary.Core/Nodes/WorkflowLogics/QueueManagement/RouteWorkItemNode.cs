@@ -4,7 +4,7 @@ namespace NodeLibrary.QueueManagementNodes;
 
 [DisplayName("Route Work Item")]
 [Description("Routes a work item from one queue to another.")]
-[NodeMetadata(icon: "/assets/Queue.svg", doNotRenderIf: "production")]
+[NodeMetadata(icon: "/assets/Queue.svg")]
 public class RouteWorkItemNode : BaseNode
 {
     [DisplayName("WorkItem ID")]
