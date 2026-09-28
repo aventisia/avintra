@@ -22,4 +22,7 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 EXPOSE 4003
 
+# IMPORTANT NOTE: keep a single uvicorn worker. Chat tool-approval pauses live
+# in this process (InMemorySaver + compiled-graph cache); `--workers > 1` or
+# multiple replicas route resumes to workers without the pause (409 expired).
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "4003"]

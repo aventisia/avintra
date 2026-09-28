@@ -1,0 +1,45 @@
+meta {
+  name: Approval resume with no pending pause returns 409
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/approvals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "conversation_id": "99999999-9999-9999-9999-999999999999",
+    "decisions": [
+      {
+        "tool_call_id": "call_anything",
+        "decision": "approve"
+      }
+    ]
+  }
+}
+
+docs {
+  > Conversations without a live pause fail closed with 409 before any id matching
+  > happens (never paused, already resumed/decided, or expired after a process restart
+  > since the checkpointer is process-local).
+  >
+  > No prerequisite: `99999999-9999-9999-9999-999999999999` has no graph or checkpoint.
+  > Re-running `chat-agent-approval-resume` a second time for a decided pause hits the
+  > same branch - swap this id for `{{APPROVAL_CONVERSATION_ID}}` after resuming once.
+  >
+  > Expected response: HTTP 409 with detail
+  > "No pending tool approval was found for this conversation. It may have expired; please retry the original request."
+  >
+  > Notes:
+  > - A pause belonging to ANOTHER user/tenant returns the same 409: ownership is
+  >   verified from checkpoint metadata and unresolvable owners are rejected fail-closed.
+  > - The frontend surfaces this as the "Please retry the original request." hint on the approval card.
+}

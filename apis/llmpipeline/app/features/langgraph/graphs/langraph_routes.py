@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Literal
 from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -16,6 +16,20 @@ from app.core.logger import logger
 
 
 router = APIRouter()
+
+
+class ApprovalDecision(BaseModel):
+    """One user decision for a pending human-approval tool call."""
+
+    tool_call_id: str
+    decision: Literal["approve", "deny"]
+
+
+class ChatApprovalRequest(BaseModel):
+    """Resume payload for a chat turn paused on tool approval."""
+
+    conversation_id: str
+    decisions: list[ApprovalDecision] = []
 
 
 # -----------------------------------------------------------
@@ -180,6 +194,75 @@ async def generate_langgraph_response_normalized_route(
             async for chunk in chat_service.stream_normalized(request, user, db_session=session):
                 yield _serialize_chunk(chunk)
                 if not request.is_temp_chat:
+                    await session.commit()
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@router.post("/chat/completions/approvals")
+async def approve_langgraph_tool_calls_route(
+    request: ChatApprovalRequest,
+    user: User = Depends(authorize()),
+):
+    """Resume a paused chat turn after the user reviewed pending tool calls.
+
+    Reuses the normalized SSE protocol so the client renders the resumed
+    ``tool_call`` results, text deltas, follow-ups, and final ``done`` frame
+    exactly like a regular turn. Returns 409 when the conversation has no
+    pending approval (never paused, already decided, or expired after a
+    restart).
+    """
+
+    pending = await chat_service.get_pending_approval(
+        request.conversation_id,
+        user,
+    )
+    if pending is None:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "No pending tool approval was found for this conversation. "
+                "It may have expired; please retry the original request."
+            ),
+        )
+
+    paused_request, pending_calls = pending
+
+    # Decisions must target the calls this pause actually surfaced; a stale or
+    # tampered client id is rejected rather than silently ignored.
+    pending_ids = {call["tool_call_id"] for call in pending_calls}
+    unknown_ids = [
+        decision.tool_call_id
+        for decision in request.decisions
+        if decision.tool_call_id not in pending_ids
+    ]
+    if unknown_ids:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Approval decisions do not match the pending tool calls "
+                f"(unknown: {', '.join(unknown_ids)}). The pause may have "
+                "changed; please retry the original request."
+            ),
+        )
+
+    decisions = {
+        decision.tool_call_id: decision.decision
+        for decision in request.decisions
+    }
+
+    async def event_generator():
+        async with get_db_session_context(
+            settings.POSTGRESQL_WORKSPACE_DB_NAME,
+        ) as session:
+            async for chunk in chat_service.stream_normalized(
+                paused_request,
+                user,
+                db_session=session,
+                resume_decisions=decisions,
+            ):
+                yield _serialize_chunk(chunk)
+                if not paused_request.is_temp_chat:
                     await session.commit()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

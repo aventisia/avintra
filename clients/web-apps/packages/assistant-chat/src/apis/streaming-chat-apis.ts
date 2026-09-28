@@ -21,6 +21,25 @@ export interface StreamingChatRequestDto {
   isTempChat?: boolean;
 }
 
+/** A single approve/deny decision for a pending tool call. */
+export interface ApprovalDecisionDto {
+  /** Matches the `tool_call_id` surfaced in the approval_required frame. */
+  toolCallId: string;
+  /** "approve" executes the action; anything else denies it. */
+  decision: "approve" | "deny";
+}
+
+/**
+ * Resume request for a chat turn paused on tool approval. Mirrors
+ * WorkspaceAPIs StreamingChatApprovalRequestDto.
+ */
+export interface StreamingChatApprovalRequestDto {
+  flowVersionId: string;
+  conversationId: string;
+  isTempChat?: boolean;
+  decisions: ApprovalDecisionDto[];
+}
+
 /**
  * Parses an SSE response body into an async iterator of `data:` payload strings.
  * Skips event/comment/blank lines and strips the trailing `\n\n` separator.
@@ -63,16 +82,19 @@ async function* parseSse(body: ReadableStream<Uint8Array>): AsyncGenerator<strin
  *
  * @param request The streaming chat request payload.
  * @param signal Optional AbortController signal to cancel the stream.
+ * @param extraHeaders Optional per-app headers (e.g. Studio space scoping).
  */
 export async function* streamChatCompletion(
   request: StreamingChatRequestDto,
   signal?: AbortSignal,
+  extraHeaders?: Record<string, string>,
 ): AsyncGenerator<string> {
   const response = await fetch(`${baseAPIURL}/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
+      ...extraHeaders,
     },
     credentials: "include", // forward the JWT cookie for auth
     body: JSON.stringify(request),
@@ -82,6 +104,47 @@ export async function* streamChatCompletion(
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || `Streaming request failed (${response.status}).`);
+  }
+
+  if (!response.body) {
+    throw new Error("Streaming response has no body.");
+  }
+
+  yield* parseSse(response.body);
+}
+
+/**
+ * Resumes a paused chat turn with the user's tool-approval decisions and
+ * returns the SSE data payloads of the continuation.
+ *
+ * Calls the WorkspaceAPIs SSE proxy (`assist/chats/stream/approvals`), which
+ * relays the llmpipeline /chat/completions/approvals stream. The continuation
+ * uses the same normalized frame protocol as a regular completion.
+ *
+ * @param request The approval decisions payload.
+ * @param signal Optional AbortController signal to cancel the stream.
+ * @param extraHeaders Optional per-app headers (e.g. Studio space scoping).
+ */
+export async function* streamApprovalDecisions(
+  request: StreamingChatApprovalRequestDto,
+  signal?: AbortSignal,
+  extraHeaders?: Record<string, string>,
+): AsyncGenerator<string> {
+  const response = await fetch(`${baseAPIURL}/approvals`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      ...extraHeaders,
+    },
+    credentials: "include", // forward the JWT cookie for auth
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `Approval request failed (${response.status}).`);
   }
 
   if (!response.body) {

@@ -15,6 +15,7 @@
   "dependencies": {
     "@assistant-ui/react": "^0.15.11",
     "@assistant-ui/react-markdown": "^0.14.10",
+    "@avplatform/assistant-chat": "*",
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",

@@ -10,10 +10,19 @@ from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
+from app.features.langgraph.services.tool_approval import (
+    APPROVAL_DENIED,
+    APPROVAL_EXPIRED,
+    message_approval_marker,
+)
+from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.llm_providers.services.corsair_sidecar_service import (
-    to_corsair_tool_path,
+    fetch_corsair_schemas,
+    is_corsair_tool,
+    parse_corsair_tool_name,
+    to_corsair_action,
 )
 
 
@@ -23,6 +32,8 @@ You are a routing assistant. Given a user request and a catalog of available too
 Rules:
 - Only select items that are actually needed to answer the request.
 - If the request is a simple chat question, return empty lists.
+- When the user asks to try again, retry, or continue an earlier request, select the tools or skills that were previously used for that request.
+- A previous denial does not make an action irrelevant: the user approves each execution individually.
 - Do not invent tools or skills that are not in the catalog.
 - Respond ONLY with valid JSON matching the provided schema.
 """
@@ -35,6 +46,8 @@ async def select_tools_and_skills(
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
+    allowed_tool_names: list[str] | None = None,
+    conversation_messages: list[Any] | None = None,
 ) -> "ToolSkillSelectionResponse":
     """
     Ask a small planner LLM which tools and skills are relevant for ``request``.
@@ -49,13 +62,21 @@ async def select_tools_and_skills(
             skills in addition to global skills.
         allowed_skill_names: When provided, the planner can only choose from
             these skills (e.g. the skills explicitly attached to an agent).
+        allowed_tool_names: When provided, the planner can only choose from
+            these tools (e.g. the actions explicitly configured on an agent).
+            Corsair actions are not in the local registry, so their catalog
+            entries are fetched from the sidecar.
+        conversation_messages: Recent LangGraph state messages. A compact
+            transcript is included so follow-up requests (e.g. "try again")
+            resolve against what was asked and attempted earlier.
     """
 
-    catalog = _build_catalog(
+    catalog = await _build_catalog(
         tool_registry=tool_registry,
         skill_registry=skill_registry,
         tenant_id=tenant_id,
         allowed_skill_names=allowed_skill_names,
+        allowed_tool_names=allowed_tool_names,
     )
 
     if not catalog.tools and not catalog.skills:
@@ -67,6 +88,7 @@ async def select_tools_and_skills(
     prompt = _build_planner_prompt(
         request=request,
         catalog=catalog,
+        conversation_messages=conversation_messages,
     )
 
     planner_request = LLMRequest(
@@ -171,7 +193,7 @@ async def resolve_requested_or_selected_tools_and_skills(
     if tool_config:
         # Studio stores tools as { tool: "outlook", actions: [{ action: "send_email" }] }.
         # LangGraph registers one tool per action, named "<tool>_<action>".
-        explicit_tools = _expand_tool_config(tool_config)
+        explicit_tools = expand_tool_config(tool_config)
 
     if skill_names:
         explicit_skills = skill_names
@@ -215,53 +237,6 @@ async def resolve_requested_or_selected_tools_and_skills(
     return selection.tool_names, selected_skills
 
 
-def _expand_tool_config(tool_config: list[Any]) -> list[str]:
-    """Expand Studio tool config entries into LangGraph tool names.
-
-    Studio format: { tool: "outlook", actions: [{ action: "send_email" }] }
-    Legacy LangGraph name: "outlook_send_email"
-    Corsair LangGraph name: "github.api.issues.create"
-
-    For Corsair, the Studio ``tool`` field is the plugin root (e.g. ``github``)
-    and the action is either the remaining dotted path (e.g.
-    ``api.issues.create``) or the seeded OpenAPI operationId (e.g.
-    ``openai.models.list``). Both are normalized to the canonical sidecar path
-    ``<plugin>.api.<action>``.
-
-    For legacy platform tools, the action is a single capability word (e.g.
-    ``send_email``) and the emitted name remains ``<tool>_<action>``.
-    """
-    names: list[str] = []
-    for config in tool_config:
-        tool = getattr(config, "tool", None) or config.get("tool", "")
-        actions = getattr(config, "actions", None) or config.get("actions", [])
-        # If the tool name already contains a dot, emit dotted names directly.
-        if "." in tool:
-            for action in actions:
-                action_name = getattr(action, "action", None) or action.get("action", "")
-                if tool and action_name:
-                    names.append(f"{tool}.{action_name}")
-            if not actions and tool:
-                names.append(tool)
-            continue
-        for action in actions:
-            action_name = getattr(action, "action", None) or action.get("action", "")
-            if tool and action_name:
-                # Dotted actions identify Corsair tools. Studio sends the seeded
-                # OpenAPI operationId (e.g. "openai.models.list"); normalize it
-                # to the canonical sidecar path (e.g. "openai.api.models.list").
-                if "." in action_name:
-                    names.append(to_corsair_tool_path(tool, action_name))
-                else:
-                    names.append(f"{tool}_{action_name}")
-        if not actions and tool:
-            names.append(tool)
-    return names
-
-
-
-
-
 def _resolve_skill_configs(
     skill_registry: SkillRegistry,
     skill_names: list[str],
@@ -284,17 +259,24 @@ def _resolve_skill_configs(
     return configs
 
 
-def _build_catalog(
+async def _build_catalog(
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
+    allowed_tool_names: list[str] | None = None,
 ) -> "ToolSkillCatalog":
     """Build a name/description catalog from the live registries.
 
     When ``allowed_skill_names`` is provided the skill catalog is restricted
     to those names; an empty list restricts it to no skills. ``None`` means
     no explicit attachment context and leaves the full registry visible.
+
+    ``allowed_tool_names`` behaves the same way for tools. Because Corsair
+    actions live on the sidecar and not in the local registry, their entries
+    are fetched from the sidecar for the configured actions. A sidecar failure
+    omits the Corsair entries entirely so the planner cannot select them
+    (fail closed).
     """
 
     tools = [
@@ -304,6 +286,29 @@ def _build_catalog(
         }
         for tool in tool_registry.get_all()
     ]
+
+    if allowed_tool_names is not None:
+        allowed_tools = {
+            name.strip().lower()
+            for name in allowed_tool_names
+            if name and name.strip()
+        }
+        corsair_entries = await _build_corsair_catalog_entries(allowed_tool_names)
+        available_tools = {tool["name"].lower() for tool in tools}
+        available_tools.update(entry["name"].lower() for entry in corsair_entries)
+        missing_tools = sorted(allowed_tools - available_tools)
+        if missing_tools:
+            logger.warning(
+                "Configured tools not found in the registry or sidecar: %s",
+                missing_tools,
+            )
+        tools = [
+            tool for tool in tools if tool["name"].lower() in allowed_tools
+        ] + [
+            entry
+            for entry in corsair_entries
+            if entry["name"].lower() in allowed_tools
+        ]
 
     skills = [
         {
@@ -333,18 +338,86 @@ def _build_catalog(
     return ToolSkillCatalog(tools=tools, skills=skills)
 
 
+async def _build_corsair_catalog_entries(
+    allowed_tool_names: list[str],
+) -> list[dict[str, Any]]:
+    """Build planner catalog entries for configured Corsair actions.
+
+    Configured names are normalized to canonical ``<plugin>.api.<action>``
+    paths, grouped per plugin, and resolved against the sidecar tool catalog
+    (cached). Returns an empty list when the sidecar is unavailable so planner
+    gating fails closed rather than selecting actions it cannot describe.
+    """
+
+    plugin_actions: dict[str, set[str]] = {}
+    for name in allowed_tool_names:
+        if not name or not is_corsair_tool(name):
+            continue
+        try:
+            plugin, action = parse_corsair_tool_name(name)
+        except ValueError:
+            logger.warning("Skipping malformed Corsair tool name: %s", name)
+            continue
+        normalized_action = to_corsair_action(plugin, action)
+        plugin_actions.setdefault(plugin.strip().lower(), set()).add(
+            normalized_action
+        )
+
+    if not plugin_actions:
+        return []
+
+    fetch_configs = [
+        {
+            "tool": plugin,
+            "actions": [{"action": action} for action in sorted(actions)],
+        }
+        for plugin, actions in sorted(plugin_actions.items())
+    ]
+
+    try:
+        schemas = await fetch_corsair_schemas(fetch_configs)
+    except Exception:
+        logger.exception(
+            "Failed to fetch Corsair catalog entries; omitting Corsair tools."
+        )
+        return []
+
+    entries: list[dict[str, Any]] = []
+    for schema in schemas:
+        entry_name = schema.get("name")
+        if not entry_name:
+            continue
+        entries.append(
+            {
+                "name": entry_name,
+                "description": schema.get("description") or entry_name,
+            }
+        )
+
+    return entries
+
+
 def _build_planner_prompt(
     request: LLMRequest,
     catalog: "ToolSkillCatalog",
+    conversation_messages: list[Any] | None = None,
 ) -> str:
     """Assemble the prompt sent to the planner LLM."""
 
     user_text = _extract_user_text(request)
+    recent_conversation = _format_recent_messages(conversation_messages)
+    recent_section = (
+        "\nRecent conversation (most recent last; use it to resolve follow-up "
+        "requests that reference earlier messages or tool attempts):\n"
+        f"{recent_conversation}\n"
+        if recent_conversation
+        else ""
+    )
 
     return f"""\
         User request:
         {user_text}
-
+        {recent_section}
         Available tools (name and description only):
         {json.dumps(catalog.tools, indent=2)}
 
@@ -356,6 +429,98 @@ def _build_planner_prompt(
         Respond with valid JSON matching this schema:
         {json.dumps(ToolSkillSelectionResponse.model_json_schema(), indent=2)}
         """
+
+
+def _format_recent_messages(
+    messages: list[Any] | None,
+    limit: int = 6,
+    max_chars_per_message: int = 300,
+) -> str:
+    """Render a compact transcript of recent conversation messages.
+
+    Gives the planner enough context to resolve follow-up requests such as
+    "try again" or "and the others?" that reference an earlier tool or skill
+    decision. The trailing user message is excluded because it is provided
+    separately as the user request.
+
+    Tool outcomes are paraphrased as short neutral notes instead of raw tool
+    output: results can be huge, and denial instructions ("do not retry") would
+    bias the relevance decision. Whether an action may run is enforced by the
+    tool-approval gate, not by the planner.
+    """
+
+    if not messages:
+        return ""
+
+    recent = list(messages)
+    # Drop the current user request when it is present as the latest message.
+    if recent and getattr(recent[-1], "type", None) in ("human", "user"):
+        recent = recent[:-1]
+
+    lines: list[str] = []
+    tool_call_names: dict[str, str] = {}
+
+    for message in recent:
+        role = (
+            getattr(message, "type", None)
+            or getattr(message, "role", None)
+            or "unknown"
+        )
+
+        # Track tool-call ids so tool results can name their originating tool.
+        for call in getattr(message, "tool_calls", None) or []:
+            if isinstance(call, dict) and call.get("id"):
+                tool_call_names[str(call["id"])] = str(call.get("name") or "")
+
+        if role in ("tool", "tool_result"):
+            # Paraphrase outcomes neutrally: raw output is often huge, and
+            # mentioning a denial biases the planner away from re-selecting an
+            # action the user may now be asking to retry. Approval consent is
+            # enforced by the tool-approval gate, not by the planner.
+            name = getattr(message, "name", None) or tool_call_names.get(
+                str(getattr(message, "tool_call_id", "") or ""), ""
+            )
+            if message_approval_marker(message) in (APPROVAL_DENIED, APPROVAL_EXPIRED):
+                outcome = "was requested earlier and did not complete"
+            else:
+                outcome = "ran earlier"
+            label = f"{name} " if name else "An earlier action "
+            lines.append(f"tool: {label}{outcome}")
+            continue
+
+        if role not in ("human", "user", "ai", "assistant"):
+            continue
+
+        content = getattr(message, "content", "")
+        if isinstance(content, list):
+            content = " ".join(str(part) for part in content)
+        text = " ".join(str(content or "").split())
+
+        # Knowledge-base context is injected as a user message; it is retrieval
+        # payload, not conversation, and only adds noise for the planner.
+        if "[Knowledge Base Context]" in text:
+            continue
+
+        # Assistant tool-call messages carry no text; surface the called tools.
+        tool_calls = getattr(message, "tool_calls", None) or []
+        if role == "ai" and tool_calls:
+            names = ", ".join(
+                str(call.get("name") or "")
+                for call in tool_calls
+                if isinstance(call, dict)
+            )
+            text = f"(requested tool call: {names}) {text}".strip()
+
+        if not text:
+            continue
+
+        if len(text) > max_chars_per_message:
+            text = text[:max_chars_per_message] + "…"
+
+        role_label = {"human": "user", "ai": "assistant"}.get(role, role)
+        lines.append(f"{role_label}: {text}")
+
+    return "\n".join(lines[-limit:])
 
 
 def _extract_user_text(request: LLMRequest) -> str:
@@ -425,10 +590,16 @@ def _validate_selection(
 
 
 def _fallback_selection(catalog: "ToolSkillCatalog") -> "ToolSkillSelectionResponse":
-    """Return every registered tool and skill when the planner fails."""
+    """Return the planner fallback when selection fails.
+
+    Skills keep their full allowed catalog (the model still receives skill
+    instructions, which are prompt-only). Tools fall back to an empty list so
+    a planner outage can never bind or execute a configured action without a
+    positive relevance decision.
+    """
 
     return ToolSkillSelectionResponse(
-        tool_names=[tool["name"] for tool in catalog.tools],
+        tool_names=[],
         skill_names=[skill["name"] for skill in catalog.skills],
     )
 

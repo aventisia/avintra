@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ToolCallMessagePartStatus } from "@assistant-ui/react";
+import { useToolCallCoordinatorStore } from "@avplatform/assistant-chat";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ToolProvider } from "../constants/tools-provider-enum";
-import { useToolCallCoordinatorStore } from "../store/tool-call-store";
 import { useToolExecutionMutation } from "./useToolsExecutionMutation";
 
 export type ToolCallStatus = "pending" | "success" | "failed" | "cancelled";

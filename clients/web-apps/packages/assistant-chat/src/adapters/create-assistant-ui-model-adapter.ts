@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assistant-ui/react";
 
-import { streamChatCompletion } from "../apis/streaming-chat-apis";
+import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
+import { isPendingApprovalPart } from "../lib/approval-parts";
 import { LLMMessageType } from "../types/llm-message.type";
 
-type CreateAssistantUIModelAdapterParams = {
+export type CreateAssistantUIModelAdapterParams = {
   flowVersionId: string;
   // Accepts the lazy getter instead of a static string
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
@@ -12,6 +13,11 @@ type CreateAssistantUIModelAdapterParams = {
   onSuggestionsUpdate?: (actions: string[]) => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
   isTempChat?: boolean;
+  /**
+   * Extra request headers for both stream calls (e.g. Studio space scoping
+   * headers). Workspace omits this; Studio passes its space-header getter.
+   */
+  getExtraHeaders?: () => Record<string, string>;
 };
 
 /**
@@ -72,16 +78,49 @@ function extractFilesFromMessage(message: ThreadMessage | undefined): string[] {
 }
 
 /**
+ * Collects resolved tool-approval decisions from the last thread message.
+ *
+ * assistant-ui re-runs the model adapter after every approval in the batch is
+ * answered and passes the updated assistant message last, which is how a
+ * resumed turn is detected. Unresolved approvals (no `approved`, no
+ * `resolution`) are ignored because the runtime only continues once the whole
+ * batch is decided.
+ */
+function collectApprovalDecisions(message: ThreadMessage | undefined): ApprovalDecision[] {
+  if (!message || message.role !== "assistant") return [];
+
+  const decisions: ApprovalDecision[] = [];
+  for (const part of message.content) {
+    if (part.type !== "tool-call") continue;
+    const approval = (part as any).approval as
+      { approved?: boolean; resolution?: "cancelled" | "expired" } | undefined;
+    if (!approval || approval.approved === undefined) continue;
+    decisions.push({
+      toolCallId: part.toolCallId,
+      decision: approval.approved ? "approve" : "deny",
+    });
+  }
+  return decisions;
+}
+
+/** A single resolved user decision collected from the thread state. */
+type ApprovalDecision = {
+  toolCallId: string;
+  decision: "approve" | "deny";
+};
+
+/**
  * Streams the chat completion from the normalized llmpipeline endpoint and
  * emits incremental text deltas, tool calls, follow-ups, and the final result.
  *
  * The server (WorkspaceAPIs -> llmpipeline /chat/completions/normalized) sends
  * SSE frames of shape:
- *   { type: "delta",      output: "<partial text>" }
- *   { type: "tool_call",  output: { tool_call_id, content } }
- *   { type: "tools",      output: [ { action, ... } ] }
- *   { type: "followup",   output: [ "suggestion", ... ] }
- *   { type: "done",       output: "<final text>" }
+ *   { type: "delta",             output: "<partial text>" }
+ *   { type: "tool_call",         output: { tool_call_id, content } }
+ *   { type: "approval_required", output: { tool_call_id, name, args } }
+ *   { type: "tools",             output: [ { action, ... } ] }
+ *   { type: "followup",          output: [ "suggestion", ... ] }
+ *   { type: "done",              output: "<final text>" }
  */
 export const createAssistantUIModelAdapter = ({
   flowVersionId,
@@ -89,7 +128,12 @@ export const createAssistantUIModelAdapter = ({
   onRequestComplete,
   onSuggestionsUpdate,
   isTempChat = false,
+  getExtraHeaders,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
+  // Last conversation id observed in a frame. Temporary chats never allocate
+  // one client-side, so this is the only handle that can resume their approvals.
+  let lastServerConversationId: string | undefined;
+
   return {
     async *run(options) {
       // Persisted chats own their history server-side (checkpoint + DB); only
@@ -98,11 +142,54 @@ export const createAssistantUIModelAdapter = ({
       const threadMessages = isTempChat ? mapThreadToLLMMessages(allMessagesExceptLast) : [];
 
       const lastMessage = options.messages[options.messages.length - 1];
+
+      // Continuation runs (approvals answered / tool results added) reuse the
+      // same assistant message, which the runtime passes separately from the
+      // conversation history.
+      const currentAssistantMessage = options.unstable_getMessage?.();
+
+      // A run whose assistant message carries resolved approvals is the
+      // continuation of a paused turn: resume it instead of starting a new
+      // user turn.
+      const approvalDecisions = collectApprovalDecisions(currentAssistantMessage);
+      const isApprovalResume = approvalDecisions.length > 0;
+
+      // Tool-call frames for these ids are the executed approval actions. The
+      // approval card already occupies the toolCallId in this message, so the
+      // duplicate result part is skipped (the model summarizes the outcome).
+      const approvalToolCallIds = new Set<string>();
+      for (const part of currentAssistantMessage?.content ?? []) {
+        if (part.type === "tool-call" && part.approval) {
+          approvalToolCallIds.add(part.toolCallId);
+        }
+      }
+
       const userInputText = lastMessage ? toMessageText(lastMessage.content) : "";
       const files = extractFilesFromMessage(lastMessage);
 
-      // Lazily allocate a conversation id (persisted Assist mode only).
-      const conversationId = await getConversationId(!isTempChat);
+      // Lazily allocate a conversation id (persisted Assist mode only). Resumes
+      // reuse the id the paused turn was started with.
+      const conversationId = isApprovalResume
+        ? (lastServerConversationId ?? (await getConversationId(false)))
+        : await getConversationId(!isTempChat);
+
+      // A resume needs the exact conversation whose pause is being decided.
+      // Without it (e.g. a temporary chat reloaded before its first frame)
+      // there is nothing to POST against, so explain and end the run instead
+      // of firing the approvals request with an empty id. The server clears
+      // its stale pause when the next message arrives.
+      if (isApprovalResume && !conversationId) {
+        yield {
+          content: [
+            ...((currentAssistantMessage?.content ?? []).map((part) => ({ ...part })) as any[]),
+            {
+              type: "text",
+              text: "This paused request could not be resumed because its conversation is no longer available. Please send the request again.",
+            },
+          ],
+        };
+        return;
+      }
 
       const contentParts: any[] = [];
       const toolAccumulator: Record<string, any> = {};
@@ -151,23 +238,21 @@ export const createAssistantUIModelAdapter = ({
         yield { content: contentParts.map((part) => ({ ...part })) };
       };
 
-      try {
-        for await (const rawPayload of streamChatCompletion(
-          {
-            flowVersionId,
-            conversationId: conversationId || null,
-            threadMessages,
-            userInput: userInputText,
-            files: files.length > 0 ? files : undefined,
-            isTempChat,
-          },
-          options.abortSignal,
-        )) {
+      // Processes normalized SSE frames into the assistant message content.
+      // Shared by regular completions and approval resumes.
+      async function* processFrames(frames: AsyncGenerator<string>) {
+        for await (const rawPayload of frames) {
           let frame: any;
           try {
             frame = JSON.parse(rawPayload);
           } catch {
             continue;
+          }
+
+          // Keep the server-allocated conversation id (temporary chats never
+          // allocate one client-side) so a paused approval can be resumed.
+          if (typeof frame?.conversation_id === "string" && frame.conversation_id) {
+            lastServerConversationId = frame.conversation_id;
           }
 
           switch (frame?.type) {
@@ -215,6 +300,8 @@ export const createAssistantUIModelAdapter = ({
               // the tool widget (completed state with the tool's output).
               const toolCallId =
                 frame.output?.tool_call_id || `tool-${Object.keys(toolAccumulator).length}`;
+              // Executed approval actions already have a card with this id.
+              if (approvalToolCallIds.has(toolCallId)) break;
               const toolName = frame.output?.name || "tool";
               const args = frame.output?.args || frame.output || {};
               const argsText =
@@ -231,6 +318,28 @@ export const createAssistantUIModelAdapter = ({
               };
               toolAccumulator[toolCallId] = part;
               contentParts.push(part);
+              break;
+            }
+            case "approval_required": {
+              // The server paused before executing human-approval actions.
+              // Render a gated tool-call part; the user's decision re-runs this
+              // adapter, which resumes the paused turn via the approvals API.
+              const toolCallId = frame.output?.tool_call_id || `approval-${contentParts.length}`;
+              const toolName = frame.output?.name || "tool";
+              const args = frame.output?.args || {};
+              contentParts.push({
+                type: "tool-call",
+                toolCallId,
+                toolName,
+                argsText: JSON.stringify(args),
+                args,
+                // An empty approval bag marks the gate as undecided. The
+                // runtime fills in `approved`/`reason` on a user decision;
+                // the adapter sets `resolution: "expired"` when the pause
+                // can no longer be resumed.
+                approval: {},
+              });
+              yield* maybeYield();
               break;
             }
             case "skill": {
@@ -250,6 +359,8 @@ export const createAssistantUIModelAdapter = ({
                 const toolResults = frame.output as any[];
                 toolResults.forEach((tool, idx) => {
                   const id = tool?.call_id || `tool-${idx}`;
+                  // Executed approval actions already have a card with this id.
+                  if (approvalToolCallIds.has(id)) return;
                   const existing = toolAccumulator[id];
                   const name = tool?.output?.action || tool?.type || "tool";
                   if (existing) {
@@ -285,7 +396,15 @@ export const createAssistantUIModelAdapter = ({
               break;
             }
             case "error": {
-              pushText(frame?.message || "An error occurred during the request.");
+              // Normalized error frames carry the detail in `output`; `message`
+              // is kept as a fallback for older relays.
+              const detail =
+                typeof frame?.message === "string" && frame.message
+                  ? frame.message
+                  : typeof frame?.output === "string"
+                    ? frame.output
+                    : "";
+              pushText(detail || "An error occurred during the request.");
               break;
             }
             // Backend metadata frames that should not be rendered.
@@ -296,6 +415,38 @@ export const createAssistantUIModelAdapter = ({
               break;
           }
         }
+      }
+
+      try {
+        if (isApprovalResume) {
+          yield* processFrames(
+            streamApprovalDecisions(
+              {
+                flowVersionId,
+                conversationId: conversationId ?? "",
+                isTempChat,
+                decisions: approvalDecisions,
+              },
+              options.abortSignal,
+              getExtraHeaders?.(),
+            ),
+          );
+        } else {
+          yield* processFrames(
+            streamChatCompletion(
+              {
+                flowVersionId,
+                conversationId: conversationId || null,
+                threadMessages,
+                userInput: userInputText,
+                files: files.length > 0 ? files : undefined,
+                isTempChat,
+              },
+              options.abortSignal,
+              getExtraHeaders?.(),
+            ),
+          );
+        }
 
         // Ensure at least a placeholder is rendered.
         if (contentParts.length === 0) {
@@ -305,21 +456,41 @@ export const createAssistantUIModelAdapter = ({
           });
         }
 
-        yield { content: contentParts };
+        // Unresolved approvals must leave the message in "requires-action": the
+        // runtime only accepts approval responses (and auto-continues once the
+        // whole batch is decided) from that state.
+        const hasPendingApproval = contentParts.some(isPendingApprovalPart);
+
+        if (hasPendingApproval) {
+          yield {
+            content: contentParts,
+            status: { type: "requires-action", reason: "tool-calls" },
+          };
+        } else {
+          yield { content: contentParts };
+        }
         onRequestComplete?.();
       } catch (error) {
         console.error("Streaming chat error:", error);
-        yield {
-          content: [
-            {
-              type: "text",
-              text:
-                error instanceof Error
-                  ? error.message
-                  : "An error occurred during the chat request.",
-            },
-          ],
-        };
+        // Keep everything already streamed (text, reasoning, tool cards) —
+        // replacing the message with only the error would hide the turn's
+        // context. Gates still undecided can no longer be resumed (the stream
+        // died), so mark them "expired": the card drops its buttons, the
+        // coordinator unregisters it, and the message finishes instead of
+        // sitting in "requires-action" forever.
+        for (const part of contentParts) {
+          if (isPendingApprovalPart(part)) {
+            part.approval = { ...part.approval, resolution: "expired" };
+          }
+        }
+        const note =
+          error instanceof Error ? error.message : "An error occurred during the chat request.";
+        if (contentParts.length === 0) {
+          contentParts.push({ type: "text", text: note });
+        } else {
+          pushText(`\n\n${note}`);
+        }
+        yield { content: contentParts.map((part) => ({ ...part })) };
       }
     },
   };

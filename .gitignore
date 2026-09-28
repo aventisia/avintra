@@ -507,6 +507,8 @@ clients/web-apps/packages/ui/.turbo/turbo-lint.log
 clients/web-apps/packages/ui/.turbo/turbo-typecheck.log
 clients/web-apps/packages/ui-editors/.turbo/turbo-lint.log
 clients/web-apps/packages/ui-editors/.turbo/turbo-typecheck.log
+clients/web-apps/packages/assistant-chat/.turbo/turbo-lint.log
+clients/web-apps/packages/assistant-chat/.turbo/turbo-typecheck.log
 
 # Custom ignore rules
 [Pp]ublished/

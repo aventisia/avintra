@@ -8,11 +8,11 @@ import {
   useAui,
   useLocalRuntime,
 } from "@assistant-ui/react";
+import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // API imports are kept as they are internal domain logic for this specific feature
-import { createAssistantUIModelAdapter } from "../adapters/create-assistant-ui-model-adapter";
 import { createHistoryAdapter } from "../adapters/history-adaptor";
 import { insertConversation } from "../apis/assist-conversations-apis";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
