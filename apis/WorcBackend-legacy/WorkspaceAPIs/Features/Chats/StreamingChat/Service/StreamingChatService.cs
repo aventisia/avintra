@@ -20,6 +20,14 @@ public interface IStreamingChatService
     IAsyncEnumerable<string> StreamChatCompletionAsync(
         StreamingChatRequestDto request,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Resumes a conversation paused on tool approval and relays the llmpipeline
+    /// /chat/completions/approvals SSE stream back to the caller.
+    /// </summary>
+    IAsyncEnumerable<string> StreamApprovalDecisionsAsync(
+        StreamingChatApprovalRequestDto request,
+        CancellationToken cancellationToken);
 }
 
 public class StreamingChatService : IStreamingChatService
@@ -72,6 +80,34 @@ public class StreamingChatService : IStreamingChatService
         }
     }
 
+    public async IAsyncEnumerable<string> StreamApprovalDecisionsAsync(
+        StreamingChatApprovalRequestDto request,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        // 1. Reuse the chat completion resolution for access control and the
+        // published/draft-version gate; the Chat AI node config is not needed
+        // for a resume, only the flow version (space + environment headers).
+        var (flowVersion, _) = await ResolveChatAgentConfigAsync(
+            new StreamingChatRequestDto
+            {
+                FlowVersionId = request.FlowVersionId,
+                IsTempChat = request.IsTempChat,
+            },
+            cancellationToken);
+        if (flowVersion is null)
+        {
+            yield return SerializeError("Chat Agent flow configuration could not be resolved.");
+            yield break;
+        }
+
+        // 2. Relay the resumed turn. The try/catch lives inside the inner
+        // iterator method because C# forbids `yield` within a try/catch.
+        await foreach (var chunk in StreamApprovalsFromPipelineAsync(request, flowVersion, cancellationToken))
+        {
+            yield return chunk;
+        }
+    }
+
     /// <summary>
     /// Posts the resolved LLM payload to llmpipeline /chat/completions and yields
     /// the SSE "data:" lines as they arrive.
@@ -83,9 +119,56 @@ public class StreamingChatService : IStreamingChatService
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var llmPayload = BuildLlmPayload(request, flowVersion, nodeConfig);
-        var endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/chat/completions/normalized";
+        await foreach (var chunk in RelayPipelineStreamAsync(
+            "/api/chat/completions/normalized",
+            llmPayload,
+            flowVersion,
+            cancellationToken))
+        {
+            yield return chunk;
+        }
+    }
+
+    /// <summary>
+    /// Posts the approval decisions to llmpipeline /chat/completions/approvals
+    /// and relays the resumed turn's normalized SSE frames.
+    /// </summary>
+    private async IAsyncEnumerable<string> StreamApprovalsFromPipelineAsync(
+        StreamingChatApprovalRequestDto request,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var llmPayload = new
+        {
+            conversation_id = request.ConversationId.ToString(),
+            decisions = (request.Decisions ?? new List<ApprovalDecisionItem>())
+                .Select(d => new { tool_call_id = d.ToolCallId, decision = d.Decision })
+                .ToList(),
+        };
+
+        await foreach (var chunk in RelayPipelineStreamAsync(
+            "/api/chat/completions/approvals",
+            llmPayload,
+            flowVersion,
+            cancellationToken))
+        {
+            yield return chunk;
+        }
+    }
+
+    /// <summary>
+    /// Posts an SSE payload to an llmpipeline endpoint and yields the "data:"
+    /// frames as they arrive. Shared by chat completions and approval decisions.
+    /// </summary>
+    private async IAsyncEnumerable<string> RelayPipelineStreamAsync(
+        string endpointPath,
+        object payload,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}{endpointPath}";
         var jsonContent = new StringContent(
-            System.Text.Json.JsonSerializer.Serialize(llmPayload),
+            System.Text.Json.JsonSerializer.Serialize(payload),
             Encoding.UTF8,
             "application/json");
 
@@ -126,10 +209,16 @@ public class StreamingChatService : IStreamingChatService
         {
             var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogError(
-                "llmpipeline /chat/completions failed. status={Status} body={Body}",
+                "llmpipeline {Endpoint} failed. status={Status} body={Body}",
+                endpointPath,
                 response.StatusCode,
                 errorBody);
-            yield return SerializeError($"LLM pipeline request failed ({response.StatusCode}).");
+
+            // 409 is only emitted by the approvals endpoint when the pause is
+            // unknown (already decided or expired after a restart).
+            yield return SerializeError(response.StatusCode == HttpStatusCode.Conflict
+                ? "No pending tool approval was found for this conversation. It may have expired; please retry the original request."
+                : $"LLM pipeline request failed ({response.StatusCode}).");
             yield break;
         }
 
