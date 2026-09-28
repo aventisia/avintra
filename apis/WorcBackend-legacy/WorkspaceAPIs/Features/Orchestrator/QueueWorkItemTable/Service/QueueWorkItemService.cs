@@ -224,6 +224,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // calls (which have no space context) can resolve queues scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(q =>
+                    q.EnvType == _currentTenantService.CurrentEnvType &&
                     q.TenantId == _currentTenantService.CurrentTenantId &&
                     (!string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
                         ? q.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
@@ -430,6 +431,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // have no space context) can resolve queues scoped to the tenant.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     (!string.IsNullOrEmpty(queueFilterRequestDto.QueueName)
                         ? w.Name.ToLower() == queueFilterRequestDto.QueueName.ToLower()
@@ -1300,6 +1302,7 @@ public class QueueWorkItemService : IQueueWorkItemService
         // calls can resolve the destination queue scoped to the tenant.
         var destinationQueue = await _unitOfWork.QueueRepo
             .GetByConditionAsync(w =>
+                w.EnvType == _currentTenantService.CurrentEnvType &&
                 w.TenantId == _currentTenantService.CurrentTenantId &&
                 w.Name.ToLower() == destinationQueueName.ToLower())
             .IgnoreQueryFilters()
