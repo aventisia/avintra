@@ -41,6 +41,30 @@ from app.features.llm_providers.llm_providers_utils import (
 )
 
 
+def verify_pause_owner(metadata: dict[str, Any], user: User) -> bool:
+    """Check that a paused approval belongs to ``user``. Fail closed.
+
+    IMPORTANT NOTE: an unresolvable owner in checkpoint metadata rejects the
+    resume (409 upstream). A pause whose ownership cannot be verified is never
+    resumable by another user, even if the conversation id is known.
+    """
+
+    paused_user = metadata.get("user")
+    if isinstance(paused_user, User):
+        paused_user_id = str(paused_user.user_id)
+        paused_tenant_id = str(paused_user.tenant_id)
+    elif isinstance(paused_user, dict):
+        paused_user_id = str(paused_user.get("user_id") or "")
+        paused_tenant_id = str(paused_user.get("tenant_id") or "")
+    else:
+        return False
+
+    return bool(paused_user_id) and bool(paused_tenant_id) and (
+        paused_user_id == str(user.user_id)
+        and paused_tenant_id == str(user.tenant_id)
+    )
+
+
 class ChatService:
     """Execute and stream LangGraph chat requests."""
 
@@ -324,7 +348,7 @@ class ChatService:
             # ``Command(resume={})`` is treated by LangGraph as "no resume" and
             # re-interrupts, so always send a truthy payload; unknown/missing
             # decisions fail closed to denial inside the tool node.
-            resume_payload = resume_decisions or {"decisions": []}
+            resume_payload = resume_decisions or {"__no_decision__": "deny"}
             graph_input: Any = Command(
                 resume=resume_payload,
                 # Checkpoint deserialization strips live objects (and the user's
@@ -350,14 +374,18 @@ class ChatService:
 
             # A new message while an approval is pending cannot be processed
             # until the pause is cleared: auto-deny the stale requests first.
-            async for chunk in self._cancel_stale_approvals(
+            cancel_frames, cleared = await self._clear_stale_approvals(
                 graph=graph,
                 config=config,
                 request=request,
                 user=user,
                 conversation_id=conversation_id,
-            ):
+                db_session=db_session,
+            )
+            for chunk in cancel_frames:
                 yield chunk
+            if not cleared:
+                return
 
             messages, request_messages, persisted_ids = await self._prepare_input(
                 request=request,
@@ -1039,47 +1067,41 @@ class ChatService:
             return None
 
         # Only the owner of the paused conversation may decide on its approvals.
-        paused_user = metadata.get("user")
-        if isinstance(paused_user, User):
-            paused_user_id = paused_user.user_id
-            paused_tenant_id = paused_user.tenant_id
-        elif isinstance(paused_user, dict):
-            paused_user_id = paused_user.get("user_id")
-            paused_tenant_id = paused_user.get("tenant_id")
-        else:
-            paused_user_id = paused_tenant_id = None
-
-        if (
-            paused_user_id is not None
-            and paused_tenant_id is not None
-            and (
-                paused_user_id != user.user_id
-                or paused_tenant_id != user.tenant_id
-            )
-        ):
+        # Unverifiable ownership fails closed (C1/C2 in the #235 review).
+        if not verify_pause_owner(metadata, user):
             logger.warning(
-                "Approval resume rejected for conversation %s: wrong user.",
+                "Approval resume rejected for conversation %s: owner could not "
+                "be verified.",
                 conversation_id,
             )
             return None
 
         return paused_request, pending
 
-    async def _cancel_stale_approvals(
+    async def _clear_stale_approvals(
         self,
         graph: Any,
         config: dict[str, Any],
         request: LLMRequest,
         user: User,
         conversation_id: str,
-    ) -> AsyncIterator[Any]:
+        db_session: AsyncSession | None,
+    ) -> tuple[list[LLMChunkResponse], bool]:
         """Auto-deny pending approvals when a new message arrives.
 
         A client that lost the approval widget must not dead-end the thread:
         pending calls are denied (never executed) and the new message proceeds.
-        Repeats are capped so a model that keeps requesting human-only tools
-        cannot loop indefinitely.
+        Returns the frames to emit and whether the pause was cleared. When it
+        was not cleared the caller MUST abort the new turn — invoking a graph
+        with a pending interrupt re-enters the pause.
+
+        IMPORTANT NOTE: the auto-deny continuation is persisted silently (it
+        exists in the checkpoint and DB, but is not streamed to the UI), so
+        persisted history keeps an assistant acknowledgement the live UI never
+        showed. Repeats are capped at 3 rounds.
         """
+
+        frames: list[LLMChunkResponse] = []
 
         for _ in range(3):
             try:
@@ -1089,18 +1111,32 @@ class ChatService:
                     "Failed to inspect pending approvals. conversation_id=%s",
                     conversation_id,
                 )
-                return
+                frames.append(
+                    LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=(
+                            "A previous tool approval could not be inspected. "
+                            "Please retry this request."
+                        ),
+                        type="error",
+                        conversation_id=conversation_id,
+                    )
+                )
+                return frames, False
 
             pending = self._pending_approval_tool_calls(state)
             if not pending:
-                return
+                return frames, True
 
-            yield LLMChunkResponse(
-                provider=request.provider,
-                model=request.model,
-                output="Cancelling pending tool approval",
-                type="status",
-                conversation_id=conversation_id,
+            frames.append(
+                LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output="Cancelling pending tool approval",
+                    type="status",
+                    conversation_id=conversation_id,
+                )
             )
 
             deny_decisions = {
@@ -1127,7 +1163,60 @@ class ChatService:
                     "Failed to cancel pending approvals. conversation_id=%s",
                     conversation_id,
                 )
-                return
+                frames.append(
+                    LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=(
+                            "A previous tool approval could not be cancelled. "
+                            "Please retry this request."
+                        ),
+                        type="error",
+                        conversation_id=conversation_id,
+                    )
+                )
+                return frames, False
+
+            # Persist the denial continuation so DB history matches the
+            # checkpoint. Silent by design (see IMPORTANT NOTE above).
+            if db_session is not None and not request.is_temp_chat:
+                try:
+                    post_state = await graph.aget_state(config)
+                    post_messages = post_state.values.get("messages", []) or []
+                    final_ai = self._latest_ai_message(post_messages)
+                    if final_ai is not None:
+                        await self.conversation_service.save_message(
+                            db_session=db_session,
+                            request=request,
+                            user=user,
+                            conversation_id=conversation_id,
+                            message=final_ai,
+                        )
+                except Exception:
+                    logger.exception(
+                        "Failed to persist cancelled-approval continuation. "
+                        "conversation_id=%s",
+                        conversation_id,
+                    )
+
+        logger.error(
+            "Pending approvals could not be cleared after retries. "
+            "conversation_id=%s",
+            conversation_id,
+        )
+        frames.append(
+            LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=(
+                    "A previous tool approval could not be cancelled. "
+                    "Please retry this request."
+                ),
+                type="error",
+                conversation_id=conversation_id,
+            )
+        )
+        return frames, False
 
     @staticmethod
     def _sanitize_tool_history(
@@ -1186,6 +1275,9 @@ class ChatService:
                         tool_call_id=call_id,
                         name=name,
                         status="error",
+                        # Machine-readable marker (mirrors tool_node denials);
+                        # detection must never parse prose.
+                        additional_kwargs={"worc_approval": "expired"},
                     )
                 )
 
