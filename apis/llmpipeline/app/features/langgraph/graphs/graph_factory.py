@@ -18,8 +18,11 @@ from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.services.request_context import restore_request
-from app.features.langgraph.services.tool_skill_selector import (
+from app.features.langgraph.services.tool_approval import (
+    APPROVAL_DENIED,
     message_approval_marker,
+)
+from app.features.langgraph.services.tool_skill_selector import (
     select_tools_and_skills,
 )
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
@@ -126,9 +129,10 @@ def _create_seed_request_node(request: LLMRequest, user: User):
 
     async def seed_request(state: ChatState):
         metadata = state.get("metadata") or {}
+        # The merge_metadata reducer keeps other keys; this node owns only
+        # request/user and prefers the per-invocation seed over build-time.
         return {
             "metadata": {
-                **metadata,
                 "request": metadata.get("request") or request,
                 "user": metadata.get("user") or user,
             }
@@ -588,7 +592,7 @@ def _build_denied_retry_instruction(
         str(getattr(message, "name", "") or "")
         for message in messages[:-1]
         if getattr(message, "type", None) == "tool"
-        and message_approval_marker(message) == "denied"
+        and message_approval_marker(message) == APPROVAL_DENIED
     }
     if not denied_names:
         return None

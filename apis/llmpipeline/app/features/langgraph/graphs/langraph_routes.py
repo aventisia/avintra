@@ -226,7 +226,25 @@ async def approve_langgraph_tool_calls_route(
             ),
         )
 
-    paused_request, _pending_calls = pending
+    paused_request, pending_calls = pending
+
+    # Decisions must target the calls this pause actually surfaced; a stale or
+    # tampered client id is rejected rather than silently ignored.
+    pending_ids = {call["tool_call_id"] for call in pending_calls}
+    unknown_ids = [
+        decision.tool_call_id
+        for decision in request.decisions
+        if decision.tool_call_id not in pending_ids
+    ]
+    if unknown_ids:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Approval decisions do not match the pending tool calls "
+                f"(unknown: {', '.join(unknown_ids)}). The pause may have "
+                "changed; please retry the original request."
+            ),
+        )
 
     decisions = {
         decision.tool_call_id: decision.decision

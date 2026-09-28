@@ -10,6 +10,12 @@ from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
+from app.features.langgraph.services.tool_approval import (
+    APPROVAL_DENIED,
+    APPROVAL_EXPIRED,
+    message_approval_marker,
+)
+from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.llm_providers.services.corsair_sidecar_service import (
@@ -17,7 +23,6 @@ from app.features.llm_providers.services.corsair_sidecar_service import (
     is_corsair_tool,
     parse_corsair_tool_name,
     to_corsair_action,
-    to_corsair_tool_path,
 )
 
 
@@ -188,7 +193,7 @@ async def resolve_requested_or_selected_tools_and_skills(
     if tool_config:
         # Studio stores tools as { tool: "outlook", actions: [{ action: "send_email" }] }.
         # LangGraph registers one tool per action, named "<tool>_<action>".
-        explicit_tools = _expand_tool_config(tool_config)
+        explicit_tools = expand_tool_config(tool_config)
 
     if skill_names:
         explicit_skills = skill_names
@@ -230,84 +235,6 @@ async def resolve_requested_or_selected_tools_and_skills(
     )
 
     return selection.tool_names, selected_skills
-
-
-def _iter_tool_config_entries(tool_config: list[Any]):
-    """Yield ``(normalized_tool_name, approval)`` for every configured action.
-
-    Naming rules (shared with ``_expand_tool_config`` and the approval map):
-    - tool containing a dot → ``<tool>.<action>``
-    - dotted action (Corsair operationId) → canonical ``<plugin>.api.<action>``
-    - legacy action → ``<tool>_<action>``
-    - entry without actions → the raw tool name
-    """
-
-    for config in tool_config:
-        tool = getattr(config, "tool", None) or config.get("tool", "")
-        actions = getattr(config, "actions", None) or config.get("actions", [])
-        # If the tool name already contains a dot, emit dotted names directly.
-        if "." in tool:
-            if not actions and tool:
-                yield tool, None
-            for action in actions:
-                action_name = getattr(action, "action", None) or action.get("action", "")
-                approval = getattr(action, "approval", None) or action.get("approval", None)
-                if tool and action_name:
-                    yield f"{tool}.{action_name}", approval
-            continue
-        if not actions and tool:
-            yield tool, None
-        for action in actions:
-            action_name = getattr(action, "action", None) or action.get("action", "")
-            approval = getattr(action, "approval", None) or action.get("approval", None)
-            if tool and action_name:
-                # Dotted actions identify Corsair tools. Studio sends the seeded
-                # OpenAPI operationId (e.g. "openai.models.list"); normalize it
-                # to the canonical sidecar path (e.g. "openai.api.models.list").
-                if "." in action_name:
-                    yield to_corsair_tool_path(tool, action_name), approval
-                else:
-                    yield f"{tool}_{action_name}", approval
-
-
-def _expand_tool_config(tool_config: list[Any]) -> list[str]:
-    """Expand Studio tool config entries into LangGraph tool names.
-
-    Studio format: { tool: "outlook", actions: [{ action: "send_email" }] }
-    Legacy LangGraph name: "outlook_send_email"
-    Corsair LangGraph name: "github.api.issues.create"
-
-    For Corsair, the Studio ``tool`` field is the plugin root (e.g. ``github``)
-    and the action is either the remaining dotted path (e.g.
-    ``api.issues.create``) or the seeded OpenAPI operationId (e.g.
-    ``openai.models.list``). Both are normalized to the canonical sidecar path
-    ``<plugin>.api.<action>``.
-
-    For legacy platform tools, the action is a single capability word (e.g.
-    ``send_email``) and the emitted name remains ``<tool>_<action>``.
-    """
-
-    return [name for name, _ in _iter_tool_config_entries(tool_config)]
-
-
-def build_tool_approval_map(tool_config: list[Any] | None) -> dict[str, str]:
-    """Map normalized configured tool names to their approval policy.
-
-    Studio sends one ``approval`` per action (``"auto"`` | ``"human"``).
-    Missing or unrecognized values fail closed to ``"human"`` so an action can
-    never auto-execute without an explicit ``auto`` configuration. Names are
-    normalized exactly like bound tool names (see ``_expand_tool_config``).
-    """
-
-    approvals: dict[str, str] = {}
-    for name, approval in _iter_tool_config_entries(tool_config or []):
-        approvals[name] = (
-            "auto" if str(approval).strip().lower() == "auto" else "human"
-        )
-    return approvals
-
-
-
 
 
 def _resolve_skill_configs(
@@ -504,23 +431,6 @@ def _build_planner_prompt(
         """
 
 
-def message_approval_marker(message: Any) -> str | None:
-    """Read the ``worc_approval`` marker from a tool-result message.
-
-    Returns ``"denied"``/``"expired"`` only for machine-marked messages. Prose
-    in tool output (e.g. a "permission denied" API error) is never treated as
-    an approval outcome.
-    """
-
-    kwargs = getattr(message, "additional_kwargs", None)
-    if kwargs is None and isinstance(message, dict):
-        kwargs = message.get("additional_kwargs")
-    if not isinstance(kwargs, dict):
-        return None
-    marker = kwargs.get("worc_approval")
-    return str(marker) if marker else None
-
-
 def _format_recent_messages(
     messages: list[Any] | None,
     limit: int = 6,
@@ -570,7 +480,7 @@ def _format_recent_messages(
             name = getattr(message, "name", None) or tool_call_names.get(
                 str(getattr(message, "tool_call_id", "") or ""), ""
             )
-            if message_approval_marker(message) in ("denied", "expired"):
+            if message_approval_marker(message) in (APPROVAL_DENIED, APPROVAL_EXPIRED):
                 outcome = "was requested earlier and did not complete"
             else:
                 outcome = "ran earlier"
