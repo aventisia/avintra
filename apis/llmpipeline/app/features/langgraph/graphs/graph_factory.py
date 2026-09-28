@@ -18,6 +18,7 @@ from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.services.tool_skill_selector import (
+    message_approval_marker,
     select_tools_and_skills,
 )
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
@@ -607,7 +608,7 @@ def _build_denied_retry_instruction(
         str(getattr(message, "name", "") or "")
         for message in messages[:-1]
         if getattr(message, "type", None) == "tool"
-        and "denied" in str(getattr(message, "content", "") or "").lower()
+        and message_approval_marker(message) == "denied"
     }
     if not denied_names:
         return None

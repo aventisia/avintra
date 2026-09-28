@@ -504,6 +504,23 @@ def _build_planner_prompt(
         """
 
 
+def message_approval_marker(message: Any) -> str | None:
+    """Read the ``worc_approval`` marker from a tool-result message.
+
+    Returns ``"denied"``/``"expired"`` only for machine-marked messages. Prose
+    in tool output (e.g. a "permission denied" API error) is never treated as
+    an approval outcome.
+    """
+
+    kwargs = getattr(message, "additional_kwargs", None)
+    if kwargs is None and isinstance(message, dict):
+        kwargs = message.get("additional_kwargs")
+    if not isinstance(kwargs, dict):
+        return None
+    marker = kwargs.get("worc_approval")
+    return str(marker) if marker else None
+
+
 def _format_recent_messages(
     messages: list[Any] | None,
     limit: int = 6,
@@ -553,8 +570,7 @@ def _format_recent_messages(
             name = getattr(message, "name", None) or tool_call_names.get(
                 str(getattr(message, "tool_call_id", "") or ""), ""
             )
-            content = str(getattr(message, "content", "") or "")
-            if "denied" in content.lower():
+            if message_approval_marker(message) in ("denied", "expired"):
                 outcome = "was requested earlier and did not complete"
             else:
                 outcome = "ran earlier"

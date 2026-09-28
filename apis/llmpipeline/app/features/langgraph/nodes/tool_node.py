@@ -132,37 +132,40 @@ def _extract_connector_error(result: dict) -> str | None:
         return None
 
 
+def _approval_key(tool_call: dict, index: int) -> str:
+    """Stable batch key for one tool call's approval decision.
+
+    Falls back to a positional key when the model emits a tool call without an
+    id, so unnamed calls cannot collide on the empty-string key.
+    """
+
+    return tool_call.get("id") or f"__approval_idx_{index}"
+
+
 def _normalize_approval_resume(
     resume_payload,
     pending_tool_call_ids: list[str],
 ) -> dict[str, str]:
     """Normalize an interrupt resume payload into ``{tool_call_id: approve|deny}``.
 
-    Accepts the shapes a resume request may carry: a mapping of tool_call_id to
-    decision, a list of decision dicts, or a ``{"decisions": [...]}`` wrapper.
-    Anything that is not an explicit "approve" counts as a denial.
+    The approvals route sends a flat mapping of approval key to decision
+    (see ``_approval_key``). Anything that is not an explicit "approve" counts
+    as a denial.
     """
 
-    if isinstance(resume_payload, dict) and isinstance(
-        resume_payload.get("decisions"), list
-    ):
-        entries = resume_payload["decisions"]
-    elif isinstance(resume_payload, dict):
-        entries = [
+    entries = (
+        [
             {"tool_call_id": key, "decision": value}
             for key, value in resume_payload.items()
         ]
-    elif isinstance(resume_payload, list):
-        entries = resume_payload
-    else:
-        entries = []
+        if isinstance(resume_payload, dict)
+        else []
+    )
 
     decisions: dict[str, str] = {}
     for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        tool_call_id = entry.get("tool_call_id") or entry.get("id")
-        decision = entry.get("decision") or entry.get("approval")
+        tool_call_id = entry["tool_call_id"]
+        decision = entry["decision"]
         if tool_call_id:
             decisions[str(tool_call_id)] = (
                 "approve"
@@ -224,7 +227,7 @@ def _request_tool_approvals(
     )
 
     pending = []
-    for tool_call in tool_calls:
+    for index, tool_call in enumerate(tool_calls):
         # Model-facing Corsair names are sanitized; configured approval keys are
         # canonical dotted paths, so compare on the canonical name.
         lookup_name = _canonical_tool_name(
@@ -236,7 +239,7 @@ def _request_tool_approvals(
             continue
         pending.append(
             {
-                "tool_call_id": tool_call.get("id", ""),
+                "tool_call_id": _approval_key(tool_call, index),
                 "name": lookup_name or tool_call.get("name", ""),
                 "args": tool_call.get("args") or {},
             }
@@ -270,6 +273,8 @@ def _denial_message(tool_name: str, tool_call_id: str) -> ToolMessage:
         tool_call_id=tool_call_id,
         name=tool_name,
         status="error",
+        # Machine-readable marker; retry/dedup detection must never parse prose.
+        additional_kwargs={"worc_approval": "denied"},
     )
 
 
@@ -343,9 +348,11 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         precomputed_results: dict[str, ToolMessage] = {}
         remaining_tool_calls: list[dict] = []
 
-        for tool_call in tool_calls:
+        for index, tool_call in enumerate(tool_calls):
             tool_name = tool_call.get("name", "")
-            tool_call_id = tool_call.get("id", "")
+            # Approval-keyed so unnamed calls cannot collide on the empty id;
+            # for calls that have one this is the tool_call_id unchanged.
+            tool_call_id = _approval_key(tool_call, index)
             args = tool_call.get("args", {})
 
             # A denied human-approval call short-circuits: the model receives a
@@ -491,23 +498,40 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
 
         # Merge connector results in the same order as the original tool_calls.
         merged_messages = []
-        for tool_call in tool_calls:
-            tool_call_id = tool_call.get("id", "")
+        consumed: set[int] = set()
+        for index, tool_call in enumerate(tool_calls):
+            tool_call_id = _approval_key(tool_call, index)
             if tool_call_id in precomputed_results:
                 merged_messages.append(precomputed_results[tool_call_id])
-            else:
-                # Find the matching ToolMessage produced by ToolNode.
-                matching = next(
-                    (
-                        msg
-                        for msg in new_messages
-                        if isinstance(msg, ToolMessage)
-                        and getattr(msg, "tool_call_id", None) == tool_call_id
-                    ),
-                    None,
-                )
-                if matching:
-                    merged_messages.append(matching)
+                continue
+
+            # Find the matching ToolMessage produced by ToolNode. Real ids are
+            # matched exactly; unnamed calls consume the first unclaimed
+            # unnamed result so two of them cannot share one message.
+            real_id = tool_call.get("id", "")
+            matching = next(
+                (
+                    (position, msg)
+                    for position, msg in enumerate(new_messages)
+                    if position not in consumed
+                    and isinstance(msg, ToolMessage)
+                    and (
+                        (
+                            bool(real_id)
+                            and getattr(msg, "tool_call_id", None) == real_id
+                        )
+                        or (
+                            not real_id
+                            and not (getattr(msg, "tool_call_id", None) or "")
+                        )
+                    )
+                ),
+                None,
+            )
+            if matching:
+                position, msg = matching
+                consumed.add(position)
+                merged_messages.append(msg)
 
         return {"messages": merged_messages}
 
