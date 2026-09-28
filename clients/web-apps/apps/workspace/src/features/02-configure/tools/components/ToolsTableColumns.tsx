@@ -11,7 +11,7 @@ import { ToolDto } from "@/features/02-configure/tools/dtos/index";
 import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
 
-export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): ColumnDef<ToolDto>[] => [
+export const toolsTableColumns = (isLibrary: boolean): ColumnDef<ToolDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -36,11 +36,9 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        {isShared && (
-          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </span>
-        )}
+        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </span>
       </div>
     ),
   },

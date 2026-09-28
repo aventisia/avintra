@@ -10,12 +10,11 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
 import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
-import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 import { Tooltip } from "@/ui/components/tooltip";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
@@ -37,14 +36,13 @@ export const VaultTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, isShared } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
-  // Fetch keystores data
-  // Use currentTab to dictate which API hook is called
+  // Fetch the merged vault credentials data
   const { data } = useFetchVaults();
 
-  const vaultsTableColumnsArray = vaultsTableColumns(isShared);
+  const vaultsTableColumnsArray = vaultsTableColumns();
 
   // Create a React table for configs data
   const table = useDataTable(
@@ -67,12 +65,11 @@ export const VaultTable = () => {
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="vault" />
-              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              {isPersonal && <DTCreateButton buttonText="Add Credential" entity="vault" />}
+              <DTCreateButton buttonText="Add Credential" entity="vault" />
             </div>
           </div>
           {/* DT with only rows and custom design */}
@@ -143,13 +140,11 @@ export const VaultTable = () => {
                               aria-label="Connection pending"
                             />
                           </Tooltip>
-                        )}
+)}
 
-                        {isShared && (
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
-                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                          </span>
-                        )}
+                        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
+                          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                        </span>
                       </div>{" "}
                       <div className="flex items-center">
                         <span className="text-2xs text-muted-foreground">

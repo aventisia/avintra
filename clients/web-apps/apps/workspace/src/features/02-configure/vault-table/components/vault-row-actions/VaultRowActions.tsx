@@ -7,9 +7,9 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
-import { isOAuthCredentialType } from "../../vault-config/constants/oauth-credential-types";
-import { isCorsairCredentialType } from "../../vault-config/constants/corsair-integration-mapper";
 import { useTableTab } from "../../hooks/useTableTab";
+import { isCorsairCredentialType } from "../../vault-config/constants/corsair-integration-mapper";
+import { isOAuthCredentialType } from "../../vault-config/constants/oauth-credential-types";
 import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
 import { VaultRowReconnectAction } from "./VaultRowReconnectAction";
 import { VaultRowTestConnectionAction } from "./VaultRowTestConnectionAction";
@@ -29,8 +29,8 @@ export const VaultRowActions = ({
   accessLevel = ResourceAccessTypeEnum.View,
   isTenantWideAccess,
 }: VaultRowActionsProps) => {
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isShared, queryKey } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
   const actions = getResourceAccessActions(accessLevel);
 
@@ -62,7 +62,10 @@ export const VaultRowActions = ({
       {/* Triggers Config delete alert dialog  */}
       {actions?.delete && <VaultRowDeleteAction rowId={rowId} />}
 
-      {isShared && <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />}
+      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
+      {accessLevel !== ResourceAccessTypeEnum.Owner && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };

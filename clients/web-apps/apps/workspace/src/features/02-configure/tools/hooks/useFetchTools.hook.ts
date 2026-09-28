@@ -11,7 +11,10 @@ import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 import { useTableTab } from "./useTableTab.hook";
 
 /**
- * Fetches tools for the current tab (personal, shared, or library).
+ * Fetches tools for the active tab.
+ *
+ * The default ("all") view merges the current-space (personal) and shared-with-user
+ * lists into one table; the library tab shows platform tools.
  */
 export const useFetchTools = () => {
   // Get the currently selected space so the query refetches when the space changes
@@ -22,28 +25,29 @@ export const useFetchTools = () => {
   );
 
   const env = useEnvironmentStore((state) => state.env);
+  const space = currentSpace?.id ?? "";
 
-  const { currentTab, isPersonal, isShared, isLibrary, queryKey } = useTableTab();
+  const { isLibrary } = useTableTab();
 
   const personalQuery = useQuery({
-    queryKey,
+    queryKey: [...DATA_QUERY_KEY, space, env],
     queryFn: () => getTools({ isPersonal: true }),
-    enabled: isPersonal,
+    enabled: !isLibrary,
   });
 
   const sharedQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? "", env],
+    queryKey: [...DATA_QUERY_KEY, "SHARED", space, env],
     queryFn: () => getTools({ isPersonal: false }),
-    enabled: isShared,
+    enabled: !isLibrary,
   });
 
   const libraryQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? "", env],
+    queryKey: [...DATA_QUERY_KEY, "LIBRARY", space, env],
     queryFn: () => getLibraryTools(),
     enabled: isLibrary,
   });
 
-  const activeQuery = isPersonal ? personalQuery : isShared ? sharedQuery : libraryQuery;
+  const activeQueries = isLibrary ? [libraryQuery] : [personalQuery, sharedQuery];
 
   const isError = personalQuery.isError || sharedQuery.isError || libraryQuery.isError;
   const error = personalQuery.error || sharedQuery.error || libraryQuery.error;
@@ -52,11 +56,21 @@ export const useFetchTools = () => {
     if (isError) toast.error(error?.toString() ?? "Failed to fetch tools");
   }, [error, isError]);
 
+  // Merge the active lists into a single table payload. Return undefined until at
+  // least one list has resolved so callers can show a loading skeleton.
+  const data = isLibrary
+    ? libraryQuery.data
+    : personalQuery.data || sharedQuery.data
+      ? {
+          ...personalQuery.data,
+          data: [...(personalQuery.data?.data ?? []), ...(sharedQuery.data?.data ?? [])],
+        }
+      : undefined;
+
   return {
-    data: activeQuery.data,
-    isFetching: activeQuery.isFetching,
-    isLoading: activeQuery.isLoading,
+    data,
+    isFetching: activeQueries.some((query) => query.isFetching),
+    isLoading: activeQueries.some((query) => query.isLoading),
     isError,
-    currentTab,
   };
 };

@@ -32,8 +32,8 @@ export const SkillRowActions = ({
 
   const actions = getResourceAccessActions(accessLevel);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
-  const { isShared, isLibrary: isLibraryTab, queryKey, currentTab } = useTableTab();
+  // Get the active tab and the query key used to invalidate the merged skills list
+  const { isLibrary: isLibraryTab, queryKey } = useTableTab();
 
   const readOnly = isLibraryRow || isLibraryTab;
 
@@ -46,7 +46,9 @@ export const SkillRowActions = ({
           onClick={(e) => {
             e.stopPropagation();
             navigate(
-              `/configure/skills/${rowId}?skill=${name}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
+              `/configure/skills/${rowId}?skill=${name}${
+                isLibraryTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""
+              }`,
             );
           }}
           content="Open"
@@ -69,7 +71,11 @@ export const SkillRowActions = ({
       <DropdownMenuSeparator />
       {/* Skill delete alert dialog (not available for library skills) */}
       {!readOnly && actions?.delete && <SkillRowDeleteAction rowId={rowId} />}
-      {isShared && <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />}
+
+      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
+      {!readOnly && accessLevel !== ResourceAccessTypeEnum.Owner && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };

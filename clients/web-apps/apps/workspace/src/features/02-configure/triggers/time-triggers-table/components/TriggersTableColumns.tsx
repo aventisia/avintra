@@ -15,7 +15,7 @@ import { TriggerRowActions } from "./table-actions/TriggerRowActions";
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const triggersTableColumns = (isSharedTab: boolean): ColumnDef<TimeTriggerDto>[] => [
+export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -49,11 +49,9 @@ export const triggersTableColumns = (isSharedTab: boolean): ColumnDef<TimeTrigge
           {row.getValue("name")}
         </div>
 
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </p>
       </div>
     ),
   },

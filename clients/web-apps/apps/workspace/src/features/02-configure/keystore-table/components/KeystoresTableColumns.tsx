@@ -13,7 +13,7 @@ import { KeystoreRowActions } from "./keystore-row-actions/KeystoreRowActions";
  * Array of table columns for the keystores table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const keystoresTableColumns = (isSharedTab: boolean): ColumnDef<KeystoresTableDto>[] => [
+export const keystoresTableColumns = (): ColumnDef<KeystoresTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -44,11 +44,9 @@ export const keystoresTableColumns = (isSharedTab: boolean): ColumnDef<Keystores
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </p>
       </div>
     ),
   },

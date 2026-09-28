@@ -25,7 +25,7 @@ const processingModeLabel: Record<QueueProcessingModeEnum, string> = {
  * Array of table columns for the queues table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableDto>[] => [
+export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -59,18 +59,16 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
       return (
         <div className="flex  items-center max-w-80 gap-3 ">
           <NavLink
-            to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}&tab=${isSharedTab ? "shared" : "personal"}`}
+            to={`/configure/queues/work-items/${queueId}?name=${encodeURIComponent(queueName)}`}
             onClick={(e) => e.stopPropagation()}
             className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
             title="View work items"
           >
             {row.getValue<string>("name")}
           </NavLink>
-          {isSharedTab && (
-            <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
-              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-            </p>
-          )}
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+          </p>
         </div>
       );
     },
@@ -87,13 +85,17 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
   {
     accessorKey: "processingMode",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("processingMode")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("processingMode")}
+      />
     ),
     cell: ({ row }) => {
       const value = row.getValue<QueueProcessingModeEnum | null>("processingMode");
       return (
         <div className="w-auto truncate font-medium">
-          {value ? processingModeLabel[value] ?? value : "--"}
+          {value ? (processingModeLabel[value] ?? value) : "--"}
         </div>
       );
     },

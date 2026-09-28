@@ -15,13 +15,8 @@ import { WorkItemRowActions } from "./WorkItemRowActions";
  *
  * @param queueName Name of the parent queue, used for the detail-view link and
  * back navigation.
- * @param isSharedTab Whether the queue was opened from the Shared queues tab;
- * the originating tab is carried in links so back navigation returns to it.
  */
-export const workItemsTableColumns = (
-  queueName = "WorkItem",
-  isSharedTab = false,
-): ColumnDef<QueueWorkItemDto>[] => [
+export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />,
@@ -32,7 +27,7 @@ export const workItemsTableColumns = (
       const id = row.original.id ?? "";
       return (
         <NavLink
-          to={`wid/${id}?name=${encodeURIComponent(queueName)}&tab=${isSharedTab ? "shared" : "personal"}`}
+          to={`wid/${id}?name=${encodeURIComponent(queueName)}`}
           title="View work item"
           className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
         >

@@ -26,7 +26,8 @@ export const ToolRowActions = ({
   isLibrary = false,
 }: ToolRowActionsProps) => {
   const actions = getResourceAccessActions(accessLevel);
-  const { isShared, queryKey } = useTableTab();
+  // Get the query key used to invalidate the merged tools list after a mutation
+  const { queryKey } = useTableTab();
 
   return (
     <DataTableRowActions className="w-36 min-w-36">
@@ -53,7 +54,10 @@ export const ToolRowActions = ({
       {/* Delete tool (not available for library tools) */}
       {!isLibrary && actions?.delete && <ToolRowDeleteAction rowId={rowId} />}
 
-      {isShared && <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />}
+      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
+      {!isLibrary && accessLevel !== ResourceAccessTypeEnum.Owner && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };

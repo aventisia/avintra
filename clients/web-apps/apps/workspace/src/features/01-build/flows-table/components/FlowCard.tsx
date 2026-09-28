@@ -11,7 +11,6 @@ import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 
 type FlowCardProps = {
   flow: FlowsTableDto;
-  isShared: boolean;
 };
 
 /**
@@ -21,7 +20,7 @@ type FlowCardProps = {
  * name (opening the Agent Builder), type, platform and AI model badges, the queues
  * the agent is linked to, and the same row actions available in the table view.
  */
-export const FlowCard = ({ flow, isShared }: FlowCardProps) => {
+export const FlowCard = ({ flow }: FlowCardProps) => {
   // Flows run on Windows only when the supported platform is restricted.
   const platform = flow.supportedPlatform === "windows" ? "Windows" : "Cloud & Windows";
   const aiModels = flow.aiModels ?? [];
@@ -58,14 +57,12 @@ export const FlowCard = ({ flow, isShared }: FlowCardProps) => {
             <Monitor className="h-3 w-3" />
             {platform}
           </span>
-          {isShared && (
-            <Badge
-              variant="outline"
-              className="whitespace-nowrap rounded-full border-slate-200 bg-muted px-2 py-0.5 text-primary"
-            >
-              {flow.accessLevel?.replace(/([A-Z])/g, " $1").trim()}
-            </Badge>
-          )}
+          <Badge
+            variant="outline"
+            className="whitespace-nowrap rounded-full border-slate-200 bg-muted px-2 py-0.5 text-primary"
+          >
+            {flow.accessLevel?.replace(/([A-Z])/g, " $1").trim()}
+          </Badge>
         </div>
       </CardHeader>
 
