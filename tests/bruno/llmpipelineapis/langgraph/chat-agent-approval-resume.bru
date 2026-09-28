@@ -1,0 +1,46 @@
+meta {
+  name: Chat agent resume paused approval
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/approvals
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "conversation_id": "{{APPROVAL_CONVERSATION_ID}}",
+    "decisions": [
+      {
+        "tool_call_id": "{{APPROVAL_TOOL_CALL_ID}}",
+        "decision": "approve"
+      }
+    ]
+  }
+}
+
+docs {
+  > Resumes the turn paused by `chat-agent-approval-required`.
+  >
+  > Prerequisites (copy from the `approval_required` frame):
+  > - `APPROVAL_CONVERSATION_ID` = the frame's `conversation_id`
+  > - `APPROVAL_TOOL_CALL_ID` = the frame's `output.tool_call_id`
+  >
+  > Expected SSE frames:
+  > - `status` ("Running tool: ...") / `tool_call` with the execution result when approved
+  > - `delta` frames with the model's summary of the outcome
+  > - `done` frame
+  >
+  > Variants:
+  > - Deny: set `"decision": "deny"` -> model continues with a denial `ToolMessage` (no `tool_call` result frame).
+  > - Omitted decision: any `tool_call_id` not present in `decisions` is denied (fail closed).
+  > - Expired: resuming twice, or after a server restart / new message, returns HTTP 409 with
+  >   "No pending tool approval was found for this conversation.".
+}

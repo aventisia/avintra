@@ -1,0 +1,72 @@
+meta {
+  name: Chat agent human-approval action pauses for confirmation
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/normalized
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "You must call the translate_text tool with text \"good morning\" and language \"French\". Do not answer without calling it.",
+    "files": null,
+    "tool_config": [
+      {
+        "tool": "translate",
+        "actions": [
+          {
+            "approval": "human",
+            "action": "text"
+          }
+        ]
+      }
+    ],
+    "skill_names": [],
+    "is_temp_chat": true,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": 500,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "0.2",
+    "top_p": "1.0",
+    "stream": true,
+    "ref_type": "Agent",
+    "ref_id": "00000000-0000-0000-0000-000000000001",
+    "ref_name": "Approval Pending Test",
+    "action": "AgentExecution",
+    "is_chat_agent": true,
+    "generate_followup_messages": false
+  }
+}
+
+docs {
+  > A configured action with `"approval": "human"` (or a missing/null approval) must pause before execution.
+  >
+  > Expected SSE frames:
+  > - `delta` / `status` frames while planning
+  > - `approval_required` frame: `{"type":"approval_required","output":{"tool_call_id":"...","name":"...","args":{...}},"conversation_id":"..."}`
+  > - `done` frame closing the stream
+  > - NO `tool_call` frame for the paused action (nothing executed yet)
+  >
+  > Record `conversation_id` and `output.tool_call_id` from the `approval_required` frame,
+  > then run `chat-agent-approval-resume` with them (set `APPROVAL_CONVERSATION_ID` and
+  > `APPROVAL_TOOL_CALL_ID` in the active environment or as runtime vars).
+  >
+  > Notes:
+  > - `is_temp_chat: true` keeps the pause in server memory, so resume it against the same
+  >   running llmpipeline process.
+  > - For the auto-approval variant set `"approval": "auto"` and confirm no pause occurs.
+  > - Corsair actions (e.g. `{"tool":"github","actions":[{"action":"api.issues.list"}]}`)
+  >   behave the same when the Corsair sidecar is reachable.
+}

@@ -13,6 +13,10 @@ from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.llm_providers.services.corsair_sidecar_service import (
+    fetch_corsair_schemas,
+    is_corsair_tool,
+    parse_corsair_tool_name,
+    to_corsair_action,
     to_corsair_tool_path,
 )
 
@@ -35,6 +39,7 @@ async def select_tools_and_skills(
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
+    allowed_tool_names: list[str] | None = None,
 ) -> "ToolSkillSelectionResponse":
     """
     Ask a small planner LLM which tools and skills are relevant for ``request``.
@@ -49,13 +54,18 @@ async def select_tools_and_skills(
             skills in addition to global skills.
         allowed_skill_names: When provided, the planner can only choose from
             these skills (e.g. the skills explicitly attached to an agent).
+        allowed_tool_names: When provided, the planner can only choose from
+            these tools (e.g. the actions explicitly configured on an agent).
+            Corsair actions are not in the local registry, so their catalog
+            entries are fetched from the sidecar.
     """
 
-    catalog = _build_catalog(
+    catalog = await _build_catalog(
         tool_registry=tool_registry,
         skill_registry=skill_registry,
         tenant_id=tenant_id,
         allowed_skill_names=allowed_skill_names,
+        allowed_tool_names=allowed_tool_names,
     )
 
     if not catalog.tools and not catalog.skills:
@@ -215,6 +225,44 @@ async def resolve_requested_or_selected_tools_and_skills(
     return selection.tool_names, selected_skills
 
 
+def _iter_tool_config_entries(tool_config: list[Any]):
+    """Yield ``(normalized_tool_name, approval)`` for every configured action.
+
+    Naming rules (shared with ``_expand_tool_config`` and the approval map):
+    - tool containing a dot → ``<tool>.<action>``
+    - dotted action (Corsair operationId) → canonical ``<plugin>.api.<action>``
+    - legacy action → ``<tool>_<action>``
+    - entry without actions → the raw tool name
+    """
+
+    for config in tool_config:
+        tool = getattr(config, "tool", None) or config.get("tool", "")
+        actions = getattr(config, "actions", None) or config.get("actions", [])
+        # If the tool name already contains a dot, emit dotted names directly.
+        if "." in tool:
+            if not actions and tool:
+                yield tool, None
+            for action in actions:
+                action_name = getattr(action, "action", None) or action.get("action", "")
+                approval = getattr(action, "approval", None) or action.get("approval", None)
+                if tool and action_name:
+                    yield f"{tool}.{action_name}", approval
+            continue
+        if not actions and tool:
+            yield tool, None
+        for action in actions:
+            action_name = getattr(action, "action", None) or action.get("action", "")
+            approval = getattr(action, "approval", None) or action.get("approval", None)
+            if tool and action_name:
+                # Dotted actions identify Corsair tools. Studio sends the seeded
+                # OpenAPI operationId (e.g. "openai.models.list"); normalize it
+                # to the canonical sidecar path (e.g. "openai.api.models.list").
+                if "." in action_name:
+                    yield to_corsair_tool_path(tool, action_name), approval
+                else:
+                    yield f"{tool}_{action_name}", approval
+
+
 def _expand_tool_config(tool_config: list[Any]) -> list[str]:
     """Expand Studio tool config entries into LangGraph tool names.
 
@@ -231,32 +279,25 @@ def _expand_tool_config(tool_config: list[Any]) -> list[str]:
     For legacy platform tools, the action is a single capability word (e.g.
     ``send_email``) and the emitted name remains ``<tool>_<action>``.
     """
-    names: list[str] = []
-    for config in tool_config:
-        tool = getattr(config, "tool", None) or config.get("tool", "")
-        actions = getattr(config, "actions", None) or config.get("actions", [])
-        # If the tool name already contains a dot, emit dotted names directly.
-        if "." in tool:
-            for action in actions:
-                action_name = getattr(action, "action", None) or action.get("action", "")
-                if tool and action_name:
-                    names.append(f"{tool}.{action_name}")
-            if not actions and tool:
-                names.append(tool)
-            continue
-        for action in actions:
-            action_name = getattr(action, "action", None) or action.get("action", "")
-            if tool and action_name:
-                # Dotted actions identify Corsair tools. Studio sends the seeded
-                # OpenAPI operationId (e.g. "openai.models.list"); normalize it
-                # to the canonical sidecar path (e.g. "openai.api.models.list").
-                if "." in action_name:
-                    names.append(to_corsair_tool_path(tool, action_name))
-                else:
-                    names.append(f"{tool}_{action_name}")
-        if not actions and tool:
-            names.append(tool)
-    return names
+
+    return [name for name, _ in _iter_tool_config_entries(tool_config)]
+
+
+def build_tool_approval_map(tool_config: list[Any] | None) -> dict[str, str]:
+    """Map normalized configured tool names to their approval policy.
+
+    Studio sends one ``approval`` per action (``"auto"`` | ``"human"``).
+    Missing or unrecognized values fail closed to ``"human"`` so an action can
+    never auto-execute without an explicit ``auto`` configuration. Names are
+    normalized exactly like bound tool names (see ``_expand_tool_config``).
+    """
+
+    approvals: dict[str, str] = {}
+    for name, approval in _iter_tool_config_entries(tool_config or []):
+        approvals[name] = (
+            "auto" if str(approval).strip().lower() == "auto" else "human"
+        )
+    return approvals
 
 
 
@@ -284,17 +325,24 @@ def _resolve_skill_configs(
     return configs
 
 
-def _build_catalog(
+async def _build_catalog(
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
+    allowed_tool_names: list[str] | None = None,
 ) -> "ToolSkillCatalog":
     """Build a name/description catalog from the live registries.
 
     When ``allowed_skill_names`` is provided the skill catalog is restricted
     to those names; an empty list restricts it to no skills. ``None`` means
     no explicit attachment context and leaves the full registry visible.
+
+    ``allowed_tool_names`` behaves the same way for tools. Because Corsair
+    actions live on the sidecar and not in the local registry, their entries
+    are fetched from the sidecar for the configured actions. A sidecar failure
+    omits the Corsair entries entirely so the planner cannot select them
+    (fail closed).
     """
 
     tools = [
@@ -304,6 +352,29 @@ def _build_catalog(
         }
         for tool in tool_registry.get_all()
     ]
+
+    if allowed_tool_names is not None:
+        allowed_tools = {
+            name.strip().lower()
+            for name in allowed_tool_names
+            if name and name.strip()
+        }
+        corsair_entries = await _build_corsair_catalog_entries(allowed_tool_names)
+        available_tools = {tool["name"].lower() for tool in tools}
+        available_tools.update(entry["name"].lower() for entry in corsair_entries)
+        missing_tools = sorted(allowed_tools - available_tools)
+        if missing_tools:
+            logger.warning(
+                "Configured tools not found in the registry or sidecar: %s",
+                missing_tools,
+            )
+        tools = [
+            tool for tool in tools if tool["name"].lower() in allowed_tools
+        ] + [
+            entry
+            for entry in corsair_entries
+            if entry["name"].lower() in allowed_tools
+        ]
 
     skills = [
         {
@@ -331,6 +402,65 @@ def _build_catalog(
         ]
 
     return ToolSkillCatalog(tools=tools, skills=skills)
+
+
+async def _build_corsair_catalog_entries(
+    allowed_tool_names: list[str],
+) -> list[dict[str, Any]]:
+    """Build planner catalog entries for configured Corsair actions.
+
+    Configured names are normalized to canonical ``<plugin>.api.<action>``
+    paths, grouped per plugin, and resolved against the sidecar tool catalog
+    (cached). Returns an empty list when the sidecar is unavailable so planner
+    gating fails closed rather than selecting actions it cannot describe.
+    """
+
+    plugin_actions: dict[str, set[str]] = {}
+    for name in allowed_tool_names:
+        if not name or not is_corsair_tool(name):
+            continue
+        try:
+            plugin, action = parse_corsair_tool_name(name)
+        except ValueError:
+            logger.warning("Skipping malformed Corsair tool name: %s", name)
+            continue
+        normalized_action = to_corsair_action(plugin, action)
+        plugin_actions.setdefault(plugin.strip().lower(), set()).add(
+            normalized_action
+        )
+
+    if not plugin_actions:
+        return []
+
+    fetch_configs = [
+        {
+            "tool": plugin,
+            "actions": [{"action": action} for action in sorted(actions)],
+        }
+        for plugin, actions in sorted(plugin_actions.items())
+    ]
+
+    try:
+        schemas = await fetch_corsair_schemas(fetch_configs)
+    except Exception:
+        logger.exception(
+            "Failed to fetch Corsair catalog entries; omitting Corsair tools."
+        )
+        return []
+
+    entries: list[dict[str, Any]] = []
+    for schema in schemas:
+        entry_name = schema.get("name")
+        if not entry_name:
+            continue
+        entries.append(
+            {
+                "name": entry_name,
+                "description": schema.get("description") or entry_name,
+            }
+        )
+
+    return entries
 
 
 def _build_planner_prompt(
@@ -425,10 +555,16 @@ def _validate_selection(
 
 
 def _fallback_selection(catalog: "ToolSkillCatalog") -> "ToolSkillSelectionResponse":
-    """Return every registered tool and skill when the planner fails."""
+    """Return the planner fallback when selection fails.
+
+    Skills keep their full allowed catalog (the model still receives skill
+    instructions, which are prompt-only). Tools fall back to an empty list so
+    a planner outage can never bind or execute a configured action without a
+    positive relevance decision.
+    """
 
     return ToolSkillSelectionResponse(
-        tool_names=[tool["name"] for tool in catalog.tools],
+        tool_names=[],
         skill_names=[skill["name"] for skill in catalog.skills],
     )
 
