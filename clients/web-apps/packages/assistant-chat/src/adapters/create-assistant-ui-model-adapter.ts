@@ -2,6 +2,7 @@
 import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assistant-ui/react";
 
 import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
+import { isPendingApprovalPart } from "../lib/approval-parts";
 import { LLMMessageType } from "../types/llm-message.type";
 
 export type CreateAssistantUIModelAdapterParams = {
@@ -172,6 +173,24 @@ export const createAssistantUIModelAdapter = ({
         ? (lastServerConversationId ?? (await getConversationId(false)))
         : await getConversationId(!isTempChat);
 
+      // A resume needs the exact conversation whose pause is being decided.
+      // Without it (e.g. a temporary chat reloaded before its first frame)
+      // there is nothing to POST against, so explain and end the run instead
+      // of firing the approvals request with an empty id. The server clears
+      // its stale pause when the next message arrives.
+      if (isApprovalResume && !conversationId) {
+        yield {
+          content: [
+            ...((currentAssistantMessage?.content ?? []).map((part) => ({ ...part })) as any[]),
+            {
+              type: "text",
+              text: "This paused request could not be resumed because its conversation is no longer available. Please send the request again.",
+            },
+          ],
+        };
+        return;
+      }
+
       const contentParts: any[] = [];
       const toolAccumulator: Record<string, any> = {};
       let hasTextContent = false;
@@ -314,10 +333,11 @@ export const createAssistantUIModelAdapter = ({
                 toolName,
                 argsText: JSON.stringify(args),
                 args,
-                approval: {
-                  id: toolCallId,
-                  prompt: `Allow ${toolName} to run?`,
-                },
+                // An empty approval bag marks the gate as undecided. The
+                // runtime fills in `approved`/`reason` on a user decision;
+                // the adapter sets `resolution: "expired"` when the pause
+                // can no longer be resumed.
+                approval: {},
               });
               yield* maybeYield();
               break;
@@ -376,7 +396,15 @@ export const createAssistantUIModelAdapter = ({
               break;
             }
             case "error": {
-              pushText(frame?.message || "An error occurred during the request.");
+              // Normalized error frames carry the detail in `output`; `message`
+              // is kept as a fallback for older relays.
+              const detail =
+                typeof frame?.message === "string" && frame.message
+                  ? frame.message
+                  : typeof frame?.output === "string"
+                    ? frame.output
+                    : "";
+              pushText(detail || "An error occurred during the request.");
               break;
             }
             // Backend metadata frames that should not be rendered.
@@ -431,10 +459,7 @@ export const createAssistantUIModelAdapter = ({
         // Unresolved approvals must leave the message in "requires-action": the
         // runtime only accepts approval responses (and auto-continues once the
         // whole batch is decided) from that state.
-        const hasPendingApproval = contentParts.some(
-          (part) =>
-            part.type === "tool-call" && part.approval && part.approval.approved === undefined,
-        );
+        const hasPendingApproval = contentParts.some(isPendingApprovalPart);
 
         if (hasPendingApproval) {
           yield {
@@ -447,17 +472,25 @@ export const createAssistantUIModelAdapter = ({
         onRequestComplete?.();
       } catch (error) {
         console.error("Streaming chat error:", error);
-        yield {
-          content: [
-            {
-              type: "text",
-              text:
-                error instanceof Error
-                  ? error.message
-                  : "An error occurred during the chat request.",
-            },
-          ],
-        };
+        // Keep everything already streamed (text, reasoning, tool cards) —
+        // replacing the message with only the error would hide the turn's
+        // context. Gates still undecided can no longer be resumed (the stream
+        // died), so mark them "expired": the card drops its buttons, the
+        // coordinator unregisters it, and the message finishes instead of
+        // sitting in "requires-action" forever.
+        for (const part of contentParts) {
+          if (isPendingApprovalPart(part)) {
+            part.approval = { ...part.approval, resolution: "expired" };
+          }
+        }
+        const note =
+          error instanceof Error ? error.message : "An error occurred during the chat request.";
+        if (contentParts.length === 0) {
+          contentParts.push({ type: "text", text: note });
+        } else {
+          pushText(`\n\n${note}`);
+        }
+        yield { content: contentParts.map((part) => ({ ...part })) };
       }
     },
   };

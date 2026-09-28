@@ -14,12 +14,12 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useToolCallCoordinatorStore } from "../stores/tool-call-store";
 
-/** Approval metadata the adapter attaches to a gated tool-call part. */
+/**
+ * Approval metadata the adapter attaches to a gated tool-call part. A bag
+ * with neither `approved` nor `resolution` is an undecided gate.
+ */
 type ToolApprovalMeta = {
-  id: string;
-  prompt?: string;
   approved?: boolean;
-  reason?: string;
   resolution?: "cancelled" | "expired";
 };
 
@@ -139,6 +139,11 @@ export const ToolApprovalRequest = ({
             {state === "pending" && (
               <>
                 The assistant wants to run <span className="font-mono break-all">{toolName}</span>.
+                {disabled && (
+                  <span className="block">
+                    Decisions cannot be recorded in a read-only or archived thread.
+                  </span>
+                )}
               </>
             )}
             {state === "approved" && (
