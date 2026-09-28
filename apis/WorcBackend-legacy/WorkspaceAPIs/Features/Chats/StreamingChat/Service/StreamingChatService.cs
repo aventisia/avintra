@@ -142,7 +142,17 @@ public class StreamingChatService : IStreamingChatService
         {
             conversation_id = request.ConversationId.ToString(),
             decisions = (request.Decisions ?? new List<ApprovalDecisionItem>())
-                .Select(d => new { tool_call_id = d.ToolCallId, decision = d.Decision })
+                // Normalize before relaying: llmpipeline's decision field is a
+                // strict approve|deny literal, and "anything that is not an
+                // explicit approval denies the call" is the fail-closed rule
+                // already documented on the DTO.
+                .Select(d => new
+                {
+                    tool_call_id = d.ToolCallId,
+                    decision = string.Equals(d.Decision, "approve", StringComparison.OrdinalIgnoreCase)
+                        ? "approve"
+                        : "deny",
+                })
                 .ToList(),
         };
 
