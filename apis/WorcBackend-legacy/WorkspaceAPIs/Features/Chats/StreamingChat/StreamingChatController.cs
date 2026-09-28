@@ -34,4 +34,23 @@ public class StreamingChatController : ControllerBase
             await Response.Body.FlushAsync(HttpContext.RequestAborted);
         }
     }
+
+    /// <summary>
+    /// Resumes a chat turn paused on human tool approval and relays the llmpipeline
+    /// /chat/completions/approvals SSE stream back to the caller, using the same
+    /// normalized frame protocol as the completions endpoint.
+    /// </summary>
+    [HttpPost("approvals")]
+    public async Task StreamApprovalDecisions([FromBody] StreamingChatApprovalRequestDto request)
+    {
+        Response.Headers["Cache-Control"] = "no-cache";
+        Response.Headers["X-Accel-Buffering"] = "no"; // disable nginx buffering
+        Response.Headers["Content-Type"] = "text/event-stream";
+
+        await foreach (var chunk in _streamingChatService.StreamApprovalDecisionsAsync(request, HttpContext.RequestAborted))
+        {
+            await Response.WriteAsync(chunk, HttpContext.RequestAborted);
+            await Response.Body.FlushAsync(HttpContext.RequestAborted);
+        }
+    }
 }
