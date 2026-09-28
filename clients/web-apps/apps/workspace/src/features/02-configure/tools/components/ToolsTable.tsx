@@ -13,6 +13,7 @@ import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
+import { getToolIcon } from "../constants/tool-icon-mapper";
 import {
   COLUMN_VISIBILITY_STATE,
   TABLE_HEADING,
@@ -20,7 +21,6 @@ import {
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,
 } from "../constants/tools-table.constants";
-import { getToolIcon } from "../constants/tool-icon-mapper";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
@@ -39,10 +39,10 @@ export const ToolsTable = () => {
     COLUMN_VISIBILITY_STATE,
   );
 
-  const { isShared, isLibrary, isReadOnly, queryKey, currentTab } = useTableTab();
+  const { isLibrary, isReadOnly, queryKey } = useTableTab();
   const { data, isLoading } = useFetchTools();
 
-  const tableColumns = useMemo(() => toolsTableColumns(isShared, isLibrary), [isShared, isLibrary]);
+  const tableColumns = useMemo(() => toolsTableColumns(isLibrary), [isLibrary]);
   const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
@@ -72,7 +72,9 @@ export const ToolsTable = () => {
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
-                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(row.getValue("name"))}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
+                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
+                    row.getValue("name"),
+                  )}${isLibrary ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
                 >
                   <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                     {/* Left: Icon with centered content */}
@@ -83,7 +85,8 @@ export const ToolsTable = () => {
                           alt={row.getValue("name") as string}
                           className="h-6 w-6 object-contain"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = basePath + "/brand-img/default-provider.svg";
+                            (e.target as HTMLImageElement).src =
+                              basePath + "/brand-img/default-provider.svg";
                           }}
                         />
                       </div>
@@ -94,11 +97,9 @@ export const ToolsTable = () => {
                           <div className="text-sm font-medium">
                             {getToolDisplayName(row.getValue("name") as string)}
                           </div>
-                          {isShared && (
-                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-                              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                            </span>
-                          )}
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                          </span>
                         </div>
                         <span className="text-xs text-muted-foreground line-clamp-2">
                           {row.getValue("description") as string}

@@ -10,11 +10,10 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
@@ -36,13 +35,13 @@ export const QueuesTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, isShared } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
   // Fetch queues data
   const { data } = useFetchQueues();
 
-  const queuesTableColumnsArray = queuesTableColumns(isShared);
+  const queuesTableColumnsArray = queuesTableColumns();
 
   // Create a React table for queues data
   const table = useDataTable(
@@ -64,12 +63,11 @@ export const QueuesTable = () => {
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="queues" />
-              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search queues..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              {isPersonal && <DTCreateButton entity="queue" />}
+              <DTCreateButton entity="queue" />
             </div>
           </div>
           {/* Data table to render data */}

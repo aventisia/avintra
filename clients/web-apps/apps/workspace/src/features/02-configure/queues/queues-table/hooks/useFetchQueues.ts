@@ -1,5 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -7,41 +7,13 @@ import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { getQueues } from "../apis/queues-table-apis";
-import { useTableTab } from "./useTableTab";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
- * Custom hook to fetch projects using react query.
- * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ * Fetches the current-space (personal) and shared-with-user queues concurrently and
+ * exposes them as a single merged list.
  */
-export const useFetchQueues = () => {
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  // queryKey already includes the current space id.
-  const { isPersonal, queryKey } = useTableTab();
-  // Get projects using react query
-  const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey,
-    queryFn: () => getQueues({ isPersonal }),
-  });
-
-  // Show toast on fetch error
-  useEffect(() => {
-    if (isError) toast.error(error.toString());
-  }, [error, isError]);
-
-  // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
-};
-
-/**
- * Fetches both the personal and the shared queue lists and exposes them as a
- * single merged list.
- *
- * Used by the work item screens, which can be reached from either the Personal
- * or the Shared tab: the originating tab is not part of the work-item routes,
- * so the queue must be resolved against both lists instead of only the active
- * tab's list.
- */
-export const useFetchAllQueues = () => {
+const useMergedQueues = () => {
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({
       currentSpace: state.currentSpace,
@@ -53,11 +25,11 @@ export const useFetchAllQueues = () => {
   const results = useQueries({
     queries: [
       {
-        queryKey: ["queues", space, env],
+        queryKey: [...DATA_QUERY_KEY, space, env],
         queryFn: () => getQueues({ isPersonal: true }),
       },
       {
-        queryKey: ["queues", "SHARED", space, env],
+        queryKey: [...DATA_QUERY_KEY, "SHARED", space, env],
         queryFn: () => getQueues({ isPersonal: false }),
       },
     ],
@@ -79,5 +51,37 @@ export const useFetchAllQueues = () => {
     data,
     isFetching: results.some((r) => r.isFetching),
     isLoading: results.some((r) => r.isLoading),
+    isError: results.some((r) => r.isError),
+    error: results.find((r) => r.error)?.error,
   };
+};
+
+/**
+ * Custom hook to fetch the merged queue list for the queues table.
+ * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ */
+export const useFetchQueues = () => {
+  // Get the merged personal + shared queues using react query
+  const { data, isFetching, isLoading, isError, error } = useMergedQueues();
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error?.toString() ?? "Failed to fetch queues");
+  }, [error, isError]);
+
+  // Return isFetching and isLoading flag
+  return { data, isFetching, isLoading };
+};
+
+/**
+ * Fetches both the personal and the shared queue lists and exposes them as a
+ * single merged list.
+ *
+ * Used by the work item screens, which resolve a queue against the merged list so
+ * the originating tab is no longer required.
+ */
+export const useFetchAllQueues = () => {
+  const { data, isFetching, isLoading } = useMergedQueues();
+
+  return { data, isFetching, isLoading };
 };

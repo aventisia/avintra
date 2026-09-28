@@ -31,13 +31,13 @@ export const SkillTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
-  const { isShared, isLibrary, isReadOnly, queryKey, currentTab } = useTableTab();
+  // Get the active tab and the query key used to invalidate the merged skills list
+  const { isLibrary, isReadOnly, queryKey } = useTableTab();
 
   // Fetch skills data
   const { data } = useFetchSkills();
 
-  const skillTableColumnsArray = SkillTableColumns(isShared, isLibrary);
+  const skillTableColumnsArray = SkillTableColumns(isLibrary);
 
   // Create a React table for skills data
   const table = useDataTable(
@@ -71,7 +71,9 @@ export const SkillTable = () => {
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
-                  to={`/configure/skills/${row.original.id}?skill=${row.getValue("name")}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
+                  to={`/configure/skills/${row.original.id}?skill=${row.getValue("name")}${
+                    isLibrary ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""
+                  }`}
                 >
                   <div className="flex flex-col cursor-pointer h-36 justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                     <div className="flex flex-1 flex-col">
@@ -80,11 +82,9 @@ export const SkillTable = () => {
                           <div className="w-auto truncate text-sm font-medium">
                             {row.getValue("name")}
                           </div>
-                          {isShared && (
-                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-                              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                            </span>
-                          )}
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                          </span>
                         </div>
                         {/* Action trigger */}
                         <SkillRowActions

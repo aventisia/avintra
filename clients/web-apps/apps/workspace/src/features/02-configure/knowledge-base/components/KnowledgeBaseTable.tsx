@@ -9,11 +9,10 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
 import { NavLink } from "react-router-dom";
 
-import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKnowledgeBase } from "../hooks/useFetchKnowledgeBase";
 import { useTableTab } from "../hooks/useTableTab";
@@ -31,13 +30,13 @@ export const KnowledgeBaseTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, currentTab, isShared } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
-  // Fetch configs data
+  // Fetch the merged knowledge bases data
   const { data } = useFetchKnowledgeBase();
 
-  const KBTableColumnsArray = KBTableColumns(isShared);
+  const KBTableColumnsArray = KBTableColumns();
 
   // Create a React table for configs data
   const table = useDataTable(
@@ -58,11 +57,10 @@ export const KnowledgeBaseTable = () => {
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="knowledge-bases" />
-              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              {isPersonal && <DTCreateButton buttonText="Add" entity="knowledgeBase" />}
+              <DTCreateButton buttonText="Add" entity="knowledgeBase" />
             </div>
           </div>
           {/* DT with only rows and custom design */}
@@ -71,7 +69,7 @@ export const KnowledgeBaseTable = () => {
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
-                  to={`/configure/knowledge-base/${row.original.id}?kb=${row.getValue("name")}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
+                  to={`/configure/knowledge-base/${row.original.id}?kb=${row.getValue("name")}`}
                 >
                   <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                     <div className="flex flex-1 flex-col">
@@ -80,11 +78,9 @@ export const KnowledgeBaseTable = () => {
                           <div className="w-auto truncate text-sm font-medium">
                             {row.getValue("name")}
                           </div>
-                          {isShared && (
-                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
-                              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                            </span>
-                          )}
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
+                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                          </span>
                         </div>
                         {/* Action trigger */}
                         <KBRowActions

@@ -41,8 +41,8 @@ export const FlowsTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, isArchived, isShared, queryKey } = useTableTab();
+  // Get the active tab and the query key used to invalidate the merged agents list
+  const { isArchived, queryKey } = useTableTab();
 
   // Grid/table view preference (persisted in localStorage)
   const { view, setView } = useFlowsView();
@@ -50,7 +50,7 @@ export const FlowsTable = () => {
   // Fetch flows data
   const { data } = useFetchFlows();
 
-  const flowsTableColumnsArray = flowsTableColumns(isShared);
+  const flowsTableColumnsArray = flowsTableColumns();
 
   // Create a React table for flows data
   const table = useDataTable(
@@ -84,7 +84,7 @@ export const FlowsTable = () => {
               {view === "table" && (
                 <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               )}
-              {isPersonal && <DTCreateButton entity="flow" />}{" "}
+              <DTCreateButton entity="flow" />{" "}
             </div>
           </div>
           {/* Grid or table view of the flows data */}
@@ -93,7 +93,7 @@ export const FlowsTable = () => {
               {table.getRowModel().rows.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
                   {table.getRowModel().rows.map((row) => (
-                    <FlowCard key={row.id} flow={row.original} isShared={isShared} />
+                    <FlowCard key={row.id} flow={row.original} />
                   ))}
                 </div>
               ) : hasNoAgents ? (
@@ -125,7 +125,7 @@ export const FlowsTable = () => {
           {/* Resource Share Dialog */}
           <ResourceShareDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
-          {isPersonal && view === "table" && <FlowsBulkActions table={table} />}{" "}
+          {view === "table" && <FlowsBulkActions table={table} />}{" "}
         </div>
       ) : view === "grid" ? (
         // Show grid skeleton while fetching the flows data

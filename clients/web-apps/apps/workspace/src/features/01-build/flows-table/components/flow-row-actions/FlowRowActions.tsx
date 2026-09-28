@@ -26,8 +26,8 @@ export const FlowRowActions = ({
 }: FlowRowActionsProps) => {
   const actions = getResourceAccessActions(accessLevel);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isShared, queryKey } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
   return (
     // Dropdown menu for flow table row action */}
@@ -58,7 +58,10 @@ export const FlowRowActions = ({
 
       {actions?.delete && <FlowRowDeleteAction rowId={rowId} />}
 
-      {isShared && <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />}
+      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
+      {accessLevel !== ResourceAccessTypeEnum.Owner && (
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+      )}
     </DataTableRowActions>
   );
 };

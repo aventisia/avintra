@@ -15,8 +15,7 @@ export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  // queryKey already includes the current space id.
+  // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
 
   // Get rowIds of selected rows
