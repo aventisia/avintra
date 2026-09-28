@@ -8,9 +8,14 @@ import {
   MessagePrimitive,
   SuggestionPrimitive,
   ThreadPrimitive,
-  useAui,
   useAuiState,
 } from "@assistant-ui/react";
+import {
+  ToolApprovalBulkBar,
+  ToolApprovalRequest,
+  useHasPendingToolCalls,
+  useToolCallCoordinatorStore,
+} from "@avplatform/assistant-chat";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -34,15 +39,10 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import ToolsCall from "../../tool-widget/components/ToolsCall";
-import {
-  useHasPendingToolCalls,
-  useToolCallCoordinatorStore,
-} from "../../tool-widget/store/tool-call-store";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
-import { ToolApprovalRequest } from "./tool-approval";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 function FollowUps() {
@@ -362,20 +362,6 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
 const AssistantMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
-  const aui = useAui();
-  const isRunning = useAuiState((s) => s.thread.isRunning);
-  const [bulkSubmitting, setBulkSubmitting] = useState(false);
-  // Primitive selector so the subscription value stays referentially stable.
-  const pendingApprovalCount = useAuiState(
-    (s) =>
-      s.message.content.filter(
-        (part) =>
-          part.type === "tool-call" &&
-          part.approval !== undefined &&
-          part.approval.approved === undefined &&
-          part.approval.resolution === undefined,
-      ).length,
-  );
   const showPendingIndicator = useAuiState((s) => {
     if (s.message.status?.type !== "running") return false;
     return !s.message.content.some((part) => {
@@ -388,34 +374,6 @@ const AssistantMessage: FC = () => {
       return false;
     });
   });
-
-  // Resolves every pending approval in this message at once. The runtime only
-  // starts the resumed turn after the whole batch is decided.
-  const handleBulkDecision = async (approved: boolean) => {
-    if (bulkSubmitting || isRunning) return;
-    setBulkSubmitting(true);
-    try {
-      const message = aui.message.getState();
-      const pending = message.content.filter(
-        (part) =>
-          part.type === "tool-call" &&
-          part.approval !== undefined &&
-          part.approval.approved === undefined &&
-          part.approval.resolution === undefined,
-      );
-      for (const part of pending) {
-        if (part.type !== "tool-call") continue;
-        await aui.message.part({ toolCallId: part.toolCallId }).respondToToolApproval({
-          approved,
-          reason: approved ? undefined : "User denied this action.",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to respond to tool approvals:", error);
-    } finally {
-      setBulkSubmitting(false);
-    }
-  };
 
   return (
     <MessagePrimitive.Root
@@ -459,29 +417,7 @@ const AssistantMessage: FC = () => {
           }}
         </MessagePrimitive.Parts>
 
-        {!isDisabled && pendingApprovalCount > 1 && (
-          <div className="aui-tool-approval-bulk mt-2 flex items-center justify-end gap-2 rounded-md border border-dashed border-border/70 px-3 py-2">
-            <span className="mr-auto text-xs text-muted-foreground">
-              {pendingApprovalCount} actions are waiting for your approval.
-            </span>
-            <Button
-              variant="outline"
-              size="xs"
-              disabled={bulkSubmitting || isRunning}
-              onClick={() => void handleBulkDecision(false)}
-            >
-              Deny all
-            </Button>
-            <Button
-              variant="default"
-              size="xs"
-              disabled={bulkSubmitting || isRunning}
-              onClick={() => void handleBulkDecision(true)}
-            >
-              Approve all
-            </Button>
-          </div>
-        )}
+        <ToolApprovalBulkBar disabled={isDisabled} />
         {showPendingIndicator && (
           <div
             className="aui-assistant-pending-indicator mt-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-muted-foreground text-xs"

@@ -4,7 +4,7 @@ import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assista
 import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
 import { LLMMessageType } from "../types/llm-message.type";
 
-type CreateAssistantUIModelAdapterParams = {
+export type CreateAssistantUIModelAdapterParams = {
   flowVersionId: string;
   // Accepts the lazy getter instead of a static string
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
@@ -12,6 +12,11 @@ type CreateAssistantUIModelAdapterParams = {
   onSuggestionsUpdate?: (actions: string[]) => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
   isTempChat?: boolean;
+  /**
+   * Extra request headers for both stream calls (e.g. Studio space scoping
+   * headers). Workspace omits this; Studio passes its space-header getter.
+   */
+  getExtraHeaders?: () => Record<string, string>;
 };
 
 /**
@@ -122,6 +127,7 @@ export const createAssistantUIModelAdapter = ({
   onRequestComplete,
   onSuggestionsUpdate,
   isTempChat = false,
+  getExtraHeaders,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   // Last conversation id observed in a frame. Temporary chats never allocate
   // one client-side, so this is the only handle that can resume their approvals.
@@ -318,10 +324,12 @@ export const createAssistantUIModelAdapter = ({
             }
             case "skill": {
               // Surface skill usage as a lightweight system note so the user
-              // can see which skills the agent invoked.
+              // can see which skills the agent invoked. The trailing blank line
+              // is required so the blockquote is terminated and does not absorb
+              // the model's following content (e.g. markdown tables).
               const skillName = frame.output?.name || frame.output;
               if (skillName) {
-                pushText(`\n\n> Using skill: **${skillName}**\n`);
+                pushText(`\n\n> Using skill: **${skillName}**\n\n`);
               }
               break;
             }
@@ -392,6 +400,7 @@ export const createAssistantUIModelAdapter = ({
                 decisions: approvalDecisions,
               },
               options.abortSignal,
+              getExtraHeaders?.(),
             ),
           );
         } else {
@@ -406,6 +415,7 @@ export const createAssistantUIModelAdapter = ({
                 isTempChat,
               },
               options.abortSignal,
+              getExtraHeaders?.(),
             ),
           );
         }
