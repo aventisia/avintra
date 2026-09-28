@@ -926,6 +926,20 @@ public class JobsTableService : IJobsTableService
             if (nextJob == null)
                 return serviceResponse.Update(null, 200, null);
 
+            // Credit gate: cancel rather than hand a pending job to a runner when the tenant
+            // cannot afford execution. StartJob is also gated, but cancelling here stops the
+            // job from being handed out at all.
+            if (!await _creditGateService.HasSufficientCreditsAsync(nextJob.TenantId))
+            {
+                _creditGateService.CancelForInsufficientCredits(nextJob);
+                _unitOfWork.JobRepo.Update(nextJob);
+                if (!await _unitOfWork.SaveAsync())
+                    return serviceResponse.Update("Failed to cancel pending job.", 500);
+
+                _logger.LogWarning("Blocking pending job dispatch for tenant {TenantId}: insufficient credits.", nextJob.TenantId);
+                return serviceResponse.Update("Insufficient credits to start a job.", 402);
+            }
+
             // Assign the job to this machine so it cannot be picked by another dispatch path.
             nextJob.MachineId = machineId;
             nextJob.ExecutedOn = machine.Name ?? machineId.ToString();

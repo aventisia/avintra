@@ -188,7 +188,7 @@ public class TimeTriggerExecutionJob : IJob
 
                     // Log the job IDs
                     if (jobIds.Count != 0)
-                        await _jobsExecutorService.ExecuteCommanByIdsdAsync(jobIds);
+                        await _jobsExecutorService.ExecuteCommandByIdsAsync(jobIds);
                 }
             }
         }
