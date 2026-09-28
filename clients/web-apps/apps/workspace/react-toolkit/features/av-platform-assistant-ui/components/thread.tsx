@@ -8,6 +8,7 @@ import {
   MessagePrimitive,
   SuggestionPrimitive,
   ThreadPrimitive,
+  useAui,
   useAuiState,
 } from "@assistant-ui/react";
 import { Button } from "@avplatform/ui/buttons";
@@ -41,6 +42,7 @@ import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
+import { ToolApprovalRequest } from "./tool-approval";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 function FollowUps() {
@@ -320,16 +322,13 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
         ) : (
           <CheckIcon className="size-3.5 shrink-0 text-muted-foreground/70" />
         )}
-        <span
-          className={cn(
-            "font-medium",
-            isRunning && "animate-pulse",
-          )}
-        >
+        <span className={cn("font-medium", isRunning && "animate-pulse")}>
           {isRunning ? "Processing" : "Thinking"}
         </span>
         {steps.length > 0 && (
-          <span className="truncate opacity-70">· {steps[activeStep >= 0 ? activeStep : steps.length - 1]}</span>
+          <span className="truncate opacity-70">
+            · {steps[activeStep >= 0 ? activeStep : steps.length - 1]}
+          </span>
         )}
       </button>
       {isOpen && (
@@ -343,7 +342,9 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
                   ) : (
                     <CheckIcon className="mt-0.5 size-3 shrink-0 text-muted-foreground/60" />
                   )}
-                  <span className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}>
+                  <span
+                    className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}
+                  >
                     {step}
                   </span>
                 </li>
@@ -361,6 +362,20 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
 const AssistantMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
+  const aui = useAui();
+  const isRunning = useAuiState((s) => s.thread.isRunning);
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+  // Primitive selector so the subscription value stays referentially stable.
+  const pendingApprovalCount = useAuiState(
+    (s) =>
+      s.message.content.filter(
+        (part) =>
+          part.type === "tool-call" &&
+          part.approval !== undefined &&
+          part.approval.approved === undefined &&
+          part.approval.resolution === undefined,
+      ).length,
+  );
   const showPendingIndicator = useAuiState((s) => {
     if (s.message.status?.type !== "running") return false;
     return !s.message.content.some((part) => {
@@ -374,6 +389,34 @@ const AssistantMessage: FC = () => {
     });
   });
 
+  // Resolves every pending approval in this message at once. The runtime only
+  // starts the resumed turn after the whole batch is decided.
+  const handleBulkDecision = async (approved: boolean) => {
+    if (bulkSubmitting || isRunning) return;
+    setBulkSubmitting(true);
+    try {
+      const message = aui.message.getState();
+      const pending = message.content.filter(
+        (part) =>
+          part.type === "tool-call" &&
+          part.approval !== undefined &&
+          part.approval.approved === undefined &&
+          part.approval.resolution === undefined,
+      );
+      for (const part of pending) {
+        if (part.type !== "tool-call") continue;
+        await aui.message.part({ toolCallId: part.toolCallId }).respondToToolApproval({
+          approved,
+          reason: approved ? undefined : "User denied this action.",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to respond to tool approvals:", error);
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
+
   return (
     <MessagePrimitive.Root
       className="aui-assistant-message-root text-sm fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-[var(--thread-max-width)] animate-in py-3 duration-150 !min-h-fit !h-fit"
@@ -383,6 +426,15 @@ const AssistantMessage: FC = () => {
         <MessagePrimitive.Parts>
           {({ part }) => {
             if (part.type === "tool-call") {
+              // Server-side approval gates get a dedicated confirmation card;
+              // the flow-builder ToolsCall widget must not execute chat actions.
+              if (part.approval) {
+                return (
+                  <div className="my-2 w-full">
+                    <ToolApprovalRequest {...part} disabled={isDisabled} />
+                  </div>
+                );
+              }
               return (
                 <div className="my-2 w-full">
                   {/* Fallback pattern for dynamically rendered tool UIs */}
@@ -406,6 +458,30 @@ const AssistantMessage: FC = () => {
             return null;
           }}
         </MessagePrimitive.Parts>
+
+        {!isDisabled && pendingApprovalCount > 1 && (
+          <div className="aui-tool-approval-bulk mt-2 flex items-center justify-end gap-2 rounded-md border border-dashed border-border/70 px-3 py-2">
+            <span className="mr-auto text-xs text-muted-foreground">
+              {pendingApprovalCount} actions are waiting for your approval.
+            </span>
+            <Button
+              variant="outline"
+              size="xs"
+              disabled={bulkSubmitting || isRunning}
+              onClick={() => void handleBulkDecision(false)}
+            >
+              Deny all
+            </Button>
+            <Button
+              variant="default"
+              size="xs"
+              disabled={bulkSubmitting || isRunning}
+              onClick={() => void handleBulkDecision(true)}
+            >
+              Approve all
+            </Button>
+          </div>
+        )}
         {showPendingIndicator && (
           <div
             className="aui-assistant-pending-indicator mt-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-muted-foreground text-xs"
