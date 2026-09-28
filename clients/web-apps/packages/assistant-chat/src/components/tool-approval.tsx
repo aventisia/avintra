@@ -12,7 +12,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useToolCallCoordinatorStore } from "../../tool-widget/store/tool-call-store";
+import { useToolCallCoordinatorStore } from "../stores/tool-call-store";
 
 /** Approval metadata the adapter attaches to a gated tool-call part. */
 type ToolApprovalMeta = {
@@ -29,7 +29,7 @@ type ToolApprovalRequestProps = {
   argsText?: string;
   approval?: ToolApprovalMeta;
   /** Responds to the approval gate; rejects when the runtime cannot record it. */
-  respondToApproval: (response: ToolApprovalResponse) => Promise<void>;
+  respondToApproval: (response: ToolApprovalResponse) => void | Promise<void>;
   /** Hides the decision buttons in read-only/archived threads. */
   disabled?: boolean;
 };

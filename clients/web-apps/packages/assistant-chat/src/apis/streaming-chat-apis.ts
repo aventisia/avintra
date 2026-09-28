@@ -9,7 +9,6 @@
  * A single `fetch` POST with `stream: true` enables real-time token streaming,
  * tool events, and follow-up suggestions — matching modern AI chat UX.
  */
-import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chats/stream`;
 
@@ -83,17 +82,19 @@ async function* parseSse(body: ReadableStream<Uint8Array>): AsyncGenerator<strin
  *
  * @param request The streaming chat request payload.
  * @param signal Optional AbortController signal to cancel the stream.
+ * @param extraHeaders Optional per-app headers (e.g. Studio space scoping).
  */
 export async function* streamChatCompletion(
   request: StreamingChatRequestDto,
   signal?: AbortSignal,
+  extraHeaders?: Record<string, string>,
 ): AsyncGenerator<string> {
   const response = await fetch(`${baseAPIURL}/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
-      ...getStudioSpaceHeaders(),
+      ...extraHeaders,
     },
     credentials: "include", // forward the JWT cookie for auth
     body: JSON.stringify(request),
@@ -122,17 +123,19 @@ export async function* streamChatCompletion(
  *
  * @param request The approval decisions payload.
  * @param signal Optional AbortController signal to cancel the stream.
+ * @param extraHeaders Optional per-app headers (e.g. Studio space scoping).
  */
 export async function* streamApprovalDecisions(
   request: StreamingChatApprovalRequestDto,
   signal?: AbortSignal,
+  extraHeaders?: Record<string, string>,
 ): AsyncGenerator<string> {
   const response = await fetch(`${baseAPIURL}/approvals`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
-      ...getStudioSpaceHeaders(),
+      ...extraHeaders,
     },
     credentials: "include", // forward the JWT cookie for auth
     body: JSON.stringify(request),
