@@ -12,15 +12,17 @@ public class OrchestratorHub : Hub
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHubContext<FlowExecutionHub> _flowExecutionHubContext;
+    private readonly ICreditGateService _creditGateService;
 
     // Constructor to initialize dependencies
-    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig, IHubContext<FlowExecutionHub> flowExecutionHubContext)
+    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig, IHubContext<FlowExecutionHub> flowExecutionHubContext, ICreditGateService creditGateService)
     {
         _clientStatusStore = clientStatusStore;
         _logger = logger;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _environmentConfig = environmentConfig;
         _flowExecutionHubContext = flowExecutionHubContext;
+        _creditGateService = creditGateService;
     }
 
     // Invoked when a client successfully connects to the hub.
@@ -151,8 +153,16 @@ public class OrchestratorHub : Hub
                 timestamp = DateTimeOffset.UtcNow
             });
 
+            // Credit gate: only a machine pulls a pending job on connect, and only when its tenant
+            // can afford execution. Non-machine (browser/desktop) connections never reach this check.
+            var canPullPendingJob = clientType != ClientTypesEnum.AvintraMachine
+                || await _creditGateService.HasSufficientCreditsAsync(tenantId);
+
+            if (!canPullPendingJob)
+                _logger.LogWarning("Blocking pending job dispatch for tenant {TenantId}: insufficient credits.", tenantId);
+
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
-            if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled)
+            if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled && canPullPendingJob)
             {
                 // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
                 var flowVersionIds = await _workspaceInternalDbContext.MachineFlowVersions
@@ -373,6 +383,15 @@ public class OrchestratorHub : Hub
             var httpContext = Context.GetHttpContext();
             var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
+
+            // Credit gate: block manual execution for a tenant that cannot afford it before a
+            // Runner is instructed to start.
+            if (!await _creditGateService.HasSufficientCreditsAsync(tenantId))
+            {
+                _logger.LogWarning("Blocking agent execution for tenant {TenantId}: insufficient credits.", tenantId);
+                await Clients.Caller.SendAsync("error", "Insufficient credits to execute this agent.");
+                return;
+            }
 
             // Create a new job for agent execution
             var job = new Job()

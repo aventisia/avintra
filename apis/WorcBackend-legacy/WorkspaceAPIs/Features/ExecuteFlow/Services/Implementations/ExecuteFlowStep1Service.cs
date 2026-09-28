@@ -13,6 +13,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
     private readonly INotificationHelperService _notificationHelperService;
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICreditGateService _creditGateService;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -23,7 +24,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         INotificationHelperService notificationHelperService,
         IExecuteFlowStep2Service executeFlowStep2Service,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICreditGateService creditGateService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -35,6 +37,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             : Guid.Empty;
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
         _resourceShareService = resourceShareService;
+        _creditGateService = creditGateService;
     }
 
     public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType)
@@ -102,6 +105,13 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 // Validate: Flow graph is invalid (e.g. missing nodes or edges, or edges connecting to non-existing nodes)
                 if (FlowValidationHelper.IsValidFlowGraph(parsedFlow) is string flowGraphValidationError)
                     return serviceResponse.Update($"Flow graph is invalid: {flowGraphValidationError}", 400);
+            }
+
+            var tenantId = _currentTenantService.CurrentTenantId;
+            if (!await _creditGateService.HasSufficientCreditsAsync(tenantId))
+            {
+                _logger.LogWarning("Blocking flow execution for tenant {TenantId}: insufficient credits.", tenantId);
+                return serviceResponse.Update("Insufficient credits to execute this flow.", 402);
             }
 
             // Insert a new job for the flow execution.
