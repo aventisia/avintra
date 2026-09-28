@@ -174,7 +174,8 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         current_request = restore_request(metadata, request)
 
         # Bound Corsair tools keep their canonical dotted path in metadata; the
-        # model only ever emits the sanitized (underscored) name.
+        # model only ever emits the sanitized (underscored) name. Approval keys
+        # use the configured dotted form, so match via canonical_tool_name().
         corsair_paths = {
             tool.name: (getattr(tool, "metadata", None) or {}).get("corsair_path")
             for tool in tools

@@ -134,8 +134,9 @@ def canonical_tool_name(
     Corsair tools are bound under an OpenAI-safe name (dots replaced with
     underscores, e.g. ``openai_api_models_list``) while ``tool_config`` entries
     use the dotted sidecar path (``openai.api.models.list``). Bound tools carry
-    their original path in ``metadata["corsair_path"]``; when that is not
-    available the sanitized ``_api_`` form is parsed back to the dotted path.
+    their original path in ``metadata["corsair_path"]`` (stamped by
+    ``tools/corsair/corsair_tool_factory.py``); when that is not available the
+    sanitized ``_api_`` form is parsed back to the dotted path.
     """
 
     if not tool_name:
