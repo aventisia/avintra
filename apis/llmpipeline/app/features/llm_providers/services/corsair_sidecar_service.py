@@ -9,6 +9,7 @@ using the legacy dynamic-import executors.
 from __future__ import annotations
 
 import json
+import time
 from typing import Any, List
 
 import httpx
@@ -280,6 +281,13 @@ def _sidecar_base_url() -> str:
     return url.rstrip("/")
 
 
+# In-process cache for the sidecar tool catalog: (monotonic time, tools).
+# Plugin descriptions change only when integrations are installed, so a short
+# TTL avoids a sidecar round-trip for every planner and binding call.
+_CORSAIR_TOOLS_CACHE_TTL_SECONDS = 600
+_corsair_tools_cache: tuple[float, List[dict[str, Any]]] | None = None
+
+
 async def invoke_corsair_tool(
     tool_name: str,
     arguments: dict[str, Any],
@@ -369,21 +377,25 @@ async def invoke_corsair_tool(
         )
 
 
-async def fetch_corsair_schemas(
-    tool_configs: List[ToolConfig] | list[dict[str, Any]],
-) -> List[dict[str, Any]]:
-    """Fetch Corsair tool schemas from the sidecar for the given configs.
+async def _fetch_all_corsair_tools() -> List[dict[str, Any]]:
+    """Fetch the sidecar tool catalog, cached for a short TTL.
 
-    Only configs whose tool name corresponds to a Corsair plugin are fetched.
-    The sidecar ``GET /api/corsair/tools`` returns a list of operations with
-    ``path``, ``description``, and ``input`` (JSON schema). We translate each
-    matching path into the OpenAI Responses API function shape.
-
-    ``tool_configs`` may contain either ``ToolConfig`` instances or plain
-    dicts (e.g. deserialized request JSON), so both shapes are handled.
+    Both planner-catalog building and tool-schema binding read the same
+    ``GET /api/corsair/tools`` response, so the raw tool list is cached
+    in-process to avoid a sidecar round-trip on every chat message. Returns an
+    empty list when the sidecar is unreachable so callers fail closed.
     """
+
+    global _corsair_tools_cache
+
+    now = time.monotonic()
+    if _corsair_tools_cache is not None:
+        cached_at, cached_tools = _corsair_tools_cache
+        if now - cached_at < _CORSAIR_TOOLS_CACHE_TTL_SECONDS:
+            return cached_tools
+
     base_url = _sidecar_base_url()
-    if not base_url or not tool_configs:
+    if not base_url:
         return []
 
     try:
@@ -403,6 +415,31 @@ async def fetch_corsair_schemas(
 
     sidecar_tools = data.get("tools", []) if isinstance(data, dict) else []
     if not isinstance(sidecar_tools, list):
+        return []
+
+    _corsair_tools_cache = (now, sidecar_tools)
+    return sidecar_tools
+
+
+async def fetch_corsair_schemas(
+    tool_configs: List[ToolConfig] | list[dict[str, Any]],
+) -> List[dict[str, Any]]:
+    """Fetch Corsair tool schemas from the sidecar for the given configs.
+
+    Only configs whose tool name corresponds to a Corsair plugin are fetched.
+    The sidecar ``GET /api/corsair/tools`` returns a list of operations with
+    ``path``, ``description``, and ``input`` (JSON schema). We translate each
+    matching path into the OpenAI Responses API function shape.
+
+    ``tool_configs`` may contain either ``ToolConfig`` instances or plain
+    dicts (e.g. deserialized request JSON), so both shapes are handled.
+    """
+
+    if not tool_configs:
+        return []
+
+    sidecar_tools = await _fetch_all_corsair_tools()
+    if not sidecar_tools:
         return []
 
     # Build a quick lookup by path.

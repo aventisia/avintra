@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 
 import time
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
+from langgraph.types import Command
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
@@ -31,6 +32,7 @@ from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant a
 from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
+    LLMChunkResponse,
     LLMRequest,
     LLMResponse,
 )
@@ -103,7 +105,16 @@ class ChatService:
                 persisted_tool_call_ids=persisted_tool_call_ids,
             )
 
-        response = await graph.ainvoke({"messages": messages}, config)
+        response = await graph.ainvoke(
+            {
+                "messages": messages,
+                # The compiled graph is cached per conversation, so the request
+                # captured at build time goes stale. Seed each invocation with
+                # the current request/user for per-message planner gating.
+                "metadata": {"request": request, "user": user},
+            },
+            config,
+        )
         response_messages = response.get("messages", []) or []
 
         graph_response = self._latest_ai_message(response_messages)
@@ -173,7 +184,12 @@ class ChatService:
             )
 
         async for event in graph.astream_events(
-            {"messages": messages},
+            {
+                "messages": messages,
+                # Seed the current request so per-message planner gating sees
+                # this turn's input rather than the graph-build-time request.
+                "metadata": {"request": request, "user": user},
+            },
             config=config,
             stream_mode="messages",
             version="v2",
@@ -269,6 +285,7 @@ class ChatService:
         request: LLMRequest,
         user: User,
         db_session: AsyncSession | None = None,
+        resume_decisions: dict[str, str] | None = None,
     ) -> AsyncIterator[Any]:
         """Stream chat responses as a normalized, frontend-friendly protocol.
 
@@ -278,47 +295,99 @@ class ChatService:
 
         - ``{"type": "delta", "output": "<partial text>"}`` token deltas
         - ``{"type": "tool_call", "output": {tool payload}}`` tool invocations
+        - ``{"type": "approval_required", "output": {...}}`` pending approvals
         - ``{"type": "followup", "output": [...]}`` suggested follow-ups
         - ``{"type": "done", "output": "<final text>"}`` final completion
 
         ``conversation_id`` is set on every chunk so the client can persist it.
-        """
 
-        from app.features.llm_providers.llm_providers_schemas import (
-            LLMChunkResponse,
-        )
+        When ``resume_decisions`` is provided, the paused tool approval for
+        ``request.conversation_id`` is resumed instead of starting a new turn.
+        """
 
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
         conversation_id = request.conversation_id or str(uuid4())
         request.conversation_id = conversation_id
 
-        if db_session is not None:
-            await self._load_custom_tools(request, user, db_session)
+        if resume_decisions is not None:
+            # Resume a paused turn: approved calls execute, denied calls return
+            # denial ToolMessages, then the model continues the same turn.
+            graph = self._graph_for_conversation(conversation_id)
+            if graph is None:
+                raise ValueError(
+                    "No paused conversation found for this approval request."
+                )
+            config = self._thread_config(conversation_id)
+            request_messages: list[BaseMessage] = []
+            persisted_ids: set[str | None] = set()
+            # ``Command(resume={})`` is treated by LangGraph as "no resume" and
+            # re-interrupts, so always send a truthy payload; unknown/missing
+            # decisions fail closed to denial inside the tool node.
+            resume_payload = resume_decisions or {"decisions": []}
+            graph_input: Any = Command(
+                resume=resume_payload,
+                # Checkpoint deserialization strips live objects (and the user's
+                # access token), so re-seed them for the resumed nodes.
+                update={
+                    "metadata": {
+                        "request": request,
+                        "user": user,
+                        "approval_enabled": True,
+                    }
+                },
+            )
+        else:
+            if db_session is not None:
+                await self._load_custom_tools(request, user, db_session)
 
-        graph = self._graph(
-            request=request,
-            user=user,
-            db_session=db_session,
-        )
-        config = self._thread_config(conversation_id)
-
-        messages, request_messages, persisted_ids = await self._prepare_input(
-            request=request,
-            graph=graph,
-            config=config,
-            db_session=db_session,
-        )
-
-        if not request.is_temp_chat and db_session is not None and request_messages:
-            await self.conversation_service.save_message(
+            graph = self._graph(
+                request=request,
+                user=user,
                 db_session=db_session,
+            )
+            config = self._thread_config(conversation_id)
+
+            # A new message while an approval is pending cannot be processed
+            # until the pause is cleared: auto-deny the stale requests first.
+            async for chunk in self._cancel_stale_approvals(
+                graph=graph,
+                config=config,
                 request=request,
                 user=user,
                 conversation_id=conversation_id,
-                message=request_messages[-1],
-                persisted_ids=persisted_ids,
+            ):
+                yield chunk
+
+            messages, request_messages, persisted_ids = await self._prepare_input(
+                request=request,
+                graph=graph,
+                config=config,
+                db_session=db_session,
             )
+
+            if not request.is_temp_chat and db_session is not None and request_messages:
+                await self.conversation_service.save_message(
+                    db_session=db_session,
+                    request=request,
+                    user=user,
+                    conversation_id=conversation_id,
+                    message=request_messages[-1],
+                    persisted_ids=persisted_ids,
+                )
+
+            graph_input = {
+                "messages": messages,
+                # Seed the current request so per-message planner gating sees
+                # this turn's input rather than the graph-build-time request.
+                "metadata": {
+                    "request": request,
+                    "user": user,
+                    # Approval pauses are enforced only on this interactive,
+                    # streaming chat path.
+                    "approval_enabled": True,
+                },
+            }
 
         text_buffer: list[str] = []
         graph_response = None
@@ -332,7 +401,7 @@ class ChatService:
         suppress_raw_deltas = request.is_chat_agent
 
         async for event in graph.astream_events(
-            {"messages": messages},
+            graph_input,
             config=config,
             stream_mode="messages",
             version="v2",
@@ -522,24 +591,45 @@ class ChatService:
                             persisted_tool_call_ids=persisted_tool_call_ids,
                         )
 
-        # Persist the final AI message if not already saved.
-        if not request.is_temp_chat and db_session is not None:
-            try:
-                state = await graph.aget_state(config)
-                final_messages = state.values.get("messages", [])
-            except Exception:
-                final_messages = []
-            if final_messages:
-                graph_response = self._latest_ai_message(final_messages, fallback=graph_response)
-                await self.conversation_service.save_message(
-                    db_session=db_session,
-                    request=request,
-                    user=user,
-                    conversation_id=conversation_id,
-                    message=final_messages[-1],
-                    persisted_ids=persisted_ids,
-                    persisted_tool_call_ids=persisted_tool_call_ids,
-                )
+        # Read the final snapshot once: it drives persistence and surfaces any
+        # human approvals the graph paused on during this turn.
+        state = None
+        try:
+            state = await graph.aget_state(config)
+        except Exception:
+            logger.exception(
+                "Failed to retrieve graph state after streaming. "
+                "conversation_id=%s",
+                conversation_id,
+            )
+
+        final_messages = (
+            state.values.get("messages", []) if state is not None else []
+        )
+        if not request.is_temp_chat and db_session is not None and final_messages:
+            graph_response = self._latest_ai_message(
+                final_messages, fallback=graph_response
+            )
+            await self.conversation_service.save_message(
+                db_session=db_session,
+                request=request,
+                user=user,
+                conversation_id=conversation_id,
+                message=final_messages[-1],
+                persisted_ids=persisted_ids,
+                persisted_tool_call_ids=persisted_tool_call_ids,
+            )
+
+        # Surface pending human-approval tool calls so the client can render the
+        # confirmation UI. The graph remains paused until /approvals resumes it.
+        for pending_call in self._pending_approval_tool_calls(state):
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=pending_call,
+                type="approval_required",
+                conversation_id=conversation_id,
+            )
 
         final_response = self._create_final_response(
             request=request,
@@ -792,6 +882,9 @@ class ChatService:
             db_session=db_session,
             conversation_id=config["configurable"]["thread_id"],
         )
+        # Restart-expired approval pauses can leave assistant tool calls without
+        # responses in persisted history; close them before replaying the turn.
+        persisted = self._sanitize_tool_history(persisted)
         persisted_ids = self.conversation_service.extract_persisted_ids(persisted)
 
         try:
@@ -873,6 +966,232 @@ class ChatService:
             )
 
         return self._graphs[cache_key]
+
+    def _graph_for_conversation(self, conversation_id: str) -> Any | None:
+        """Return the compiled graph cached for ``conversation_id``, if any."""
+
+        for key, graph in self._graphs.items():
+            if len(key) > 2 and key[2] == conversation_id:
+                return graph
+        return None
+
+    @staticmethod
+    def _pending_approval_tool_calls(state: Any) -> list[dict]:
+        """Extract pending human-approval tool calls from a graph snapshot."""
+
+        if state is None:
+            return []
+
+        pending: list[dict] = []
+        for task in getattr(state, "tasks", ()) or ():
+            for item in getattr(task, "interrupts", ()) or ():
+                value = getattr(item, "value", None)
+                if isinstance(value, list):
+                    pending.extend(
+                        call
+                        for call in value
+                        if isinstance(call, dict) and call.get("tool_call_id")
+                    )
+        return pending
+
+    async def get_pending_approval(
+        self,
+        conversation_id: str,
+        user: User,
+    ) -> tuple[LLMRequest, list[dict]] | None:
+        """Return the paused request and pending calls for a conversation.
+
+        Returns ``None`` when the conversation has no cached graph, no pending
+        approval, or belongs to a different user/tenant. The paused request is
+        rebuilt from checkpoint state because InMemorySaver deserializes the
+        original pydantic object into a dict.
+        """
+
+        graph = self._graph_for_conversation(conversation_id)
+        if graph is None:
+            return None
+
+        try:
+            state = await graph.aget_state(self._thread_config(conversation_id))
+        except Exception:
+            logger.exception(
+                "Failed to read pending approval state. conversation_id=%s",
+                conversation_id,
+            )
+            return None
+
+        pending = self._pending_approval_tool_calls(state)
+        if not pending:
+            return None
+
+        metadata = state.values.get("metadata") or {}
+        paused_request = metadata.get("request")
+        if isinstance(paused_request, dict):
+            try:
+                paused_request = LLMRequest(**paused_request)
+            except Exception:
+                logger.exception(
+                    "Failed to rebuild paused request. conversation_id=%s",
+                    conversation_id,
+                )
+                return None
+        if not isinstance(paused_request, LLMRequest):
+            return None
+
+        # Only the owner of the paused conversation may decide on its approvals.
+        paused_user = metadata.get("user")
+        if isinstance(paused_user, User):
+            paused_user_id = paused_user.user_id
+            paused_tenant_id = paused_user.tenant_id
+        elif isinstance(paused_user, dict):
+            paused_user_id = paused_user.get("user_id")
+            paused_tenant_id = paused_user.get("tenant_id")
+        else:
+            paused_user_id = paused_tenant_id = None
+
+        if (
+            paused_user_id is not None
+            and paused_tenant_id is not None
+            and (
+                paused_user_id != user.user_id
+                or paused_tenant_id != user.tenant_id
+            )
+        ):
+            logger.warning(
+                "Approval resume rejected for conversation %s: wrong user.",
+                conversation_id,
+            )
+            return None
+
+        return paused_request, pending
+
+    async def _cancel_stale_approvals(
+        self,
+        graph: Any,
+        config: dict[str, Any],
+        request: LLMRequest,
+        user: User,
+        conversation_id: str,
+    ) -> AsyncIterator[Any]:
+        """Auto-deny pending approvals when a new message arrives.
+
+        A client that lost the approval widget must not dead-end the thread:
+        pending calls are denied (never executed) and the new message proceeds.
+        Repeats are capped so a model that keeps requesting human-only tools
+        cannot loop indefinitely.
+        """
+
+        for _ in range(3):
+            try:
+                state = await graph.aget_state(config)
+            except Exception:
+                logger.exception(
+                    "Failed to inspect pending approvals. conversation_id=%s",
+                    conversation_id,
+                )
+                return
+
+            pending = self._pending_approval_tool_calls(state)
+            if not pending:
+                return
+
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output="Cancelling pending tool approval",
+                type="status",
+                conversation_id=conversation_id,
+            )
+
+            deny_decisions = {
+                item["tool_call_id"]: "deny" for item in pending
+            }
+            try:
+                await graph.ainvoke(
+                    Command(
+                        resume=deny_decisions,
+                        # Re-seed live objects dropped by checkpoint
+                        # deserialization (see stream_normalized).
+                        update={
+                            "metadata": {
+                                "request": request,
+                                "user": user,
+                                "approval_enabled": True,
+                            }
+                        },
+                    ),
+                    config,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to cancel pending approvals. conversation_id=%s",
+                    conversation_id,
+                )
+                return
+
+    @staticmethod
+    def _sanitize_tool_history(
+        messages: list[BaseMessage],
+    ) -> list[BaseMessage]:
+        """Close assistant tool calls that have no persisted responses.
+
+        A paused approval that outlives the in-memory checkpoint (e.g. restart)
+        leaves an AIMessage with tool_calls but no ToolMessages in the persisted
+        history. Providers reject such sequences, so append a synthetic denial
+        result for every unanswered call.
+        """
+
+        sanitized: list[BaseMessage] = []
+        index = 0
+
+        while index < len(messages):
+            message = messages[index]
+            sanitized.append(message)
+
+            tool_calls = getattr(message, "tool_calls", None) or []
+            if not isinstance(message, AIMessage) or not tool_calls:
+                index += 1
+                continue
+
+            answered: set[str] = set()
+            lookahead = index + 1
+            while lookahead < len(messages) and isinstance(
+                messages[lookahead], ToolMessage
+            ):
+                answered.add(
+                    getattr(messages[lookahead], "tool_call_id", "") or ""
+                )
+                sanitized.append(messages[lookahead])
+                lookahead += 1
+
+            for tool_call in tool_calls:
+                call_id = (
+                    tool_call.get("id", "")
+                    if isinstance(tool_call, dict)
+                    else getattr(tool_call, "id", "")
+                )
+                if not call_id or call_id in answered:
+                    continue
+                name = (
+                    tool_call.get("name", "")
+                    if isinstance(tool_call, dict)
+                    else getattr(tool_call, "name", "")
+                )
+                sanitized.append(
+                    ToolMessage(
+                        content=(
+                            "Action not executed: the approval session "
+                            "expired or was cancelled."
+                        ),
+                        tool_call_id=call_id,
+                        name=name,
+                        status="error",
+                    )
+                )
+
+            index = lookahead
+
+        return sanitized
 
     def _create_initial_response(self, request: LLMRequest) -> LLMResponse:
         return LLMResponse(

@@ -5,10 +5,14 @@ import json
 from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import BaseTool
 from langgraph.prebuilt import ToolNode
+from langgraph.types import interrupt
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.graph_state import ChatState
+from app.features.langgraph.services.tool_skill_selector import (
+    build_tool_approval_map,
+)
 from app.features.langgraph.tools.outlook.outlook_client import send_email_via_outlook
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
 from app.features.llm_providers.services.corsair_sidecar_service import (
@@ -126,6 +130,104 @@ def _extract_connector_error(result: dict) -> str | None:
         return None
 
 
+def _normalize_approval_resume(
+    resume_payload,
+    pending_tool_call_ids: list[str],
+) -> dict[str, str]:
+    """Normalize an interrupt resume payload into ``{tool_call_id: approve|deny}``.
+
+    Accepts the shapes a resume request may carry: a mapping of tool_call_id to
+    decision, a list of decision dicts, or a ``{"decisions": [...]}`` wrapper.
+    Anything that is not an explicit "approve" counts as a denial.
+    """
+
+    if isinstance(resume_payload, dict) and isinstance(
+        resume_payload.get("decisions"), list
+    ):
+        entries = resume_payload["decisions"]
+    elif isinstance(resume_payload, dict):
+        entries = [
+            {"tool_call_id": key, "decision": value}
+            for key, value in resume_payload.items()
+        ]
+    elif isinstance(resume_payload, list):
+        entries = resume_payload
+    else:
+        entries = []
+
+    decisions: dict[str, str] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        tool_call_id = entry.get("tool_call_id") or entry.get("id")
+        decision = entry.get("decision") or entry.get("approval")
+        if tool_call_id:
+            decisions[str(tool_call_id)] = (
+                "approve"
+                if str(decision).strip().lower() == "approve"
+                else "deny"
+            )
+
+    # Fail closed: a pending call without an explicit approval is denied.
+    for tool_call_id in pending_tool_call_ids:
+        decisions.setdefault(tool_call_id, "deny")
+
+    return decisions
+
+
+def _request_tool_approvals(tool_calls: list[dict], request: LLMRequest) -> dict[str, str]:
+    """Pause for user approval on configured actions that require it.
+
+    Returns ``{tool_call_id: "approve"|"deny"}`` for the human-approval calls in
+    this batch. Calls configured with ``approval: "auto"`` are not included. The
+    interrupt happens before anything in the batch executes, so a resume never
+    re-runs already-executed calls.
+    """
+
+    approval_map = build_tool_approval_map(
+        getattr(request, "tool_config", None) or []
+    )
+
+    pending = [
+        {
+            "tool_call_id": tool_call.get("id", ""),
+            "name": tool_call.get("name", ""),
+            "args": tool_call.get("args") or {},
+        }
+        for tool_call in tool_calls
+        # Missing approval fails closed to "human".
+        if approval_map.get(tool_call.get("name", ""), "human") != "auto"
+    ]
+
+    if not pending:
+        return {}
+
+    logger.debug(
+        "Pausing for tool approval: %s",
+        [item["name"] for item in pending],
+    )
+
+    resume_payload = interrupt(pending)
+
+    return _normalize_approval_resume(
+        resume_payload, [item["tool_call_id"] for item in pending]
+    )
+
+
+def _denial_message(tool_name: str, tool_call_id: str) -> ToolMessage:
+    """Build the ToolMessage returned to the model when a user denies an action."""
+
+    return ToolMessage(
+        content=(
+            "The user denied this action. Do not retry it or silently perform it; "
+            "acknowledge the denial and continue without the action."
+        ),
+        tool_call_id=tool_call_id,
+        name=tool_name,
+        status="error",
+    )
+
+
 def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
     """
     Build an async tool execution node for a LangGraph workflow.
@@ -161,24 +263,51 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             [tool_call.get("name") for tool_call in tool_calls],
         )
 
-        # Connector-backed tools are handled outside of ToolNode so we can pass
-        # request context (credentials, user token) to the implementation.
-        connector_results: dict[str, ToolMessage] = {}
-        remaining_tool_calls: list[dict] = []
-
         metadata = state.get("metadata") or {}
         user = metadata.get("user")
+        # Endpoint-seeded live request. After a checkpoint round-trip the object
+        # deserializes to a dict, so fall back to the request captured at graph
+        # build time when that happens.
+        current_request = metadata.get("request")
+        if not isinstance(current_request, LLMRequest):
+            current_request = request
+
+        # Interactive chat turns pause for human approval before executing any
+        # call in the batch (auto + human together, so a resume never re-runs a
+        # call that already had side effects).
+        approval_decisions: dict[str, str] = {}
+        if (
+            metadata.get("approval_enabled")
+            and current_request is not None
+            and getattr(current_request, "is_chat_agent", False)
+        ):
+            approval_decisions = _request_tool_approvals(
+                tool_calls, current_request
+            )
+
+        # Connector-backed tools are handled outside of ToolNode so we can pass
+        # request context (credentials, user token) to the implementation.
+        precomputed_results: dict[str, ToolMessage] = {}
+        remaining_tool_calls: list[dict] = []
 
         for tool_call in tool_calls:
             tool_name = tool_call.get("name", "")
             tool_call_id = tool_call.get("id", "")
             args = tool_call.get("args", {})
 
+            # A denied human-approval call short-circuits: the model receives a
+            # denial ToolMessage and the turn continues without the action.
+            if approval_decisions.get(tool_call_id) == "deny":
+                precomputed_results[tool_call_id] = _denial_message(
+                    tool_name, tool_call_id
+                )
+                continue
+
             # Corsair sidecar tools: dotted names like "github.issues.create" are
             # routed to the sidecar directly, using credentials from the request.
-            if is_corsair_tool(tool_name) and request is not None:
+            if is_corsair_tool(tool_name) and current_request is not None:
                 if not isinstance(user, User):
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="User authentication context missing for Corsair tool.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -190,20 +319,20 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     result = await invoke_corsair_tool(
                         tool_name=tool_name,
                         arguments=args,
-                        llm_request=request,
+                        llm_request=current_request,
                         user=user,
                     )
 
                     if result.get("success"):
                         content = json.dumps(result.get("data")) if result.get("data") is not None else "Corsair tool executed successfully."
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=content,
                             tool_call_id=tool_call_id,
                             name=tool_name,
                             status="success",
                         )
                     else:
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Corsair tool failed: {result.get('error') or result.get('message') or result}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -211,7 +340,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                 except Exception as exc:
                     logger.exception("Corsair sidecar tool failed for %s", tool_name)
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content=f"Error invoking Corsair tool {tool_name}: {exc}",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -219,10 +348,10 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     )
                 continue
 
-            if tool_name == "outlook_send_email" and request is not None:
-                credential_name = _resolve_outlook_credential_name(request)
+            if tool_name == "outlook_send_email" and current_request is not None:
+                credential_name = _resolve_outlook_credential_name(current_request)
                 if not credential_name:
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="No Outlook credential configured for this agent.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -231,7 +360,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     continue
 
                 if not isinstance(user, User):
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="User authentication context missing.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -254,8 +383,8 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         from_address=from_address,
                         cc=args.get("cc"),
                         bcc=args.get("bcc"),
-                        agent_id=getattr(request, "ref_id", None),
-                        agent_name=getattr(request, "ref_name", None) or getattr(request, "agent_name", None),
+                        agent_id=getattr(current_request, "ref_id", None),
+                        agent_name=getattr(current_request, "ref_name", None) or getattr(current_request, "agent_name", None),
                     )
 
                     # The WorkspaceAPIs cloud connector wraps failures inside a
@@ -269,7 +398,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     nested_error = _extract_connector_error(result)
 
                     if result.get("status") == "success" and nested_status and 200 <= nested_status < 300:
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Email sent successfully via Outlook. Response: {result.get('response')}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -277,7 +406,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                     else:
                         detail = nested_error or result.get("error") or result.get("message")
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Failed to send email via Outlook: {detail}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -285,7 +414,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                 except Exception as exc:
                     logger.exception("Outlook send email tool failed")
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content=f"Error sending email via Outlook: {exc}",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -311,8 +440,8 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         merged_messages = []
         for tool_call in tool_calls:
             tool_call_id = tool_call.get("id", "")
-            if tool_call_id in connector_results:
-                merged_messages.append(connector_results[tool_call_id])
+            if tool_call_id in precomputed_results:
+                merged_messages.append(precomputed_results[tool_call_id])
             else:
                 # Find the matching ToolMessage produced by ToolNode.
                 matching = next(

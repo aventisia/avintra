@@ -18,9 +18,6 @@ from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.services.tool_skill_selector import (
-    ToolSkillCatalog,
-    ToolSkillSelectionResponse,
-    resolve_requested_or_selected_tools_and_skills,
     select_tools_and_skills,
 )
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
@@ -116,16 +113,43 @@ def build_chat_graph(
     return builder.compile(checkpointer=graph_memory)
 
 
+def _restore_request(
+    metadata: dict,
+    fallback: LLMRequest | None,
+) -> LLMRequest | None:
+    """Return the current request carried in state metadata.
+
+    Checkpoint deserialization turns the pydantic ``LLMRequest`` into a dict, so
+    rebuild it when needed and otherwise fall back to the build-time request.
+    """
+
+    request = metadata.get("request")
+    if isinstance(request, LLMRequest):
+        return request
+    if isinstance(request, dict):
+        try:
+            return LLMRequest(**request)
+        except Exception:
+            logger.exception("Failed to rebuild request from graph state.")
+    return fallback
+
+
 def _create_seed_request_node(request: LLMRequest, user: User):
-    """Write the original request and user into graph state metadata."""
+    """Write the original request and user into graph state metadata.
+
+    The compiled graph is cached per conversation, so the request captured at
+    build time goes stale after the first turn. ChatService passes the current
+    request/user in the invocation input; prefer those and fall back to the
+    build-time values (e.g. for resumptions without new input).
+    """
 
     async def seed_request(state: ChatState):
         metadata = state.get("metadata") or {}
         return {
             "metadata": {
                 **metadata,
-                "request": request,
-                "user": user,
+                "request": metadata.get("request") or request,
+                "user": metadata.get("user") or user,
             }
         }
 
@@ -150,6 +174,7 @@ def _create_agent_selector_node(
 
     async def identify_tools_and_skills(state: ChatState):
         metadata = state.get("metadata") or {}
+        current_request = _restore_request(metadata, request)
 
         # Load tenant-specific skills from the database so the planner sees
         # both global skills and this tenant's custom skills.
@@ -160,12 +185,13 @@ def _create_agent_selector_node(
                 tenant_id=tenant_id,
             )
 
-        # Explicitly configured tools (via "Configure Tools") are force-bound —
-        # the agent may call any of them. Explicitly attached skills (via
-        # "Configure Skills") are NOT force-injected; the ReAct planner decides
-        # per-message which skill(s) are actually relevant (Path B), so a simple
-        # "Hi" does not apply a skill the user never triggered.
-        selected_tool_names = list(explicit_tool_names or [])
+        # Explicitly configured tools (via "Configure Tools") are the only tools
+        # the agent may call. They are NOT force-bound: the ReAct planner decides
+        # per-message which configured actions are relevant (Path B), so a pure
+        # text/drafting request binds and executes nothing. Explicitly attached
+        # skills follow the same per-message routing.
+        configured_tool_names = list(explicit_tool_names or [])
+        configured_tool_set = set(configured_tool_names)
 
         if explicit_skill_names:
             logger.debug(
@@ -173,16 +199,23 @@ def _create_agent_selector_node(
                 explicit_skill_names,
             )
 
-        # Let the ReAct planner decide which skills are relevant for this
-        # specific user message.
+        # Let the ReAct planner decide which tools and skills are relevant for
+        # this specific user message.
         selection = await select_tools_and_skills(
-            request=request,
+            request=current_request,
             user=user,
             tool_registry=tool_registry,
             skill_registry=skill_registry,
             tenant_id=tenant_id,
             allowed_skill_names=list(explicit_skill_names or []),
+            allowed_tool_names=configured_tool_names,
         )
+
+        # Bind only configured actions the planner flagged as relevant. When
+        # the planner selects none (e.g. writing/drafting), no tool is bound.
+        selected_tool_names = [
+            name for name in selection.tool_names if name in configured_tool_set
+        ]
 
         selected_skill_names = selection.skill_names
         selected_skills = _resolve_skill_configs(
@@ -190,28 +223,6 @@ def _create_agent_selector_node(
             selected_skill_names,
             tenant_id=tenant_id,
         )
-
-        # Corsair tools live on the sidecar, not in the legacy registry. Keep
-        # any explicitly-provided dotted names in the selection even though the
-        # planner catalog never contained them.
-        if explicit_tool_names:
-            corsair_explicit = [
-                name for name in explicit_tool_names if is_corsair_tool(name)
-            ]
-            selected_tool_names = list(
-                dict.fromkeys(selected_tool_names + corsair_explicit)
-            )
-
-        # Corsair tools live on the sidecar, not in the legacy registry. Keep
-        # any explicitly-provided dotted names in the selection even though the
-        # planner catalog never contained them.
-        if explicit_tool_names:
-            corsair_explicit = [
-                name for name in explicit_tool_names if is_corsair_tool(name)
-            ]
-            selected_tool_names = list(
-                dict.fromkeys(selected_tool_names + corsair_explicit)
-            )
 
         logger.info(
             "Agent identified tools/skills. tools=%s skills=%s",
@@ -246,6 +257,9 @@ def _create_dynamic_model_node(
 
         selected_tool_names = metadata.get("selected_tool_names")
         selected_skills = metadata.get("selected_skills")
+        # Prefer the request seeded for this turn; the closure request is the
+        # graph-build-time request and goes stale in cached conversations.
+        current_request = _restore_request(metadata, llm_request)
 
         node_model = model
 
@@ -253,7 +267,7 @@ def _create_dynamic_model_node(
         tools = await _resolve_tools(
             tool_registry,
             selected_tool_names,
-            llm_request,
+            current_request,
         )
 
         # Enable tool calling when tools are available
@@ -272,7 +286,7 @@ def _create_dynamic_model_node(
         # model to ground its answer in the injected "[Knowledge Base Context]"
         # block. This is independent of skill selection so the agent reliably
         # uses retrieved KB content even when no skill is applied.
-        kb_directive = _build_kb_directive(llm_request)
+        kb_directive = _build_kb_directive(current_request)
         if kb_directive:
             if skill_prompt:
                 skill_prompt = f"{kb_directive}\n\n{skill_prompt}"
@@ -291,7 +305,7 @@ def _create_dynamic_model_node(
 
         # Structured output cannot be combined with tool calling
         # because both control the model response format
-        response_format = _get_response_format(llm_request)
+        response_format = _get_response_format(current_request)
 
         if response_format and not tools:
             node_model = node_model.with_structured_output(
@@ -303,7 +317,7 @@ def _create_dynamic_model_node(
         return await create_model_node(
             model=node_model,
             skill_prompt=skill_prompt,
-            max_short_term_turns=llm_request.max_short_term_turns,
+            max_short_term_turns=current_request.max_short_term_turns,
         )(state)
 
     return model_node_factory
@@ -318,11 +332,18 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         metadata = state.get("metadata") or {}
 
         selected_tool_names = metadata.get("selected_tool_names")
+        # Credential/config lookups must use the current turn's request, not the
+        # graph-build-time request captured in the closure.
+        current_request = _restore_request(metadata, request)
 
         # Resolve selected tool names into executable tools
-        tools = await _resolve_tools(tool_registry, selected_tool_names or [], request)
+        tools = await _resolve_tools(
+            tool_registry,
+            selected_tool_names or [],
+            current_request,
+        )
 
-        return await create_tool_node(tools, request)(state)
+        return await create_tool_node(tools, current_request)(state)
 
     return tool_node_factory
 
@@ -440,9 +461,30 @@ def _resolve_skill_configs(
 
 
 def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
-    """Build a system prompt fragment describing selected skills."""
+    """Build a system prompt fragment describing selected skills.
+
+    Skills are stored in graph state and survive checkpoint round-trips as
+    plain dicts, so each entry is normalized back to ``SkillConfig`` before
+    use (approval resumes re-enter the model node without the selector node).
+    """
 
     if not skills:
+        return None
+
+    normalized: list[SkillConfig] = []
+    for raw in skills:
+        if isinstance(raw, SkillConfig):
+            normalized.append(raw)
+            continue
+        if isinstance(raw, dict):
+            try:
+                normalized.append(SkillConfig(**raw))
+            except Exception:
+                logger.warning(
+                    "Skipping unreadable skill from graph state: %s",
+                    raw.get("name"),
+                )
+    if not normalized:
         return None
 
     lines = [
@@ -450,7 +492,7 @@ def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
         "",
     ]
 
-    for skill in skills:
+    for skill in normalized:
         lines.append(f"- {skill.name}: {skill.description}")
 
         # If the skill was loaded from the DB, inject the full file contents
