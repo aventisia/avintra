@@ -27,6 +27,8 @@ You are a routing assistant. Given a user request and a catalog of available too
 Rules:
 - Only select items that are actually needed to answer the request.
 - If the request is a simple chat question, return empty lists.
+- When the user asks to try again, retry, or continue an earlier request, select the tools or skills that were previously used for that request.
+- A previous denial does not make an action irrelevant: the user approves each execution individually.
 - Do not invent tools or skills that are not in the catalog.
 - Respond ONLY with valid JSON matching the provided schema.
 """
@@ -40,6 +42,7 @@ async def select_tools_and_skills(
     tenant_id: str | None = None,
     allowed_skill_names: list[str] | None = None,
     allowed_tool_names: list[str] | None = None,
+    conversation_messages: list[Any] | None = None,
 ) -> "ToolSkillSelectionResponse":
     """
     Ask a small planner LLM which tools and skills are relevant for ``request``.
@@ -58,6 +61,9 @@ async def select_tools_and_skills(
             these tools (e.g. the actions explicitly configured on an agent).
             Corsair actions are not in the local registry, so their catalog
             entries are fetched from the sidecar.
+        conversation_messages: Recent LangGraph state messages. A compact
+            transcript is included so follow-up requests (e.g. "try again")
+            resolve against what was asked and attempted earlier.
     """
 
     catalog = await _build_catalog(
@@ -77,6 +83,7 @@ async def select_tools_and_skills(
     prompt = _build_planner_prompt(
         request=request,
         catalog=catalog,
+        conversation_messages=conversation_messages,
     )
 
     planner_request = LLMRequest(
@@ -466,15 +473,24 @@ async def _build_corsair_catalog_entries(
 def _build_planner_prompt(
     request: LLMRequest,
     catalog: "ToolSkillCatalog",
+    conversation_messages: list[Any] | None = None,
 ) -> str:
     """Assemble the prompt sent to the planner LLM."""
 
     user_text = _extract_user_text(request)
+    recent_conversation = _format_recent_messages(conversation_messages)
+    recent_section = (
+        "\nRecent conversation (most recent last; use it to resolve follow-up "
+        "requests that reference earlier messages or tool attempts):\n"
+        f"{recent_conversation}\n"
+        if recent_conversation
+        else ""
+    )
 
     return f"""\
         User request:
         {user_text}
-
+        {recent_section}
         Available tools (name and description only):
         {json.dumps(catalog.tools, indent=2)}
 
@@ -486,6 +502,99 @@ def _build_planner_prompt(
         Respond with valid JSON matching this schema:
         {json.dumps(ToolSkillSelectionResponse.model_json_schema(), indent=2)}
         """
+
+
+def _format_recent_messages(
+    messages: list[Any] | None,
+    limit: int = 6,
+    max_chars_per_message: int = 300,
+) -> str:
+    """Render a compact transcript of recent conversation messages.
+
+    Gives the planner enough context to resolve follow-up requests such as
+    "try again" or "and the others?" that reference an earlier tool or skill
+    decision. The trailing user message is excluded because it is provided
+    separately as the user request.
+
+    Tool outcomes are paraphrased as short neutral notes instead of raw tool
+    output: results can be huge, and denial instructions ("do not retry") would
+    bias the relevance decision. Whether an action may run is enforced by the
+    tool-approval gate, not by the planner.
+    """
+
+    if not messages:
+        return ""
+
+    recent = list(messages)
+    # Drop the current user request when it is present as the latest message.
+    if recent and getattr(recent[-1], "type", None) in ("human", "user"):
+        recent = recent[:-1]
+
+    lines: list[str] = []
+    tool_call_names: dict[str, str] = {}
+
+    for message in recent:
+        role = (
+            getattr(message, "type", None)
+            or getattr(message, "role", None)
+            or "unknown"
+        )
+
+        # Track tool-call ids so tool results can name their originating tool.
+        for call in getattr(message, "tool_calls", None) or []:
+            if isinstance(call, dict) and call.get("id"):
+                tool_call_names[str(call["id"])] = str(call.get("name") or "")
+
+        if role in ("tool", "tool_result"):
+            # Paraphrase outcomes neutrally: raw output is often huge, and
+            # mentioning a denial biases the planner away from re-selecting an
+            # action the user may now be asking to retry. Approval consent is
+            # enforced by the tool-approval gate, not by the planner.
+            name = getattr(message, "name", None) or tool_call_names.get(
+                str(getattr(message, "tool_call_id", "") or ""), ""
+            )
+            content = str(getattr(message, "content", "") or "")
+            if "denied" in content.lower():
+                outcome = "was requested earlier and did not complete"
+            else:
+                outcome = "ran earlier"
+            label = f"{name} " if name else "An earlier action "
+            lines.append(f"tool: {label}{outcome}")
+            continue
+
+        if role not in ("human", "user", "ai", "assistant"):
+            continue
+
+        content = getattr(message, "content", "")
+        if isinstance(content, list):
+            content = " ".join(str(part) for part in content)
+        text = " ".join(str(content or "").split())
+
+        # Knowledge-base context is injected as a user message; it is retrieval
+        # payload, not conversation, and only adds noise for the planner.
+        if "[Knowledge Base Context]" in text:
+            continue
+
+        # Assistant tool-call messages carry no text; surface the called tools.
+        tool_calls = getattr(message, "tool_calls", None) or []
+        if role == "ai" and tool_calls:
+            names = ", ".join(
+                str(call.get("name") or "")
+                for call in tool_calls
+                if isinstance(call, dict)
+            )
+            text = f"(requested tool call: {names}) {text}".strip()
+
+        if not text:
+            continue
+
+        if len(text) > max_chars_per_message:
+            text = text[:max_chars_per_message] + "…"
+
+        role_label = {"human": "user", "ai": "assistant"}.get(role, role)
+        lines.append(f"{role_label}: {text}")
+
+    return "\n".join(lines[-limit:])
 
 
 def _extract_user_text(request: LLMRequest) -> str:

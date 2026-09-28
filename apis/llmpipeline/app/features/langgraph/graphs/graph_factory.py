@@ -209,6 +209,7 @@ def _create_agent_selector_node(
             tenant_id=tenant_id,
             allowed_skill_names=list(explicit_skill_names or []),
             allowed_tool_names=configured_tool_names,
+            conversation_messages=state.get("messages"),
         )
 
         # Bind only configured actions the planner flagged as relevant. When
@@ -302,6 +303,20 @@ def _create_dynamic_model_node(
                 skill_prompt = f"{tool_instruction}\n\n{skill_prompt}"
             else:
                 skill_prompt = tool_instruction
+
+        # A denial recorded earlier in the conversation otherwise makes the
+        # model refuse to act even when the user explicitly asks again. When
+        # the user re-requests an action they previously denied, tell the model
+        # to call it; approval is requested again at execution time.
+        retry_instruction = _build_denied_retry_instruction(
+            state.get("messages"),
+            tools,
+        )
+        if retry_instruction:
+            if skill_prompt:
+                skill_prompt = f"{retry_instruction}\n\n{skill_prompt}"
+            else:
+                skill_prompt = retry_instruction
 
         # Structured output cannot be combined with tool calling
         # because both control the model response format
@@ -565,6 +580,53 @@ def _build_tool_instruction(tools: list[BaseTool]) -> str | None:
         "explaining, summarizing, or general questions), do not call any tool. "
         "Never call a tool to explore or verify. Do not claim you are unable to "
         "perform an action that a tool supports; call the tool."
+    )
+
+
+def _build_denied_retry_instruction(
+    messages: list[Any] | None,
+    tools: list[BaseTool],
+) -> str | None:
+    """Return an instruction to re-call tools the user previously denied.
+
+    Denials stay in the conversation history, which otherwise makes the model
+    refuse to act when the user explicitly asks for the action again. The
+    directive only applies at the start of a new user turn: on post-tool
+    continuations the tool has already run (or the denial was just delivered)
+    and re-calling it would be wrong.
+    """
+
+    if not messages or not tools:
+        return None
+
+    # Only nudge on a fresh user turn (the latest message is the user request).
+    if getattr(messages[-1], "type", None) != "human":
+        return None
+
+    denied_names = {
+        str(getattr(message, "name", "") or "")
+        for message in messages[:-1]
+        if getattr(message, "type", None) == "tool"
+        and "denied" in str(getattr(message, "content", "") or "").lower()
+    }
+    if not denied_names:
+        return None
+
+    # Model-facing Corsair names are sanitized (dots -> underscores); compare
+    # on both forms so bound tools match their denial records.
+    retry_names = [
+        tool.name
+        for tool in tools
+        if tool.name in denied_names or tool.name.replace(".", "_") in denied_names
+    ]
+    if not retry_names:
+        return None
+
+    return (
+        "Earlier in this conversation the user denied approval for: "
+        + ", ".join(retry_names)
+        + ". They have now asked for that action again. Call the tool again; "
+        "the user will be asked to approve it."
     )
 
 
