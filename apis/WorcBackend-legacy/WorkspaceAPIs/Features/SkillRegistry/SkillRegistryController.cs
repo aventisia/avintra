@@ -30,8 +30,8 @@ public class SkillRegistryController : BaseApiController
     }
 
     // Checks the availability of a skill name.
+    // Any authenticated user may check availability; creation is authorized per-record in the service.
     [HttpPost("is-available")]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsSkillNameAvailable(
         [FromQuery] Guid? skillId,
         [FromBody] CheckAvailabilityDto checkAvailabilityDto)
@@ -54,8 +54,8 @@ public class SkillRegistryController : BaseApiController
     }
 
     // Creates a new skill.
+    // Creation is open to all roles (e.g. TD); ownership is assigned in the service.
     [HttpPost]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<SkillDto>>> CreateSkill([FromBody] SkillDto skillDto)
     {
         return ResultHelper(await _skillRegistryService.InsertSkillAsync(skillDto));
@@ -63,7 +63,6 @@ public class SkillRegistryController : BaseApiController
 
     // Updates an existing skill.
     [HttpPut]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<SkillDto>>> UpdateSkill([FromBody] SkillDto skillDto)
     {
         return ResultHelper(await _skillRegistryService.UpdateSkillAsync(skillDto));
@@ -71,7 +70,6 @@ public class SkillRegistryController : BaseApiController
 
     // Deletes a skill by its ID.
     [HttpDelete("{skillId}")]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteSkill(Guid skillId)
     {
         return ResultHelper(await _skillRegistryService.DeleteSkillAsync(skillId));
@@ -79,7 +77,6 @@ public class SkillRegistryController : BaseApiController
 
     // Deletes multiple skills.
     [HttpPost("delete-multiple")]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleSkills([FromBody] List<Guid> skillIds)
     {
         return ResultHelper(await _skillRegistryService.DeleteSkillsAsync(skillIds));
