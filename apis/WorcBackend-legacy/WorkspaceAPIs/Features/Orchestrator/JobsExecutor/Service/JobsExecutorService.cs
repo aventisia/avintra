@@ -7,6 +7,7 @@ public class JobsExecutorService : IJobsExecutorService
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IHubContext<OrchestratorHub> _hubContext;
     private readonly IClientStatusStore _clientStatusStore;
+    private readonly ICreditGateService _creditGateService;
 
     private readonly Guid _userId;
 
@@ -17,7 +18,8 @@ public class JobsExecutorService : IJobsExecutorService
         IHttpContextAccessor httpContextAccessor,
         IHubContext<OrchestratorHub> hubContext,
         IClientStatusStore clientStatusStore,
-        WorkspaceInternalDbContext workspaceInternalDbContext)
+        WorkspaceInternalDbContext workspaceInternalDbContext,
+        ICreditGateService creditGateService)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
@@ -26,6 +28,7 @@ public class JobsExecutorService : IJobsExecutorService
         _hubContext = hubContext;
         _clientStatusStore = clientStatusStore;
         _workspaceInternalDbContext = workspaceInternalDbContext;
+        _creditGateService = creditGateService;
     }
 
     // Method to execute a job command
@@ -49,6 +52,17 @@ public class JobsExecutorService : IJobsExecutorService
             if (jobDetails == null)
             {
                 _logger.LogWarning("Job {JobId} not found in the database.", job.Id);
+                return;
+            }
+
+            if (!await _creditGateService.HasSufficientCreditsAsync(jobDetails.TenantId))
+            {
+                _creditGateService.CancelForInsufficientCredits(jobDetails);
+                _unitOfWork.JobRepo.Update(jobDetails);
+                if (!await _unitOfWork.SaveAsync())
+                    _logger.LogWarning("Failed to persist insufficient-credit cancellation for job {JobId}.", jobDetails.Id);
+
+                _logger.LogWarning("Blocking job dispatch for tenant {TenantId}: insufficient credits.", jobDetails.TenantId);
                 return;
             }
 
