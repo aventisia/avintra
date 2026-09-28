@@ -585,9 +585,22 @@ public class TenantAccountService : ITenantAccountService
                 .ToListAsync();
 
             // If a specific space is selected, keep only the users who have access to it.
+            // Space membership is explicit for non-default spaces, but users who were never
+            // assigned to ANY non-default space are tenant-wide members (they default to the
+            // Central space). Those users must stay assignable too, otherwise resources created
+            // inside a space (e.g. skills) cannot be shared with them at all.
             if (currentSpaceId != Guid.Empty)
             {
-                var spaceUserIds = await _unitOfWork.SpaceUserRepo
+                // All active memberships across every non-default space of the tenant.
+                var activeSpaceUserIds = await _unitOfWork.SpaceUserRepo
+                    .GetByConditionAsync(su =>
+                        su.TenantId == _tenantId &&
+                        su.IsActive)
+                    .Select(su => su.UserId)
+                    .ToListAsync();
+
+                // Members of the selected space.
+                var membersOfCurrentSpace = await _unitOfWork.SpaceUserRepo
                     .GetByConditionAsync(su =>
                         su.TenantId == _tenantId &&
                         su.SpaceId == currentSpaceId &&
@@ -596,7 +609,17 @@ public class TenantAccountService : ITenantAccountService
                     .Distinct()
                     .ToListAsync();
 
-                accountUsers = accountUsers.Where(u => spaceUserIds.Contains(u.Id)).ToList();
+                // Central-only users = tenant users not present in ANY active space membership.
+                var spaceMemberIds = activeSpaceUserIds.ToHashSet();
+                var centralOnlyUserIds = accountUsers
+                    .Select(u => u.Id)
+                    .Where(id => !spaceMemberIds.Contains(id));
+
+                var allowedUserIds = membersOfCurrentSpace
+                    .Union(centralOnlyUserIds)
+                    .ToHashSet();
+
+                accountUsers = accountUsers.Where(u => allowedUserIds.Contains(u.Id)).ToList();
             }
 
             // Populate the response with the search results.
