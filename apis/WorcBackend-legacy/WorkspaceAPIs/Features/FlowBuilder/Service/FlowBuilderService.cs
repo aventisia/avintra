@@ -840,8 +840,12 @@ public class FlowBuilderService : IFlowBuilderService
     {
         foreach (var name in names)
         {
+            // Load the source queue together with its user and agent assignments so the
+            // Production clone can be linked the same way.
             var devQueue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(q => q.QueueUsers)
+                .Include(q => q.QueueFlowVersions)
                 .FirstOrDefaultAsync();
             if (devQueue == null)
                 continue;
@@ -849,34 +853,114 @@ public class FlowBuilderService : IFlowBuilderService
             var prodQueue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
-            if (prodQueue != null)
-                continue;
 
-            var clone = new Queue
+            // Create the Production queue clone only when it does not exist yet.
+            if (prodQueue == null)
             {
-                Name = devQueue.Name,
-                Type = devQueue.Type,
-                ProcessingMode = devQueue.ProcessingMode,
-                RouteToQueues = devQueue.RouteToQueues,
-                Description = devQueue.Description,
-                IsUniqueReferencesEnforced = devQueue.IsUniqueReferencesEnforced,
-                IsStoredEncrypted = devQueue.IsStoredEncrypted,
-                ShouldRetryFailedItems = devQueue.ShouldRetryFailedItems,
-                ShouldRetryAbandonedItems = devQueue.ShouldRetryAbandonedItems,
-                MaximumRetryAttempts = devQueue.MaximumRetryAttempts,
-                InputSchema = devQueue.InputSchema,
-                OutputSchema = devQueue.OutputSchema,
-                Statuses = devQueue.Statuses,
-                IsTenantWideAccess = devQueue.IsTenantWideAccess,
-                CredentialName = devQueue.CredentialName,
-                EnvType = ConfigureEnvironmentType.Prod,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-            await _unitOfWork.QueueRepo.InsertAsync(clone);
-            await _unitOfWork.SaveAsync();
-            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Queue);
+                prodQueue = new Queue
+                {
+                    Name = devQueue.Name,
+                    Type = devQueue.Type,
+                    ProcessingMode = devQueue.ProcessingMode,
+                    RouteToQueues = devQueue.RouteToQueues,
+                    Description = devQueue.Description,
+                    IsUniqueReferencesEnforced = devQueue.IsUniqueReferencesEnforced,
+                    IsStoredEncrypted = devQueue.IsStoredEncrypted,
+                    ShouldRetryFailedItems = devQueue.ShouldRetryFailedItems,
+                    ShouldRetryAbandonedItems = devQueue.ShouldRetryAbandonedItems,
+                    MaximumRetryAttempts = devQueue.MaximumRetryAttempts,
+                    InputSchema = devQueue.InputSchema,
+                    OutputSchema = devQueue.OutputSchema,
+                    Statuses = devQueue.Statuses,
+                    IsTenantWideAccess = devQueue.IsTenantWideAccess,
+                    CredentialName = devQueue.CredentialName,
+                    EnvType = ConfigureEnvironmentType.Prod,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                };
+                await _unitOfWork.QueueRepo.InsertAsync(prodQueue);
+                await _unitOfWork.SaveAsync();
+                await _resourceShareService.AssignOwnerAsync(_userId, prodQueue.Id, ResourceTypeEnum.Queue);
+            }
+
+            // Mirror the queue's user assignments onto the Production queue.
+            await EnsureProdQueueUsersAsync(devQueue, prodQueue);
+
+            // Mirror the queue's agent (flow version) assignments onto the Production queue.
+            await EnsureProdQueueFlowVersionsAsync(devQueue, prodQueue);
         }
+    }
+
+    /// <summary>
+    /// Copies the source queue's user assignments onto its Production clone. Existing links are
+    /// skipped so repeated publishes stay idempotent.
+    /// </summary>
+    private async Task EnsureProdQueueUsersAsync(Queue devQueue, Queue prodQueue)
+    {
+        var sourceUsers = devQueue.QueueUsers?.ToList() ?? new List<QueueUser>();
+        if (sourceUsers.Count == 0)
+            return;
+
+        // Fetch the users already linked to the Production queue to avoid duplicates.
+        var existingUserIds = await _unitOfWork.QueueUserRepo
+            .GetByConditionAsync(qu => qu.QueueId == prodQueue.Id)
+            .Select(qu => qu.UserId)
+            .ToListAsync();
+
+        var newQueueUsers = sourceUsers
+            .Where(qu => !existingUserIds.Contains(qu.UserId))
+            .Select(qu => new QueueUser
+            {
+                QueueId = prodQueue.Id,
+                UserId = qu.UserId,
+                AccessType = qu.AccessType,
+                TenantId = qu.TenantId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            })
+            .ToList();
+
+        if (newQueueUsers.Count == 0)
+            return;
+
+        await _unitOfWork.QueueUserRepo.InsertAsync(newQueueUsers);
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <summary>
+    /// Copies the source queue's agent (flow version) assignments onto its Production clone.
+    /// Existing links are skipped so repeated publishes stay idempotent.
+    /// </summary>
+    private async Task EnsureProdQueueFlowVersionsAsync(Queue devQueue, Queue prodQueue)
+    {
+        var sourceFlowVersions = devQueue.QueueFlowVersions?.ToList() ?? new List<QueueFlowVersion>();
+        if (sourceFlowVersions.Count == 0)
+            return;
+
+        // Fetch the flow versions already linked to the Production queue to avoid duplicates.
+        var existingFlowVersionIds = await _unitOfWork.QueueFlowVersionRepo
+            .GetByConditionAsync(qf => qf.QueueId == prodQueue.Id)
+            .Select(qf => qf.FlowVersionId)
+            .ToListAsync();
+
+        var newQueueFlowVersions = sourceFlowVersions
+            .Where(qf => !existingFlowVersionIds.Contains(qf.FlowVersionId))
+            .Select(qf => new QueueFlowVersion
+            {
+                QueueId = prodQueue.Id,
+                FlowVersionId = qf.FlowVersionId,
+                AccessType = qf.AccessType,
+                TenantId = qf.TenantId,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId
+            })
+            .ToList();
+
+        if (newQueueFlowVersions.Count == 0)
+            return;
+
+        await _unitOfWork.QueueFlowVersionRepo.InsertAsync(newQueueFlowVersions);
+        await _unitOfWork.SaveAsync();
     }
 
     private async Task EnsureProdToolsAsync(List<string> names)
