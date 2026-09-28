@@ -6,17 +6,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { toast } from "@avplatform/ui/sonner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
-import { getToolById, setToolActiveState } from "../../apis/tools.apis";
-import { getToolIcon } from "../../constants/tool-icon-mapper";
-import { DATA_QUERY_KEY } from "../../constants/tools-table.constants";
-import { ComponentTypeEnum } from "../../enums/component-type-enum";
+import { getToolById } from "../../apis/tools.apis";
 import { getToolDisplayName } from "../../utils/tool-name-formatter";
+import { ToolIcon } from "../ToolIcon";
 import { OperationList } from "./OperationList";
 
 const TABLE_HEADING = "Tools";
@@ -26,7 +22,6 @@ export const ToolDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const toolName = searchParams.get("tool") ?? "Tool Details";
-  const queryClient = useQueryClient();
 
   useDocumentTitle(`${toolName} - ${TABLE_HEADING}`);
 
@@ -37,18 +32,6 @@ export const ToolDetailsPage = () => {
   });
 
   const tool = data?.data;
-
-  const activeStateMutation = useMutation({
-    mutationFn: (isActive: boolean) => setToolActiveState(id ?? "", isActive),
-    onSuccess: (_response, isActive) => {
-      toast.success(`Tool ${isActive ? "activated" : "deactivated"}.`);
-      queryClient.invalidateQueries({ queryKey: [DETAIL_QUERY_KEY, id] });
-      queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
-    },
-    onError: (error) => {
-      toast.error((error as Error).message || "Failed to update tool active state");
-    },
-  });
 
   if (isLoading) {
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
@@ -62,9 +45,6 @@ export const ToolDetailsPage = () => {
       </div>
     );
   }
-
-  const isPlatformTool = tool.type === ComponentTypeEnum.Platform;
-  const basePath = import.meta.env.VITE_WORKSPACE_PATH?.replace(/\/$/, "") || "";
 
   return (
     <div className="space-y-4 h-full pb-4 pt-[17px]">
@@ -84,41 +64,20 @@ export const ToolDetailsPage = () => {
             </BreadcrumbList>
           </Breadcrumb>
         </h2>
-        <div className="flex items-center gap-2">
-          {!isPlatformTool && (
-            <Button
-              size="sm"
-              variant={tool.isActive ? "outline" : "default"}
-              disabled={activeStateMutation.isPending}
-              onClick={() => activeStateMutation.mutate(!tool.isActive)}
-            >
-              {activeStateMutation.isPending
-                ? tool.isActive
-                  ? "Deactivating..."
-                  : "Activating..."
-                : tool.isActive
-                  ? "Deactivate Tool"
-                  : "Activate Tool"}
-            </Button>
-          )}
-        </div>
       </div>
 
-      {/* Unified detail layout (same for platform and custom tools): icon
-          header card plus the operations list, full width. Custom tools fall
-          back to the default-provider icon via getToolIcon. */}
+      {/* Unified detail layout: icon header card plus the operations list, full
+          width. Uses the user-provided icon when present, then a mapped brand
+          asset, otherwise the shared Wrench glyph (the studio node default). */}
       <div className="grid h-[calc(100vh-2.7*var(--header-height))] grid-cols-1 gap-3">
         <div className="space-y-4">
           {/* Tool header: icon, name, and description */}
           <div className="rounded-lg border bg-background px-5 py-3.5">
             <div className="flex items-center  gap-4">
-              <img
-                src={basePath + getToolIcon(tool.name)}
-                alt={tool.name}
+              <ToolIcon
+                name={tool.name}
+                iconUrl={tool.iconUrl}
                 className="h-12 w-12 flex-shrink-0 object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = basePath + "/brand-img/default-provider.svg";
-                }}
               />
               <div className="flex flex-col gap-2">
                 <h1 className="text-xl font-semibold">{getToolDisplayName(tool.name)}</h1>

@@ -30,6 +30,12 @@ export interface TestToolDto {
 
 /**
  * Represents the response from a tool test call.
+ *
+ * The wire keys are snake_case because both producers emit them as-is: the
+ * Python LLM pipeline returns its Pydantic field names (`status_code`,
+ * `duration_ms`), and the Workspace API pins the same names via
+ * `[JsonPropertyName]` on `TestToolResponseDto`. The frontend talks to both
+ * ends, so the interface mirrors the wire contract.
  */
 export interface TestToolResponseDto {
   /**
@@ -40,7 +46,7 @@ export interface TestToolResponseDto {
   /**
    * HTTP status code returned by the test call.
    */
-  statusCode?: number;
+  status_code?: number;
 
   /**
    * Response body returned by the test call.
@@ -50,5 +56,5 @@ export interface TestToolResponseDto {
   /**
    * Duration of the test call in milliseconds.
    */
-  durationMs?: number;
+  duration_ms?: number;
 }

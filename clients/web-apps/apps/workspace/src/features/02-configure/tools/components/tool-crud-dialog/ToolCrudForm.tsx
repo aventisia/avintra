@@ -89,6 +89,13 @@ export const ToolCrudForm = ({
       />
 
       <InputField
+        name="iconUrl"
+        label="Icon URL"
+        placeholder="https://example.com/icon.svg"
+        description="Optional URL of the icon that represents the tool. Defaults to the placeholder icon."
+      />
+
+      <InputField
         name="baseUrl"
         label="Base URL"
         placeholder="https://api.example.com"

@@ -85,6 +85,12 @@ export const toolZodSchema = z.object({
     .max(100, { message: maxLenError("Tool code", 100) })
     .optional(),
   description: z.string().optional(),
+  iconUrl: z
+    .string()
+    .max(1000, { message: maxLenError("Icon URL", 1000) })
+    .url({ message: "Icon URL must be a valid URL" })
+    .optional()
+    .or(z.literal("")),
   type: z.nativeEnum(ComponentTypeEnum),
   baseUrl: toolBaseUrlSchema,
   openApiSpec: z.string().optional(),

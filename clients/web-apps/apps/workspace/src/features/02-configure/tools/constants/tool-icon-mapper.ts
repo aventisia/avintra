@@ -3,7 +3,8 @@ import { getCorsairPluginIcon } from "../../vault-credentials/vault-credential-c
 /**
  * Maps tool names/ids to their brand icons from corsair DCP generator.
  * These icons are available in the studio public/brand-img folder.
- * Falls back to default-provider icon if specific icon is not found.
+ * Returns undefined when a specific icon is not found, so callers fall back to
+ * the shared Wrench glyph used by the studio canvas node.
  */
 export const toolIconMapper: Record<string, string> = {
   // --- AI / LLM providers ---
@@ -179,12 +180,14 @@ export const toolIconMapper: Record<string, string> = {
 
 /**
  * Get the icon path for a tool by name or id.
- * Returns the mapped icon or a default placeholder icon if not found.
+ * Returns the mapped brand icon, or `undefined` when no specific icon is found
+ * so callers can fall back to the shared Wrench glyph (the studio node default)
+ * instead of a placeholder image.
  */
-export const getToolIcon = (toolName?: string): string => {
-  if (!toolName) return toolIconMapper.default;
+export const getToolIcon = (toolName?: string): string | undefined => {
+  if (!toolName) return undefined;
   const lowerName = toolName.toLowerCase();
   const shortName = lowerName.replace(/^corsair\s+/, "");
 
-  return toolIconMapper[shortName] || getCorsairPluginIcon(shortName) || toolIconMapper.default;
+  return toolIconMapper[shortName] || getCorsairPluginIcon(shortName) || undefined;
 };

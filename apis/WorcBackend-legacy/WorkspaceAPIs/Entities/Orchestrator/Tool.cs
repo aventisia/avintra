@@ -45,6 +45,13 @@ public class Tool : IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the optional URL of the icon that represents the tool.
+    /// When null, the default placeholder icon is used.
+    /// </summary>
+    [MaxLength(1000)]
+    public string? IconUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the component is platform-managed or custom.
     /// </summary>
     public required ComponentTypeEnum Type { get; set; }

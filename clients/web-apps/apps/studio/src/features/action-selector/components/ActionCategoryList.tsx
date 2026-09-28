@@ -295,7 +295,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
             <Tooltip content="Add custom tool">
               <Button
                 onClick={handleAddCustomTool}
-                className="ml-auto"
+                className="ml-auto rounded-full"
                 size="icon8"
                 variant="ghost"
                 aria-label="Add custom tool"
@@ -338,7 +338,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
                           : "hover:bg-accent hover:text-accent-foreground",
                       )}
                     >
-                      <CustomToolIcon icon={tool.icon} className="mt-0.5" />
+                      <CustomToolIcon icon={tool.icon} iconUrl={tool.iconUrl} className="mt-0.5" />
                       <div className="grow overflow-hidden">
                         <div className="flex items-center gap-1.5">
                           <h3 className="truncate text-xs font-medium text-foreground">

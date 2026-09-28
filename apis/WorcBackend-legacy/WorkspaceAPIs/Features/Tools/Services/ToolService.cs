@@ -151,6 +151,7 @@ public class ToolService : IToolService
                     Id = w.Id,
                     Name = w.Name,
                     Description = w.Description,
+                    IconUrl = w.IconUrl,
                     Type = w.Type,
                     AuthenticationType = w.AuthenticationType,
                     CredentialName = w.CredentialName,
@@ -251,6 +252,7 @@ public class ToolService : IToolService
                     Id = w.Id,
                     Name = w.Name,
                     Description = w.Description,
+                    IconUrl = w.IconUrl,
                     Type = w.Type,
                     AuthenticationType = w.AuthenticationType,
                     CredentialName = w.CredentialName,
@@ -566,6 +568,12 @@ public class ToolService : IToolService
             // Normalize string properties to avoid case-sensitivity issues.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
+            // Store blank icon URLs as null so the optional column stays clean.
+            if (string.IsNullOrWhiteSpace(toolDto.IconUrl))
+            {
+                toolDto.IconUrl = null;
+            }
+
             // Ensure the tool name is unique within the current environment.
             var toolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
@@ -677,6 +685,12 @@ public class ToolService : IToolService
             // Normalize string properties.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
+            // Store blank icon URLs as null so the optional column stays clean.
+            if (string.IsNullOrWhiteSpace(toolDto.IconUrl))
+            {
+                toolDto.IconUrl = null;
+            }
+
             // Fetch the existing tool.
             var toolToUpdate = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
@@ -730,6 +744,7 @@ public class ToolService : IToolService
 
             // Apply scalar updates.
             toolToUpdate.Description = toolDto.Description;
+            toolToUpdate.IconUrl = toolDto.IconUrl;
             toolToUpdate.BaseUrl = toolDto.BaseUrl;
             toolToUpdate.AuthenticationType = toolDto.AuthenticationType;
             toolToUpdate.CredentialName = toolDto.CredentialName;

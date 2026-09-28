@@ -20,7 +20,9 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
         />
       ) : null}
 
-      {data.icon ? (
+      {data.iconUrl ? (
+        <FallbackImageIcon className="h-4 w-4" src={data.iconUrl} aria-hidden="true" />
+      ) : data.icon ? (
         <div aria-hidden="true">{iconMapper[data.icon]}</div>
       ) : (
         <FallbackImageIcon className="h-4 w-4" src={data.img} aria-hidden="true" />
@@ -35,7 +37,10 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
             </Badge>
           )}
           {data.isVerified === false && (
-            <Badge className="ml-1 text-3xs" variant={"destructive"}>
+            <Badge
+              className="ml-1 border-orange-200 bg-orange-50 text-orange-700 text-3xs"
+              variant={"outline"}
+            >
               Unverified
             </Badge>
           )}
