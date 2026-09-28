@@ -22,6 +22,13 @@ public class ToolDto
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the optional URL of the icon that represents the tool (max 1000 chars).
+    /// When null, the default placeholder icon is used.
+    /// </summary>
+    [StringLength(1000)]
+    public string? IconUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the component is platform-managed or custom.
     /// </summary>
     public ComponentTypeEnum? Type { get; set; }

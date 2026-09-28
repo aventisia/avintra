@@ -8,6 +8,7 @@ import {
   synthesizeOpenApiSpec,
   toParsedSchema,
 } from "../../utils/manual-openapi.util";
+import { isValidIconUrl } from "../../utils/tool-icon.util";
 import { getOperationVerificationMap } from "../../utils/tool-operations.util";
 import { FieldLabel } from "./FieldLabel";
 import { ManualMethodsEditor } from "./ManualMethodsEditor";
@@ -70,10 +71,13 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     setDraftTool(draftTool ? { ...draftTool, ...patch } : undefined);
   };
 
-  const getError = (field: "name" | "baseUrl") => {
+  const getError = (field: "name" | "baseUrl" | "iconUrl") => {
     if (!touched[field]) return null;
     if (field === "name" && !draftTool?.name?.trim()) return "Name is required.";
     if (field === "baseUrl" && !draftTool?.baseUrl?.trim()) return "Base URL is required.";
+    if (field === "iconUrl" && !isValidIconUrl(draftTool?.iconUrl)) {
+      return "Icon URL must be a valid URL.";
+    }
     return null;
   };
 
@@ -156,6 +160,22 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           rows={3}
           className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
+      </div>
+
+      <div className="space-y-1.5">
+        <FieldLabel
+          label="Icon URL (optional)"
+          description="Optional URL of the icon that represents the tool. Defaults to the placeholder icon when left empty."
+        />
+        <input
+          type="url"
+          value={draftTool?.iconUrl ?? ""}
+          onChange={(e) => updateDraft({ iconUrl: e.target.value })}
+          onBlur={() => setTouched((prev) => ({ ...prev, iconUrl: true }))}
+          placeholder="https://example.com/icon.svg"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+        />
+        {getError("iconUrl") && <p className="text-xs text-destructive">{getError("iconUrl")}</p>}
       </div>
 
       <div className="space-y-1.5">

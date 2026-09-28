@@ -14,6 +14,7 @@ import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 import { toManualOperations } from "../../utils/manual-openapi.util";
+import { isValidIconUrl } from "../../utils/tool-icon.util";
 import { StepAuthenticate } from "./StepAuthenticate";
 import { StepIngestSpec } from "./StepIngestSpec";
 import { StepPlayground } from "./StepPlayground";
@@ -55,6 +56,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
         id: crypto.randomUUID(),
         name: "",
         description: "",
+        iconUrl: "",
         type: ComponentTypeEnum.Custom,
         baseUrl: "",
         openApiSpec: "",
@@ -115,7 +117,8 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const isIngestValid = Boolean(
     draftTool?.name?.trim() &&
     draftTool?.baseUrl?.trim() &&
-    (draftTool?.openApiSpec?.trim() || hasValidManualOperation),
+    (draftTool?.openApiSpec?.trim() || hasValidManualOperation) &&
+    isValidIconUrl(draftTool?.iconUrl),
   );
 
   const canProceed = isIngestValid && isNameValidForSubmit;

@@ -55,7 +55,7 @@ export function getCustomToolNodeName(toolName: string, operationId: string): st
  * Minimal structural view of a tool consumed by the L2/L3 converters. Satisfied
  * by both the personal-tools list (`ToolDto`) and the usable-tools view.
  */
-type CustomToolLike = Pick<ToolDto, "id" | "name" | "description" | "icon">;
+type CustomToolLike = Pick<ToolDto, "id" | "name" | "description" | "icon" | "iconUrl">;
 
 /**
  * Filters the usable-tool catalog down to active custom tools (type=Custom,
@@ -86,6 +86,16 @@ export function formatOperationId(operationId: string): string {
 /** L2 tool icon resolution: custom icon first, then the shared wrench glyph key. */
 export function getToolIcon(tool: CustomToolLike): string {
   return tool.icon || DEFAULT_TOOL_ICON_KEY;
+}
+
+/**
+ * L2/L3/node image resolution: the tool's trimmed `iconUrl`, or undefined when
+ * unset. Renderers treat an undefined value as "use the default glyph" so a
+ * null/empty icon URL never breaks the node, L2 row or L3 action.
+ */
+export function getToolIconUrl(tool: CustomToolLike): string | undefined {
+  const value = tool.iconUrl?.trim();
+  return value ? value : undefined;
 }
 
 /** L2 tool display name, mirroring the OpenAPI `info.title` convention. */
@@ -323,6 +333,7 @@ export function convertToolOperationsToActions(
   label: string;
   description: string;
   icon?: string;
+  iconUrl?: string;
   img?: string;
   color?: string;
   supportedPlatforms: string[];
@@ -334,6 +345,7 @@ export function convertToolOperationsToActions(
   if (!operations?.length) return [];
 
   const toolIcon = getToolIcon(tool);
+  const toolIconUrl = getToolIconUrl(tool);
 
   return operations.map((operation) => {
     const method = operation.method?.toUpperCase() ?? "";
@@ -387,6 +399,7 @@ export function convertToolOperationsToActions(
       label,
       description,
       icon,
+      iconUrl: toolIconUrl,
       img: undefined,
       color,
       supportedPlatforms: ["cloud", "windows"],
