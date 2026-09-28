@@ -1,4 +1,6 @@
 # KB (Knowledge Base) retrieval utilities for augmenting LLM requests with relevant context chunks
+from datetime import datetime, timezone
+
 from sqlalchemy import bindparam, text
 
 from app.core.config import settings
@@ -40,6 +42,21 @@ def _resolve_kb_credential(kb_config: dict, name_key: str, fallback: str | None 
     if credential_name:
         return credential_name
     return fallback
+
+
+def _kb_recency_key(row) -> tuple[int, datetime]:
+    """Sortable (file_count, created_on) key that tolerates bad timestamps.
+
+    A NULL ``CreatedOn`` (legacy/unfinished rows) would crash tuple ordering,
+    and naive-vs-aware values would not compare either; coerce both sides to
+    aware UTC so a dated row always wins and a missing one sorts oldest (#256).
+    """
+    created = row["created_on"]
+    if created is None:
+        created = datetime.min.replace(tzinfo=timezone.utc)
+    elif created.tzinfo is None:
+        created = created.replace(tzinfo=timezone.utc)
+    return (int(row["file_count"] or 0), created)
 
 
 async def _resolve_kb_embedding_configs(
@@ -104,10 +121,7 @@ async def _resolve_kb_embedding_configs(
     for row in rows:
         row_name = str(row["kb_name"])
         current = best_by_name.get(row_name)
-        if current is None or (
-            (int(row["file_count"] or 0), row["created_on"])
-            > (int(current["file_count"] or 0), current["created_on"])
-        ):
+        if current is None or _kb_recency_key(row) > _kb_recency_key(current):
             best_by_name[row_name] = row
 
     if len(rows) != len(best_by_name):
