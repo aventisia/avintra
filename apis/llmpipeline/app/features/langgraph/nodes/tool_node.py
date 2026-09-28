@@ -9,6 +9,12 @@ from langgraph.prebuilt import ToolNode
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.graph_state import ChatState
+from app.features.langgraph.services.request_context import restore_request
+from app.features.langgraph.services.tool_approval import (
+    approval_key,
+    denial_tool_message,
+    request_tool_approvals,
+)
 from app.features.langgraph.tools.outlook.outlook_client import send_email_via_outlook
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
 from app.features.llm_providers.services.corsair_sidecar_service import (
@@ -161,24 +167,61 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             [tool_call.get("name") for tool_call in tool_calls],
         )
 
-        # Connector-backed tools are handled outside of ToolNode so we can pass
-        # request context (credentials, user token) to the implementation.
-        connector_results: dict[str, ToolMessage] = {}
-        remaining_tool_calls: list[dict] = []
-
         metadata = state.get("metadata") or {}
         user = metadata.get("user")
+        # Endpoint-seeded live request; the build-time request is the fallback
+        # (checkpoint round-trips deserialize the live one to a dict).
+        current_request = restore_request(metadata, request)
 
-        for tool_call in tool_calls:
+        # Bound Corsair tools keep their canonical dotted path in metadata; the
+        # model only ever emits the sanitized (underscored) name. Approval keys
+        # use the configured dotted form, so match via canonical_tool_name().
+        corsair_paths = {
+            tool.name: (getattr(tool, "metadata", None) or {}).get("corsair_path")
+            for tool in tools
+        }
+        corsair_paths = {name: path for name, path in corsair_paths.items() if path}
+
+        # IMPORTANT NOTE: Interactive chat turns pause for human approval
+        # before executing ANY call in the batch (auto + human together), so a
+        # resume never re-runs a call that already had side effects. The pause
+        # invariant: no tool executes until every human-approval call in the
+        # batch has an explicit decision.
+        approval_decisions: dict[str, str] = {}
+        if (
+            metadata.get("approval_enabled")
+            and current_request is not None
+            and getattr(current_request, "is_chat_agent", False)
+        ):
+            approval_decisions = request_tool_approvals(
+                tool_calls, current_request, corsair_paths
+            )
+
+        # Connector-backed tools are handled outside of ToolNode so we can pass
+        # request context (credentials, user token) to the implementation.
+        precomputed_results: dict[str, ToolMessage] = {}
+        remaining_tool_calls: list[dict] = []
+
+        for index, tool_call in enumerate(tool_calls):
             tool_name = tool_call.get("name", "")
-            tool_call_id = tool_call.get("id", "")
+            # Approval-keyed so unnamed calls cannot collide on the empty id;
+            # for calls that have one this is the tool_call_id unchanged.
+            tool_call_id = approval_key(tool_call, index)
             args = tool_call.get("args", {})
+
+            # A denied human-approval call short-circuits: the model receives a
+            # denial ToolMessage and the turn continues without the action.
+            if approval_decisions.get(tool_call_id) == "deny":
+                precomputed_results[tool_call_id] = denial_tool_message(
+                    tool_name, tool_call_id
+                )
+                continue
 
             # Corsair sidecar tools: dotted names like "github.issues.create" are
             # routed to the sidecar directly, using credentials from the request.
-            if is_corsair_tool(tool_name) and request is not None:
+            if is_corsair_tool(tool_name) and current_request is not None:
                 if not isinstance(user, User):
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="User authentication context missing for Corsair tool.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -188,22 +231,22 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
 
                 try:
                     result = await invoke_corsair_tool(
-                        tool_name=tool_name,
+                        tool_name=corsair_paths.get(tool_name, tool_name),
                         arguments=args,
-                        llm_request=request,
+                        llm_request=current_request,
                         user=user,
                     )
 
                     if result.get("success"):
                         content = json.dumps(result.get("data")) if result.get("data") is not None else "Corsair tool executed successfully."
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=content,
                             tool_call_id=tool_call_id,
                             name=tool_name,
                             status="success",
                         )
                     else:
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Corsair tool failed: {result.get('error') or result.get('message') or result}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -211,7 +254,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                 except Exception as exc:
                     logger.exception("Corsair sidecar tool failed for %s", tool_name)
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content=f"Error invoking Corsair tool {tool_name}: {exc}",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -219,10 +262,10 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     )
                 continue
 
-            if tool_name == "outlook_send_email" and request is not None:
-                credential_name = _resolve_outlook_credential_name(request)
+            if tool_name == "outlook_send_email" and current_request is not None:
+                credential_name = _resolve_outlook_credential_name(current_request)
                 if not credential_name:
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="No Outlook credential configured for this agent.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -231,7 +274,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     continue
 
                 if not isinstance(user, User):
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content="User authentication context missing.",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -254,8 +297,8 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         from_address=from_address,
                         cc=args.get("cc"),
                         bcc=args.get("bcc"),
-                        agent_id=getattr(request, "ref_id", None),
-                        agent_name=getattr(request, "ref_name", None) or getattr(request, "agent_name", None),
+                        agent_id=getattr(current_request, "ref_id", None),
+                        agent_name=getattr(current_request, "ref_name", None) or getattr(current_request, "agent_name", None),
                     )
 
                     # The WorkspaceAPIs cloud connector wraps failures inside a
@@ -269,7 +312,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                     nested_error = _extract_connector_error(result)
 
                     if result.get("status") == "success" and nested_status and 200 <= nested_status < 300:
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Email sent successfully via Outlook. Response: {result.get('response')}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -277,7 +320,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                     else:
                         detail = nested_error or result.get("error") or result.get("message")
-                        connector_results[tool_call_id] = ToolMessage(
+                        precomputed_results[tool_call_id] = ToolMessage(
                             content=f"Failed to send email via Outlook: {detail}",
                             tool_call_id=tool_call_id,
                             name=tool_name,
@@ -285,7 +328,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         )
                 except Exception as exc:
                     logger.exception("Outlook send email tool failed")
-                    connector_results[tool_call_id] = ToolMessage(
+                    precomputed_results[tool_call_id] = ToolMessage(
                         content=f"Error sending email via Outlook: {exc}",
                         tool_call_id=tool_call_id,
                         name=tool_name,
@@ -309,23 +352,40 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
 
         # Merge connector results in the same order as the original tool_calls.
         merged_messages = []
-        for tool_call in tool_calls:
-            tool_call_id = tool_call.get("id", "")
-            if tool_call_id in connector_results:
-                merged_messages.append(connector_results[tool_call_id])
-            else:
-                # Find the matching ToolMessage produced by ToolNode.
-                matching = next(
-                    (
-                        msg
-                        for msg in new_messages
-                        if isinstance(msg, ToolMessage)
-                        and getattr(msg, "tool_call_id", None) == tool_call_id
-                    ),
-                    None,
-                )
-                if matching:
-                    merged_messages.append(matching)
+        consumed: set[int] = set()
+        for index, tool_call in enumerate(tool_calls):
+            tool_call_id = approval_key(tool_call, index)
+            if tool_call_id in precomputed_results:
+                merged_messages.append(precomputed_results[tool_call_id])
+                continue
+
+            # Find the matching ToolMessage produced by ToolNode. Real ids are
+            # matched exactly; unnamed calls consume the first unclaimed
+            # unnamed result so two of them cannot share one message.
+            real_id = tool_call.get("id", "")
+            matching = next(
+                (
+                    (position, msg)
+                    for position, msg in enumerate(new_messages)
+                    if position not in consumed
+                    and isinstance(msg, ToolMessage)
+                    and (
+                        (
+                            bool(real_id)
+                            and getattr(msg, "tool_call_id", None) == real_id
+                        )
+                        or (
+                            not real_id
+                            and not (getattr(msg, "tool_call_id", None) or "")
+                        )
+                    )
+                ),
+                None,
+            )
+            if matching:
+                position, msg = matching
+                consumed.add(position)
+                merged_messages.append(msg)
 
         return {"messages": merged_messages}
 

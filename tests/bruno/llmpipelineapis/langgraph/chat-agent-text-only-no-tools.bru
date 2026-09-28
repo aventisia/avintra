@@ -1,0 +1,63 @@
+meta {
+  name: Chat agent text-only request binds no tools
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/normalized
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "Draft a short, polite reminder email about the upcoming team offsite. Do not call any tools.",
+    "files": null,
+    "tool_config": [
+      {
+        "tool": "translate",
+        "actions": [
+          {
+            "approval": "human",
+            "action": "text"
+          }
+        ]
+      }
+    ],
+    "skill_names": [],
+    "is_temp_chat": true,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": 500,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "0.2",
+    "top_p": "1.0",
+    "stream": true,
+    "ref_type": "Agent",
+    "ref_id": "00000000-0000-0000-0000-000000000001",
+    "ref_name": "Tool Gating Regression",
+    "action": "AgentExecution",
+    "is_chat_agent": true,
+    "generate_followup_messages": false
+  }
+}
+
+docs {
+  > Regression for #235: a text-only drafting request must not bind or execute the configured action.
+  >
+  > Expected SSE frames:
+  > - `delta` frames with the drafted text
+  > - `done` frame with the final text
+  > - NO `approval_required` frame
+  > - NO `tool_call` / `tools` frame (nothing executed)
+  >
+  > If `approval_required` or `tool_call` appears, the planner/gating intersection is broken.
+}

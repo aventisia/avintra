@@ -1,0 +1,82 @@
+meta {
+  name: Mixed auto+human tool batch pauses on the human call only
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/chat/completions/normalized
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "You must call BOTH the translate_text tool (text \"good morning\", language \"French\") AND the GitHub issues list tool, as a single batch of two tool calls. Do not answer without calling both.",
+    "files": null,
+    "tool_config": [
+      {
+        "tool": "translate",
+        "actions": [
+          {
+            "approval": "auto",
+            "action": "text"
+          }
+        ]
+      },
+      {
+        "tool": "github",
+        "actions": [
+          {
+            "approval": "human",
+            "action": "api.issues.list"
+          }
+        ]
+      }
+    ],
+    "skill_names": [],
+    "is_temp_chat": true,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": 500,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "0.2",
+    "top_p": "1.0",
+    "stream": true,
+    "ref_type": "Agent",
+    "ref_id": "00000000-0000-0000-0000-000000000002",
+    "ref_name": "Approval Mixed Batch Test",
+    "action": "AgentExecution",
+    "is_chat_agent": true,
+    "generate_followup_messages": false
+  }
+}
+
+docs {
+  > Verifies the batch invariant: the WHOLE tool-call batch pauses before ANY call
+  > executes, but only the human-approval calls are surfaced for decision.
+  >
+  > Expected SSE frames:
+  > - exactly ONE `approval_required` frame - for the human `github` call only
+  >   (the `auto` translate call never appears in the pending list)
+  > - NO `tool_call` frames: the auto-approved call is also withheld until the pause
+  >   clears, so a resume never re-runs a call that already had side effects
+  > - `done` frame closing the stream
+  >
+  > Then resume with `chat-agent-approval-resume` (approve the recorded tool_call_id):
+  > the resumed stream runs BOTH tools - two `tool_call` result frames (translate
+  > executes without ever being gated) plus the model's summary.
+  >
+  > Notes:
+  > - Denying the human call instead yields a denial `ToolMessage` for it while the
+  >   auto call still executes on resume.
+  > - Requires the same running process (temp chat) and the Corsair sidecar reachable
+  >   for the github tool to bind; the pause itself happens before execution either way.
+}

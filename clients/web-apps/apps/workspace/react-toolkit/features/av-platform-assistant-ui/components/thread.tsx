@@ -10,6 +10,12 @@ import {
   ThreadPrimitive,
   useAuiState,
 } from "@assistant-ui/react";
+import {
+  ToolApprovalBulkBar,
+  ToolApprovalRequest,
+  useHasPendingToolCalls,
+  useToolCallCoordinatorStore,
+} from "@avplatform/assistant-chat";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -33,10 +39,6 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import ToolsCall from "../../tool-widget/components/ToolsCall";
-import {
-  useHasPendingToolCalls,
-  useToolCallCoordinatorStore,
-} from "../../tool-widget/store/tool-call-store";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
@@ -320,16 +322,13 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
         ) : (
           <CheckIcon className="size-3.5 shrink-0 text-muted-foreground/70" />
         )}
-        <span
-          className={cn(
-            "font-medium",
-            isRunning && "animate-pulse",
-          )}
-        >
+        <span className={cn("font-medium", isRunning && "animate-pulse")}>
           {isRunning ? "Processing" : "Thinking"}
         </span>
         {steps.length > 0 && (
-          <span className="truncate opacity-70">· {steps[activeStep >= 0 ? activeStep : steps.length - 1]}</span>
+          <span className="truncate opacity-70">
+            · {steps[activeStep >= 0 ? activeStep : steps.length - 1]}
+          </span>
         )}
       </button>
       {isOpen && (
@@ -343,7 +342,9 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
                   ) : (
                     <CheckIcon className="mt-0.5 size-3 shrink-0 text-muted-foreground/60" />
                   )}
-                  <span className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}>
+                  <span
+                    className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}
+                  >
                     {step}
                   </span>
                 </li>
@@ -383,6 +384,15 @@ const AssistantMessage: FC = () => {
         <MessagePrimitive.Parts>
           {({ part }) => {
             if (part.type === "tool-call") {
+              // Server-side approval gates get a dedicated confirmation card;
+              // the flow-builder ToolsCall widget must not execute chat actions.
+              if (part.approval) {
+                return (
+                  <div className="my-2 w-full">
+                    <ToolApprovalRequest {...part} disabled={isDisabled} />
+                  </div>
+                );
+              }
               return (
                 <div className="my-2 w-full">
                   {/* Fallback pattern for dynamically rendered tool UIs */}
@@ -406,6 +416,8 @@ const AssistantMessage: FC = () => {
             return null;
           }}
         </MessagePrimitive.Parts>
+
+        <ToolApprovalBulkBar disabled={isDisabled} />
         {showPendingIndicator && (
           <div
             className="aui-assistant-pending-indicator mt-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-muted-foreground text-xs"
