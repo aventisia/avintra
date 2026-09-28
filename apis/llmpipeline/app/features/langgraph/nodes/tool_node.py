@@ -18,6 +18,8 @@ from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolCon
 from app.features.llm_providers.services.corsair_sidecar_service import (
     invoke_corsair_tool,
     is_corsair_tool,
+    parse_corsair_tool_name,
+    to_corsair_tool_path,
 )
 
 
@@ -175,7 +177,40 @@ def _normalize_approval_resume(
     return decisions
 
 
-def _request_tool_approvals(tool_calls: list[dict], request: LLMRequest) -> dict[str, str]:
+def _canonical_tool_name(
+    tool_name: str,
+    corsair_paths: dict[str, str] | None = None,
+) -> str:
+    """Resolve a model-facing tool name to the canonical configured name.
+
+    Corsair tools are bound under an OpenAI-safe name (dots replaced with
+    underscores, e.g. ``openai_api_models_list``) while ``tool_config`` entries
+    use the dotted sidecar path (``openai.api.models.list``). Bound tools carry
+    their original path in ``metadata["corsair_path"]``; when that is not
+    available the sanitized ``_api_`` form is parsed back to the dotted path.
+    """
+
+    if not tool_name:
+        return tool_name
+
+    if corsair_paths and corsair_paths.get(tool_name):
+        return corsair_paths[tool_name]
+
+    if is_corsair_tool(tool_name):
+        try:
+            plugin, action = parse_corsair_tool_name(tool_name)
+            return to_corsair_tool_path(plugin, action)
+        except ValueError:
+            return tool_name
+
+    return tool_name
+
+
+def _request_tool_approvals(
+    tool_calls: list[dict],
+    request: LLMRequest,
+    corsair_paths: dict[str, str] | None = None,
+) -> dict[str, str]:
     """Pause for user approval on configured actions that require it.
 
     Returns ``{tool_call_id: "approve"|"deny"}`` for the human-approval calls in
@@ -188,16 +223,24 @@ def _request_tool_approvals(tool_calls: list[dict], request: LLMRequest) -> dict
         getattr(request, "tool_config", None) or []
     )
 
-    pending = [
-        {
-            "tool_call_id": tool_call.get("id", ""),
-            "name": tool_call.get("name", ""),
-            "args": tool_call.get("args") or {},
-        }
-        for tool_call in tool_calls
+    pending = []
+    for tool_call in tool_calls:
+        # Model-facing Corsair names are sanitized; configured approval keys are
+        # canonical dotted paths, so compare on the canonical name.
+        lookup_name = _canonical_tool_name(
+            tool_call.get("name", ""),
+            corsair_paths,
+        )
         # Missing approval fails closed to "human".
-        if approval_map.get(tool_call.get("name", ""), "human") != "auto"
-    ]
+        if approval_map.get(lookup_name, "human") == "auto":
+            continue
+        pending.append(
+            {
+                "tool_call_id": tool_call.get("id", ""),
+                "name": lookup_name or tool_call.get("name", ""),
+                "args": tool_call.get("args") or {},
+            }
+        )
 
     if not pending:
         return {}
@@ -219,8 +262,10 @@ def _denial_message(tool_name: str, tool_call_id: str) -> ToolMessage:
 
     return ToolMessage(
         content=(
-            "The user denied this action. Do not retry it or silently perform it; "
-            "acknowledge the denial and continue without the action."
+            "The user denied this action for the current request, so it did not "
+            "run. Acknowledge the denial and continue without performing the "
+            "action now. If the user explicitly asks later to try again, you may "
+            "call this action again."
         ),
         tool_call_id=tool_call_id,
         name=tool_name,
@@ -272,6 +317,14 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         if not isinstance(current_request, LLMRequest):
             current_request = request
 
+        # Bound Corsair tools keep their canonical dotted path in metadata; the
+        # model only ever emits the sanitized (underscored) name.
+        corsair_paths = {
+            tool.name: (getattr(tool, "metadata", None) or {}).get("corsair_path")
+            for tool in tools
+        }
+        corsair_paths = {name: path for name, path in corsair_paths.items() if path}
+
         # Interactive chat turns pause for human approval before executing any
         # call in the batch (auto + human together, so a resume never re-runs a
         # call that already had side effects).
@@ -282,7 +335,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             and getattr(current_request, "is_chat_agent", False)
         ):
             approval_decisions = _request_tool_approvals(
-                tool_calls, current_request
+                tool_calls, current_request, corsair_paths
             )
 
         # Connector-backed tools are handled outside of ToolNode so we can pass
@@ -317,7 +370,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
 
                 try:
                     result = await invoke_corsair_tool(
-                        tool_name=tool_name,
+                        tool_name=corsair_paths.get(tool_name, tool_name),
                         arguments=args,
                         llm_request=current_request,
                         user=user,

@@ -42,17 +42,26 @@ def _resolve_kb_credential(kb_config: dict, name_key: str, fallback: str | None 
     return fallback
 
 
-async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> list[dict]:
+async def _resolve_kb_embedding_configs(
+    kb_names: list[str],
+    tenant_id: str,
+    env_type: str = "dev",
+) -> list[dict]:
     """
     Resolve per-KB retrieval configuration for selected knowledge bases.
 
-    All selected KBs must exist, be active, and belong to the tenant.
+    All selected KBs must exist, be active, and belong to the tenant in the
+    request's deployment environment (``dev`` for draft/unpublished flows,
+    ``prod`` for published flows). Within one environment, duplicate rows for
+    the same name (e.g. an emptied duplicate) resolve to the row that owns the
+    most files so retrieval keeps working.
     """
     normalized_kb_names = [kb_name.strip() for kb_name in kb_names if (kb_name or "").strip()]
     if not normalized_kb_names:
         raise ValueError("kb_names cannot be empty.")
 
     unique_kb_names = list(dict.fromkeys(normalized_kb_names))  # Preserve order and ensure uniqueness
+    normalized_env = (env_type or "dev").strip().lower()
 
     async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
         query_sql = text(
@@ -63,9 +72,17 @@ async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> 
                 "EmbeddingModel" AS embedding_model,
                 "EmbeddingCredentialId"::text AS embedding_credential_id,
                 "StoreCredentialId"::text AS store_credential_id,
-                "VectorStore" AS vector_store
+                "VectorStore" AS vector_store,
+                "CreatedOn" AS created_on,
+                (
+                    SELECT COUNT(*)
+                    FROM "worc_KBFiles" AS files
+                    WHERE files."KnowledgeBaseId" = "worc_KBs"."Id"
+                      AND files."IsDisabled" = false
+                ) AS file_count
             FROM "worc_KBs"
             WHERE "TenantId" = :tenant_id
+              AND lower("EnvType"::text) = :env_type
               AND "Name"::text IN :kb_names
             """
         ).bindparams(bindparam("kb_names", expanding=True))
@@ -74,18 +91,44 @@ async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> 
             query_sql,
             {
                 "tenant_id": str(tenant_id),
+                "env_type": normalized_env,
                 "kb_names": unique_kb_names,
             },
         )
         rows = result.mappings().all()
 
-    if len(rows) != len(unique_kb_names):
-        raise ValueError("One or more kb_names are missing, disabled, or not accessible for this tenant.")
+    # Retrieval filters the vector store by KB name, so same-environment
+    # duplicates are collapsed deterministically: prefer the row with the most
+    # files, then the newest one, instead of failing the whole lookup.
+    best_by_name: dict[str, dict] = {}
+    for row in rows:
+        row_name = str(row["kb_name"])
+        current = best_by_name.get(row_name)
+        if current is None or (
+            (int(row["file_count"] or 0), row["created_on"])
+            > (int(current["file_count"] or 0), current["created_on"])
+        ):
+            best_by_name[row_name] = row
 
-    kb_configs_by_name = {str(row["kb_name"]): row for row in rows}
+    if len(rows) != len(best_by_name):
+        logger.warning(
+            "[KB-RETRIEVAL] Duplicate knowledge base names in env=%s resolved by file count. kb_names=%s",
+            normalized_env,
+            sorted(best_by_name),
+        )
+
+    missing_kb_names = [
+        kb_name for kb_name in unique_kb_names if kb_name not in best_by_name
+    ]
+    if missing_kb_names:
+        raise ValueError(
+            "One or more kb_names are missing, disabled, or not accessible "
+            f"for this tenant in the '{normalized_env}' environment."
+        )
+
     ordered_configs: list[dict] = []
     for kb_name in unique_kb_names:
-        row = kb_configs_by_name[kb_name]
+        row = best_by_name[kb_name]
         ordered_configs.append(
             {
                 "kb_name": kb_name,
@@ -120,6 +163,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
         kb_configs = await _resolve_kb_embedding_configs(
             kb_names=llm_request.kb_names or [],
             tenant_id=str(user.tenant_id),
+            env_type=user.env_type,
         )
 
         all_chunks = []
