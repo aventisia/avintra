@@ -25,9 +25,10 @@ const serializeResponseBody = (body: unknown): string => {
   }
 };
 
-// An operation is verified only when its test call returns HTTP 200 exactly.
+// An operation is verified only when its test call returns HTTP 200 exactly,
+// regardless of the response body contents.
 const isVerifiedResult = (result: TestToolResponseDto | "error" | undefined): boolean =>
-  result !== undefined && result !== "error" && result.statusCode === 200;
+  result !== undefined && result !== "error" && result.status_code === 200;
 
 /**
  * Playground step. The user selects the operations to test; only the selected
@@ -225,9 +226,19 @@ export const StepPlayground = () => {
                 </span>
                 <span className="ml-auto">
                   {verified ? (
-                    <Badge variant="default">Verified</Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-green-200 bg-green-50 text-green-700"
+                    >
+                      Verified
+                    </Badge>
                   ) : (
-                    <Badge variant="destructive">Unverified</Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-orange-200 bg-orange-50 text-orange-700"
+                    >
+                      Unverified
+                    </Badge>
                   )}
                 </span>
               </label>
@@ -275,11 +286,11 @@ export const StepPlayground = () => {
           <p className="text-sm">
             Verification: {isVerifiedResult(lastTestedResponse) ? "Verified" : "Unverified"}
           </p>
-          {lastTestedResponse !== "error" && lastTestedResponse.statusCode && (
-            <p className="text-sm">Status: {lastTestedResponse.statusCode}</p>
+          {lastTestedResponse !== "error" && lastTestedResponse.status_code && (
+            <p className="text-sm">Status: {lastTestedResponse.status_code}</p>
           )}
-          {lastTestedResponse !== "error" && lastTestedResponse.durationMs && (
-            <p className="text-sm">Duration: {lastTestedResponse.durationMs}ms</p>
+          {lastTestedResponse !== "error" && lastTestedResponse.duration_ms && (
+            <p className="text-sm">Duration: {lastTestedResponse.duration_ms}ms</p>
           )}
           {lastTestedResponse === "error" && (
             <p className="text-sm text-destructive">The test call failed.</p>

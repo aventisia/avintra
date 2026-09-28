@@ -26,6 +26,12 @@ export interface ToolDto {
   description?: string;
 
   /**
+   * Optional URL of the icon that represents the tool. Empty/undefined means the
+   * default placeholder icon is used.
+   */
+  iconUrl?: string;
+
+  /**
    * Component type of the tool.
    */
   type?: ComponentTypeEnum;
@@ -240,6 +246,12 @@ export interface UsableToolDto {
    * Description of the tool.
    */
   description?: string;
+
+  /**
+   * Optional URL of the icon that represents the tool. Empty/undefined means the
+   * default placeholder icon is used.
+   */
+  iconUrl?: string;
 
   /**
    * Component type of the tool. Always Custom for user-created tools.
