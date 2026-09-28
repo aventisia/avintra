@@ -10,6 +10,7 @@ from langgraph.types import interrupt
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.graph_state import ChatState
+from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_skill_selector import (
     build_tool_approval_map,
 )
@@ -315,12 +316,9 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
 
         metadata = state.get("metadata") or {}
         user = metadata.get("user")
-        # Endpoint-seeded live request. After a checkpoint round-trip the object
-        # deserializes to a dict, so fall back to the request captured at graph
-        # build time when that happens.
-        current_request = metadata.get("request")
-        if not isinstance(current_request, LLMRequest):
-            current_request = request
+        # Endpoint-seeded live request; the build-time request is the fallback
+        # (checkpoint round-trips deserialize the live one to a dict).
+        current_request = restore_request(metadata, request)
 
         # Bound Corsair tools keep their canonical dotted path in metadata; the
         # model only ever emits the sanitized (underscored) name.
@@ -330,9 +328,11 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         }
         corsair_paths = {name: path for name, path in corsair_paths.items() if path}
 
-        # Interactive chat turns pause for human approval before executing any
-        # call in the batch (auto + human together, so a resume never re-runs a
-        # call that already had side effects).
+        # IMPORTANT NOTE: Interactive chat turns pause for human approval
+        # before executing ANY call in the batch (auto + human together), so a
+        # resume never re-runs a call that already had side effects. The pause
+        # invariant: no tool executes until every human-approval call in the
+        # batch has an explicit decision.
         approval_decisions: dict[str, str] = {}
         if (
             metadata.get("approval_enabled")

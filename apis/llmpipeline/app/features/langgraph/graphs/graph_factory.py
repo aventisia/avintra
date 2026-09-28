@@ -17,6 +17,7 @@ from app.features.langgraph.nodes.tool_node import create_tool_node
 from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
+from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_skill_selector import (
     message_approval_marker,
     select_tools_and_skills,
@@ -114,27 +115,6 @@ def build_chat_graph(
     return builder.compile(checkpointer=graph_memory)
 
 
-def _restore_request(
-    metadata: dict,
-    fallback: LLMRequest | None,
-) -> LLMRequest | None:
-    """Return the current request carried in state metadata.
-
-    Checkpoint deserialization turns the pydantic ``LLMRequest`` into a dict, so
-    rebuild it when needed and otherwise fall back to the build-time request.
-    """
-
-    request = metadata.get("request")
-    if isinstance(request, LLMRequest):
-        return request
-    if isinstance(request, dict):
-        try:
-            return LLMRequest(**request)
-        except Exception:
-            logger.exception("Failed to rebuild request from graph state.")
-    return fallback
-
-
 def _create_seed_request_node(request: LLMRequest, user: User):
     """Write the original request and user into graph state metadata.
 
@@ -175,7 +155,7 @@ def _create_agent_selector_node(
 
     async def identify_tools_and_skills(state: ChatState):
         metadata = state.get("metadata") or {}
-        current_request = _restore_request(metadata, request)
+        current_request = restore_request(metadata, request)
 
         # Load tenant-specific skills from the database so the planner sees
         # both global skills and this tenant's custom skills.
@@ -261,7 +241,7 @@ def _create_dynamic_model_node(
         selected_skills = metadata.get("selected_skills")
         # Prefer the request seeded for this turn; the closure request is the
         # graph-build-time request and goes stale in cached conversations.
-        current_request = _restore_request(metadata, llm_request)
+        current_request = restore_request(metadata, llm_request)
 
         node_model = model
 
@@ -350,7 +330,7 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         selected_tool_names = metadata.get("selected_tool_names")
         # Credential/config lookups must use the current turn's request, not the
         # graph-build-time request captured in the closure.
-        current_request = _restore_request(metadata, request)
+        current_request = restore_request(metadata, request)
 
         # Resolve selected tool names into executable tools
         tools = await _resolve_tools(

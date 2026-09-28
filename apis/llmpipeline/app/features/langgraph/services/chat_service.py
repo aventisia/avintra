@@ -8,6 +8,8 @@ from typing import Any
 from uuid import UUID, uuid4
 
 import time
+from collections import OrderedDict
+
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from langgraph.types import Command
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
+from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.conversation_service import (
     ConversationService,
     conversation_service,
@@ -75,8 +78,16 @@ class ChatService:
         conversation_service: ConversationService,
         credit_usage_service: CreditUsageService | None = None,
     ):
-        # Store compiled graph cache
-        self._graphs: dict[tuple, Any] = {}
+        # Compiled-graph cache (MRU at the end). Pause/resume routing uses
+        # _conversation_graph_key to find the LATEST graph built for a
+        # conversation, since editing an agent's config creates a second cache
+        # key for the same thread.
+        self._graphs: "OrderedDict[tuple, Any]" = OrderedDict()
+        self._graph_cache_limit = 512
+        self._conversation_graph_key: dict[str, tuple] = {}
+        # Conversations with an outstanding approval pause; their graphs are
+        # never evicted (a missing graph turns a pending approval into a 409).
+        self._pending_approval_conversations: set[str] = set()
 
         self.tool_registry = tool_registry
         self.skill_registry = skill_registry
@@ -411,8 +422,10 @@ class ChatService:
                 "metadata": {
                     "request": request,
                     "user": user,
-                    # Approval pauses are enforced only on this interactive,
-                    # streaming chat path.
+                    # IMPORTANT NOTE: Approval pauses are enforced only on
+                    # this interactive, streaming chat path. Workflow and
+                    # non-normalized action-execution endpoints run without
+                    # human approval gating by design.
                     "approval_enabled": True,
                 },
             }
@@ -650,7 +663,12 @@ class ChatService:
 
         # Surface pending human-approval tool calls so the client can render the
         # confirmation UI. The graph remains paused until /approvals resumes it.
-        for pending_call in self._pending_approval_tool_calls(state):
+        pending_calls = self._pending_approval_tool_calls(state)
+        if pending_calls:
+            self._pending_approval_conversations.add(conversation_id)
+        else:
+            self._pending_approval_conversations.discard(conversation_id)
+        for pending_call in pending_calls:
             yield LLMChunkResponse(
                 provider=request.provider,
                 model=request.model,
@@ -993,15 +1011,50 @@ class ChatService:
                 cache_key,
             )
 
+        self._graphs.move_to_end(cache_key)
+        if request.conversation_id:
+            # Last graph built for this conversation wins; a config edit
+            # mid-conversation replaces the index entry on purpose.
+            self._conversation_graph_key[request.conversation_id] = cache_key
+        self._evict_graph_cache()
+
         return self._graphs[cache_key]
 
-    def _graph_for_conversation(self, conversation_id: str) -> Any | None:
-        """Return the compiled graph cached for ``conversation_id``, if any."""
+    def _evict_graph_cache(self) -> None:
+        """Trim the graph cache to its limit, oldest entries first.
 
-        for key, graph in self._graphs.items():
-            if len(key) > 2 and key[2] == conversation_id:
-                return graph
-        return None
+        Conversations with an outstanding approval pause are never evicted:
+        dropping their graph would strand a live pause in the checkpointer with
+        no way to resume it. If nothing is evictable the cache is allowed to
+        exceed its soft limit rather than corrupt pending approvals.
+        """
+
+        while len(self._graphs) > self._graph_cache_limit:
+            evicted = False
+            for key in list(self._graphs.keys()):
+                conversation_id = key[2]
+                if conversation_id in self._pending_approval_conversations:
+                    continue
+                self._graphs.pop(key)
+                if self._conversation_graph_key.get(conversation_id) == key:
+                    del self._conversation_graph_key[conversation_id]
+                evicted = True
+                break
+            if not evicted:
+                break
+
+    def _graph_for_conversation(self, conversation_id: str) -> Any | None:
+        """Return the compiled graph cached for ``conversation_id``, if any.
+
+        Uses the conversation index (latest cache key wins) instead of scanning
+        insertion order, so a mid-conversation config edit cannot strand the
+        resume on a stale compiled graph.
+        """
+
+        key = self._conversation_graph_key.get(conversation_id)
+        if key is None:
+            return None
+        return self._graphs.get(key)
 
     @staticmethod
     def _pending_approval_tool_calls(state: Any) -> list[dict]:
@@ -1053,16 +1106,7 @@ class ChatService:
             return None
 
         metadata = state.values.get("metadata") or {}
-        paused_request = metadata.get("request")
-        if isinstance(paused_request, dict):
-            try:
-                paused_request = LLMRequest(**paused_request)
-            except Exception:
-                logger.exception(
-                    "Failed to rebuild paused request. conversation_id=%s",
-                    conversation_id,
-                )
-                return None
+        paused_request = restore_request(metadata, None)
         if not isinstance(paused_request, LLMRequest):
             return None
 
