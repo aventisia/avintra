@@ -1,0 +1,10 @@
+# Development-only dependencies for llmpipeline (NOT installed in the container image).
+#
+# Install on top of the runtime requirements:
+#     pip install -r requirements.txt -r requirements-dev.txt
+#
+# Run the test suite from this directory (ENV defaults to "local", which
+# loads .env / .env.local for settings):
+#     ./venv/bin/python -m pytest tests/ -q
+
+pytest==8.4.2
