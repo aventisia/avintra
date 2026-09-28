@@ -23,8 +23,8 @@ public class SkillRegistryFileController : BaseApiController
     }
 
     // Registers a file under a specific skill.
+    // Edit access is verified per-record in the service (owner or edit-level share).
     [HttpPost("{skillId}/files")]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<SkillFileDto>>> RegisterSkillFile(Guid skillId, [FromBody] RegisterSkillFileDto registerSkillFileDto)
     {
         return ResultHelper(await _skillRegistryFileService.RegisterSkillFileAsync(skillId, registerSkillFileDto));
@@ -32,7 +32,6 @@ public class SkillRegistryFileController : BaseApiController
 
     // Deletes a specific file from a skill.
     [HttpDelete("{skillId}/files/{fileId}")]
-    [Authorize(Roles = "SA,TA,OM")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteSkillFile(Guid skillId, Guid fileId)
     {
         return ResultHelper(await _skillRegistryFileService.DeleteSkillFileAsync(skillId, fileId));
