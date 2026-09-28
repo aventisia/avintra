@@ -13,7 +13,6 @@ import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
-import { getToolIcon } from "../constants/tool-icon-mapper";
 import {
   COLUMN_VISIBILITY_STATE,
   TABLE_HEADING,
@@ -84,10 +83,6 @@ export const ToolsTable = () => {
                           name={row.getValue("name") as string}
                           iconUrl={row.original.iconUrl}
                           className="h-6 w-6 object-contain"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              basePath + "/brand-img/default-provider.svg";
-                          }}
                         />
                       </div>
 
