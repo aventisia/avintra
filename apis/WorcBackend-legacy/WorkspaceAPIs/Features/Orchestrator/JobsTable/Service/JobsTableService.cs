@@ -15,6 +15,7 @@ public class JobsTableService : IJobsTableService
     private readonly IClientContextResolver _clientContextResolver;
     private readonly IExecutionNotificationService _executionNotificationService;
     private readonly IClientStatusStore _clientStatusStore;
+    private readonly ICreditGateService _creditGateService;
     private readonly IHubContext<OrchestratorHub> _orchestratorHubContext;
     private const int MaxRemarkLength = 2000;
 
@@ -30,6 +31,7 @@ public class JobsTableService : IJobsTableService
         IClientContextResolver clientContextResolver,
         IExecutionNotificationService executionNotificationService,
         IClientStatusStore clientStatusStore,
+        ICreditGateService creditGateService,
         IHubContext<OrchestratorHub> orchestratorHubContext)
     {
         // Set the user ID from the HTTP context
@@ -51,6 +53,7 @@ public class JobsTableService : IJobsTableService
         _clientContextResolver = clientContextResolver;
         _executionNotificationService = executionNotificationService;
         _clientStatusStore = clientStatusStore;
+        _creditGateService = creditGateService;
         _orchestratorHubContext = orchestratorHubContext;
     }
 
@@ -233,6 +236,14 @@ public class JobsTableService : IJobsTableService
                 // If ExecutionLocation not provided, return
                 if (string.IsNullOrEmpty(jobInsertDto.ExecutionLocation))
                     return serviceResponse.Update("Machine name is required for published agents.", 400);
+            }
+
+            // The tenant credit gate is the production source of truth for commercial tenants.
+            // Fail closed here so a credit-less job is never created or dispatched.
+            if (!await _creditGateService.HasSufficientCreditsAsync(tenantId))
+            {
+                _logger.LogWarning("Blocking job creation for tenant {TenantId}: insufficient credits.", tenantId);
+                return serviceResponse.Update("Insufficient credits to create this job.", 402);
             }
 
             // TODO: Need to check this
@@ -665,6 +676,17 @@ public class JobsTableService : IJobsTableService
                     : serviceResponse.Update("Only jobs in created status can be started.", 409);
             }
 
+            if (!await _creditGateService.HasSufficientCreditsAsync(job.TenantId))
+            {
+                _creditGateService.CancelForInsufficientCredits(job);
+                _unitOfWork.JobRepo.Update(job);
+                if (!await _unitOfWork.SaveAsync())
+                    _logger.LogWarning("Failed to persist cancellation for insufficient-credit job {JobId}.", job.Id);
+
+                _logger.LogWarning("Blocking job start for tenant {TenantId}: insufficient credits.", job.TenantId);
+                return serviceResponse.Update("Insufficient credits to start this job.", 402);
+            }
+
             // Update status and start time.
             job.Status = JobStatusEnum.Running;
             job.StartTime = DateTimeOffset.UtcNow;
@@ -903,6 +925,20 @@ public class JobsTableService : IJobsTableService
 
             if (nextJob == null)
                 return serviceResponse.Update(null, 200, null);
+
+            // Credit gate: cancel rather than hand a pending job to a runner when the tenant
+            // cannot afford execution. StartJob is also gated, but cancelling here stops the
+            // job from being handed out at all.
+            if (!await _creditGateService.HasSufficientCreditsAsync(nextJob.TenantId))
+            {
+                _creditGateService.CancelForInsufficientCredits(nextJob);
+                _unitOfWork.JobRepo.Update(nextJob);
+                if (!await _unitOfWork.SaveAsync())
+                    return serviceResponse.Update("Failed to cancel pending job.", 500);
+
+                _logger.LogWarning("Blocking pending job dispatch for tenant {TenantId}: insufficient credits.", nextJob.TenantId);
+                return serviceResponse.Update("Insufficient credits to start a job.", 402);
+            }
 
             // Assign the job to this machine so it cannot be picked by another dispatch path.
             nextJob.MachineId = machineId;
