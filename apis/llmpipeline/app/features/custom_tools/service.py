@@ -9,7 +9,10 @@ import httpx
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.features.custom_tools.vault_credential_client import fetch_decrypted_vault_credential
+from app.features.custom_tools.vault_credential_client import (
+    extract_credential_material,
+    fetch_decrypted_vault_credential,
+)
 
 
 async def execute_tool_test(
@@ -103,9 +106,7 @@ def _inject_auth(
     query_params: dict[str, Any],
     credential: dict[str, Any],
 ) -> None:
-    # Credential data is shaped as { "Type": "...", "Parameters": { ... } }
-    credential_type = credential.get("Type") or credential.get("type") if credential else None
-    parameters = credential.get("Parameters") or credential.get("parameters") or {}
+    credential_type, parameters = extract_credential_material(credential)
 
     if credential_type == "ApiKeyHeader":
         key_name = parameters.get("KeyName") or parameters.get("key_name") or "X-API-Key"
