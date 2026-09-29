@@ -12,6 +12,11 @@ import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook to fetch skills using react query.
+ *
+ * The default ("current") view merges the current-space (personal) and
+ * shared-with-user lists into one table; the library tab shows platform skills.
+ * Passing "all" fetches every list, which is used by detail-page lookups.
+ *
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchSkills = (tab: "current" | "all" = "current") => {
@@ -23,39 +28,34 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   );
 
   const env = useEnvironmentStore((state) => state.env);
+  const space = currentSpace?.id ?? "";
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
-  // queryKey already includes the current space id.
-  const { isPersonal, isShared, isLibrary, queryKey } = useTableTab();
+  const { isLibrary } = useTableTab();
 
   const shouldFetchBoth = tab === "all";
 
-  // When fetching both lists (e.g. detail page lookup), use stable distinct keys
-  // so the queries never collide. For the current tab view, use the tab-derived key.
-  // All keys include the current space id to match mutation invalidation.
-  const personalQueryKey = shouldFetchBoth
-    ? [...DATA_QUERY_KEY, currentSpace?.id ?? "", env]
-    : queryKey;
-  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? "", env];
-  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? "", env];
+  // Stable, distinct keys per list. All keys include the current space id and share
+  // the DATA_QUERY_KEY prefix so a single invalidation refetches every list.
+  const personalQueryKey = [...DATA_QUERY_KEY, space, env];
+  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED", space, env];
+  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY", space, env];
 
-  // Get skills using react query
   const personalQuery = useQuery({
     queryKey: personalQueryKey,
     queryFn: () => getSkills({ isPersonal: true }),
-    enabled: shouldFetchBoth || isPersonal,
+    enabled: shouldFetchBoth || !isLibrary,
   });
 
   const sharedQuery = useQuery({
     queryKey: sharedQueryKey,
     queryFn: () => getSkills({ isPersonal: false }),
-    enabled: shouldFetchBoth || isShared,
+    enabled: shouldFetchBoth || !isLibrary,
   });
 
   const libraryQuery = useQuery({
     queryKey: libraryQueryKey,
     queryFn: () => getLibrarySkills(),
-    enabled: isLibrary,
+    enabled: shouldFetchBoth || isLibrary,
   });
 
   const isError = personalQuery.isError || sharedQuery.isError || libraryQuery.isError;
@@ -66,24 +66,41 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
     if (isError) toast.error(error?.toString() ?? "Failed to fetch skills");
   }, [error, isError]);
 
-  const activeQuery = isPersonal ? personalQuery : isShared ? sharedQuery : libraryQuery;
+  const activeQueries = shouldFetchBoth
+    ? [personalQuery, sharedQuery, libraryQuery]
+    : isLibrary
+      ? [libraryQuery]
+      : [personalQuery, sharedQuery];
+
+  // Merge the active lists into a single table payload. Return undefined until at
+  // least one list has resolved so callers can show a loading skeleton.
+  const hasPersonalOrShared = Boolean(personalQuery.data || sharedQuery.data);
 
   const data = shouldFetchBoth
-    ? {
-        ...personalQuery.data,
-        data: [
-          ...(personalQuery.data?.data ?? []),
-          ...(sharedQuery.data?.data ?? []),
-          ...(libraryQuery.data?.data ?? []),
-        ],
-      }
-    : activeQuery.data;
+    ? hasPersonalOrShared || libraryQuery.data
+      ? {
+          ...personalQuery.data,
+          data: [
+            ...(personalQuery.data?.data ?? []),
+            ...(sharedQuery.data?.data ?? []),
+            ...(libraryQuery.data?.data ?? []),
+          ],
+        }
+      : undefined
+    : isLibrary
+      ? libraryQuery.data
+      : hasPersonalOrShared
+        ? {
+            ...personalQuery.data,
+            data: [...(personalQuery.data?.data ?? []), ...(sharedQuery.data?.data ?? [])],
+          }
+        : undefined;
 
   // Return isFetching and isLoading flag
   return {
     data,
     isError,
-    isFetching: activeQuery.isFetching,
-    isLoading: activeQuery.isLoading,
+    isFetching: activeQueries.some((query) => query.isFetching),
+    isLoading: activeQueries.some((query) => query.isLoading),
   };
 };

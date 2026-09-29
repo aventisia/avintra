@@ -143,6 +143,7 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTransactionEventService, QueueTransactionEventService>();
         services.AddScoped<IQueueUserService, QueueUserService>();
         services.AddScoped<IQueueFlowVersionService, QueueFlowVersionService>();
+        services.AddScoped<ICreditGateService, CreditGateService>();
         services.AddScoped<IJobsTableService, JobsTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();
         services.AddScoped<IVaultService, VaultService>();

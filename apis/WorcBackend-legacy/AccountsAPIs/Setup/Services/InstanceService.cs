@@ -62,6 +62,10 @@ public class InstanceService : IInstanceService
                         httpResponse.StatusCode, httpResponse.ReasonPhrase);
 
                     serviceResponse.Message = "Failed to retrieve metrics from external API.";
+                    // Do not surface a partially-collected payload: callers must
+                    // skip posting it (the instance-usage validator rejects an
+                    // empty Last7DayUsages with 400 and that used to disable login).
+                    serviceResponse.Data = null;
                     return serviceResponse;
                 }
 
@@ -80,6 +84,7 @@ public class InstanceService : IInstanceService
                 {
                     _logger.LogError("Deserialization failed or response contains invalid data: {ResponseContent}", responseContent);
                     serviceResponse.Message = "Invalid response data from external API.";
+                    serviceResponse.Data = null;
                     return serviceResponse;
                 }
 
@@ -104,6 +109,8 @@ public class InstanceService : IInstanceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to collect metrics from {Source}.", source);
+            // A failed collection has no valid metrics to report.
+            serviceResponse.Data = null;
         }
 
         // Return the service response, whether successful or containing an error message
@@ -134,12 +141,14 @@ public class InstanceService : IInstanceService
             // Check if the response was successful
             if (!httpResponse.IsSuccessStatusCode)
             {
+                // A failed validation call is NOT an enforcement decision: it can
+                // be a transient network error or a rejected (e.g. empty) metrics
+                // payload. Keep the last known enforcement state instead of
+                // locking every user out of the instance.
                 _logger.LogError("Failed to post metrics to the external API. Status: {StatusCode}, Reason: {ReasonPhrase}",
                     httpResponse.StatusCode,
                     httpResponse.ReasonPhrase
                 );
-                // Update runtime application settings from the API response
-                _environmentConfig.OnPremLoginDisabled = true;
                 return;
             }
 
@@ -156,9 +165,10 @@ public class InstanceService : IInstanceService
                 });
 
             // Check if the response contains valid data
-            if (externalServiceResponse.StatusCode != 200 || externalServiceResponse.Data == null)
+            if (externalServiceResponse?.StatusCode != 200 || externalServiceResponse.Data?.Enforcement == null)
             {
                 _logger.LogError("Failed to deserialize the API response or the data is invalid: {ResponseContent}", responseContent);
+                return;
             }
 
             // Update runtime application settings from the API response

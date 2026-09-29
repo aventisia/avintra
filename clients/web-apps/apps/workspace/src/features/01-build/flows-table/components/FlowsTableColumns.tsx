@@ -15,7 +15,7 @@ import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
  * Array of table columns for the flows table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto>[] => [
+export const flowsTableColumns = (): ColumnDef<FlowsTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -51,11 +51,9 @@ export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto
           flowName={row.original.name ?? "NAME_NOT_FOUND"}
           flowVersionNumber={`v${row.original.versionNumber}`}
         />
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
+        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </p>
       </div>
     ),
   },

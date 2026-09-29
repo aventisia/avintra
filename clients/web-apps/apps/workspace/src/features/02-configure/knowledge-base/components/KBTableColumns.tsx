@@ -12,7 +12,7 @@ import { KBRowActions } from "./kb-row-actions/KBRowActions";
  * Array of table columns for the configs table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const KBTableColumns = (isSharedTab: boolean): ColumnDef<KnowledgeBaseTableDto>[] => [
+export const KBTableColumns = (): ColumnDef<KnowledgeBaseTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -43,11 +43,9 @@ export const KBTableColumns = (isSharedTab: boolean): ColumnDef<KnowledgeBaseTab
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </p>
       </div>
     ),
   },

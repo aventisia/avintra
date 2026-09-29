@@ -11,10 +11,7 @@ import { SkillRowActions } from "./skill-row-actions/SkillRowActions";
 /**
  * Array of table columns for the skills table.
  */
-export const SkillTableColumns = (
-  isSharedTab: boolean,
-  isLibraryTab: boolean = false,
-): ColumnDef<SkillTableDto>[] => [
+export const SkillTableColumns = (isLibraryTab: boolean = false): ColumnDef<SkillTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -45,11 +42,9 @@ export const SkillTableColumns = (
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
-            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-          </p>
-        )}
+        <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+        </p>
       </div>
     ),
   },

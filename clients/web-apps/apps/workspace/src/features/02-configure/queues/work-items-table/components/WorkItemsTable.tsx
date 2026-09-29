@@ -28,8 +28,6 @@ export const WorkItemsTable = () => {
   const [searchParams] = useSearchParams();
 
   const name = searchParams.get("name") ?? "WorkItem";
-  const currentTab = searchParams.get("tab") ?? "personal";
-  const isSharedTab = currentTab === "shared";
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
   const navigate = useNavigate();
@@ -61,10 +59,10 @@ export const WorkItemsTable = () => {
   }, [queue]);
 
   const filteredColumns = useMemo(() => {
-    if (!hasOnlyReadAccess) return workItemsTableColumns(name, isSharedTab);
+    if (!hasOnlyReadAccess) return workItemsTableColumns(name);
 
-    return workItemsTableColumns(name, isSharedTab).filter((column) => column.id !== "actions");
-  }, [hasOnlyReadAccess, name, isSharedTab]);
+    return workItemsTableColumns(name).filter((column) => column.id !== "actions");
+  }, [hasOnlyReadAccess, name]);
 
   // Create a React table for WorkItems data
   const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
@@ -76,7 +74,7 @@ export const WorkItemsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <PayloadTableHeading queueName={data?.data[0]?.queueName || name} tab={currentTab} />
+            <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["id"]} placeholder="Search..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
