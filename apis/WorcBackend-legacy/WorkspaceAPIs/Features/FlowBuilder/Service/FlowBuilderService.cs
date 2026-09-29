@@ -13,6 +13,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly INotificationEventService _notificationEventService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly ICollaborationStore _collaborationStore;
+    private readonly IAppSecretService _appSecretService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -25,7 +26,8 @@ public class FlowBuilderService : IFlowBuilderService
         IResourceShareService resourceShareService,
         INotificationEventService notificationEventService,
         ICurrentTenantService currentTenantService,
-        ICollaborationStore collaborationStore)
+        ICollaborationStore collaborationStore,
+        IAppSecretService appSecretService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -43,6 +45,7 @@ public class FlowBuilderService : IFlowBuilderService
         _notificationEventService = notificationEventService;
         _currentTenantService = currentTenantService;
         _collaborationStore = collaborationStore;
+        _appSecretService = appSecretService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -328,9 +331,9 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Validate: Flow version is already published
-            if (flowVersion.IsPublished == true)
-                return serviceResponse.Update("Flow is already published.", 400);
+            // Re-publishing an already published version is allowed: it acts as an idempotent
+            // repair pass that re-collects references and re-creates any missing Production clones.
+            var wasAlreadyPublished = flowVersion.IsPublished == true;
 
             // Validate: ChatAgent versions must satisfy the single-node shape so invalid
             // client payloads (e.g. trigger/end/plus nodes, missing Chat AI node) cannot be published
@@ -378,27 +381,32 @@ public class FlowBuilderService : IFlowBuilderService
                     // Adapt the DTO values into the flow version object
                     publishFlowVersionDto.Adapt(flowVersion);
 
-                    // Collect and store the referenced resource names (credentials, queues, KBs, tools, skills)
-                    flowVersion.ResourceReferences = await CollectResourceReferencesAsync(flowVersion.ReactFlowObject);
-
-                    // Mark the flow version as published
-                    flowVersion.IsPublished = true;
-                    flowVersion.LastModifiedByUserId = _userId;
-                    flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
-
-                    // Update and persist changes
-                    _unitOfWork.FlowVersionRepo.Update(flowVersion);
-                    if (!await _unitOfWork.SaveAsync())
+                    // Collect references and clone any missing Production resources as one atomic
+                    // unit: if cloning fails, the whole publish rolls back and surfaces as an error
+                    // instead of leaving a half-published agent.
+                    await _unitOfWork.ExecuteInTransactionAsync(async () =>
                     {
-                        _logger.LogError($"Failed to save changes while publishing the flow version as {publishType}.");
-                        return serviceResponse;
-                    }
+                        // Collect and store the referenced resource names (credentials, queues, KBs, tools, skills)
+                        flowVersion.ResourceReferences = await CollectResourceReferencesAsync(flowVersion.ReactFlowObject);
+
+                        // Mark the flow version as published
+                        flowVersion.IsPublished = true;
+                        flowVersion.LastModifiedByUserId = _userId;
+                        flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                        // Persist the version together with every cloned Production resource.
+                        _unitOfWork.FlowVersionRepo.Update(flowVersion);
+                        await _unitOfWork.SaveAsync();
+                    });
 
                     // Log success and set response message
-                    serviceResponse.Message = $"{publishType} published successfully.";
+                    serviceResponse.Message = wasAlreadyPublished
+                        ? $"{publishType} is already published. Production resources were re-verified."
+                        : $"{publishType} published successfully.";
 
                     // Notify the Orchestrator Manager(s) of the tenant that an agent is ready for use
-                    if (publishFlowVersionDto.Type == PublishTypesEnum.Agent || publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent)
+                    if (!wasAlreadyPublished &&
+                        (publishFlowVersionDto.Type == PublishTypesEnum.Agent || publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent))
                     {
                         await _notificationEventService.NotifyAgentPublishedAsync(
                             flowVersion.Flow.TenantId,
@@ -420,8 +428,12 @@ public class FlowBuilderService : IFlowBuilderService
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur
-            _logger.LogError($"Exception occurred in PublishFlowVersionAsync: {ex.Message}");
+            // Fail loudly: the transaction has already rolled back any partial Production clones,
+            // so report a clear failure instead of silently leaving a half-published agent.
+            _logger.LogError(ex, "Failed to publish flow version {FlowVersionId}.", publishFlowVersionDto.Id);
+            serviceResponse.Data = false;
+            serviceResponse.StatusCode = 500;
+            serviceResponse.Message = "Failed to publish the flow version. No changes were applied; please resolve the reported resource error and try again.";
         }
 
         return serviceResponse;
@@ -685,7 +697,10 @@ public class FlowBuilderService : IFlowBuilderService
         }
         catch (Exception ex)
         {
+            // Log and rethrow: a failed clone/validation must abort publish (the caller wraps this
+            // pass in a transaction), never publish an agent whose Prod resources are missing.
             _logger.LogError(ex, "Failed to collect resource references while publishing.");
+            throw;
         }
 
         return System.Text.Json.JsonSerializer.Serialize(references);
@@ -694,11 +709,13 @@ public class FlowBuilderService : IFlowBuilderService
     /// <summary>
     /// Normalizes the collected credential references. Legacy rows may store a GUID instead of a
     /// name; those are resolved to the actual credential name. References that do not resolve to a
-    /// credential in the current environment are removed so the published flow never points at a
-    /// missing credential.
+    /// credential in the current environment fail the publish so the published flow never points at
+    /// a missing credential.
     /// </summary>
     private async Task ValidateCredentialReferencesAsync(List<string> credentialNames)
     {
+        var unresolved = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         for (var i = credentialNames.Count - 1; i >= 0; i--)
         {
             var value = credentialNames[i];
@@ -721,67 +738,81 @@ public class FlowBuilderService : IFlowBuilderService
                 }
             }
 
-            // Verify the name resolves in the current environment; otherwise drop it.
+            // A reference that does not resolve in the current environment must fail the publish:
+            // silently dropping it would publish a flow pointing at a missing credential.
             var byName = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name == value && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
             if (byName == null)
+            {
+                unresolved.Add(value);
                 credentialNames.RemoveAt(i);
+            }
         }
+
+        if (unresolved.Count > 0)
+            throw new InvalidOperationException(
+                $"Cannot publish: the following credential(s) were not found in the {_currentTenantService.CurrentEnvType} environment: {string.Join(", ", unresolved)}.");
     }
 
     /// <summary>
     /// Ensures a Production (EnvType = Prod) clone exists for every referenced resource. The source
-    /// is the current request environment; the target is always Prod. Existing Prod records are left
-    /// untouched (find-or-clone).
+    /// is the current request environment; the target is always Prod. Existing Prod records are
+    /// repaired (files, vectors, link rows) rather than duplicated. Throws when a referenced source
+    /// is missing so publish fails instead of silently producing a broken agent.
     /// </summary>
     private async Task EnsureProdClonesAsync(Dictionary<string, List<string>> references)
     {
-        if (references["credentials"].Count > 0)
-            await EnsureProdAppSecretsAsync(references["credentials"]);
-        if (references["queues"].Count > 0)
-            await EnsureProdQueuesAsync(references["queues"]);
-        if (references["tools"].Count > 0)
-            await EnsureProdToolsAsync(references["tools"]);
-        if (references["knowledgeBases"].Count > 0)
-            await EnsureProdKnowledgeBasesAsync(references["knowledgeBases"]);
-        if (references["skills"].Count > 0)
-            await EnsureProdSkillsAsync(references["skills"]);
-        if (references["keyStores"].Count > 0)
-            await EnsureProdKeyStoresAsync(references["keyStores"]);
+        var missing = new List<string>();
+
+        missing.AddRange(await EnsureProdAppSecretsAsync(references["credentials"]));
+        missing.AddRange(await EnsureProdQueuesAsync(references["queues"]));
+        missing.AddRange(await EnsureProdToolsAsync(references["tools"]));
+        missing.AddRange(await EnsureProdKnowledgeBasesAsync(references["knowledgeBases"]));
+        missing.AddRange(await EnsureProdSkillsAsync(references["skills"]));
+        missing.AddRange(await EnsureProdKeyStoresAsync(references["keyStores"]));
+
+        if (missing.Count > 0)
+            throw new InvalidOperationException(
+                $"Cannot publish: the following referenced resource(s) were not found in the {_currentTenantService.CurrentEnvType} environment: {string.Join(", ", missing)}.");
     }
 
     /// <summary>
     /// Finds or creates the Production clone of a credential (App Secret), including its encrypted
-    /// key-value pairs. Returns the Production App Secret ID, or the original ID when no source
-    /// credential exists.
+    /// key-value pairs. Returns the Production App Secret ID. A Dev credential GUID is never written
+    /// onto a Production record: a missing source or failed clone fails the publish.
     /// </summary>
-    private async Task<Guid?> ResolveProdCredentialIdAsync(Guid? devCredentialId)
+    private async Task<Guid?> ResolveProdCredentialIdAsync(Guid? sourceCredentialId)
     {
-        if (devCredentialId is null || devCredentialId == Guid.Empty)
-            return devCredentialId;
+        if (sourceCredentialId is null || sourceCredentialId == Guid.Empty)
+            return null;
 
-        var devSecret = await _unitOfWork.AppSecretRepo
-            .GetByConditionAsync(w => w.Id == devCredentialId && w.EnvType == _currentTenantService.CurrentEnvType)
+        var sourceSecret = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Id == sourceCredentialId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
-        if (devSecret == null)
-            return devCredentialId;
+        if (sourceSecret == null)
+            throw new InvalidOperationException(
+                $"Cannot publish: credential '{sourceCredentialId}' referenced by a knowledge base was not found in the {_currentTenantService.CurrentEnvType} environment.");
 
+        await AcquireProdCloneLockAsync("credential", sourceSecret.Name);
         var prodSecret = await _unitOfWork.AppSecretRepo
-            .GetByConditionAsync(w => w.Name == devSecret.Name && w.EnvType == ConfigureEnvironmentType.Prod)
+            .GetByConditionAsync(w => w.Name == sourceSecret.Name && w.EnvType == ConfigureEnvironmentType.Prod)
             .FirstOrDefaultAsync();
         if (prodSecret != null)
+        {
+            await EnsureProdCredentialMirroredAsync(prodSecret);
             return prodSecret.Id;
+        }
 
-        var clone = await CloneAppSecretToProdAsync(devSecret);
-        return clone?.Id ?? devCredentialId;
+        var clone = await CloneAppSecretToProdAsync(sourceSecret);
+        return clone.Id;
     }
 
     /// <summary>
     /// Clones a source App Secret into a new Production record, copying its encrypted key-value
-    /// pairs and assigning ownership to the current user.
+    /// pairs, inheriting its space, and assigning ownership to the current user.
     /// </summary>
-    private async Task<AppSecret?> CloneAppSecretToProdAsync(AppSecret devSecret)
+    private async Task<AppSecret> CloneAppSecretToProdAsync(AppSecret devSecret)
     {
         var clone = new AppSecret
         {
@@ -791,6 +822,7 @@ public class FlowBuilderService : IFlowBuilderService
             Data = devSecret.Data,
             UsageCount = 0,
             IsTenantWideAccess = devSecret.IsTenantWideAccess,
+            SpaceId = devSecret.SpaceId,
             EnvType = ConfigureEnvironmentType.Prod,
             CreatedByUserId = _userId,
             LastModifiedByUserId = _userId,
@@ -812,34 +844,66 @@ public class FlowBuilderService : IFlowBuilderService
         }
         await _unitOfWork.SaveAsync();
 
-        await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.AppSecret);
+        await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.AppSecret);
+
+        // Corsair keys connections by the App Secret Id, so mirroring the clone is what makes the
+        // Production credential usable by platform tool calls.
+        await EnsureProdCredentialMirroredAsync(clone);
         return clone;
     }
 
-    private async Task EnsureProdAppSecretsAsync(List<string> names)
+    private async Task<List<string>> EnsureProdAppSecretsAsync(List<string> names)
     {
+        var missing = new List<string>();
         foreach (var name in names)
         {
+            await AcquireProdCloneLockAsync("credential", name);
             var devSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
             if (devSecret == null)
+            {
+                missing.Add($"credential '{name}'");
                 continue;
+            }
 
             var prodSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
             if (prodSecret != null)
+            {
+                // Repair a Production clone that was created before Corsair mirroring existed.
+                await EnsureProdCredentialMirroredAsync(prodSecret);
                 continue;
+            }
 
             await CloneAppSecretToProdAsync(devSecret);
         }
+
+        return missing;
     }
 
-    private async Task EnsureProdQueuesAsync(List<string> names)
+    /// <summary>
+    /// Mirrors a Production credential to the Corsair sidecar. Corsair keys connections by the App
+    /// Secret Id, so a Production clone that is not mirrored fails at runtime when a platform tool
+    /// is invoked. Publishing fails when the mirror cannot be created, so a broken clone is never
+    /// persisted.
+    /// </summary>
+    private async Task EnsureProdCredentialMirroredAsync(AppSecret prodSecret)
     {
+        if (!await _appSecretService.SyncCredentialToCorsairAsync(prodSecret.Id))
+        {
+            throw new InvalidOperationException(
+                $"Cannot publish: failed to mirror credential '{prodSecret.Name}' to the Corsair sidecar for the {ConfigureEnvironmentType.Prod} environment.");
+        }
+    }
+
+    private async Task<List<string>> EnsureProdQueuesAsync(List<string> names)
+    {
+        var missing = new List<string>();
         foreach (var name in names)
         {
+            await AcquireProdCloneLockAsync("queue", name);
             // Load the source queue together with its user and agent assignments so the
             // Production clone can be linked the same way.
             var devQueue = await _unitOfWork.QueueRepo
@@ -848,7 +912,10 @@ public class FlowBuilderService : IFlowBuilderService
                 .Include(q => q.QueueFlowVersions)
                 .FirstOrDefaultAsync();
             if (devQueue == null)
+            {
+                missing.Add($"queue '{name}'");
                 continue;
+            }
 
             var prodQueue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
@@ -874,13 +941,14 @@ public class FlowBuilderService : IFlowBuilderService
                     Statuses = devQueue.Statuses,
                     IsTenantWideAccess = devQueue.IsTenantWideAccess,
                     CredentialName = devQueue.CredentialName,
+                    SpaceId = devQueue.SpaceId,
                     EnvType = ConfigureEnvironmentType.Prod,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId
                 };
                 await _unitOfWork.QueueRepo.InsertAsync(prodQueue);
                 await _unitOfWork.SaveAsync();
-                await _resourceShareService.AssignOwnerAsync(_userId, prodQueue.Id, ResourceTypeEnum.Queue);
+                await AssignOwnerOrThrowAsync(prodQueue.Id, ResourceTypeEnum.Queue);
             }
 
             // Mirror the queue's user assignments onto the Production queue.
@@ -889,6 +957,8 @@ public class FlowBuilderService : IFlowBuilderService
             // Mirror the queue's agent (flow version) assignments onto the Production queue.
             await EnsureProdQueueFlowVersionsAsync(devQueue, prodQueue);
         }
+
+        return missing;
     }
 
     /// <summary>
@@ -963,18 +1033,64 @@ public class FlowBuilderService : IFlowBuilderService
         await _unitOfWork.SaveAsync();
     }
 
-    private async Task EnsureProdToolsAsync(List<string> names)
+    private async Task<List<string>> EnsureProdToolsAsync(List<string> names)
     {
+        var missing = new List<string>();
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
         foreach (var name in names)
         {
-            var devTool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .FirstOrDefaultAsync();
+            // Resolve the source the same way the runtimes do: a custom tool in the current
+            // tenant/environment, preferring the request space, then Central, then the oldest
+            // other-space match. Query filters are disabled because the comparison is explicit.
+            var devToolCandidates = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.Type == ComponentTypeEnum.Custom &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == envType)
+                .IgnoreQueryFilters()
+                .OrderBy(w => w.CreatedOn)
+                .ThenBy(w => w.Id)
+                .ToListAsync();
+
+            var devTool = devToolCandidates
+                .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
+                .FirstOrDefault();
+
             if (devTool == null)
+            {
+                // Platform library tools are tenant-agnostic (TenantId = Guid.Empty, SpaceId = null)
+                // and available in every environment, so they never need a Production clone.
+                var platformToolExists = await _unitOfWork.ToolRepo
+                    .GetByConditionAsync(w =>
+                        w.Name == name &&
+                        w.Type == ComponentTypeEnum.Platform &&
+                        w.TenantId == Guid.Empty &&
+                        w.SpaceId == null)
+                    .IgnoreQueryFilters()
+                    .AnyAsync();
+                if (platformToolExists)
+                    continue;
+
+                missing.Add($"tool '{name}'");
                 continue;
+            }
+
+            await AcquireProdCloneLockAsync("tool", name);
 
             var prodTool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.Type == ComponentTypeEnum.Custom &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devTool.SpaceId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
             if (prodTool != null)
                 continue;
@@ -992,113 +1108,330 @@ public class FlowBuilderService : IFlowBuilderService
                 IsTenantWideAccess = devTool.IsTenantWideAccess,
                 IsActive = devTool.IsActive,
                 IsVerified = devTool.IsVerified,
+                SpaceId = devTool.SpaceId,
                 EnvType = ConfigureEnvironmentType.Prod,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
             };
             await _unitOfWork.ToolRepo.InsertAsync(clone);
             await _unitOfWork.SaveAsync();
-            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Tool);
+            await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.Tool);
         }
+
+        return missing;
     }
 
-    private async Task EnsureProdKnowledgeBasesAsync(List<string> names)
+    private async Task<List<string>> EnsureProdKnowledgeBasesAsync(List<string> names)
     {
+        var missing = new List<string>();
         foreach (var name in names)
         {
+            await AcquireProdCloneLockAsync("knowledge-base", name);
             var devKb = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(kb => kb.Files)
                 .FirstOrDefaultAsync();
             if (devKb == null)
+            {
+                missing.Add($"knowledge base '{name}'");
                 continue;
+            }
+
+            // External vector stores (e.g. qdrant) keep their vectors outside Postgres and cannot be
+            // copied into Prod. Fail the publish instead of pointing the agent at an empty
+            // Production knowledge base.
+            if (devKb.VectorStore != VectorStoreEnum.pgvector)
+                throw new InvalidOperationException(
+                    $"Cannot publish: knowledge base '{devKb.Name}' uses the '{devKb.VectorStore}' vector store, whose vectors cannot be copied to Production. Switch it to pgvector or remove it from the flow.");
 
             var prodKb = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
-            if (prodKb != null)
-                continue;
 
-            var clone = new KnowledgeBase
+            // Create the Production header when missing; otherwise repair its files/vectors below.
+            if (prodKb == null)
             {
-                Name = devKb.Name,
-                Description = devKb.Description,
-                VectorStore = devKb.VectorStore,
-                EmbeddingProvider = devKb.EmbeddingProvider,
-                EmbeddingModel = devKb.EmbeddingModel,
-                EmbeddingCredentialId = await ResolveProdCredentialIdAsync(devKb.EmbeddingCredentialId),
-                StoreCredentialId = await ResolveProdCredentialIdAsync(devKb.StoreCredentialId),
-                CollectionName = devKb.CollectionName,
-                VectorStoreConfig = devKb.VectorStoreConfig,
-                IsTenantWideAccess = devKb.IsTenantWideAccess,
-                EnvType = ConfigureEnvironmentType.Prod,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-            await _unitOfWork.KnowledgeBaseRepo.InsertAsync(clone);
-            await _unitOfWork.SaveAsync();
-            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.KnowledgeBase);
-        }
-    }
-
-    private async Task EnsureProdSkillsAsync(List<string> names)
-    {
-        foreach (var name in names)
-        {
-            var devSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .Include(i => i.Files)
-                .FirstOrDefaultAsync();
-            if (devSkill == null)
-                continue;
-
-            var prodSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
-                .FirstOrDefaultAsync();
-            if (prodSkill != null)
-                continue;
-
-            var clone = new Skill
-            {
-                Name = devSkill.Name,
-                Description = devSkill.Description,
-                Type = devSkill.Type,
-                IsGlobal = devSkill.IsGlobal,
-                IsTenantWideAccess = devSkill.IsTenantWideAccess,
-                IsActive = devSkill.IsActive,
-                EnvType = ConfigureEnvironmentType.Prod,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-            await _unitOfWork.SkillRepo.InsertAsync(clone);
-            await _unitOfWork.SaveAsync();
-
-            foreach (var file in devSkill.Files ?? new List<SkillFile>())
-            {
-                await _unitOfWork.SkillFileRepo.InsertAsync(new SkillFile
+                prodKb = new KnowledgeBase
                 {
-                    SkillId = clone.Id,
-                    FileName = file.FileName,
-                    Content = file.Content,
-                    FileType = file.FileType,
+                    Name = devKb.Name,
+                    Description = devKb.Description,
+                    VectorStore = devKb.VectorStore,
+                    EmbeddingProvider = devKb.EmbeddingProvider,
+                    EmbeddingModel = devKb.EmbeddingModel,
+                    EmbeddingCredentialId = await ResolveProdCredentialIdAsync(devKb.EmbeddingCredentialId),
+                    StoreCredentialId = await ResolveProdCredentialIdAsync(devKb.StoreCredentialId),
+                    CollectionName = devKb.CollectionName,
+                    VectorStoreConfig = devKb.VectorStoreConfig,
+                    IsTenantWideAccess = devKb.IsTenantWideAccess,
+                    SpaceId = devKb.SpaceId,
+                    EnvType = ConfigureEnvironmentType.Prod,
                     CreatedByUserId = _userId,
                     LastModifiedByUserId = _userId,
-                });
+                };
+                await _unitOfWork.KnowledgeBaseRepo.InsertAsync(prodKb);
+                await _unitOfWork.SaveAsync();
+                await AssignOwnerOrThrowAsync(prodKb.Id, ResourceTypeEnum.KnowledgeBase);
             }
-            await _unitOfWork.SaveAsync();
 
-            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Skill);
+            // Mirror file metadata and vectors so the Production KB is usable (idempotent repair).
+            await EnsureProdKnowledgeBaseFilesAsync(devKb, prodKb);
+            await EnsureProdKnowledgeBaseVectorsAsync(devKb, prodKb);
         }
+
+        return missing;
     }
 
-    private async Task EnsureProdKeyStoresAsync(List<string> names)
+    /// <summary>
+    /// Copies the source knowledge base's file metadata onto its Production twin. File content is
+    /// never stored, so only metadata/status is mirrored; names already present are skipped.
+    /// </summary>
+    private async Task EnsureProdKnowledgeBaseFilesAsync(KnowledgeBase devKb, KnowledgeBase prodKb)
     {
+        var sourceFiles = devKb.Files?.ToList() ?? new List<KnowledgeBaseFile>();
+        if (sourceFiles.Count == 0)
+            return;
+
+        var existingNames = await _unitOfWork.KnowledgeBaseFileRepo
+            .GetByConditionAsync(f => f.KnowledgeBaseId == prodKb.Id)
+            .Select(f => f.FileName)
+            .ToListAsync();
+        var existing = existingNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var newFiles = sourceFiles
+            .Where(f => !existing.Contains(f.FileName))
+            .Select(f => new KnowledgeBaseFile
+            {
+                TenantId = f.TenantId,
+                SpaceId = f.SpaceId,
+                KnowledgeBaseId = prodKb.Id,
+                FileName = f.FileName,
+                Extension = f.Extension,
+                ContentType = f.ContentType,
+                SizeInBytes = f.SizeInBytes,
+                ChunksCount = f.ChunksCount,
+                Status = f.Status,
+                VectorizationErrorMessage = f.VectorizationErrorMessage,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            })
+            .ToList();
+
+        if (newFiles.Count == 0)
+            return;
+
+        await _unitOfWork.KnowledgeBaseFileRepo.InsertAsync(newFiles);
+        await _unitOfWork.SaveAsync();
+    }
+
+    /// <summary>
+    /// Copies the source knowledge base's pgvector rows into Production. Vectors are keyed by the
+    /// kb_name stored in Metadata (there is no KB foreign key) and re-embedding is impossible because
+    /// the source file content is discarded, so the rows are physically duplicated with
+    /// Metadata.env_type rewritten to "prod".
+    /// </summary>
+    private async Task EnsureProdKnowledgeBaseVectorsAsync(KnowledgeBase devKb, KnowledgeBase prodKb)
+    {
+        var sourceVectors = await _unitOfWork.VectorStoreRepo
+            .GetByConditionAsync(vs => vs.Metadata != null)
+            .ToListAsync();
+
+        var devEnv = _currentTenantService.CurrentEnvType.ToString().ToLowerInvariant();
+        var devVectors = sourceVectors
+            .Where(vs => VectorStoreMetadataHelpers.IsForKnowledgeBase(vs, devKb.Name) &&
+                         string.Equals(VectorStoreMetadataHelpers.GetEnvType(vs), devEnv, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        if (devVectors.Count == 0)
+            return;
+
+        // Skip vectors already mirrored into Prod so republishing stays idempotent.
+        var prodKeys = sourceVectors
+            .Where(vs => VectorStoreMetadataHelpers.IsForKnowledgeBase(vs, prodKb.Name) &&
+                         string.Equals(VectorStoreMetadataHelpers.GetEnvType(vs), "prod", StringComparison.OrdinalIgnoreCase))
+            .Select(BuildVectorKey)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var newVectors = new List<VectorStore>();
+        foreach (var vector in devVectors)
+        {
+            if (prodKeys.Contains(BuildVectorKey(vector)))
+                continue;
+
+            newVectors.Add(new VectorStore
+            {
+                Id = Guid.NewGuid(),
+                TenantId = vector.TenantId,
+                Content = vector.Content,
+                Embedding = new Vector(vector.Embedding.ToArray()),
+                Metadata = CloneMetadataWithEnvType(vector.Metadata, "prod"),
+            });
+        }
+
+        if (newVectors.Count == 0)
+            return;
+
+        await _unitOfWork.VectorStoreRepo.InsertAsync(newVectors);
+        await _unitOfWork.SaveAsync();
+    }
+
+    // Identifies a vector within a knowledge base: document name + chunk content.
+    private static string BuildVectorKey(VectorStore vectorStore)
+    {
+        var docName = string.Empty;
+        if (vectorStore.Metadata?.RootElement.ValueKind == JsonValueKind.Object &&
+            vectorStore.Metadata.RootElement.TryGetProperty("doc_name", out var docNameElement))
+        {
+            docName = docNameElement.GetString() ?? string.Empty;
+        }
+
+        return $"{docName}\u0000{vectorStore.Content}";
+    }
+
+    // Copies a vector's metadata JSON and stamps the target environment.
+    private static JsonDocument CloneMetadataWithEnvType(JsonDocument? metadata, string envType)
+    {
+        var node = (metadata is null
+            ? null
+            : JsonNode.Parse(metadata.RootElement.GetRawText()) as JsonObject) ?? new JsonObject();
+        node["env_type"] = envType;
+        return JsonDocument.Parse(node.ToJsonString());
+    }
+
+    private async Task<List<string>> EnsureProdSkillsAsync(List<string> names)
+    {
+        var missing = new List<string>();
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
         foreach (var name in names)
         {
+            // Resolve the source the same way the runtimes do: a custom skill in the current
+            // tenant/environment, preferring the request space, then Central, then the oldest
+            // other-space match. Query filters are disabled because the comparison is explicit.
+            var devSkillCandidates = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.Type == ComponentTypeEnum.Custom &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == envType)
+                .IgnoreQueryFilters()
+                .Include(i => i.Files)
+                .OrderBy(w => w.CreatedOn)
+                .ThenBy(w => w.Id)
+                .ToListAsync();
+
+            var devSkill = devSkillCandidates
+                .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
+                .FirstOrDefault();
+
+            if (devSkill == null)
+            {
+                // Platform library skills are shipped with the runtime and available in every
+                // environment (they are discovered from the installed skill package), so they
+                // never need a Production clone.
+                var platformSkillExists = await _unitOfWork.SkillRepo
+                    .GetByConditionAsync(w => w.Name == name && w.Type == ComponentTypeEnum.Platform)
+                    .IgnoreQueryFilters()
+                    .AnyAsync();
+                if (platformSkillExists)
+                    continue;
+
+                missing.Add($"skill '{name}'");
+                continue;
+            }
+
+            await AcquireProdCloneLockAsync("skill", name);
+
+            var prodSkill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.Type == ComponentTypeEnum.Custom &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devSkill.SpaceId)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            // Create the Production skill when missing; otherwise repair its files below.
+            if (prodSkill == null)
+            {
+                prodSkill = new Skill
+                {
+                    Name = devSkill.Name,
+                    Description = devSkill.Description,
+                    Type = devSkill.Type,
+                    IsGlobal = devSkill.IsGlobal,
+                    IsTenantWideAccess = devSkill.IsTenantWideAccess,
+                    IsActive = devSkill.IsActive,
+                    SpaceId = devSkill.SpaceId,
+                    EnvType = ConfigureEnvironmentType.Prod,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                };
+                await _unitOfWork.SkillRepo.InsertAsync(prodSkill);
+                await _unitOfWork.SaveAsync();
+                await AssignOwnerOrThrowAsync(prodSkill.Id, ResourceTypeEnum.Skill);
+            }
+
+            await EnsureProdSkillFilesAsync(devSkill, prodSkill);
+        }
+
+        return missing;
+    }
+
+    /// <summary>
+    /// Copies the source skill's files onto its Production twin, skipping file names already present.
+    /// </summary>
+    private async Task EnsureProdSkillFilesAsync(Skill devSkill, Skill prodSkill)
+    {
+        var sourceFiles = devSkill.Files?.ToList() ?? new List<SkillFile>();
+        if (sourceFiles.Count == 0)
+            return;
+
+        var existingNames = await _unitOfWork.SkillFileRepo
+            .GetByConditionAsync(f => f.SkillId == prodSkill.Id)
+            .Select(f => f.FileName)
+            .ToListAsync();
+        var existing = existingNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var newFiles = sourceFiles
+            .Where(f => !existing.Contains(f.FileName))
+            .Select(f => new SkillFile
+            {
+                TenantId = f.TenantId,
+                SpaceId = f.SpaceId,
+                SkillId = prodSkill.Id,
+                FileName = f.FileName,
+                Content = f.Content,
+                FileType = f.FileType,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            })
+            .ToList();
+
+        if (newFiles.Count == 0)
+            return;
+
+        await _unitOfWork.SkillFileRepo.InsertAsync(newFiles);
+        await _unitOfWork.SaveAsync();
+    }
+
+    private async Task<List<string>> EnsureProdKeyStoresAsync(List<string> names)
+    {
+        var missing = new List<string>();
+        foreach (var name in names)
+        {
+            await AcquireProdCloneLockAsync("key-store", name);
             var devKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
             if (devKeyStore == null)
+            {
+                missing.Add($"key store '{name}'");
                 continue;
+            }
 
             var prodKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
@@ -1115,19 +1448,44 @@ public class FlowBuilderService : IFlowBuilderService
                 IsEncrypted = devKeyStore.IsEncrypted,
                 AccessLevel = devKeyStore.AccessLevel,
                 IsTenantWideAccess = devKeyStore.IsTenantWideAccess,
+                SpaceId = devKeyStore.SpaceId,
                 EnvType = ConfigureEnvironmentType.Prod,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
             };
             await _unitOfWork.KeyStoreRepo.InsertAsync(clone);
             await _unitOfWork.SaveAsync();
-            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.KeyStore);
+            await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.KeyStore);
         }
+
+        return missing;
     }
 
     private static bool IsEmptyCredential(string? value) =>
         string.IsNullOrWhiteSpace(value) ||
         value == "00000000-0000-0000-0000-000000000000";
+
+    /// <summary>
+    /// Assigns ownership to a newly cloned resource and aborts publishing when the share cannot be
+    /// persisted. The caller's transaction then rolls back the resource clone as well.
+    /// </summary>
+    private async Task AssignOwnerOrThrowAsync(Guid resourceId, ResourceTypeEnum resourceType)
+    {
+        if (!await _resourceShareService.AssignOwnerAsync(_userId, resourceId, resourceType))
+        {
+            throw new InvalidOperationException(
+                $"Cannot publish: failed to assign ownership for the cloned {resourceType} '{resourceId}'.");
+        }
+    }
+
+    private Task AcquireProdCloneLockAsync(string resourceType, string name)
+    {
+        var space = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? "central"
+            : _currentTenantService.CurrentSpaceId.ToString("N");
+        var key = $"prod-clone:{_currentTenantService.CurrentTenantId:N}:{space}:{resourceType}:{name.Trim().ToUpperInvariant()}";
+        return _unitOfWork.AcquireAdvisoryLockAsync(key);
+    }
 
     // Reads a credential reference from a config object. Accepts both the canonical
     // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).

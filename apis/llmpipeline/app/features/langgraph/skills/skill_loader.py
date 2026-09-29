@@ -8,6 +8,8 @@ from typing import Any
 import yaml
 from sqlalchemy.orm import selectinload
 
+from app.core.env_utils import normalize_env_type
+from app.core.space_utils import normalize_space_id
 from app.core.logger import logger
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.skills.skill_registry import SkillRegistry
@@ -314,23 +316,29 @@ async def load_user_skills_from_db(
     registry: SkillRegistry,
     db_session,
     tenant_id: str,
+    env_type: str | None = "dev",
+    space_id: str | None = None,
 ) -> list[SkillConfig]:
     """
-    Load active user-created skills from the Workspace DB for a tenant.
+    Load active user-created skills from the Workspace DB for a tenant and env.
 
     Args:
         registry: ``SkillRegistry`` to register discovered user skills into.
         db_session: An async SQLAlchemy session.
         tenant_id: UUID string of the tenant whose skills should be loaded.
+        env_type: Active deployment environment ("dev"/"prod"). Skills from other
+            environments are excluded so Dev and Prod resolve independently.
 
     Returns:
         A list of user ``SkillConfig`` instances that were registered.
     """
 
-    from sqlalchemy import select
+    from sqlalchemy import case, func, select
     from uuid import UUID
 
     loaded: list[SkillConfig] = []
+    normalized_env = normalize_env_type(env_type)
+    normalized_space_id = normalize_space_id(space_id)
 
     try:
         tenant_uuid = UUID(tenant_id)
@@ -342,16 +350,29 @@ async def load_user_skills_from_db(
         )
         return loaded
 
+    space_order = case(
+        (Skill.space_id == normalized_space_id, 0),
+        (Skill.space_id.is_(None), 1),
+        else_=2,
+    )
     result = await db_session.execute(
         select(Skill)
         .where(Skill.tenant_id == tenant_uuid)
+        .where(func.lower(Skill.env_type) == normalized_env)
         .where(Skill.is_active.is_(True))
         .where(Skill.is_disabled.is_(False))
+        # Prefer the request space, then Central, then the oldest other-space row.
+        .order_by(space_order, Skill.created_on.asc(), Skill.id.asc())
         .options(selectinload(Skill.files))
     )
     skills = result.unique().scalars().all()
 
+    selected_skill_names: set[str] = set()
     for skill in skills:
+        normalized_name = skill.name.casefold()
+        if normalized_name in selected_skill_names:
+            continue
+        selected_skill_names.add(normalized_name)
         config = _build_skill_config_from_db(skill)
         if config is None:
             continue

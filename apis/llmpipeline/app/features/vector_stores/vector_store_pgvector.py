@@ -20,7 +20,11 @@ from app.features.vector_stores.vector_stores_schemas import (
     QueryDocResponse,
     RetrievedChunk,
 )
-from app.features.vector_stores.vector_store_utils import VectorStoreInputResolver, VectorStoreTextChunker
+from app.core.env_utils import normalize_env_type
+from app.features.vector_stores.vector_store_utils import (
+    VectorStoreInputResolver,
+    VectorStoreTextChunker,
+)
 
 
 class PgVectorStore(BaseVectorStore):
@@ -44,6 +48,10 @@ class PgVectorStore(BaseVectorStore):
             source_text = VectorStoreInputResolver.resolve_source_text(ingest_doc_request.input)
             chunks = VectorStoreTextChunker.chunk_text(source_text, ingest_doc_request.chunk_size, ingest_doc_request.chunk_overlap)
             chunks_created = len(chunks)
+
+            # Scope the stored vectors to the active environment so Dev and Prod copies of the
+            # same knowledge base never resolve against each other.
+            env_type = normalize_env_type(user.env_type)
 
             # Error: No chunks created
             if chunks_created == 0:
@@ -93,7 +101,7 @@ class PgVectorStore(BaseVectorStore):
                         "id": str(uuid.uuid4()),
                         "tenant_id": str(self.db.tenant_id),
                         "content": chunk,
-                        "metadata": json.dumps(ingest_doc_request.metadata),
+                        "metadata": json.dumps({**(ingest_doc_request.metadata or {}), "env_type": env_type}),
                         "embedding": self._to_pgvector_literal(embedding),
                     },
                 )
@@ -181,6 +189,10 @@ class PgVectorStore(BaseVectorStore):
             filter_clauses: list[str] = []
             bind_params: dict = {}
 
+            # Environment scoping (legacy rows without env_type are treated as Dev).
+            filter_clauses.append('COALESCE("Metadata" ->> \'env_type\', \'dev\') = :env_type')
+            bind_params["env_type"] = normalize_env_type(user.env_type)
+
             # Name-based filters (preferred)
             normalized_kb_names = (
                 [k.strip() for k in query_doc_request.kb_names if (k or "").strip()]
@@ -217,9 +229,10 @@ class PgVectorStore(BaseVectorStore):
                 """
             )
 
-            # Bind expanding params for IN clauses
-            for key in bind_params:
-                query_sql = query_sql.bindparams(bindparam(key, expanding=True))
+            # Bind expanding params for IN clauses (scalar params such as env_type stay plain)
+            for key in ("kb_names", "doc_names"):
+                if key in bind_params:
+                    query_sql = query_sql.bindparams(bindparam(key, expanding=True))
 
             # Execute the query and fetch results
             query_params = {
@@ -327,6 +340,11 @@ class PgVectorStore(BaseVectorStore):
                     detail="At least one filter (kb_names, doc_names) must be provided.",
                 )
 
+            # Restrict deletion to the active environment (legacy rows without env_type count as Dev)
+            # so deleting Dev documents never removes their Production copies.
+            filter_clauses.append('COALESCE("Metadata" ->> \'env_type\', \'dev\') = :env_type')
+            bind_params["env_type"] = normalize_env_type(user.env_type)
+
             # Compose WHERE fragment
             filter_sql = " AND ".join(filter_clauses)
 
@@ -339,9 +357,10 @@ class PgVectorStore(BaseVectorStore):
                 """
             )
 
-            # Bind expanding params for IN clauses
-            for key in bind_params:
-                delete_sql = delete_sql.bindparams(bindparam(key, expanding=True))
+            # Bind expanding params for IN clauses (scalar params such as env_type stay plain)
+            for key in ("kb_names", "doc_names"):
+                if key in bind_params:
+                    delete_sql = delete_sql.bindparams(bindparam(key, expanding=True))
 
             # Set parameters for deletion query
             delete_params: dict = {

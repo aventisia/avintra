@@ -116,4 +116,13 @@ public interface IAppSecretService
     /// <returns>A service response containing the connection status.</returns>
     Task<ServiceResponse<CorsairConnectionStatus>> GetOAuthConnectionStatusAsync(Guid appSecretId);
     Task<ServiceResponse<CorsairCredentialTestResult>> TestCorsairCredentialAsync(Guid appSecretId);
+
+    /// <summary>
+    /// Mirrors a stored App Secret (API-key and OAuth plugins) to the Corsair sidecar using its
+    /// persisted values. Credentials are normally mirrored on create/update; this method lets
+    /// callers (e.g. Production publish cloning) re-sync a credential that was inserted directly.
+    /// </summary>
+    /// <param name="appSecretId">The App Secret Id used as the Corsair connection/tenant handle.</param>
+    /// <returns><c>true</c> when every applicable mirror succeeded (or nothing needed mirroring).</returns>
+    Task<bool> SyncCredentialToCorsairAsync(Guid appSecretId);
 }

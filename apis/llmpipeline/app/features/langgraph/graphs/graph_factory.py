@@ -168,6 +168,8 @@ def _create_agent_selector_node(
                 registry=skill_registry,
                 db_session=db_session,
                 tenant_id=tenant_id,
+                env_type=user.env_type,
+                space_id=user.space_id,
             )
 
         # Explicitly configured tools (via "Configure Tools") are the only tools

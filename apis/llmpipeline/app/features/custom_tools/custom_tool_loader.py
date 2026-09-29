@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 from langchain_core.tools import tool
 
-from app.core.logger import logger
+from app.core.env_utils import normalize_env_type
+from app.core.space_utils import normalize_space_id
 from app.features.custom_tools.custom_tool_executor import execute_operation
 from app.features.custom_tools.models import Tool
 from app.features.custom_tools.schemas import ToolOperation
@@ -14,31 +14,57 @@ from app.features.custom_tools.schemas import ToolOperation
 async def load_tools_for_tenant(
     session: AsyncSession,
     tenant_id: UUID,
-    flow_version_id: UUID | None = None,
+    tool_names: list[str] | None = None,
     workspace_api: str | None = None,
     access_token: str | None = None,
     env_type: str = "dev",
+    space_id: str | UUID | None = None,
 ) -> list[dict]:
+    """
+    Load the tenant's active custom tools for an environment.
+
+    Tools are resolved by root name (``ws_Tools.Name``) so only the actions
+    explicitly configured on the agent are loaded. An empty/omitted
+    ``tool_names`` loads nothing: custom tools are never bound unless the agent
+    configures them.
+    """
+
+    normalized_tool_names = [
+        name.strip() for name in (tool_names or []) if (name or "").strip()
+    ]
+    if not normalized_tool_names:
+        return []
+
+    normalized_env = normalize_env_type(env_type)
+    normalized_space_id = normalize_space_id(space_id)
+    space_order = case(
+        (Tool.space_id == normalized_space_id, 0),
+        (Tool.space_id.is_(None), 1),
+        else_=2,
+    )
     stmt = (
         select(Tool)
         .where(Tool.tenant_id == tenant_id)
+        .where(func.lower(Tool.env_type) == normalized_env)
+        .where(Tool.name.in_(normalized_tool_names))
         .where(Tool.type == "Custom")
         .where(Tool.is_active == True)
         .where(Tool.is_verified == True)
         .where(Tool.is_disabled == False)
+        # Prefer the request space, then Central, then the oldest other-space row.
+        .order_by(space_order, Tool.created_on.asc(), Tool.id.asc())
     )
-
-    if flow_version_id:
-        from app.features.custom_tools.models import FlowVersion_Tool
-        stmt = stmt.join(FlowVersion_Tool, Tool.id == FlowVersion_Tool.tool_id).where(
-            FlowVersion_Tool.flow_version_id == flow_version_id
-        )
 
     result = await session.execute(stmt)
     tools = result.scalars().all()
 
     langchain_tools = []
+    selected_tool_names: set[str] = set()
     for tool in tools:
+        normalized_name = tool.name.casefold()
+        if normalized_name in selected_tool_names:
+            continue
+        selected_tool_names.add(normalized_name)
         if not tool.parsed_schema:
             continue
 
@@ -58,7 +84,7 @@ async def load_tools_for_tenant(
                     operation=operation,
                     workspace_api=workspace_api,
                     access_token=access_token,
-                    env_type=env_type,
+                    env_type=normalized_env,
                 )
             )
 

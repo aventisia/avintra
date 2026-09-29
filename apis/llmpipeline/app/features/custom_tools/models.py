@@ -1,7 +1,8 @@
 import uuid
+from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -28,6 +29,18 @@ class Tool(TenantScopedMixin, CustomToolsBase):
         UUID(as_uuid=True),
         nullable=False,
         index=True,
+    )
+    space_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        "SpaceId",
+        UUID(as_uuid=True),
+        nullable=True,
+        index=True,
+    )
+    env_type: Mapped[str] = mapped_column(
+        "EnvType",
+        String(10),
+        nullable=False,
+        default="Dev",
     )
     name: Mapped[str] = mapped_column(
         "Name",
@@ -97,6 +110,12 @@ class Tool(TenantScopedMixin, CustomToolsBase):
         Boolean,
         nullable=False,
         default=False,
+    )
+    created_on: Mapped[Optional[datetime]] = mapped_column(
+        "CreatedOn",
+        DateTime(timezone=True),
+        nullable=True,
+        default=None,
     )
 
     flow_version_links: Mapped[list["FlowVersion_Tool"]] = relationship(

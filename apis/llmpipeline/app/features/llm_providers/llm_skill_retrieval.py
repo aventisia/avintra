@@ -61,6 +61,8 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
                 registry=registry,
                 db_session=session,
                 tenant_id=tenant_id,
+                env_type=user.env_type,
+                space_id=user.space_id,
             )
 
             skill_configs = _resolve_skill_configs(

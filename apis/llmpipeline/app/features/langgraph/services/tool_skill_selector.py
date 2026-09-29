@@ -182,6 +182,8 @@ async def resolve_requested_or_selected_tools_and_skills(
             registry=skill_registry,
             db_session=db_session,
             tenant_id=tenant_id,
+            env_type=user.env_type,
+            space_id=user.space_id,
         )
 
     explicit_tools: list[str] | None = None
@@ -655,4 +657,3 @@ class ToolSkillSelectionResponse:
             },
             "required": ["tool_names", "skill_names"],
         }
-

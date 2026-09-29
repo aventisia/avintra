@@ -78,6 +78,18 @@ class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
         nullable=False,
         index=True,
     )
+    space_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        "SpaceId",
+        UUID(as_uuid=True),
+        nullable=True,
+        index=True,
+    )
+    env_type: Mapped[str] = mapped_column(
+        "EnvType",
+        String(10),
+        nullable=False,
+        default="Dev",
+    )
     name: Mapped[str] = mapped_column(
         "Name",
         String(255),
@@ -121,7 +133,13 @@ class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
     )
 
     __table_args__ = (
-        UniqueConstraint("TenantId", "Name", name="UQ_worc_Skills_TenantId_Name"),
+        UniqueConstraint(
+            "TenantId",
+            "SpaceId",
+            "EnvType",
+            "Name",
+            name="UQ_worc_Skills_TenantId_SpaceId_EnvType_Name",
+        ),
     )
 
 

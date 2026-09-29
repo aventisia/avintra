@@ -5,6 +5,7 @@ from sqlalchemy import bindparam, text
 
 from app.core.config import settings
 from app.core.database import TenantDB, get_db_session_context
+from app.core.env_utils import normalize_env_type
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMMessage, LLMRequest
@@ -78,7 +79,7 @@ async def _resolve_kb_embedding_configs(
         raise ValueError("kb_names cannot be empty.")
 
     unique_kb_names = list(dict.fromkeys(normalized_kb_names))  # Preserve order and ensure uniqueness
-    normalized_env = (env_type or "dev").strip().lower()
+    normalized_env = normalize_env_type(env_type)
 
     async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
         query_sql = text(

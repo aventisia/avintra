@@ -1056,8 +1056,10 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Fetch the credential entity by name within the current environment, including its encrypted key-value pairs
-            var appSecret = await _unitOfWork.AppSecretRepo
+            // Fetch the credential entity by name within the current environment, including its
+            // encrypted key-value pairs. Space filters are bypassed because credentials are resolved
+            // tenant-wide, but the query can therefore surface same-name rows from other spaces.
+            var appSecretCandidates = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name == appSecretName &&
@@ -1066,7 +1068,18 @@ public class AppSecretService : IAppSecretService
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .OrderBy(w => w.CreatedOn)
+                .ToListAsync();
+
+            // Resolve deterministically (the unique index is TenantId + SpaceId + EnvType + Name):
+            // prefer the request's space, then Central (null), then the oldest record.
+            var requestSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+                ? (Guid?)null
+                : _currentTenantService.CurrentSpaceId;
+            var appSecret = appSecretCandidates
+                .OrderBy(w => w.SpaceId == requestSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
+                .ThenBy(w => w.CreatedOn)
+                .FirstOrDefault();
 
             if (appSecret == null)
             {
@@ -1158,6 +1171,39 @@ public class AppSecretService : IAppSecretService
         serviceResponse.StatusCode = 200;
         serviceResponse.Message = "Connection test completed.";
         return serviceResponse;
+    }
+
+    /// <summary>
+    /// Mirrors a stored App Secret (API-key and OAuth plugins) to the Corsair sidecar using its
+    /// persisted values. Credentials are normally mirrored on create/update; this lets callers
+    /// such as Production publish cloning re-sync a credential that was inserted directly.
+    /// </summary>
+    public async Task<bool> SyncCredentialToCorsairAsync(Guid appSecretId)
+    {
+        // Query filters are bypassed because publish runs against a freshly inserted clone whose
+        // tenant/space match the request but may not be resolvable through the space filter.
+        var appSecret = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Id == appSecretId)
+            .IgnoreQueryFilters()
+            .Include(i => i.EncryptedKeyValues)
+            .FirstOrDefaultAsync();
+
+        if (appSecret == null)
+        {
+            _logger.LogWarning("Corsair sync skipped: credential {AppSecretId} not found.", appSecretId);
+            return false;
+        }
+
+        // Persisted values are ciphertext; the mirror helpers decrypt them before sending.
+        var encryptedValues = (appSecret.EncryptedKeyValues ?? new List<EncryptedKeyValue>())
+            .GroupBy(kv => kv.Name)
+            .ToDictionary(group => group.Key, group => group.First().Value);
+
+        // API-key plugins and OAuth plugins are mutually exclusive per credential type; both
+        // return true when their plugin does not apply.
+        var apiKeyMirrored = await MirrorCredentialToCorsairAsync(appSecret, encryptedValues);
+        var oauthMirrored = await MirrorOAuthCredentialToCorsairAsync(appSecret, encryptedValues);
+        return apiKeyMirrored && oauthMirrored;
     }
 
     /// <summary>
@@ -4093,15 +4139,17 @@ public class AppSecretService : IAppSecretService
 
     /// <summary>
     /// Mirrors an API-key credential to the Corsair sidecar when the credential type maps to a supported plugin.
-    /// The mirror is best-effort: failures are logged but do not fail the create/update operation.
+    /// In the create/update paths the mirror is best-effort (the returned value is ignored); publish treats a
+    /// <c>false</c> result as a failure so it never persists an unusable Production clone.
     /// </summary>
-    private async Task MirrorCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
+    /// <returns><c>true</c> when nothing needed mirroring or every attempted mirror succeeded.</returns>
+    private async Task<bool> MirrorCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
     {
         var plugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
         var plugins = _corsairConfigRepository.GetPluginIdsForVaultType(appSecret.Type.ToString());
         if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
         {
-            return;
+            return true;
         }
 
         var decryptedValues = encryptedValues.ToDictionary(
@@ -4112,7 +4160,7 @@ public class AppSecretService : IAppSecretService
         // sending their ClientSecret to API-key plugins produces a 400 response.
         if (decryptedValues.ContainsKey("ClientSecret"))
         {
-            return;
+            return true;
         }
 
         if (decryptedValues.Count == 0)
@@ -4121,9 +4169,10 @@ public class AppSecretService : IAppSecretService
                 "Skipping Corsair mirror for credential {AppSecretId}: no credential values found for plugin {Plugin}.",
                 appSecret.Id,
                 plugin);
-            return;
+            return true;
         }
 
+        var allMirrored = true;
         foreach (var pluginId in plugins.Count > 0 ? plugins : new[] { plugin! })
         {
             IReadOnlyDictionary<string, string>? credentials = pluginId == "twilio"
@@ -4139,8 +4188,13 @@ public class AppSecretService : IAppSecretService
                 continue;
             }
 
-            await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, pluginId, credentials);
+            if (!await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, pluginId, credentials))
+            {
+                allMirrored = false;
+            }
         }
+
+        return allMirrored;
     }
 
     /// <summary>
@@ -4165,14 +4219,16 @@ public class AppSecretService : IAppSecretService
     /// <summary>
     /// Mirrors an OAuth credential (ClientId + ClientSecret) to the Corsair sidecar as tenant-scoped
     /// integration keys when the credential type maps to a supported OAuth plugin.
-    /// Best-effort: failures are logged but do not fail the create/update operation.
+    /// In the create/update paths the mirror is best-effort (the returned value is ignored); publish
+    /// treats a <c>false</c> result as a failure so it never persists an unusable Production clone.
     /// </summary>
-    private async Task MirrorOAuthCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
+    /// <returns><c>true</c> when nothing needed mirroring or the integration keys were stored.</returns>
+    private async Task<bool> MirrorOAuthCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
     {
         var plugin = MapAppSecretTypeToCorsairOAuthPlugin(appSecret.Type);
         if (string.IsNullOrWhiteSpace(plugin))
         {
-            return;
+            return true;
         }
 
         var decryptedValues = encryptedValues.ToDictionary(
@@ -4186,7 +4242,7 @@ public class AppSecretService : IAppSecretService
                 "Skipping Corsair OAuth mirror for credential {AppSecretId}: no client secret found for plugin {Plugin}.",
                 appSecret.Id,
                 plugin);
-            return;
+            return true;
         }
 
         // ClientId and RedirectUrl are stored in the sanitized JSON (not encrypted).
@@ -4202,10 +4258,10 @@ public class AppSecretService : IAppSecretService
                 "Skipping Corsair OAuth mirror for credential {AppSecretId}: missing client id or redirect url for plugin {Plugin}.",
                 appSecret.Id,
                 plugin);
-            return;
+            return true;
         }
 
-        await _corsairSidecarService.StoreIntegrationKeysAsync(
+        return await _corsairSidecarService.StoreIntegrationKeysAsync(
             appSecret.Id,
             plugin,
             clientId,
