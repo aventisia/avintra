@@ -13,8 +13,9 @@ const nameProps: InputFieldProps = {
   name: "name",
   label: "Unique Name",
   isRequired: true,
+  placeholder: "pdf-report-generator",
   description:
-    "A **unique** name for your skill.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Cannot be changed** after creation.",
+    "A **unique** name for your skill.\n\n- **Format:** lowercase letters (a-z), numbers (0-9) and single hyphens (`-`) only, in kebab-case (e.g. `pdf-report-generator`).\n- **Max length:** 255 characters.\n- **Cannot be changed** after creation.",
 };
 
 // Description

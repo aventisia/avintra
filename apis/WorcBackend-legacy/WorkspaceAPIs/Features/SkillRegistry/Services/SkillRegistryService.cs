@@ -12,6 +12,12 @@ public class SkillRegistryService : ISkillRegistryService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
 
+    /// <summary>
+    /// Validates skill names using the kebab-case convention: lowercase letters and digits,
+    /// hyphen-separated segments, with no leading, trailing, or consecutive hyphens.
+    /// </summary>
+    private static readonly Regex SkillNameRegex = new(@"^[a-z][a-z0-9]*(-[a-z0-9]+)*$", RegexOptions.Compiled);
+
     public SkillRegistryService(
         ILogger<SkillRegistryService> logger,
         IUnitOfWork unitOfWork,
@@ -124,6 +130,15 @@ public class SkillRegistryService : ISkillRegistryService
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = "Skill name is required to check availability";
+                return serviceResponse;
+            }
+
+            // Validate that the submitted name follows the kebab-case convention.
+            if (!SkillNameRegex.IsMatch(checkAvailabilityDto.UserInput))
+            {
+                serviceResponse.Data = new TrueFalseResultDto { Result = false };
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Skill name must contain lowercase letters, numbers and single hyphens only (e.g. pdf-report-generator)";
                 return serviceResponse;
             }
 
@@ -324,6 +339,13 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
+            // Validate that the skill name follows the kebab-case convention.
+            if (!SkillNameRegex.IsMatch(skillDto.Name))
+            {
+                serviceResponse.Message = "Skill name must contain lowercase letters, numbers and single hyphens only (e.g. pdf-report-generator)";
+                return serviceResponse;
+            }
+
             // Check duplicate name within tenant and current environment to avoid conflicts.
             var existingSkill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
@@ -442,19 +464,10 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Check for duplicate name excluding the current skill, within the current environment.
-            var duplicateName = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w =>
-                    w.Id != skillDto.Id &&
-                    w.Name.ToLower() == skillDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType
-                )
-                .FirstOrDefaultAsync();
-
-            if (duplicateName != null)
+            // Reject any attempt to rename an existing skill; names are immutable after creation.
+            if (!string.Equals(existingSkill.Name, skillDto.Name, StringComparison.Ordinal))
             {
-                serviceResponse.Message = "A skill with this name already exists";
-                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Skill name cannot be changed after creation";
                 return serviceResponse;
             }
 
