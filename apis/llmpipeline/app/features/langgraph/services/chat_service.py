@@ -5,7 +5,7 @@ import json
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import time
 from collections import OrderedDict
@@ -36,7 +36,10 @@ from app.features.langgraph.skills.skill_loader import load_default_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_default_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.langgraph.tools.tool_config_utils import expand_tool_config
+from app.features.langgraph.tools.tool_config_utils import (
+    configured_tool_roots,
+    expand_tool_config,
+)
 from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant as load_custom_tools
 from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
@@ -846,17 +849,27 @@ class ChatService:
         user: User,
         db_session: AsyncSession,
     ) -> None:
-        """Load custom tools from the DB and register them in the tool registry."""
+        """Load the request's configured custom tools and register them.
+
+        Only tools explicitly configured on the agent are loaded, scoped to the
+        active environment. The previous ``FlowVersionId`` join could never match
+        (the link table is dormant), so tools are resolved by their root name
+        (``ws_Tools.Name``) instead.
+        """
+
+        tool_names = configured_tool_roots(request.tool_config or [])
+        if not tool_names:
+            return
+
         try:
             custom_tools = await load_custom_tools(
                 session=db_session,
                 tenant_id=user.tenant_id,
-                flow_version_id=(
-                    UUID(request.ref_id) if request.ref_type and request.ref_id else None
-                ),
-                workspace_api="https://{settings.APP_BASE_URL}/workspace",
+                tool_names=tool_names,
+                workspace_api=f"https://{settings.APP_BASE_URL}/workspace",
                 access_token=user.access_token,
                 env_type=user.env_type,
+                space_id=user.space_id,
             )
             for ct in custom_tools:
                 self.tool_registry.register(ct)

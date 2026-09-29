@@ -19,6 +19,7 @@ from app.features.vector_stores.vector_stores_schemas import (
     QueryDocResponse,
     RetrievedChunk,
 )
+from app.core.env_utils import normalize_env_type
 from app.features.vector_stores.vector_store_utils import (
     VectorStoreInputResolver,
     VectorStoreTextChunker,
@@ -185,6 +186,9 @@ class QdrantVectorStore(BaseVectorStore):
             # Initialize list to store Qdrant points
             points = []
 
+            # Scope the stored vectors to the active environment for parity with pgvector.
+            env_type = normalize_env_type(user.env_type)
+
             # Iterate through chunks and corresponding embeddings
             for chunk, embedding in zip(chunks, embedding_response.embeddings):
 
@@ -205,7 +209,7 @@ class QdrantVectorStore(BaseVectorStore):
                         "vector": embedding,
                         "payload": {
                             "content": chunk,
-                            "metadata": ingest_doc_request.metadata,
+                            "metadata": {**(ingest_doc_request.metadata or {}), "env_type": env_type},
                             "tenant_id": str(user.tenant_id),
                             "timestamp": datetime.datetime.now(
                                 datetime.timezone.utc
@@ -317,7 +321,12 @@ class QdrantVectorStore(BaseVectorStore):
                 {
                     "key": "tenant_id",
                     "match": {"value": str(user.tenant_id)},
-                }
+                },
+                # Environment scoping for parity with pgvector.
+                {
+                    "key": "metadata.env_type",
+                    "match": {"value": normalize_env_type(user.env_type)},
+                },
             ]
 
             # Name-based filters (preferred)
@@ -473,6 +482,11 @@ class QdrantVectorStore(BaseVectorStore):
                 {
                     "key": "tenant_id",
                     "match": {"value": str(user.tenant_id)},
+                },
+                # Restrict deletion to the active environment for parity with pgvector.
+                {
+                    "key": "metadata.env_type",
+                    "match": {"value": normalize_env_type(user.env_type)},
                 },
                 *should_filters,  # each name filter is ANDed, not ORed
             ]

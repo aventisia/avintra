@@ -67,6 +67,23 @@ def iter_tool_config_entries(tool_config: list[Any]):
                 yield f"{tool}_{action_name}", approval
 
 
+def configured_tool_roots(tool_config: list[Any]) -> list[str]:
+    """Return the distinct root tool names from Studio ``tool_config`` entries.
+
+    The root is the Studio ``tool`` field (e.g. ``outlook`` for the action
+    ``outlook_send_email``), which matches ``ws_Tools.Name``. Custom OpenAPI
+    tools are stored per root, so this is what ``load_tools_for_tenant`` filters
+    on. Order is preserved and duplicates are dropped.
+    """
+
+    roots: list[str] = []
+    for config in tool_config or []:
+        tool = (field(config, "tool", "") or "").strip()
+        if tool and tool not in roots:
+            roots.append(tool)
+    return roots
+
+
 def expand_tool_config(tool_config: list[Any]) -> list[str]:
     """Expand Studio tool config entries into LangGraph tool names.
 

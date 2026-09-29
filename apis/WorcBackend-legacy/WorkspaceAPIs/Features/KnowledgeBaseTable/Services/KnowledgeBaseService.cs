@@ -644,12 +644,17 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Delete associated vector store entries (cascade delete)
+            // Delete associated vector store entries (cascade delete), scoped to the KB's own
+            // environment so deleting a Dev KB never removes its Production vectors.
             var vectorStores = await _unitOfWork.VectorStoreRepo
                 .GetByConditionAsync(vs => vs.TenantId == _currentTenantService.CurrentTenantId && vs.Metadata != null)
                 .ToListAsync();
 
-            var kbVectorStores = vectorStores.Where(vs => IsVectorStoreForKnowledgeBase(vs, kb.Name)).ToList();
+            var kbEnvType = kb.EnvType.ToString().ToLowerInvariant();
+            var kbVectorStores = vectorStores
+                .Where(vs => VectorStoreMetadataHelpers.IsForKnowledgeBase(vs, kb.Name) &&
+                             string.Equals(VectorStoreMetadataHelpers.GetEnvType(vs), kbEnvType, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
             foreach (var vs in kbVectorStores)
             {
@@ -766,17 +771,19 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Delete associated vector store entries for all KBs
-            var kbNameSet = kbs
-                .Select(kb => kb.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            // Delete associated vector store entries for all KBs, scoped by each KB's environment.
+            var kbScopes = kbs
+                .Where(kb => !string.IsNullOrWhiteSpace(kb.Name))
+                .Select(kb => (Name: kb.Name, EnvType: kb.EnvType.ToString().ToLowerInvariant()))
+                .ToHashSet();
             var vectorStores = await _unitOfWork.VectorStoreRepo
                 .GetByConditionAsync(vs => vs.Metadata != null)
                 .ToListAsync();
 
             var kbVectorStores = vectorStores
-                .Where(vs => kbNameSet.Any(kbName => IsVectorStoreForKnowledgeBase(vs, kbName)))
+                .Where(vs => kbScopes.Any(scope =>
+                    VectorStoreMetadataHelpers.IsForKnowledgeBase(vs, scope.Name) &&
+                    string.Equals(VectorStoreMetadataHelpers.GetEnvType(vs), scope.EnvType, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             foreach (var vs in kbVectorStores)
@@ -805,23 +812,6 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         }
 
         return serviceResponse;
-    }
-
-    private static bool IsVectorStoreForKnowledgeBase(VectorStore vectorStore, string kbName)
-    {
-        if (vectorStore.Metadata == null)
-            return false;
-
-        if (vectorStore.Metadata.RootElement.ValueKind != JsonValueKind.Object)
-            return false;
-
-        if (!vectorStore.Metadata.RootElement.TryGetProperty("kb_name", out var kbNameElement))
-            return false;
-
-        var metadataKbName = kbNameElement.GetString();
-        return !string.IsNullOrWhiteSpace(metadataKbName)
-            && !string.IsNullOrWhiteSpace(kbName)
-            && string.Equals(metadataKbName, kbName, StringComparison.OrdinalIgnoreCase);
     }
 
     // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;

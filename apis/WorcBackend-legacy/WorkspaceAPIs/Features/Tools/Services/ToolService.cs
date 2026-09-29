@@ -302,16 +302,18 @@ public class ToolService : IToolService
                     new TrueFalseResultDto { Result = false });
             }
 
-            // Search for an existing tool with the same name (case-insensitive) within the current environment.
-            var existingToolWithSameName = await _unitOfWork.ToolRepo
+            // Search for an existing tool with the same name (case-insensitive) within the current
+            // environment. AnyAsync avoids a duplicate-name throw when same-name tools exist across
+            // spaces (the space filter is intentionally bypassed for platform/tool uniqueness).
+            var toolNameExists = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == normalizedName.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .AnyAsync();
 
-            if (existingToolWithSameName != null)
+            if (toolNameExists)
             {
                 return serviceResponse.Update(
                     $"Tool name '{normalizedName}' already exists.",
@@ -411,14 +413,25 @@ public class ToolService : IToolService
             // Fetch the requested tool by name within the current environment.
             // Bypass global tenant/space filters so platform (library) tools with
             // TenantId = Guid.Empty are visible to every tenant.
-            var tool = await _unitOfWork.ToolRepo
+            var toolCandidates = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == normalizedName &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .OrderBy(w => w.CreatedOn)
+                .ToListAsync();
+
+            // Resolve deterministically (the unique index is TenantId + SpaceId + EnvType + Name):
+            // prefer the request's space, then Central (null), then the oldest record.
+            var requestSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+                ? (Guid?)null
+                : _currentTenantService.CurrentSpaceId;
+            var tool = toolCandidates
+                .OrderBy(w => w.SpaceId == requestSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
+                .ThenBy(w => w.CreatedOn)
+                .FirstOrDefault();
 
             if (tool == null)
             {
@@ -478,9 +491,9 @@ public class ToolService : IToolService
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .AnyAsync();
 
-            if (toolWithSameName != null)
+            if (toolWithSameName)
             {
                 return serviceResponse.Update($"Tool '{toolDto.Name}' already exists.", 409);
             }

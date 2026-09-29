@@ -2,7 +2,7 @@
 
 public static class RequestExternalAPIUtil
 {
-    public static async Task<HttpResponseMessage> RequestExternalAPI(CrudTypesEnum crudType, string url, string? jwt = null, object? content = null)
+    public static async Task<HttpResponseMessage> RequestExternalAPI(CrudTypesEnum crudType, string url, string? jwt = null, object? content = null, ConfigureEnvironmentType? envType = null)
     {
         // Decide HttpMethod
         var method = crudType switch
@@ -26,6 +26,13 @@ public static class RequestExternalAPIUtil
 
         // Create HttpRequestMessage
         var request = new HttpRequestMessage(method, url);
+
+        // Forward the active environment so downstream services resolve env-scoped resources
+        // (credentials, knowledge bases, vectors, skills, tools) against the same environment.
+        if (envType.HasValue)
+        {
+            request.Headers.TryAddWithoutValidation("X-Env-Type", envType.Value.ToString().ToLowerInvariant());
+        }
 
         // If content is not null
         if (content != null)

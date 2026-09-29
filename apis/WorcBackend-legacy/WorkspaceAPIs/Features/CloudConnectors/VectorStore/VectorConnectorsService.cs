@@ -10,15 +10,18 @@ public class VectorConnectorsService : IVectorConnectorsService
 {
     private readonly ILogger<VectorConnectorsService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly string? _jwt;
 
     public VectorConnectorsService(
         ILogger<VectorConnectorsService> logger,
         EnvironmentConfig environmentConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _environmentConfig = environmentConfig;
+        _currentTenantService = currentTenantService;
 
         // Set _jwt
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
@@ -133,7 +136,8 @@ public class VectorConnectorsService : IVectorConnectorsService
                 CrudTypesEnum.Delete,
                 apiUrl,
                 _jwt,
-                content);
+                content,
+                _currentTenantService.CurrentEnvType);
         }
         else
         {
@@ -142,7 +146,8 @@ public class VectorConnectorsService : IVectorConnectorsService
                 CrudTypesEnum.Create,
                 apiUrl,
                 _jwt,
-                content);
+                content,
+                _currentTenantService.CurrentEnvType);
         }
 
         // Throws exception if response status code is unsuccessful

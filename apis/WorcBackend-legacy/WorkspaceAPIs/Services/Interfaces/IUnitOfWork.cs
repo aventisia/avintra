@@ -64,4 +64,17 @@ public interface IUnitOfWork
     /// </summary>
     /// <returns>True if there are pending changes, otherwise false.</returns>
     bool HasChanges();
+
+    /// <summary>
+    /// Runs the supplied operation inside a single database transaction. The transaction is
+    /// committed when the operation completes and rolled back when it throws, so callers get
+    /// all-or-nothing semantics across multiple repository saves.
+    /// </summary>
+    /// <param name="operation">The asynchronous work to execute atomically.</param>
+    Task ExecuteInTransactionAsync(Func<Task> operation);
+
+    /// <summary>
+    /// Acquires a transaction-scoped PostgreSQL advisory lock for a logical resource key.
+    /// </summary>
+    Task AcquireAdvisoryLockAsync(string resourceKey);
 }
