@@ -24,6 +24,15 @@ const alphaNumericRegex = new RegExp(/^[a-zA-z0-9]+([\s][a-zA-Z0-9]+)*$/);
 /** Checks whether field contains valid variable name or not */
 const variableRegex = new RegExp(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
 
+/**
+ * Checks whether field contains a valid skill name or not.
+ * Uses the kebab-case convention: lowercase letters and digits, hyphen-separated segments,
+ * with no leading, trailing, or consecutive hyphens.
+ * Examples of valid matches: 'pdf-report-generator', 'summarizer', 'sql-generator-2'
+ * Examples of invalid matches: 'PDF-Report', 'pdf_report', '-pdf', 'pdf--report'
+ */
+const skillNameRegex = new RegExp(/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/);
+
 /** Checks whether field contains no-whitespaces or not */
 const noWhitespaceRegex = new RegExp(/^[^\s]*$/);
 
@@ -73,6 +82,7 @@ export {
   numericRegex,
   alphaNumericRegex,
   variableRegex,
+  skillNameRegex,
   noWhitespaceRegex,
   pwdRegex,
   positiveFloatNumberRegex,

@@ -1,4 +1,4 @@
-import { maxLenError, reqError, variableError, variableRegex } from "@avplatform/ui/utils";
+import { maxLenError, reqError, skillNameError, skillNameRegex } from "@avplatform/ui/utils";
 import { z } from "zod";
 
 /**
@@ -8,8 +8,8 @@ export const skillNameSchema = z
   .string()
   .min(1, { message: reqError("Name") })
   .max(255, { message: maxLenError("Name", 255) })
-  .regex(variableRegex, {
-    message: variableError("Name"),
+  .regex(skillNameRegex, {
+    message: skillNameError("Name"),
   });
 
 /**

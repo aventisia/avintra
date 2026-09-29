@@ -32,6 +32,10 @@ const alphaNumericError = (label: string) =>
 /** Output: ${label} can only contain letters, number and underscore */
 const variableError = (label: string) => `${label} can only contain letters, number and underscore`;
 
+/** Output: ${label} must be lowercase letters, numbers, and single hyphens (e.g. pdf-report-generator) */
+const skillNameError = (label: string) =>
+  `${label} must be lowercase letters, numbers, and single hyphens (e.g. pdf-report-generator)`;
+
 /** Checks whether field contains no-whitespaces or not */
 const noWhitespaceError = (label: string) => `${label} does not allow whitespace`;
 
@@ -70,6 +74,7 @@ export {
   numericError,
   alphaNumericError,
   variableError,
+  skillNameError,
   noWhitespaceError,
   pwdError,
   reqError,
