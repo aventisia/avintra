@@ -10,11 +10,10 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
@@ -35,13 +34,13 @@ export const TriggersTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, isShared } = useTableTab();
+  // Get the query key used to invalidate both merged lists after a mutation
+  const { queryKey } = useTableTab();
 
   // Fetch triggers data
   const { data } = useFetchTriggers();
 
-  const triggersTableColumnsArray = triggersTableColumns(isShared);
+  const triggersTableColumnsArray = triggersTableColumns();
   // Create a React table for triggers data
   const table = useDataTable(
     triggersTableColumnsArray,
@@ -61,7 +60,6 @@ export const TriggersTable = () => {
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="time-triggers" />
-              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />{" "}
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox
@@ -70,7 +68,7 @@ export const TriggersTable = () => {
                 placeholder="Search triggers..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              {isPersonal && <DTCreateButton entity="timeTrigger" />}
+              <DTCreateButton entity="timeTrigger" />
             </div>
           </div>
           {/* Data table to render data */}

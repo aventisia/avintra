@@ -85,6 +85,19 @@ public class FlowsTableService : IFlowsTableService
                     .ToListAsync();
             }
 
+            // Exclude archived agents: a flow whose latest version is archived is shown
+            // only in the Archived tab, never in the active personal/shared lists.
+            flows = flows
+                .Where(flow =>
+                {
+                    var latestVersion = flow.FlowVersions?
+                        .OrderByDescending(version => version.VersionNumber)
+                        .FirstOrDefault();
+
+                    return latestVersion == null || !latestVersion.IsArchived;
+                })
+                .ToList();
+
             // Map the flow entities to DTOs
             var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
 

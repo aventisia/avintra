@@ -1,47 +1,14 @@
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
-
-import { useCurrentSpaceStore } from "@/stores/current-space-store";
-
-import { DATA_QUERY_KEY, TABLE_TAB_QUERY_PARAM } from "../constants";
+import { DATA_QUERY_KEY } from "../constants";
 
 /**
- * Returns tab state and query key derived from URL search params.
+ * Returns the query key used to invalidate the merged knowledge base list.
  *
- * Keeps tab handling logic reusable across features while allowing
- * each feature to provide its own query param and query key.
- *
- * The returned query key is the single source of truth for the table list
- * query: it always includes the current space id so fetches and mutations
- * resolve the same cache entry.
+ * The list merges the current-space (personal) and shared-with-user queries into a
+ * single table, so the returned key is the base prefix of both query keys.
+ * Invalidating this prefix refetches both lists after a mutation.
  */
 export const useTableTab = () => {
-  const [searchParams] = useSearchParams();
-
-  const { currentSpace } = useCurrentSpaceStore(
-    useShallow((state) => ({
-      currentSpace: state.currentSpace,
-    })),
-  );
-
-  const currentTab = searchParams.get(TABLE_TAB_QUERY_PARAM) ?? "personal";
-
-  const isPersonal = currentTab === "personal";
-  const isShared = currentTab === "shared";
-
-  const queryKey = useMemo(
-    () => [
-      ...(isPersonal ? DATA_QUERY_KEY : [...DATA_QUERY_KEY, "SHARED"]),
-      currentSpace?.id ?? "",
-    ],
-    [isPersonal, currentSpace?.id],
-  );
-
   return {
-    currentTab,
-    isPersonal,
-    queryKey,
-    isShared,
+    queryKey: DATA_QUERY_KEY,
   };
 };

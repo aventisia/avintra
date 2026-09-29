@@ -1,7 +1,4 @@
 import { DialogCrudAction } from "@avplatform/ui/types";
-import { User, Users } from "lucide-react";
-
-import { QueryTabItem } from "@/components/QueryTab";
 
 /**
  * The unique key for the knowledgeBase query to be used in the query client. ["knowledgeBase"]
@@ -16,19 +13,6 @@ const TABLE_HEADING = "Knowledge Bases";
 
 const TABLE_KEY = "knowledge-base";
 const DETAIL_TABLE_KEY = "knowledge-base-details";
-
-/**
- * Key used for the query param in tables tab
- */
-const TABLE_TAB_QUERY_PARAM = "tab";
-
-/**
- * Tabs to be used in tables tab
- */
-const TABLE_VIEW_TABS = [
-  { label: "Personal", value: "personal", icon: User },
-  { label: "Shared", value: "shared", icon: Users },
-] as QueryTabItem[];
 
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
@@ -50,6 +34,4 @@ export {
   TABLE_HEADING,
   TABLE_KEY,
   DETAIL_TABLE_KEY,
-  TABLE_TAB_QUERY_PARAM,
-  TABLE_VIEW_TABS,
 };
