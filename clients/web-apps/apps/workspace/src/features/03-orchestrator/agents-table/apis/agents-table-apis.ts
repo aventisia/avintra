@@ -36,7 +36,9 @@ export const getSearchPublishedAgents = (query: string) => {
  */
 export const getAssignedMachines = (flowVersionId: string) => {
   return axiosInstance
-    .get<IHttpResponse<AssignMachineDto[]>>(`${baseAPIURL}/${flowVersionId}/machines`)
+    .get<IHttpResponse<AssignMachineDto[]>>(`${baseAPIURL}/${flowVersionId}/machines`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -48,6 +50,7 @@ export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
     .post<IHttpResponse<boolean>>(
       `${baseAPIURL}/${assignMachineDto.flowVersionId}/assign-machines`,
       assignMachineDto.machineIds,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -60,6 +63,7 @@ export const removeMachines = (assignMachineDto: AgentAssignMachineDto) => {
     .post<IHttpResponse<boolean>>(
       `${baseAPIURL}/${assignMachineDto.flowVersionId}/remove-machines`,
       assignMachineDto.machineIds,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -69,7 +73,9 @@ export const removeMachines = (assignMachineDto: AgentAssignMachineDto) => {
  */
 export const updateAgent = (updatedAgent: AgentsTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<AgentsTableDto>>(`${baseAPIURL}`, updatedAgent)
+    .put<IHttpResponse<AgentsTableDto>>(`${baseAPIURL}`, updatedAgent, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -80,6 +86,7 @@ const deleteAgent = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-version/delete/${id}`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -89,13 +96,17 @@ const deleteAgent = (id: string) => {
  */
 const deleteAgents = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 export const disableMachines = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/disable-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
