@@ -176,7 +176,7 @@ namespace WorkspaceAPIs.Jobs
                     localTimeOfDay);
             }
 
-            return CronScheduleUtil.ComputeNextTriggerUtc(cronExpression, now);
+            return CronScheduleUtil.ComputeNextTriggerUtc(cronExpression, now, timezone: "UTC");
         }
 
         // Parses a JSON-serialized list of integers (null-safe).
