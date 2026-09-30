@@ -218,6 +218,9 @@ public static class AccountsDbInitialSeed
                                 .Select(r => r.ToString())
                                 .ToList();
 
+            // SA is granted only to Commercial deployments. Community and Enterprise are
+            // single-tenant self-hosted deployments whose platform admin must NOT hold SA
+            // (SA is already excluded from the base workspace role set above).
             // Check if the tenant type is 'Commercial' (case-insensitive comparison)
             if (environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase))
             {
@@ -259,9 +262,23 @@ public static class AccountsDbInitialSeed
     {
         try
         {
-            // Attempt to parse the TenantId as a Guid
+            // Community deployments have no on-prem tenant id to parse, so generate a fresh id for
+            // the single default tenant. Paid deployments keep the id supplied by GlobalAdmin.
             Guid tenantGuid;
-            bool isValidTenantId = Guid.TryParse(environmentConfig.OnPremTenantId, out tenantGuid);
+            if (environmentConfig.IsCommunityDeployment)
+            {
+                tenantGuid = Guid.NewGuid();
+            }
+            else
+            {
+                Guid.TryParse(environmentConfig.OnPremTenantId, out tenantGuid);
+            }
+
+            // Community deployments receive no tenant metadata from GlobalAdmin; fall back to a
+            // fixed display name so the tenant and its container are still named deterministically.
+            var tenantName = environmentConfig.IsCommunityDeployment && string.IsNullOrWhiteSpace(environmentConfig.OnPremTenantName)
+                ? OnPremTenantTypesEnum.Community.ToString()
+                : environmentConfig.OnPremTenantName;
 
             // Initialize default tenant
             var newTenant = new Tenant()
@@ -270,9 +287,9 @@ public static class AccountsDbInitialSeed
                 ResourceType = TenantResourceTypesEnum.Dedicated,
                 Type = TenantTypesEnum.Organization,
                 Currency = CurrencyTypesEnum.USD,
-                Name = environmentConfig.OnPremTenantName,
+                Name = tenantName,
                 Domain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(environmentConfig.AccountsApiBaseUrl),
-                ContainerName = TenantContainerUtil.GenerateName(environmentConfig.OnPremTenantName),
+                ContainerName = TenantContainerUtil.GenerateName(tenantName),
                 ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
@@ -483,7 +500,8 @@ public static class AccountsDbInitialSeed
                 return true;
             }
 
-            // Prepare plan type based on tenant type
+            // Prepare plan type based on tenant type: Commercial gets Pro; Enterprise and
+            // Community (single-tenant deployments) get None (effectively unlimited, unpaid).
             SubscriptionPlanTypeEnum planType = environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
                 SubscriptionPlanTypeEnum.Pro :
                 SubscriptionPlanTypeEnum.None;
