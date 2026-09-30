@@ -22,6 +22,25 @@ public class InstanceService : IInstanceService
     // Collects and processes metrics such as user count, job execution stats, and other instance-related metrics from an external API.
     public async Task<ServiceResponse<InstanceRequestDto>> CollectMetricsAsync(string source)
     {
+        // Community deployments do not synchronize usage with GlobalAdmin. Return a benign,
+        // non-null success response so the startup caller's null-check does not treat the
+        // deliberate skip as a Workspace API failure (which would abort application startup).
+        // PostMetricsToApiAsync is also a no-op for community, so nothing is ever posted.
+        if (_environmentConfig.IsCommunityDeployment)
+        {
+            return new ServiceResponse<InstanceRequestDto>()
+            {
+                Data = new InstanceRequestDto()
+                {
+                    PlatformVersion = _appDefaultConfig.PlatformVersion,
+                    Source = source,
+                    Last7DayUsages = new List<ProjectUsageMetricDto>()
+                },
+                Message = "Instance metrics reporting is disabled for community deployments.",
+                StatusCode = 200
+            };
+        }
+
         // Initialize the service response with a success status and message
         var serviceResponse = new ServiceResponse<InstanceRequestDto>()
         {
@@ -120,6 +139,10 @@ public class InstanceService : IInstanceService
     // Posts the collected metrics to an external API for validation or further processing.
     public async Task PostMetricsToApiAsync(InstanceRequestDto instanceRequestDto)
     {
+        // Community deployments never post usage to GlobalAdmin, so skip the validation
+        // call entirely (no HTTP request, no enforcement flags overwritten from the response).
+        if (_environmentConfig.IsCommunityDeployment) return;
+
         try
         {
             var httpClient = new HttpClient();
