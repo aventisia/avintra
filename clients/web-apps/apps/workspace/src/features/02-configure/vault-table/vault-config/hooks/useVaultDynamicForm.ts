@@ -15,6 +15,7 @@ import {
   getNodeConfig,
 } from "@/features/dynamic-config-panel";
 import { NodeInputType } from "@/features/dynamic-config-panel/types/input-output-types";
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { isVaultNameAvailable } from "../../apis/vaults-table-apis";
 import { vaultNameSchema } from "../../constants/vault-zod-schema";
@@ -22,8 +23,8 @@ import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useTableTab } from "../../hooks/useTableTab";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 import {
-  getCustomApiToolVaultSchema,
   getCustomApiToolDefaultValues,
+  getCustomApiToolVaultSchema,
   mapCustomApiToolDataToFormValues,
 } from "../constants/custom-api-tool-schema";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
@@ -55,10 +56,8 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
   // Get query client
   const queryClient = useQueryClient();
 
-  // Get vaults data from query client
-  const vaultsData = queryClient.getQueryData<{
-    data: VaultsTableDto[];
-  }>(queryKey);
+  // Get vaults data from the merged Personal/Shared lists in the cache
+  const vaultsData = getMergedQueryData<VaultsTableDto>(queryClient, queryKey);
 
   // Get vault data by id
   const vaultData = vaultsData?.data.find((item) => item.id === rowId);

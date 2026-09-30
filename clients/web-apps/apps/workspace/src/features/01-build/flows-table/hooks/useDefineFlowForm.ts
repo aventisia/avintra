@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isFlowNameAvailable } from "../apis/flows-table-apis";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
@@ -66,10 +68,8 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
 
   // Fetch flow data when rowId changes
   useEffect(() => {
-    // Get flows data from query client
-    const flowsData = queryClient.getQueryData<{
-      data: FlowsTableDto[];
-    }>(queryKey);
+    // Get flows data from the merged Personal/Shared lists in the cache
+    const flowsData = getMergedQueryData<FlowsTableDto>(queryClient, queryKey);
 
     // Get flow data by id
     const flowData = flowsData?.data.find((item) => item.id === rowId);
@@ -120,9 +120,7 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
     // so a tampered/enabled select cannot change it.
     let type = formData.type;
     if (crudAction === "update") {
-      const flowsData = queryClient.getQueryData<{
-        data: FlowsTableDto[];
-      }>(queryKey);
+      const flowsData = getMergedQueryData<FlowsTableDto>(queryClient, queryKey);
       const originalType = flowsData?.data.find((item) => item.id === rowId)?.type;
       if (originalType) type = originalType;
     }

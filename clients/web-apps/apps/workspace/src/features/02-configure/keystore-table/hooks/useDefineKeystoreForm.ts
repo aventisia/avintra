@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isKeystoreNameAvailable } from "../apis/keystores-table-apis";
 import { keystoreNameSchema, keystoreZodSchema } from "../constants/keystore-zod-schema";
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
@@ -68,10 +70,8 @@ export const useDefineKeystoreForm = ({ rowId, crudAction }: UseDefineKeystoreFo
 
   // Fetch keystore data when rowId changes
   useEffect(() => {
-    // Get keystores data from query client
-    const keystoresData = queryClient.getQueryData<{
-      data: KeystoresTableDto[];
-    }>(queryKey);
+    // Get keystores data from the merged Personal/Shared lists in the cache
+    const keystoresData = getMergedQueryData<KeystoresTableDto>(queryClient, queryKey);
 
     // Get keystore data by id
     const keystoreData = keystoresData?.data.find((item) => item.id === rowId);

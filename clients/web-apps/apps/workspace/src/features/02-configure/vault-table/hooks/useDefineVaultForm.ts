@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isVaultNameAvailable } from "../apis/vaults-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { vaultNameSchema, vaultZodSchema } from "../constants/vault-zod-schema";
@@ -63,10 +65,8 @@ export const useDefineVaultForm = ({ rowId, crudAction }: UseDefineVaultFormOpti
 
   // Fetch config data when rowId changes
   useEffect(() => {
-    // Get configs data from query client
-    const configsData = queryClient.getQueryData<{
-      data: VaultsTableDto[];
-    }>(DATA_QUERY_KEY);
+    // Get configs data from the merged Personal/Shared lists in the cache
+    const configsData = getMergedQueryData<VaultsTableDto>(queryClient, DATA_QUERY_KEY);
 
     // Get config data by id
     const configData = configsData?.data.find((item) => item.id === rowId);

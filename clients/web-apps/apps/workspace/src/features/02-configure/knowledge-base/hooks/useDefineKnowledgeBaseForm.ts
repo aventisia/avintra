@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isKnowledgeBaseNameAvailable } from "../apis/knowledge-base-apis";
 import {
   knowledgeBaseNameSchema,
@@ -78,10 +80,8 @@ export const useDefineKnowledgeBaseForm = ({
 
   // Fetch knowledge base data when rowId changes
   useEffect(() => {
-    // Get knowledgeBase data from query client
-    const knowledgeBaseDataList = queryClient.getQueryData<{
-      data: KnowledgeBaseTableDto[];
-    }>(queryKey);
+    // Get knowledgeBase data from the merged Personal/Shared lists in the cache
+    const knowledgeBaseDataList = getMergedQueryData<KnowledgeBaseTableDto>(queryClient, queryKey);
 
     // Get knowledge base data by id
     const knowledgeBaseData = knowledgeBaseDataList?.data?.find((item) => item.id === rowId);
@@ -98,7 +98,10 @@ export const useDefineKnowledgeBaseForm = ({
       embeddingConfig: {
         isByokEnabled: knowledgeBaseData?.embeddingCredentialId ? true : false,
         provider: knowledgeBaseData?.embeddingProvider ?? "openai",
-        credentialName: knowledgeBaseData?.embeddingCredentialName ?? knowledgeBaseData?.embeddingCredentialId ?? "",
+        credentialName:
+          knowledgeBaseData?.embeddingCredentialName ??
+          knowledgeBaseData?.embeddingCredentialId ??
+          "",
         model: knowledgeBaseData?.embeddingModel ?? "",
       },
       isDisabled: knowledgeBaseData?.isDisabled ?? false,

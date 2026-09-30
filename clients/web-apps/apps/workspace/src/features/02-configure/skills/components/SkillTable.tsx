@@ -7,6 +7,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
+import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
@@ -37,7 +38,7 @@ export const SkillTable = () => {
   // Fetch skills data
   const { data } = useFetchSkills();
 
-  const skillTableColumnsArray = SkillTableColumns(isLibrary);
+  const skillTableColumnsArray = useMemo(() => SkillTableColumns(isLibrary), [isLibrary]);
 
   // Create a React table for skills data
   const table = useDataTable(

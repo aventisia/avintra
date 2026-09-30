@@ -1,5 +1,5 @@
-import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,11 +9,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isNameAvailable } from "../apis/triggers-table-apis";
-import {
-  triggerNameSchema,
-  triggerZodSchema,
-} from "../constants/trigger-zod-schema";
+import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema";
 import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
 import { useTableTab } from "./useTableTab";
 
@@ -66,10 +65,8 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
 
   // Fetch trigger data when rowId changes
   useEffect(() => {
-    // Get triggers data from query client
-    const triggersData = queryClient.getQueryData<{
-      data: WebhookTriggerDto[];
-    }>(queryKey);
+    // Get triggers data from the merged Personal/Shared lists in the cache
+    const triggersData = getMergedQueryData<WebhookTriggerDto>(queryClient, queryKey);
 
     // Find the trigger by rowId
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
