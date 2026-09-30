@@ -1,7 +1,9 @@
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
-/// Default credit gate. Reads the available credit balance from AccountsAPIs.
+/// Default credit gate. Reads the read-only TenantCredits projection from AccountsDb so the
+/// gate works identically in request, hub, trigger and background/scheduler contexts, none of
+/// which can rely on an end-user access token to call AccountsAPIs over HTTP.
 /// </summary>
 public class CreditGateService : ICreditGateService
 {
@@ -15,17 +17,17 @@ public class CreditGateService : ICreditGateService
     private const double MinimumRequiredCredits = 10;
 
     private readonly ILogger<CreditGateService> _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly TenantDbContext _tenantDbContext;
 
     public CreditGateService(
         ILogger<CreditGateService> logger,
-        IHttpContextAccessor httpContextAccessor,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        TenantDbContext tenantDbContext)
     {
         _logger = logger;
-        _httpContextAccessor = httpContextAccessor;
         _environmentConfig = environmentConfig;
+        _tenantDbContext = tenantDbContext;
     }
 
     public async Task<bool> HasSufficientCreditsAsync(Guid tenantId)
@@ -48,39 +50,12 @@ public class CreditGateService : ICreditGateService
 
         try
         {
-            var accountsApiBaseUrl = _environmentConfig.AppBaseUrl?.TrimEnd('/');
-            if (string.IsNullOrWhiteSpace(accountsApiBaseUrl))
-            {
-                _logger.LogError("Accounts API base URL is not configured; blocking job dispatch.");
-                return false;
-            }
-
-            var jwt = GetJwtOfRequestUtil.GetJwtOfRequest(_httpContextAccessor.HttpContext);
-            var response = await RequestExternalAPIUtil.RequestExternalAPI(
-                CrudTypesEnum.Read,
-                $"https://{accountsApiBaseUrl}/accounts/api/credit-usage/available-credits",
-                jwt);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning(
-                    "Accounts API credit balance request returned {StatusCode} for tenant {TenantId}; blocking job dispatch.",
-                    (int)response.StatusCode,
-                    tenantId);
-                return false;
-            }
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var availableCreditsResponse = JsonConvert.DeserializeObject<ServiceResponse<AvailableCreditResponse>>(responseContent);
-            var availableCredits = availableCreditsResponse?.Data?.AvailableCredits;
-
-            if (!availableCredits.HasValue)
-            {
-                _logger.LogWarning(
-                    "Accounts API returned no available credit balance for tenant {TenantId}; blocking job dispatch.",
-                    tenantId);
-                return false;
-            }
+            // Mirror the AccountsAPIs available-credits calculation: sum the non-expired
+            // credit allocations for the tenant (CreditUsageService.GetAvailableCreditsAsync).
+            var today = DateTimeOffset.UtcNow.Date;
+            var availableCredits = await _tenantDbContext.ReadOnlyTenantCredits
+                .Where(w => w.TenantId == tenantId && w.ExpiredOn.Date > today)
+                .SumAsync(s => s.AvailableCredits);
 
             if (availableCredits < MinimumRequiredCredits)
             {
@@ -105,10 +80,5 @@ public class CreditGateService : ICreditGateService
         job.Status = JobStatusEnum.Canceled;
         job.EndTime = DateTimeOffset.UtcNow;
         job.Remark = InsufficientCreditsRemark;
-    }
-
-    private sealed class AvailableCreditResponse
-    {
-        public double AvailableCredits { get; set; }
     }
 }
