@@ -154,7 +154,8 @@ public class TimeTriggerExecutionJob : IJob
                         triggerModel.EffectiveDate,
                         triggerModel.ExceptionHours,
                         triggerModel.ExceptionWeekdays,
-                        triggerModel.ExceptionDates);
+                        triggerModel.ExceptionDates,
+                        trigger.Timezone);
 
                     // Update metadata with latest subscription data
                     trigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(triggerModel, jsonOptions));

@@ -91,10 +91,26 @@ public static class CronScheduleUtil
     DateTimeOffset effectiveDate,
     IReadOnlyCollection<int>? excludedHours = null,
     IReadOnlyCollection<int>? excludedWeekdays = null,
-    IReadOnlyCollection<DateOnly>? excludedDates = null)
+    IReadOnlyCollection<DateOnly>? excludedDates = null,
+    string timezone = "UTC")
     {
         // Ensure effectiveDate is not in the past
         effectiveDate = effectiveDate > DateTimeOffset.UtcNow ? effectiveDate : DateTimeOffset.UtcNow;
+
+        // Resolve the trigger timezone once; fall back to UTC for unknown/invalid ids
+        TimeZoneInfo tz;
+        try
+        {
+            tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            tz = TimeZoneInfo.Utc;
+        }
+        catch (InvalidTimeZoneException)
+        {
+            tz = TimeZoneInfo.Utc;
+        }
 
         // Create a CronExpression object based on the provided cron expression
         var expr = new CronExpression(cronExpression);
@@ -105,20 +121,21 @@ public static class CronScheduleUtil
         // Loop up to 750 times to find the next valid time that does not match excluded criteria
         for (int i = 0; i < 750 && next != null; i++)
         {
-            // Get the DateTime value from the next valid time (in UTC)
-            var nextValue = next.Value.UtcDateTime;
+            // Convert the candidate instant to the trigger timezone so exception
+            // hours/weekdays/dates are evaluated against the user's local wall clock.
+            var localNext = TimeZoneInfo.ConvertTime(next.Value, tz);
 
             // Convert the DateTime to DateOnly (removes time component)
-            var nextDateOnly = DateOnly.FromDateTime(nextValue);
+            var nextDateOnly = DateOnly.FromDateTime(localNext.DateTime);
 
             // Get the day of the week (1 = Monday, 7 = Sunday)
-            int weekday = (int)nextValue.DayOfWeek;
+            int weekday = (int)localNext.DayOfWeek;
 
             // Normalize Sunday to 7 to match convention (1 = Monday, 7 = Sunday)
             if (weekday == 0) weekday = 7;
 
             // Get the hour of the day (0-23)
-            int hour = nextValue.Hour;
+            int hour = localNext.Hour;
 
             // Check if the computed time should be excluded (either hour, weekday, or date)
             if (!((excludedHours?.Contains(hour) ?? false) ||
@@ -189,24 +206,5 @@ public static class CronScheduleUtil
 
             _ => "Custom schedule"
         };
-    }
-
-    // Converts a given local DateTimeOffset to UTC based on a specified timezone.
-    public static DateTimeOffset ConvertLocalTimeToUtc(string timezone, DateTimeOffset localDateTimeOffset)
-    {
-        // Get the timezone info based on the provided timezone ID.
-        var tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
-
-        // Ensure the input DateTimeOffset is in the correct timezone.
-        var localDateTime = localDateTimeOffset.DateTime;
-
-        // Get the UTC offset for the given timezone and local DateTime.
-        var localOffset = tz.GetUtcOffset(localDateTime);
-
-        // Create a new DateTimeOffset using the local date and time with the calculated offset.
-        var adjustedDateTimeOffset = new DateTimeOffset(localDateTime, localOffset);
-
-        // Convert the adjusted DateTimeOffset to UTC.
-        return adjustedDateTimeOffset.ToUniversalTime();
     }
 }

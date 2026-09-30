@@ -371,7 +371,8 @@ public class TimeTriggerService(
                 model.EffectiveDate,
                 model.ExceptionHours,
                 model.ExceptionWeekdays,
-                model.ExceptionDates
+                model.ExceptionDates,
+                newTimeTrigger.Timezone
             );
 
             var jsonOptions = new JsonSerializerOptions
@@ -661,7 +662,8 @@ public class TimeTriggerService(
                     model.EffectiveDate,
                     model.ExceptionHours,
                     model.ExceptionWeekdays,
-                    model.ExceptionDates
+                    model.ExceptionDates,
+                    timeTriggerDto.Timezone
                 );
             }
             if (timeTriggerDto.EndDate.HasValue && timeTriggerDto.EndDate.Value < model.NextTriggerTime)
