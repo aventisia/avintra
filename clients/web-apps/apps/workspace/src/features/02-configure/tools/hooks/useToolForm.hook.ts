@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { getToolById, isToolNameAvailable } from "../apis/tools.apis";
 import { DETAIL_DATA_QUERY_KEY } from "../constants/tools-table.constants";
@@ -81,8 +82,8 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
     }
 
     const loadTool = async () => {
-      // First try the list cache (Personal/Shared tabs).
-      const cachedList = queryClient.getQueryData<{ data: ToolDto[] }>(queryKey);
+      // First try the merged Personal/Shared/Library lists in the cache.
+      const cachedList = getMergedQueryData<ToolDto>(queryClient, queryKey);
       const cachedTool = cachedList?.data?.find((item) => item.id === rowId);
 
       if (cachedTool) {

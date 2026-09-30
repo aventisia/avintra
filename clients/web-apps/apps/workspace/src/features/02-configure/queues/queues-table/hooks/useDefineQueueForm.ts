@@ -1,7 +1,7 @@
-import { ISelectOption } from "@avplatform/ui/types";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { ISelectOption } from "@avplatform/ui/types";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { getCredSelectOptions } from "../apis/app-secret-apis";
 import { isNameAvailable } from "../apis/queues-table-apis";
@@ -168,10 +169,8 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
   // Fetch queue data when rowId changes
   useEffect(() => {
-    // Get queues data from query client
-    const queuesData = queryClient.getQueryData<{
-      data: QueuesTableDto[];
-    }>(queryKey);
+    // Get queues data from the merged Personal/Shared lists in the cache
+    const queuesData = getMergedQueryData<QueuesTableDto>(queryClient, queryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);
@@ -207,7 +206,16 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
         queueData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: queueData?.lastModifiedOn ? new Date(queueData?.lastModifiedOn) : new Date(),
     });
-  }, [rowId, form, queryClient, userSession, crudAction, queryKey, selectOptions, isOptionsLoading]);
+  }, [
+    rowId,
+    form,
+    queryClient,
+    userSession,
+    crudAction,
+    queryKey,
+    selectOptions,
+    isOptionsLoading,
+  ]);
 
   // Get check availability state and methods
   const {

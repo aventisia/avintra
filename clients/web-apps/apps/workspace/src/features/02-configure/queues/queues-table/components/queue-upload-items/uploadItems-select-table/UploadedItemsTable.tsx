@@ -9,6 +9,8 @@ import { CircleCheckIcon, CircleXIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { InputSchemaField, QueuesTableDto } from "../../../dtos/queues-table-dto";
 import { useTableTab } from "../../../hooks/useTableTab";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
@@ -38,10 +40,8 @@ export function UploadedItemsTable({
   const { queryKey } = useTableTab();
 
   useEffect(() => {
-    // Get queues data from query client
-    const queuesData = queryClient.getQueryData<{
-      data: QueuesTableDto[];
-    }>(queryKey);
+    // Get queues data from the merged Personal/Shared lists in the cache
+    const queuesData = getMergedQueryData<QueuesTableDto>(queryClient, queryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);

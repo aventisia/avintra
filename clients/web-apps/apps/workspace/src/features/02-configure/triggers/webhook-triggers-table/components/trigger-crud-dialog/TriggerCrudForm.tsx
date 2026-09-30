@@ -17,6 +17,7 @@ import { Controller } from "react-hook-form";
 import { z } from "zod";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField.tsx";
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import {
@@ -91,10 +92,8 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
   // Fetch trigger data when rowId changes
   useEffect(() => {
     if (crudAction !== "create" || !isSuccess) return;
-    // Get triggers data from query client
-    const triggersData = queryClient.getQueryData<{
-      data: WebhookTriggerDto[];
-    }>(queryKey);
+    // Get triggers data from the merged Personal/Shared lists in the cache
+    const triggersData = getMergedQueryData<WebhookTriggerDto>(queryClient, queryKey);
 
     // Find the trigger by rowId
     const triggerData = triggersData?.data[0];

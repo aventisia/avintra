@@ -1,5 +1,5 @@
-import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,11 +9,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+
 import { isNameAvailable } from "../apis/triggers-table-apis";
-import {
-  triggerNameSchema,
-  triggerZodSchema,
-} from "../constants/trigger-zod-schema";
+import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema";
 import { MessageTriggerDto } from "../dtos/message-trigger-dto";
 import { useTableTab } from "./useTableTab";
 
@@ -70,10 +69,8 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
 
   // Fetch trigger data when rowId changes
   useEffect(() => {
-    // Get triggers data from query client
-    const triggersData = queryClient.getQueryData<{
-      data: MessageTriggerDto[];
-    }>(queryKey);
+    // Get triggers data from the merged Personal/Shared lists in the cache
+    const triggersData = getMergedQueryData<MessageTriggerDto>(queryClient, queryKey);
 
     // Find the trigger by rowId
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
@@ -107,18 +104,14 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
   }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-  } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
-    defaultInputValue: triggerName,
-    fieldName: "name",
-    form,
-    fieldSchema: triggerNameSchema,
-    checkAvailabilityAPIFn: isNameAvailable,
-  });
+  const { isAvailable, isCheckPending, handleInputChange, availabilityMessage } =
+    useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
+      defaultInputValue: triggerName,
+      fieldName: "name",
+      form,
+      fieldSchema: triggerNameSchema,
+      checkAvailabilityAPIFn: isNameAvailable,
+    });
 
   // Refine form data before submission
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {

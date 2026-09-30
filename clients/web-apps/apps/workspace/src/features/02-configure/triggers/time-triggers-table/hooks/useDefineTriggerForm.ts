@@ -1,5 +1,5 @@
-import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { isNameAvailable } from "../apis/triggers-table-apis";
 import { numbersToWeekdays, weekdaysToNumbers } from "../constants/form-utils";
@@ -75,7 +77,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
    * from the query cache and populates the form, mapping backend formats to UI structures.
    */
   useEffect(() => {
-    const triggersData = queryClient.getQueryData<{ data: TimeTriggerDto[] }>(queryKey);
+    const triggersData = getMergedQueryData<TimeTriggerDto>(queryClient, queryKey);
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
     // Set trigger name for availability check
@@ -112,18 +114,14 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
   }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
-  const {
-    isAvailable,
-    isCheckPending,
-    handleInputChange,
-    availabilityMessage,
-  } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
-    defaultInputValue: triggerName,
-    fieldName: "name",
-    form,
-    fieldSchema: triggerNameSchema,
-    checkAvailabilityAPIFn: isNameAvailable,
-  });
+  const { isAvailable, isCheckPending, handleInputChange, availabilityMessage } =
+    useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
+      defaultInputValue: triggerName,
+      fieldName: "name",
+      form,
+      fieldSchema: triggerNameSchema,
+      checkAvailabilityAPIFn: isNameAvailable,
+    });
 
   /**
    * Transforms form state back into the required DTO format for the backend API.

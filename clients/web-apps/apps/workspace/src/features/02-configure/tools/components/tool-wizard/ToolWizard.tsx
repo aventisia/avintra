@@ -6,6 +6,7 @@ import * as YAML from "js-yaml";
 import { FormEvent, useEffect, useState } from "react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { getToolById, insertTool, updateTool } from "../../apis/tools.apis";
 import { DATA_QUERY_KEY, DETAIL_DATA_QUERY_KEY } from "../../constants/tools-table.constants";
@@ -66,7 +67,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     }
 
     const loadTool = async () => {
-      const cachedList = queryClient.getQueryData<{ data: ToolDto[] }>(queryKey);
+      const cachedList = getMergedQueryData<ToolDto>(queryClient, queryKey);
       const cachedTool = cachedList?.data?.find((item) => item.id === rowId);
       let tool: ToolDto | undefined = cachedTool;
       if (!tool) {

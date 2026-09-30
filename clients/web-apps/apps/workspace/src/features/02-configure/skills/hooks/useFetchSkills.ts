@@ -1,6 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
@@ -74,27 +74,32 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
 
   // Merge the active lists into a single table payload. Return undefined until at
   // least one list has resolved so callers can show a loading skeleton.
-  const hasPersonalOrShared = Boolean(personalQuery.data || sharedQuery.data);
+  //
+  // Memoized on the underlying query data so the returned object/array keeps a
+  // stable identity between renders. Passing a fresh array on every render makes
+  // TanStack Table's `autoResetPageIndex` fire a state update each render, which
+  // causes an infinite render loop (page freeze) while a dialog is open.
+  const data = useMemo(() => {
+    if (shouldFetchBoth) {
+      if (!personalQuery.data && !sharedQuery.data && !libraryQuery.data) return undefined;
+      return {
+        ...personalQuery.data,
+        data: [
+          ...(personalQuery.data?.data ?? []),
+          ...(sharedQuery.data?.data ?? []),
+          ...(libraryQuery.data?.data ?? []),
+        ],
+      };
+    }
 
-  const data = shouldFetchBoth
-    ? hasPersonalOrShared || libraryQuery.data
-      ? {
-          ...personalQuery.data,
-          data: [
-            ...(personalQuery.data?.data ?? []),
-            ...(sharedQuery.data?.data ?? []),
-            ...(libraryQuery.data?.data ?? []),
-          ],
-        }
-      : undefined
-    : isLibrary
-      ? libraryQuery.data
-      : hasPersonalOrShared
-        ? {
-            ...personalQuery.data,
-            data: [...(personalQuery.data?.data ?? []), ...(sharedQuery.data?.data ?? [])],
-          }
-        : undefined;
+    if (isLibrary) return libraryQuery.data;
+
+    if (!personalQuery.data && !sharedQuery.data) return undefined;
+    return {
+      ...personalQuery.data,
+      data: [...(personalQuery.data?.data ?? []), ...(sharedQuery.data?.data ?? [])],
+    };
+  }, [shouldFetchBoth, isLibrary, personalQuery.data, sharedQuery.data, libraryQuery.data]);
 
   // Return isFetching and isLoading flag
   return {
