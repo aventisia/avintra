@@ -89,4 +89,13 @@ public class EnvironmentConfig
 
     // Custom API Key Config
     public string CustomApiKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// True when no on-prem tenant credentials are configured. A community deployment is
+    /// a single-tenant, self-hosted edition that does not synchronize with GlobalAdmin.
+    /// This is the single source of truth for the community detection rule: either the
+    /// tenant id or the instance key being blank marks the deployment as community.
+    /// </summary>
+    public bool IsCommunityDeployment =>
+        string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
 }

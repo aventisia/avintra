@@ -22,9 +22,17 @@ public static class EnvironmentConfigurationExtension
 
         // Basic environment variables
         var APP_BASE_URL = GetRequiredEnvVar("APP_BASE_URL");
-        var ON_PREM_TENANT_ID = GetRequiredEnvVar("ON_PREM_TENANT_ID");
-        var ON_PREM_INSTANCE_KEY = GetRequiredEnvVar("ON_PREM_INSTANCE_KEY");
+
+        // On-prem tenant credentials are optional: either being blank marks the deployment as
+        // community. The admin email is always required so the default platform user can be seeded.
+        var ON_PREM_TENANT_ID = Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID") ?? string.Empty;
+        var ON_PREM_INSTANCE_KEY = Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY") ?? string.Empty;
         var ON_PREM_ADMIN_EMAIL = GetRequiredEnvVar("ON_PREM_ADMIN_EMAIL");
+
+        // Community deployments never synchronize with GlobalAdmin. This rule mirrors
+        // EnvironmentConfig.IsCommunityDeployment so the decision is made once here.
+        var isCommunityDeployment = string.IsNullOrWhiteSpace(ON_PREM_TENANT_ID)
+            || string.IsNullOrWhiteSpace(ON_PREM_INSTANCE_KEY);
 
         // Database and storage environment variables
         var POSTGRESQL_HOST = GetRequiredEnvVar("POSTGRESQL_HOST");
@@ -99,17 +107,42 @@ public static class EnvironmentConfigurationExtension
         var OTP_NUMBER_OF_CHARACTERS = Environment.GetEnvironmentVariable("OTP_NUMBER_OF_CHARACTERS") ?? config["EnvironmentConfig:OtpNumberOfCharacters"] ?? "6";
         var OTP_IS_ALPHA_NUMERIC = Environment.GetEnvironmentVariable("OTP_IS_ALPHA_NUMERIC") ?? config["EnvironmentConfig:OtpIsAlphaNumeric"] ?? "false";
 
-        // Fetch tenant and instance metadata from GlobalAdmin API
-        var globalAdminApiBaseUrl = Guard.Against.NullOrWhiteSpace(config["AppDefaultConfig:GlobalAdminApiBaseUrl"], message: "GlobalAdminApiUrl configuration cannot be null or empty");
-        var tenantValidationInfo = FetchOnPremTenantMetaDataAsync(globalAdminApiBaseUrl, ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY).GetAwaiter().GetResult();
-        var ON_PREM_TENANT_TYPE = tenantValidationInfo.TenantType;
-        var ON_PREM_TENANT_NAME = tenantValidationInfo.TenantName;
-        var ON_PREM_INSTANCE_TYPE = tenantValidationInfo.InstanceType;
-        var ON_PREM_CONTRACT_START = tenantValidationInfo.ContractStart;
-        var ON_PREM_CONTRACT_END = tenantValidationInfo.ContractEnd;
-        var ON_PREM_EXECUTION_TIME_ALLOWED = tenantValidationInfo.ExecutionTimeAllowed;
-        var ON_PREM_EXECUTION_DISABLED = tenantValidationInfo.ExecutionDisabled;
-        var ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
+        // Fetch tenant and instance metadata from GlobalAdmin API (paid on-prem deployments only).
+        // Community deployments skip this entirely: the type is fixed locally and the enforcement
+        // flags default to permissive so login and execution stay enabled.
+        string ON_PREM_TENANT_TYPE;
+        string ON_PREM_TENANT_NAME;
+        string ON_PREM_INSTANCE_TYPE;
+        DateTime ON_PREM_CONTRACT_START;
+        DateTime ON_PREM_CONTRACT_END;
+        int ON_PREM_EXECUTION_TIME_ALLOWED;
+        bool ON_PREM_EXECUTION_DISABLED;
+        bool ON_PREM_LOGIN_DISABLED;
+
+        if (isCommunityDeployment)
+        {
+            ON_PREM_TENANT_TYPE = OnPremTenantTypesEnum.Community.ToString();
+            ON_PREM_TENANT_NAME = string.Empty;
+            ON_PREM_INSTANCE_TYPE = string.Empty;
+            ON_PREM_CONTRACT_START = DateTime.MinValue;
+            ON_PREM_CONTRACT_END = DateTime.MinValue;
+            ON_PREM_EXECUTION_TIME_ALLOWED = 0;
+            ON_PREM_EXECUTION_DISABLED = false;
+            ON_PREM_LOGIN_DISABLED = false;
+        }
+        else
+        {
+            var globalAdminApiBaseUrl = Guard.Against.NullOrWhiteSpace(config["AppDefaultConfig:GlobalAdminApiBaseUrl"], message: "GlobalAdminApiUrl configuration cannot be null or empty");
+            var tenantValidationInfo = FetchOnPremTenantMetaDataAsync(globalAdminApiBaseUrl, ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY).GetAwaiter().GetResult();
+            ON_PREM_TENANT_TYPE = tenantValidationInfo.TenantType;
+            ON_PREM_TENANT_NAME = tenantValidationInfo.TenantName;
+            ON_PREM_INSTANCE_TYPE = tenantValidationInfo.InstanceType;
+            ON_PREM_CONTRACT_START = tenantValidationInfo.ContractStart;
+            ON_PREM_CONTRACT_END = tenantValidationInfo.ContractEnd;
+            ON_PREM_EXECUTION_TIME_ALLOWED = tenantValidationInfo.ExecutionTimeAllowed;
+            ON_PREM_EXECUTION_DISABLED = tenantValidationInfo.ExecutionDisabled;
+            ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
+        }
 
         // Rozorpay payment gateway environment variables (Only if enabled and tenant type is Commercial)
         var RAZORPAY_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("RAZORPAY_ENABLED") ?? config["EnvironmentConfig:RazorpayEnabled"] ?? "false");
