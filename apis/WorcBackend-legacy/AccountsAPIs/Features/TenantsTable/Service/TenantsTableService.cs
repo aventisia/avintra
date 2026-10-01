@@ -6,6 +6,7 @@ public class TenantsTableService : ITenantsTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
+    private readonly AccountsDbContext _accountsDbContext;
     private readonly Guid _userId;
     private readonly string _jwt;
     private readonly EnvironmentConfig _environmentConfig;
@@ -17,6 +18,7 @@ public class TenantsTableService : ITenantsTableService
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
         IAzureBlobStorageService azureBlobStorageService,
+        AccountsDbContext accountsDbContext,
         EnvironmentConfig environmentConfig)
     {
         // Set _userId
@@ -27,6 +29,7 @@ public class TenantsTableService : ITenantsTableService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _azureBlobStorageService = azureBlobStorageService;
+        _accountsDbContext = accountsDbContext;
         _environmentConfig = environmentConfig;
     }
 
@@ -433,6 +436,11 @@ public class TenantsTableService : ITenantsTableService
             {
                 return serviceResponse;
             }
+
+            // Seed the tenant's default "Central" space so it exists immediately after creation
+            // for every deployment type (community, commercial, enterprise).
+            await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                _accountsDbContext, newTenant.Id, newTenant.CreatedByUserId, newTenant.LastModifiedByUserId, _logger);
 
             // Task successful
             serviceResponse.Data = newTenant.Adapt<TenantsTableDto>();
