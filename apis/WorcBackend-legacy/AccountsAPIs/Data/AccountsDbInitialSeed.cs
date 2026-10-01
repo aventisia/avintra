@@ -36,7 +36,7 @@ public static class AccountsDbInitialSeed
                 // This runs unconditionally (idempotently) so existing databases also pick up
                 // newly added roles (e.g. the CRM placeholders), even when the rest of the seed
                 // is skipped by IsSeedingRequired.
-                if (!await SeedDefaultRolesAsync(_roleManager, logger)) return app;
+                if (!await SeedDefaultRolesAsync(_roleManager, environmentConfig, logger)) return app;
 
                 // Seeding is not required
                 if (!await IsSeedingRequired(_accountsDbContext, logger)) return app;
@@ -59,8 +59,8 @@ public static class AccountsDbInitialSeed
                 // Update Super user tenant Id
                 if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id, logger)) return app;
 
-                // Seed Permissions
-                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser, logger)) return app;
+                // Seed Credit Plans
+                if (!await SeedCreditPlansAsync(_accountsDbContext, environmentConfig, superUser, logger)) return app;
 
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
                 if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser, logger))
@@ -147,12 +147,21 @@ public static class AccountsDbInitialSeed
 
     // Seed roles. Idempotent: for each fixed role, add it only when it does not exist yet,
     // so existing databases pick up newly added roles without touching the ones already present.
-    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, ILogger logger)
+    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, EnvironmentConfig environmentConfig, ILogger logger)
     {
         try
         {
             foreach (var role in Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>())
             {
+                // Community deployments are single-tenant, workspace-only editions.
+                // Do not seed SA (platform admin is scoped to commercial deployments) or any
+                // CRM role (the CRM app is not part of the community edition) into AspNetRoles.
+                if (environmentConfig.IsCommunityDeployment &&
+                    (role == CustomRolesEnum.SA || role.ToPlatformApp() == PlatformAppsEnum.CRM))
+                {
+                    continue;
+                }
+
                 // Role already exists. Do not add it again.
                 if (await roleManager.RoleExistsAsync(role.ToString())) continue;
 
@@ -286,10 +295,11 @@ public static class AccountsDbInitialSeed
                 Id = tenantGuid,
                 ResourceType = TenantResourceTypesEnum.Dedicated,
                 Type = TenantTypesEnum.Organization,
-                Currency = CurrencyTypesEnum.USD,
+                Currency = CurrencyTypesEnum.INR,
                 Name = tenantName,
                 Domain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(environmentConfig.AccountsApiBaseUrl),
                 ContainerName = TenantContainerUtil.GenerateName(tenantName),
+                Country = CountriesEnum.India,
                 ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
@@ -312,6 +322,11 @@ public static class AccountsDbInitialSeed
             // Save changes
             await accountsDbContext.SaveChangesAsync();
 
+            // Seed the tenant's default "Central" space immediately so a newly installed
+            // database has it without waiting for the next startup (all deployment types).
+            await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                accountsDbContext, newTenant.Id, newTenant.CreatedByUserId, newTenant.LastModifiedByUserId, logger);
+
             // Tenants seeded successfully
             return newTenant;
         }
@@ -325,10 +340,6 @@ public static class AccountsDbInitialSeed
     // Ensure every tenant has a default "Central" space.
     // Runs unconditionally (idempotently) so existing tenants also get it,
     // even when the rest of the seed is skipped by IsSeedingRequired.
-    //
-    // NOTE: Uses raw SQL insert to bypass the DbContext SaveChanges override,
-    // which would otherwise overwrite TenantId with Guid.Empty during startup
-    // (no request context is available at seed time).
     private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext, ILogger logger)
     {
         try
@@ -338,22 +349,8 @@ public static class AccountsDbInitialSeed
 
             foreach (var tenant in tenants)
             {
-                // Check if a default space already exists for the tenant
-                var existingDefaultSpace = await accountsDbContext.Spaces
-                    .Where(w => w.TenantId == tenant.Id && w.IsDefault)
-                    .SingleOrDefaultAsync();
-
-                // Default space already exists for this tenant
-                if (existingDefaultSpace != null) continue;
-
-                // Insert the default "Central" space directly via raw SQL
-                var centralSpaceId = Guid.NewGuid();
-                var now = DateTimeOffset.UtcNow;
-                var centralName = "Central";
-                var centralDescription = "The default space for shared resources, workflows, agents, and content accessible across the organization.";
-                await accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
-                    $@"INSERT INTO ""Spaces"" (""Id"", ""TenantId"", ""Name"", ""Description"", ""IsDefault"", ""CreatedByUserId"", ""CreatedOn"", ""LastModifiedByUserId"", ""LastModifiedOn"", ""IsDisabled"")
-                      VALUES ({centralSpaceId}, {tenant.Id}, {centralName}, {centralDescription}, {true}, {tenant.CreatedByUserId}, {now}, {tenant.LastModifiedByUserId}, {now}, {false})");
+                await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                    accountsDbContext, tenant.Id, tenant.CreatedByUserId, tenant.LastModifiedByUserId, logger);
             }
         }
         catch (Exception ex)
@@ -441,10 +438,18 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed CreditPlans based on CreditServicesEnum
-    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser, ILogger logger)
+    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
     {
         try
         {
+            // Credit plans are only billed on Commercial deployments. Community and Enterprise
+            // are self-hosted editions with no usage billing, so skip seeding entirely.
+            if (!environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                logger.LogDebug("Non-commercial deployment, skipping credit plan seed.");
+                return true;
+            }
+
             // Create a list to hold CreditPlan objects to be inserted in bulk
             var creditPlans = new List<CreditPlan>();
 
