@@ -3,6 +3,8 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { SkillTableDto } from "../dtos/skill-table-dto";
@@ -42,9 +44,11 @@ export const SkillTableColumns = (isLibraryTab: boolean = false): ColumnDef<Skil
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
-          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-        </p>
+        {row.original.accessLevel !== ResourceAccessTypeEnum.Personal && (
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+          </p>
+        )}
       </div>
     ),
   },

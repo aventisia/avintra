@@ -18,9 +18,7 @@ public class SkillMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null)
-            .Map(dest => dest.FileCount,
-                src => src.Files != null ? src.Files.Count : 0);
+                    : null);
 
         config.NewConfig<SkillDto, Skill>()
             .Ignore(dest => dest.Id)
@@ -29,11 +27,6 @@ public class SkillMappingProfile : IRegister
             .IgnoreNullValues(true);
 
         config.NewConfig<SkillFile, SkillFileDto>()
-            .Map(dest => dest.Content,
-                src => string.Join(" ",
-                    src.Content
-                        .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Take(20)))
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

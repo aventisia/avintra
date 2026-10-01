@@ -13,12 +13,11 @@ import { SkillTableDto } from "../dtos/skill-table-dto";
 export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/skill-registry`;
 
 /**
- * Retrieves list of skills created by the current user.
+ * Retrieves list of skills (personal and shared with the current user).
  */
-export const getSkills = ({ isPersonal = true }: { isPersonal: boolean }) => {
-  const path = isPersonal ? `list` : `list/shared`;
+export const getSkills = () => {
   return axiosInstance
-    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/list`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -30,6 +29,15 @@ export const isSkillNameAvailable = (postObj: CheckAvailabilityDto) => {
     .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
       headers: getSpaceHeaders(),
     })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves a skill by its ID.
+ */
+export const getSkillById = (skillId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SkillTableDto>>(`${baseAPIURL}/${skillId}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

@@ -20,6 +20,13 @@ const RESOURCE_ACCESS_ACTIONS: Record<ResourceAccessTypeEnum, ResourceAccessActi
     share: true,
   },
 
+  [ResourceAccessTypeEnum.Personal]: {
+    read: true,
+    update: true,
+    delete: true,
+    share: true,
+  },
+
   [ResourceAccessTypeEnum.FullAccess]: {
     read: true,
     update: true,

@@ -8,14 +8,16 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable } from "@avplatform/ui/hooks";
 import { DownloadIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { downloadSkillZip } from "../../apis/skill-file-apis";
 import { DETAIL_TABLE_KEY } from "../../constants";
 import { columnVisibilityState } from "../../constants/skill-files-column-visibility-state";
+import { useFetchSkillById } from "../../hooks/useFetchSkillById";
 import { useFetchSkillFiles } from "../../hooks/useFetchSkillFiles";
-import { useFetchSkills } from "../../hooks/useFetchSkills";
 import { useTableTab } from "../../hooks/useTableTab";
 import { useSkillFilesDialogStore } from "../../stores/skill-files-upload-dialog-store";
 import { SkillFileUploadDialog } from "./SkillFileUploadDialog";
@@ -29,7 +31,6 @@ import { TableHeading } from "./TableHeading";
 export const SkillFilesTable = () => {
   const { id: skillId = "" } = useParams();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const skillName = searchParams.get("skill") ?? "Skill not found";
 
   // Get data-table preferences from local storage
@@ -43,30 +44,20 @@ export const SkillFilesTable = () => {
 
   // Fetch skill files data
   const { data } = useFetchSkillFiles(skillId);
-  const {
-    data: skillData,
-    isLoading: isSkillListLoading,
-    isError: isSkillListError,
-  } = useFetchSkills("all");
 
-  const skill = useMemo(
-    () => skillData?.data?.find((item) => item.id === skillId),
-    [skillData?.data, skillId],
-  );
+  // Fetch the skill itself by id (a single detail request instead of scanning lists)
+  const { data: skillData } = useFetchSkillById(skillId);
+  const skill = skillData?.data;
 
   const columns = useMemo(() => getSkillFilesTableColumns(skillId, skill), [skillId, skill]);
 
-  // If the skill does not exist in personal/shared lists and fetching has finished
-  // without an error, revert the user back to the skills list.
-  useEffect(() => {
-    if (!isSkillListLoading && !isSkillListError && skillId && !skill) {
-      navigate("/configure/skills");
-    }
-  }, [isSkillListLoading, isSkillListError, skillId, skill, navigate]);
-
   const canManageFiles = useMemo(() => {
     if (isReadOnly || !skill) return false;
-    return skill.accessLevel === "Owner" || skill.accessLevel === "FullAccess";
+    return (
+      skill.accessLevel === ResourceAccessTypeEnum.Personal ||
+      skill.accessLevel === ResourceAccessTypeEnum.Owner ||
+      skill.accessLevel === ResourceAccessTypeEnum.FullAccess
+    );
   }, [isReadOnly, skill]);
 
   const filteredColumns = useMemo(() => {

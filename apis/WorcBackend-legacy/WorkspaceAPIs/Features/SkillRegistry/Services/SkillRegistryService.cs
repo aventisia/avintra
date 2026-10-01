@@ -34,72 +34,58 @@ public class SkillRegistryService : ISkillRegistryService
     }
 
     /// <summary>
-    /// Retrieves all skills for the current user.
+    /// Retrieves all skills visible to the current user (personal and shared).
     /// </summary>
-    public async Task<ServiceResponse<IEnumerable<SkillDto>>> GetSkillsAsync(bool isPersonal)
+    public async Task<ServiceResponse<IEnumerable<SkillDto>>> GetSkillsAsync()
     {
         // Initialize a failed response in case the operation does not complete successfully.
         var serviceResponse = ServiceResponse<IEnumerable<SkillDto>>.Create("Failed to retrieve skills. Please try again", 400);
 
         try
         {
-            // Initialize empty collections to hold results and resource access mapping.
-            List<Skill> skills = new();
-            Dictionary<Guid, ResourceAccessTypeEnum> resourceAccess = new();
+            // Retrieve IDs and access levels for skills explicitly shared with the current user.
+            var resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                _userId,
+                ResourceTypeEnum.Skill,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
 
-            // Check whether to return skills created by the current user.
-            if (isPersonal)
-            {
-                // Query skills owned by the current user with related data.
-                skills = await _unitOfWork.SkillRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Include(i => i.CreatedByUser)
-                    .Include(i => i.LastModifiedByUser)
-                    .Include(i => i.Files)
-                    .ToListAsync();
-            }
-            else
-            {
-                // Retrieve IDs and access levels for resources shared with the current user.
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-                    _userId,
-                    ResourceTypeEnum.Skill,
-                    new[]
-                    {
-                        ResourceAccessTypeEnum.Owner,
-                        ResourceAccessTypeEnum.View,
-                        ResourceAccessTypeEnum.Edit,
-                    }
-                );
-
-                // Load skills that are tenant-wide or explicitly shared, excluding own skills.
-                skills = await _unitOfWork.SkillRepo
-                    .GetByConditionAsync(w =>
-                        w.CreatedByUserId != _userId &&
-                        w.EnvType == _currentTenantService.CurrentEnvType &&
-                        (
-                            w.IsTenantWideAccess ||
-                            resourceAccess.Keys.Contains(w.Id)
-                        )
+            // Load skills owned by the user plus skills shared with them (explicitly or
+            // tenant-wide) in a single query, ordered by most recently created.
+            var skills = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    (
+                        w.CreatedByUserId == _userId ||
+                        (w.CreatedByUserId != _userId &&
+                            (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     )
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Include(i => i.CreatedByUser)
-                    .Include(i => i.LastModifiedByUser)
-                    .Include(i => i.Files)
-                    .ToListAsync();
-            }
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .ToListAsync();
 
-            // Map retrieved skill entities to DTOs.
-            var skillDtoList = skills.Adapt<List<SkillDto>>();
-
-            // Assign effective access level to each skill DTO.
-            skillDtoList.ForEach(fe =>
+            // Map retrieved skill entities to DTOs, assigning the effective access level:
+            // Owner for own skills, the granted level for shared skills, and View for
+            // tenant-wide skills without an explicit share.
+            var skillDtoList = skills.Select(skill =>
             {
-                fe.AccessLevel = isPersonal
-                    ? ResourceAccessTypeEnum.Owner
-                    : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
-            });
+                var skillDto = skill.Adapt<SkillDto>();
+                skillDto.AccessLevel = skill.CreatedByUserId == _userId
+                    ? ResourceAccessTypeEnum.Personal
+                    : resourceAccess.GetValueOrDefault(skill.Id, ResourceAccessTypeEnum.View);
+                return skillDto;
+            }).ToList();
+
+            // Attach file counts without loading file content.
+            var fileCounts = await GetFileCountsAsync(skills.Select(s => s.Id));
+            skillDtoList.ForEach(dto => dto.FileCount = fileCounts.GetValueOrDefault(dto.Id, 0));
 
             serviceResponse.Update("Skills retrieved successfully", 200, skillDtoList);
         }
@@ -192,10 +178,11 @@ public class SkillRegistryService : ISkillRegistryService
             // Retrieve the skill by ID including its related users and files.
             // Bypass global tenant/space filters so platform/global skills are visible.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Id == skillId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w =>
+                    w.Id == skillId &&
+                    (w.Type == ComponentTypeEnum.Platform || w.EnvType == _currentTenantService.CurrentEnvType))
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .Include(i => i.Files)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
@@ -206,32 +193,44 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Verify the current user has permission to view the skill.
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
-                _userId,
-                skill.Id,
-                ResourceTypeEnum.Skill,
-                skill.CreatedByUserId,
-                skill.IsTenantWideAccess,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.View,
-                }
-            );
-
-            // Return forbidden when user lacks view permission.
-            if (!canView)
+            // Platform/library skills are read-only and viewable by all users, so they
+            // skip the per-user share check.
+            var accessLevel = ResourceAccessTypeEnum.View;
+            if (skill.Type != ComponentTypeEnum.Platform)
             {
-                _logger.LogWarning("User {UserId} attempted to access skill {SkillId} without permission.", _userId, skill.Id);
-                serviceResponse.Message = "You do not have permission to view this skill";
-                return serviceResponse;
+                var (canView, resolvedAccessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    skill.Id,
+                    ResourceTypeEnum.Skill,
+                    skill.CreatedByUserId,
+                    skill.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.View,
+                    }
+                );
+
+                // Return forbidden when user lacks view permission.
+                if (!canView)
+                {
+                    _logger.LogWarning("User {UserId} attempted to access skill {SkillId} without permission.", _userId, skill.Id);
+                    serviceResponse.Message = "You do not have permission to view this skill";
+                    return serviceResponse;
+                }
+
+                accessLevel = resolvedAccessLevel ?? ResourceAccessTypeEnum.View;
             }
 
-            // Map to DTO and set effective access level.
+            // Map to DTO and set effective access level (Personal for own records).
             var skillDto = skill.Adapt<SkillDto>();
-            skillDto.AccessLevel = accessLevel ?? ResourceAccessTypeEnum.View;
+            skillDto.AccessLevel = skill.CreatedByUserId == _userId
+                ? ResourceAccessTypeEnum.Personal
+                : accessLevel;
+
+            // Attach the file count without loading file content.
+            skillDto.FileCount = (await GetFileCountsAsync(new[] { skill.Id })).GetValueOrDefault(skill.Id, 0);
 
             serviceResponse.Update("Skill retrieved successfully", 200, skillDto);
         }
@@ -268,10 +267,9 @@ public class SkillRegistryService : ISkillRegistryService
             var skill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == normalizedName &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    (w.Type == ComponentTypeEnum.Platform || w.EnvType == _currentTenantService.CurrentEnvType))
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .Include(i => i.Files)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
@@ -282,32 +280,44 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Verify the current user has permission to view the skill.
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
-                _userId,
-                skill.Id,
-                ResourceTypeEnum.Skill,
-                skill.CreatedByUserId,
-                skill.IsTenantWideAccess,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.Edit,
-                    ResourceAccessTypeEnum.View,
-                }
-            );
-
-            // Return forbidden when user lacks view permission.
-            if (!canView)
+            // Platform/library skills are read-only and viewable by all users, so they
+            // skip the per-user share check.
+            var accessLevel = ResourceAccessTypeEnum.View;
+            if (skill.Type != ComponentTypeEnum.Platform)
             {
-                _logger.LogWarning("User {UserId} attempted to access skill {SkillName} without permission.", _userId, skillName);
-                serviceResponse.Message = "You do not have permission to view this skill";
-                return serviceResponse;
+                var (canView, resolvedAccessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    skill.Id,
+                    ResourceTypeEnum.Skill,
+                    skill.CreatedByUserId,
+                    skill.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.Edit,
+                        ResourceAccessTypeEnum.View,
+                    }
+                );
+
+                // Return forbidden when user lacks view permission.
+                if (!canView)
+                {
+                    _logger.LogWarning("User {UserId} attempted to access skill {SkillName} without permission.", _userId, skillName);
+                    serviceResponse.Message = "You do not have permission to view this skill";
+                    return serviceResponse;
+                }
+
+                accessLevel = resolvedAccessLevel ?? ResourceAccessTypeEnum.View;
             }
 
-            // Map to DTO and set effective access level.
+            // Map to DTO and set effective access level (Personal for own records).
             var skillDto = skill.Adapt<SkillDto>();
-            skillDto.AccessLevel = accessLevel ?? ResourceAccessTypeEnum.View;
+            skillDto.AccessLevel = skill.CreatedByUserId == _userId
+                ? ResourceAccessTypeEnum.Personal
+                : accessLevel;
+
+            // Attach the file count without loading file content.
+            skillDto.FileCount = (await GetFileCountsAsync(new[] { skill.Id })).GetValueOrDefault(skill.Id, 0);
 
             serviceResponse.Update("Skill retrieved successfully", 200, skillDto);
         }
@@ -390,8 +400,8 @@ public class SkillRegistryService : ISkillRegistryService
                 .FirstOrDefaultAsync();
             resultDto.CreatedBy = createdByUser?.UserName;
 
-            // Set ownership access level.
-            resultDto.AccessLevel = ResourceAccessTypeEnum.Owner;
+            // Set ownership access level (Personal: created by the caller).
+            resultDto.AccessLevel = ResourceAccessTypeEnum.Personal;
 
             serviceResponse.Update("Skill created successfully", 201, resultDto);
         }
@@ -510,7 +520,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Determine access level based on ownership.
             resultDto.AccessLevel = existingSkill.CreatedByUserId == _userId
-                ? ResourceAccessTypeEnum.Owner
+                ? ResourceAccessTypeEnum.Personal
                 : ResourceAccessTypeEnum.Edit;
 
             serviceResponse.Update("Skill updated successfully", 200, resultDto);
@@ -740,16 +750,16 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Retrieve IDs and access levels for resources shared with the target user.
-            var resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-                _currentTenantService.CurrentUserId,
-                ResourceTypeEnum.Skill,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                });
+            // Shares granted to the target user, folded into the skill query as an EXISTS
+            // subquery so personal + shared skills are read in a single database round trip.
+            var sharedShares = _unitOfWork.ResourceShareRepo.GetByConditionAsync(rs =>
+                rs.UserId == _currentTenantService.CurrentUserId &&
+                rs.ResourceType == ResourceTypeEnum.Skill &&
+                (
+                    rs.AccessLevel == ResourceAccessTypeEnum.Owner ||
+                    rs.AccessLevel == ResourceAccessTypeEnum.View ||
+                    rs.AccessLevel == ResourceAccessTypeEnum.Edit
+                ));
 
             // Load skills within the tenant that are global, tenant-wide, explicitly shared, or owned by the user.
             var skills = await _unitOfWork.SkillRepo
@@ -759,7 +769,7 @@ public class SkillRegistryService : ISkillRegistryService
                     (
                         w.CreatedByUserId == _currentTenantService.CurrentUserId ||
                         w.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(w.Id)
+                        sharedShares.Any(rs => rs.ResourceId == w.Id)
                     )
                 )
                 .OrderByDescending(o => o.CreatedOn)
@@ -815,9 +825,12 @@ public class SkillRegistryService : ISkillRegistryService
                 .IgnoreQueryFilters()
                 .ToListAsync();
 
-            // Map entities to DTOs.
+            // Map entities to DTOs and attach file counts without loading file content.
             var skillDtoList = librarySkills.Adapt<List<SkillDto>>();
             skillDtoList.ForEach(fe => fe.AccessLevel = ResourceAccessTypeEnum.View);
+
+            var libraryFileCounts = await GetFileCountsAsync(librarySkills.Select(s => s.Id));
+            skillDtoList.ForEach(dto => dto.FileCount = libraryFileCounts.GetValueOrDefault(dto.Id, 0));
 
             serviceResponse.Update("Library skills retrieved successfully", 200, skillDtoList);
         }
@@ -844,26 +857,33 @@ public class SkillRegistryService : ISkillRegistryService
 
         try
         {
-            // Retrieve skill IDs accessible to current user through explicit sharing.
-            var accessibleSkillIds = await _resourceShareService
-                .GetAccessibleResourceIdsAsync(
-                    _userId,
-                    ResourceTypeEnum.Skill,
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit
-                );
+            // Shares granted to the current user, folded into the skill query as an EXISTS
+            // subquery so personal + shared skills are read in a single database round trip.
+            var sharedShares = _unitOfWork.ResourceShareRepo.GetByConditionAsync(rs =>
+                rs.UserId == _userId &&
+                rs.ResourceType == ResourceTypeEnum.Skill &&
+                (
+                    rs.AccessLevel == ResourceAccessTypeEnum.Owner ||
+                    rs.AccessLevel == ResourceAccessTypeEnum.View ||
+                    rs.AccessLevel == ResourceAccessTypeEnum.Edit
+                ));
 
+            // Platform/library skills are environment-agnostic (read-only, no EnvType),
+            // so they are matched regardless of the current environment.
             var options = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.IsDisabled == false &&
                     w.IsActive &&
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (
-                        w.CreatedByUserId == _userId ||
-                        w.IsTenantWideAccess ||
-                        accessibleSkillIds.Contains(w.Id) ||
-                        w.Type == ComponentTypeEnum.Platform
+                        w.Type == ComponentTypeEnum.Platform ||
+                        (
+                            w.EnvType == _currentTenantService.CurrentEnvType &&
+                            (
+                                w.CreatedByUserId == _userId ||
+                                w.IsTenantWideAccess ||
+                                sharedShares.Any(rs => rs.ResourceId == w.Id)
+                            )
+                        )
                     )
                 )
                 .OrderBy(s => s.Name)
@@ -885,5 +905,25 @@ public class SkillRegistryService : ISkillRegistryService
         }
 
         return serviceResponse;
+    }
+
+    /// <summary>
+    /// Counts files per skill without materialising file content.
+    /// </summary>
+    private async Task<Dictionary<Guid, int>> GetFileCountsAsync(IEnumerable<Guid> skillIds)
+    {
+        // Avoid a query for an empty set.
+        var ids = skillIds.Distinct().ToList();
+        if (ids.Count == 0)
+        {
+            return new Dictionary<Guid, int>();
+        }
+
+        // Single grouped count; never selects the Content column.
+        return await _unitOfWork.SkillFileRepo
+            .GetByConditionAsync(f => ids.Contains(f.SkillId))
+            .GroupBy(f => f.SkillId)
+            .Select(g => new { SkillId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.SkillId, x => x.Count);
     }
 }

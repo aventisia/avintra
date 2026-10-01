@@ -10,7 +10,7 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/sk
 interface RegisterSkillFileDto {
   fileName: string;
   content: string;
-  fileType: string;
+  fileType?: string;
 }
 
 /**

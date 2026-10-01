@@ -23,9 +23,10 @@ public class SkillFileDto
     public required string FileName { get; set; }
 
     /// <summary>
-    /// Gets or sets the text content of the file.
+    /// Gets or sets the text content of the file. Null when content is not requested,
+    /// so list responses never carry file bodies.
     /// </summary>
-    public required string Content { get; set; }
+    public string? Content { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the file (e.g., markdown, python, shell, javascript).

@@ -9,3 +9,17 @@ get {
   body: none
   auth: none
 }
+
+tests {
+  test("returns the merged personal + shared list", function () {
+    expect(res.status).to.equal(200);
+    expect(Array.isArray(res.body.data)).to.equal(true);
+  });
+
+  test("every row exposes an access level (own rows are Personal, shared rows are granted)", function () {
+    const allowed = ["Personal", "Owner", "FullAccess", "View", "Create", "Edit", "Delete"];
+    res.body.data.forEach(function (skill) {
+      expect(allowed).to.include(skill.accessLevel);
+    });
+  });
+}
