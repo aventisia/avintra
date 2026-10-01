@@ -1,24 +1,44 @@
+import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { DATA_QUERY_KEY, TABLE_TAB_QUERY_PARAM } from "../constants";
 
 /**
- * Returns whether the Library tab is active and the query key used to invalidate
- * the merged skills list.
+ * Returns whether the Library tab is active and the query key of the merged
+ * skills list.
  *
- * The default ("all") tab merges the current-space (personal) and shared-with-user
- * lists; the "library" tab shows the platform library. The query key is the base
- * prefix of all three query keys so mutations refetch every list.
+ * The default ("all") tab shows the merged personal + shared list returned by a
+ * single endpoint; the "library" tab shows the platform library. The query key
+ * is the concrete list key so mutations invalidate and optimistically update the
+ * cached list.
  */
 export const useTableTab = () => {
   const [searchParams] = useSearchParams();
 
+  // Current space id and environment scope the list query key.
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
+  const env = useEnvironmentStore((state) => state.env);
+  const space = currentSpace?.id ?? "";
+
   const isLibrary = searchParams.get(TABLE_TAB_QUERY_PARAM) === "library";
   const isReadOnly = isLibrary;
+
+  // Memoized so the key keeps a stable identity between renders; consumers use it
+  // in effect dependencies and as a react-query key.
+  const queryKey = useMemo(() => [...DATA_QUERY_KEY, space, env], [space, env]);
 
   return {
     isLibrary,
     isReadOnly,
-    queryKey: DATA_QUERY_KEY,
+    queryKey,
   };
 };

@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { isSkillNameAvailable } from "../apis/skill-apis";
 import { skillNameSchema, skillZodSchema } from "../constants/skill-zod-schema";
@@ -65,8 +65,10 @@ export const useDefineSkillForm = ({ rowId, crudAction }: UseDefineSkillFormOpti
 
   // Fetch skill data when rowId changes
   useEffect(() => {
-    // Get skill data from the merged Personal/Shared/Library lists in the cache
-    const skillDataList = getMergedQueryData<SkillTableDto>(queryClient, queryKey);
+    // Get skill data from the merged Personal/Shared list in the cache
+    const skillDataList = queryClient.getQueryData<{
+      data: SkillTableDto[];
+    }>(queryKey);
 
     // Get skill data by id
     const skillData = skillDataList?.data?.find((item) => item.id === rowId);
@@ -114,7 +116,7 @@ export const useDefineSkillForm = ({ rowId, crudAction }: UseDefineSkillFormOpti
       createdOn: formData.createdOn?.toISOString(),
       lastModifiedBy: formData.lastModifiedBy,
       lastModifiedOn: formData.lastModifiedOn?.toISOString(),
-      accessLevel: "Owner" as const,
+      accessLevel: ResourceAccessTypeEnum.Personal,
       isTenantWideAccess: false,
       isGlobal: false,
       isActive: true,

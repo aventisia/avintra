@@ -82,20 +82,110 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 }
             }
 
-            // Load files belonging to the skill, including creator information.
+            // Load file metadata only (never the stored content) so list responses stay small.
             var files = await _unitOfWork.SkillFileRepo
                 .GetByConditionAsync(w => w.SkillId == skillId)
-                .Include(i => i.CreatedByUser)
-                .OrderBy(i => i.FileName)
-                .IgnoreAutoIncludes()
                 .IgnoreQueryFilters()
+                .OrderBy(i => i.FileName)
+                .Select(f => new SkillFileDto
+                {
+                    Id = f.Id,
+                    SkillId = f.SkillId,
+                    FileName = f.FileName,
+                    FileType = f.FileType,
+                    Content = null,
+                    CreatedBy = f.CreatedByUser != null
+                        ? f.CreatedByUser.FirstName + " " + f.CreatedByUser.LastName
+                        : null,
+                    CreatedOn = f.CreatedOn,
+                })
                 .ToListAsync();
 
-            serviceResponse.Update("Skill files retrieved successfully", 200, files.Adapt<List<SkillFileDto>>());
+            serviceResponse.Update("Skill files retrieved successfully", 200, files);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving files for skill {SkillId} and user {UserId}", skillId, _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Retrieves a single skill file, including its content, by its ID.
+    /// </summary>
+    public async Task<ServiceResponse<SkillFileDto>> GetSkillFileAsync(Guid skillId, Guid fileId)
+    {
+        // Initialize a failed response in case the operation does not complete successfully.
+        var serviceResponse = ServiceResponse<SkillFileDto>.Create("Failed to retrieve skill file. Please try again", 404);
+
+        try
+        {
+            // Validate the provided skill and file IDs.
+            if (skillId == Guid.Empty || fileId == Guid.Empty)
+            {
+                serviceResponse.Message = "Valid skill ID and file ID are required";
+                return serviceResponse;
+            }
+
+            // Retrieve the skill and verify access (bypass global tenant/space filters
+            // so platform/global skills seeded with Guid.Empty tenant remain visible).
+            var skill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w => w.Id == skillId)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            // Return 404 when skill does not exist.
+            if (skill == null)
+            {
+                serviceResponse.Message = "Skill not found";
+                return serviceResponse;
+            }
+
+            // Platform skills are viewable by all users, so skip the access check.
+            // For other skill types, verify the current user has view access.
+            if (skill.Type != ComponentTypeEnum.Platform)
+            {
+                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    skill.Id,
+                    ResourceTypeEnum.Skill,
+                    skill.CreatedByUserId,
+                    skill.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                    });
+
+                if (!canView)
+                {
+                    serviceResponse.Message = "You do not have permission to view this skill";
+                    return serviceResponse;
+                }
+            }
+
+            // Load the requested file with its content and creator information.
+            var file = await _unitOfWork.SkillFileRepo
+                .GetByConditionAsync(w => w.Id == fileId && w.SkillId == skillId)
+                .Include(i => i.CreatedByUser)
+                .IgnoreAutoIncludes()
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            // Return 404 when the file does not exist under the skill.
+            if (file == null)
+            {
+                serviceResponse.Message = "Skill file not found";
+                return serviceResponse;
+            }
+
+            serviceResponse.Update("Skill file retrieved successfully", 200, file.Adapt<SkillFileDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving file {FileId} for skill {SkillId} and user {UserId}", fileId, skillId, _userId);
         }
 
         return serviceResponse;
@@ -188,10 +278,10 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 return serviceResponse;
             }
 
-            // Infer file type from extension when not explicitly provided.
-            var fileType = !string.IsNullOrWhiteSpace(registerSkillFileDto.FileType)
-                ? registerSkillFileDto.FileType
-                : InferFileType(safeFileName);
+            // Derive the file type from the file name extension; fall back to an explicitly
+            // provided value only when the extension is unknown.
+            var fileType = InferFileType(safeFileName)
+                ?? (string.IsNullOrWhiteSpace(registerSkillFileDto.FileType) ? null : registerSkillFileDto.FileType);
 
             // Build new skill file entity from the DTO.
             var skillFile = new SkillFile
@@ -219,7 +309,11 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
-            serviceResponse.Update("Skill file registered successfully", 201, (createdFile ?? skillFile).Adapt<SkillFileDto>());
+            // Return metadata only; the caller already holds the content it uploaded.
+            var resultDto = (createdFile ?? skillFile).Adapt<SkillFileDto>();
+            resultDto.Content = null;
+
+            serviceResponse.Update("Skill file registered successfully", 201, resultDto);
         }
         catch (Exception ex)
         {
@@ -410,16 +504,16 @@ public class SkillRegistryFileService : ISkillRegistryFileService
     {
         return Path.GetExtension(fileName).ToLowerInvariant() switch
         {
-            ".md" => "markdown",
-            ".py" => "python",
-            ".sh" => "shell",
-            ".js" => "javascript",
-            ".ts" => "typescript",
-            ".json" => "json",
-            ".yaml" or ".yml" => "yaml",
-            ".txt" => "text",
-            ".csv" => "csv",
-            ".ps1" => "powershell",
+            ".md" or ".markdown" => "Markdown",
+            ".py" => "Python",
+            ".sh" => "Shell",
+            ".js" => "JavaScript",
+            ".ts" => "TypeScript",
+            ".json" => "JSON",
+            ".yaml" or ".yml" => "YAML",
+            ".txt" => "Text",
+            ".csv" => "CSV",
+            ".ps1" => "PowerShell",
             _ => null,
         };
     }

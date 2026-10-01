@@ -13,6 +13,14 @@ public interface ISkillRegistryFileService
     Task<ServiceResponse<IEnumerable<SkillFileDto>>> GetSkillFilesAsync(Guid skillId);
 
     /// <summary>
+    /// Retrieves a single skill file, including its content, by its ID.
+    /// </summary>
+    /// <param name="skillId">The ID of the skill.</param>
+    /// <param name="fileId">The ID of the file.</param>
+    /// <returns>The task result contains the service response with the skill file content.</returns>
+    Task<ServiceResponse<SkillFileDto>> GetSkillFileAsync(Guid skillId, Guid fileId);
+
+    /// <summary>
     /// Registers a file under a specific skill.
     /// </summary>
     /// <param name="skillId">The ID of the skill.</param>

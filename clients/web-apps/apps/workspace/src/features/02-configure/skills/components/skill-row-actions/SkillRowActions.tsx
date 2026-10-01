@@ -72,10 +72,12 @@ export const SkillRowActions = ({
       {/* Skill delete alert dialog (not available for library skills) */}
       {!readOnly && actions?.delete && <SkillRowDeleteAction rowId={rowId} />}
 
-      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
-      {!readOnly && accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
-      )}
+      {/* Remove the resource from the user's shared list (shown for rows the user doesn't own) */}
+      {!readOnly &&
+        accessLevel !== ResourceAccessTypeEnum.Owner &&
+        accessLevel !== ResourceAccessTypeEnum.Personal && (
+          <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+        )}
     </DataTableRowActions>
   );
 };

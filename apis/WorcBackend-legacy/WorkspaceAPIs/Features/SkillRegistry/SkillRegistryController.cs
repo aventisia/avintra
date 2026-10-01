@@ -15,18 +15,11 @@ public class SkillRegistryController : BaseApiController
         _skillRegistryService = skillRegistryService;
     }
 
-    // Retrieves all personal skills.
+    // Retrieves list of skills (personal and shared with the current user).
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetPersonalSkills()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetSkills()
     {
-        return ResultHelper(await _skillRegistryService.GetSkillsAsync(true));
-    }
-
-    // Retrieves all shared skills.
-    [HttpGet("list/shared")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetSharedSkills()
-    {
-        return ResultHelper(await _skillRegistryService.GetSkillsAsync(false));
+        return ResultHelper(await _skillRegistryService.GetSkillsAsync());
     }
 
     // Checks the availability of a skill name.

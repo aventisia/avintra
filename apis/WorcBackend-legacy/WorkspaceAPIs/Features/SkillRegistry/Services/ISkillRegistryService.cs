@@ -6,11 +6,10 @@ namespace WorkspaceAPIs.Services;
 public interface ISkillRegistryService
 {
     /// <summary>
-    /// Retrieves all skills for the current user.
+    /// Retrieves all skills visible to the current user (personal and shared).
     /// </summary>
-    /// <param name="isPersonal">If <c>true</c>, returns only personal skills. If <c>false</c>, returns shared skills.</param>
     /// <returns>The task result contains the service response with the list of skill details.</returns>
-    Task<ServiceResponse<IEnumerable<SkillDto>>> GetSkillsAsync(bool isPersonal);
+    Task<ServiceResponse<IEnumerable<SkillDto>>> GetSkillsAsync();
 
     /// <summary>
     /// Checks whether a skill name is available within the current tenant.

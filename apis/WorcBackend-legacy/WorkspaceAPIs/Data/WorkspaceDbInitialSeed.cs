@@ -299,7 +299,7 @@ public static class WorkspaceDbInitialSeed
                     SkillId = skillId,
                     FileName = "SKILL.md",
                     Content = content,
-                    FileType = "markdown",
+                    FileType = "Markdown",
                     CreatedByUserId = platformAdmin.UserId,
                     LastModifiedByUserId = platformAdmin.UserId,
                     CreatedOn = now,
@@ -312,7 +312,7 @@ public static class WorkspaceDbInitialSeed
             {
                 existingSkillFile.TenantId = platformAdmin.TenantId;
                 existingSkillFile.Content = content;
-                existingSkillFile.FileType = "markdown";
+                existingSkillFile.FileType = "Markdown";
                 existingSkillFile.LastModifiedByUserId = platformAdmin.UserId;
                 existingSkillFile.LastModifiedOn = now;
             }

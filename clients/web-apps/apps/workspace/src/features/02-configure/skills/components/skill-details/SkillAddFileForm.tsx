@@ -54,7 +54,6 @@ export const SkillAddFileForm = ({
           await registerSkillFile(skillId, {
             fileName: fileItem.file.name,
             content: fileItem.content,
-            fileType: fileItem.file.name.split(".").pop() || "",
           });
           markCompleted(fileItem.id);
           successCount++;

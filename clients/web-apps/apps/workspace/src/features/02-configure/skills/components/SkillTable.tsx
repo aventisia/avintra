@@ -13,6 +13,7 @@ import { NavLink } from "react-router-dom";
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -83,9 +84,11 @@ export const SkillTable = () => {
                           <div className="w-auto truncate text-sm font-medium">
                             {row.getValue("name")}
                           </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                          </span>
+                          {row.original.accessLevel !== ResourceAccessTypeEnum.Personal && (
+                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                              {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                            </span>
+                          )}
                         </div>
                         {/* Action trigger */}
                         <SkillRowActions

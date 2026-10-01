@@ -39,5 +39,12 @@ public enum ResourceAccessTypeEnum
     /// Gets permission to remove content or delete the resource.
     /// </summary>
     [Description("Gets permission to remove content or delete the resource.")]
-    Delete
+    Delete,
+
+    /// <summary>
+    /// Indicates the resource was created by the current user. This is an ownership
+    /// marker derived at read time and is never persisted as a resource share.
+    /// </summary>
+    [Description("Personal resource owned by the current user.")]
+    Personal
 }

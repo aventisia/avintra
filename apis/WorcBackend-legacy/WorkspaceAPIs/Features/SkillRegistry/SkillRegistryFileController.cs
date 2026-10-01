@@ -22,6 +22,13 @@ public class SkillRegistryFileController : BaseApiController
         return ResultHelper(await _skillRegistryFileService.GetSkillFilesAsync(skillId));
     }
 
+    // Retrieves a single file (including its content) for a specific skill.
+    [HttpGet("{skillId}/files/{fileId}")]
+    public async Task<ActionResult<ServiceResponse<SkillFileDto>>> GetSkillFile(Guid skillId, Guid fileId)
+    {
+        return ResultHelper(await _skillRegistryFileService.GetSkillFileAsync(skillId, fileId));
+    }
+
     // Registers a file under a specific skill.
     // Edit access is verified per-record in the service (owner or edit-level share).
     [HttpPost("{skillId}/files")]

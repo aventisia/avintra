@@ -5,4 +5,5 @@ export enum ResourceAccessTypeEnum {
   Create = "Create",
   Edit = "Edit", // View Edit
   Delete = "Delete", //View Delete
+  Personal = "Personal", // Record created by the current user (ownership marker)
 }
