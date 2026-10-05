@@ -206,9 +206,13 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Community deployments are limited to the single seeded Central space.
-            // Creating more spaces requires upgrading to a commercial or enterprise plan.
-            if (_environmentConfig.IsCommunityDeployment)
+            // Community deployments are limited to one space regardless of plan data.
+            var currentSpaceCount = _environmentConfig.IsCommunityDeployment
+                ? await _unitOfWork.SpaceRepo
+                    .GetByConditionAsync(s => s.TenantId == _tenantId)
+                    .CountAsync()
+                : 0;
+            if (_environmentConfig.IsCommunityDeployment && currentSpaceCount >= 1)
             {
                 _logger.LogWarning("Space creation blocked: community deployments support a single space.");
                 serviceResponse.Message = "Your community edition supports a single space. Upgrade to create more spaces.";
