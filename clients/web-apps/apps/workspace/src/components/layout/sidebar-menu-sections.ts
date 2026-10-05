@@ -270,7 +270,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: Wallet,
         name: "Usage",
         route: "/tenant/usage",
-        type: ["Commercial", "Community"],
+        type: ["Commercial"],
       },
       {
         permissions: ["TA"],
