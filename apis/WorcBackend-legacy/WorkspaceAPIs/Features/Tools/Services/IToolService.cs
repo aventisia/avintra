@@ -97,8 +97,8 @@ public interface IToolService
     Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive);
 
     /// <summary>
-    /// Gets all platform (library) tools available to the current tenant.
+    /// Gets all platform's default tools available to the current tenant.
     /// </summary>
-    /// <returns>A collection of library tools.</returns>
-    Task<ServiceResponse<IEnumerable<ToolDto>>> GetLibraryToolsAsync();
+    /// <returns>A collection of platform's default tools.</returns>
+    Task<ServiceResponse<IEnumerable<ToolDto>>> GetPlatformToolsAsync();
 }

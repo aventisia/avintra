@@ -11,7 +11,7 @@ import { ToolDto } from "@/features/02-configure/tools/dtos/index";
 import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
 
-export const toolsTableColumns = (isLibrary: boolean): ColumnDef<ToolDto>[] => [
+export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -130,7 +130,7 @@ export const toolsTableColumns = (isLibrary: boolean): ColumnDef<ToolDto>[] => [
         name={row.name}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess}
-        isLibrary={isLibrary}
+        isPlatformTool={isPlatformTab}
       />
     ),
   }),

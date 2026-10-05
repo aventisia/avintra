@@ -133,7 +133,7 @@ public class ToolService : IToolService
             // Fetch usable tools across every scope. Global tenant/space filters are bypassed so
             // tenant-agnostic platform tools (TenantId = Guid.Empty) are visible to every tenant.
             // Only slim columns are projected so the large OpenApiSpec/ParsedSchema payloads are
-            // not loaded for the whole library.
+            // not loaded for the whole catalogue.
             // Resolve brand icons for platform tools from the Camel and Corsair
             // catalogs. Custom tools and unknown integrations fall back to null.
             var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -248,7 +248,7 @@ public class ToolService : IToolService
             w.IsVerified &&
             !w.IsDisabled &&
             (
-                // Platform library tools are tenant-agnostic and available in every environment.
+                // Platform's default tools are tenant-agnostic and available in every environment.
                 (w.Type == ComponentTypeEnum.Platform &&
                  w.TenantId == Guid.Empty &&
                  w.SpaceId == null &&
@@ -345,7 +345,7 @@ public class ToolService : IToolService
         try
         {
             // Fetch the requested tool.
-            // Bypass global tenant/space filters so platform (library) tools with
+            // Bypass global tenant/space filters so platform's default tools with
             // TenantId = Guid.Empty are visible to every tenant.
             var tool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType && (w.TenantId == _currentTenantService.CurrentTenantId || w.TenantId == Guid.Empty))
@@ -411,7 +411,7 @@ public class ToolService : IToolService
             var normalizedName = toolName.Trim().ToLowerInvariant();
 
             // Fetch the requested tool by name within the current environment.
-            // Bypass global tenant/space filters so platform (library) tools with
+            // Bypass global tenant/space filters so platform's default tools with
             // TenantId = Guid.Empty are visible to every tenant.
             var toolCandidates = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
@@ -973,18 +973,18 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Retrieves all platform (library) tools available to the current tenant.
-    public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetLibraryToolsAsync()
+    // Retrieves all platform's tools available to the current tenant.
+    public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetPlatformToolsAsync()
     {
         var serviceResponse = new ServiceResponse<IEnumerable<ToolDto>>
         {
-            Message = "Failed to fetch library tools."
+            Message = "Failed to fetch platform tools."
         };
 
         try
         {
             // Step 1: Load platform-managed tools.
-            var libraryTools = await _unitOfWork.ToolRepo
+            var platformTools = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.CreatedByUser)
@@ -993,17 +993,17 @@ public class ToolService : IToolService
                 .ToListAsync();
 
             // Step 2: Map to DTOs and assign view access.
-            var mappedTools = libraryTools.Adapt<IEnumerable<ToolDto>>().ToList();
+            var mappedTools = platformTools.Adapt<IEnumerable<ToolDto>>().ToList();
             mappedTools.ForEach(toolDto => toolDto.AccessLevel = ResourceAccessTypeEnum.View);
 
             return serviceResponse.Update(
-                "Library tools retrieved successfully.",
+                "Platform tools retrieved successfully.",
                 200,
                 mappedTools);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to fetch library tools.");
+            _logger.LogError(ex, "Failed to fetch platform tools.");
         }
 
         return serviceResponse;

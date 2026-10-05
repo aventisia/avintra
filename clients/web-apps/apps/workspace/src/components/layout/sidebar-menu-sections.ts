@@ -118,7 +118,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         permissions: ["OM", "TD"],
         Icon: PuzzleIcon,
         name: "skills",
-        route: "/configure/skills",
+        route: "/configure/skill-registry",
         type: ["Commercial", "Enterprise"],
       },
       {

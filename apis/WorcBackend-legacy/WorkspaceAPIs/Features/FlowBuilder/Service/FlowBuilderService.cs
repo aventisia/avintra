@@ -1064,7 +1064,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             if (devTool == null)
             {
-                // Platform library tools are tenant-agnostic (TenantId = Guid.Empty, SpaceId = null)
+                // Platform's default tools are tenant-agnostic (TenantId = Guid.Empty, SpaceId = null)
                 // and available in every environment, so they never need a Production clone.
                 var platformToolExists = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
@@ -1328,7 +1328,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             if (devSkill == null)
             {
-                // Platform library skills are shipped with the runtime and available in every
+                // Platform default skills are shipped with the runtime and available in every
                 // environment (they are discovered from the installed skill package), so they
                 // never need a Production clone.
                 var platformSkillExists = await _unitOfWork.SkillRepo

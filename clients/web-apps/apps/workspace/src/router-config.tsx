@@ -15,11 +15,11 @@ import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultPage } from "./pages/02-configure/VaultPage";
 import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
 import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
+import { QueueWorkItemDetailPage } from "./pages/02-configure/queues/QueueWorkItemDetailPage";
 import { QueuesPage } from "./pages/02-configure/queues/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/02-configure/queues/QueuesWorkItemsPage";
-import { QueueWorkItemDetailPage } from "./pages/02-configure/queues/QueueWorkItemDetailPage";
-import { SkillDetailsPage } from "./pages/02-configure/skills/SkillsDetailsPage";
-import { SkillPage } from "./pages/02-configure/skills/SkillsPage";
+import { SkillDetailsPage } from "./pages/02-configure/skill-registry/SkillsDetailsPage";
+import { SkillPage } from "./pages/02-configure/skill-registry/SkillsPage";
 import { ToolDetailsPage } from "./pages/02-configure/tools/ToolDetailsPage";
 import { ToolsPage } from "./pages/02-configure/tools/ToolsPage";
 import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage";
@@ -37,6 +37,7 @@ import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
+import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
 import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
@@ -47,7 +48,6 @@ import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
-import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
 import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
@@ -148,7 +148,7 @@ const routerConfig: RouteObject[] = [
             ],
           },
           {
-            path: "skills",
+            path: "skill-registry",
             children: [
               {
                 index: true,

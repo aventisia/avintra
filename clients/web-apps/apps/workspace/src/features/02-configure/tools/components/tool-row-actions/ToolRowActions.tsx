@@ -15,7 +15,7 @@ interface ToolRowActionsProps {
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
-  isLibrary?: boolean;
+  isPlatformTool?: boolean;
 }
 
 export const ToolRowActions = ({
@@ -23,7 +23,7 @@ export const ToolRowActions = ({
   name,
   accessLevel,
   isTenantWideAccess,
-  isLibrary = false,
+  isPlatformTool = false,
 }: ToolRowActionsProps) => {
   const actions = getResourceAccessActions(accessLevel);
   // Get the query key used to invalidate the merged tools list after a mutation
@@ -34,13 +34,13 @@ export const ToolRowActions = ({
       {/* View the tool details */}
       {<DTRowAction rowId={rowId} crudAction="read" entity="tool" />}
 
-      {/* Edit tool details (not available for library tools) */}
-      {!isLibrary && actions?.update && (
+      {/* Edit tool details (not available for platform's default tools) */}
+      {!isPlatformTool && actions?.update && (
         <DTRowAction rowId={rowId} crudAction="update" entity="tool" />
       )}
 
-      {/* Share Access (not available for library tools) */}
-      {!isLibrary && actions?.share && (
+      {/* Share Access (not available for platform's default tools) */}
+      {!isPlatformTool && actions?.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
@@ -51,11 +51,11 @@ export const ToolRowActions = ({
 
       <DropdownMenuSeparator />
 
-      {/* Delete tool (not available for library tools) */}
-      {!isLibrary && actions?.delete && <ToolRowDeleteAction rowId={rowId} />}
+      {/* Delete tool (not available for platform's default tools) */}
+      {!isPlatformTool && actions?.delete && <ToolRowDeleteAction rowId={rowId} />}
 
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
-      {!isLibrary && accessLevel !== ResourceAccessTypeEnum.Owner && (
+      {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </DataTableRowActions>
