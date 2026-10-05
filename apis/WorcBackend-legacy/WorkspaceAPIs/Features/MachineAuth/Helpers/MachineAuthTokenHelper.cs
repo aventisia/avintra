@@ -15,12 +15,14 @@ public static class MachineAuthTokenHelper
     /// <param name="tenantId">The tenant ID claim value.</param>
     /// <param name="userId">The linked workspace user ID claim value.</param>
     /// <param name="userName">The linked workspace user's username claim value.</param>
+    /// <param name="machineId">The ID of the machine this token authenticates, emitted as the "mid" claim.</param>
     /// <returns>The signed JWT string.</returns>
     public static (string Jwt, DateTimeOffset ExpiresOn) CreateMachineJwt(
         EnvironmentConfig environmentConfig,
         Guid tenantId,
         Guid userId,
-        string userName)
+        string userName,
+        Guid machineId)
     {
         // Compute the expiry upfront so it can be returned alongside the token
         var expiresOn = DateTimeOffset.UtcNow.AddMinutes(environmentConfig.JwtValidityInMinutes);
@@ -31,6 +33,7 @@ public static class MachineAuthTokenHelper
             ["tntid"] = tenantId.ToString(),
             ["uid"] = userId.ToString(),
             ["uname"] = userName,
+            [MachineIdentityClaims.MachineIdClaimType] = machineId.ToString(),
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
         };
 

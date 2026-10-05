@@ -103,7 +103,7 @@ public class MachineAuthService : IMachineAuthService
             await _workspaceDbContext.SaveChangesAsync();
 
             // Mint the JWT for the linked user account
-            var (jwt, expiresOn) = MachineAuthTokenHelper.CreateMachineJwt(_environmentConfig, tenantId, linkedUser.Id, linkedUser.UserName);
+            var (jwt, expiresOn) = MachineAuthTokenHelper.CreateMachineJwt(_environmentConfig, tenantId, linkedUser.Id, linkedUser.UserName, machine.Id);
 
             // Task successful
             return serviceResponse.Update("Machine registered", 200, new MachineAuthResDto
@@ -187,7 +187,7 @@ public class MachineAuthService : IMachineAuthService
                 return serviceResponse.Update("Linked user account not found.", 404);
 
             // Mint the JWT for the linked user account
-            var (jwt, expiresOn) = MachineAuthTokenHelper.CreateMachineJwt(_environmentConfig, tenantId, linkedUser.Id, linkedUser.UserName);
+            var (jwt, expiresOn) = MachineAuthTokenHelper.CreateMachineJwt(_environmentConfig, tenantId, linkedUser.Id, linkedUser.UserName, machine.Id);
 
             // Task successful
             return serviceResponse.Update(null, 200, new MachineAuthResDto
