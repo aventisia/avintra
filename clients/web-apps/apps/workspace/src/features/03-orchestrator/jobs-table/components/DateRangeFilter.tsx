@@ -1,9 +1,10 @@
 import { Calendar } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
 import { CalendarDays } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { DateRange, paramsToRange, rangeToParams, useDateRangePickerStore } from "..";
@@ -14,9 +15,12 @@ export const DateRangeFilter = () => {
 
   const [showRangePicker, setShowRangePicker] = useState(false);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
+  const isCommunityDeployment = useUserSessionStore(
+    (state) => state.userSession?.deploymentType === "Community",
+  );
 
   const hydratedRef = useRef(false);
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
 
   const isCurrentTab = searchParams.get("t") == "Current";
 
@@ -24,10 +28,13 @@ export const DateRangeFilter = () => {
      Default last 7 days
   -------------------------------- */
 
-  const defaultRange: DateRange = {
-    from: subDays(today, 6),
-    to: today,
-  };
+  const defaultRange = useMemo<DateRange>(
+    () => ({
+      from: subDays(today, isCommunityDeployment ? 0 : 6),
+      to: today,
+    }),
+    [isCommunityDeployment, today],
+  );
 
   // Sync date range selection with URL param on mount
   useEffect(() => {
@@ -49,7 +56,7 @@ export const DateRangeFilter = () => {
     }
 
     hydratedRef.current = true;
-  }, [searchParams, setSearchParams, setDateRange]);
+  }, [defaultRange, searchParams, setSearchParams, setDateRange]);
 
   const applyRange = useCallback(
     (range?: DateRange) => {
@@ -69,7 +76,10 @@ export const DateRangeFilter = () => {
     { label: "Today", value: "today" },
     { label: "Week to Date", value: "week" },
     { label: "Month to Date", value: "month" },
-    { label: "Last 7 days", value: 7 },
+    {
+      label: isCommunityDeployment ? "Last 1 day" : "Last 7 days",
+      value: isCommunityDeployment ? 1 : 7,
+    },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
   ];

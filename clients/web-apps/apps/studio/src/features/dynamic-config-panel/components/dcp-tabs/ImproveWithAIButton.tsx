@@ -2,9 +2,12 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+import { SparklesIcon } from "lucide-react";
 
 import { getAITasksByName } from "@/features/ai-tasks/apis/ai-tasks-apis";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { UpgradeFeatureButton } from "@avplatform/ui";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 
 import { LLMResponseDto, ProviderLiteral } from "../../dtos/llm-providers-dto";
 import { useImproveWithAIMutation } from "../../hooks/useImproveWithAIMutation";
@@ -33,6 +36,11 @@ const ImproveWithAIButton = ({
 
   // Mutation hook to generate the template instruction
   const { mutate: improveWithAI, data, isPending } = useImproveWithAIMutation();
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
 
   useEffect(() => {
     if (data) {
@@ -103,6 +111,19 @@ const ImproveWithAIButton = ({
       console.error("ImproveWithAI failed:", error);
     }
   };
+
+  if (userSession?.deploymentType === "Community") {
+    return (
+      <UpgradeFeatureButton
+        label="Improve with AI"
+        icon={<SparklesIcon className="h-4 w-4" />}
+        featureName="AI prompt improvement"
+        benefit="Refine prompts and JSON schemas faster with AI."
+        pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
+        className="flex items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+      />
+    );
+  }
 
   return (
     <PromptActionButton

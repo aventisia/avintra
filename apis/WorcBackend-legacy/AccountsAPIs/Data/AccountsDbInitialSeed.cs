@@ -501,6 +501,12 @@ public static class AccountsDbInitialSeed
             // If the subscription plan already exists, skip seeding and return true
             if (existingPlan != null)
             {
+                if (environmentConfig.IsCommunityDeployment && existingPlan.HistoryRetentionDays != 1)
+                {
+                    existingPlan.HistoryRetentionDays = 1;
+                    await accountsDbContext.SaveChangesAsync();
+                }
+
                 logger.LogDebug("Subscription plan {PlanName} already exists.", subscriptionPlanName);
                 return true;
             }
@@ -524,7 +530,7 @@ public static class AccountsDbInitialSeed
                 MaxSpaces = int.MaxValue,
                 MaxUsers = int.MaxValue,
                 StorageLimitMB = int.MaxValue,
-                HistoryRetentionDays = int.MaxValue,
+                HistoryRetentionDays = environmentConfig.IsCommunityDeployment ? 1 : int.MaxValue,
                 Price = 0,
                 IsDefault = true,
                 CreatedByUserId = superUser.Id,

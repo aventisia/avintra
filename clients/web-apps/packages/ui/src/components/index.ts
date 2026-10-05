@@ -26,3 +26,4 @@ export * from "./StopPropagationWrapper";
 export * from "./Switch";
 export * from "./TagInput";
 export * from "./Textarea";
+export * from "./upgrade-feature";
