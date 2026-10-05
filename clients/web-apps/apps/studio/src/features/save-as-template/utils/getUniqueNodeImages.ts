@@ -26,7 +26,7 @@ export function getUniqueFlowImages(nodes: Node<NodeDataType>[]): string[] {
       // Model node labels are provider values (e.g. "googlegemini", "groq"),
       // which do not always map 1:1 to a brand-img file name. Resolve through
       // the provider brand icon map so aliases (gemini, groqcloud, ollama) work.
-      imagePath = getProviderBrandIcon(node.data.label as string) ?? null;
+      imagePath = getProviderBrandIcon(node.data?.label as string) ?? null;
     }
 
     if (imagePath && imagePath !== DEFAULT_IMAGE) {
