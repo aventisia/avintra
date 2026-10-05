@@ -116,11 +116,11 @@ export const setToolActiveState = (id: string, isActive: boolean) => {
 };
 
 /**
- * Retrieves all platform (library) tools.
+ * Retrieves all platform's default tools.
  */
-export const getLibraryTools = () => {
+export const getPlatformTools = () => {
   return axiosInstance
-    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/library`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/platform`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

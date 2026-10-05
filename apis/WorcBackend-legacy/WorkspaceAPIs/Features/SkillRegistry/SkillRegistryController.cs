@@ -82,11 +82,11 @@ public class SkillRegistryController : BaseApiController
         return ResultHelper(await _skillRegistryService.GetSkillsForSyncAsync());
     }
 
-    // Retrieves all platform (library) skills.
-    [HttpGet("library")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetLibrarySkills()
+    // Retrieves all platform default skills.
+    [HttpGet("platform")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetPlatformSkills()
     {
-        return ResultHelper(await _skillRegistryService.GetLibrarySkillsAsync());
+        return ResultHelper(await _skillRegistryService.GetPlatformSkillsAsync());
     }
 
     // Retrieves skills in select-option format for dropdowns.

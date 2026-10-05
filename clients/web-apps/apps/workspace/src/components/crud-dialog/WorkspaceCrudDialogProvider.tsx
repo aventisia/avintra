@@ -6,7 +6,7 @@ import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "
 import { getDialogHeadingDescription as getKeystoreDialogHeadingDescription } from "@/features/02-configure/keystore-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
-import { getDialogHeadingDescription as getSkillsDialogHeadingDescription } from "@/features/02-configure/skills/constants";
+import { getDialogHeadingDescription as getSkillsDialogHeadingDescription } from "@/features/02-configure/skill-registry/constants";
 import { getDialogHeadingDescription as getToolsDialogHeadingDescription } from "@/features/02-configure/tools/constants/tools-table.constants";
 import { getDialogHeadingDescription as getEmailTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/email-triggers-table/constants";
 import { getDialogHeadingDescription as getMessageTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/message-triggers-table/constants";
@@ -22,13 +22,13 @@ import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
+import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant";
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
 import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
 import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
 import { getDialogHeadingDescription as getNotificationDialogHeadingDescription } from "@/features/notifications/constants/notifications-table.constant";
-import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant";
 
 const MachineCrudDialogContent = lazy(() =>
   import("@/features/03-orchestrator/machines-table/components/machine-crud-dialog/MachineCrudDialogContent").then(
@@ -61,7 +61,7 @@ const KBCrudDialogContent = lazy(() =>
   ),
 );
 const SkillsCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/skills/components/skill-crud-dialog/SkillCrudDialogContent").then(
+  import("@/features/02-configure/skill-registry/components/skill-crud-dialog/SkillCrudDialogContent").then(
     (m) => ({ default: m.SkillCrudDialogContent }),
   ),
 );

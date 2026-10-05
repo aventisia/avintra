@@ -68,10 +68,10 @@ public interface ISkillRegistryService
     Task<ServiceResponse<IEnumerable<SkillSyncDto>>> GetSkillsForSyncAsync();
 
     /// <summary>
-    /// Retrieves all platform (library) skills available to the current tenant.
+    /// Retrieves all platform default skills available to the current tenant.
     /// </summary>
-    /// <returns>The task result contains the service response with the list of library skill details.</returns>
-    Task<ServiceResponse<IEnumerable<SkillDto>>> GetLibrarySkillsAsync();
+    /// <returns>The task result contains the service response with the list of platform default skill details.</returns>
+    Task<ServiceResponse<IEnumerable<SkillDto>>> GetPlatformSkillsAsync();
 
     /// <summary>
     /// Retrieves skills accessible to the current user in selectable option format.

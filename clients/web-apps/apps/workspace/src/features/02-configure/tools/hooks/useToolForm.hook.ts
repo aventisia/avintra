@@ -82,7 +82,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
     }
 
     const loadTool = async () => {
-      // First try the merged Personal/Shared/Library lists in the cache.
+      // First try the merged Personal/Shared/Platform lists in the cache.
       const cachedList = getMergedQueryData<ToolDto>(queryClient, queryKey);
       const cachedTool = cachedList?.data?.find((item) => item.id === rowId);
 
@@ -111,7 +111,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
         return;
       }
 
-      // Fallback to API for Library tab or when cache is empty.
+      // Fallback to API for Platform tab or when cache is empty.
       try {
         const response = await getToolById(rowId);
         const tool = response.data;

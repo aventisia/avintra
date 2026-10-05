@@ -104,10 +104,10 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.SetToolActiveStateAsync(toolId, request.IsActive));
     }
 
-    // Retrieves all platform (library) tools.
-    [HttpGet("library")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ToolDto>>>> GetLibraryTools()
+    // Retrieves all platform tools.
+    [HttpGet("platform")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ToolDto>>>> GetPlatformTools()
     {
-        return ResultHelper(await _toolService.GetLibraryToolsAsync());
+        return ResultHelper(await _toolService.GetPlatformToolsAsync());
     }
 }

@@ -193,7 +193,7 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Platform/library skills are read-only and viewable by all users, so they
+            // Platform default skills are read-only and viewable by all users, so they
             // skip the per-user share check.
             var accessLevel = ResourceAccessTypeEnum.View;
             if (skill.Type != ComponentTypeEnum.Platform)
@@ -280,7 +280,7 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Platform/library skills are read-only and viewable by all users, so they
+            // Platform default skills are read-only and viewable by all users, so they
             // skip the per-user share check.
             var accessLevel = ResourceAccessTypeEnum.View;
             if (skill.Type != ComponentTypeEnum.Platform)
@@ -807,17 +807,17 @@ public class SkillRegistryService : ISkillRegistryService
     }
 
     /// <summary>
-    /// Retrieves all platform (library) skills available to the current tenant.
+    /// Retrieves all platform default skills available to the current tenant.
     /// </summary>
-    public async Task<ServiceResponse<IEnumerable<SkillDto>>> GetLibrarySkillsAsync()
+    public async Task<ServiceResponse<IEnumerable<SkillDto>>> GetPlatformSkillsAsync()
     {
         // Initialize a failed response in case the operation does not complete successfully.
-        var serviceResponse = ServiceResponse<IEnumerable<SkillDto>>.Create("Failed to retrieve library skills. Please try again", 400);
+        var serviceResponse = ServiceResponse<IEnumerable<SkillDto>>.Create("Failed to retrieve platform skills. Please try again", 400);
 
         try
         {
             // Load platform-managed skills for the current tenant.
-            var librarySkills = await _unitOfWork.SkillRepo
+            var platformSkills = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.CreatedByUser)
@@ -826,17 +826,17 @@ public class SkillRegistryService : ISkillRegistryService
                 .ToListAsync();
 
             // Map entities to DTOs and attach file counts without loading file content.
-            var skillDtoList = librarySkills.Adapt<List<SkillDto>>();
+            var skillDtoList = platformSkills.Adapt<List<SkillDto>>();
             skillDtoList.ForEach(fe => fe.AccessLevel = ResourceAccessTypeEnum.View);
 
-            var libraryFileCounts = await GetFileCountsAsync(librarySkills.Select(s => s.Id));
-            skillDtoList.ForEach(dto => dto.FileCount = libraryFileCounts.GetValueOrDefault(dto.Id, 0));
+            var platformFileCounts = await GetFileCountsAsync(platformSkills.Select(s => s.Id));
+            skillDtoList.ForEach(dto => dto.FileCount = platformFileCounts.GetValueOrDefault(dto.Id, 0));
 
-            serviceResponse.Update("Library skills retrieved successfully", 200, skillDtoList);
+            serviceResponse.Update("Platform skills retrieved successfully", 200, skillDtoList);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving library skills for tenant {TenantId}", _currentTenantService.CurrentTenantId);
+            _logger.LogError(ex, "Error retrieving platform skills for tenant {TenantId}", _currentTenantService.CurrentTenantId);
         }
 
         return serviceResponse;
@@ -844,7 +844,7 @@ public class SkillRegistryService : ISkillRegistryService
 
     /// <summary>
     /// Retrieves skills accessible to the current user in selectable option format.
-    /// Includes personal, shared, and platform (library) skills that are active and not disabled.
+    /// Includes personal, shared, and platform default skills that are active and not disabled.
     /// </summary>
     public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSkillOptionsAsync()
     {
@@ -868,7 +868,7 @@ public class SkillRegistryService : ISkillRegistryService
                     rs.AccessLevel == ResourceAccessTypeEnum.Edit
                 ));
 
-            // Platform/library skills are environment-agnostic (read-only, no EnvType),
+            // Platform default skills are environment-agnostic (read-only, no EnvType),
             // so they are matched regardless of the current environment.
             var options = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>

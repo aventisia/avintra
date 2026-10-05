@@ -29,7 +29,7 @@ import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
 
 /**
- * Renders a list of tools with Personal, Shared, and Library tabs.
+ * Renders a list of tools with Personal, Shared, and Platform tabs.
  */
 export const ToolsTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -39,10 +39,10 @@ export const ToolsTable = () => {
     COLUMN_VISIBILITY_STATE,
   );
 
-  const { isLibrary, isReadOnly, queryKey } = useTableTab();
+  const { isPlatformTab, isReadOnly, queryKey } = useTableTab();
   const { data, isLoading } = useFetchTools();
 
-  const tableColumns = useMemo(() => toolsTableColumns(isLibrary), [isLibrary]);
+  const tableColumns = useMemo(() => toolsTableColumns(isPlatformTab), [isPlatformTab]);
   const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
@@ -74,7 +74,7 @@ export const ToolsTable = () => {
                   key={row.id}
                   to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
                     row.getValue("name"),
-                  )}${isLibrary ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
+                  )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
                 >
                   <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                     {/* Left: Icon with centered content */}
@@ -113,7 +113,7 @@ export const ToolsTable = () => {
                       name={row.original.name}
                       accessLevel={row.original.accessLevel}
                       isTenantWideAccess={row.original.isTenantWideAccess}
-                      isLibrary={isLibrary}
+                      isPlatformTool={isPlatformTab}
                     />
                   </div>
                 </NavLink>
