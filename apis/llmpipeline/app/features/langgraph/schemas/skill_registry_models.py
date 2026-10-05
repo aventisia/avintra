@@ -1,5 +1,5 @@
 
-"""Workspace DB models for the user skill registry.
+"""Workspace DB models for the custom skill registry.
 
 These models mirror the C# ``worc_Skills`` / ``worc_SkillFiles`` schema so the
 Python API can read custom skills created through the .NET API. They are stored
@@ -62,7 +62,7 @@ class _BaseEntityMixin:
 
 
 class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
-    """A user-created or global skill definition stored in the Workspace DB."""
+    """A custom or platform skill definition stored in the Workspace DB."""
 
     __tablename__ = "worc_Skills"
 

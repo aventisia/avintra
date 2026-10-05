@@ -32,15 +32,18 @@ from app.features.langgraph.services.credit_usage_service import (
     CreditUsageService,
     credit_usage_service,
 )
-from app.features.langgraph.skills.skill_loader import load_default_skills
+from app.features.langgraph.skills.skill_loader import (
+    load_custom_skills,
+    load_platform_skills,
+)
 from app.features.langgraph.skills.skill_registry import SkillRegistry
-from app.features.langgraph.tools.tool_loader import load_default_tools
+from app.features.langgraph.tools.tool_loader import load_platform_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.langgraph.tools.tool_config_utils import (
     configured_tool_roots,
     expand_tool_config,
 )
-from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant as load_custom_tools
+from app.features.custom_tools.custom_tool_loader import load_custom_tools
 from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
@@ -79,9 +82,9 @@ class ChatService:
         self.conversation_service = conversation_service
         self.credit_usage_service = credit_usage_service
 
-        # Load default tools and skills
-        load_default_tools(self.tool_registry)
-        load_default_skills(self.skill_registry)
+        # Load platform tools and skills
+        load_platform_tools(self.tool_registry)
+        load_platform_skills(self.skill_registry)
 
     async def invoke(
         self,
@@ -94,14 +97,14 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools from DB before building the graph
+        # Load custom tools and custom skills from DB before building the graph
         if db_session is not None:
             await self._load_custom_tools(request, user, db_session)
+            await self._load_custom_skills(user, db_session)
 
         graph = self._graph(
             request=request,
             user=user,
-            db_session=db_session,
         )
         conversation_id = request.conversation_id or str(uuid4())
         config = self._thread_config(conversation_id)
@@ -170,14 +173,14 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools from DB before building the graph
+        # Load custom tools and custom skills from DB before building the graph
         if db_session is not None:
             await self._load_custom_tools(request, user, db_session)
+            await self._load_custom_skills(user, db_session)
 
         graph = self._graph(
             request=request,
             user=user,
-            db_session=db_session,
         )
         conversation_id = request.conversation_id or str(uuid4())
         config = self._thread_config(conversation_id)
@@ -360,11 +363,11 @@ class ChatService:
         else:
             if db_session is not None:
                 await self._load_custom_tools(request, user, db_session)
+                await self._load_custom_skills(user, db_session)
 
             graph = self._graph(
                 request=request,
                 user=user,
-                db_session=db_session,
             )
             config = self._thread_config(conversation_id)
 
@@ -886,6 +889,34 @@ class ChatService:
                 exc,
             )
 
+    async def _load_custom_skills(
+        self,
+        user: User,
+        db_session: AsyncSession,
+    ) -> None:
+        """Load tenant-specific skills so the planner can route to them.
+
+        Runs before the graph starts streaming. Skill loading emits SQL, and the
+        SSE routes commit the shared session after every chunk; loading inside a
+        graph node (which runs in a concurrent task) would race that commit and
+        fail with a "session is in 'prepared' state" error.
+        """
+
+        try:
+            await load_custom_skills(
+                registry=self.skill_registry,
+                db_session=db_session,
+                tenant_id=str(user.tenant_id),
+                env_type=user.env_type,
+                space_id=user.space_id,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Failed to load custom skills for tenant %s: %s",
+                user.tenant_id,
+                exc,
+            )
+
     def _thread_config(
         self,
         conversation_id: str,
@@ -962,7 +993,6 @@ class ChatService:
         self,
         request: LLMRequest,
         user: User,
-        db_session: AsyncSession | None = None,
     ) -> Any:
         """Retrieve or create a compiled LangGraph instance."""
 
@@ -996,7 +1026,6 @@ class ChatService:
                 user=user,
                 tool_registry=self.tool_registry,
                 skill_registry=self.skill_registry,
-                db_session=db_session,
                 tool_names=explicit_tool_names or None,
                 skill_names=explicit_skill_names or None,
             )

@@ -6,38 +6,38 @@ from app.core.database import get_db_session_context
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.graphs.graph_factory import _build_skill_prompt, _resolve_skill_configs
-from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
+from app.features.langgraph.skills.skill_loader import load_custom_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.llm_providers.llm_kb_retrieval import _inject_context_into_input
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
 
-# Module-level singleton registry for user/tenant skills.
-# No default platform skills are loaded here; skills are injected only when
+# Module-level singleton registry for custom/tenant skills.
+# No platform skills are loaded here; skills are injected only when
 # explicitly requested in the payload and resolved from the Workspace DB.
-_user_skill_registry: SkillRegistry | None = None
+_custom_skill_registry: SkillRegistry | None = None
 
 
-def _get_user_skill_registry() -> SkillRegistry:
-    """Return a registry for tenant-scoped user skills."""
-    global _user_skill_registry
-    if _user_skill_registry is None:
-        _user_skill_registry = SkillRegistry()
-    return _user_skill_registry
+def _get_custom_skill_registry() -> SkillRegistry:
+    """Return a registry for tenant-scoped custom skills."""
+    global _custom_skill_registry
+    if _custom_skill_registry is None:
+        _custom_skill_registry = SkillRegistry()
+    return _custom_skill_registry
 
 
 async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) -> None:
     """
-    Resolve ``llm_request.skill_names`` against the tenant's user skills and
+    Resolve ``llm_request.skill_names`` against the tenant's custom skills and
     inject a formatted skill prompt into ``llm_request.input``.
 
     Works like ``retrieve_and_inject_kb_context`` but for skills:
-    - loads the tenant's user skills from the Workspace DB
+    - loads the tenant's custom skills from the Workspace DB
     - resolves each requested name to a ``SkillConfig``
     - builds a prompt fragment with names, descriptions, and file contents
     - prepends the prompt into the request input
 
-    Default platform skills are intentionally **not** loaded here; skills are
+    Platform skills are intentionally **not** loaded here; skills are
     only injected when explicitly provided in the request payload.
 
     Silently skips on any error so that a skill-resolution failure does not
@@ -54,10 +54,10 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
     tenant_id = str(user.tenant_id)
 
     try:
-        registry = _get_user_skill_registry()
+        registry = _get_custom_skill_registry()
 
         async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
-            await load_user_skills_from_db(
+            await load_custom_skills(
                 registry=registry,
                 db_session=session,
                 tenant_id=tenant_id,

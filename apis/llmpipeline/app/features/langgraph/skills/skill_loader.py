@@ -157,12 +157,12 @@ def discover_skills() -> dict[str, SkillConfig]:
     return discovered
 
 
-def load_default_skills(
+def load_platform_skills(
     registry: SkillRegistry,
     skill_names: list[str] | None = None,
 ) -> list[SkillConfig]:
     """
-    Register the default set of platform skills.
+    Register the platform skills.
 
     Selection priority:
         1. ``skill_names`` — if provided and non-empty, only those skills are
@@ -189,7 +189,7 @@ def load_default_skills(
     else:
         selected_names = set(discovered.keys())
         logger.debug(
-            "Loading all discovered default skills: %s",
+            "Loading all discovered platform skills: %s",
             sorted(selected_names),
         )
 
@@ -211,7 +211,7 @@ def load_default_skills(
     return loaded
 
 
-def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
+def _build_custom_skill_config(skill: Skill) -> SkillConfig | None:
     """
     Build a ``SkillConfig`` from a database ``Skill`` row.
 
@@ -312,7 +312,7 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
     )
 
 
-async def load_user_skills_from_db(
+async def load_custom_skills(
     registry: SkillRegistry,
     db_session,
     tenant_id: str,
@@ -320,17 +320,17 @@ async def load_user_skills_from_db(
     space_id: str | None = None,
 ) -> list[SkillConfig]:
     """
-    Load active user-created skills from the Workspace DB for a tenant and env.
+    Load active custom skills from the Workspace DB for a tenant and env.
 
     Args:
-        registry: ``SkillRegistry`` to register discovered user skills into.
+        registry: ``SkillRegistry`` to register discovered custom skills into.
         db_session: An async SQLAlchemy session.
         tenant_id: UUID string of the tenant whose skills should be loaded.
         env_type: Active deployment environment ("dev"/"prod"). Skills from other
             environments are excluded so Dev and Prod resolve independently.
 
     Returns:
-        A list of user ``SkillConfig`` instances that were registered.
+        A list of custom ``SkillConfig`` instances that were registered.
     """
 
     from sqlalchemy import case, func, select
@@ -344,7 +344,7 @@ async def load_user_skills_from_db(
         tenant_uuid = UUID(tenant_id)
     except Exception as exc:
         logger.warning(
-            "Invalid tenant_id for user skill loading: %s (%s)",
+            "Invalid tenant_id for custom skill loading: %s (%s)",
             tenant_id,
             exc,
         )
@@ -373,13 +373,13 @@ async def load_user_skills_from_db(
         if normalized_name in selected_skill_names:
             continue
         selected_skill_names.add(normalized_name)
-        config = _build_skill_config_from_db(skill)
+        config = _build_custom_skill_config(skill)
         if config is None:
             continue
 
         if registry.exists(config.name):
             logger.warning(
-                "User skill %s (%s) conflicts with an existing skill; overwriting.",
+                "Custom skill %s (%s) conflicts with an existing skill; overwriting.",
                 config.name,
                 skill.id,
             )
@@ -387,7 +387,7 @@ async def load_user_skills_from_db(
         registry.register(config)
         loaded.append(config)
         logger.debug(
-            "Loaded user skill %s for tenant %s",
+            "Loaded custom skill %s for tenant %s",
             config.name,
             tenant_id,
         )
