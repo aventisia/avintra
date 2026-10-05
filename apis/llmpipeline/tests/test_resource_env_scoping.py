@@ -23,11 +23,11 @@ from sqlalchemy import UniqueConstraint
 from app.core.env_utils import normalize_env_type
 from app.core.space_utils import normalize_space_id
 from app.features.auth.authenticated_user import User
-from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant
+from app.features.custom_tools.custom_tool_loader import load_custom_tools
 from app.features.custom_tools.models import Tool
 from app.features.langgraph.schemas.skill_registry_models import Skill
 from app.features.langgraph.services.chat_service import ChatService
-from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
+from app.features.langgraph.skills.skill_loader import load_custom_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_config_utils import (
     configured_tool_roots,
@@ -193,7 +193,7 @@ class TestLoadToolsForTenant:
     def test_empty_names_load_nothing(self):
         session = _FakeSession()
         result = asyncio.run(
-            load_tools_for_tenant(session=session, tenant_id=uuid4(), tool_names=[])
+            load_custom_tools(session=session, tenant_id=uuid4(), tool_names=[])
         )
         assert result == []
         assert session.statements == []
@@ -201,7 +201,7 @@ class TestLoadToolsForTenant:
     def test_scoped_by_env_and_name(self):
         session = _FakeSession()
         asyncio.run(
-            load_tools_for_tenant(
+            load_custom_tools(
                 session=session,
                 tenant_id=uuid4(),
                 tool_names=["outlook"],
@@ -221,15 +221,15 @@ class TestLoadToolsForTenant:
 
 
 # ---------------------------------------------------------------------------
-# User skill loader: env scoping
+# Custom skill loader: env scoping
 # ---------------------------------------------------------------------------
 
 
-class TestLoadUserSkillsFromDb:
+class TestLoadCustomSkillsFromDb:
     def test_scoped_by_env(self):
         session = _FakeSession()
         loaded = asyncio.run(
-            load_user_skills_from_db(
+            load_custom_skills(
                 registry=SkillRegistry(),
                 db_session=session,
                 tenant_id=str(uuid4()),
@@ -248,7 +248,7 @@ class TestLoadUserSkillsFromDb:
     def test_invalid_tenant_id_skips_query(self):
         session = _FakeSession()
         loaded = asyncio.run(
-            load_user_skills_from_db(
+            load_custom_skills(
                 registry=SkillRegistry(),
                 db_session=session,
                 tenant_id="not-a-uuid",
