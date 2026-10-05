@@ -38,8 +38,25 @@ public static class AccountsDbInitialSeed
                 // is skipped by IsSeedingRequired.
                 if (!await SeedDefaultRolesAsync(_roleManager, environmentConfig, logger)) return app;
 
-                // Seeding is not required
-                if (!await IsSeedingRequired(_accountsDbContext, logger)) return app;
+                // Keep the default subscription data aligned with the deployment edition on existing databases.
+                if (!await IsSeedingRequired(_accountsDbContext, logger))
+                {
+                    var existingSuperUser = await _accountsDbContext.Users
+                        .Where(w => w.IsDefault)
+                        .SingleOrDefaultAsync();
+
+                    if (existingSuperUser != null)
+                    {
+                        if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, existingSuperUser, logger) ||
+                            !await SeedTenantSubscriptionAsync(_accountsDbContext, existingSuperUser, logger) ||
+                            !await SeedTenantCreditsAsync(_accountsDbContext, existingSuperUser, logger))
+                        {
+                            return app;
+                        }
+                    }
+
+                    return app;
+                }
 
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, environmentConfig, logger);
@@ -492,6 +509,11 @@ public static class AccountsDbInitialSeed
         {
             // Define the name of the subscription plan to seed
             var subscriptionPlanName = "Default";
+            var historyRetentionDays = environmentConfig.IsCommunityDeployment
+                ? 1
+                : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
+                    ? 365
+                    : int.MaxValue;
 
             // Check if the default subscription plan already exists in the database
             var existingPlan = await accountsDbContext.SubscriptionPlans
@@ -501,9 +523,18 @@ public static class AccountsDbInitialSeed
             // If the subscription plan already exists, skip seeding and return true
             if (existingPlan != null)
             {
-                if (environmentConfig.IsCommunityDeployment && existingPlan.HistoryRetentionDays != 1)
+                if (existingPlan.MaxPublishedItems != 0 ||
+                    existingPlan.MaxSpaces != 0 ||
+                    existingPlan.MaxUsers != 0 ||
+                    existingPlan.StorageLimitMB != 0 ||
+                    existingPlan.HistoryRetentionDays != historyRetentionDays)
                 {
-                    existingPlan.HistoryRetentionDays = 1;
+                    existingPlan.MaxPublishedItems = 0;
+                    existingPlan.MaxSpaces = 0;
+                    existingPlan.MaxUsers = 0;
+                    existingPlan.StorageLimitMB = 0;
+                    existingPlan.HistoryRetentionDays = historyRetentionDays;
+                    existingPlan.LastModifiedByUserId = superUser.Id;
                     await accountsDbContext.SaveChangesAsync();
                 }
 
@@ -526,11 +557,11 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 Status = PlanStatusTypesEnum.Custom,
                 UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
-                MaxPublishedItems = int.MaxValue,
-                MaxSpaces = int.MaxValue,
-                MaxUsers = int.MaxValue,
-                StorageLimitMB = int.MaxValue,
-                HistoryRetentionDays = environmentConfig.IsCommunityDeployment ? 1 : int.MaxValue,
+                MaxPublishedItems = 0,
+                MaxSpaces = 0,
+                MaxUsers = 0,
+                StorageLimitMB = 0,
+                HistoryRetentionDays = historyRetentionDays,
                 Price = 0,
                 IsDefault = true,
                 CreatedByUserId = superUser.Id,
@@ -570,18 +601,6 @@ public static class AccountsDbInitialSeed
             // Define the subscription plan name (could also be retrieved from config)
             var subscriptionPlanName = "Default";
 
-            // Check if a subscription plan already exists for the super user's tenant
-            var existingSubscription = await accountsDbContext.TenantSubscriptions
-                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
-                .SingleOrDefaultAsync();
-
-            // If a subscription plan already exists, skip seeding and return true
-            if (existingSubscription != null)
-            {
-                logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
-                return true;
-            }
-
             // Get the default subscription plan to be associated with the tenant
             var subscriptionPlan = await accountsDbContext.SubscriptionPlans
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
@@ -591,6 +610,28 @@ public static class AccountsDbInitialSeed
             {
                 logger.LogError("Subscription plan {PlanName} not found.", subscriptionPlanName);
                 return false;
+            }
+
+            // Check if a subscription plan already exists for the super user's tenant
+            var existingSubscription = await accountsDbContext.TenantSubscriptions
+                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            if (existingSubscription != null)
+            {
+                if (existingSubscription.PlanId == subscriptionPlan.Id)
+                {
+                    existingSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+                    existingSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+                    existingSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+                    existingSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+                    existingSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+                    existingSubscription.LastModifiedByUserId = superUser.Id;
+                    await accountsDbContext.SaveChangesAsync();
+                }
+
+                logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
+                return true;
             }
 
             // Create the new TenantSubscription with necessary details
@@ -603,11 +644,11 @@ public static class AccountsDbInitialSeed
                 Status = SubscriptionStatusTypesEnum.Active,
                 NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
                 MaxCredits = ulong.MaxValue,
-                MaxPublishedItems = int.MaxValue,
-                MaxSpaces = int.MaxValue,
-                MaxUsers = int.MaxValue,
-                StorageLimitMB = int.MaxValue,
-                HistoryRetentionDays = int.MaxValue,
+                MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
+                MaxSpaces = subscriptionPlan.MaxSpaces,
+                MaxUsers = subscriptionPlan.MaxUsers,
+                StorageLimitMB = subscriptionPlan.StorageLimitMB,
+                HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays,
                 CreatedByUserId = superUser.Id,
                 LastModifiedByUserId = superUser.Id
             };
