@@ -1,0 +1,32 @@
+meta {
+  name: Create job rejects invalid execution location
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "executionLocation": "not-a-machine"
+  }
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  > For a published agent, `executionLocation` must be a machine GUID or the "Cloud"/"Web Server"
+  > sentinel. Any other value is rejected with 400.
+  > Requires `ACCESS_TOKEN` (OM role) and a published `FLOW_VERSION_ID`.
+}

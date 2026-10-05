@@ -1,0 +1,32 @@
+meta {
+  name: Create job rejects unknown machine
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "executionLocation": "{{$guid}}"
+  }
+}
+
+assert {
+  res.status: eq 404
+}
+
+docs {
+  > A published agent job must be bound to an existing machine. A random (non-existent) machine GUID
+  > is rejected with 404, so a job can never silently fall back to another machine.
+  > Requires `ACCESS_TOKEN` (OM role) and a published `FLOW_VERSION_ID`.
+}

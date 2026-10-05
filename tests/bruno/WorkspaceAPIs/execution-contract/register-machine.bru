@@ -1,0 +1,40 @@
+meta {
+  name: Register machine for execution contract
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/machine-auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  X-API-KEY: {{CUSTOM_API_KEY}}
+  X-TENANT-ID: {{TENANT_ID}}
+}
+
+body:json {
+  {
+    "operatingSystem": "Windows",
+    "osID": "bruno-execution-contract-machine",
+    "hostname": "bruno-execution-contract-host",
+    "username": "bruno.execution.contract",
+    "linkedUserAccountId": "{{ACCOUNT_USER_ID}}"
+  }
+}
+
+script:post-response {
+  // Registers (or re-registers, idempotently) a machine and captures the machine identity used by
+  // the executor endpoints. The issued JWT carries the "mid" (machine id) claim.
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar("MACHINE_ID", res.getBody().data.machineId);
+      bru.setGlobalEnvVar("MACHINE_JWT", res.getBody().data.jwt);
+  }
+}
+
+docs {
+  > Registers the machine that the executor (poll) requests authenticate as.
+  > Requires `CUSTOM_API_KEY`, `TENANT_ID` and `ACCOUNT_USER_ID` to be set in the Bruno Global Environment.
+}

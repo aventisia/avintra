@@ -170,14 +170,14 @@ public class OrchestratorHub : Hub
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
 
-                // Search for an active job that is associated with the machine's FlowVersionIds
-                // The job should be in 'Created' status, and either not assigned to a machine or assigned to the current machine
+                // Search for a Created job that is already bound to this machine. Unassigned jobs are
+                // never pulled here — they are bound deterministically by the dispatch resolver.
                 var job = await _workspaceInternalDbContext.Jobs
                     .Where(w =>
                         w.TenantId == tenantId &&
                         w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
-                        (w.MachineId == null || w.MachineId == clientId)
+                        w.MachineId == clientId
                     )
                     .OrderByDescending(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
@@ -304,6 +304,16 @@ public class OrchestratorHub : Hub
         await Clients.Caller.SendAsync("client_presence", payload);
     }
 
+    // Returns true when a machine's pending JobId still refers to a live (Created) job.
+    private async Task<bool> HasLivePendingJobAsync(ClientDataStore machine)
+    {
+        if (machine?.JobId is not Guid pendingJobId || pendingJobId == Guid.Empty)
+            return false;
+
+        return await _workspaceInternalDbContext.Jobs
+            .AnyAsync(w => w.Id == pendingJobId && w.Status == JobStatusEnum.Created);
+    }
+
     // Executes the agent on a specified machine. If no machine name is provided or if it's invalid,
     // it attempts to find an online machine associated with the agent.
     // The method updates the machine's status and triggers the agent execution if all conditions are satisfied.
@@ -337,24 +347,26 @@ public class OrchestratorHub : Hub
             // Initialize variable to hold machine status
             ClientDataStore? clientDataStore = null;
 
-            // If no machine name is provided, attempt to find an available online machine
+            // Machine ids mapped to this agent.
+            var mappedMachineIds = (agent.FlowVersionMachines?.Select(s => s.MachineId) ?? Enumerable.Empty<Guid>()).ToHashSet();
+
+            // If no machine name is provided, deterministically select an available machine mapped to the agent.
             if (string.IsNullOrEmpty(machineName))
             {
-                // Retrieve all machine IDs assigned to this agent
-                var availableMachineIds = agent.FlowVersionMachines?.Select(s => s.MachineId).ToList();
+                // Fetch tenant machine statuses and keep only online machines.
+                var onlineMachines = (await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId))
+                    .Where(m => m.Status == MachineStatusEnum.Online)
+                    .ToList();
 
-                // Fetch all machine statuses for the current tenant
-                var machines = await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId);
-
-                // Attempt to find an online machine from the list of assigned machines
-                clientDataStore = machines.FirstOrDefault(m =>
-                    availableMachineIds.Contains(m.ClientId) && m.Status == MachineStatusEnum.Online);
-
-                // If no machine found in assigned list, search for any available online machine
-                if (clientDataStore == null)
+                // Exclude machines already holding a live pending job.
+                var pendingMachineIds = new HashSet<Guid>();
+                foreach (var machine in onlineMachines)
                 {
-                    clientDataStore = machines.FirstOrDefault(m => m.Status == MachineStatusEnum.Online);
+                    if (await HasLivePendingJobAsync(machine))
+                        pendingMachineIds.Add(machine.ClientId);
                 }
+
+                clientDataStore = JobsAssignmentHelpers.SelectDeterministicTargetMachine(mappedMachineIds, onlineMachines, pendingMachineIds);
 
                 // If no valid machine is found, return an error message
                 if (clientDataStore == null)
@@ -375,6 +387,14 @@ public class OrchestratorHub : Hub
                 {
                     _logger.LogWarning("Machine {MachineName} not found in client status store.", machineName);
                     await Clients.Caller.SendAsync("error", "Machine not found.");
+                    return;
+                }
+
+                // The named machine must be mapped to this agent.
+                if (!mappedMachineIds.Contains(clientDataStore.ClientId))
+                {
+                    _logger.LogWarning("Machine {MachineName} is not mapped to agent {AgentId}.", machineName, agentId);
+                    await Clients.Caller.SendAsync("error", "Machine is not assigned to this agent.");
                     return;
                 }
             }

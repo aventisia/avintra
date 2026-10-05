@@ -66,57 +66,54 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            // Determine the machine for job execution. A machine name is already set (job was assigned
-            // to a specific machine) unless the job originated from a non-machine source ("Desktop App",
-            // "Agent Builder", "Web Server"), in which case we pick an online machine.
-            var machineNeedsSelection = string.IsNullOrEmpty(job.ExecutedOn)
-                || (!job.ExecutedOn.StartsWith("Desktop App") && !job.ExecutedOn.StartsWith("Agent Builder"));
+            // Non-machine origins (unpublished Desktop App / Agent Builder runs) never dispatch to a
+            // runner machine; TriggerExecutionAsync skips/handles them further below.
+            var isNonMachineOrigin = !string.IsNullOrEmpty(job.ExecutedOn)
+                && (job.ExecutedOn.StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase)
+                    || job.ExecutedOn.StartsWith("Agent Builder", StringComparison.OrdinalIgnoreCase));
 
-            if (machineNeedsSelection)
+            // Bind an unassigned job (trigger/webhook/Cloud) to a deterministic machine. A job that is
+            // already bound to a machine keeps that machine and is never reassigned.
+            if (!isNonMachineOrigin && (job.MachineId == null || job.MachineId == Guid.Empty))
             {
-                _logger.LogInformation("Machine name is null for Job ID: {JobId}, attempting to find an online machine.", job.Id);
-
-                // Fetch machine statuses for the tenant.
-                // Only pick a machine that is online and has no pending (dispatched-but-not-started) job.
                 var machineList = (await _clientStatusStore.GetMachineStatusesAsync(job.TenantId)).ToList();
-                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: tenant {TenantId} has {Count} machine(s) in store.", job.TenantId, machineList.Count);
-                foreach (var m in machineList)
+
+                // Machine ids mapped to this flow version.
+                var mappedMachineIds = await _unitOfWork.Machine_FlowVersionRepo
+                    .GetByConditionAsync(w => w.FlowVersionId == job.FlowVersionId && w.TenantId == job.TenantId)
+                    .Select(s => s.MachineId)
+                    .ToListAsync();
+
+                // Machines already holding a live pending (dispatched-but-not-started) job.
+                var pendingMachineIds = new HashSet<Guid>();
+                foreach (var machine in machineList)
                 {
-                    _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync:   machine name={ClientName}, type={Type}, status={Status}, jobId={JobId}, connectionId={ConnectionId}", m.ClientName ?? m.ClientId.ToString(), m.Type, m.Status, m.JobId, m.ConnectionId);
+                    if (machine.JobId.HasValue && machine.JobId.Value != Guid.Empty && await HasLivePendingJobAsync(machine))
+                        pendingMachineIds.Add(machine.ClientId);
                 }
 
-                // Pick the first machine that is online AND has no live pending job. A machine carrying a
-                // stale pending marker (its job no longer exists, is terminal, or was reassigned) is
-                // self-healed here so it is not blocked forever.
-                ClientDataStore? clientDataStoreDto = null;
-                foreach (var m in machineList)
+                var targetMachine = JobsAssignmentHelpers.SelectDeterministicTargetMachine(mappedMachineIds, machineList, pendingMachineIds);
+
+                if (targetMachine == null)
                 {
-                    if (m.Status != MachineStatusEnum.Online && m.Status != MachineStatusEnum.Idle)
-                        continue;
-
-                    if (await HasLivePendingJobAsync(m))
-                        continue;
-
-                    clientDataStoreDto = m;
-                    break;
-                }
-
-                if (clientDataStoreDto == null)
-                {
-                    _logger.LogWarning("No online machine found for TenantId: {TenantId}.", job.TenantId);
-                    _logger.LogWarning("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: no eligible machine (Online + no live pending job) found for job {JobId}, tenant {TenantId}. Dispatch aborted.", job.Id, job.TenantId);
+                    _logger.LogWarning("No available machine mapped to flow version {FlowVersionId} for job {JobId}, tenant {TenantId}. Job stays unassigned.", job.FlowVersionId, job.Id, job.TenantId);
                     return;
                 }
 
-                // The job now executes on the chosen machine. Keep the internal Guid FK (MachineId) for
-                // DB dispatch, and persist the machine NAME in ExecutedOn for identification across the hub.
-                job.MachineId = clientDataStoreDto.ClientId;
-                job.ExecutedOn = clientDataStoreDto.ClientName ?? clientDataStoreDto.ClientId.ToString();
-                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: picked machine {MachineName} for job {JobId} (connectionId={ConnectionId}).", job.ExecutedOn, job.Id, clientDataStoreDto.ConnectionId);
+                // Keep the internal Guid FK (MachineId) for DB dispatch and the machine NAME in
+                // ExecutedOn for identification across the hub.
+                job.MachineId = targetMachine.ClientId;
+                job.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
+                _logger.LogInformation("Job {JobId} assigned to machine {MachineName}.", job.Id, job.ExecutedOn);
             }
-            else
+            else if (!isNonMachineOrigin)
             {
-                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: job {JobId} already has machine name {MachineName} assigned.", job.Id, job.ExecutedOn);
+                // Bound job: refresh the display name from the live store when the machine is connected.
+                var boundMachine = await _clientStatusStore.GetClientByIdAsync(job.MachineId!.Value);
+                if (boundMachine?.ClientName is string boundMachineName && !string.IsNullOrWhiteSpace(boundMachineName))
+                    job.ExecutedOn = boundMachineName;
+                else
+                    _logger.LogInformation("Job {JobId} is bound to machine {MachineId}.", job.Id, job.MachineId);
             }
 
             // Create an ExecutionCommandDto to trigger the job execution
@@ -283,7 +280,8 @@ public class JobsExecutorService : IJobsExecutorService
             // A machine can pull the next pending job only when it is free (no job dispatched/in-flight).
             var isMachineFree = !clientDataStore.JobId.HasValue || clientDataStore.JobId.Value == Guid.Empty;
 
-            // Search for an active job associated with the machine if it's idle/online and not busy.
+            // Hand the machine the next job that is already bound to it, if it is idle/online and free.
+            // Unassigned jobs are never pulled here — they are bound by the dispatch resolver instead.
             // A machine with a pending job falls through to the busy broadcast below.
             if ((clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle) && isMachineFree)
             {
@@ -293,12 +291,13 @@ public class JobsExecutorService : IJobsExecutorService
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
 
+                // Only a job already bound to this machine may be handed to it.
                 var job = await _unitOfWork.JobRepo
                     .GetByConditionAsync(w =>
                         w.TenantId == executionCommandDto.TenantId &&
                         w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
-                        (w.MachineId == null || w.MachineId == machineClientId)
+                        w.MachineId == machineClientId
                     )
                     .OrderByDescending(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
@@ -306,8 +305,8 @@ public class JobsExecutorService : IJobsExecutorService
                 // If a job is found, assign it to the machine and update status
                 if (job != null)
                 {
-                    // Assign job to this machine. Keep the internal Guid FK (MachineId) for DB dispatch,
-                    // and persist the machine NAME in ExecutedOn for identification across the hub.
+                    // Keep the internal Guid FK (MachineId) for DB dispatch, and persist the machine
+                    // NAME in ExecutedOn for identification across the hub.
                     job.MachineId = machineClientId;
                     job.ExecutedOn = machineName;
                     _unitOfWork.JobRepo.Update(job);
@@ -424,38 +423,43 @@ public class JobsExecutorService : IJobsExecutorService
                 // Process each job within this tenant group
                 foreach (var job in tenantGroup)
                 {
-                    // If the job doesn't have a valid MachineId, we need to find one
-                    if (job.MachineId == null || job.MachineId == Guid.Empty)
+                    // Jobs already bound to a machine keep that machine.
+                    if (job.MachineId != null && job.MachineId != Guid.Empty)
+                        continue;
+
+                    // Ensure machineFlows exists and is not empty
+                    var machineFlows = job.FlowVersion?.FlowVersionMachines?.Where(w => w != null).ToList();
+                    if (machineFlows == null || !machineFlows.Any())
                     {
-                        // Ensure machineFlows exists and is not empty
-                        var machineFlows = job.FlowVersion?.FlowVersionMachines?.Where(w => w != null).ToList();
-                        if (machineFlows == null || !machineFlows.Any())
-                        {
-                            _logger.LogWarning("No valid machine flows found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
-                            continue;  // Skip this job and move to the next one
-                        }
+                        _logger.LogWarning("No valid machine flows found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
+                        continue;  // Skip this job and move to the next one
+                    }
 
-                        // Find the first machine from machineList that is online or idle and is in the machineFlows
-                        var onlineMachine = machineList
-                            .Where(w =>
-                                machineFlows.Any(flow => flow.MachineId == w.ClientId) &&
-                                (
-                                    w.Status == MachineStatusEnum.Online ||
-                                    w.Status == MachineStatusEnum.Idle)
-                                )
-                            .FirstOrDefault();
+                    var mappedMachineIds = machineFlows.Select(f => f.MachineId);
 
-                        // If an online machine is found, assign it to the job and add to update list
-                        if (onlineMachine != null && !jobsNeedToUpdate.Any(j => j.MachineId == onlineMachine.ClientId))
-                        {
-                            job.MachineId = onlineMachine.ClientId;
-                            job.ExecutedOn = onlineMachine.ClientName ?? onlineMachine.ClientId.ToString();
-                            jobsNeedToUpdate.Add(job);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("No available online machine found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
-                        }
+                    // Exclude machines already holding a live pending job and machines chosen earlier in
+                    // this batch (a single machine must not be handed two jobs at once).
+                    var unavailableMachineIds = new HashSet<Guid>();
+                    foreach (var machine in machineList)
+                    {
+                        if (machine.JobId.HasValue && machine.JobId.Value != Guid.Empty && await HasLivePendingJobAsync(machine))
+                            unavailableMachineIds.Add(machine.ClientId);
+                    }
+                    foreach (var pendingJob in jobsNeedToUpdate.Where(j => j.MachineId.HasValue))
+                        unavailableMachineIds.Add(pendingJob.MachineId!.Value);
+
+                    // Deterministically pick the lowest-id available machine mapped to the flow version.
+                    var targetMachine = JobsAssignmentHelpers.SelectDeterministicTargetMachine(mappedMachineIds, machineList, unavailableMachineIds);
+
+                    if (targetMachine != null)
+                    {
+                        job.MachineId = targetMachine.ClientId;
+                        job.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
+                        jobsNeedToUpdate.Add(job);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("No available machine found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
                     }
                 }
             }
