@@ -1,9 +1,7 @@
-import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
+import { UpgradeFeatureButton } from "@avplatform/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 
-import { UpgradeSpaceDialog } from "./UpgradeSpaceDialog";
+const UPGRADE_PRICING_URL = `${import.meta.env.VITE_MARKETING_URL}/pricing`;
 
 /**
  * Spaces toolbar button for community deployments.
@@ -13,20 +11,17 @@ import { UpgradeSpaceDialog } from "./UpgradeSpaceDialog";
  * create-space dialog.
  */
 export const UpgradeSpaceButton = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   return (
-    <>
-      <Button
-        size={"xs"}
-        className={cn("gap-2 text-sm tracking-wide")}
-        onClick={() => setIsDialogOpen(true)}
-      >
-        <PlusIcon className="h-4 w-4" />
-        Create Space
-      </Button>
-
-      <UpgradeSpaceDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
-    </>
+    <UpgradeFeatureButton
+      label="Create Space"
+      icon={<PlusIcon className="h-4 w-4" />}
+      featureName="additional spaces"
+      benefit="Create separate spaces to organize teams, users, and resources."
+      pricingUrl={UPGRADE_PRICING_URL}
+      size="xs"
+      variant="default"
+      className="gap-2 text-sm tracking-wide"
+      openOnMount
+    />
   );
 };
