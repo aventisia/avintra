@@ -6,7 +6,7 @@ type State = {
   isAlertDialogOpen: boolean;
 
   /** Function to execute when the user confirms the action */
-  confirmActionFn: () => void;
+  confirmActionFn: () => void | Promise<unknown>;
 
   /** Whether the action is destructive */
   isDestructive?: boolean;
@@ -25,6 +25,9 @@ type State = {
 
   /** Text for the confirm button */
   confirmBtnText?: string;
+
+  /** Whether to show loading feedback for async confirmation actions */
+  showLoadingOnConfirm?: boolean;
 };
 
 type Actions = {
@@ -43,11 +46,13 @@ export const useAlertDialogStore = create<State & Actions>((set) => ({
   description: "This action cannot be undone. Are you sure you want to continue?",
   cancelBtnText: "Cancel",
   confirmBtnText: "Yes, continue",
+  showLoadingOnConfirm: false,
 
   setAlertDialogState: (alertOptions) =>
     set((state) => ({
       ...state,
       ...alertOptions,
+      showLoadingOnConfirm: alertOptions.showLoadingOnConfirm ?? false,
       // Always reset custom content unless the caller explicitly provides it.
       // Otherwise a previous alert's ReactNode (e.g. the created API key) leaks into the next alert.
       content: alertOptions.content,

@@ -55,6 +55,12 @@ type State = {
   /** Flag to indicate if flow is loading */
   isFlowLoading: boolean;
 
+  /** Flag to indicate a new flow version is being created and loaded */
+  isVersionTransitioning: boolean;
+
+  /** Version ID being loaded for a version transition */
+  versionTransitionId: string | null;
+
   /** Flag to indicate if flow is saving in the background */
   isFlowSaving: boolean;
 
@@ -72,6 +78,9 @@ type Actions = {
 
   /** Sets the loading state of the flow */
   setIsFlowLoading: (isLoading: boolean) => void;
+
+  /** Starts, targets, or finishes a version transition */
+  setVersionTransition: (versionId: string | null | undefined) => void;
 
   /** Sets the saving state of the flow */
   setIsFlowSaving: (isSaving: boolean) => void;
@@ -108,6 +117,8 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
   isChatAgent: false,
 
   isFlowLoading: false,
+  isVersionTransitioning: false,
+  versionTransitionId: null,
   isFlowSaving: false,
   executionState: "stopped",
   conditionalExecutionGroup: [],
@@ -120,6 +131,12 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     }),
 
   setIsFlowLoading: (isLoading) => set({ isFlowLoading: isLoading }),
+
+  setVersionTransition: (versionId) =>
+    set({
+      isVersionTransitioning: versionId !== null,
+      versionTransitionId: versionId ?? null,
+    }),
 
   setIsFlowSaving: (isSaving) => set({ isFlowSaving: isSaving }),
 

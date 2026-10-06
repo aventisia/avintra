@@ -48,7 +48,7 @@ export const useOpenFlow = () => {
     // Switching flow/version keeps the same `/agent` path, so the route blocker
     // never sees it and the canvas reload would silently drop a dirty config
     // form. Flush the edits before replacing the canvas (aborts when invalid).
-    void guardDirtyNodeConfig(() => openFlow(rowId, versionId), { closeWhenClean: true });
+    return guardDirtyNodeConfig(() => openFlow(rowId, versionId), { closeWhenClean: true });
   };
 
   // Return the handle open flow action function

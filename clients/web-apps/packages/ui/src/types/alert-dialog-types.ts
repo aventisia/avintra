@@ -28,7 +28,7 @@
  */
 type AlertDialogDefaultOptions = {
   /** Function to be executed when the confirm action is triggered */
-  confirmActionFn: () => void;
+  confirmActionFn: () => void | Promise<unknown>;
 
   /** Type of alert dialog */
   alertType: "delete" | "delete-record" | "delete-multiple" | "disable-multiple" | "unsaved";
@@ -38,6 +38,9 @@ type AlertDialogDefaultOptions = {
    * Not applicable for `delete` and `unsaved` alert types.
    */
   additionalText?: string;
+
+  /** Keep the dialog open and show a loading spinner while an async confirmation runs. */
+  showLoadingOnConfirm?: boolean;
 };
 
 /**
@@ -53,7 +56,7 @@ type AlertDialogDefaultOptions = {
  */
 type AlertDialogCustomOptions = {
   /** Function to be executed when the confirm button is clicked */
-  confirmActionFn: () => void;
+  confirmActionFn: () => void | Promise<unknown>;
 
   /** Indicates whether the action is destructive. Default is `true`. */
   isDestructive?: boolean;
@@ -72,6 +75,9 @@ type AlertDialogCustomOptions = {
 
   /** Custom text for the confirm button. Defaults is `Yes, continue`. */
   confirmBtnText?: string;
+
+  /** Keep the dialog open and show a loading spinner while an async confirmation runs. */
+  showLoadingOnConfirm?: boolean;
 };
 
 export type { AlertDialogDefaultOptions, AlertDialogCustomOptions };

@@ -85,9 +85,10 @@ export const ReactFlowExt = () => {
   );
 
   // Get global store state and actions
-  const { currentFlow } = useCurrentFlowStore(
+  const { currentFlow, isVersionTransitioning } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
+      isVersionTransitioning: state.isVersionTransitioning,
     })),
   );
 
@@ -373,7 +374,7 @@ export const ReactFlowExt = () => {
               fixed panels so it shares their stacking context. */}
           <DCPDialog />
           <FlowActionLockBanner />
-          {isLoading && (
+          {(isLoading || isVersionTransitioning) && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
               <LoadingSpinner className="h-6 w-6 text-primary" />
             </div>
