@@ -8,9 +8,14 @@ export type {
   StreamingChatRequestDto,
 } from "./apis/streaming-chat-apis";
 
+export { ChatToolCall } from "./components/chat-tool-call";
+export type { ChatToolCallProps } from "./components/chat-tool-call";
 export { ToolApprovalBulkBar } from "./components/tool-approval-bulk-bar";
 export { ToolApprovalRequest } from "./components/tool-approval";
+export { ThinkingIndicator } from "./components/thinking-indicator";
+export type { ThinkingIndicatorProps } from "./components/thinking-indicator";
 
+export { humanizeToolLabel } from "./lib/tool-labels";
 export { getPendingApprovalParts, isPendingApprovalPart } from "./lib/approval-parts";
 export type { ApprovalPartMeta, ApprovalToolCallPart } from "./lib/approval-parts";
 

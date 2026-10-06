@@ -5,14 +5,20 @@ import {
   BranchPickerPrimitive,
   ComposerPrimitive,
   ErrorPrimitive,
+  type GroupByContext,
   MessagePrimitive,
+  type PartState,
   SuggestionPrimitive,
   ThreadPrimitive,
+  groupPartByType,
   useAuiState,
 } from "@assistant-ui/react";
 import {
+  ChatToolCall,
+  ThinkingIndicator,
   ToolApprovalBulkBar,
   ToolApprovalRequest,
+  humanizeToolLabel,
   useHasPendingToolCalls,
   useToolCallCoordinatorStore,
 } from "@avplatform/assistant-chat";
@@ -32,13 +38,13 @@ import {
   MoreHorizontalIcon,
   PencilIcon,
   RefreshCwIcon,
+  SparklesIcon,
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import ToolsCall from "../../tool-widget/components/ToolsCall";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
@@ -277,38 +283,72 @@ const MessageError: FC = () => {
   );
 };
 
-/**
- * Collapsible block that shows the assistant's chain-of-thought — the ordered
- * sequence of every step the model took ("Selecting tools and skills",
- * "Thinking", "Running tool: X") plus any reasoning/thinking text the model
- * emitted. It persists after the final response is surfaced.
- */
-const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
-  const [open, setOpen] = useState(false);
-  // Animate while the assistant is actively generating. Use both the message
-  // status and the thread-level running flag so the animation reliably appears
-  // for all streaming paths.
-  const isRunning = useAuiState((s) => s.thread.isRunning);
+// Consecutive reasoning and tool-call parts collapse into one chain-of-thought
+// group; selected skills (native data parts) join the same group. Approval
+// gates are kept out of that group so they are always visible when paused.
+const baseGroupBy = groupPartByType({
+  reasoning: ["group-thought", "group-reasoning"],
+  "tool-call": ["group-thought", "group-tool"],
+});
 
-  // Auto-expand while the assistant is processing so the animated action
-  // steps are visible; keep the user's manual toggle otherwise.
+const groupMessageParts = (
+  part: PartState,
+  context?: GroupByContext,
+): readonly `group-${string}`[] => {
+  if (part.type === "tool-call" && part.approval) {
+    return ["group-approval"];
+  }
+  if (part.type === "data" && (part as { name?: string }).name === "skill") {
+    return ["group-thought", "group-skill"];
+  }
+  return baseGroupBy(part, context);
+};
+
+/**
+ * Collapsible container for a turn's chain-of-thought (reasoning, selected
+ * skills, and tool calls). Auto-expands while that message is running and
+ * collapses to a compact header once it completes.
+ */
+const ChainOfThought: FC<{
+  status: { type: string };
+  indices: readonly number[];
+  counts: { running: number; incomplete: number; requiresAction: number };
+  children: React.ReactNode;
+}> = ({ status, indices, counts, children }) => {
+  const [open, setOpen] = useState(false);
+  const parts = useAuiState((s) => s.message.parts);
+  const isRunning = status.type === "running" || counts.running > 0;
   const isOpen = isRunning || open;
 
-  // Split the chain-of-thought into individual action steps (each prefixed
-  // with a bullet by the adapter). While running, the last step is the one
-  // currently being executed and gets the animated spinner.
-  const steps = text
-    .split("\n")
-    .map((line) => line.replace(/^\u2022\s*/, "").trim())
-    .filter(Boolean);
+  const groupParts = indices
+    .map((index) => parts[index])
+    .filter((part): part is PartState => Boolean(part));
+  const toolCount = groupParts.filter((part) => part.type === "tool-call").length;
+  const hasReasoning = groupParts.some((part) => part.type === "reasoning");
+  const hasIncomplete = counts.incomplete > 0;
+  const lastPart = groupParts[groupParts.length - 1];
 
-  const activeStep = isRunning ? steps.length - 1 : -1;
+  // While running, name the current step (tool or skill) like a live status;
+  // once complete, summarize the turn.
+  const runningLabel =
+    lastPart?.type === "tool-call"
+      ? humanizeToolLabel(lastPart.toolName)
+      : lastPart?.type === "data" && lastPart.name === "skill"
+        ? `Using skill ${(lastPart.data as { name?: string } | undefined)?.name ?? ""}`.trim()
+        : "Thinking";
+
+  const completeLabel =
+    toolCount > 0
+      ? `Used ${toolCount} tool${toolCount > 1 ? "s" : ""}`
+      : hasReasoning
+        ? "Thought process"
+        : "Details";
 
   return (
-    <div className="aui-assistant-reasoning-block my-2 w-full overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+    <div className="aui-assistant-chain-of-thought my-2 w-full overflow-hidden rounded-lg border border-border/60 bg-muted/30">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen((value) => !value)}
         className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/50"
         aria-expanded={isOpen}
       >
@@ -320,60 +360,56 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
         {isRunning ? (
           <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-primary" />
         ) : (
-          <CheckIcon className="size-3.5 shrink-0 text-muted-foreground/70" />
+          <CheckIcon
+            className={cn(
+              "size-3.5 shrink-0",
+              hasIncomplete ? "text-destructive" : "text-muted-foreground/70",
+            )}
+          />
         )}
         <span className={cn("font-medium", isRunning && "animate-pulse")}>
-          {isRunning ? "Processing" : "Thinking"}
+          {isRunning ? runningLabel : completeLabel}
         </span>
-        {steps.length > 0 && (
-          <span className="truncate opacity-70">
-            · {steps[activeStep >= 0 ? activeStep : steps.length - 1]}
-          </span>
-        )}
       </button>
       {isOpen && (
-        <div className="aui-assistant-reasoning-content border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-          {steps.length > 0 ? (
-            <ul className="space-y-1">
-              {steps.map((step, i) => (
-                <li key={i} className="flex items-start gap-1.5">
-                  {i === activeStep ? (
-                    <LoaderCircleIcon className="mt-0.5 size-3 shrink-0 animate-spin text-primary" />
-                  ) : (
-                    <CheckIcon className="mt-0.5 size-3 shrink-0 text-muted-foreground/60" />
-                  )}
-                  <span
-                    className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}
-                  >
-                    {step}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <span className="whitespace-pre-wrap">{text || "Thinking…"}</span>
-          )}
+        <div className="aui-assistant-chain-of-thought-content space-y-1 border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          {children}
         </div>
       )}
     </div>
   );
 };
 
+/** Genuine model reasoning/thinking text inside a chain-of-thought group. */
+const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
+  if (!text.trim()) return null;
+  return (
+    <div className="aui-assistant-reasoning-block whitespace-pre-wrap text-muted-foreground italic">
+      {text}
+    </div>
+  );
+};
+
+/** A skill the planner selected for this turn. */
+const SkillChip: FC<{ name?: string }> = ({ name }) => {
+  if (!name) return null;
+  return (
+    <div className="aui-assistant-skill-chip my-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-muted-foreground text-xs">
+      <SparklesIcon className="size-3" />
+      <span>Using skill: {name}</span>
+    </div>
+  );
+};
+
+/** Native per-message loading affordance shown while the assistant works. */
+const MessageThinking: FC = () => {
+  const startedAt = useAuiState((s) => s.message.createdAt);
+  return <ThinkingIndicator startedAt={startedAt} className="mt-1 px-2" />;
+};
+
 const AssistantMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
-  const showPendingIndicator = useAuiState((s) => {
-    if (s.message.status?.type !== "running") return false;
-    return !s.message.content.some((part) => {
-      if (part.type === "text" || part.type === "reasoning") {
-        return part.text.trim().length > 0;
-      }
-      if (part.type === "tool-call") {
-        return true;
-      }
-      return false;
-    });
-  });
 
   return (
     <MessagePrimitive.Root
@@ -381,52 +417,56 @@ const AssistantMessage: FC = () => {
       data-role="assistant"
     >
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
-        <MessagePrimitive.Parts>
-          {({ part }) => {
-            if (part.type === "tool-call") {
-              // Server-side approval gates get a dedicated confirmation card;
-              // the flow-builder ToolsCall widget must not execute chat actions.
-              if (part.approval) {
+        <MessagePrimitive.GroupedParts groupBy={groupMessageParts} indicator="no-text">
+          {({ part, children }) => {
+            switch (part.type) {
+              case "group-thought":
                 return (
-                  <div className="my-2 w-full">
-                    <ToolApprovalRequest {...part} disabled={isDisabled} />
+                  <ChainOfThought status={part.status} indices={part.indices} counts={part.counts}>
+                    {children}
+                  </ChainOfThought>
+                );
+              case "group-approval":
+              case "group-reasoning":
+              case "group-tool":
+              case "group-skill":
+                return <>{children}</>;
+              case "reasoning":
+                return <ReasoningBlock text={part.text} />;
+              case "tool-call": {
+                // Server-side approval gates get a dedicated confirmation card;
+                // chat-agent tools run server-side, so they render display-only.
+                if (part.approval) {
+                  return (
+                    <div className="my-2 w-full">
+                      <ToolApprovalRequest {...part} disabled={isDisabled} />
+                    </div>
+                  );
+                }
+                return (
+                  <div className="my-1 w-full">
+                    {/* Fallback pattern for dynamically rendered tool UIs */}
+                    {part.toolUI ?? <ChatToolCall {...part} />}
                   </div>
                 );
               }
-              return (
-                <div className="my-2 w-full">
-                  {/* Fallback pattern for dynamically rendered tool UIs */}
-                  {part.toolUI ?? <ToolsCall {...part} />}
-                </div>
-              );
-            }
-
-            if (part.type === "reasoning") {
-              return <ReasoningBlock text={part.text ?? ""} />;
-            }
-
-            if (part.type === "text") {
-              if (!part.text || part.text.trim() === "") {
+              case "data":
+                return part.name === "skill" ? (
+                  <SkillChip name={(part.data as { name?: string } | undefined)?.name} />
+                ) : null;
+              case "text":
+                if (!part.text || part.text.trim() === "") return null;
+                // Render Markdown if there is text.
+                return <MarkdownText />;
+              case "indicator":
+                return <MessageThinking />;
+              default:
                 return null;
-              }
-              // Render Markdown if there is text.
-              return <MarkdownText />;
             }
-
-            return null;
           }}
-        </MessagePrimitive.Parts>
+        </MessagePrimitive.GroupedParts>
 
         <ToolApprovalBulkBar disabled={isDisabled} />
-        {showPendingIndicator && (
-          <div
-            className="aui-assistant-pending-indicator mt-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-muted-foreground text-xs"
-            aria-label="Waiting for response"
-          >
-            <RefreshCwIcon className="size-3 animate-spin" />
-            <span>Thinking...</span>
-          </div>
-        )}
         <MessageError />
       </div>
 
