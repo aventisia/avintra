@@ -15,8 +15,6 @@ export const UpgradeSpaceButton = () => {
     <UpgradeFeatureButton
       label="Create Space"
       icon={<PlusIcon className="h-4 w-4" />}
-      featureName="additional spaces"
-      benefit="Create separate spaces to organize teams, users, and resources."
       pricingUrl={UPGRADE_PRICING_URL}
       size="xs"
       variant="default"
