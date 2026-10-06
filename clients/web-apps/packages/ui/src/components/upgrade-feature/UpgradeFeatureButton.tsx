@@ -19,8 +19,10 @@ import { cn } from "../../lib";
 type UpgradeFeatureButtonProps = {
   label: string;
   icon: ReactNode;
-  featureName: string;
-  benefit: string;
+  /** Full title shown in the upgrade dialog. */
+  title?: string;
+  /** Full description shown in the upgrade dialog. */
+  description?: string;
   pricingUrl: string;
   size?: ButtonProps["size"];
   variant?: ButtonProps["variant"];
@@ -32,8 +34,8 @@ type UpgradeFeatureButtonProps = {
 export const UpgradeFeatureButton = ({
   label,
   icon,
-  featureName,
-  benefit,
+  title = "Upgrade to unlock",
+  description = "Upgrade now to access this feature and unlock more capabilities.",
   pricingUrl,
   size = "sm",
   variant = "outline",
@@ -101,10 +103,8 @@ export const UpgradeFeatureButton = ({
             <X aria-hidden="true" className="h-4 w-4" />
           </Button>
           <AlertDialogHeader className="pr-7">
-            <AlertDialogTitle className="break-words">
-              Upgrade to unlock {featureName}
-            </AlertDialogTitle>
-            <AlertDialogDescription>{benefit}</AlertDialogDescription>
+            <AlertDialogTitle className="break-words">{title}</AlertDialogTitle>
+            <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
 
           {showPricingFallback && (
