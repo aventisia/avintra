@@ -424,6 +424,9 @@ class ChatService:
         # Track tool name/args per tool_call_id so the UI can render the tool
         # widget (with human-in-loop approval) before execution.
         tool_call_meta: dict[str, dict] = {}
+        # Ids whose completion frame has already been emitted (on_tool_end for
+        # ToolNode tools; the tools node output below for connector tools).
+        completed_tool_call_ids: set[str] = set()
         # When a chat agent is configured to emit JSON (e.g. from a custom
         # prompt/template), the streamed deltas are raw JSON tokens. We buffer
         # them and suppress the raw token frames, then parse the JSON at the end.
@@ -439,48 +442,6 @@ class ChatService:
             data = event.get("data", {})
             event_metadata = event.get("metadata", {})
             node_name = event_metadata.get("langgraph_node")
-
-            # Node about to run: surface a human-readable status frame so the
-            # UI can show which step the agent is currently taking.
-            if event_type == "on_chain_start":
-                status = self._status_for_node(node_name)
-                if status:
-                    yield LLMChunkResponse(
-                        provider=request.provider,
-                        model=request.model,
-                        output=status,
-                        type="status",
-                        conversation_id=conversation_id,
-                    )
-
-                # When the "tools" node runs, surface the specific tool names the
-                # model is about to call. Connector-backed tools execute directly
-                # inside the node (bypassing LangGraph's ToolNode), so the
-                # on_tool_start event never fires for them — surface them here
-                # from the pending AIMessage tool_calls in the graph state.
-                if node_name == "tools":
-                    try:
-                        state_data = data.get("input") or {}
-                        messages = state_data.get("messages") or []
-                        last = messages[-1] if messages else None
-                        tool_calls = getattr(last, "tool_calls", None) or []
-                        for tc in tool_calls:
-                            tool_call_name = (
-                                tc.get("name")
-                                if isinstance(tc, dict)
-                                else getattr(tc, "name", None)
-                            )
-                            if tool_call_name:
-                                yield LLMChunkResponse(
-                                    provider=request.provider,
-                                    model=request.model,
-                                    output=f"Running tool: {tool_call_name}",
-                                    type="status",
-                                    conversation_id=conversation_id,
-                                )
-                    except Exception:
-                        pass
-                continue
 
             # Token-level deltas from the chat model.
             if event_type == "on_chat_model_stream":
@@ -512,31 +473,53 @@ class ChatService:
                             )
                 continue
 
-            # Tool invocation started: capture name + args for the UI.
-            if event_type == "on_tool_start":
-                tool_name = event.get("name") or ""
-                tool_input = data.get("input") or {}
-                tool_call_id = (
-                    tool_input.get("tool_call_id")
-                    if isinstance(tool_input, dict)
-                    else None
-                )
-                if tool_call_id:
+            # Tools node starting: surface every pending call as a preliminary
+            # tool-call frame so the UI can render it as running. The AIMessage's
+            # tool_calls are the only reliable source of the ids/names/args:
+            # LangGraph invokes tools with their args (no id on on_tool_start),
+            # and connector-backed tools bypass the tool runnable entirely, so
+            # neither on_tool_start nor on_tool_end can carry them.
+            if event_type == "on_chain_start" and node_name == "tools":
+                state_input = data.get("input") or {}
+                input_messages = state_input.get("messages") or []
+                last_message = input_messages[-1] if input_messages else None
+                for tool_call in getattr(last_message, "tool_calls", None) or []:
+                    tool_call_id = (
+                        tool_call.get("id")
+                        if isinstance(tool_call, dict)
+                        else getattr(tool_call, "id", None)
+                    )
+                    if not tool_call_id:
+                        continue
+                    tool_name = (
+                        tool_call.get("name", "")
+                        if isinstance(tool_call, dict)
+                        else getattr(tool_call, "name", "")
+                    )
+                    tool_args = (
+                        tool_call.get("args", {})
+                        if isinstance(tool_call, dict)
+                        else getattr(tool_call, "args", {})
+                    )
                     tool_call_meta[tool_call_id] = {
                         "name": tool_name,
-                        "args": tool_input.get("args", {}),
+                        "args": tool_args,
                     }
-                    # Surface the running tool as a status frame.
                     yield LLMChunkResponse(
                         provider=request.provider,
                         model=request.model,
-                        output=f"Running tool: {tool_name}" if tool_name else "Running tool",
-                        type="status",
+                        output={
+                            "tool_call_id": tool_call_id,
+                            "name": tool_name,
+                            "args": tool_args,
+                        },
+                        type="tool_call",
                         conversation_id=conversation_id,
                     )
                 continue
 
-            # Completed tool call (result available).
+            # Completed tool call (result available). Connector-backed tools are
+            # completed from the tools node output below instead.
             if event_type == "on_tool_end":
                 output = data.get("output")
                 if isinstance(output, ToolMessage):
@@ -545,15 +528,18 @@ class ChatService:
                         fallback=graph_response,
                     )
                     tool_call_id = getattr(output, "tool_call_id", None)
+                    if tool_call_id:
+                        completed_tool_call_ids.add(tool_call_id)
                     meta = tool_call_meta.get(tool_call_id, {})
                     yield LLMChunkResponse(
                         provider=request.provider,
                         model=request.model,
                         output={
                             "tool_call_id": tool_call_id,
-                            "name": meta.get("name", ""),
+                            "name": event.get("name") or meta.get("name", ""),
                             "args": meta.get("args", {}),
                             "content": getattr(output, "content", ""),
+                            "status": getattr(output, "status", "success"),
                         },
                         type="tool_call",
                         conversation_id=conversation_id,
@@ -579,6 +565,38 @@ class ChatService:
                         output_messages,
                         fallback=graph_response,
                     )
+                    # Connector-backed tools bypass the tool runnable, so their
+                    # results only appear in this node output. Emit a completion
+                    # frame for every ToolMessage not already completed above.
+                    if node_name == "tools":
+                        for message in output_messages:
+                            if not isinstance(message, ToolMessage):
+                                continue
+                            tool_call_id = getattr(message, "tool_call_id", None)
+                            if (
+                                not tool_call_id
+                                or tool_call_id in completed_tool_call_ids
+                            ):
+                                continue
+                            completed_tool_call_ids.add(tool_call_id)
+                            meta = tool_call_meta.get(tool_call_id, {})
+                            yield LLMChunkResponse(
+                                provider=request.provider,
+                                model=request.model,
+                                output={
+                                    "tool_call_id": tool_call_id,
+                                    "name": meta.get("name", "")
+                                    or getattr(message, "name", "")
+                                    or "",
+                                    "args": meta.get("args", {}),
+                                    "content": getattr(message, "content", ""),
+                                    "status": getattr(
+                                        message, "status", "success"
+                                    ),
+                                },
+                                type="tool_call",
+                                conversation_id=conversation_id,
+                            )
                     # Surface the skills the planner actually selected for this
                     # request. Unlike mere configuration, a selection means the
                     # skill instructions were injected into the model prompt.
@@ -596,14 +614,10 @@ class ChatService:
                                 yield LLMChunkResponse(
                                     provider=request.provider,
                                     model=request.model,
-                                    output=f"Using skill: {skill_name}",
-                                    type="status",
+                                    output={"name": skill_name},
+                                    type="skill",
                                     conversation_id=conversation_id,
                                 )
-                    # NOTE: only genuine runtime actions are surfaced in the
-                    # reasoning chain: tool calls ("Running tool: X") and
-                    # planner-selected skills ("Using skill: X"). A simple "Hi"
-                    # claims neither.
                     if (
                         not request.is_temp_chat
                         and db_session is not None
@@ -830,21 +844,6 @@ class ChatService:
             return ""
         except Exception:
             return ""
-
-    @staticmethod
-    def _status_for_node(node_name: str) -> str | None:
-        """Map a LangGraph node name to a human-readable status label.
-
-        Returns ``None`` for nodes that should not surface a status frame.
-        """
-        if not node_name:
-            return None
-        return {
-            "seed_request": "Preparing request",
-            "agent_selector": "Selecting tools and skills",
-            "model": "Thinking",
-            "tools": "Executing tools",
-        }.get(node_name)
 
     async def _load_custom_tools(
         self,
@@ -1178,14 +1177,10 @@ class ChatService:
             if not pending:
                 return frames, True
 
-            frames.append(
-                LLMChunkResponse(
-                    provider=request.provider,
-                    model=request.model,
-                    output="Cancelling pending tool approval",
-                    type="status",
-                    conversation_id=conversation_id,
-                )
+            logger.info(
+                "Cancelling %d pending tool approval(s) for conversation_id=%s",
+                len(pending),
+                conversation_id,
             )
 
             deny_decisions = {
