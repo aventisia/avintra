@@ -39,6 +39,12 @@ export const useFetchFlowToLoad = () => {
       setIsFlowLoading: state.setIsFlowLoading,
     })),
   );
+  const { versionTransitionId, setVersionTransition } = useCurrentFlowStore(
+    useShallow((state) => ({
+      versionTransitionId: state.versionTransitionId,
+      setVersionTransition: state.setVersionTransition,
+    })),
+  );
 
   // Get  store state and actions of flow settings
   const { setSettings } = useSettingsStore(
@@ -90,6 +96,12 @@ export const useFetchFlowToLoad = () => {
   useEffect(() => {
     setIsFlowLoading(isLoading);
   }, [isLoading, setIsFlowLoading]);
+
+  useEffect(() => {
+    if (versionId === versionTransitionId && versionTransitionId && !isLoading && !data?.data) {
+      setVersionTransition(null);
+    }
+  }, [data?.data, isLoading, setVersionTransition, versionId, versionTransitionId]);
 
   // Reset hydration when the URL changes
   useEffect(() => {
@@ -191,6 +203,9 @@ export const useFetchFlowToLoad = () => {
           fitView({ duration: ZOOM_ANIMATION_DURATION, minZoom: 1 });
         }
         setIsFlowLoading(false);
+        if (flowData.versionId === useCurrentFlowStore.getState().versionTransitionId) {
+          setVersionTransition(null);
+        }
       }, 500);
     }
 
