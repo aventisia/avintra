@@ -223,14 +223,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: IdentificationIcon,
         name: "tenant",
         route: "/tenant/overview",
-        type: ["Commercial", "Community"],
-      },
-      {
-        permissions: ["TA"],
-        Icon: IdentificationIcon,
-        name: "preferences",
-        route: "/tenant/preferences", // Only applicabe in case of enterprise deployment
-        type: ["Enterprise", "Community"],
+        type: ["Commercial"],
       },
       {
         permissions: ["TA"],
@@ -296,10 +289,17 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
       {
         permissions: ["TA"],
+        Icon: IdentificationIcon,
+        name: "preferences",
+        route: "/tenant/preferences", // Only applicabe in case of enterprise and community deployment
+        type: ["Enterprise", "Community"],
+      },
+      {
+        permissions: ["TA"],
         Icon: QuestionMarkCircleIcon,
         name: "support",
         route: "/tenant/support/tickets",
-        type: ["Commercial", "Community"],
+        type: ["Commercial"],
       },
     ],
   },

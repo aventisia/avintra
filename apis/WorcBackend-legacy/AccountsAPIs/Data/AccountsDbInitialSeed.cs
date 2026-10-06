@@ -514,6 +514,7 @@ public static class AccountsDbInitialSeed
                 : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
                     ? 365
                     : int.MaxValue;
+            var maxSpaces = environmentConfig.IsCommunityDeployment ? 1 : 0;
 
             // Check if the default subscription plan already exists in the database
             var existingPlan = await accountsDbContext.SubscriptionPlans
@@ -524,13 +525,13 @@ public static class AccountsDbInitialSeed
             if (existingPlan != null)
             {
                 if (existingPlan.MaxPublishedItems != 0 ||
-                    existingPlan.MaxSpaces != 0 ||
+                    existingPlan.MaxSpaces != maxSpaces ||
                     existingPlan.MaxUsers != 0 ||
                     existingPlan.StorageLimitMB != 0 ||
                     existingPlan.HistoryRetentionDays != historyRetentionDays)
                 {
                     existingPlan.MaxPublishedItems = 0;
-                    existingPlan.MaxSpaces = 0;
+                    existingPlan.MaxSpaces = maxSpaces;
                     existingPlan.MaxUsers = 0;
                     existingPlan.StorageLimitMB = 0;
                     existingPlan.HistoryRetentionDays = historyRetentionDays;
@@ -558,7 +559,7 @@ public static class AccountsDbInitialSeed
                 Status = PlanStatusTypesEnum.Custom,
                 UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
                 MaxPublishedItems = 0,
-                MaxSpaces = 0,
+                MaxSpaces = maxSpaces,
                 MaxUsers = 0,
                 StorageLimitMB = 0,
                 HistoryRetentionDays = historyRetentionDays,

@@ -1,8 +1,8 @@
+import { UpgradeFeatureButton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { UpgradeFeatureButton } from "@avplatform/ui";
 import { Node } from "@xyflow/react";
 import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -54,8 +54,6 @@ const GenerateButton = ({
       <UpgradeFeatureButton
         label="Generate"
         icon={<SparklesIcon className="h-4 w-4" />}
-        featureName="AI template instructions"
-        benefit="Generate clear instructions from the steps in your workflow."
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
         size="sm"
         className="flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
