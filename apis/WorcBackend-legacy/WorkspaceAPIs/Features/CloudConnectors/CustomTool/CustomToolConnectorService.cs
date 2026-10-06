@@ -79,7 +79,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             }
 
             // Step 2: Reject inactive/disabled tools within the current tenant/environment.
-            if (!tool.IsActive || tool.IsDisabled)
+            if (tool.IsDisabled)
             {
                 serviceResponse.Message = $"Custom tool '{tool.Name}' is not active.";
                 return serviceResponse;
@@ -392,7 +392,12 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         // Body candidates come from the legacy/free-form extras only; the Request
         // Payload section is a JSON object and is applied by BuildRequestContent.
         var remainingPayload = new Dictionary<string, object>(sections.Extras, StringComparer.OrdinalIgnoreCase);
-        return ($"{baseUri.GetLeftPart(UriPartial.Authority).TrimEnd('/')}/{pathAndQuery}", remainingPayload);
+
+        // Preserve the base URL's path prefix (e.g. "/v1", "/api") so the proxy
+        // target matches the LLM-pipeline test path (baseUrl + operation path).
+        // UriPartial.Authority would drop it and cause upstream 404s.
+        var baseUrlPrefix = baseUri.GetLeftPart(UriPartial.Path).TrimEnd('/');
+        return ($"{baseUrlPrefix}/{pathAndQuery}", remainingPayload);
     }
 
     /// <summary>
