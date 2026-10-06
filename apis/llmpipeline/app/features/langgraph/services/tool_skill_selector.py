@@ -128,13 +128,7 @@ async def select_tools_and_skills(
             ]
         )
 
-        # ``response`` may be a raw dict when ``with_structured_output`` is used.
-        if isinstance(response, dict):
-            raw_output = json.dumps(response)
-        elif isinstance(response.content, str):
-            raw_output = response.content
-        else:
-            raw_output = str(response.content)
+        raw_output = _extract_response_text(response)
 
         logger.debug("Tool/skill planner raw output: %s", raw_output)
 
@@ -557,6 +551,40 @@ def _coerce_name_list(value: Any) -> list[str]:
     return [str(value)]
 
 
+def _extract_response_text(response: Any) -> str:
+    """Return the plain-text payload of a chat model response.
+
+    Providers shape ``AIMessage.content`` differently: most return a string, but
+    Gemini 3 returns a list of content blocks (e.g.
+    ``[{"type": "text", "text": "..."}]``). Stringifying that list yields a
+    Python repr (single quotes, ``extras`` metadata) which is not valid JSON, so
+    the planner parse would fail and fall back to selecting every skill and no
+    tools. Concatenate the text blocks instead. ``response`` may also already be
+    a raw dict when ``with_structured_output`` is used.
+    """
+
+    if isinstance(response, dict):
+        return json.dumps(response)
+
+    content = getattr(response, "content", response)
+
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts: list[str] = []
+        for part in content:
+            if isinstance(part, dict):
+                text = part.get("text")
+                if isinstance(text, str):
+                    parts.append(text)
+            elif isinstance(part, str):
+                parts.append(part)
+        return "".join(parts)
+
+    return str(content)
+
+
 def _parse_selection_output(raw_output: str) -> "ToolSkillSelectionResponse":
     """Parse planner JSON output into a selection response."""
 
@@ -570,7 +598,18 @@ def _parse_selection_output(raw_output: str) -> "ToolSkillSelectionResponse":
             lines = lines[:-1]
         cleaned = "\n".join(lines).strip()
 
-    data = json.loads(cleaned)
+    try:
+        data = json.loads(cleaned)
+    except json.JSONDecodeError:
+        # Some models prepend/append prose around the JSON object. Recover the
+        # outermost ``{...}`` span before giving up so a stray sentence does not
+        # trigger the "select everything / no tools" fallback.
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end <= start:
+            raise
+        data = json.loads(cleaned[start : end + 1])
+
     if not isinstance(data, dict):
         raise ValueError(
             f"Planner returned {type(data).__name__}, expected a JSON object."

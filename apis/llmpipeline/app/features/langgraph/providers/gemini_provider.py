@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from fastapi import HTTPException
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -7,6 +9,29 @@ from app.core.logger import logger
 from app.core.vault_manager import VaultManager
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
+
+
+def _to_genai_endpoint(base_url: str | None) -> str | None:
+    """
+    Reduce a REST base URL to the host[:port] expected by the google-genai client.
+
+    ``ChatGoogleGenerativeAI.base_url`` is a convenience alias for the SDK's
+    ``client_options['api_endpoint']``. The default async transport (gRPC) only
+    accepts a bare ``host[:port]``; passing a full REST URL (scheme + path, e.g.
+    ``https://generativelanguage.googleapis.com/v1beta``) makes the client hang
+    indefinitely without raising. ``settings.GEMINI_API_URL`` is such a REST URL,
+    so strip the scheme and path before handing it to the SDK.
+    """
+
+    if not base_url:
+        return None
+
+    parsed = urlparse(base_url if "://" in base_url else f"//{base_url}")
+    host = parsed.hostname or parsed.path
+    if not host:
+        return None
+
+    return f"{host}:{parsed.port}" if parsed.port else host
 
 
 def create_gemini_model(
@@ -124,7 +149,6 @@ def create_gemini_model(
         temperature=llm_request.temperature,
         top_p=llm_request.top_p,
         max_tokens=llm_request.max_output_tokens,
-        stream_usage=True,
         api_key=resolved_api_key,
-        base_url=resolved_base_url,
+        base_url=_to_genai_endpoint(resolved_base_url),
     )
