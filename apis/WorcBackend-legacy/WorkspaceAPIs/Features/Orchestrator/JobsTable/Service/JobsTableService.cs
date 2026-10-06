@@ -1105,7 +1105,10 @@ public class JobsTableService : IJobsTableService
 
         var statusParam = command.CreateParameter();
         statusParam.ParameterName = "status";
-        statusParam.Value = (int)JobStatusEnum.Created;
+        // "Status" is persisted as text (EnumToStringConverter<JobStatusEnum>), so the parameter
+        // must be the enum name, not its integer value, to avoid "text = integer" in Postgres.
+        statusParam.Value = JobStatusEnum.Created.ToString();
+        statusParam.DbType = DbType.String;
         command.Parameters.Add(statusParam);
 
         var machineParam = command.CreateParameter();
