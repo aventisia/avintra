@@ -19,19 +19,6 @@ public static class JobsAssignmentHelpers
            || executionLocation.Equals(WebServerExecutionLocation, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Attempts to read the execution location as a machine id. Returns false for empty
-    /// values, the "Cloud"/"Web Server" sentinels, and any non-Guid value.
-    /// </summary>
-    public static bool TryParseMachineId(string? executionLocation, out Guid machineId)
-    {
-        machineId = Guid.Empty;
-        if (IsUnassignedExecutionLocation(executionLocation))
-            return false;
-
-        return Guid.TryParse(executionLocation, out machineId) && machineId != Guid.Empty;
-    }
-
-    /// <summary>
     /// Deterministically selects the machine an unassigned job should run on: the lowest
     /// <see cref="ClientDataStore.ClientId"/> among the machines mapped to the job's flow version
     /// that are online/idle and are not already holding a live pending job. Returns null when no

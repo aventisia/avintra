@@ -26,7 +26,8 @@ assert {
 }
 
 docs {
-  > For a published agent, `executionLocation` must be a machine GUID or the "Cloud"/"Web Server"
-  > sentinel. Any other value is rejected with 400.
+  > For a published agent, `executionLocation` must be the machine's unique name
+  > (`[username]_os_osId`) or the "Cloud"/"Web Server" sentinel. A value that resolves to no
+  > machine is rejected with 400.
   > Requires `ACCESS_TOKEN` (OM role) and a published `FLOW_VERSION_ID`.
 }

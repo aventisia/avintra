@@ -275,28 +275,28 @@ public class JobsTableService : IJobsTableService
             jobInsertDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobInsertDto);
 
             // Bind the job to the machine it was created for. For published flows the
-            // ExecutionLocation carries a machine id; the machine must exist in the tenant and
-            // be mapped to the flow version. Sentinels ("Cloud"/"Web Server") stay unassigned and
-            // are resolved deterministically at dispatch time.
+            // ExecutionLocation carries the machine's unique name ([username]_os_osId); the
+            // machine must exist in the tenant and be mapped to the flow version. Sentinels
+            // ("Cloud"/"Web Server") stay unassigned and are resolved deterministically at
+            // dispatch time.
             Guid? resolvedMachineId = null;
             string? resolvedMachineName = null;
             if (flowVersion.IsFlowVersionPublished && !JobsAssignmentHelpers.IsUnassignedExecutionLocation(jobInsertDto.ExecutionLocation))
             {
-                // Invalid, non-Guid execution locations cannot identify a machine.
-                if (!JobsAssignmentHelpers.TryParseMachineId(jobInsertDto.ExecutionLocation, out var requestedMachineId))
-                    return serviceResponse.Update("Invalid execution location.", 400);
+                var requestedMachineName = jobInsertDto.ExecutionLocation!.ToLower();
 
-                // Resolve the requested machine within the current tenant (Machine is tenant-scoped).
+                // Resolve the machine by its unique name within the current tenant (Machine is
+                // tenant-scoped); an unknown name cannot identify a machine.
                 var requestedMachine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w => w.Id == requestedMachineId)
+                    .GetByConditionAsync(w => w.Name.ToLower() == requestedMachineName)
                     .FirstOrDefaultAsync();
 
                 if (requestedMachine == null)
-                    return serviceResponse.Update("Machine not found.", 404);
+                    return serviceResponse.Update("Invalid execution location.", 400);
 
                 // The machine must be mapped to the job's flow version.
                 var isMachineMappedToFlow = await _unitOfWork.Machine_FlowVersionRepo
-                    .GetByConditionAsync(w => w.MachineId == requestedMachineId && w.FlowVersionId == jobInsertDto.FlowVersionId)
+                    .GetByConditionAsync(w => w.MachineId == requestedMachine.Id && w.FlowVersionId == jobInsertDto.FlowVersionId)
                     .AnyAsync();
 
                 if (!isMachineMappedToFlow)

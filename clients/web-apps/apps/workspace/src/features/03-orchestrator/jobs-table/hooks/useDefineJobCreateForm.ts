@@ -65,7 +65,7 @@ export const useDefineJobCreateForm = ({
     executionLocation: formData.executeOnCloud
       ? "Cloud"
       : typeof formData.executionLocation === "object" && formData.executionLocation
-        ? formData.executionLocation.value
+        ? formData.executionLocation.label
         : formData.executionLocation,
     jobInputData:
       formData.jobInputData === DEFAULT_JOB_INPUT_DATA
