@@ -1,0 +1,36 @@
+meta {
+  name: Archive published flow version
+  type: http
+  seq: 16
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/agent
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "d1240fb0-113d-45c1-81e5-c4eda712b835",
+    "refId": "49332198-735c-43d3-9a62-ffff99c1b564",
+    "name": "Table",
+    "type": "Agent",
+    "machineCount": 0,
+    "isLocked": false,
+    "isDraft": false,
+    "isPublished": true,
+    "isArchived": true,
+    "isDisabled": false
+  }
+}
+
+script:post-response {
+  test("response status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("flow version is archived", function() {
+    expect(res.getBody().data.isArchived).to.equal(true);
+  });
+}

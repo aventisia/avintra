@@ -187,6 +187,14 @@ public class AgentTableService : IAgentTableService
                 return serviceResponse;
             }
 
+            // On the archive transition (false -> true) detach the version from every
+            // active relationship and drop the resources it leaves orphaned, all in the
+            // same unit of work, so no orphan links or resources survive.
+            if (!existingVersion.IsArchived && agentTableDto.IsArchived)
+            {
+                await ArchiveFlowVersionAsync(existingVersion);
+            }
+
             // Map the updated fields from the DTO to the entity
             existingVersion.IsArchived = agentTableDto.IsArchived;
             existingVersion.IsDisabled = agentTableDto.IsDisabled;
@@ -780,4 +788,454 @@ public class AgentTableService : IAgentTableService
         return serviceResponse;
     }
 
+    // Archives a flow version: captures what it referenced, detaches every active
+    // relationship and deletes the resources it leaves orphaned. Deletions are staged
+    // only; the caller owns the SaveAsync so the whole archive commits atomically.
+    private async Task ArchiveFlowVersionAsync(FlowVersion flowVersion)
+    {
+        // Capture the agent's resource references and trigger links before they are cleared.
+        var resourceReferences = ParseResourceReferences(flowVersion.ResourceReferences);
+        var linkedTriggerIds = await _unitOfWork.TriggerFlowVersionRepo
+            .GetByConditionAsync(w => w.FlowVersionId == flowVersion.Id)
+            .Select(w => w.TriggerId)
+            .Distinct()
+            .ToListAsync();
+
+        await UnlinkFlowVersionRelationshipsAsync(flowVersion);
+        await DeleteOrphanedResourcesAsync(flowVersion, resourceReferences, linkedTriggerIds);
+    }
+
+    // Stages the removal of every active relationship for a flow version being archived.
+    // Deletions are staged only; the caller owns the SaveAsync so the archive flag and
+    // all unlinks commit together in a single unit of work.
+    private async Task UnlinkFlowVersionRelationshipsAsync(FlowVersion flowVersion)
+    {
+        var flowVersionId = flowVersion.Id;
+        var tenantId = flowVersion.TenantId;
+
+        // Unlink machines so the archived version can no longer be dispatched
+        await DeleteLinksAsync(_unitOfWork.Machine_FlowVersionRepo, w => w.FlowVersionId == flowVersionId);
+
+        // Unlink queues from the archived version
+        await DeleteLinksAsync(_unitOfWork.QueueFlowVersionRepo, w => w.FlowVersionId == flowVersionId);
+
+        // Unlink triggers (time/webhook/email/message). Removing these rows is what
+        // stops the trigger handlers from scheduling the archived version.
+        await DeleteLinksAsync(_unitOfWork.TriggerFlowVersionRepo, w => w.FlowVersionId == flowVersionId);
+
+        // Release tool references
+        await DeleteLinksAsync(_unitOfWork.FlowVersionToolRepo, w => w.FlowVersionId == flowVersionId);
+
+        // Revoke per-user access and the tenant-wide access shortcut
+        await DeleteLinksAsync(_unitOfWork.FlowVersionUserRepo, w => w.FlowVersionId == flowVersionId);
+        flowVersion.IsTenantWideAccess = false;
+
+        // Remove the agent risk registry row. Registry rows are created without a space,
+        // so the space filter is bypassed; the tenant guard keeps the scope safe.
+        var registryRows = await _unitOfWork.AgentRiskRegistryRepo
+            .GetByConditionAsync(w => w.FlowVersionId == flowVersionId && w.TenantId == tenantId)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+        if (registryRows.Count > 0)
+        {
+            _unitOfWork.AgentRiskRegistryRepo.Delete(registryRows);
+        }
+
+        // Revoke the resource shares for the archived version
+        await _resourceShareService.DeleteResourceSharesAsync(flowVersionId, ResourceTypeEnum.FlowVersion);
+
+        // Cancel pending/running jobs; completed runs are retained as history.
+        // The space filter is bypassed so jobs are cancelled regardless of the space
+        // the archive request resolves to; the tenant guard keeps the scope safe.
+        var activeJobs = await _unitOfWork.JobRepo
+            .GetByConditionAsync(w =>
+                w.FlowVersionId == flowVersionId &&
+                w.TenantId == tenantId &&
+                (w.Status == JobStatusEnum.Created || w.Status == JobStatusEnum.Running))
+            .IgnoreQueryFilters()
+            .ToListAsync();
+        if (activeJobs.Count > 0)
+        {
+            activeJobs.ForEach(job => job.Status = JobStatusEnum.Canceled);
+            _unitOfWork.JobRepo.Update(activeJobs);
+        }
+
+        // Reset the resource references so the version no longer advertises links
+        // to resources it has been detached from
+        flowVersion.ResourceReferences = System.Text.Json.JsonSerializer.Serialize(
+            new Dictionary<string, List<string>>
+            {
+                ["credentials"] = new(),
+                ["queues"] = new(),
+                ["knowledgeBases"] = new(),
+                ["tools"] = new(),
+                ["skills"] = new(),
+                ["keyStores"] = new(),
+            });
+    }
+
+    // Stages the deletion of every entity matching the condition. Nothing is saved here;
+    // the caller owns the SaveAsync so all unlinks commit together.
+    private async Task DeleteLinksAsync<TEntity>(
+        IRepositoryBase<TEntity, WorkspaceDbContext> repository,
+        Expression<Func<TEntity, bool>> condition) where TEntity : class
+    {
+        var entities = await repository.GetByConditionAsync(condition).ToListAsync();
+        if (entities.Count > 0)
+        {
+            repository.Delete(entities);
+        }
+    }
+
+    // Deletes the credentials, queues, knowledge bases, tools, skills, key stores and
+    // triggers the archived agent referenced when no other active agent uses them and they
+    // have no other relationships. Platform, global, tenant-wide and PROD-guarded resources
+    // are always kept.
+    private async Task DeleteOrphanedResourcesAsync(
+        FlowVersion flowVersion,
+        Dictionary<string, List<string>> resourceReferences,
+        List<Guid> linkedTriggerIds)
+    {
+        // Names still referenced by other active agents, keyed by resource type.
+        var usedNames = await GetResourceNamesUsedByOtherAgentsAsync(flowVersion.Id);
+
+        await DeleteOrphanedCredentialsAsync(resourceReferences["credentials"], usedNames["credentials"], flowVersion.Id);
+        await DeleteOrphanedQueuesAsync(resourceReferences["queues"], usedNames["queues"], flowVersion.Id);
+        await DeleteOrphanedKnowledgeBasesAsync(resourceReferences["knowledgeBases"], usedNames["knowledgeBases"]);
+        await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"], flowVersion.Id);
+        await DeleteOrphanedSkillsAsync(resourceReferences["skills"], usedNames["skills"]);
+        await DeleteOrphanedKeyStoresAsync(resourceReferences["keyStores"], usedNames["keyStores"]);
+        await DeleteOrphanedTriggersAsync(linkedTriggerIds, flowVersion.Id);
+    }
+
+    // Parses the flow version's resource reference JSON into name lists keyed by resource
+    // type. Missing or malformed JSON yields empty lists.
+    private static Dictionary<string, List<string>> ParseResourceReferences(string? resourceReferences)
+    {
+        var references = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["credentials"] = new(),
+            ["queues"] = new(),
+            ["knowledgeBases"] = new(),
+            ["tools"] = new(),
+            ["skills"] = new(),
+            ["keyStores"] = new(),
+        };
+
+        if (string.IsNullOrWhiteSpace(resourceReferences))
+            return references;
+
+        try
+        {
+            var parsed = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, List<string>>>(resourceReferences);
+            if (parsed == null)
+                return references;
+
+            foreach (var kvp in parsed)
+            {
+                var key = kvp.Key?.ToLowerInvariant();
+                if (key != null && references.ContainsKey(key))
+                    references[key] = kvp.Value ?? new List<string>();
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // Ignore malformed reference JSON; nothing can be resolved from it.
+        }
+
+        return references;
+    }
+
+    // Builds the set of resource names still referenced by other non-archived agents.
+    private async Task<Dictionary<string, HashSet<string>>> GetResourceNamesUsedByOtherAgentsAsync(Guid excludedFlowVersionId)
+    {
+        var usedNames = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["credentials"] = new(StringComparer.OrdinalIgnoreCase),
+            ["queues"] = new(StringComparer.OrdinalIgnoreCase),
+            ["knowledgeBases"] = new(StringComparer.OrdinalIgnoreCase),
+            ["tools"] = new(StringComparer.OrdinalIgnoreCase),
+            ["skills"] = new(StringComparer.OrdinalIgnoreCase),
+            ["keyStores"] = new(StringComparer.OrdinalIgnoreCase),
+        };
+
+        // Only active agents keep a resource alive; archived agents no longer use it.
+        var otherAgentReferences = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w => w.Id != excludedFlowVersionId && !w.IsArchived)
+            .Select(w => w.ResourceReferences)
+            .ToListAsync();
+
+        foreach (var referenceJson in otherAgentReferences)
+        {
+            var references = ParseResourceReferences(referenceJson);
+            foreach (var kvp in references)
+            {
+                if (!usedNames.TryGetValue(kvp.Key, out var names))
+                    continue;
+
+                foreach (var name in DistinctNames(kvp.Value))
+                    names.Add(name);
+            }
+        }
+
+        return usedNames;
+    }
+
+    // Deletes credentials referenced only by the archived agent when they are not shared
+    // and not referenced by any other entity.
+    private async Task DeleteOrphanedCredentialsAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var credential = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (credential == null || credential.IsTenantWideAccess)
+                continue;
+
+            if (await IsCredentialReferencedElsewhereAsync(credential, name, flowVersionId))
+                continue;
+
+            // Owned key-value pairs go with the credential.
+            await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.AppSecretId == credential.Id);
+            await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.AppSecret);
+            _unitOfWork.AppSecretRepo.Delete(credential);
+        }
+    }
+
+    // Checks whether a credential is still referenced by a knowledge base, queue or tool.
+    private async Task<bool> IsCredentialReferencedElsewhereAsync(AppSecret credential, string name, Guid flowVersionId)
+    {
+        var normalizedName = name.ToLower();
+
+        // Knowledge bases may embed or store through this credential.
+        var usedByKnowledgeBase = await _unitOfWork.KnowledgeBaseRepo
+            .GetByConditionAsync(w => w.EmbeddingCredentialId == credential.Id || w.StoreCredentialId == credential.Id)
+            .AnyAsync();
+        if (usedByKnowledgeBase)
+            return true;
+
+        // Queues and tools persist the credential by name.
+        var usedByQueue = await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => w.CredentialName != null && w.CredentialName.ToLower() == normalizedName)
+            .AnyAsync();
+        if (usedByQueue)
+            return true;
+
+        var usedByTool = await _unitOfWork.ToolRepo
+            .GetByConditionAsync(w => w.CredentialName != null && w.CredentialName.ToLower() == normalizedName)
+            .AnyAsync();
+        if (usedByTool)
+            return true;
+
+        // Tool links belonging to another active agent (the archived agent's links are already staged for removal).
+        return await _unitOfWork.FlowVersionToolRepo
+            .GetByConditionAsync(w => w.CredentialName != null &&
+                                      w.CredentialName.ToLower() == normalizedName &&
+                                      w.FlowVersionId != flowVersionId)
+            .AnyAsync();
+    }
+
+    // Deletes queues referenced only by the archived agent when they are not shared and
+    // have no work items, user assignments or inbound routing.
+    private async Task DeleteOrphanedQueuesAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var queue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (queue == null || queue.IsTenantWideAccess)
+                continue;
+
+            // Still assigned to another active agent?
+            var assignedToOtherAgent = await _unitOfWork.QueueFlowVersionRepo
+                .GetByConditionAsync(w => w.QueueId == queue.Id && w.FlowVersionId != flowVersionId)
+                .AnyAsync();
+            if (assignedToOtherAgent)
+                continue;
+
+            // Other relationships: work items, user assignments or inbound routing.
+            var hasTransactions = await _unitOfWork.QueueTransactionRepo
+                .GetByConditionAsync(w => w.QueueId == queue.Id)
+                .AnyAsync();
+            if (hasTransactions)
+                continue;
+
+            var hasUsers = await _unitOfWork.QueueUserRepo
+                .GetByConditionAsync(w => w.QueueId == queue.Id)
+                .AnyAsync();
+            if (hasUsers)
+                continue;
+
+            if (await IsQueueRoutedToByOtherQueueAsync(queue))
+                continue;
+
+            await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+            _unitOfWork.QueueRepo.Delete(queue);
+        }
+    }
+
+    // Checks whether another queue routes work items into the supplied queue.
+    private async Task<bool> IsQueueRoutedToByOtherQueueAsync(Queue queue)
+    {
+        // RouteToQueues is a name array; load the arrays and compare in memory.
+        var routeLists = await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => w.Id != queue.Id && w.RouteToQueues != null)
+            .Select(w => w.RouteToQueues)
+            .ToListAsync();
+
+        return routeLists.Any(routes =>
+            routes != null && routes.Any(r => string.Equals(r, queue.Name, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    // Deletes knowledge bases referenced only by the archived agent when they are not shared.
+    // Owned files and vector store entries go with them.
+    private async Task DeleteOrphanedKnowledgeBasesAsync(List<string> names, HashSet<string> usedNames)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (knowledgeBase == null || knowledgeBase.IsTenantWideAccess)
+                continue;
+
+            // Owned vector store entries and files go with the knowledge base.
+            var vectorStores = await _unitOfWork.VectorStoreRepo
+                .GetByConditionAsync(vs => vs.TenantId == knowledgeBase.TenantId && vs.Metadata != null)
+                .ToListAsync();
+            foreach (var vectorStore in vectorStores.Where(vs => IsVectorStoreForKnowledgeBase(vs, knowledgeBase.Name)))
+                _unitOfWork.VectorStoreRepo.Delete(vectorStore);
+
+            await DeleteLinksAsync(_unitOfWork.KnowledgeBaseFileRepo, f => f.KnowledgeBaseId == knowledgeBase.Id);
+            await _resourceShareService.DeleteResourceSharesAsync(knowledgeBase.Id, ResourceTypeEnum.KnowledgeBase);
+            _unitOfWork.KnowledgeBaseRepo.Delete(knowledgeBase);
+        }
+    }
+
+    // Matches a vector store record to a knowledge base by its metadata kb_name.
+    private static bool IsVectorStoreForKnowledgeBase(VectorStore vectorStore, string knowledgeBaseName)
+    {
+        if (vectorStore.Metadata == null || vectorStore.Metadata.RootElement.ValueKind != JsonValueKind.Object)
+            return false;
+
+        if (!vectorStore.Metadata.RootElement.TryGetProperty("kb_name", out var kbNameElement))
+            return false;
+
+        var metadataKbName = kbNameElement.GetString();
+        return !string.IsNullOrWhiteSpace(metadataKbName)
+            && !string.IsNullOrWhiteSpace(knowledgeBaseName)
+            && string.Equals(metadataKbName, knowledgeBaseName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Deletes tools referenced only by the archived agent when they are not shared, not
+    // platform-managed and not linked to another active agent.
+    private async Task DeleteOrphanedToolsAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var tool = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (tool == null || tool.IsTenantWideAccess || tool.Type == ComponentTypeEnum.Platform)
+                continue;
+
+            // Still linked to another active agent?
+            var linkedToOtherAgent = await _unitOfWork.FlowVersionToolRepo
+                .GetByConditionAsync(w => w.ToolId == tool.Id && w.FlowVersionId != flowVersionId)
+                .AnyAsync();
+            if (linkedToOtherAgent)
+                continue;
+
+            await _resourceShareService.DeleteResourceSharesAsync(tool.Id, ResourceTypeEnum.Tool);
+            _unitOfWork.ToolRepo.Delete(tool);
+        }
+    }
+
+    // Deletes skills referenced only by the archived agent when they are not shared and not
+    // platform/global. Owned files go with them.
+    private async Task DeleteOrphanedSkillsAsync(List<string> names, HashSet<string> usedNames)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var skill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (skill == null || skill.IsTenantWideAccess || skill.IsGlobal || skill.Type == ComponentTypeEnum.Platform)
+                continue;
+
+            // Owned files go with the skill.
+            await DeleteLinksAsync(_unitOfWork.SkillFileRepo, f => f.SkillId == skill.Id);
+            await _resourceShareService.DeleteResourceSharesAsync(skill.Id, ResourceTypeEnum.Skill);
+            _unitOfWork.SkillRepo.Delete(skill);
+        }
+    }
+
+    // Deletes key stores referenced only by the archived agent when they are not shared.
+    private async Task DeleteOrphanedKeyStoresAsync(List<string> names, HashSet<string> usedNames)
+    {
+        foreach (var name in DistinctNames(names))
+        {
+            if (usedNames.Contains(name))
+                continue;
+
+            var keyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (keyStore == null || keyStore.IsTenantWideAccess)
+                continue;
+
+            await _resourceShareService.DeleteResourceSharesAsync(keyStore.Id, ResourceTypeEnum.KeyStore);
+            _unitOfWork.KeyStoreRepo.Delete(keyStore);
+        }
+    }
+
+    // Deletes triggers linked to the archived agent when they are not shared and no longer
+    // linked to another active agent.
+    private async Task DeleteOrphanedTriggersAsync(List<Guid> triggerIds, Guid flowVersionId)
+    {
+        foreach (var triggerId in triggerIds.Distinct())
+        {
+            var trigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w => w.Id == triggerId && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (trigger == null || trigger.IsTenantWideAccess)
+                continue;
+
+            // Still linked to another active agent?
+            var linkedToOtherAgent = await _unitOfWork.TriggerFlowVersionRepo
+                .GetByConditionAsync(w => w.TriggerId == triggerId && w.FlowVersionId != flowVersionId)
+                .AnyAsync();
+            if (linkedToOtherAgent)
+                continue;
+
+            await _resourceShareService.DeleteResourceSharesAsync(trigger.Id, ResourceTypeEnum.Trigger);
+            _unitOfWork.TriggerRepo.Delete(trigger);
+        }
+    }
+
+    // Resolves distinct, trimmed, non-empty reference names.
+    private static IEnumerable<string> DistinctNames(IEnumerable<string> names)
+    {
+        return names
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+    }
 }
