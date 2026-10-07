@@ -315,7 +315,7 @@ public class ToolService : IToolService
         // selected in flows; the invoke endpoint rejects unverified tools at runtime.
         return w =>
             w.IsActive &&
-            (!w.IsVerified || w.Type == ComponentTypeEnum.Custom) &&
+            w.IsVerified &&
             !w.IsDisabled &&
             (
                 // Platform's default tools are tenant-agnostic and available in every environment.
@@ -382,8 +382,7 @@ public class ToolService : IToolService
                         (w.Type == ComponentTypeEnum.Custom &&
                         w.TenantId == _currentTenantService.CurrentTenantId)
                     ) &&
-                    w.Name.ToLower() == normalizedName.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType
+                    w.Name.ToLower() == normalizedName.ToLower()
                 )
                 .IgnoreQueryFilters()
                 .AnyAsync();
