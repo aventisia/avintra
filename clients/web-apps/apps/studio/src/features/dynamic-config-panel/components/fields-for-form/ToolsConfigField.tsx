@@ -303,6 +303,9 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           placeholder="Select Tool"
           isLoading={isUsableToolsLoading}
           disabled={isUsableToolsLoading}
+          // Usable tools without a brand icon (e.g. custom tools) fall back to the
+          // shared Wrench default, matching the configured-list icon below.
+          fallbackIcon={<Wrench className="h-4 w-4 shrink-0 text-muted-foreground" />}
         />
 
         <CredentialsSelectField
