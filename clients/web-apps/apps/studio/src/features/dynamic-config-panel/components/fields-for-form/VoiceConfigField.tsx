@@ -15,22 +15,30 @@ import { voiceProviderData } from "../../constants/voice-providers";
 export interface VoiceConfigFieldProps {
   /** The base name of the form field */
   name: string;
+  /**
+   * Form path of the provider this field watches. Defaults to the standalone
+   * Text-to-Speech node so existing nodes keep working unchanged.
+   */
+  providerPath?: string;
 }
 
-const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
+const VoiceConfigField = ({
+  name,
+  providerPath = "__ModelConfig__TextToSpeech.provider",
+}: VoiceConfigFieldProps) => {
   const { control, setValue, watch } = useFormContext();
 
   // 1. Memoize Field Names
   const fieldNames = useMemo(
     () =>
       ({
-        provider: `__ModelConfig__TextToSpeech.provider`, // Watch the provider selected in ModelConfigField
+        provider: providerPath, // Watch the provider selected in ModelConfigField
         language: `${name}.language`,
         voice: `${name}.voice`,
         speed: `${name}.speed`,
         // pitch: `${name}.pitch`,
       }) as const,
-    [name],
+    [name, providerPath],
   );
 
   // Watch the provider value dynamically

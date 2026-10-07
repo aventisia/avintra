@@ -23,6 +23,9 @@ import { DCPControlType, RenderIfType } from "..";
  * @property showTokenCount - If true, show the token count in the prompt field footer.
  * @property showVariables - If true, show variable chips/helpers in the prompt field footer.
  * @property showJsonOutput - If true, show the JSON output toggle in the model settings.
+ * @property specialty - Forces the model list to a speech specialty (stt/tts) regardless of node name.
+ * @property hideByok - If true, hides the BYOK switch on the model config field.
+ * @property providerPath - Form path of the provider a voice config field should watch.
  */
 export type DCPFieldSchemaType = {
   type: DCPControlType;
@@ -45,6 +48,9 @@ export type DCPFieldSchemaType = {
   showTokenCount?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   showVariables?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   showJsonOutput?: boolean; // Not a html attribute (only required by the model config field)
+  specialty?: "stt" | "tts"; // Not a html attribute (forces the model list to a speech specialty)
+  hideByok?: boolean; // Not a html attribute (hides the BYOK switch on the model config field)
+  providerPath?: string; // Not a html attribute (form path of the provider a voice config field watches)
   renderIf?: RenderIfType; // Not a html attribute
   serviceType?: string;
   category?: string; // By default category's value is 'Inputs' else whatever is set

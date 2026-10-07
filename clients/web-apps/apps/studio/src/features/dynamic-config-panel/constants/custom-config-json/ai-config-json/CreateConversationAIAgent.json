@@ -39,6 +39,57 @@
     },
     {
       "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__SpeechToText",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "elevenlabs",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "category": "Voice",
+      "group": "Speech to Text"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__TextToSpeech",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "elevenlabs",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "category": "Voice",
+      "group": "Text to Speech"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__TextToSpeech",
+      "defaultValue": {
+        "language": "en",
+        "voice": "21m00Tcm4TlvDq8ikWAM",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice",
+      "group": "Text to Speech"
+    },
+    {
+      "direction": "Input",
       "type": "knowledge-base-config",
       "name": "__KbConfig__Conversation",
       "label": "Knowledge Base(s)",
