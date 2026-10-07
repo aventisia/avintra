@@ -22,6 +22,8 @@ MIME_TO_EXTENSION = {
     "audio/flac": ".flac",
     "audio/ogg": ".ogg",
     "audio/mp4": ".m4a",
+    # Browser MediaRecorder container (Chrome/Firefox audio-only recordings).
+    "audio/webm": ".webm",
 
     # Video
     "video/mp4": ".mp4",

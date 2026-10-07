@@ -59,6 +59,8 @@ export const useVoiceRecorder = ({
 }: UseVoiceRecorderParams) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  /** Elapsed recording time in whole seconds, shown next to the mic while recording. */
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -97,9 +99,9 @@ export const useVoiceRecorder = ({
           agent_name: agentName ?? null,
         };
         const response = await transcribeSpeechToText(requestDto);
-        const transcript = response.data?.output?.trim();
+        const transcript = response.output?.trim();
         if (transcript) onTranscriptRef.current(transcript);
-        else toast.error(response.data?.error ?? "No speech was detected.");
+        else toast.error(response.error ?? "No speech was detected.");
       } catch (error) {
         console.error("Speech transcription failed:", error);
         toast.error("Could not transcribe the recording.");
@@ -116,7 +118,11 @@ export const useVoiceRecorder = ({
 
   const startRecording = useCallback(async () => {
     if (!sttConfig?.model) {
-      toast.error("Configure the Speech to Text model first.");
+      toast.error("Select a Speech to Text model first.");
+      return;
+    }
+    if (sttConfig.is_byok_enabled && !sttConfig.credential_name?.trim()) {
+      toast.error("Select a credential for Speech to Text first.");
       return;
     }
     if (!isSupported) {
@@ -168,10 +174,53 @@ export const useVoiceRecorder = ({
     if (recorder && recorder.state !== "inactive") recorder.stop();
   }, []);
 
+  // Tick an elapsed-time counter while recording (400 ms keeps the seconds
+  // boundary close without re-rendering every frame).
+  useEffect(() => {
+    if (!isRecording) {
+      setRecordingSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    setRecordingSeconds(0);
+    const interval = window.setInterval(() => {
+      setRecordingSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 400);
+    return () => window.clearInterval(interval);
+  }, [isRecording]);
+
+  // Derive the mic control's tooltip and disabled state from the required
+  // configuration: a model is always needed; a credential only when the agent
+  // runs BYOK (the ChatAgent voice config does).
+  const missingModel = !sttConfig?.model?.trim();
+  const missingCredential =
+    Boolean(sttConfig?.is_byok_enabled) && !sttConfig?.credential_name?.trim();
+
+  const disabledReason = !isSupported
+    ? "Microphone recording is not supported in this browser."
+    : missingModel && missingCredential
+      ? "Select a Speech to Text model and credential to start recording."
+      : missingModel
+        ? "Select a Speech to Text model to start recording."
+        : missingCredential
+          ? "Select a credential for Speech to Text to start recording."
+          : isTranscribing
+            ? "Transcribing your recording\u2026"
+            : null;
+
+  const isMicDisabled = disabledReason !== null;
+  const micTooltip = isMicDisabled
+    ? disabledReason
+    : isRecording
+      ? "Stop recording"
+      : "Start voice recording";
+
   const toggleRecording = useCallback(() => {
+    // Refuse while unconfigured or transcribing; the tooltip explains why.
+    if (isMicDisabled) return;
     if (isRecording) stopRecording();
     else void startRecording();
-  }, [isRecording, startRecording, stopRecording]);
+  }, [isMicDisabled, isRecording, startRecording, stopRecording]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -186,5 +235,13 @@ export const useVoiceRecorder = ({
     };
   }, []);
 
-  return { isSupported, isRecording, isTranscribing, toggleRecording };
+  return {
+    isSupported,
+    isRecording,
+    isTranscribing,
+    recordingSeconds,
+    isMicDisabled,
+    micTooltip,
+    toggleRecording,
+  };
 };
