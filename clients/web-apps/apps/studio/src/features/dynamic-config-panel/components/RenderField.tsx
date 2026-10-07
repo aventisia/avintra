@@ -77,11 +77,18 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "config-panel-model-output":
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
-      return <ModelConfigField name={field.name} showJsonOutput={field.showJsonOutput} />;
+      return (
+        <ModelConfigField
+          name={field.name}
+          showJsonOutput={field.showJsonOutput}
+          specialty={field.specialty}
+          hideByok={field.hideByok}
+        />
+      );
     case "tools-config-select":
       return <ToolsConfigField name={field.name} />;
     case "voice-config-select":
-      return <VoiceConfigField name={field.name} />;
+      return <VoiceConfigField name={field.name} providerPath={field.providerPath} />;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "prompt-input-v2":
