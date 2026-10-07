@@ -1,75 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ExportedMessageRepository,
   ExportedMessageRepositoryItem,
   ThreadHistoryAdapter,
   ThreadMessage,
 } from "@assistant-ui/react";
+import { groupConversationMessages } from "@avplatform/assistant-chat";
 
-import {
-  getConversationMessages,
-} from "../apis/assist-conversations-apis";
-import {
-  ConversationMessageDto,
-  ConversationMessageSenderEnum,
-} from "../dtos/conversation-message-dto";
+import { getConversationMessages } from "../apis/assist-conversations-apis";
 
 /**
  * Binds assistant-ui message logs to your backend tables.
+ *
+ * Persisted rows are grouped into user/assistant messages and their structured
+ * content (skills, tool calls, approvals) is rebuilt from the recorded frame
+ * transcript, so a reloaded thread matches the streamed one.
+ *
  * @param getConversationId Lazy dynamic getter to fetch or create the DB identifier.
  */
 export const createHistoryAdapter = (
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>,
 ): ThreadHistoryAdapter => {
-  const mapRole = (role: ConversationMessageSenderEnum): ThreadMessage["role"] => {
-    switch (role) {
-      case ConversationMessageSenderEnum.USER:
-        return "user";
-      case ConversationMessageSenderEnum.ASSISTANT:
-        return "assistant";
-      case ConversationMessageSenderEnum.SYSTEM:
-        return "system";
-      default:
-        return "assistant";
-    }
-  };
-
-  const mapDtoToThreadMessage = (msg: ConversationMessageDto): ThreadMessage => {
-    const role = mapRole(msg.role);
-
-    const base = {
-      id: msg.id ?? "",
-      createdAt: new Date(msg.createdOn),
-    };
-
-    if (role === "assistant") {
-      return {
-        ...base,
-        role: "assistant",
-        status: { type: "complete", reason: "unknown" },
-        metadata: (msg.metadata || {}) as any,
-        content: [{ type: "text", text: msg.content }],
-      };
-    }
-
-    if (role === "user") {
-      return {
-        ...base,
-        role: "user",
-        attachments: [],
-        metadata: (msg.metadata || { custom: {} }) as any,
-        content: [{ type: "text", text: msg.content }],
-      };
-    }
-
-    return {
-      ...base,
-      role: "system",
-      metadata: (msg.metadata || { custom: {} }) as any,
-      content: [{ type: "text", text: msg.content }],
-    };
-  };
-
   return {
     async load(): Promise<ExportedMessageRepository> {
       try {
@@ -85,7 +35,7 @@ export const createHistoryAdapter = (
           return { messages: [] };
         }
 
-        const threadMessages = data.map(mapDtoToThreadMessage);
+        const threadMessages = groupConversationMessages(data) as unknown as ThreadMessage[];
 
         const messages = threadMessages.map((msg, index) => ({
           message: msg,

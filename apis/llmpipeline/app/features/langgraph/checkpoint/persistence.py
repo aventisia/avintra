@@ -193,6 +193,52 @@ async def save_message(
     )
 
 
+async def save_transcript(
+    session: AsyncSession,
+    tenant_id: uuid.UUID,
+    conversation_id: str,
+    content: str,
+    frames: list[dict[str, Any]],
+    decisions: dict[str, str] | None = None,
+) -> None:
+    """Persist a UI-only transcript row for a streamed assistant turn.
+
+    The row is not part of the model history: ``load_messages`` skips it. It
+    carries the normalized SSE ``frames`` so the chat UI can rebuild the same
+    structured content (skills, tool calls, approvals, text) after a reload.
+    """
+
+    try:
+        conversation_uuid = uuid.UUID(conversation_id)
+    except ValueError:
+        logger.error(
+            "Cannot save transcript; invalid conversation_id UUID: %s",
+            conversation_id,
+        )
+        return
+
+    metadata: dict[str, Any] = {"ui_transcript": True, "frames": frames}
+    if decisions:
+        metadata["decisions"] = decisions
+
+    session.add(
+        ConversationMessage(
+            id=uuid.uuid4(),
+            tenant_id=tenant_id,
+            conversation_id=conversation_uuid,
+            role="assistant",
+            content=content or "",
+            message_metadata=metadata,
+            created_on=datetime.now(timezone.utc),
+        )
+    )
+
+    logger.debug(
+        "Persisted UI transcript for conversation %s.",
+        conversation_id,
+    )
+
+
 async def load_messages(
     session: AsyncSession,
     conversation_id: str,
@@ -219,6 +265,11 @@ async def load_messages(
 
     for record in records:
         metadata = record.message_metadata or {}
+
+        # UI transcript rows exist only to rehydrate the chat UI; they must not
+        # be replayed to the model as assistant messages.
+        if metadata.get("ui_transcript"):
+            continue
 
         message_id = metadata.get("message_id") or str(record.id)
 

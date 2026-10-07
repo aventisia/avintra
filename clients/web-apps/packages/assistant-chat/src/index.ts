@@ -19,6 +19,11 @@ export { humanizeToolLabel } from "./lib/tool-labels";
 export { getPendingApprovalParts, isPendingApprovalPart } from "./lib/approval-parts";
 export type { ApprovalPartMeta, ApprovalToolCallPart } from "./lib/approval-parts";
 
+export { buildContentPartsFromFrames, createContentPartsBuilder } from "./lib/content-parts";
+export type { ContentPart, ContentPartsBuilder, NormalizedChatFrame } from "./lib/content-parts";
+export { groupConversationMessages } from "./lib/conversation-messages";
+export type { ConversationMessageLike } from "./lib/conversation-messages";
+
 export { useHasPendingToolCalls, useToolCallCoordinatorStore } from "./stores/tool-call-store";
 export type { ToolCallEntry } from "./stores/tool-call-store";
 
