@@ -89,6 +89,21 @@ const releaseResolvedUrls = (): void => {
   resolvedUrls.clear();
 };
 
+/** Revokes and forgets the object URL for a single clip. */
+const releaseClipUrl = (clip: VoiceAudioClip): void => {
+  const url = resolvedUrls.get(clip.id);
+  if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
+  resolvedUrls.delete(clip.id);
+};
+
+/** Collects the keys that currently own a clip (playing or queued). */
+const collectActiveKeys = (): string[] => {
+  const keys = new Set<string>();
+  if (current) keys.add(current.key);
+  queue.forEach((clip) => keys.add(clip.key));
+  return [...keys];
+};
+
 type VoicePlaybackState = {
   /** Whether streamed replies are spoken aloud (persisted). */
   speakReplies: boolean;
@@ -100,19 +115,22 @@ type VoicePlaybackState = {
   activeKey: string | null;
   /** Clips waiting behind the one currently playing. */
   queueSize: number;
+  /** Keys with a clip currently playing or waiting in the queue. */
+  activeKeys: string[];
+  /** Keys with an in-flight Text-to-Speech request. */
+  synthesizingKeys: string[];
   /** Per-message clip cache so replays skip synthesis. */
   clipCache: Record<string, VoiceAudioClip[]>;
 
   setSpeakReplies: (value: boolean) => void;
-  setSynthesizing: (value: boolean) => void;
+  /** Marks a key as synthesizing (or done) for the per-message Stop control. */
+  markSynthesizing: (key: string, value: boolean) => void;
   /** Appends clips to the FIFO queue; playback starts when idle. */
   enqueue: (key: string, clips: VoiceAudioClip[]) => void;
-  /** Pauses/resumes `key` when it owns playback, otherwise enqueues it. */
-  togglePauseResume: (key: string, clips: VoiceAudioClip[]) => void;
-  pause: () => void;
-  resume: () => void;
   /** Stops playback and drops the queue without aborting the run. */
   stop: () => void;
+  /** Stops and drops only `key`'s clips, leaving other keys playing. */
+  stopKey: (key: string) => void;
   cacheClips: (key: string, clips: VoiceAudioClip[]) => void;
   getCachedClips: (key: string) => VoiceAudioClip[] | undefined;
 };
@@ -122,13 +140,18 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
   const playNext = (): void => {
     if (queue.length === 0) {
       current = null;
-      set({ isPlaying: false, activeKey: null, queueSize: 0 });
+      set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
       return;
     }
 
     const next = queue.shift() as QueuedClip;
     current = next;
-    set({ isPlaying: true, activeKey: next.key, queueSize: queue.length });
+    set({
+      isPlaying: true,
+      activeKey: next.key,
+      queueSize: queue.length,
+      activeKeys: collectActiveKeys(),
+    });
 
     const element = getAudioElement(playNext);
     element.src = resolveClipUrl(next);
@@ -144,6 +167,8 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
     isSynthesizing: false,
     activeKey: null,
     queueSize: 0,
+    activeKeys: [],
+    synthesizingKeys: [],
     clipCache: {},
 
     setSpeakReplies: (value) => {
@@ -153,34 +178,26 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
       if (!value) get().stop();
     },
 
-    setSynthesizing: (value) => set({ isSynthesizing: value }),
+    markSynthesizing: (key, value) =>
+      set((state) => {
+        const synthesizingKeys = value
+          ? state.synthesizingKeys.includes(key)
+            ? state.synthesizingKeys
+            : [...state.synthesizingKeys, key]
+          : state.synthesizingKeys.filter((existing) => existing !== key);
+        return { synthesizingKeys, isSynthesizing: synthesizingKeys.length > 0 };
+      }),
 
     enqueue: (key, clips) => {
       if (clips.length === 0) return;
+      // Live replies must never (re)start playback while muted; a synthesis
+      // task that resolves just after a mute would otherwise resume the audio.
+      // Other keys are explicit per-message playback and stay allowed.
+      if (key === LIVE_SPEECH_KEY && !get().speakReplies) return;
       queue.push(...clips.map((clip) => ({ ...clip, key })));
-      set({ queueSize: queue.length });
+      set({ queueSize: queue.length, activeKeys: collectActiveKeys() });
       // Only auto-start when idle; a paused player waits for an explicit resume.
       if (current === null) playNext();
-    },
-
-    togglePauseResume: (key, clips) => {
-      if (current && current.key === key) {
-        if (get().isPlaying) get().pause();
-        else get().resume();
-        return;
-      }
-      get().enqueue(key, clips);
-    },
-
-    pause: () => {
-      audioElement?.pause();
-      set({ isPlaying: false });
-    },
-
-    resume: () => {
-      if (!audioElement || !current) return;
-      set({ isPlaying: true });
-      audioElement.play().catch(() => set({ isPlaying: false }));
     },
 
     stop: () => {
@@ -192,7 +209,36 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
         audioElement.load();
       }
       releaseResolvedUrls();
-      set({ isPlaying: false, activeKey: null, queueSize: 0 });
+      set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+    },
+
+    stopKey: (key) => {
+      const removed = queue.filter((clip) => clip.key === key);
+      queue = queue.filter((clip) => clip.key !== key);
+
+      // If the stopped key owns the audio element, halt it and release its URLs.
+      if (current && current.key === key) {
+        removed.push(current);
+        current = null;
+        if (audioElement) {
+          audioElement.pause();
+          audioElement.removeAttribute("src");
+          audioElement.load();
+        }
+      }
+      removed.forEach(releaseClipUrl);
+
+      // Nothing was playing for this key: just resync the derived state.
+      if (current === null && queue.length === 0) {
+        set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+        return;
+      }
+      // Continue with whatever other keys still have clips queued.
+      if (current === null) {
+        playNext();
+        return;
+      }
+      set({ queueSize: queue.length, activeKeys: collectActiveKeys() });
     },
 
     cacheClips: (key, clips) => {

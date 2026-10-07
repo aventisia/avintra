@@ -38,7 +38,6 @@ import {
   LoaderCircleIcon,
   Mic,
   MoreHorizontalIcon,
-  PauseIcon,
   PencilIcon,
   PlayIcon,
   Plus,
@@ -710,9 +709,20 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
       .trim(),
   );
 
-  const isActiveClip = voice?.activeKey === messageId;
-  const isPlayingThis = Boolean(voice?.isPlaying && isActiveClip);
-  const speakTooltip = isPlayingThis ? "Pause" : isActiveClip ? "Resume" : "Read aloud";
+  // The button is a Play/Stop toggle. It reflects both explicit per-message
+  // playback and the live stream (which speaks the last reply), and it is
+  // disabled while spoken replies are muted.
+  const isLast = useAuiState((s) => s.message.isLast);
+  const isMuted = Boolean(voice && !voice.speakReplies);
+  const isLiveTarget = Boolean(voice?.isLiveSpeaking && isLast);
+  const isSpeaking = Boolean(
+    voice &&
+    (isLiveTarget ||
+      voice.activeKeys.includes(messageId) ||
+      voice.synthesizingKeys.includes(messageId)),
+  );
+  const disabledReason = isMuted ? "Audio is muted. Unmute to play." : null;
+  const speakTooltip = disabledReason ?? (isSpeaking ? "Stop" : "Read aloud");
 
   return (
     <ActionBarPrimitive.Root
@@ -723,12 +733,17 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
       {voice && messageText.length > 0 && (
         <TooltipIconButton
           tooltip={speakTooltip}
-          className="aui-assistant-action-bar-speak"
+          className="aui-assistant-action-bar-speak data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
           aria-label={speakTooltip}
-          aria-pressed={isPlayingThis}
-          onClick={() => voice.toggleMessageSpeech(messageId, messageText)}
+          aria-pressed={isSpeaking && !isMuted}
+          aria-disabled={isMuted}
+          data-disabled={isMuted ? "true" : undefined}
+          onClick={() => {
+            if (isMuted) return;
+            voice.toggleMessageSpeech(messageId, messageText, isLiveTarget);
+          }}
         >
-          {isPlayingThis ? <PauseIcon /> : isActiveClip ? <PlayIcon /> : <Volume2Icon />}
+          {isSpeaking && !isMuted ? <SquareIcon /> : <PlayIcon />}
         </TooltipIconButton>
       )}
 

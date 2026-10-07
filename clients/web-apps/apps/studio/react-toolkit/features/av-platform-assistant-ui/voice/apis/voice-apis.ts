@@ -23,11 +23,15 @@ export const transcribeSpeechToText = (requestDto: STTRequestDto) => {
  * Synthesizes speech from text.
  * Uses the llmpipeline LiteLLM v2 route (`POST /v2/llm/tts/synthesize`).
  * The response is a flat `TTSResponseDto` (not wrapped in `ServiceResponse`).
+ *
+ * Pass an `AbortSignal` to cancel an in-flight request (e.g. when the user
+ * mutes spoken replies while the answer is still streaming).
  */
-export const synthesizeTts = (requestDto: TTSRequestDto) => {
+export const synthesizeTts = (requestDto: TTSRequestDto, signal?: AbortSignal) => {
   return axiosInstance
     .post<TTSResponseDto>(`${baseAPIURL}/v2/llm/tts/synthesize`, requestDto, {
       headers: getStudioConfigHeaders(),
+      signal,
     })
     .then((res) => res.data);
 };
