@@ -8,7 +8,7 @@ from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
-from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
+from app.features.langgraph.skills.skill_loader import load_custom_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_DENIED,
@@ -58,8 +58,8 @@ async def select_tools_and_skills(
     selected skills into the agent's system prompt.
 
     Args:
-        tenant_id: When provided, the catalog includes tenant-specific user
-            skills in addition to global skills.
+        tenant_id: When provided, the catalog includes tenant-specific custom
+            skills in addition to platform skills.
         allowed_skill_names: When provided, the planner can only choose from
             these skills (e.g. the skills explicitly attached to an agent).
         allowed_tool_names: When provided, the planner can only choose from
@@ -128,13 +128,9 @@ async def select_tools_and_skills(
             ]
         )
 
-        # ``response`` may be a raw dict when ``with_structured_output`` is used.
-        if isinstance(response, dict):
-            raw_output = json.dumps(response)
-        elif isinstance(response.content, str):
-            raw_output = response.content
-        else:
-            raw_output = str(response.content)
+        raw_output = _extract_response_text(response)
+
+        logger.debug("Tool/skill planner raw output: %s", raw_output)
 
         parsed = _parse_selection_output(raw_output)
 
@@ -162,14 +158,14 @@ async def resolve_requested_or_selected_tools_and_skills(
     from the lightweight catalog.
 
     Tenant-specific skills are loaded from the database when a session is
-    provided so that custom user skills are available alongside global skills.
+    provided so that custom skills are available alongside platform skills.
 
     Args:
         request: The incoming LLM request.
         user: Authenticated user (used for tenant scoping and model creation).
         tool_registry: Registry of available tools.
         skill_registry: Registry of available skills.
-        db_session: Optional async SQLAlchemy session for loading user skills.
+        db_session: Optional async SQLAlchemy session for loading custom skills.
 
     Returns:
         A tuple of (selected_tool_names, selected_skill_configs).
@@ -178,7 +174,7 @@ async def resolve_requested_or_selected_tools_and_skills(
     tenant_id = str(user.tenant_id)
 
     if db_session is not None:
-        await load_user_skills_from_db(
+        await load_custom_skills(
             registry=skill_registry,
             db_session=db_session,
             tenant_id=tenant_id,
@@ -539,6 +535,56 @@ def _extract_user_text(request: LLMRequest) -> str:
     return ""
 
 
+def _coerce_name_list(value: Any) -> list[str]:
+    """Normalize a planner field into a list of names.
+
+    The planner is asked for arrays, but a weak model may return a bare
+    string or ``null``; coerce both into a list so validation can run.
+    """
+
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, (list, tuple, set)):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def _extract_response_text(response: Any) -> str:
+    """Return the plain-text payload of a chat model response.
+
+    Providers shape ``AIMessage.content`` differently: most return a string, but
+    Gemini 3 returns a list of content blocks (e.g.
+    ``[{"type": "text", "text": "..."}]``). Stringifying that list yields a
+    Python repr (single quotes, ``extras`` metadata) which is not valid JSON, so
+    the planner parse would fail and fall back to selecting every skill and no
+    tools. Concatenate the text blocks instead. ``response`` may also already be
+    a raw dict when ``with_structured_output`` is used.
+    """
+
+    if isinstance(response, dict):
+        return json.dumps(response)
+
+    content = getattr(response, "content", response)
+
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts: list[str] = []
+        for part in content:
+            if isinstance(part, dict):
+                text = part.get("text")
+                if isinstance(text, str):
+                    parts.append(text)
+            elif isinstance(part, str):
+                parts.append(part)
+        return "".join(parts)
+
+    return str(content)
+
+
 def _parse_selection_output(raw_output: str) -> "ToolSkillSelectionResponse":
     """Parse planner JSON output into a selection response."""
 
@@ -552,8 +598,35 @@ def _parse_selection_output(raw_output: str) -> "ToolSkillSelectionResponse":
             lines = lines[:-1]
         cleaned = "\n".join(lines).strip()
 
-    data = json.loads(cleaned)
-    return ToolSkillSelectionResponse(**data)
+    try:
+        data = json.loads(cleaned)
+    except json.JSONDecodeError:
+        # Some models prepend/append prose around the JSON object. Recover the
+        # outermost ``{...}`` span before giving up so a stray sentence does not
+        # trigger the "select everything / no tools" fallback.
+        start = cleaned.find("{")
+        end = cleaned.rfind("}")
+        if start == -1 or end <= start:
+            raise
+        data = json.loads(cleaned[start : end + 1])
+
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"Planner returned {type(data).__name__}, expected a JSON object."
+        )
+
+    # The planner prompt shows the response schema, and weaker models echo its
+    # top-level "type": "object" (or add other keys). Read only the fields we
+    # understand instead of splatting the whole object into the constructor.
+    if "tool_names" not in data and "skill_names" not in data:
+        raise ValueError(
+            f"Planner response missing tool_names/skill_names: {sorted(data)}"
+        )
+
+    return ToolSkillSelectionResponse(
+        tool_names=_coerce_name_list(data.get("tool_names")),
+        skill_names=_coerce_name_list(data.get("skill_names")),
+    )
 
 
 def _validate_selection(

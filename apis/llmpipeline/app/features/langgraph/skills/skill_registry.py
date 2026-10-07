@@ -9,14 +9,14 @@ class SkillRegistry:
     A skill is currently a lightweight name/description item that the
     planner uses to decide whether it is relevant for a user request.
 
-    User-created skills loaded from the database are kept in a separate
+    Custom skills loaded from the database are kept in a separate
     tenant-scoped namespace so that they can be refreshed per request and
-    do not collide with globally-defined filesystem skills.
+    do not collide with platform filesystem skills.
     """
 
     def __init__(self):
         self._skills: dict[str, SkillConfig] = {}
-        self._user_skills: dict[str, dict[str, SkillConfig]] = {}
+        self._custom_skills: dict[str, dict[str, SkillConfig]] = {}
 
     def register(
         self,
@@ -109,7 +109,7 @@ class SkillRegistry:
         Return skill names registered for a specific tenant.
         """
 
-        return list(self._user_skills.get(tenant_id, {}).keys())
+        return list(self._custom_skills.get(tenant_id, {}).keys())
 
     def remove(
         self,
@@ -141,17 +141,17 @@ class SkillRegistry:
         skill: SkillConfig,
     ) -> None:
         """
-        Register a user-created skill under a tenant namespace.
+        Register a custom skill under a tenant namespace.
 
-        Tenant-scoped skills are layered on top of global skills during
+        Tenant-scoped skills are layered on top of platform skills during
         runtime so each tenant only sees their own custom skills plus the
         platform defaults.
         """
 
-        if tenant_id not in self._user_skills:
-            self._user_skills[tenant_id] = {}
+        if tenant_id not in self._custom_skills:
+            self._custom_skills[tenant_id] = {}
 
-        self._user_skills[tenant_id][skill.name] = skill
+        self._custom_skills[tenant_id][skill.name] = skill
 
         logger.debug(
             "Registered tenant skill: %s for tenant %s",
@@ -168,12 +168,12 @@ class SkillRegistry:
         Resolve a skill by name, preferring tenant-specific definitions.
 
         Resolution order:
-            1. Tenant-specific user skill (if ``tenant_id`` is provided).
-            2. Global filesystem skill.
+            1. Tenant-specific custom skill (if ``tenant_id`` is provided).
+            2. Platform filesystem skill.
         """
 
         if tenant_id:
-            tenant_skill = self._user_skills.get(tenant_id, {}).get(name)
+            tenant_skill = self._custom_skills.get(tenant_id, {}).get(name)
             if tenant_skill is not None:
                 return tenant_skill
 
@@ -184,16 +184,16 @@ class SkillRegistry:
         tenant_id: str | None,
     ) -> list[SkillConfig]:
         """
-        Return all global skills plus tenant-specific user skills.
+        Return all platform skills plus tenant-specific custom skills.
 
-        Tenant-specific skills with the same name as a global skill take
+        Tenant-specific skills with the same name as a platform skill take
         precedence in the returned list.
         """
 
         merged = dict(self._skills)
 
         if tenant_id:
-            merged.update(self._user_skills.get(tenant_id, {}))
+            merged.update(self._custom_skills.get(tenant_id, {}))
 
         return list(merged.values())
 
@@ -211,19 +211,19 @@ class SkillRegistry:
             if skill.is_active
         ]
 
-    def clear_tenant_skills(
+    def clear_custom_skills(
         self,
         tenant_id: str,
     ) -> None:
         """
-        Remove all user skills for a tenant.
+        Remove all custom skills for a tenant.
 
         Useful during sync/testing or when refreshing tenant skills from
         the database.
         """
 
-        if tenant_id in self._user_skills:
-            del self._user_skills[tenant_id]
+        if tenant_id in self._custom_skills:
+            del self._custom_skills[tenant_id]
             logger.debug(
                 "Cleared tenant skills for %s",
                 tenant_id,

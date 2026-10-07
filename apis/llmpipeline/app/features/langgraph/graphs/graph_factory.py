@@ -7,7 +7,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import tools_condition
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
@@ -25,7 +24,6 @@ from app.features.langgraph.services.tool_approval import (
 from app.features.langgraph.services.tool_skill_selector import (
     select_tools_and_skills,
 )
-from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.services.corsair_sidecar_service import is_corsair_tool
@@ -40,7 +38,6 @@ def build_chat_graph(
     user: User,
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
-    db_session: AsyncSession | None = None,
     tool_names: list[str] | None = None,
     skill_names: list[str] | None = None,
 ) -> StateGraph:
@@ -77,7 +74,6 @@ def build_chat_graph(
             skill_registry=skill_registry,
             request=request,
             user=user,
-            db_session=db_session,
             explicit_tool_names=tool_names,
             explicit_skill_names=skill_names,
         ),
@@ -147,7 +143,6 @@ def _create_agent_selector_node(
     skill_registry: SkillRegistry,
     request: LLMRequest,
     user: User,
-    db_session: AsyncSession | None = None,
     explicit_tool_names: list[str] | None = None,
     explicit_skill_names: list[str] | None = None,
 ):
@@ -160,17 +155,6 @@ def _create_agent_selector_node(
     async def identify_tools_and_skills(state: ChatState):
         metadata = state.get("metadata") or {}
         current_request = restore_request(metadata, request)
-
-        # Load tenant-specific skills from the database so the planner sees
-        # both global skills and this tenant's custom skills.
-        if db_session is not None:
-            await load_user_skills_from_db(
-                registry=skill_registry,
-                db_session=db_session,
-                tenant_id=tenant_id,
-                env_type=user.env_type,
-                space_id=user.space_id,
-            )
 
         # Explicitly configured tools (via "Configure Tools") are the only tools
         # the agent may call. They are NOT force-bound: the ReAct planner decides

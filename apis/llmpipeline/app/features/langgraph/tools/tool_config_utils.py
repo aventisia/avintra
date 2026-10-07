@@ -72,7 +72,7 @@ def configured_tool_roots(tool_config: list[Any]) -> list[str]:
 
     The root is the Studio ``tool`` field (e.g. ``outlook`` for the action
     ``outlook_send_email``), which matches ``ws_Tools.Name``. Custom OpenAPI
-    tools are stored per root, so this is what ``load_tools_for_tenant`` filters
+    tools are stored per root, so this is what ``load_custom_tools`` filters
     on. Order is preserved and duplicates are dropped.
     """
 

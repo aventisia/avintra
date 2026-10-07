@@ -12,6 +12,8 @@ import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { getSpaceHeaders } from "@/utils/space-headers";
+
 // API imports are kept as they are internal domain logic for this specific feature
 import { createHistoryAdapter } from "../adapters/history-adaptor";
 import { insertConversation } from "../apis/assist-conversations-apis";
@@ -236,6 +238,8 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
           isTempChat: mode === "temporary",
+          // Chat streams are scoped to the current space.
+          getExtraHeaders: getSpaceHeaders,
         }),
       [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
     ),
