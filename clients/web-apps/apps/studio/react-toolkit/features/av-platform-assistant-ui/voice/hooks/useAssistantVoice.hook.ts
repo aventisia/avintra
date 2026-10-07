@@ -99,9 +99,9 @@ export const useAssistantVoice = ({
     };
 
     const response = await synthesizeTts(requestDto);
-    const output = response.data?.output;
+    const output = response.output;
     if (!output) {
-      if (response.data?.error) throw new Error(response.data.error);
+      if (response.error) throw new Error(response.error);
       return null;
     }
     return { id: crypto.randomUUID(), audio: output, mimeType: resolveAudioMimeType(output) };

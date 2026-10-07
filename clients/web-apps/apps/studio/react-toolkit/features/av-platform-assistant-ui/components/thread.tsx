@@ -36,18 +36,25 @@ import {
   CopyIcon,
   DownloadIcon,
   LoaderCircleIcon,
+  Mic,
   MoreHorizontalIcon,
+  PauseIcon,
   PencilIcon,
+  PlayIcon,
   Plus,
   RefreshCwIcon,
   SparklesIcon,
   SquareIcon,
+  Volume2Icon,
+  VolumeXIcon,
 } from "lucide-react";
 import type { FC } from "react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
+import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
+import { useVoiceRecorder } from "../voice/hooks/useVoiceRecorder.hook";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
@@ -176,18 +183,71 @@ const ThreadHeader = ({
           </span>
         )}
       </div>
-      <TooltipIconButton
-        tooltip="New chat"
-        side="left"
-        variant="ghost"
-        size="icon8"
-        className="aui-thread-new-session size-8 shrink-0 rounded-md"
-        aria-label="Start new chat"
-        onClick={handleNewSession}
-      >
-        <Plus className="size-4 text-[var(--icon-color)]" />
-      </TooltipIconButton>
+      <div className="flex shrink-0 items-center gap-1">
+        <TooltipIconButton
+          tooltip="New chat"
+          side="left"
+          variant="ghost"
+          size="icon8"
+          className="aui-thread-new-session size-8 shrink-0 rounded-md"
+          aria-label="Start new chat"
+          onClick={handleNewSession}
+        >
+          <Plus className="size-4 text-[var(--icon-color)]" />
+        </TooltipIconButton>
+      </div>
     </div>
+  );
+};
+
+/**
+ * Composer toggle for spoken replies. Turning it off mutes playback without
+ * aborting the run. It stays hoverable while unconfigured (aria-disabled, not
+ * the native `disabled`) so the tooltip can explain what is missing.
+ */
+const SpeakerToggle: FC = () => {
+  const voice = useAssistantVoiceContext();
+  if (!voice) return null;
+
+  const missingModel = !voice.ttsConfig?.model?.trim();
+  const missingCredential =
+    Boolean(voice.ttsConfig?.is_byok_enabled) && !voice.ttsConfig?.credential_name?.trim();
+
+  const disabledReason =
+    missingModel && missingCredential
+      ? "Select a Text to Speech model and credential to hear replies."
+      : missingModel
+        ? "Select a Text to Speech model to hear replies."
+        : missingCredential
+          ? "Select a credential for Text to Speech to hear replies."
+          : null;
+
+  const isDisabled = disabledReason !== null;
+  const label = voice.speakReplies ? "Mute spoken replies" : "Speak replies";
+  const tooltip = disabledReason ?? label;
+
+  return (
+    <TooltipIconButton
+      tooltip={tooltip}
+      side="bottom"
+      variant="ghost"
+      size="icon8"
+      className="aui-composer-speak-replies size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
+      aria-label={tooltip}
+      aria-pressed={voice.speakReplies}
+      aria-disabled={isDisabled}
+      data-disabled={isDisabled ? "true" : undefined}
+      onClick={() => {
+        if (isDisabled) return;
+        voice.setSpeakReplies(!voice.speakReplies);
+      }}
+    >
+      {voice.speakReplies ? (
+        <Volume2Icon className={cn("size-4", voice.isPlaying && "text-primary")} />
+      ) : (
+        <VolumeXIcon className="size-4 text-[var(--icon-color)]" />
+      )}
+    </TooltipIconButton>
   );
 };
 
@@ -296,14 +356,86 @@ const Composer: FC = () => {
   );
 };
 
+/** Formats an elapsed second count as `m:ss` for the recording indicator. */
+const formatRecordingTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
 const ComposerAction: FC = () => {
   const hasPending = useHasPendingToolCalls();
 
   const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
+  const aui = useAui();
+  const voice = useAssistantVoiceContext();
+
+  // Append the transcript to whatever the user has already typed.
+  const handleTranscript = useCallback(
+    (text: string) => {
+      const existing = aui.composer.getState().text;
+      aui.composer.setText(existing.trim() ? `${existing.trimEnd()} ${text}` : text);
+    },
+    [aui],
+  );
+
+  const {
+    isRecording,
+    isTranscribing,
+    recordingSeconds,
+    isMicDisabled,
+    micTooltip,
+    toggleRecording,
+  } = useVoiceRecorder({
+    sttConfig: voice?.sttConfig ?? null,
+    refId: voice?.refId ?? "",
+    refName: voice?.refName ?? "",
+    agentName: voice?.agentName ?? null,
+    language: voice?.language ?? null,
+    onTranscript: handleTranscript,
+  });
 
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
-      <ComposerAddAttachment />
+      <div className="flex items-center gap-1">
+        <ComposerAddAttachment />
+        {/* Keep the mic hoverable while unconfigured: use aria-disabled (not the native
+            `disabled`, which applies pointer-events-none) so the tooltip can explain what
+            is missing. The click is ignored inside `toggleRecording`. */}
+        {voice && (
+          <>
+            <TooltipIconButton
+              tooltip={micTooltip}
+              side="bottom"
+              variant="ghost"
+              size="icon8"
+              className="aui-composer-mic size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
+              aria-label={micTooltip}
+              aria-pressed={isRecording}
+              aria-disabled={isMicDisabled}
+              data-disabled={isMicDisabled ? "true" : undefined}
+              onClick={toggleRecording}
+            >
+              {isTranscribing ? (
+                <LoaderCircleIcon className="size-4 animate-spin" />
+              ) : isRecording ? (
+                <SquareIcon className="size-3 fill-current text-destructive" />
+              ) : (
+                <Mic className="size-4" />
+              )}
+            </TooltipIconButton>
+            {isRecording && (
+              <span
+                className="aui-composer-recording-timer text-xs font-medium tabular-nums text-muted-foreground"
+                aria-live="polite"
+              >
+                {formatRecordingTime(recordingSeconds)}
+              </span>
+            )}
+            <SpeakerToggle />
+          </>
+        )}
+      </div>
 
       <AuiIf condition={(s) => !s.thread.isRunning && !hasPending}>
         <ComposerPrimitive.Send asChild>
@@ -549,12 +681,38 @@ const AssistantMessage: FC = () => {
 };
 
 const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
+  const voice = useAssistantVoiceContext();
+  const messageId = useAuiState((s) => s.message.id);
+  // Only answer text is spoken; reasoning/thinking parts stay silent.
+  const messageText = useAuiState((s) =>
+    s.message.content
+      .map((part) => (part.type === "text" ? part.text : ""))
+      .join("\n")
+      .trim(),
+  );
+
+  const isActiveClip = voice?.activeKey === messageId;
+  const isPlayingThis = Boolean(voice?.isPlaying && isActiveClip);
+  const speakTooltip = isPlayingThis ? "Pause" : isActiveClip ? "Resume" : "Read aloud";
+
   return (
     <ActionBarPrimitive.Root
       hideWhenRunning
       autohide="not-last"
       className="aui-assistant-action-bar-root col-start-3 row-start-2 -ml-1 flex gap-1 text-muted-foreground"
     >
+      {voice && messageText.length > 0 && (
+        <TooltipIconButton
+          tooltip={speakTooltip}
+          className="aui-assistant-action-bar-speak"
+          aria-label={speakTooltip}
+          aria-pressed={isPlayingThis}
+          onClick={() => voice.toggleMessageSpeech(messageId, messageText)}
+        >
+          {isPlayingThis ? <PauseIcon /> : isActiveClip ? <PlayIcon /> : <Volume2Icon />}
+        </TooltipIconButton>
+      )}
+
       <ActionBarPrimitive.Copy asChild>
         <TooltipIconButton tooltip="Copy">
           <AuiIf condition={(s) => s.message.isCopied}>
