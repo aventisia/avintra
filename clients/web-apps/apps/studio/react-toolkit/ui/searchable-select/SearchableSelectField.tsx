@@ -7,6 +7,7 @@ import {
   FormMessage,
 } from "@avplatform/ui/form";
 import { FormFieldSizeType } from "@avplatform/ui/types";
+import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
 import {
@@ -24,6 +25,8 @@ interface SearchableSelectFieldProps extends BaseFieldProps {
   disabled?: boolean;
   size?: FormFieldSizeType;
   isLoading?: boolean;
+  /** Rendered in place of the icon for select options whose `icon` is not set. */
+  fallbackIcon?: React.ReactNode;
 }
 
 const SearchableSelectField = ({
@@ -38,6 +41,7 @@ const SearchableSelectField = ({
   searchPlaceholder,
   primaryText,
   isLoading,
+  fallbackIcon,
 }: SearchableSelectFieldProps) => {
   const { control } = useFormContext<FieldValues>();
 
@@ -60,6 +64,7 @@ const SearchableSelectField = ({
               disabled={disabled}
               size={size}
               isLoading={isLoading}
+              fallbackIcon={fallbackIcon}
             />
           </FormControl>
 
