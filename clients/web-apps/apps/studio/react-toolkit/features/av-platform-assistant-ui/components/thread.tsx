@@ -530,20 +530,23 @@ const groupMessageParts = (
 const ChainOfThought: FC<{
   status: { type: string };
   indices: readonly number[];
-  counts: { running: number; incomplete: number; requiresAction: number };
   children: React.ReactNode;
-}> = ({ status, indices, counts, children }) => {
+}> = ({ status, indices, children }) => {
   const [open, setOpen] = useState(false);
   const parts = useAuiState((s) => s.message.parts);
-  const isRunning = status.type === "running" || counts.running > 0;
-  const isOpen = isRunning || open;
 
   const groupParts = indices
     .map((index) => parts[index])
     .filter((part): part is PartState => Boolean(part));
+
+  // The library reports a group as `running` while any contained part streams;
+  // compute the warning state from the parts themselves since the group object
+  // exposes no per-status counts.
+  const isRunning = status.type === "running";
+  const isOpen = isRunning || open;
   const toolCount = groupParts.filter((part) => part.type === "tool-call").length;
   const hasReasoning = groupParts.some((part) => part.type === "reasoning");
-  const hasIncomplete = counts.incomplete > 0;
+  const hasIncomplete = groupParts.some((part) => part.status.type === "incomplete");
   const lastPart = groupParts[groupParts.length - 1];
 
   // While running, name the current step (tool or skill) like a live status;
@@ -640,7 +643,7 @@ const AssistantMessage: FC = () => {
             switch (part.type) {
               case "group-thought":
                 return (
-                  <ChainOfThought status={part.status} indices={part.indices} counts={part.counts}>
+                  <ChainOfThought status={part.status} indices={part.indices}>
                     {children}
                   </ChainOfThought>
                 );
