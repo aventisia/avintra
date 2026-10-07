@@ -46,7 +46,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<FlowVersion_Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // Global SpaceId + TenantId filters.
         // Each entity is scoped by BOTH its owning tenant and its space:
@@ -108,7 +107,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
         modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
-        modelBuilder.Entity<FlowVersion_Tool>().HasIndex(index => new { index.TenantId, index.FlowVersionId, index.ToolId }).IsUnique();
         modelBuilder.Entity<Queue>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KeyStore>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Vault>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
@@ -230,19 +228,6 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Tool and WorkspaceUser
         modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
-        // Configure Many-to-Many relationship between FlowVersion and Tool
-        modelBuilder.Entity<FlowVersion_Tool>()
-            .HasOne(one => one.FlowVersion)
-            .WithMany()
-            .HasForeignKey(fKey => fKey.FlowVersionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<FlowVersion_Tool>()
-            .HasOne(one => one.Tool)
-            .WithMany()
-            .HasForeignKey(fKey => fKey.ToolId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -415,7 +400,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
     public DbSet<Tool> Tools { get; set; }
-    public DbSet<FlowVersion_Tool> FlowVersionTools { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketComment> TicketComments { get; set; }
     public DbSet<TicketAttachment> TicketAttachments { get; set; }

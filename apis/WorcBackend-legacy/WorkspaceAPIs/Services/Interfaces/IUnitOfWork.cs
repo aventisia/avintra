@@ -46,7 +46,6 @@ public interface IUnitOfWork
     ISkillRepo SkillRepo { get; }
     ISkillFileRepo SkillFileRepo { get; }
     IToolRepo ToolRepo { get; }
-    IFlowVersionToolRepo FlowVersionToolRepo { get; }
     ITicketRepo TicketRepo { get; }
     ITicketCommentRepo TicketCommentRepo { get; }
     ITicketAttachmentRepo TicketAttachmentRepo { get; }

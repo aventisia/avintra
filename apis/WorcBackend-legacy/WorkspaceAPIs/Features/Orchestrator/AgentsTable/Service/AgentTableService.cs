@@ -823,9 +823,6 @@ public class AgentTableService : IAgentTableService
         // stops the trigger handlers from scheduling the archived version.
         await DeleteLinksAsync(_unitOfWork.TriggerFlowVersionRepo, w => w.FlowVersionId == flowVersionId);
 
-        // Release tool references
-        await DeleteLinksAsync(_unitOfWork.FlowVersionToolRepo, w => w.FlowVersionId == flowVersionId);
-
         // Revoke per-user access and the tenant-wide access shortcut
         await DeleteLinksAsync(_unitOfWork.FlowVersionUserRepo, w => w.FlowVersionId == flowVersionId);
         flowVersion.IsTenantWideAccess = false;
@@ -899,10 +896,10 @@ public class AgentTableService : IAgentTableService
         // Names still referenced by other active agents, keyed by resource type.
         var usedNames = await GetResourceNamesUsedByOtherAgentsAsync(flowVersion.Id);
 
-        await DeleteOrphanedCredentialsAsync(resourceReferences["credentials"], usedNames["credentials"], flowVersion.Id);
+        await DeleteOrphanedCredentialsAsync(resourceReferences["credentials"], usedNames["credentials"]);
         await DeleteOrphanedQueuesAsync(resourceReferences["queues"], usedNames["queues"], flowVersion.Id);
         await DeleteOrphanedKnowledgeBasesAsync(resourceReferences["knowledgeBases"], usedNames["knowledgeBases"]);
-        await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"], flowVersion.Id);
+        await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"]);
         await DeleteOrphanedSkillsAsync(resourceReferences["skills"], usedNames["skills"]);
         await DeleteOrphanedKeyStoresAsync(resourceReferences["keyStores"], usedNames["keyStores"]);
         await DeleteOrphanedTriggersAsync(linkedTriggerIds, flowVersion.Id);
@@ -983,7 +980,7 @@ public class AgentTableService : IAgentTableService
 
     // Deletes credentials referenced only by the archived agent when they are not shared
     // and not referenced by any other entity.
-    private async Task DeleteOrphanedCredentialsAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    private async Task DeleteOrphanedCredentialsAsync(List<string> names, HashSet<string> usedNames)
     {
         foreach (var name in DistinctNames(names))
         {
@@ -996,7 +993,7 @@ public class AgentTableService : IAgentTableService
             if (credential == null || credential.IsTenantWideAccess)
                 continue;
 
-            if (await IsCredentialReferencedElsewhereAsync(credential, name, flowVersionId))
+            if (await IsCredentialReferencedElsewhereAsync(credential, name))
                 continue;
 
             // Owned key-value pairs go with the credential.
@@ -1007,7 +1004,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Checks whether a credential is still referenced by a knowledge base, queue or tool.
-    private async Task<bool> IsCredentialReferencedElsewhereAsync(AppSecret credential, string name, Guid flowVersionId)
+    private async Task<bool> IsCredentialReferencedElsewhereAsync(AppSecret credential, string name)
     {
         var normalizedName = name.ToLower();
 
@@ -1025,17 +1022,8 @@ public class AgentTableService : IAgentTableService
         if (usedByQueue)
             return true;
 
-        var usedByTool = await _unitOfWork.ToolRepo
+        return await _unitOfWork.ToolRepo
             .GetByConditionAsync(w => w.CredentialName != null && w.CredentialName.ToLower() == normalizedName)
-            .AnyAsync();
-        if (usedByTool)
-            return true;
-
-        // Tool links belonging to another active agent (the archived agent's links are already staged for removal).
-        return await _unitOfWork.FlowVersionToolRepo
-            .GetByConditionAsync(w => w.CredentialName != null &&
-                                      w.CredentialName.ToLower() == normalizedName &&
-                                      w.FlowVersionId != flowVersionId)
             .AnyAsync();
     }
 
@@ -1140,7 +1128,7 @@ public class AgentTableService : IAgentTableService
 
     // Deletes tools referenced only by the archived agent when they are not shared, not
     // platform-managed and not linked to another active agent.
-    private async Task DeleteOrphanedToolsAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    private async Task DeleteOrphanedToolsAsync(List<string> names, HashSet<string> usedNames)
     {
         foreach (var name in DistinctNames(names))
         {
@@ -1151,13 +1139,6 @@ public class AgentTableService : IAgentTableService
                 .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
             if (tool == null || tool.IsTenantWideAccess || tool.Type == ComponentTypeEnum.Platform)
-                continue;
-
-            // Still linked to another active agent?
-            var linkedToOtherAgent = await _unitOfWork.FlowVersionToolRepo
-                .GetByConditionAsync(w => w.ToolId == tool.Id && w.FlowVersionId != flowVersionId)
-                .AnyAsync();
-            if (linkedToOtherAgent)
                 continue;
 
             await _resourceShareService.DeleteResourceSharesAsync(tool.Id, ResourceTypeEnum.Tool);

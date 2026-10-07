@@ -2,9 +2,9 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from app.core.database import TenantScopedMixin
 
@@ -117,52 +117,3 @@ class Tool(TenantScopedMixin, CustomToolsBase):
         nullable=True,
         default=None,
     )
-
-    flow_version_links: Mapped[list["FlowVersion_Tool"]] = relationship(
-        back_populates="tool",
-    )
-
-
-class FlowVersion_Tool(TenantScopedMixin, CustomToolsBase):
-    """Many-to-many join between FlowVersion and Tool."""
-
-    __tablename__ = "FlowVersion_Tool"
-
-    id: Mapped[uuid.UUID] = mapped_column(
-        "Id",
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-    )
-    tenant_id: Mapped[uuid.UUID] = mapped_column(
-        "TenantId",
-        UUID(as_uuid=True),
-        nullable=False,
-        index=True,
-    )
-    flow_version_id: Mapped[uuid.UUID] = mapped_column(
-        "FlowVersionId",
-        UUID(as_uuid=True),
-        ForeignKey("FlowVersions.Id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    tool_id: Mapped[uuid.UUID] = mapped_column(
-        "ToolId",
-        UUID(as_uuid=True),
-        ForeignKey("ws_Tools.Id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    allowed_operations: Mapped[Optional[list]] = mapped_column(
-        "AllowedOperations",
-        JSONB,
-        nullable=True,
-        default=None,
-    )
-    credential_name: Mapped[Optional[str]] = mapped_column(
-        "CredentialName",
-        String(255),
-        nullable=True,
-        default=None,
-    )
-
-    tool: Mapped["Tool"] = relationship(back_populates="flow_version_links")

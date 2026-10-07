@@ -254,7 +254,7 @@ failed partway must be repairable by re-running it.
   the tool/skill selector and the chat custom-tool loader must resolve only
   Prod resources.
 - Custom tools load by configured root name (`ws_Tools.Name`) for the request
-  env; the dormant `FlowVersion_Tool` link table is not queried.
+  env.
 - pgvector retrieval/delete filters vectors with
   `COALESCE("Metadata" ->> 'env_type', 'dev') = :env_type`, so legacy rows count
   as Dev and Prod never sees Dev chunks.

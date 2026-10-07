@@ -767,46 +767,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_FlowVersionUsers");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion_Tool", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<List<string>>("AllowedOperations")
-                        .HasColumnType("text[]");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CredentialName")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<Guid>("FlowVersionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ToolId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlowVersionId");
-
-                    b.HasIndex("ToolId");
-
-                    b.HasIndex("TenantId", "FlowVersionId", "ToolId")
-                        .IsUnique();
-
-                    b.ToTable("FlowVersion_Tool");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3405,25 +3365,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowVersion");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersion_Tool", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.FlowVersion", "FlowVersion")
-                        .WithMany()
-                        .HasForeignKey("FlowVersionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.Tool", "Tool")
-                        .WithMany()
-                        .HasForeignKey("ToolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FlowVersion");
-
-                    b.Navigation("Tool");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>

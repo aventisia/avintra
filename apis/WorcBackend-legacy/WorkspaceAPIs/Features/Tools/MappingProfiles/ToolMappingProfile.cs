@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
 /// <summary>
-/// Configures object mappings for tools and flow version tools.
+/// Configures object mappings for tools.
 /// </summary>
 public class ToolMappingProfile : IRegister
 {
@@ -31,15 +31,6 @@ public class ToolMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
-            .IgnoreNullValues(true);
-
-        // Maps FlowVersion_Tool to FlowVersionToolDto.
-        config.NewConfig<FlowVersion_Tool, FlowVersionToolDto>();
-
-        // Maps FlowVersionToolDto to FlowVersion_Tool.
-        config.NewConfig<FlowVersionToolDto, FlowVersion_Tool>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.CreatedOn)
             .IgnoreNullValues(true);
     }
 }
