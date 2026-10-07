@@ -310,6 +310,73 @@ class ChatService:
         db_session: AsyncSession | None = None,
         resume_decisions: dict[str, str] | None = None,
     ) -> AsyncIterator[Any]:
+        """Stream chat responses, persisting a replayable UI transcript.
+
+        Delegates to :meth:`_stream_normalized_impl` and records every yielded
+        normalized frame so the conversation can be rehydrated with the same
+        structured content on reload. The transcript row is written when the
+        terminal ``done`` frame is reached but before it is yielded, because the
+        SSE route commits the shared session right after each frame.
+        """
+
+        transcript_frames: list[dict[str, Any]] = []
+        transcript_text: list[str] = []
+
+        async for chunk in self._stream_normalized_impl(
+            request=request,
+            user=user,
+            db_session=db_session,
+            resume_decisions=resume_decisions,
+        ):
+            chunk_type = getattr(chunk, "type", None)
+            output = getattr(chunk, "output", None)
+
+            if chunk_type == "delta" and isinstance(output, str):
+                transcript_text.append(output)
+
+            try:
+                frame = json.loads(chunk.model_dump_json())
+            except Exception:
+                frame = None
+
+            if chunk_type == "done":
+                if frame is not None:
+                    transcript_frames.append(frame)
+
+                conversation_id = getattr(request, "conversation_id", None)
+                if (
+                    not request.is_temp_chat
+                    and db_session is not None
+                    and conversation_id
+                ):
+                    content = "".join(transcript_text)
+                    if not content and isinstance(output, str):
+                        content = output
+                    await self.conversation_service.save_transcript(
+                        db_session=db_session,
+                        request=request,
+                        user=user,
+                        conversation_id=conversation_id,
+                        content=content,
+                        frames=transcript_frames,
+                        decisions=resume_decisions,
+                    )
+
+                yield chunk
+                continue
+
+            if frame is not None:
+                transcript_frames.append(frame)
+
+            yield chunk
+
+    async def _stream_normalized_impl(
+        self,
+        request: LLMRequest,
+        user: User,
+        db_session: AsyncSession | None = None,
+        resume_decisions: dict[str, str] | None = None,
+    ) -> AsyncIterator[Any]:
         """Stream chat responses as a normalized, frontend-friendly protocol.
 
         Unlike :meth:`stream` (which emits raw LangGraph ``astream_events``),

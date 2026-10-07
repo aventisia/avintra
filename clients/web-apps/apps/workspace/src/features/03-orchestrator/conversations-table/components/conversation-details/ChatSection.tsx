@@ -1,4 +1,4 @@
-import { ThreadMessageLike } from "@assistant-ui/react";
+import { groupConversationMessages } from "@avplatform/assistant-chat";
 import { Badge } from "@avplatform/ui/badge";
 
 import { AgentIcon } from "@/features/04-assist/my-chats/components/chat-agents-list/AgentIcon";
@@ -6,42 +6,10 @@ import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assi
 
 import { AdminConversationDto } from "../../dtos/conversations-table-dto";
 
-/**
- * Reconstructs assistant-ui thread message parts from a persisted message.
- * Tool calls are stored in `metadata.tool_calls` (written by llmpipeline), so
- * the read-only view can render them as tool-call parts instead of losing them.
- */
-function mapMessageToThreadMessage(a: {
-  content: string;
-  role: string;
-  metadata?: Record<string, unknown> | null;
-}): ThreadMessageLike {
-  const role = a.role.toLowerCase() as ThreadMessageLike["role"];
-  const content: any[] = [];
-
-  if (a.content) {
-    content.push({ type: "text", text: a.content });
-  }
-
-  const toolCalls = (a.metadata?.tool_calls as any[]) || [];
-  if (Array.isArray(toolCalls)) {
-    toolCalls.forEach((tc, i) => {
-      content.push({
-        type: "tool-call",
-        toolCallId: tc?.id || `tool-${i}`,
-        toolName: tc?.name || "tool",
-        argsText: JSON.stringify(tc?.args || {}),
-        args: tc?.args || {},
-      });
-    });
-  }
-
-  return { content, role } as ThreadMessageLike;
-}
-
 export default function ChatSection({ data }: { data: AdminConversationDto }) {
-  // map conversation messages with thread message
-  const messages = data?.messages?.map(mapMessageToThreadMessage) ?? [];
+  // Persisted rows are grouped and their structured content (skills, tool
+  // calls, approvals) is rebuilt from the recorded frame transcript.
+  const messages = groupConversationMessages(data?.messages ?? []);
 
   return (
     <div className="flex flex-col h-full w-full">
