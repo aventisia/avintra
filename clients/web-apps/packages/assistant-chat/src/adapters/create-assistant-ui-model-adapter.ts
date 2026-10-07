@@ -3,6 +3,7 @@ import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assista
 
 import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
 import { isPendingApprovalPart } from "../lib/approval-parts";
+import { createContentPartsBuilder } from "../lib/content-parts";
 import { LLMMessageType } from "../types/llm-message.type";
 
 export type CreateAssistantUIModelAdapterParams = {
@@ -134,6 +135,14 @@ export const createAssistantUIModelAdapter = ({
   // one client-side, so this is the only handle that can resume their approvals.
   let lastServerConversationId: string | undefined;
 
+  // Approval ids already submitted to the approvals endpoint. A single
+  // assistant message can pause on several approval batches in sequence (a
+  // gated tool runs, the model then calls another gated tool), and
+  // assistant-ui keeps every resolved approval on the message, so a later
+  // resume reports the earlier decisions too. Resubmitting a consumed decision
+  // is rejected by the server, so only send each one once.
+  const submittedApprovalIds = new Set<string>();
+
   return {
     async *run(options) {
       // Persisted chats own their history server-side (checkpoint + DB); only
@@ -150,9 +159,14 @@ export const createAssistantUIModelAdapter = ({
 
       // A run whose assistant message carries resolved approvals is the
       // continuation of a paused turn: resume it instead of starting a new
-      // user turn.
-      const approvalDecisions = collectApprovalDecisions(currentAssistantMessage);
-      const isApprovalResume = approvalDecisions.length > 0;
+      // user turn. Only decisions the server has not already consumed are
+      // submitted, since earlier batches stay on the message as decided.
+      const resolvedApprovalDecisions = collectApprovalDecisions(currentAssistantMessage);
+      const isApprovalResume = resolvedApprovalDecisions.length > 0;
+      if (!isApprovalResume) submittedApprovalIds.clear();
+      const approvalDecisions = resolvedApprovalDecisions.filter(
+        (decision) => !submittedApprovalIds.has(decision.toolCallId),
+      );
 
       // Tool-call frames for these ids are the executed approval actions. The
       // approval card already occupies the toolCallId in this message, so the
@@ -191,51 +205,21 @@ export const createAssistantUIModelAdapter = ({
         return;
       }
 
-      const contentParts: any[] = [];
-      const toolAccumulator: Record<string, any> = {};
-      let hasTextContent = false;
+      // Shared frame → content-parts builder (also used to rehydrate history).
+      // Approval ids already on the message are skipped so a resume does not
+      // duplicate the paused card with the executed call's result frame.
+      const builder = createContentPartsBuilder({
+        skipToolCallIds: approvalToolCallIds,
+      });
       let lastYieldedSnapshot = "";
-      // Persistent chain-of-thought. Every step the model takes is appended
-      // here in order and retained after the response is surfaced.
-      const steps: string[] = [];
-      // Genuine reasoning/thinking tokens emitted by the model.
-      let reasoningText = "";
-
-      const pushText = (text: string) => {
-        const last = contentParts[contentParts.length - 1];
-        if (last && last.type === "text") {
-          last.text += text;
-        } else {
-          contentParts.push({ type: "text", text });
-        }
-        hasTextContent ||= text.trim().length > 0;
-      };
-
-      // Compose the full chain-of-thought text: the ordered step list first,
-      // then any genuine reasoning content the model emitted.
-      const buildReasoningText = () => {
-        const lines: string[] = [];
-        for (const step of steps) lines.push(`\u2022 ${step}`);
-        if (reasoningText) lines.push(reasoningText);
-        return lines.join("\n");
-      };
-
-      // Update (or create) the reasoning part so the chain-of-thought is
-      // always rendered. The part persists after the stream ends.
-      const setReasoningPart = () => {
-        const text = buildReasoningText();
-        const idx = contentParts.findIndex((p) => p.type === "reasoning");
-        if (idx !== -1) contentParts[idx].text = text;
-        else contentParts.push({ type: "reasoning", text });
-      };
 
       // Yield the current content parts so @assistant-ui/react re-renders the
       // assistant message incrementally while the SSE stream is still open.
       const maybeYield = function* () {
-        const currentSnapshot = JSON.stringify(contentParts);
+        const currentSnapshot = JSON.stringify(builder.parts);
         if (currentSnapshot === lastYieldedSnapshot) return;
         lastYieldedSnapshot = currentSnapshot;
-        yield { content: contentParts.map((part) => ({ ...part })) };
+        yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
       };
 
       // Processes normalized SSE frames into the assistant message content.
@@ -255,170 +239,25 @@ export const createAssistantUIModelAdapter = ({
             lastServerConversationId = frame.conversation_id;
           }
 
-          switch (frame?.type) {
-            case "status": {
-              // Live step status (e.g. "Selecting tools and skills",
-              // "Thinking", "Running tool: X"). Append it to the persistent
-              // chain-of-thought so the full sequence is retained even after
-              // the final response is surfaced.
-              const status = typeof frame.output === "string" ? frame.output : "";
-              if (status) {
-                const last = steps[steps.length - 1];
-                // Replace an in-progress placeholder (e.g. the tool being run
-                // changes) rather than appending near-duplicates; otherwise
-                // accumulate every distinct step.
-                if (last !== status) {
-                  steps.push(status);
-                  setReasoningPart();
-                  yield* maybeYield();
-                }
-              }
-              break;
-            }
-            case "reasoning": {
-              // Genuine thinking/reasoning tokens emitted by the model.
-              const reasoning = typeof frame.output === "string" ? frame.output : "";
-              if (reasoning) {
-                reasoningText += reasoning;
-                setReasoningPart();
-                yield* maybeYield();
-              }
-              break;
-            }
-            case "delta": {
-              const text = typeof frame.output === "string" ? frame.output : "";
-              if (text) {
-                pushText(text);
-                // The response is being surfaced — the chain-of-thought part
-                // remains visible above the text.
-                yield* maybeYield();
-              }
-              break;
-            }
-            case "tool_call": {
-              // Emit a tool-call part with the args + result so the UI can render
-              // the tool widget (completed state with the tool's output).
-              const toolCallId =
-                frame.output?.tool_call_id || `tool-${Object.keys(toolAccumulator).length}`;
-              // Executed approval actions already have a card with this id.
-              if (approvalToolCallIds.has(toolCallId)) break;
-              const toolName = frame.output?.name || "tool";
-              const args = frame.output?.args || frame.output || {};
-              const argsText =
-                typeof frame.output?.content === "string" && !frame.output?.args
-                  ? frame.output.content
-                  : JSON.stringify(args);
-              const part = {
-                type: "tool-call",
-                toolCallId,
-                toolName,
-                argsText,
-                args,
-                result: frame.output?.content,
-              };
-              toolAccumulator[toolCallId] = part;
-              contentParts.push(part);
-              break;
-            }
-            case "approval_required": {
-              // The server paused before executing human-approval actions.
-              // Render a gated tool-call part; the user's decision re-runs this
-              // adapter, which resumes the paused turn via the approvals API.
-              const toolCallId = frame.output?.tool_call_id || `approval-${contentParts.length}`;
-              const toolName = frame.output?.name || "tool";
-              const args = frame.output?.args || {};
-              contentParts.push({
-                type: "tool-call",
-                toolCallId,
-                toolName,
-                argsText: JSON.stringify(args),
-                args,
-                // An empty approval bag marks the gate as undecided. The
-                // runtime fills in `approved`/`reason` on a user decision;
-                // the adapter sets `resolution: "expired"` when the pause
-                // can no longer be resumed.
-                approval: {},
-              });
-              yield* maybeYield();
-              break;
-            }
-            case "skill": {
-              // Surface skill usage as a lightweight system note so the user
-              // can see which skills the agent invoked. The trailing blank line
-              // is required so the blockquote is terminated and does not absorb
-              // the model's following content (e.g. markdown tables).
-              const skillName = frame.output?.name || frame.output;
-              if (skillName) {
-                pushText(`\n\n> Using skill: **${skillName}**\n\n`);
-              }
-              break;
-            }
-            case "tools": {
-              // Final list of tool results — merge into emitted tool-call parts.
-              if (Array.isArray(frame.output)) {
-                const toolResults = frame.output as any[];
-                toolResults.forEach((tool, idx) => {
-                  const id = tool?.call_id || `tool-${idx}`;
-                  // Executed approval actions already have a card with this id.
-                  if (approvalToolCallIds.has(id)) return;
-                  const existing = toolAccumulator[id];
-                  const name = tool?.output?.action || tool?.type || "tool";
-                  if (existing) {
-                    existing.toolName = name;
-                    existing.args = tool?.output || existing.args;
-                    existing.argsText = JSON.stringify(tool?.output || {});
-                    existing.result = tool?.output || tool;
-                  } else {
-                    contentParts.push({
-                      type: "tool-call",
-                      toolCallId: id,
-                      toolName: name,
-                      argsText: JSON.stringify(tool?.output || {}),
-                      args: tool?.output || {},
-                      result: tool?.output || tool,
-                    });
-                  }
-                });
-              }
-              break;
-            }
-            case "followup": {
-              if (Array.isArray(frame.output)) {
-                onSuggestionsUpdate?.(frame.output as string[]);
-              }
-              break;
-            }
-            case "done": {
-              // Only use the done frame as a fallback if no token deltas were
-              // already streamed; otherwise it duplicates the final message.
-              const text = typeof frame.output === "string" ? frame.output : "";
-              if (text && !hasTextContent) pushText(text);
-              break;
-            }
-            case "error": {
-              // Normalized error frames carry the detail in `output`; `message`
-              // is kept as a fallback for older relays.
-              const detail =
-                typeof frame?.message === "string" && frame.message
-                  ? frame.message
-                  : typeof frame?.output === "string"
-                    ? frame.output
-                    : "";
-              pushText(detail || "An error occurred during the request.");
-              break;
-            }
-            // Backend metadata frames that should not be rendered.
-            case "tool_names":
-            case "skill_names":
-              break;
-            default:
-              break;
+          // Follow-up suggestions are transport-level, not message content.
+          if (frame?.type === "followup" && Array.isArray(frame.output)) {
+            onSuggestionsUpdate?.(frame.output as string[]);
           }
+
+          builder.apply(frame);
+          yield* maybeYield();
         }
       }
 
       try {
         if (isApprovalResume) {
+          // Every resolved approval was already sent (a stray continuation):
+          // keep the paused turn as-is instead of resuming with no decisions,
+          // which the server would treat as a full denial.
+          if (approvalDecisions.length === 0) return;
+          for (const decision of approvalDecisions) {
+            submittedApprovalIds.add(decision.toolCallId);
+          }
           yield* processFrames(
             streamApprovalDecisions(
               {
@@ -449,25 +288,20 @@ export const createAssistantUIModelAdapter = ({
         }
 
         // Ensure at least a placeholder is rendered.
-        if (contentParts.length === 0) {
-          contentParts.push({
-            type: "text",
-            text: "Workflow completed successfully.",
-          });
+        if (builder.isEmpty()) {
+          builder.pushText("Workflow completed successfully.");
         }
 
         // Unresolved approvals must leave the message in "requires-action": the
         // runtime only accepts approval responses (and auto-continues once the
         // whole batch is decided) from that state.
-        const hasPendingApproval = contentParts.some(isPendingApprovalPart);
-
-        if (hasPendingApproval) {
+        if (builder.hasPendingApproval()) {
           yield {
-            content: contentParts,
+            content: builder.parts as any[],
             status: { type: "requires-action", reason: "tool-calls" },
           };
         } else {
-          yield { content: contentParts };
+          yield { content: builder.parts as any[] };
         }
         onRequestComplete?.();
       } catch (error) {
@@ -478,19 +312,19 @@ export const createAssistantUIModelAdapter = ({
         // died), so mark them "expired": the card drops its buttons, the
         // coordinator unregisters it, and the message finishes instead of
         // sitting in "requires-action" forever.
-        for (const part of contentParts) {
+        for (const part of builder.parts) {
           if (isPendingApprovalPart(part)) {
             part.approval = { ...part.approval, resolution: "expired" };
           }
         }
         const note =
           error instanceof Error ? error.message : "An error occurred during the chat request.";
-        if (contentParts.length === 0) {
-          contentParts.push({ type: "text", text: note });
+        if (builder.isEmpty()) {
+          builder.pushText(note);
         } else {
-          pushText(`\n\n${note}`);
+          builder.pushText(`\n\n${note}`);
         }
-        yield { content: contentParts.map((part) => ({ ...part })) };
+        yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
       }
     },
   };

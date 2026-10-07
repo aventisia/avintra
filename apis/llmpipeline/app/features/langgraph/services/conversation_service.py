@@ -9,6 +9,7 @@ from app.features.langgraph.checkpoint.persistence import (
     ensure_conversation,
     load_messages,
     save_message as _save_message,
+    save_transcript as _save_transcript,
 )
 from app.features.langgraph.graphs.message_builder import build_messages
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
@@ -89,6 +90,49 @@ class ConversationService:
         except Exception:
             logger.exception(
                 "Failed to persist message. conversation_id=%s",
+                conversation_id,
+            )
+
+    async def save_transcript(
+        self,
+        db_session: AsyncSession,
+        request: LLMRequest,
+        user: User,
+        conversation_id: str,
+        content: str,
+        frames: list[dict],
+        decisions: dict[str, str] | None = None,
+    ) -> None:
+        """Persist the normalized-frame transcript for a streamed assistant turn.
+
+        Separate from :meth:`save_message`: the LangChain rows are replayed to
+        the model, while this row is read only by the UI to rebuild the
+        structured content (skills, tool calls, approvals) on reload.
+        """
+
+        try:
+            await ensure_conversation(
+                session=db_session,
+                tenant_id=user.tenant_id,
+                user_id=user.user_id,
+                conversation_id=conversation_id,
+                flow_version_id=request.ref_id,
+                audit_user_id=user.user_id,
+            )
+
+            await _save_transcript(
+                session=db_session,
+                tenant_id=user.tenant_id,
+                conversation_id=conversation_id,
+                content=content,
+                frames=frames,
+                decisions=decisions,
+            )
+
+            await db_session.flush()
+        except Exception:
+            logger.exception(
+                "Failed to persist chat transcript. conversation_id=%s",
                 conversation_id,
             )
 

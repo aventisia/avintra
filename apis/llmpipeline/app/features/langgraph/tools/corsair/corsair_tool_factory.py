@@ -9,26 +9,38 @@ from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field, create_model
 
 
-def _json_property_type(prop: dict[str, Any]) -> Any:
-    """Map a JSON schema property to a Pydantic-compatible type."""
+def _json_base_type(prop: dict[str, Any]) -> Any:
+    """Map a JSON schema property to a Pydantic-compatible Python type."""
 
     prop_type = prop.get("type") if isinstance(prop, dict) else None
-    description = prop.get("description", "") if isinstance(prop, dict) else ""
 
     if prop_type == "string":
-        base = str
-    elif prop_type == "integer":
-        base = int
-    elif prop_type == "number":
-        base = float
-    elif prop_type == "boolean":
-        base = bool
-    elif prop_type == "array":
-        base = list
-    elif prop_type == "object":
-        base = dict
-    else:
-        base = Any
+        return str
+    if prop_type == "integer":
+        return int
+    if prop_type == "number":
+        return float
+    if prop_type == "boolean":
+        return bool
+    if prop_type == "array":
+        items = prop.get("items") if isinstance(prop, dict) else None
+        item_type = _json_base_type(items) if isinstance(items, dict) else Any
+        # Gemini rejects an array without a typed ``items`` (it reports the
+        # field as missing). Default untyped arrays to strings so every bound
+        # tool declares a valid item schema.
+        if item_type is Any:
+            item_type = str
+        return list[item_type]
+    if prop_type == "object":
+        return dict
+    return Any
+
+
+def _json_property_type(prop: dict[str, Any]) -> Any:
+    """Map a JSON schema property to a Pydantic field type/definition."""
+
+    base = _json_base_type(prop)
+    description = prop.get("description", "") if isinstance(prop, dict) else ""
 
     if description:
         return (base, Field(description=description))

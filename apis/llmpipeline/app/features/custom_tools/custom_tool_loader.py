@@ -11,7 +11,7 @@ from app.features.custom_tools.models import Tool
 from app.features.custom_tools.schemas import ToolOperation
 
 
-async def load_tools_for_tenant(
+async def load_custom_tools(
     session: AsyncSession,
     tenant_id: UUID,
     tool_names: list[str] | None = None,

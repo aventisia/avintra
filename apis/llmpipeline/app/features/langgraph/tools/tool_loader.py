@@ -6,14 +6,14 @@ from app.features.langgraph.tools.calendar.calendar_tools import calendar_create
 from app.features.langgraph.tools.outlook.outlook_tools import outlook_send_email
 
 
-def load_default_tools(
+def load_platform_tools(
     registry,
 ):
     """
     Register built-in and integration LangGraph tools.
 
     This method is executed during application startup to populate the
-    ToolRegistry with default platform tools and optional third-party
+    ToolRegistry with platform tools and optional third-party
     integrations.
 
     Registered tools:

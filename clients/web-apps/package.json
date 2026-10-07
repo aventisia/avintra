@@ -14,7 +14,7 @@
     "pregit": "prettier --write . && eslint --fix . && tsc -b"
   },
   "devDependencies": {
-    "@assistant-ui/tap": "^0.9.6",
+    "@assistant-ui/tap": "^0.9.21",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/node": "^24.3.0",
     "eslint": "^9.0.0",
