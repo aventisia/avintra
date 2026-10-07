@@ -53,8 +53,7 @@
       "required": false,
       "showJsonOutput": false,
       "hideByok": true,
-      "category": "Voice",
-      "group": "Speech to Text"
+      "category": "Voice"
     },
     {
       "direction": "Input",
@@ -72,8 +71,7 @@
       "required": false,
       "showJsonOutput": false,
       "hideByok": true,
-      "category": "Voice",
-      "group": "Text to Speech"
+      "category": "Voice"
     },
     {
       "direction": "Input",
@@ -85,8 +83,7 @@
         "speed": 1
       },
       "required": false,
-      "category": "Voice",
-      "group": "Text to Speech"
+      "category": "Voice"
     },
     {
       "direction": "Input",

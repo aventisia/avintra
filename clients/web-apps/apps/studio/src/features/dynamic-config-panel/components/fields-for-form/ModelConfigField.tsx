@@ -20,6 +20,8 @@ import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
 import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { CredentialsSelectField } from "./CredentialsSelectField";
+import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { VoiceConfigField } from "./VoiceConfigField";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
@@ -458,7 +460,14 @@ const ModelConfigField = ({
     </>
   );
 
-  return (
+  // Speech model configs render inside a titled group box. Text-to-speech also
+  // renders its sibling voice settings (language/voice/speed) inline so the
+  // whole sub-config shares one box.
+  const groupName = isStt ? "Speech to Text" : isTts ? "Text to Speech" : undefined;
+  const showInlineVoiceConfig = isTts;
+  const voiceConfigName = name.replace("__ModelConfig__", "__VoiceConfig__");
+
+  const content = (
     <div className="w-full space-y-3.5">
       {!hideByok && (
         <SwitchField
@@ -510,8 +519,8 @@ const ModelConfigField = ({
 
       {isSpeechSpecialty && isInitialized && !hasEnabledSpeechModels && (
         <p className="text-xs text-muted-foreground">
-          No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant. Enable
-          one under Tenant Admin &gt; Model Providers.
+          No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
+          Enable one under Tenant Admin &gt; Model Providers.
         </p>
       )}
 
@@ -525,7 +534,17 @@ const ModelConfigField = ({
           label="Voice"
         />
       ) : null}
+
+      {showInlineVoiceConfig && (
+        <VoiceConfigField name={voiceConfigName} providerPath={fieldNames.provider} />
+      )}
     </div>
+  );
+
+  return groupName ? (
+    <GroupedFieldsWrapper groupName={groupName}>{content}</GroupedFieldsWrapper>
+  ) : (
+    content
   );
 };
 

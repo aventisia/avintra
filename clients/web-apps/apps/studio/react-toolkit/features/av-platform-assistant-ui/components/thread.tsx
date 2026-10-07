@@ -48,7 +48,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
-import type { FC } from "react";
+import type { FC, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -201,6 +201,18 @@ const ThreadHeader = ({
 };
 
 /**
+ * Enter inside the composer must always send the message. Composer buttons
+ * other than the send button (mic, speaker) are kept non-submit and must not
+ * swallow Enter as their own activation — otherwise pressing Enter while the
+ * mic is focused restarts the recording instead of submitting.
+ */
+const submitComposerOnEnter = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  event.currentTarget.closest("form")?.requestSubmit();
+};
+
+/**
  * Composer toggle for spoken replies. Turning it off mutes playback without
  * aborting the run. It stays hoverable while unconfigured (aria-disabled, not
  * the native `disabled`) so the tooltip can explain what is missing.
@@ -230,6 +242,7 @@ const SpeakerToggle: FC = () => {
     <TooltipIconButton
       tooltip={tooltip}
       side="bottom"
+      type="button"
       variant="ghost"
       size="icon8"
       className="aui-composer-speak-replies size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
@@ -237,6 +250,7 @@ const SpeakerToggle: FC = () => {
       aria-pressed={voice.speakReplies}
       aria-disabled={isDisabled}
       data-disabled={isDisabled ? "true" : undefined}
+      onKeyDown={submitComposerOnEnter}
       onClick={() => {
         if (isDisabled) return;
         voice.setSpeakReplies(!voice.speakReplies);
@@ -407,6 +421,7 @@ const ComposerAction: FC = () => {
             <TooltipIconButton
               tooltip={micTooltip}
               side="bottom"
+              type="button"
               variant="ghost"
               size="icon8"
               className="aui-composer-mic size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
@@ -414,6 +429,7 @@ const ComposerAction: FC = () => {
               aria-pressed={isRecording}
               aria-disabled={isMicDisabled}
               data-disabled={isMicDisabled ? "true" : undefined}
+              onKeyDown={submitComposerOnEnter}
               onClick={toggleRecording}
             >
               {isTranscribing ? (
