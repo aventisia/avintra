@@ -21,6 +21,16 @@ export default defineConfig({
       "@/ui": path.resolve(__dirname, "../../packages/ui/src"),
       "@": path.resolve(__dirname, "./src"),
     },
+    // The source-only `@avplatform/assistant-chat` workspace package causes npm
+    // to install its own `@assistant-ui/react`, which pulls a second
+    // `@assistant-ui/store` React context. Two context instances make the app's
+    // `AssistantRuntimeProvider` invisible to hooks used inside the shared
+    // package, surfacing as "requires an AuiProvider". Force a single react copy
+    // from each app root. Only `@assistant-ui/react` is listed: it exists at every
+    // app root, whereas its transitive `@assistant-ui/core`/`store` are nested
+    // under it, and `dedupe` fails hard when a package is not resolvable from the
+    // root (breaking deep imports like `@assistant-ui/core/react`).
+    dedupe: ["@assistant-ui/react"],
   },
   server: {
     // When `allowedHosts` is set, Vite overrides its defaults (which normally
