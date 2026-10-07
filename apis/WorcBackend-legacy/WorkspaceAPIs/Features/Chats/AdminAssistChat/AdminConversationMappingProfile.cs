@@ -98,6 +98,7 @@ namespace WorkspaceAPIs.MappingProfiles
                             Id = m.Id,
                             Role = m.Role,
                             Content = m.Content,
+                            Metadata = m.Metadata,
                             CreatedOn = m.CreatedOn,
                             ConversationId = src.Id,
                             FlowVersionId = src.FlowVersionId,
