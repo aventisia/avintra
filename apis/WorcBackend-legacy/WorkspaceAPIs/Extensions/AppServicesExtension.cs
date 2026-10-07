@@ -193,7 +193,6 @@ public static class AppServicesExtension
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
-        services.AddScoped<IFlowVersionToolService, FlowVersionToolService>();
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
