@@ -15,10 +15,20 @@ export type AssistantVoiceContextValue = {
   isPlaying: boolean;
   /** Playback key of the clip currently playing (null when idle). */
   activeKey: string | null;
+  /** Keys with a clip currently playing or waiting in the queue. */
+  activeKeys: string[];
+  /** Keys with an in-flight Text-to-Speech request. */
+  synthesizingKeys: string[];
+  /** Whether the live streamed reply is being spoken right now. */
+  isLiveSpeaking: boolean;
   /** Toggles the speak-replies preference; disabling also mutes playback. */
   setSpeakReplies: (value: boolean) => void;
-  /** Plays/pauses a completed message, synthesizing and caching on first use. */
-  toggleMessageSpeech: (key: string, text: string) => void;
+  /**
+   * Play/Stop a completed message, synthesizing and caching on first use.
+   * Pass `stopLive` when the message is currently being spoken by the live
+   * stream so its in-flight requests are cancelled too.
+   */
+  toggleMessageSpeech: (key: string, text: string, stopLive?: boolean) => void;
   /** Speech-to-Text model config, or null when the agent has none. */
   sttConfig: ModelConfigType | null;
   /** Text-to-Speech model config, or null when the agent has none. */
