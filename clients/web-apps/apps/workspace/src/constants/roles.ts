@@ -15,6 +15,9 @@ export const ROLE_LABELS: Record<string, string> = {
 /** System role code for the Tenant Admin role. */
 export const ROLE_TA = "TA";
 
+/** System role code for the Orchestrator Manager role. */
+export const ROLE_OM = "OM";
+
 /**
  * Returns the human-readable label for a role code, falling back to the raw code
  * when the role is unknown.

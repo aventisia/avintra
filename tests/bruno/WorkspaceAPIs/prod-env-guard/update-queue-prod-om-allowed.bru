@@ -1,0 +1,55 @@
+meta {
+  name: Update PROD queue allowed for OM (expect 200)
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/queue
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_OM_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "id": "{{PROD_OM_QUEUE_ID}}",
+    "name": "PROD OM authorization fixture",
+    "type": "User",
+    "processingMode": "Manual",
+    "description": "Authorization test fixture",
+    "isUniqueReferencesEnforced": false,
+    "isStoredEncrypted": false,
+    "shouldRetryFailedItems": false,
+    "shouldRetryAbandonedItems": false,
+    "maximumRetryAttempts": 5,
+    "inputSchema": [],
+    "outputSchema": null,
+    "statuses": [],
+    "isTenantWideAccess": false,
+    "credentialName": null,
+    "isDisabled": false,
+    "routeToQueues": null
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.message === "Queue updated successfully") {
+    bru.pass("OM PROD queue update allowed");
+  } else {
+    bru.fail("Expected OM PROD update success, got " + res.getStatus() + " - " + (body?.message ?? ""));
+  }
+}
+
+docs {
+  > Requires a dedicated PROD queue owned by the OM user, seeded with the values
+  > in this request so the request does not change its configuration.
+}

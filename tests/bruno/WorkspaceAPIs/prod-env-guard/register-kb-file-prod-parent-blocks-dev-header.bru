@@ -1,0 +1,43 @@
+meta {
+  name: Register KB text blocked by PROD parent despite DEV header (expect 400)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/knowledge-base/{{PROD_KB_ID}}/files/register-text
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Dev
+}
+
+body:json {
+  {
+    "textContent": "PROD parent authorization guard fixture",
+    "fileName": "prod-parent-guard-{{$randomInt}}.txt",
+    "chunkSize": 1000,
+    "chunkOverlap": 100
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("published (PROD)")) {
+    bru.pass("DEV header cannot create child data under a PROD knowledge base");
+  } else {
+    bru.fail("Expected persisted PROD parent guard, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Uses a PROD knowledge base with `X-Env-Type: Dev` to verify the parent row's
+  > persisted environment—not only the request environment—controls child creation.
+}

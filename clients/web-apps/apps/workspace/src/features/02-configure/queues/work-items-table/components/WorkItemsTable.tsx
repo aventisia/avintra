@@ -10,6 +10,9 @@ import { useDataTable } from "@avplatform/ui/hooks";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
 import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -48,15 +51,20 @@ export const WorkItemsTable = () => {
     [queuesData?.data, queueId],
   );
 
+  // Resolve Prod-capped actions so the work-item table's read-only gate matches the row actions.
+  const { actions, isProd } = useConfigureResourceAccessActions(
+    queue?.accessLevel ?? ResourceAccessTypeEnum.View,
+  );
+
   // if the KB does not exist in Queue list/shared revert user back to Queues page
   useEffect(() => {
     if (!isLoading && !queue) navigate("/configure/queues");
-  }, [isLoading, queue]);
+  }, [isLoading, queue, navigate]);
 
   const hasOnlyReadAccess = useMemo(() => {
     if (!queue) return true;
-    return queue?.accessLevel == "View";
-  }, [queue]);
+    return isProd ? !actions.update : queue.accessLevel === "View";
+  }, [queue, isProd, actions.update]);
 
   const filteredColumns = useMemo(() => {
     if (!hasOnlyReadAccess) return workItemsTableColumns(name);

@@ -1,3 +1,4 @@
+import { useActionLock } from "@avplatform/ui/action-lock";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
@@ -25,6 +26,7 @@ export const KBFilesTableRowAction = ({
 }: KBFilesTableRowActionProps) => {
   const queryClient = useQueryClient();
   const { showCustomAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   const { mutate: deleteFile, isPending } = useMutation({
     mutationFn: async () => {
@@ -64,7 +66,7 @@ export const KBFilesTableRowAction = ({
       }}
       variant="caution"
       size="icon7"
-      disabled={isPending}
+      disabled={isPending || locked}
     >
       {isPending ? (
         <Loader2Icon className="h-4 w-4 animate-spin" />

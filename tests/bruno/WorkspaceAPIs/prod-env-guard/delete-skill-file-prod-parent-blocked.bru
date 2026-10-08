@@ -1,0 +1,34 @@
+meta {
+  name: Delete skill file blocked for PROD parent (expect 400)
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/skill-registry/{{PROD_SKILL_ID}}/files/{{PROD_SKILL_FILE_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("published (PROD)")) {
+    bru.pass("Skill file deletion correctly blocked for PROD parent");
+  } else {
+    bru.fail("Expected PROD parent delete guard, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Requires `PROD_SKILL_ID` and `PROD_SKILL_FILE_ID` for an existing PROD skill
+  > and a file belonging to it.
+}

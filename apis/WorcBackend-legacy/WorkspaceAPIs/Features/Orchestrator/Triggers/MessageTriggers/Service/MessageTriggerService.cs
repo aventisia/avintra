@@ -11,6 +11,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private const int MESSAGE_EXPIRY_MINUTES = 4320;
 
     public MessageTriggerService(
@@ -22,7 +23,8 @@ public class MessageTriggerService : IMessageTriggerService
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -35,6 +37,7 @@ public class MessageTriggerService : IMessageTriggerService
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves all message triggers.
@@ -204,6 +207,15 @@ public class MessageTriggerService : IMessageTriggerService
 
         try
         {
+            // Block creating new message triggers while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<MessageTriggerDto>(
+                _currentTenantService.CurrentEnvType,
+                "message trigger");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w => 
@@ -370,6 +382,16 @@ public class MessageTriggerService : IMessageTriggerService
             {
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse; // Early return
+            }
+
+            // Require OM for PROD edits based on the persisted trigger environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<MessageTriggerDto>(
+                messageTrigger.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "message trigger");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(

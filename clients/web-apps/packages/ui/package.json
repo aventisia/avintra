@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/components/index.ts",
     "./accordion": "./src/components/accordion/index.ts",
+    "./action-lock": "./src/components/action-lock/index.ts",
     "./alert": "./src/components/alert/index.ts",
     "./alert-dialog": "./src/components/alert-dialog/index.ts",
     "./apis": "./src/apis/index.ts",

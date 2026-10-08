@@ -1,0 +1,41 @@
+meta {
+  name: PROD queue update blocked when request spoofs DEV (expect not found)
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/queue
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Dev
+}
+
+body:json {
+  {
+    "id": "{{PROD_TD_QUEUE_ID}}",
+    "name": "PROD non-OM authorization fixture"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("Queue does not exist")) {
+    bru.pass("DEV header cannot target a PROD queue");
+  } else {
+    bru.fail("Expected mismatched-environment queue rejection, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Uses the same PROD queue as the non-OM case while sending `X-Env-Type: Dev`.
+  > The request must not update the PROD row.
+}

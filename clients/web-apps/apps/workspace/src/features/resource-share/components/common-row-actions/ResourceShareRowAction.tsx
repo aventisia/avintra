@@ -11,6 +11,7 @@ interface ResourceShareRowActionProps {
   resourceName: string;
   isTenantWideAccess: boolean;
   resourceType: ResourceTypeEnum;
+  disabled?: boolean;
 }
 
 export const ResourceShareRowAction: React.FC<ResourceShareRowActionProps> = ({
@@ -18,6 +19,7 @@ export const ResourceShareRowAction: React.FC<ResourceShareRowActionProps> = ({
   resourceName,
   isTenantWideAccess,
   resourceType,
+  disabled = false,
 }) => {
   const { setShowDialog, setResource } = useResourceShareStore(
     useShallow((s) => ({
@@ -32,7 +34,9 @@ export const ResourceShareRowAction: React.FC<ResourceShareRowActionProps> = ({
       size="md"
       content="Share"
       Icon={UsersIcon}
+      disabled={disabled}
       onClick={() => {
+        if (disabled) return;
         setShowDialog(true);
         setResource(rowId, resourceName, resourceType, isTenantWideAccess);
       }}

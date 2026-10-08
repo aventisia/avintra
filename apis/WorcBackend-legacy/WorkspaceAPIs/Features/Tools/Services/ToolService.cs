@@ -14,6 +14,7 @@ public class ToolService : IToolService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly CorsairConfigRepository _corsairConfigRepository;
     private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
     private readonly CorsairIntegrationCatalogRepository _corsairIntegrationCatalogRepository;
@@ -28,6 +29,7 @@ public class ToolService : IToolService
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService,
         CorsairConfigRepository corsairConfigRepository,
         CamelConnectorCatalogRepository camelConnectorCatalogRepository,
         CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository)
@@ -39,6 +41,7 @@ public class ToolService : IToolService
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
         _corsairConfigRepository = corsairConfigRepository;
         _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
         _corsairIntegrationCatalogRepository = corsairIntegrationCatalogRepository;
@@ -480,6 +483,15 @@ public class ToolService : IToolService
 
         try
         {
+            // Block creating new tools while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<ToolDto>(
+                _currentTenantService.CurrentEnvType,
+                "tool");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Normalize string properties to avoid case-sensitivity issues.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
@@ -563,6 +575,16 @@ public class ToolService : IToolService
             if (toolToUpdate == null)
             {
                 return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            // Require OM for PROD edits based on the persisted tool environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<ToolDto>(
+                toolToUpdate.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "tool");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Verify the current user can edit the tool.

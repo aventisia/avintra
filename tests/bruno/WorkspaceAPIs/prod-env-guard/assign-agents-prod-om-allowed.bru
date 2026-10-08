@@ -1,0 +1,39 @@
+meta {
+  name: Assign agents to PROD queue allowed for OM (expect not OM-blocked)
+  type: http
+  seq: 20
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{PROD_OM_QUEUE_ID}}/assign-agents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_OM_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  []
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() !== 403 || !message.includes("Only OM users")) {
+    bru.pass("OM PROD queue agent assignment is not blocked by the OM-only guard (status " + res.getStatus() + ")");
+  } else {
+    bru.fail("OM PROD assignment was incorrectly blocked: " + message);
+  }
+}
+
+docs {
+  > Uses a dedicated PROD queue owned by the OM user. An empty agent list may
+  > adjust the fixture's assignments; this case only asserts the OM-only guard
+  > does not reject the OM caller.
+}
