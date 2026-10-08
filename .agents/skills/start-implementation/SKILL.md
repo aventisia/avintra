@@ -1,48 +1,52 @@
 ---
 name: start-implementation
-description: "Use when an implementation plan has already been discussed and agreed. Save it to local-plans/<plan-name>.md, slice it into reviewable TODOs, and implement them in the chosen execution mode: TODO by TODO (default) or all in one go."
-argument-hint: "Provide the agreed implementation plan and the execution mode (todo-by-todo or all-in-one)"
+description: "Implement an explicitly approved issue plan: save reviewable slices, implement all in one go by default, then hand off to audit-implementation."
+argument-hint: "Issue number and approved plan path; optionally request todo-by-todo"
 user-invocable: true
 ---
 
-# Start Implementation
+# Heavy Typist: Implement an Issue
 
 ## When to Use
 
-Use this workflow after the implementation plan has already been discussed and agreed, before changing implementation files.
+Use this workflow after `start-architect` has saved an explicitly approved plan at `local-issues/<issue-number>/02-architect-plan.md`. Do not implement from an unapproved plan or from memory.
 
 ## Execution Modes
 
-- **TODO by TODO (default):** implement one validated TODO at a time, pausing for review after each. Use for larger or cross-area plans.
-- **All in one go:** implement the remaining TODOs in order, validating each one and updating the plan as it completes, then present a single consolidated review. Use only for small, tightly coupled plans (≤3 TODOs, single area). If a TODO fails validation, stop immediately, mark it blocked, and report instead of continuing.
+- **All in one go (default):** implement every slice in order, validating and recording each before starting the next. Do not pause between slices. Present one consolidated implementation report when finished.
+- **TODO by TODO:** use only when the user explicitly requests it. Implement and validate one slice, then pause for review before continuing.
 
 ## Procedure
 
-1. Derive a concise, descriptive filename from the plan's subject, using the format `local-plans/<plan-name>.md` at the repository root. Reuse an existing matching plan file when appropriate.
-2. Slice the agreed plan into TODOs and save the complete plan, TODOs, statuses, and the selected execution mode to that file before editing implementation files. If no mode was provided, ask: recommend TODO by TODO for larger or cross-area plans, and all in one go only for small, tightly coupled plans.
-3. Implement TODOs in the selected mode:
-   - **TODO by TODO:** implement only the next incomplete TODO, then continue to validation.
-   - **All in one go:** implement the remaining TODOs in order. Validate each one and update its status before starting the next, without pausing for review between them.
-4. Validate each implemented TODO through the narrowest meaningful check available: UI review, Bruno API testing, a focused test, typecheck, lint, build, or equivalent manual verification.
-5. Update the local plan with the TODO status and validation result.
-6. Pause for review after each TODO (TODO by TODO mode) or once after the final TODO (all in one go).
-7. Repeat until all TODOs are complete.
+1. Read `local-issues/<issue-number>/02-architect-plan.md`, the relevant `AGENTS.md` files, current code, and the latest `04-audit-report.md` if it exists. For audit rework, proceed only when every unresolved finding is represented by a remediation task in the newly approved plan; otherwise stop and hand back to `start-architect`.
+2. Slice the approved plan's goals, phases, and tasks into reviewable work items. Save them before editing implementation files at:
+
+   ```text
+   local-issues/<issue-number>/03-heavy-typist-slices.md
+   ```
+
+   Include traceability to plan sections, ordered slices, acceptance/validation criteria, status, and selected execution mode. Reuse and update an existing slices file when resuming; preserve completed work and validation results.
+3. Use **All in one go** unless the user explicitly requested **TODO by TODO**. Record the mode in the slices file; do not ask for a mode by default.
+4. Implement slices sequentially within the approved scope. For each slice, update its status and validate it through the narrowest meaningful check available (focused test, Bruno API test, UI review, typecheck, lint, build, or equivalent manual verification) before moving on.
+5. In TODO-by-TODO mode, pause after each validated slice for review. In all-in-one mode, continue without intermediate pauses and present one consolidated report at the end.
+6. If validation fails, mark the slice blocked and stop. If implementation reveals a required architectural or scope change, stop and return to `start-architect`; do not silently change the approved plan.
+7. Do not stage, commit, or push implementation changes unless the user explicitly asks.
+8. When all slices are complete, hand off to `audit-implementation` with the issue number and plan path.
 
 ## TODO Slicing Rules
 
-- Keep each TODO substantial, self-contained, and independently reviewable.
-- Give each TODO a clear implementation boundary and an observable validation path.
+- Keep each slice substantial, self-contained, and independently verifiable.
+- Give each slice a clear implementation boundary and observable acceptance/validation path.
 - Combine tightly coupled edits that cannot be meaningfully reviewed separately.
-- Split very large work across independently testable UI, API, or backend behavior.
+- Split work by independently testable behavior or subsystem when that improves reviewability.
 - Avoid trivial edits, vague investigation, and broad milestones such as "finish the feature."
-- Use only as many TODOs as the plan needs: simple plans may have two to four; larger plans may need more.
+- Use only as many slices as the approved plan needs.
 
 ## Completion Criteria
 
 The workflow is complete only when:
 
-- The appropriately named `local-plans/<plan-name>.md` file contains the complete plan and all TODO statuses.
-- The selected execution mode is recorded in the plan file.
-- Every TODO is marked complete.
-- Each TODO was implemented sequentially and validated before the next began.
-- The local plan records validation results and any remaining gaps.
+- The approved plan at `02-architect-plan.md` was followed, or any required change was returned to the Architect.
+- `03-heavy-typist-slices.md` contains every slice, its status, the selected mode, and validation results.
+- Every slice is complete and validated; failures or remaining gaps are reported rather than hidden.
+- The user receives a concise implementation summary and the handoff to `audit-implementation`.
