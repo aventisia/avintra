@@ -31,6 +31,8 @@ export type CrudDialogRegistry = Record<CrudEntityKey, CrudDialogEntityConfig>;
 export interface CrudDialogProviderProps {
   /** Registry mapping entity key to its dialog configuration. */
   registry: CrudDialogRegistry;
+  /** Optional banner rendered above the dialog content. */
+  contentBanner?: React.ReactNode;
 }
 
 /**
@@ -46,7 +48,7 @@ export interface CrudDialogProviderProps {
  * reports it is dirty, attempts to close the dialog or go back will show an
  * "unsaved changes" alert.
  */
-export function CrudDialogProvider({ registry }: CrudDialogProviderProps) {
+export function CrudDialogProvider({ registry, contentBanner }: CrudDialogProviderProps) {
   const { isDialogOpen, entity, crudAction, rowId, back, closeCrudDialog, goBack } =
     useCrudDialogUrlState();
 
@@ -68,6 +70,7 @@ export function CrudDialogProvider({ registry }: CrudDialogProviderProps) {
         rowId={rowId}
         back={back}
         config={config}
+        contentBanner={contentBanner}
         onClose={closeCrudDialog}
         onGoBack={goBack}
       />
@@ -81,6 +84,7 @@ interface CrudDialogProps {
   rowId: string;
   back: string | null;
   config: CrudDialogEntityConfig;
+  contentBanner?: React.ReactNode;
   onClose: () => void;
   onGoBack: () => void;
 }
@@ -91,6 +95,7 @@ function CrudDialog({
   rowId,
   back,
   config,
+  contentBanner,
   onClose,
   onGoBack,
 }: CrudDialogProps) {
@@ -177,6 +182,7 @@ function CrudDialog({
           ) : null}
         </DialogDefaultHeader>
         <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
+          {contentBanner}
           <Content crudAction={crudAction} rowId={rowId} />
         </ScrollArea>
       </DialogContent>

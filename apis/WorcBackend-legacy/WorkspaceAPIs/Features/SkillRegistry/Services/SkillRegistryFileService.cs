@@ -201,6 +201,15 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
         try
         {
+            // Block registering skill files while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<SkillFileDto>(
+                _currentTenantService.CurrentEnvType,
+                "skill file");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Normalize DTO string properties before validation and persistence.
             registerSkillFileDto = TrimDtoStringPropsUtil.TrimDtoStringProps(registerSkillFileDto);
 
@@ -243,6 +252,13 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             {
                 serviceResponse.Message = "Skill not found";
                 return serviceResponse;
+            }
+
+            // Prevent writing a child file to a PROD skill even if the request environment was spoofed.
+            var parentProdBlock = ChildResourceGuard.ValidateWrite<SkillFileDto>(skill.EnvType, "skill file");
+            if (parentProdBlock != null)
+            {
+                return parentProdBlock;
             }
 
             // Verify the current user has edit access to the skill.
@@ -351,6 +367,13 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 serviceResponse.Message = "Skill not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // Prevent deleting child files from a PROD skill.
+            var parentProdBlock = ChildResourceGuard.ValidateDelete<bool>(skill.EnvType, "skill file");
+            if (parentProdBlock != null)
+            {
+                return parentProdBlock;
             }
 
             // Verify the current user has edit access to the skill.

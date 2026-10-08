@@ -1,11 +1,11 @@
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { useTableTab } from "../../hooks/useTableTab";
 import { KeystoreRowDeleteAction } from "./KeystoreRowDeleteAction";
@@ -23,7 +23,7 @@ export const KeystoreRowActions = ({
   accessLevel,
   isTenantWideAccess,
 }: KeystoreRowActionsProps) => {
-  const actions = getResourceAccessActions(accessLevel);
+  const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
   // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
@@ -38,12 +38,13 @@ export const KeystoreRowActions = ({
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="keystore" />}
 
       {/* Share Access */}
-      {actions?.share && (
+      {resourceActions.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.KeyStore}
           resourceName={name}
+          disabled={isProd}
         />
       )}
 
@@ -51,11 +52,11 @@ export const KeystoreRowActions = ({
       <DropdownMenuSeparator />
 
       {/* Triggers Keystore delete alert dialog  */}
-      {actions?.delete && <KeystoreRowDeleteAction rowId={rowId} />}
+      {resourceActions.delete && <KeystoreRowDeleteAction rowId={rowId} />}
 
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}
     </DataTableRowActions>
   );

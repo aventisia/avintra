@@ -8,6 +8,7 @@ public class WebhookTriggerService : IWebhookTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public WebhookTriggerService(
         ILogger<WebhookTriggerService> logger,
@@ -15,7 +16,8 @@ public class WebhookTriggerService : IWebhookTriggerService
         IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -23,6 +25,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         _environmentConfig = environmentConfig;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves all webhook triggers.
@@ -188,6 +191,15 @@ public class WebhookTriggerService : IWebhookTriggerService
 
         try
         {
+            // Block creating new webhook triggers while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<WebhookTriggerDto>(
+                _currentTenantService.CurrentEnvType,
+                "webhook trigger");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Duplicate name check
             var existing = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
@@ -312,6 +324,16 @@ public class WebhookTriggerService : IWebhookTriggerService
             {
                 serviceResponse.Message = "Webhook trigger does not exist";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted trigger environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<WebhookTriggerDto>(
+                trigger.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "webhook trigger");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate edit permission

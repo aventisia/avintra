@@ -1,8 +1,17 @@
+import {
+  CrudDialogProvider,
+  type CrudDialogRegistry,
+  useCrudDialogUrlState,
+} from "@avplatform/ui/data-table";
 import { DataTableSkeleton } from "@avplatform/ui/data-table";
-import { CrudDialogProvider, type CrudDialogRegistry } from "@avplatform/ui/data-table";
-import { Suspense, lazy } from "react";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudEntityKey } from "@avplatform/ui/types";
+import { Suspense, lazy, useEffect, useRef } from "react";
+import { toast } from "sonner";
 
+import { ROLE_OM } from "@/constants/roles";
 import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "@/features/01-build/flows-table/constants";
+import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getKeystoreDialogHeadingDescription } from "@/features/02-configure/keystore-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
@@ -29,6 +38,7 @@ import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
 import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
 import { getDialogHeadingDescription as getNotificationDialogHeadingDescription } from "@/features/notifications/constants/notifications-table.constant";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 const MachineCrudDialogContent = lazy(() =>
   import("@/features/03-orchestrator/machines-table/components/machine-crud-dialog/MachineCrudDialogContent").then(
@@ -305,16 +315,84 @@ const crudDialogRegistry: CrudDialogRegistry = {
 };
 
 /**
+ * IMPORTANT NOTE: Keep this entity list aligned with the environment-scoped resource cases in
+ * `apis/WorcBackend-legacy/WorkspaceAPIs/Helpers/ProdResourceShareGuard.cs`.
+ * Configure entities whose create dialogs are blocked in the Prod environment.
+ * Create/delete are disabled for these resources when env = prod.
+ */
+const CONFIG_ENTITY_KEYS = new Set<CrudEntityKey>([
+  "queue",
+  "keystore",
+  "knowledgeBase",
+  "skill",
+  "tool",
+  "vault",
+  "emailTrigger",
+  "messageTrigger",
+  "timeTrigger",
+  "webhookTrigger",
+]);
+
+/**
  * Renders the single URL-driven CRUD dialog provider for the workspace app.
  *
  * Mounted once at the root layout. The actual dialog content is determined by
  * URL query params: `e` (entity), `ca` (action), `rid` (record id), and
  * optionally `back` (return state).
+ *
+ * When env = prod, create dialogs for Configure entities are blocked even if the
+ * dialog was reached via a deep link; the reason is surfaced as a toast and the
+ * dialog params are cleared.
  */
 export function WorkspaceCrudDialogProvider() {
+  const env = useEnvironmentStore((state) => state.env);
+  const userSession = useUserSessionStore((state) => state.userSession);
+  const { crudAction, entity, closeCrudDialog } = useCrudDialogUrlState();
+
+  const isConfigureEntity = !!entity && CONFIG_ENTITY_KEYS.has(entity);
+  const isProdUpdate = env === "prod" && crudAction === "update" && isConfigureEntity;
+
+  const isBlockedCreate = env === "prod" && crudAction === "create" && isConfigureEntity;
+
+  // Hold a Prod update dialog until the session (and therefore the user's role) is
+  // known. Deciding while the session is null would briefly render the edit form
+  // for every user and then close it.
+  const isPendingProdEditAuth = isProdUpdate && !userSession;
+  const isBlockedProdEdit =
+    isProdUpdate && !!userSession && !userSession.userRoles.includes(ROLE_OM);
+  const isBlockedAction = isBlockedCreate || isBlockedProdEdit;
+
+  // The Configure dialog warning is only needed in Prod mode.
+  const showEnvBanner = env === "prod" && isConfigureEntity;
+
+  // Warn once per blocked attempt, then strip the dialog params from the URL.
+  const notifiedRef = useRef(false);
+  useEffect(() => {
+    if (!isBlockedAction) {
+      notifiedRef.current = false;
+      return;
+    }
+
+    if (!notifiedRef.current) {
+      notifiedRef.current = true;
+      toast.warning(
+        isBlockedCreate
+          ? "Creating resources is not available in PROD mode"
+          : "Your role does not allow editing resources in PROD mode",
+      );
+    }
+
+    closeCrudDialog();
+  }, [isBlockedAction, isBlockedCreate, closeCrudDialog]);
+
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      <CrudDialogProvider registry={crudDialogRegistry} />
+      {isBlockedAction || isPendingProdEditAuth ? null : (
+        <CrudDialogProvider
+          registry={crudDialogRegistry}
+          contentBanner={showEnvBanner ? <ConfigureProdEnvBanner className="mx-2" /> : undefined}
+        />
+      )}
     </Suspense>
   );
 }

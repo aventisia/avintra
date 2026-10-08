@@ -1,3 +1,4 @@
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { Button } from "@avplatform/ui/buttons";
 import {
   DTPagination,
@@ -32,6 +33,9 @@ export const SkillFilesTable = () => {
   const { id: skillId = "" } = useParams();
   const [searchParams] = useSearchParams();
   const skillName = searchParams.get("skill") ?? "Skill not found";
+
+  // Adding skill files creates sub-resources, which is disabled in Prod.
+  const { locked } = useActionLock();
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(
@@ -95,9 +99,11 @@ export const SkillFilesTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["fileName"]} placeholder="Search..." />
               {canManageFiles && (
-                <Button size="xs" onClick={() => setShowDialog(true)}>
-                  Add File
-                </Button>
+                <LockedActionTooltip>
+                  <Button size="xs" disabled={locked} onClick={() => setShowDialog(true)}>
+                    Add File
+                  </Button>
+                </LockedActionTooltip>
               )}
               <Button size="xs" variant="outline" onClick={handleDownload}>
                 <DownloadIcon className="h-3.5 w-3.5 mr-1" />

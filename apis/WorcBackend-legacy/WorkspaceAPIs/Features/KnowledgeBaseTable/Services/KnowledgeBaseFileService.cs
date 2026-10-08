@@ -78,6 +78,15 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
 
         try
         {
+            // Block registering KB files while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<KnowledgeBaseFileDto>(
+                _currentTenantService.CurrentEnvType,
+                "knowledge base file");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             dto = TrimDtoStringPropsUtil.TrimDtoStringProps(dto);
 
             if (string.IsNullOrWhiteSpace(dto.FileName) || string.IsNullOrWhiteSpace(dto.FileUrl))
@@ -95,6 +104,13 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // Prevent writing a child file to a PROD knowledge base even if the request environment was spoofed.
+            var parentProdBlock = ChildResourceGuard.ValidateWrite<KnowledgeBaseFileDto>(kb.EnvType, "knowledge base file");
+            if (parentProdBlock != null)
+            {
+                return parentProdBlock;
             }
 
             // Enforce unique document name within the knowledge base
@@ -165,6 +181,15 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
 
         try
         {
+            // Block registering KB text while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<KnowledgeBaseFileDto>(
+                _currentTenantService.CurrentEnvType,
+                "knowledge base file");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             dto = TrimDtoStringPropsUtil.TrimDtoStringProps(dto);
 
             if (string.IsNullOrWhiteSpace(dto.TextContent) || string.IsNullOrWhiteSpace(dto.FileName))
@@ -182,6 +207,13 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // Prevent writing child text to a PROD knowledge base even if the request environment was spoofed.
+            var parentProdBlock = ChildResourceGuard.ValidateWrite<KnowledgeBaseFileDto>(kb.EnvType, "knowledge base text");
+            if (parentProdBlock != null)
+            {
+                return parentProdBlock;
             }
 
             // Enforce unique document name within the knowledge base
@@ -311,6 +343,13 @@ public class KnowledgeBaseFileService : IKnowledgeBaseFileService
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // Prevent deleting child files from a PROD knowledge base.
+            var parentProdBlock = ChildResourceGuard.ValidateDelete<bool>(kb.EnvType, "knowledge base file");
+            if (parentProdBlock != null)
+            {
+                return parentProdBlock;
             }
 
             var kbFile = await _unitOfWork.KnowledgeBaseFileRepo

@@ -5,6 +5,7 @@ public class QueueTableService : IQueueTableService
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly ICurrentTenantService _currentTenantService;
@@ -14,7 +15,8 @@ public class QueueTableService : IQueueTableService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -24,6 +26,7 @@ public class QueueTableService : IQueueTableService
         _unitOfWork = unitOfWork;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Checks the availability of a queue name.
@@ -431,6 +434,15 @@ public class QueueTableService : IQueueTableService
 
         try
         {
+            // Block creating new queues while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<QueuesTableDto>(
+                _currentTenantService.CurrentEnvType,
+                "queue");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w => 
@@ -539,6 +551,16 @@ public class QueueTableService : IQueueTableService
             {
                 serviceResponse.Message = "Queue does not exist";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted queue environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<QueuesTableDto>(
+                queue.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "queue");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate edit permission
@@ -800,14 +822,14 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Validate flows existence
+            // Validate queue existence.
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
                     w.EnvType == _currentTenantService.CurrentEnvType &&
                     queueIds.Contains(w.Id))
                 .ToListAsync();
 
-            // Flows do not exist
+            // Queues do not exist.
             if (queues.Count == 0)
             {
                 serviceResponse.Message = "Queues do not exist";
@@ -922,6 +944,16 @@ public class QueueTableService : IQueueTableService
                 // If queue does not exist or does not belong to the current user, return failure.
                 serviceResponse.Message = "The queue does not exist.";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD queue edits based on the persisted queue environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<bool>(
+                queue.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "queue");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Check if all provided queue IDs are valid and belong to the current user.
