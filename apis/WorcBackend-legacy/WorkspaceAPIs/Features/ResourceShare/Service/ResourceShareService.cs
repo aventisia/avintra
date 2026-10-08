@@ -163,6 +163,17 @@ public class ResourceShareService : IResourceShareService
 
         try
         {
+            // Block sharing a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<ResourceShareDto>(
+                _unitOfWork,
+                resourceShareDto.ResourceType,
+                resourceShareDto.ResourceId,
+                "share");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
+            }
+
             // Check if the user already has access to this resource.
             var existingResource = await _unitOfWork.ResourceShareRepo
                 .GetByConditionAsync(w =>
@@ -237,6 +248,17 @@ public class ResourceShareService : IResourceShareService
 
         try
         {
+            // Block sharing a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<bool>(
+                _unitOfWork,
+                createResourceShareDto.ResourceType,
+                createResourceShareDto.ResourceId,
+                "share");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
+            }
+
             var userIds = createResourceShareDto.Users
                 .Select(s => s.UserId)
                 .Distinct()
@@ -347,6 +369,17 @@ public class ResourceShareService : IResourceShareService
                 return serviceResponse;
             }
 
+            // Block sharing a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<ResourceShareDto>(
+                _unitOfWork,
+                resourceShare.ResourceType,
+                resourceShare.ResourceId,
+                "change sharing for");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
+            }
+
             // Map updated DTO values to the entity.
             resourceShareDto.Adapt(resourceShare);
 
@@ -392,6 +425,17 @@ public class ResourceShareService : IResourceShareService
 
         try
         {
+            // Block sharing a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<bool>(
+                _unitOfWork,
+                updateTenantWideAccessDto.ResourceType,
+                updateTenantWideAccessDto.ResourceId,
+                "change sharing for");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
+            }
+
             // Update tenant-wide access based on the resource type.
             switch (updateTenantWideAccessDto.ResourceType)
             {
@@ -602,6 +646,17 @@ public class ResourceShareService : IResourceShareService
                 return serviceResponse;
             }
 
+            // Block removing access from a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<bool>(
+                _unitOfWork,
+                resourceShare.ResourceType,
+                resourceShare.ResourceId,
+                "remove access from");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
+            }
+
             // Remove the user's access record.
             _unitOfWork.ResourceShareRepo.Delete(resourceShare);
 
@@ -655,6 +710,17 @@ public class ResourceShareService : IResourceShareService
             {
                 serviceResponse.Message = "Resource share not found.";
                 return serviceResponse;
+            }
+
+            // Block removing access from a published (PROD) Configure resource.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateAsync<bool>(
+                _unitOfWork,
+                resourceShare.ResourceType,
+                resourceShare.ResourceId,
+                "remove access from");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
             }
 
             // Mark the entity for deletion.
@@ -726,6 +792,16 @@ public class ResourceShareService : IResourceShareService
             {
                 serviceResponse.Message = "No matching resource shares were found.";
                 return serviceResponse;
+            }
+
+            // Block removing access from published (PROD) resources in a batched check.
+            var prodShareBlock = await ProdResourceShareGuard.ValidateManyAsync<bool>(
+                _unitOfWork,
+                resourceShares.Select(resourceShare => (resourceShare.ResourceType, resourceShare.ResourceId)),
+                "remove access from");
+            if (prodShareBlock != null)
+            {
+                return prodShareBlock;
             }
 
             // Mark all retrieved resource shares for deletion.

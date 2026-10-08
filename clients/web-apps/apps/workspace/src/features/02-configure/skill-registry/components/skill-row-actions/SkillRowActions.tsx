@@ -3,11 +3,11 @@ import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { TABLE_TAB_QUERY_PARAM } from "../../constants";
 import { useTableTab } from "../../hooks/useTableTab.hook";
@@ -30,7 +30,7 @@ export const SkillRowActions = ({
 }: SkillRowActionsProps) => {
   const navigate = useNavigate();
 
-  const actions = getResourceAccessActions(accessLevel);
+  const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
   // Get the active tab and the query key used to invalidate the merged skills list
   const { isPlatformTab, queryKey } = useTableTab();
@@ -59,24 +59,25 @@ export const SkillRowActions = ({
         <DTRowAction rowId={rowId} crudAction="update" entity="skill" />
       )}
       {/* Share Access (not available for platform default skills) */}
-      {!readOnly && actions?.share && (
+      {!readOnly && resourceActions.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Skill}
           resourceName={name}
+          disabled={isProd}
         />
       )}
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
       {/* Skill delete alert dialog (not available for platform default skills) */}
-      {!readOnly && actions?.delete && <SkillRowDeleteAction rowId={rowId} />}
+      {!readOnly && resourceActions.delete && <SkillRowDeleteAction rowId={rowId} />}
 
       {/* Remove the resource from the user's shared list (shown for rows the user doesn't own) */}
       {!readOnly &&
         accessLevel !== ResourceAccessTypeEnum.Owner &&
         accessLevel !== ResourceAccessTypeEnum.Personal && (
-          <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+          <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
         )}
     </DataTableRowActions>
   );

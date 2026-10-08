@@ -11,13 +11,15 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public KnowledgeBaseService(
         ILogger<KnowledgeBaseService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Extract user ID from HttpContext
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -26,6 +28,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     /// <summary>
@@ -316,6 +319,15 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
         try
         {
+            // Block creating new knowledge bases while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<KnowledgeBaseDto>(
+                _currentTenantService.CurrentEnvType,
+                "knowledge base");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             knowledgeBaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(knowledgeBaseDto);
 
             // Validate input
@@ -459,6 +471,16 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted knowledge base environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<KnowledgeBaseDto>(
+                existingKB.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "knowledge base");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Check if new name already exists for this user (exclude current KB)

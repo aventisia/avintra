@@ -11,6 +11,7 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private const int OUTLOOK_EXPIRY_MINUTES = 10080;
 
     public IResourceShareService ResourceShareService => _resourceShareService;
@@ -24,7 +25,8 @@ public class EmailTriggerService : IEmailTriggerService
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -37,6 +39,7 @@ public class EmailTriggerService : IEmailTriggerService
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves all email triggers.
@@ -210,6 +213,15 @@ public class EmailTriggerService : IEmailTriggerService
 
         try
         {
+            // Block creating new email triggers while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<EmailTriggerDto>(
+                _currentTenantService.CurrentEnvType,
+                "email trigger");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
@@ -375,6 +387,16 @@ public class EmailTriggerService : IEmailTriggerService
             {
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse; // Early return
+            }
+
+            // Require OM for PROD edits based on the persisted trigger environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<EmailTriggerDto>(
+                emailTrigger.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "email trigger");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate current user has permission to update this trigger

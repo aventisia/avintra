@@ -1,0 +1,31 @@
+meta {
+  name: Prod env guard
+  seq: 90
+}
+
+docs {
+  > Verifies the Configure PROD guard rules on the Workspace API:
+  > - Creating Configure resources is blocked when `X-Env-Type` is `Prod`.
+  > - Editing a persisted PROD Configure resource requires the OM role (403 otherwise).
+  > - Child writes/deletes under a persisted PROD parent are blocked even when the
+  >   request spoofs a DEV header (message contains `published (PROD)`).
+  > - Sharing/removing access to a persisted PROD Configure resource is blocked.
+  > - Assigning agents to a PROD queue requires the OM role.
+  >
+  > Work-item inserts are intentionally NOT blocked in PROD: work items are runtime
+  > data, not Configure resources (see `create-workitem-prod-not-blocked`). The
+  > Configure UI still disables interactive uploads via `ActionLock`.
+  >
+  > Prerequisites (like the other Configure requests):
+  > - A valid session/token setup and selected tenant/space.
+  > - `SKILL_ID` / `QUEUE_ID` seeded by running their insert requests first in Dev,
+  >   for the sub-resource cases.
+  > - To run the delete case, set `PROD_QUEUE_ID` (Global Environment) to an existing
+  >   PROD queue id.
+  > - Update/assign/share cases require `PROD_OM_ACCESS_TOKEN`, `PROD_TD_ACCESS_TOKEN`,
+  >   `PROD_OM_QUEUE_ID`, `PROD_TD_QUEUE_ID`, and `DEV_TD_QUEUE_ID` in the Global
+  >   Environment. The OM-owned PROD queue and TD-owned DEV queue must be dedicated
+  >   authorization fixtures matching the payloads in the requests.
+  > - Nested-resource spoof/delete cases require `PROD_KB_ID`, `PROD_SKILL_ID`,
+  >   and `PROD_SKILL_FILE_ID` pointing to existing PROD parents/files.
+}

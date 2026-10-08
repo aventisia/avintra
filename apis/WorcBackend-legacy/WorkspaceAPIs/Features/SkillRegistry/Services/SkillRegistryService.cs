@@ -11,6 +11,7 @@ public class SkillRegistryService : ISkillRegistryService
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     /// <summary>
     /// Validates skill names using the kebab-case convention: lowercase letters and digits,
@@ -23,7 +24,8 @@ public class SkillRegistryService : ISkillRegistryService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Extract current user ID from JWT claim; fallback to empty Guid when missing.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -31,6 +33,7 @@ public class SkillRegistryService : ISkillRegistryService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     /// <summary>
@@ -339,6 +342,15 @@ public class SkillRegistryService : ISkillRegistryService
 
         try
         {
+            // Block creating new skills while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<SkillDto>(
+                _currentTenantService.CurrentEnvType,
+                "skill");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Normalize DTO string properties before validation and persistence.
             skillDto = TrimDtoStringPropsUtil.TrimDtoStringProps(skillDto);
 
@@ -450,6 +462,16 @@ public class SkillRegistryService : ISkillRegistryService
             {
                 serviceResponse.Message = "Skill not found";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted skill environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<SkillDto>(
+                existingSkill.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "skill");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Verify user has edit or owner permission.

@@ -11,7 +11,9 @@ import { DataTableSkeleton } from "@avplatform/ui/data-table";
 import { useMemo, useState } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import FileWorkItem from "@/features/04-assist/my-queues/components/work-item-details/file-type-work-item/FileWorkItem";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
 import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
@@ -43,10 +45,13 @@ export const QueueWorkItemDetail = () => {
     () => queuesData?.data?.find((item) => item.id === queueId),
     [queuesData?.data, queueId],
   );
+  const { actions, isProd } = useConfigureResourceAccessActions(
+    queue?.accessLevel ?? ResourceAccessTypeEnum.View,
+  );
 
   const inputSchema = queue?.inputSchema;
   const credentialName = queue?.credentialName;
-  const hasOnlyReadAccess = queue?.accessLevel == "View";
+  const hasOnlyReadAccess = isProd ? !actions.update : queue?.accessLevel === "View";
 
   const workItem: QueueWorkItemDto | undefined = workItemData?.data;
 

@@ -9,6 +9,9 @@ import { useDataTable } from "@avplatform/ui/hooks";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
 import { DETAIL_TABLE_KEY } from "../../constants";
 import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
 import { useFetchKBFiles } from "../../hooks/useFetchKBFiles";
@@ -47,6 +50,11 @@ export const KBFilesTable = () => {
     [kbData?.data, knowledgeBaseId],
   );
 
+  // Resolve Prod-capped actions so the file table's read-only gate matches the row actions.
+  const { actions, isProd } = useConfigureResourceAccessActions(
+    knowledgeBase?.accessLevel ?? ResourceAccessTypeEnum.View,
+  );
+
   const columns = useMemo(
     () => getKBFilesTableColumns(knowledgeBaseId, knowledgeBase),
     [knowledgeBaseId, knowledgeBase],
@@ -55,12 +63,12 @@ export const KBFilesTable = () => {
   // if the KB does not exist in KB list/shared revert user back to kb
   useEffect(() => {
     if (!isLoading && !knowledgeBase) navigate("/configure/knowledge-base");
-  }, [isLoading, knowledgeBase]);
+  }, [isLoading, knowledgeBase, navigate]);
 
   const hasOnlyReadAccess = useMemo(() => {
     if (!knowledgeBase) return true;
-    return knowledgeBase?.accessLevel == "View";
-  }, [knowledgeBase]);
+    return isProd ? !actions.update : knowledgeBase.accessLevel === "View";
+  }, [knowledgeBase, isProd, actions.update]);
 
   const filteredColumns = useMemo(() => {
     if (!hasOnlyReadAccess) return columns;

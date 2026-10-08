@@ -8,6 +8,7 @@ public class KeyStoreService : IKeyStoreService
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public KeyStoreService(
         ILogger<KeyStoreService> logger,
@@ -15,7 +16,8 @@ public class KeyStoreService : IKeyStoreService
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,6 +27,7 @@ public class KeyStoreService : IKeyStoreService
         _stringEncryptionService = stringEncryptionService;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Method to check if the key store name is available for the current user
@@ -340,6 +343,15 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
+            // Block creating new key stores while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<KeyStoreDto>(
+                _currentTenantService.CurrentEnvType,
+                "key store");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Check if the provided key store name is valid
             if (!IsValidIdentifier(keyStoreDto.Name))
             {
@@ -434,6 +446,16 @@ public class KeyStoreService : IKeyStoreService
             {
                 serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted key store environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<KeyStoreDto>(
+                keyStore.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "key store");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate update access

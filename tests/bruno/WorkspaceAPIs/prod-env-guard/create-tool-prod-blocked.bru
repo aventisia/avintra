@@ -1,0 +1,38 @@
+meta {
+  name: Create tool blocked in PROD (expect 400)
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tools
+  body: json
+  auth: none
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "name": "bruno-prod-guard-{{$randomInt}}",
+    "description": "prod env guard test",
+    "type": "Custom",
+    "baseUrl": "https://api.example.com",
+    "openApiSpec": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"Sample\",\"version\":\"1.0.0\"},\"paths\":{}}",
+    "authenticationType": "ApiKeyHeader",
+    "credentialName": null,
+    "isTenantWideAccess": false
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("PROD environment")) {
+    bru.pass("Create tool correctly blocked in PROD");
+  } else {
+    bru.fail("Expected 400 PROD guard, got " + res.getStatus() + " - " + message);
+  }
+}

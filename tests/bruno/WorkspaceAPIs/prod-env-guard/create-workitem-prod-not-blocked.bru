@@ -1,0 +1,53 @@
+meta {
+  name: Add queue work item allowed in PROD (expect not create-guard-blocked)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/workitem
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "queueId": "{{PROD_TD_QUEUE_ID}}",
+    "queueName": "",
+    "workItemData": "{\n  \"Id\": 1,\n  \"Name\": \"ProdGuard\",\n  \"Location\": \"Boston\",\n  \"Date\": \"2030-01-01\"\n}"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  const blockedByCreateGuard =
+    message.includes("Cannot create work item in the PROD environment") ||
+    message.includes("Published resources are created by publishing");
+  if (!blockedByCreateGuard) {
+    bru.pass("Prod work-item insert is not blocked by the configure create guard (status " + res.getStatus() + ")");
+  } else {
+    bru.fail("Work-item insert is incorrectly treated as configure data in PROD: " + message);
+  }
+}
+
+docs {
+  > Work items are runtime data, not published Configure resources. A PROD
+  > request must not be rejected by `CreateResourceGuard`.
+  >
+  > This case passes when the insert succeeds (200) or the queue cannot be
+  > resolved with the supplied fixture, and fails only if the response carries
+  > the configure create-guard message. Locking interactive uploads is a UI
+  > concern (`ActionLock`), not an API block.
+  >
+  > Requires `PROD_TD_ACCESS_TOKEN` and `PROD_TD_QUEUE_ID` in the Global
+  > Environment, or the response is a queue-resolution error (still a pass).
+}

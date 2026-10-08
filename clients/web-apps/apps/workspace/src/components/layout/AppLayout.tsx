@@ -8,6 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
 import { DotPattern } from "@/components/layout/DotPattern";
+import { ROLE_TA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus";
 import { PROCESSING_STATES } from "@/features/execute-flow";
@@ -19,7 +20,6 @@ import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-import { ROLE_TA } from "@/constants/roles";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
@@ -238,7 +238,7 @@ export const AppLayout = () => {
           />
           <AppHeader />
           <Sidebar />
-          <ScrollArea className={cn("h-[calc(100vh-var(--header-height)-var(--header-padding))]")}>
+          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
             <main
               className={cn(
                 "px-3 md:px-7 py-0 transition-all duration-500",

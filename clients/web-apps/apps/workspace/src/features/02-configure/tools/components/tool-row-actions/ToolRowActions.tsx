@@ -1,11 +1,11 @@
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
+import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { ToolRowDeleteAction } from "./ToolRowDeleteAction";
@@ -25,14 +25,14 @@ export const ToolRowActions = ({
   isTenantWideAccess,
   isPlatformTool = false,
 }: ToolRowActionsProps) => {
-  const actions = getResourceAccessActions(accessLevel);
+  const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
   // Get the query key used to invalidate the merged tools list after a mutation
   const { queryKey } = useTableTab();
 
   return (
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the tool details */}
-      {<DTRowAction rowId={rowId} crudAction="read" entity="tool" />}
+      <DTRowAction rowId={rowId} crudAction="read" entity="tool" />
 
       {/* Edit tool details (not available for platform's default tools) */}
       {!isPlatformTool && actions?.update && (
@@ -40,23 +40,24 @@ export const ToolRowActions = ({
       )}
 
       {/* Share Access (not available for platform's default tools) */}
-      {!isPlatformTool && actions?.share && (
+      {!isPlatformTool && resourceActions.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Tool}
           resourceName={name}
+          disabled={isProd}
         />
       )}
 
       <DropdownMenuSeparator />
 
       {/* Delete tool (not available for platform's default tools) */}
-      {!isPlatformTool && actions?.delete && <ToolRowDeleteAction rowId={rowId} />}
+      {!isPlatformTool && resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
 
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}
     </DataTableRowActions>
   );
