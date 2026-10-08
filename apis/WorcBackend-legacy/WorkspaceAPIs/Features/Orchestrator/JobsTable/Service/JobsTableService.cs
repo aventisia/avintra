@@ -386,7 +386,8 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.FlowVersionNumber = $"v{flowVersion.FlowVersionNumber}";
             jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
 
-            // Trigger job execution if a machine is available (published or desktop flow)
+            // Dispatch the job: "Cloud" runs on the cloud engine, a selected machine is dispatched
+            // to that runner (see JobsExecutorService.ExecuteJobCommandAsync).
             _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: job {JobId} created (status={Status}, machine={MachineId}, flowVersionId={FlowVersionId}, tenantId={TenantId}). Dispatching now.",
                 newJob.Id, newJob.Status, jobRecordDto.ExecutionLocation, newJob.FlowVersionId, newJob.TenantId);
             await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
