@@ -28,7 +28,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
   - `delete[Entity]`
   - `deleteMultiple[Entities]`
 - For non-CRUD controller actions, copy the backend method name and order exactly; do not invent a CRUD alias.
-- Convert backend XML docs (`/// <summary>`) into TypeScript JSDoc (`/** ... */`) for every generated API method.
+- Convert backend XML docs (`/// <summary>`) into TypeScript JSDoc (`/** ... */`) for every exported API method, keeping each summary to one short sentence.
 - Assume backend responses use `ServiceResponse<T>` wrappers and never treat payloads as raw data.
 
 ## API Integration Rules (`.apis.ts`)
@@ -89,6 +89,14 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 - Apply naming and `interface`/`type` rules incrementally whenever reviewing, fixing, or refactoring touched files.
 - For mixed legacy areas, prioritize consistency within the current change scope and avoid unrelated churn.
 
+## Documentation and Comments
+
+- Enforce the root `AGENTS.md` "Documentation and Code Style Boundaries" rules in all frontend code.
+- Document only exported/public APIs and complex type definitions with short JSDoc; never document internal functions or variables.
+- Do not add inline comments that restate code; use precise names and small components instead.
+- The only permitted inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
+- Before modifying a feature, read that feature's local `README.md` when it exists; it records domain boundaries and exceptions.
+
 ## Feature Index Import Policy
 
 - Use the feature `index.ts` for imports coming from outside the feature.
@@ -106,7 +114,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 - Separate UI rendering from API fetching/mutation logic.
 - Prefer custom hooks for data access and mutations.
 - Break complex logic into small isolated blocks.
-- Add a concise comment before non-trivial blocks to improve scanability and maintenance.
+- Make non-trivial logic scannable through precise naming and decomposition, not inline comments.
 
 ## Feature Utilities
 
@@ -128,14 +136,15 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 
 1. Verify `.apis.ts` method names and order match backend controllers.
 2. Verify CRUD naming patterns are consistent.
-3. Verify every API method has JSDoc derived from backend summaries where available.
+3. Verify every exported API method has short JSDoc derived from backend summaries where available, and internal functions are undocumented.
 4. Verify `ServiceResponse<T>` envelope handling is correct and typed.
 5. Verify DTO interface property order, casing, and type mappings.
 6. Verify validation parity with backend constraints.
 7. Verify API logic is separated from UI, ideally via hooks.
-8. Verify non-trivial logic blocks are decomposed and briefly commented.
+8. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
 9. Verify non-component files follow required suffix naming conventions.
 10. Verify `interface` is used only in `.dto.ts` files and `type` is used elsewhere.
+11. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
 
 ## Output Format
 
@@ -146,7 +155,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 - For code generation:
   - Produce complete, compilable snippets for all affected files.
   - Keep backend/ frontend naming and ordering synchronized.
-  - Include only necessary comments.
+  - Include documentation only on exported/public boundaries; never add implementation comments.
 
 <!-- BEGIN:turborepo-agent-rules -->
 

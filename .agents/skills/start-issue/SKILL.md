@@ -28,7 +28,7 @@ If no issue reference is provided, ask for one. This skill is issue-only; do not
 
 ### 2. Preliminary investigation
 
-- Read the root and relevant area `AGENTS.md` files before searching deeply.
+- Read the root and relevant area `AGENTS.md` files and any affected feature's local `README.md` before searching deeply.
 - Do a bounded first pass to identify likely subsystems, entry points, existing behavior, and missing requirements.
 - Keep this pass read-only. Do not modify implementation files.
 
@@ -42,7 +42,7 @@ If no issue reference is provided, ask for one. This skill is issue-only; do not
 ### 4. Complete the investigation
 
 - Trace the relevant existing behavior through code, callers, contracts, schemas, configuration, and tests as applicable.
-- Inspect neighboring conventions and area-specific `AGENTS.md` files.
+- Inspect neighboring conventions, area-specific `AGENTS.md` files, and local feature `README.md` files.
 - Verify every proposed manifest path exists. Include the symbol or behavior to inspect and why it is relevant.
 - Separate confirmed findings from hypotheses, open questions, and unrelated paths that were checked and excluded.
 - Do not propose a detailed implementation plan or change code; planning belongs to `start-architect`.

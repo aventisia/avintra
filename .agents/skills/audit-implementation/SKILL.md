@@ -30,7 +30,7 @@ Stage 4 of the issue workflow. Review the implementation against the approved pl
 
 ### 3. Review against code and plan
 
-- Load and follow the `code-review` skill for code-quality criteria and review output. Do not duplicate its checklist here.
+- Load and follow the `code-review` skill for code-quality criteria and review output, including the `AGENTS.md` documentation boundaries (no implementation comments; short docs on public boundaries only). Do not duplicate its checklist here.
 - Review code quality and plan conformance together: for each approved goal, requirement, or architecture decision, identify the implementing code and validation evidence, or report the gap/deviation.
 - Preserve the code-review findings and verdict. Add plan-conformance gaps as separate findings, with stable IDs and severity for the rework loop.
 - Do not edit implementation code, fix findings, or modify the Gitea issue/PR. The code-review skill is read-only for PRs.
