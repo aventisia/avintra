@@ -47,6 +47,11 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Use `public static` methods in a `public static class` so the logic is stateless and easy to unit test.
 - Only place helpers in shared/toolkit folders when they are genuinely reused across multiple features or projects.
 
+## Documentation and READMEs
+
+- Before modifying a backend feature, read `Features/<FeatureName>/README.md` when it exists; it records domain boundaries, contracts, and exceptions.
+- Do not create feature READMEs proactively; add one only when a feature has non-obvious boundaries or invariants worth documenting.
+
 ## Global Usings
 
 - Do **not** add `using` statements to a file for namespaces that are already imported in the project's `GlobalUsings.cs`.
@@ -61,7 +66,7 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Do not add `[Required]` on DTO properties if the C# `required` keyword is already used.
 - Use `[RequiredGuid]` on non-optional Guid properties in DTOs.
 - Apply `[StringLength]` based on entity max length.
-- Include max length in XML `/// <summary>` docs for DTO properties to improve hover visibility.
+- Include max length in the short XML `/// <summary>` docs for DTO properties to improve hover visibility.
 - Use camelCase for DTO parameter names in all methods (example: `CreateMachineDto createMachineDto`).
 - For many-to-many entities, use `Entity1_Entity2` (singular nouns with underscore) and keep PascalCase for the join entity/table name.
 
@@ -79,20 +84,21 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Keep the message in the `ServiceResponse` concise and relevant to the action performed. For example, use "Machine added" instead of "Machine added successfully" or "Machine added successfully to the database."
 - Split complex service logic into small isolated blocks.
 - Review each service method's logic for incorrect, incomplete, or inconsistent implementation; fix it when the intended behavior is clear, otherwise highlight the issue explicitly in the review output.
-- Add a concise step comment before each non-trivial block to aid future maintenance scanning.
+- Make non-trivial service logic scannable through precise naming and small isolated blocks, not inline comments.
 
 ## Logging and Documentation
 
 - Keep server-side logging minimal.
 - Use `_logger` only for critical production-debugging or compliance-relevant events.
-- Synchronize XML documentation across Controller, Service Interface, and Service Implementation.
-- CRUD comment patterns to enforce:
-  - `// Retrieves list of [entities].`
-  - `// Retrieves a [entity] by its ID.`
-  - `// Insert a new [entity].`
-  - `// Updates an existing [entity].`
-  - `// Deletes an existing [entity].`
-  - `// Deletes multiple [entities] by their IDs.`
+- Follow the root `AGENTS.md` "Documentation and Code Style Boundaries": no implementation comments, self-documenting names, and documentation only on public boundaries.
+- Synchronize short `/// <summary>` XML documentation across public Controller, Service Interface, and Service Implementation methods. Keep each summary to one sentence.
+- Use these summary patterns for the public CRUD methods; do not duplicate them as inline `//` comments:
+  - `Retrieves list of [entities].`
+  - `Retrieves a [entity] by its ID.`
+  - `Insert a new [entity].`
+  - `Updates an existing [entity].`
+  - `Deletes an existing [entity].`
+  - `Deletes multiple [entities] by their IDs.`
 
 ## Review Checklist
 
@@ -107,8 +113,9 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 9. Verify delete-multiple endpoints return the count of deleted records instead of a boolean.
 10. Verify DTOs are normalized prior to any database operations.
 11. Verify service method logic is correct; fix clear defects or highlight ambiguous/wrong implementations.
-12. Verify logic blocks are decomposed and commented concisely.
+12. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
 13. Verify XML docs and minimal logging rules are respected.
+14. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
 
 ## Output Format
 
@@ -119,4 +126,4 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - For code generation:
   - Produce complete, compilable snippets for all affected layers.
   - Keep naming and ordering synchronized across files.
-  - Include only necessary comments.
+  - Include documentation only on public controller/service boundaries; never add implementation comments.

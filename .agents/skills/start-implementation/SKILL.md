@@ -1,11 +1,15 @@
 ---
 name: start-implementation
-description: "Implement an explicitly approved issue plan: save reviewable slices, implement all in one go by default, then hand off to audit-implementation."
+description: "Implement an explicitly approved issue plan: save reviewable slices, implement all in one go by default, then stop for a fresh Auditor session."
 argument-hint: "Issue number and approved plan path; optionally request todo-by-todo"
 user-invocable: true
 ---
 
 # Heavy Typist: Implement an Issue
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
@@ -18,7 +22,7 @@ Use this workflow after `start-architect` has saved an explicitly approved plan 
 
 ## Procedure
 
-1. Read `local-issues/<issue-number>/02-architect-plan.md`, the relevant `AGENTS.md` files, current code, and the latest `04-audit-report.md` if it exists. For audit rework, proceed only when every unresolved finding is represented by a remediation task in the newly approved plan; otherwise stop and hand back to `start-architect`.
+1. Read `local-issues/<issue-number>/02-architect-plan.md`, the relevant `AGENTS.md` files, each affected feature's local `README.md` when present, current code, and the latest `04-audit-report.md` if it exists. For audit rework, proceed only when every unresolved finding is represented by a remediation task in the newly approved plan; otherwise stop and ask the user to restart `start-architect` in a fresh session using a different model (recommended: advanced reasoning).
 2. Slice the approved plan's goals, phases, and tasks into reviewable work items. Save them before editing implementation files at:
 
    ```text
@@ -29,9 +33,17 @@ Use this workflow after `start-architect` has saved an explicitly approved plan 
 3. Use **All in one go** unless the user explicitly requested **TODO by TODO**. Record the mode in the slices file; do not ask for a mode by default.
 4. Implement slices sequentially within the approved scope. For each slice, update its status and validate it through the narrowest meaningful check available (focused test, Bruno API test, UI review, typecheck, lint, build, or equivalent manual verification) before moving on.
 5. In TODO-by-TODO mode, pause after each validated slice for review. In all-in-one mode, continue without intermediate pauses and present one consolidated report at the end.
-6. If validation fails, mark the slice blocked and stop. If implementation reveals a required architectural or scope change, stop and return to `start-architect`; do not silently change the approved plan.
+6. If validation fails, mark the slice blocked and stop. If implementation reveals a required architectural or scope change, stop and ask the user to restart `start-architect` in a fresh session using a different model (recommended: advanced reasoning); do not silently change the approved plan.
 7. Do not stage, commit, or push implementation changes unless the user explicitly asks.
-8. When all slices are complete, hand off to `audit-implementation` with the issue number and plan path.
+8. When all slices are complete, report the implementation result, validations, and slice-file path. Say the next step is `audit-implementation` in a fresh session using a different model (recommended: review/reasoning model). Do not load or invoke that skill. Stop here.
+
+## Documentation Rules
+
+- Apply the root `AGENTS.md` "Documentation and Code Style Boundaries" to every slice.
+- Do not add inline comments that explain syntax or internal logic; use precise names instead.
+- Write short JSDoc/XML only for exported interfaces, public APIs, and complex types; leave internal functions undocumented.
+- The only permitted inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
+- Read each affected feature's local `README.md` before changing it.
 
 ## TODO Slicing Rules
 
@@ -49,4 +61,4 @@ The workflow is complete only when:
 - The approved plan at `02-architect-plan.md` was followed, or any required change was returned to the Architect.
 - `03-heavy-typist-slices.md` contains every slice, its status, the selected mode, and validation results.
 - Every slice is complete and validated; failures or remaining gaps are reported rather than hidden.
-- The user receives a concise implementation summary and the handoff to `audit-implementation`.
+- The user receives a concise implementation summary and audit instructions; this session stops without invoking another stage.

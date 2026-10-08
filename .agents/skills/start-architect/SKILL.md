@@ -1,13 +1,17 @@
 ---
 name: start-architect
-description: "Read an issue's scout report and any audit findings, recommend a planning mode, produce an approved architecture plan, and hand off to start-implementation."
+description: "Read an issue's scout report and any audit findings, recommend a planning mode, produce an approved architecture plan, then stop for a fresh Heavy Typist session."
 argument-hint: "Issue number"
 user-invocable: true
 ---
 
 # Architect an Issue
 
-Stage 2 of the issue workflow. Turn the verified scout report into a complete, reviewable implementation plan. Do not implement code.
+Stage 2 of the issue workflow. Turn the verified scout report into a complete, reviewable implementation plan. Do not implement code or continue into another stage.
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
@@ -21,7 +25,7 @@ Stage 2 of the issue workflow. Turn the verified scout report into a complete, r
 - Resolve the issue number and read `local-issues/<issue-number>/01-scout-report.md`.
 - If `local-issues/<issue-number>/04-audit-report.md` exists, read it in full. For an audit loop, plan against every unresolved finding and preserve its finding IDs/references.
 - If the scout report is missing, an audit report referenced by the handoff is missing, or the issue number is ambiguous, stop and ask for the correct input. The audit report is optional on the initial planning pass. Do not reconstruct a report from memory.
-- Read current code and relevant `AGENTS.md` files for the affected areas before finalizing technical choices.
+- Read current code, relevant `AGENTS.md` files, and each affected feature's local `README.md` when present before finalizing technical choices.
 
 ### 2. Recommend a planning mode
 
@@ -42,9 +46,10 @@ Present a complete plan in the conversation before saving it. Include:
 - Ordered implementation tasks with clear boundaries.
 - Edge cases, compatibility, security, migration/data implications, and failure behavior as applicable.
 - Validation strategy, risks, and unresolved assumptions.
+- Documentation expectations per the `AGENTS.md` code-style boundaries (no implementation comments; short docs on public boundaries only).
 - For an audit loop, a mapping from each unresolved audit finding to its remediation task and validation.
 
-Ask the user to approve, revise, or stop. Do not save an approved-plan artifact or hand off to implementation until the user explicitly approves the plan. If revised, present the complete revised plan and ask again.
+Ask the user to approve, revise, or stop. Do not save the plan until the user explicitly approves it. If revised, present the complete revised plan and ask again. Do not continue into implementation in this session.
 
 ### 4. Save the approved plan
 
@@ -56,9 +61,9 @@ local-issues/<issue-number>/02-architect-plan.md
 
 This is the canonical filename. Do not use `02-architect.md` or create a second copy. Record the approval, selected planning mode, issue number, audit findings addressed (if any), plan content, and validation expectations. Do not overwrite an unrelated plan; if a plan exists, update it only for this approved revision and preserve relevant history or decisions.
 
-### 5. Hand off to implementation
+### 5. Complete Architect stage and stop
 
-Load `start-implementation` with the issue number and approved plan path. The Heavy Typist selects the execution mode using that skill's rules; do not ask a second execution-mode question here.
+After saving the approved plan, report its path, the approval, and any key assumptions. Say the next step is `start-implementation` in a fresh session using a different model (recommended: code-generation model). Do not load or invoke that skill or begin implementation here. Stop.
 
 ## Quality Criteria
 
@@ -67,7 +72,7 @@ Load `start-implementation` with the issue number and approved plan path. The He
 - Every known audit finding is addressed or explicitly identified as unresolved with a reason.
 - The full plan received explicit human approval before it was saved.
 - The approved plan exists at `local-issues/<issue-number>/02-architect-plan.md`.
-- Implementation begins only through `start-implementation` on the approved plan.
+- The approved plan is ready for the user to start `start-implementation` in a fresh session with a different model; this session stops without invoking it.
 
 ## See Also
 
