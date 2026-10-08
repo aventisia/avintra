@@ -1,3 +1,6 @@
+using ExecutorLibrary.Helpers;
+using ExecutorLibrary.Models;
+
 namespace WorkspaceAPIs.Services;
 
 public class JobsExecutorService : IJobsExecutorService
@@ -8,8 +11,10 @@ public class JobsExecutorService : IJobsExecutorService
     private readonly IHubContext<OrchestratorHub> _hubContext;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICreditGateService _creditGateService;
+    private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
 
     private readonly Guid _userId;
+    private readonly string _accessToken;
 
     // Constructor
     public JobsExecutorService(
@@ -19,9 +24,13 @@ public class JobsExecutorService : IJobsExecutorService
         IHubContext<OrchestratorHub> hubContext,
         IClientStatusStore clientStatusStore,
         WorkspaceInternalDbContext workspaceInternalDbContext,
-        ICreditGateService creditGateService)
+        ICreditGateService creditGateService,
+        IExecuteFlowStep2Service executeFlowStep2Service)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+
+        // Forward the caller's JWT so cloud execution can call back into the APIs on behalf of the user.
+        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -29,6 +38,7 @@ public class JobsExecutorService : IJobsExecutorService
         _clientStatusStore = clientStatusStore;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _creditGateService = creditGateService;
+        _executeFlowStep2Service = executeFlowStep2Service;
     }
 
     // Method to execute a job command
@@ -66,14 +76,23 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
+            // Explicit cloud execution ("ExecutionLocation = Cloud"): run the flow on the cloud
+            // engine instead of dispatching it to a runner machine. Any other location is a
+            // selected machine and keeps the machine-bound dispatch path below.
+            if (JobsAssignmentHelpers.IsCloudExecutionLocation(jobDetails.ExecutedOn))
+            {
+                await ExecuteOnCloudAsync(jobDetails);
+                return;
+            }
+
             // Non-machine origins (unpublished Desktop App / Agent Builder runs) never dispatch to a
             // runner machine; TriggerExecutionAsync skips/handles them further below.
             var isNonMachineOrigin = !string.IsNullOrEmpty(job.ExecutedOn)
                 && (job.ExecutedOn.StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase)
                     || job.ExecutedOn.StartsWith("Agent Builder", StringComparison.OrdinalIgnoreCase));
 
-            // Bind an unassigned job (trigger/webhook/Cloud) to a deterministic machine. A job that is
-            // already bound to a machine keeps that machine and is never reassigned.
+            // Bind a remaining unassigned job (trigger/webhook) to a deterministic machine. A job
+            // that is already bound to a machine keeps that machine and is never reassigned.
             if (!isNonMachineOrigin && (job.MachineId == null || job.MachineId == Guid.Empty))
             {
                 var machineList = (await _clientStatusStore.GetMachineStatusesAsync(job.TenantId)).ToList();
@@ -142,6 +161,50 @@ public class JobsExecutorService : IJobsExecutorService
         {
             _logger.LogError(ex, "Error executing job {JobId}.", job?.Id);
         }
+    }
+
+    // Executes a Cloud-location job on the cloud engine (the in-process FlowProcessor) rather
+    // than dispatching it to a runner machine. The job is left unassigned so pollers never pick it.
+    private async Task ExecuteOnCloudAsync(Job job)
+    {
+        // Load the flow graph the job should run. Bypass tenant/space filters so dispatch resolves
+        // the version regardless of the caller's current scope.
+        var flowVersion = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w => w.Id == job.FlowVersionId)
+            .IgnoreQueryFilters()
+            .Include(i => i.Flow)
+            .AsNoTracking()
+            .SingleOrDefaultAsync();
+
+        if (flowVersion == null)
+        {
+            _logger.LogWarning("Cloud execution skipped for job {JobId}: flow version {FlowVersionId} not found.", job.Id, job.FlowVersionId);
+            return;
+        }
+
+        var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
+        if (parsedFlow == null)
+        {
+            _logger.LogWarning("Cloud execution skipped for job {JobId}: flow version {FlowVersionId} has an invalid flow graph.", job.Id, job.FlowVersionId);
+            return;
+        }
+
+        var flowExecutionArgs = new FlowExecutionArgs
+        {
+            TenantId = job.TenantId,
+            JobId = job.Id,
+            FlowVersionId = job.FlowVersionId,
+            FlowName = flowVersion.Flow?.Name ?? string.Empty,
+            FlowData = parsedFlow,
+            UserId = _userId,
+            AccessToken = _accessToken,
+            // Published agents run against production resources; drafts run against development.
+            EnvType = flowVersion.IsPublished ? "prod" : "dev"
+        };
+
+        // Fire-and-forget: the request returns immediately while the cloud engine updates the job.
+        _executeFlowStep2Service.StartExecution(flowExecutionArgs);
+        _logger.LogInformation("Job {JobId} dispatched to the cloud engine.", job.Id);
     }
 
     // Method to trigger the job execution on the assigned machine
