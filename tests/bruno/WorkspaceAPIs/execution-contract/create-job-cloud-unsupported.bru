@@ -1,0 +1,34 @@
+meta {
+  name: Create job rejects cloud on unsupported agent
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{WINDOWS_FLOW_VERSION_ID}}",
+    "executionLocation": "Cloud"
+  }
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  > Cloud execution is only allowed for agents published for the "cloud" platform
+  > (`supportedPlatform` contains "cloud"). A Windows-only agent requesting
+  > `executionLocation` "Cloud" is rejected with 400 on the server, regardless of the UI.
+  > Requires `ACCESS_TOKEN` (OM role) and `WINDOWS_FLOW_VERSION_ID` set to a published agent
+  > whose `supportedPlatform` is "windows".
+}

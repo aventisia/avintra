@@ -86,4 +86,10 @@ public class MachineFlowVersion : SelectOption
     /// Gets or sets the version number of the flow version.
     /// </summary>
     public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the comma-separated platforms the agent supports (for example "cloud" or
+    /// "windows").
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
 }

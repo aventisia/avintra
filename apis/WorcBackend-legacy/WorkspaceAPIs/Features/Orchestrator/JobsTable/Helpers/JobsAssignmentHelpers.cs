@@ -19,6 +19,24 @@ public static class JobsAssignmentHelpers
            || executionLocation.Equals(WebServerExecutionLocation, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
+    /// Returns true when the execution location explicitly requests cloud execution.
+    /// </summary>
+    public static bool IsCloudExecutionLocation(string? executionLocation)
+        => !string.IsNullOrWhiteSpace(executionLocation)
+           && executionLocation.Trim().Equals(CloudExecutionLocation, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Returns true when the agent's <c>SupportedPlatform</c> excludes cloud execution. The value
+    /// is a comma-separated list (for example "cloud" or "windows"); a null/empty value is
+    /// treated as unsupported. The cloud marker matches <see cref="CloudExecutionLocation"/>.
+    /// </summary>
+    public static bool IsCloudExecutionUnsupported(string? supportedPlatform)
+        => string.IsNullOrWhiteSpace(supportedPlatform)
+           || !supportedPlatform
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Any(IsCloudExecutionLocation);
+
+    /// <summary>
     /// Deterministically selects the machine an unassigned job should run on: the lowest
     /// <see cref="ClientDataStore.ClientId"/> among the machines mapped to the job's flow version
     /// that are online/idle and are not already holding a live pending job. Returns null when no

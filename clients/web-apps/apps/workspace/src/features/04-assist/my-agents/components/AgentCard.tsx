@@ -162,6 +162,7 @@ export const AgentCard = ({ agent }: AgentCardProps) => {
             rowId={agent.id}
             flowName={agent.name}
             flowVersionNumber={agent.versionNumber}
+            supportedPlatform={agent.supportedPlatform}
             jobId={agent.jobId}
           />
           {/* Actions menu (remove from machines) */}
