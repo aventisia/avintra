@@ -85,17 +85,18 @@ tea api --repo "$REPO" "/repos/{owner}/{repo}/pulls/$PR_ID.diff"
 
 ### 6. Review against project conventions
 
-- Read the relevant repo `AGENTS.md` files for the touched areas before judging structure or conventions.
+- Read the relevant repo `AGENTS.md` files and each touched feature's local `README.md` before judging structure or conventions.
 - If a changed file cannot be fetched or is binary/generated, say so explicitly rather than reviewing it blindly.
 
 ## Core Rules
 
-### 1. Comment Density and Style
+### 1. Documentation and Comment Density
 
-- Reject long, sprawling explanations of "what" and "why" inline.
-- For small functions, methods, or components: require JSDoc or a concise summary block.
-- For large functions: demand the logic be divided into labeled chunks inside the method so a reviewer can skim the flow.
-- Require important notes to start strictly with "IMPORTANT NOTE:".
+- Follow the repository `AGENTS.md` documentation boundaries: no inline comments explaining syntax or internal logic; require self-documenting names instead.
+- Require short JSDoc/XML only for exported interfaces, public APIs, and complex type definitions; internal functions and variables must stay undocumented.
+- Reject long or redundant public summaries; each should be one short sentence describing the contract, not the implementation.
+- Reject large functions that depend on explanatory comments; require decomposition and precise naming instead of labeled chunks.
+- The only permitted inline comments are `IMPORTANT NOTE:` warnings about external system constraints, race conditions, or required hacks.
 
 ### 2. File Structure and Modularity
 
@@ -156,8 +157,8 @@ Point out duplication, copied logic, or failure to reuse existing project utilit
 
 ### 4. Documentation / Comments
 
-Call out missing summaries, noisy inline comments, or comments that do not add value.
-Require "IMPORTANT NOTE:" for crucial warnings or implementation constraints.
+Call out undocumented exported/public APIs, over-long JSDoc, and inline comments that restate code.
+Confirm the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
 
 ### 5. Dead Code
 
@@ -182,6 +183,7 @@ The review should be exacting but fair. Do not nitpick formatting unless it mate
 - The review is read-only: the PR is never commented on, approved, rejected, or merged.
 - If `tea` is unavailable or the PR cannot be fetched, the exact blocker is reported and a fallback is offered.
 - Findings reference concrete changed file paths.
+- Documentation boundaries are enforced: no implementation comments, short docs only on public boundaries, and only `IMPORTANT NOTE:` inline exceptions.
 
 ## See Also
 

@@ -21,7 +21,7 @@ Stage 2 of the issue workflow. Turn the verified scout report into a complete, r
 - Resolve the issue number and read `local-issues/<issue-number>/01-scout-report.md`.
 - If `local-issues/<issue-number>/04-audit-report.md` exists, read it in full. For an audit loop, plan against every unresolved finding and preserve its finding IDs/references.
 - If the scout report is missing, an audit report referenced by the handoff is missing, or the issue number is ambiguous, stop and ask for the correct input. The audit report is optional on the initial planning pass. Do not reconstruct a report from memory.
-- Read current code and relevant `AGENTS.md` files for the affected areas before finalizing technical choices.
+- Read current code, relevant `AGENTS.md` files, and each affected feature's local `README.md` when present before finalizing technical choices.
 
 ### 2. Recommend a planning mode
 
@@ -42,6 +42,7 @@ Present a complete plan in the conversation before saving it. Include:
 - Ordered implementation tasks with clear boundaries.
 - Edge cases, compatibility, security, migration/data implications, and failure behavior as applicable.
 - Validation strategy, risks, and unresolved assumptions.
+- Documentation expectations per the `AGENTS.md` code-style boundaries (no implementation comments; short docs on public boundaries only).
 - For an audit loop, a mapping from each unresolved audit finding to its remediation task and validation.
 
 Ask the user to approve, revise, or stop. Do not save an approved-plan artifact or hand off to implementation until the user explicitly approves the plan. If revised, present the complete revised plan and ask again.

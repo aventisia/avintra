@@ -18,7 +18,7 @@ Use this workflow after `start-architect` has saved an explicitly approved plan 
 
 ## Procedure
 
-1. Read `local-issues/<issue-number>/02-architect-plan.md`, the relevant `AGENTS.md` files, current code, and the latest `04-audit-report.md` if it exists. For audit rework, proceed only when every unresolved finding is represented by a remediation task in the newly approved plan; otherwise stop and hand back to `start-architect`.
+1. Read `local-issues/<issue-number>/02-architect-plan.md`, the relevant `AGENTS.md` files, each affected feature's local `README.md` when present, current code, and the latest `04-audit-report.md` if it exists. For audit rework, proceed only when every unresolved finding is represented by a remediation task in the newly approved plan; otherwise stop and hand back to `start-architect`.
 2. Slice the approved plan's goals, phases, and tasks into reviewable work items. Save them before editing implementation files at:
 
    ```text
@@ -32,6 +32,14 @@ Use this workflow after `start-architect` has saved an explicitly approved plan 
 6. If validation fails, mark the slice blocked and stop. If implementation reveals a required architectural or scope change, stop and return to `start-architect`; do not silently change the approved plan.
 7. Do not stage, commit, or push implementation changes unless the user explicitly asks.
 8. When all slices are complete, hand off to `audit-implementation` with the issue number and plan path.
+
+## Documentation Rules
+
+- Apply the root `AGENTS.md` "Documentation and Code Style Boundaries" to every slice.
+- Do not add inline comments that explain syntax or internal logic; use precise names instead.
+- Write short JSDoc/XML only for exported interfaces, public APIs, and complex types; leave internal functions undocumented.
+- The only permitted inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
+- Read each affected feature's local `README.md` before changing it.
 
 ## TODO Slicing Rules
 
