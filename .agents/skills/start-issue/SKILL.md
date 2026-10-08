@@ -1,167 +1,133 @@
 ---
 name: start-issue
 disable-model-invocation: true
-argument-hint: "Issue number/URL, or an explicit branch name for non-issue work"
-description: "Read a Gitea issue, investigate it, choose a planning mode (simple or grilling), create the branch from main after approval, and hand off to start-implementation. Use when picking up an assigned issue."
+argument-hint: "Gitea issue number or URL"
+description: "Scout a Gitea issue, verify a focused investigation report with the user, create and push its branch, then hand off to start-architect."
 ---
 
-# Start Issue
+# Scout an Issue
 
-Orchestrate picking up an issue end to end: read → investigate → choose a planning mode → plan → approve → branch → start implementation. No git changes happen before the plan is approved.
+Stage 1 of the issue workflow: read the issue, investigate enough to identify the relevant code and boundaries, save the scout report, create the issue branch, and hand off to `start-architect`. Do not design or implement the solution here.
 
 ## When to Use
 
-- You were assigned a Gitea issue and are about to start work on it.
-- You say "start #42", "pick up issue 42", "read #42 and plan it", or "/start-issue 42".
-- You need a branch for work that has no issue and you provide the branch name yourself.
+- The user asks to start or investigate a Gitea issue, such as `start #42` or `/start-issue 42`.
+- The input is an issue number (`42`, `#42`) or a Gitea issue URL.
 
-## Inputs
+If no issue reference is provided, ask for one. This skill is issue-only; do not infer a branch-only workflow.
 
-- An issue number (`42`), `#42`, or a full issue URL, or
-- An explicit branch name to use verbatim, or
-- Both: the explicit branch name overrides the name derived from the issue, and the issue is still read for context.
-
-When only an explicit branch name is provided, skip steps 1–5 and go straight to branch creation (step 6). If no input is provided, ask for one.
-
-## Flow
+## Procedure
 
 ### 1. Read the issue
 
-- Confirm `tea` is available and authenticated with `tea --version` and `tea whoami`. If it is unavailable, stop and report.
-- Read the issue with `tea issue "$ISSUE_ID"`, adding `--comments` when the discussion matters for context.
-- Capture the title, state, body, assignees, and relevant comments.
-- Warn, but continue, when the issue is closed or is not assigned to the current user. Compare the `tea whoami` username with the issue assignees.
+- Confirm `tea` is available and authenticated with `tea --version` and `tea whoami`. If unavailable or unauthenticated, stop and report the exact error.
+- Resolve the issue number and repository from the input, then read it with `tea issue "$ISSUE_ID" --comments` when comments are available and relevant. For a URL to another repository, scope the `tea` request to that repository and its configured login; never silently read the same number from the current repository.
+- Record its title, state, body, assignees, acceptance criteria, and relevant discussion.
+- Compare `tea whoami` with the issue assignees. Warn, but continue, if it is closed or not assigned to the current user.
 - Never comment on, relabel, self-assign, or otherwise modify the issue.
 
-### 2. Investigate
+### 2. Preliminary investigation
 
-- Read the relevant code and conventions (repo `AGENTS.md` files) before proposing anything.
-- Assess scope and complexity: subsystems touched, contract/schema/API changes, architectural impact, requirement clarity, and unknown unknowns.
-- Change nothing: this phase is read-only.
+- Read the root and relevant area `AGENTS.md` files before searching deeply.
+- Do a bounded first pass to identify likely subsystems, entry points, existing behavior, and missing requirements.
+- Keep this pass read-only. Do not modify implementation files.
 
-### 3. Recommend a planning mode
+### 3. Ask focused questions when needed
 
-Present a recommendation with a one or two sentence rationale, and ask the user to choose:
+- Ask only questions raised by the issue and preliminary investigation that affect scope, expected behavior, compatibility, or which areas need investigation.
+- Do not ask questions already answered by the issue, comments, or repository behavior.
+- If the requirements are clear enough to investigate, continue without a question round.
+- Use the answers to focus the full investigation; record the answers and any remaining assumptions.
 
-- **Simple plan** — recommended when the change is localized, within one area, requirements are clear, and no schema/API/contract or architectural changes are involved.
-- **Grilling plan** — recommended when the investigation reveals multiple subsystems, schema/API/contract changes, new architecture, ambiguous requirements, or many unknown unknowns.
-- **Stop** — when the user only wanted context or triage.
+### 4. Complete the investigation
 
-Never start planning without the user's choice. Use the `grilling` skill only when it was chosen.
+- Trace the relevant existing behavior through code, callers, contracts, schemas, configuration, and tests as applicable.
+- Inspect neighboring conventions and area-specific `AGENTS.md` files.
+- Verify every proposed manifest path exists. Include the symbol or behavior to inspect and why it is relevant.
+- Separate confirmed findings from hypotheses, open questions, and unrelated paths that were checked and excluded.
+- Do not propose a detailed implementation plan or change code; planning belongs to `start-architect`.
 
-### 4. Plan
+### 5. Save and verify the scout report
 
-- **Simple plan:** propose a concise plan in the conversation — approach, affected areas/files, ordered steps, validation strategy, and risks. Invite revisions.
-- **Grilling plan:** load the `grilling` skill and follow it for the issue's scope. Run its rounds until the frontier is empty and the user confirms shared understanding, then consolidate the resulting decisions into the implementation plan.
+Before writing the report, verify this is a Git worktree and inspect `git status --porcelain --untracked-files=all`. The tree must be clean, except when resuming with only this issue's matching scout report from an interrupted run. If other changes exist, stop and ask the user to commit or stash them; never stash automatically.
 
-This phase makes no git changes.
+Save the report at the repository root as:
 
-### 5. Approve
+```text
+local-issues/<issue-number>/01-scout-report.md
+```
 
-- Present the final plan, including the proposed branch name derived with the Branch Naming rules below (unless an explicit name was given).
-- Ask: approve and create the branch, revise the plan, or stop.
-- Branch creation happens only after explicit approval.
+Create the issue directory if needed. If this report already exists, review and update that issue's report; do not overwrite unrelated content.
 
-### 6. Create the branch
+Include concise sections for:
 
-1. **Pre-flight checks.**
-   - Confirm this is a git working directory with `git rev-parse --is-inside-work-tree`.
-   - Check the working tree with `git status --porcelain`.
-   - If the tree is dirty, stop and ask the user to commit or stash first. Never stash automatically and never carry uncommitted changes onto the new branch.
+- Issue metadata, request, and acceptance criteria.
+- Relevant user answers, assumptions, and unresolved questions.
+- Findings about current behavior and the relevant code/data flow.
+- A verified file and symbol manifest, with a short reason for each entry.
+- Relevant contracts, schemas, APIs, tests, configuration, or dependencies.
+- Risks, investigation boundaries, and paths checked but excluded as noise.
 
-2. **Finalize the branch name.**
-   - Use the approved name, the explicit override, or `<type>/<slug>` derived with the Branch Naming rules.
-   - Validate it with `git check-ref-format --branch "$BRANCH_NAME"`. If validation fails, stop and report.
+Present the report summary and file manifest to the user. Wait for corrections or confirmation that the manifest is suitable for the Architect. Incorporate requested additions/removals and save the final report before continuing.
 
-3. **Refresh `main`.**
-   - `git fetch origin`
-   - `git switch main` — if no local `main` exists, use `git switch --create main --track origin/main`.
-   - `git pull --ff-only`
-   - If any of these fail, stop and report. Never create the branch from a stale or diverged `main`.
+### 6. Create the issue branch
 
-4. **Check for collisions.**
+Branch creation happens only after the user verifies the scout report. Never discard or silently carry unrelated work onto the branch.
+
+1. Recheck `git status --porcelain --untracked-files=all`. The only new/modified path may be this issue's scout report; if any other changes exist, stop and ask the user to commit or stash them. Never stash automatically.
+2. Derive the proposed branch name using the rules below. If the issue title has no recognized type prefix, ask the user which prefix to use.
+3. Validate with `git check-ref-format --branch "$BRANCH_NAME"`.
+4. Run `git fetch origin`; stop if it fails or `origin/main` is unavailable. Check collisions:
    - Local: `git show-ref --verify --quiet "refs/heads/$BRANCH_NAME"`.
    - Remote: `git show-ref --verify --quiet "refs/remotes/origin/$BRANCH_NAME"`.
-   - If a local branch exists, stop and report. Do not check it out, overwrite it, or silently reuse it, even when it is the current branch.
-   - If only a remote branch exists, stop and ask whether to track the existing branch instead. Do not silently reuse it.
-
-5. **Create and push.**
+   If either branch exists, stop and ask; do not overwrite or silently reuse it.
+5. Create the branch from the fetched `origin/main` and push it:
 
    ```bash
-   git switch --create "$BRANCH_NAME"
+   git switch --create "$BRANCH_NAME" origin/main
    git push --set-upstream origin "$BRANCH_NAME"
    ```
 
-   - If the push fails, keep the local branch and report the exact error plus the manual command. Never force-push and never delete the branch.
+   The scout report may remain untracked in the same worktree during the branch switch. If Git reports a conflict or any unexpected worktree state, stop without cleaning it up. If push fails, keep the local branch and report the exact error; never force-push or delete it.
+6. Report the branch, `origin/main` base hash, upstream, HEAD hash, issue number/title, and scout report path. Note that pull requests from this branch target `uat` by default (see `create-pr`).
 
-6. **Report the result.**
-   - Branch name, base (`main` at its current short hash), upstream (`origin/<branch>`), and HEAD hash.
-   - The source issue number and title when an issue was used.
-   - Note that pull requests from this branch target `uat` by default (see `create-pr`).
+Do not commit or otherwise modify the issue or implementation as part of branch creation.
 
-### 7. Hand off to implementation
+### 7. Hand off to Architect
 
-- When a plan exists (the issue path, or an explicit branch with a plan already agreed in the conversation), load the `start-implementation` skill and continue with it.
-- First ask for the execution mode, with a recommendation and rationale:
-  - **All in one go** — recommended for small, tightly coupled plans (≤3 TODOs, single area).
-  - **TODO by TODO** — recommended for larger or cross-area plans.
-- Follow the loaded skill with the chosen mode.
-- When only an explicit branch name was given and no plan exists in the conversation, stop after the branch report.
+After successful branch creation, hand off to `start-architect` with the issue number and report path. Do not write the architecture plan or start implementation in this skill.
 
 ## Branch Naming
 
-Default format: `<type>/<kebab-slug>`.
-
-Derive the type prefix from the `[Type]` prefix in the issue title:
+Default format: `<type>/<kebab-slug>`. Derive the type from the leading `[Type]` in the issue title:
 
 | Issue title prefix | Branch prefix |
-| ------------------ | ------------- |
-| `[Bug]`            | `bugfix/`     |
-| `[Feature]`        | `feat/`       |
-| `[Enhancement]`    | `feat/`       |
-| `[Documentation]`  | `docs/`       |
-| `[Security]`       | `security/`   |
-| `[Testing]`        | `test/`       |
+| --- | --- |
+| `[Bug]` | `bugfix/` |
+| `[Feature]` | `feat/` |
+| `[Enhancement]` | `feat/` |
+| `[Documentation]` | `docs/` |
+| `[Security]` | `security/` |
+| `[Testing]` | `test/` |
 
-If the title has no recognizable `[Type]` prefix, ask which prefix to use. Never guess a prefix.
-
-Derive the slug from the issue title:
-
-1. Drop the leading `[Type]` prefix.
-2. Lowercase the remaining text.
-3. Replace every run of non-alphanumeric characters with a single `-`.
-4. Trim leading and trailing `-`.
-5. Cap at 8 words or 60 characters, whichever is shorter, trimming at the last whole word.
+Derive the slug from the title by dropping `[Type]`, lowercasing, replacing each run of non-alphanumeric characters with `-`, trimming edge hyphens, and limiting it to 8 words or 60 characters (whichever is shorter, ending on a whole word). Do not include the issue number.
 
 Examples:
 
 - `[Feature] Add tenant credit gate enforcement` → `feat/add-tenant-credit-gate-enforcement`
 - `[Bug] React Flow nodes fail to render on initial load` → `bugfix/react-flow-nodes-fail-to-render-on-initial`
 
-Do not include the issue number in the branch name.
-
-## Failure and Partial States
-
-- Steps 1–5 (read, investigate, plan, approve) make no git changes.
-- Branch pre-flight failures (dirty tree, invalid or undeterminable branch name, collision, fetch/pull failure) create nothing; report the exact error and the manual command.
-- A push failure leaves the local branch in place. Report it; do not force-push, retry blindly, or delete.
-- Uncommitted work is never stashed, discarded, or carried over by this skill.
-
 ## Quality Criteria
 
-- The planning mode was recommended with a rationale and chosen by the user; the `grilling` skill runs only when chosen.
-- No git changes happen before the plan is approved.
-- The issue was read for context and never modified.
-- The branch name follows `<type>/<slug>` unless the user provided one verbatim.
-- The branch is created from the latest `main` only after a successful `git pull --ff-only`.
-- The working tree was clean before branching; uncommitted changes were not silently moved.
-- Existing local or remote branches were never overwritten or silently reused.
-- Upstream tracking is set, or the push failure is reported.
-- Implementation continued through `start-implementation` with the chosen execution mode.
-- The report includes the branch name, base, upstream, and source issue when applicable.
+- The issue was read but never modified.
+- Questions were targeted to investigation-relevant unknowns; irrelevant code was excluded with rationale.
+- The final scout report exists at the exact issue path and its file manifest was verified by the user.
+- The branch was created from fetched `origin/main` only after report confirmation; unrelated work was not moved.
+- The branch is pushed with upstream tracking, or the exact push failure is reported.
+- The Architect receives the issue number and scout report path.
 
 ## See Also
 
-- `grilling` — deep planning when the issue warrants it.
-- `start-implementation` — implement the approved plan in the chosen execution mode.
-- `create-pr` — open the pull request once the work is committed.
+- `start-architect` — turn the scout report into an approved implementation plan.
+- `start-implementation` — slice and implement the approved plan.
+- `audit-implementation` — review the implementation against the approved plan.
