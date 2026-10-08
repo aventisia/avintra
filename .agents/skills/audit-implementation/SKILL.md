@@ -1,13 +1,17 @@
 ---
 name: audit-implementation
-description: "Review an issue's changed code against its approved architecture plan, save the audit report, and restart the architect loop when findings remain."
+description: "Review an issue's changed code against its approved architecture plan, save the audit report, then stop or request a fresh Architect session."
 argument-hint: "Issue number; optionally include a Gitea PR number or URL"
 user-invocable: true
 ---
 
 # Auditor: Review an Issue
 
-Stage 4 of the issue workflow. Review the implementation against the approved plan using the `code-review` skill, save the result, and either close the loop or request another Architect → Heavy Typist → Auditor cycle. This stage is read-only except for its audit report.
+Stage 4 of the issue workflow. Review the implementation against the approved plan using the `code-review` skill, save the result, and stop. If findings remain, ask the user to start a new Architect session; do not continue the loop here. This stage is read-only except for its audit report.
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
@@ -30,7 +34,7 @@ Stage 4 of the issue workflow. Review the implementation against the approved pl
 
 ### 3. Review against code and plan
 
-- Load and follow the `code-review` skill for code-quality criteria and review output. Do not duplicate its checklist here.
+- Load and follow the `code-review` skill for code-quality criteria and review output, including the `AGENTS.md` documentation boundaries (no implementation comments; short docs on public boundaries only). Do not duplicate its checklist here.
 - Review code quality and plan conformance together: for each approved goal, requirement, or architecture decision, identify the implementing code and validation evidence, or report the gap/deviation.
 - Preserve the code-review findings and verdict. Add plan-conformance gaps as separate findings, with stable IDs and severity for the rework loop.
 - Do not edit implementation code, fix findings, or modify the Gitea issue/PR. The code-review skill is read-only for PRs.
@@ -57,10 +61,10 @@ Use `NEEDS_REWORK` for any actionable defect, missed acceptance criterion, unjus
 
 ### 5. Close or restart the loop
 
-- **NEEDS_REWORK:** present the findings and ask the user to restart with `start-architect`, providing the issue number and audit report path. The Architect must plan against each finding before Heavy Typist changes code; then rerun this audit. Do not hand findings directly to implementation or fix them yourself.
-- **CLEAR:** report that the audit loop is complete and provide the report path. Do not merge, approve, or otherwise change the PR.
+- **NEEDS_REWORK:** present the findings and ask the user to start `start-architect` in a fresh session using a different model (recommended: advanced reasoning), providing the issue number and audit report path. The Architect must plan against each finding before Heavy Typist changes code. Do not load or invoke the Architect, hand findings directly to implementation, or fix them yourself. Stop after reporting.
+- **CLEAR:** report that the audit loop is complete and provide the report path. Do not merge, approve, or otherwise change the PR. Stop.
 
-Repeat Architect → Heavy Typist → Auditor until the latest report is `CLEAR`.
+For rework, the human starts each Architect → Heavy Typist → Auditor stage in its own fresh session with a different model from the preceding stage. Repeat until the latest report is `CLEAR`.
 
 ## Quality Criteria
 

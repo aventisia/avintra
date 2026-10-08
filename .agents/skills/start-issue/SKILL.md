@@ -2,12 +2,16 @@
 name: start-issue
 disable-model-invocation: true
 argument-hint: "Gitea issue number or URL"
-description: "Scout a Gitea issue, verify a focused investigation report with the user, create and push its branch, then hand off to start-architect."
+description: "Scout a Gitea issue, verify a focused investigation report with the user, create and push its branch, then stop for a fresh Architect session."
 ---
 
 # Scout an Issue
 
-Stage 1 of the issue workflow: read the issue, investigate enough to identify the relevant code and boundaries, save the scout report, create the issue branch, and hand off to `start-architect`. Do not design or implement the solution here.
+Stage 1 of the issue workflow: read the issue, investigate enough to identify the relevant code and boundaries, save the scout report, create the issue branch, and stop. Do not design or implement the solution here.
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
@@ -28,7 +32,7 @@ If no issue reference is provided, ask for one. This skill is issue-only; do not
 
 ### 2. Preliminary investigation
 
-- Read the root and relevant area `AGENTS.md` files before searching deeply.
+- Read the root and relevant area `AGENTS.md` files and any affected feature's local `README.md` before searching deeply.
 - Do a bounded first pass to identify likely subsystems, entry points, existing behavior, and missing requirements.
 - Keep this pass read-only. Do not modify implementation files.
 
@@ -42,7 +46,7 @@ If no issue reference is provided, ask for one. This skill is issue-only; do not
 ### 4. Complete the investigation
 
 - Trace the relevant existing behavior through code, callers, contracts, schemas, configuration, and tests as applicable.
-- Inspect neighboring conventions and area-specific `AGENTS.md` files.
+- Inspect neighboring conventions, area-specific `AGENTS.md` files, and local feature `README.md` files.
 - Verify every proposed manifest path exists. Include the symbol or behavior to inspect and why it is relevant.
 - Separate confirmed findings from hypotheses, open questions, and unrelated paths that were checked and excluded.
 - Do not propose a detailed implementation plan or change code; planning belongs to `start-architect`.
@@ -93,9 +97,9 @@ Branch creation happens only after the user verifies the scout report. Never dis
 
 Do not commit or otherwise modify the issue or implementation as part of branch creation.
 
-### 7. Hand off to Architect
+### 7. Complete Scout stage and stop
 
-After successful branch creation, hand off to `start-architect` with the issue number and report path. Do not write the architecture plan or start implementation in this skill.
+After branch creation, report the issue, branch, scout-report path, and any push failure. Say the next step is `start-architect` in a fresh session using a different model (recommended: advanced reasoning). Do not load or invoke that skill, start planning, or continue into another stage. Stop here.
 
 ## Branch Naming
 
@@ -124,7 +128,7 @@ Examples:
 - The final scout report exists at the exact issue path and its file manifest was verified by the user.
 - The branch was created from fetched `origin/main` only after report confirmation; unrelated work was not moved.
 - The branch is pushed with upstream tracking, or the exact push failure is reported.
-- The Architect receives the issue number and scout report path.
+- The user receives the issue number and scout report path for a fresh Architect session; this session stops without invoking another stage.
 
 ## See Also
 
