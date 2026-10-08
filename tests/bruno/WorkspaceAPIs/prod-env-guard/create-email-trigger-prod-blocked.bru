@@ -1,0 +1,39 @@
+meta {
+  name: Create email trigger blocked in PROD (expect 400)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/email-trigger
+  body: json
+  auth: none
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "name": "bruno-prod-guard-{{$randomInt}}",
+    "timezone": "Asia/Kolkata",
+    "mailbox": "contact@example.com",
+    "folder": "Inbox",
+    "expiryDateTime": "2030-01-01T00:00:00Z",
+    "resubscribeEnabled": true,
+    "resubscribeFrequency": "90",
+    "provider": "M365",
+    "agents": []
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("PROD environment")) {
+    bru.pass("Create email trigger correctly blocked in PROD");
+  } else {
+    bru.fail("Expected 400 PROD guard, got " + res.getStatus() + " - " + message);
+  }
+}

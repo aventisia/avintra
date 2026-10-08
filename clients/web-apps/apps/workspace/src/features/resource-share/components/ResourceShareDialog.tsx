@@ -9,9 +9,11 @@ import {
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomCheckbox from "@/components/CustomCheckbox";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceShareTenantAccess } from "../hooks/useResourceShareTenantAccess";
@@ -28,6 +30,7 @@ interface ResourceShareDialogProps {
  * Integrates tenant-wide access toggling and specific user assignment workflows.
  */
 function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
+  const isProd = useEnvironmentStore((state) => state.env === "prod");
   const { showDialog, resourceName, resourceType, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
@@ -36,6 +39,13 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
       setShowDialog: state.setShowDialog,
     })),
   );
+
+  // Close an already-open share dialog if the user switches into PROD.
+  useEffect(() => {
+    if (isProd && showDialog) {
+      setShowDialog(false);
+    }
+  }, [isProd, setShowDialog, showDialog]);
 
   // Space resources don't support tenant-wide assignment, so hide the
   // "Share to all team members" checkbox for them.
@@ -51,7 +61,10 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
   } = useResourceShareTenantAccess({ queryKey });
 
   return (
-    <Dialog open={showDialog} onOpenChange={setShowDialog}>
+    <Dialog
+      open={showDialog && !isProd}
+      onOpenChange={(open) => setShowDialog(isProd ? false : open)}
+    >
       <DialogContent className="h-[75vh] min-w-[40rem]">
         <div
           className={

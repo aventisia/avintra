@@ -8,6 +8,7 @@ public class VaultService : IVaultService
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public VaultService(
         ILogger<VaultService> logger,
@@ -15,7 +16,8 @@ public class VaultService : IVaultService
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
         IResourceShareService resourceShareService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,6 +27,7 @@ public class VaultService : IVaultService
         _stringEncryptionService = stringEncryptionService;
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Method to check if the vault name is available for the current user
@@ -293,6 +296,15 @@ public class VaultService : IVaultService
 
         try
         {
+            // Block creating new vaults while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<VaultDto>(
+                _currentTenantService.CurrentEnvType,
+                "vault");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Check if a vault with the same name already exists for the user within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
@@ -378,6 +390,16 @@ public class VaultService : IVaultService
             {
                 serviceResponse.Message = "Vault does not exist.";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted vault environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<VaultDto>(
+                vault.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "vault");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate update access

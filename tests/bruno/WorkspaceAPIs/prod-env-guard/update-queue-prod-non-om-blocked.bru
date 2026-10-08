@@ -1,0 +1,41 @@
+meta {
+  name: Update PROD queue blocked for non-OM (expect 403)
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/queue
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "id": "{{PROD_TD_QUEUE_ID}}",
+    "name": "PROD non-OM authorization fixture"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 403 && message.includes("Only OM users")) {
+    bru.pass("Non-OM PROD queue update correctly blocked");
+  } else {
+    bru.fail("Expected 403 OM-only guard, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Requires a PROD queue owned by the TD user/token so ordinary resource access
+  > would otherwise permit the update.
+}

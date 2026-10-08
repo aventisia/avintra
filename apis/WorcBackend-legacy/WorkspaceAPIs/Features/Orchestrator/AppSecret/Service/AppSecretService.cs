@@ -13,6 +13,7 @@ public class AppSecretService : IAppSecretService
     private readonly Guid _userId;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     public AppSecretService(
         IUnitOfWork unitOfWork,
         ILogger<AppSecretService> logger, IHttpContextAccessor
@@ -20,6 +21,7 @@ public class AppSecretService : IAppSecretService
         IStringEncryptionService encryptionService,
         IResourceShareService resourceShareService,
         ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService,
         ICorsairSidecarService corsairSidecarService,
         EnvironmentConfig environmentConfig,
         CorsairConfigRepository corsairConfigRepository
@@ -36,6 +38,7 @@ public class AppSecretService : IAppSecretService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieve all vault credentials
@@ -395,6 +398,15 @@ public class AppSecretService : IAppSecretService
 
         try
         {
+            // Block creating new credentials while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<AppSecretDto>(
+                _currentTenantService.CurrentEnvType,
+                "credential");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
@@ -540,6 +552,16 @@ public class AppSecretService : IAppSecretService
                 _logger.LogWarning("Update failed. No credential found with ID: {AppSecretId}", appSecretDto.Id);
                 serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
+            }
+
+            // Require OM for PROD edits based on the persisted credential environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AppSecretDto>(
+                existingAppSecret.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "credential");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             // Validate update access

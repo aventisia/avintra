@@ -7,12 +7,14 @@ public class TimeTriggerService(
     ILogger<TimeTriggerService> logger,
     IUnitOfWork unitOfWork,
     IResourceShareService resourceShareService,
+    IUserManagementGuardService userManagementGuardService,
     IHttpContextAccessor httpContextAccessor,
     ICurrentTenantService currentTenantService) : ITimeTriggerService
 {
     private readonly ILogger<TimeTriggerService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IResourceShareService _resourceShareService = resourceShareService;
+    private readonly IUserManagementGuardService _userManagementGuardService = userManagementGuardService;
     private readonly ICurrentTenantService _currentTenantService = currentTenantService;
     private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
@@ -311,6 +313,15 @@ public class TimeTriggerService(
 
         try
         {
+            // Block creating new time triggers while in the PROD environment.
+            var prodBlock = CreateResourceGuard.Validate<TimeTriggerDto>(
+                _currentTenantService.CurrentEnvType,
+                "time trigger");
+            if (prodBlock != null)
+            {
+                return prodBlock;
+            }
+
             // Check if the effective date has already passed
             if (DateTimeOffset.UtcNow > timeTriggerDto.EffectiveDate)
             {
@@ -506,6 +517,16 @@ public class TimeTriggerService(
             {
                 serviceResponse.Message = "Time trigger does not exist";
                 return serviceResponse; // Early return
+            }
+
+            // Require OM for PROD edits based on the persisted trigger environment.
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<TimeTriggerDto>(
+                timeTrigger.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "time trigger");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(

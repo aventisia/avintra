@@ -1,0 +1,34 @@
+meta {
+  name: Create vault blocked in PROD (expect 400)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/Vault
+  body: json
+  auth: none
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "name": "bruno-prod-guard-{{$randomInt}}",
+    "description": "prod env guard test",
+    "username": "user",
+    "password": "pass"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("PROD environment")) {
+    bru.pass("Create vault correctly blocked in PROD");
+  } else {
+    bru.fail("Expected 400 PROD guard, got " + res.getStatus() + " - " + message);
+  }
+}

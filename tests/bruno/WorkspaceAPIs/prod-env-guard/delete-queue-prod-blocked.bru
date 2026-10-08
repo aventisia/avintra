@@ -1,0 +1,29 @@
+meta {
+  name: Delete queue blocked in PROD (expect 400)
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{PROD_QUEUE_ID}}
+  body: none
+  auth: none
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 400 && message.includes("published (PROD)")) {
+    bru.pass("Delete queue correctly blocked in PROD");
+  } else {
+    bru.fail("Expected 400 PROD delete guard, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Requires `PROD_QUEUE_ID` (Global Environment) set to an existing PROD queue id.
+}

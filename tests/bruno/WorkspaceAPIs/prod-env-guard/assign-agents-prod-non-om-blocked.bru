@@ -1,0 +1,40 @@
+meta {
+  name: Assign agents to PROD queue blocked for non-OM (expect 403)
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{PROD_TD_QUEUE_ID}}/assign-agents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  [
+    "{{FLOW_VERSION_ID}}"
+  ]
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 403 && message.includes("Only OM users")) {
+    bru.pass("Non-OM PROD queue agent assignment correctly blocked");
+  } else {
+    bru.fail("Expected 403 OM-only guard, got " + res.getStatus() + " - " + message);
+  }
+}
+
+docs {
+  > Uses the PROD queue owned by the TD token so ordinary ownership would
+  > otherwise allow the assignment. The OM-only PROD edit rule must reject it.
+}
