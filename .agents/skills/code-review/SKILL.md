@@ -1,8 +1,8 @@
 ---
 name: code-review
 user-invocable: true
-argument-hint: "Code snippet, diff, commit, or target file to review; optional review focus or constraints"
-description: "Review generated code for standard industry practices, structural integrity, and maintainability. Focuses on architecture, modularity, reuse, documentation, dead code, and maintainability issues."
+argument-hint: "Code snippet, diff, commit, file, or Gitea PR (#123 / PR URL) to review; optional review focus or constraints"
+description: "Review generated code for standard industry practices, structural integrity, and maintainability. Focuses on architecture, modularity, reuse, documentation, dead code, and maintainability issues. Accepts a Gitea PR number and fetches its changed files via the tea CLI."
 ---
 
 # Code Review
@@ -14,6 +14,79 @@ Review generated code with a strict senior-developer lens. Prioritize standard i
 - When asked to perform a code review on a generated code snippet or commit.
 - When asked to evaluate the approach taken by an AI or check code quality.
 - When a solution needs a hard pass/fail review for maintainability and industry-standard structure.
+- When a Gitea pull request is referenced (`#123`, `123`, or a PR URL) and its changed files should be reviewed.
+
+## Gitea PR Input
+
+When the review target is a Gitea pull request, fetch it with the `tea` CLI instead of asking the user to paste the diff. This path is read-only: never comment on, approve, reject, or merge the PR — hand that off to `merge-pr`.
+
+### 1. Detect the PR reference
+
+- Accept `#123`, a bare `123`, or a full PR URL (e.g. `https://gitea.aventisia.com/aventisia/worc-platform/pulls/123`).
+- Extract the numeric index into `$PR_ID` and resolve the repository into `$REPO` before fetching:
+  - For a bare number or `#123`, use the current checkout as `$REPO` (for example, `.`).
+  - For a full URL, parse its `owner/repo` and use that slug as `$REPO`; do not discard the repository from the URL.
+  - If the URL requires a non-default Gitea login (for example, because it uses a different host), set `$LOGIN` to that configured login. If no login is configured, stop and ask for access or a local checkout.
+- Pass `--repo "$REPO"` to every repository-scoped `tea pr` and `tea api` command. For a non-default login, also pass `--login "$LOGIN"`.
+- If more than one PR is referenced, ask which one to review.
+- If the reference is ambiguous with an issue number, confirm whether it is a PR before fetching.
+
+### 2. Verify the CLI
+
+- Confirm `tea` is available with `tea --version`. Verify the default login with `tea whoami`; for a non-default `$LOGIN`, verify it with the read-only request `tea api --login "$LOGIN" /user`.
+- If `tea` is unavailable or not authenticated, stop and report the exact error. Ask the user for the diff or a local branch instead of guessing.
+
+### 3. Fetch the PR overview
+
+```bash
+tea pr --repo "$REPO" \
+  --fields index,title,state,author,base,head,body,mergeable,ci "$PR_ID"
+```
+
+- Capture the title, state, author, base/head branches, description, CI status, and mergeability. If approval status matters, also inspect the PR's review records:
+
+  ```bash
+  tea api --repo "$REPO" "/repos/{owner}/{repo}/pulls/$PR_ID/reviews"
+  ```
+
+- Add `--login "$LOGIN"` to both requests when using a non-default login. Check review states rather than inferring approval from the PR state.
+- Warn, but continue, if the PR is closed.
+
+### 4. Fetch the changed files
+
+```bash
+PAGE=1
+tea api --include --repo "$REPO" \
+  "/repos/{owner}/{repo}/pulls/$PR_ID/files?page=$PAGE&limit=50"
+```
+
+- Add `--login "$LOGIN"` when using a non-default login. The `{owner}` and `{repo}` placeholders resolve from the repository selected by `--repo`.
+- The response is a JSON array with `filename`, `status`, `additions`, `deletions`, and `changes` per file. This endpoint is paginated: inspect the `X-HasMore` response header and increment `$PAGE` until it is `false`. Include every page in the file list and diffstat before reviewing.
+- To print each page's file summary, pipe its JSON body through a JSON tool. `--include` writes headers to stderr, leaving the JSON body available on stdout:
+
+```bash
+tea api --include --repo "$REPO" \
+  "/repos/{owner}/{repo}/pulls/$PR_ID/files?page=$PAGE&limit=50" \
+  | python3 -c "import sys,json; [print(f['status'], f['additions'], f['deletions'], f['filename']) for f in json.load(sys.stdin)]"
+```
+
+Repeat for every page before treating the list or diffstat as complete.
+
+### 5. Fetch the unified diff
+
+```bash
+tea api --repo "$REPO" "/repos/{owner}/{repo}/pulls/$PR_ID.diff"
+```
+
+- Review the unified diff as the primary artifact. Use `patch` instead of `diff` only when commit-level context is needed.
+- Add `--login "$LOGIN"` when using a non-default login.
+- For a large PR, save the diff to a temporary file with `tea api --output` and inspect it in manageable chunks.
+- If local checkout is necessary to inspect PR-head files, use a disposable worktree or clone. Never run `tea pr checkout` in the user's active worktree; compare the PR head against the fetched base there, then remove only the temporary worktree created for the review.
+
+### 6. Review against project conventions
+
+- Read the relevant repo `AGENTS.md` files for the touched areas before judging structure or conventions.
+- If a changed file cannot be fetched or is binary/generated, say so explicitly rather than reviewing it blindly.
 
 ## Core Rules
 
@@ -61,6 +134,7 @@ Review generated code with a strict senior-developer lens. Prioritize standard i
   - Dead Code
   - General Quality
 - When reviewing a diff or commit, assess whether the implementation stays consistent with the existing project structure and conventions.
+- When the target is a Gitea PR, base the review on the fetched unified diff and reference each finding by changed file path.
 - Call out concrete issues with file names, code regions, or patterns rather than vague criticism.
 - If the code is missing required context, say what information is needed before a reliable review can be completed.
 
@@ -100,3 +174,16 @@ End with a concise recommendation: pass, needs revision, or reject for maintaina
 ## Review Standard
 
 The review should be exacting but fair. Do not nitpick formatting unless it materially impacts readability or maintenance. Focus on whether the code is robust, modular, readable at a glance, and consistent with standard engineering practices.
+
+## Quality Criteria
+
+- A referenced Gitea PR is fetched via `tea` and its changed files are reviewed, rather than asking the user to paste the diff.
+- The changed-file list and diffstat are stated before the findings so scope is explicit.
+- The review is read-only: the PR is never commented on, approved, rejected, or merged.
+- If `tea` is unavailable or the PR cannot be fetched, the exact blocker is reported and a fallback is offered.
+- Findings reference concrete changed file paths.
+
+## See Also
+
+- `merge-pr` — land the reviewed PR once it is ready.
+- `create-pr` — open the pull request this skill reviews.
