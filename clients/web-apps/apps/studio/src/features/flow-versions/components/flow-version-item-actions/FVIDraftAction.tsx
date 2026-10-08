@@ -2,6 +2,9 @@ import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
+
 import { useInsertFlowVersionMutation } from "../../hooks/useInsertFlowVersion";
 import { useFlowVersionPopoverStore } from "../../stores/flow-version-popover-store";
 
@@ -20,6 +23,10 @@ export const FVIDraftAction = ({ flowId, versionId }: FVIDraftActionProps) => {
   });
   const closePopover = useFlowVersionPopoverStore(useShallow((state) => state.togglePopoverOpen));
 
+  // The new version is cloned from the saved source, so uncommitted canvas /
+  // config-form changes would be lost — confirm before creating it.
+  const guardUnsavedChanges = useUnsavedChangesGuard();
+
   // Return the component
   return (
     <SimpleDDMenuItem
@@ -28,7 +35,11 @@ export const FVIDraftAction = ({ flowId, versionId }: FVIDraftActionProps) => {
       Icon={PencilSquareIcon}
       onClick={() => {
         closePopover(false);
-        insertVersion({ flowId });
+        guardUnsavedChanges(() => {
+          // Discard the open config panel; the canvas is about to be replaced.
+          useDynamicConfigPanelStore.getState().closeNodeConfig();
+          insertVersion({ flowId });
+        });
       }}
     />
   );

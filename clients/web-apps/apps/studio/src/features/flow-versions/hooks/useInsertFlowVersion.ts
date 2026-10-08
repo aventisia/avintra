@@ -43,7 +43,11 @@ export const useInsertFlowVersionMutation = ({
             flowVariablesObject: flowData.data.flowVariablesObject ?? JSON.stringify([]),
           });
           setVersionTransition(httpResponse.data.id);
-          await handleOpenFlowAction(httpResponse.data.flowId, httpResponse.data.id);
+          // The discard confirm already happened in FVIDraftAction, so don't
+          // prompt again while navigating to the newly created version.
+          await handleOpenFlowAction(httpResponse.data.flowId, httpResponse.data.id, {
+            skipUnsavedGuard: true,
+          });
         } catch (error) {
           setVersionTransition(null);
           throw error;
