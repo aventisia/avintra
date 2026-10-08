@@ -9,6 +9,7 @@ interface DTEditRowActionProps {
   rowId: string;
   flowName?: string | null;
   flowVersionNumber?: number;
+  supportedPlatform?: string;
   size?: "sm" | "md";
   isDisabled: boolean;
 }
@@ -17,6 +18,7 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
   rowId,
   flowName,
   flowVersionNumber,
+  supportedPlatform,
   size = "md",
   isDisabled,
 }) => {
@@ -37,7 +39,7 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
       Icon={MonitorCheck}
       onClick={() => {
         setFlowVersionId(rowId);
-        setFlowMetadata(flowName ?? "", flowVersionNumber ?? 0);
+        setFlowMetadata(flowName ?? "", flowVersionNumber ?? 0, supportedPlatform ?? "");
         setOpen(true);
       }}
     />

@@ -14,7 +14,7 @@ public class SearchByQueryController : BaseApiController
 
     // Searches flow version
     [HttpGet("flow-version")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> SearchFlowVersion(
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowVersionSelectOption>>>> SearchFlowVersion(
         [FromQuery] string query,
         [FromQuery] FlowTypesEnum type = FlowTypesEnum.Agent,
         [FromQuery] bool includePublishedOnly = true,

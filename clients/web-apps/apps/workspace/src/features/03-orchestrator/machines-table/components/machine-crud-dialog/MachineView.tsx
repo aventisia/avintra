@@ -147,6 +147,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
                       flowId={flowVersion.flowId}
                       flowVersionId={flowVersion.value}
                       flowVersionLabel={flowVersion.label}
+                      flowVersionPlatform={flowVersion.supportedPlatform}
                     />
                   )}
                 </div>

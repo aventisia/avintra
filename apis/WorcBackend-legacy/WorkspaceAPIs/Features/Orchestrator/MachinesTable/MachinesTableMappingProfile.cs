@@ -30,7 +30,9 @@ public class MachinesTableMappingProfile : IRegister
                     ? (Guid?)src.FlowVersion.FlowId
                     : null)
             .Map(dest => dest.VersionNumber,
-                src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0);
+                src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
+            .Map(dest => dest.SupportedPlatform,
+                src => src.FlowVersion != null ? src.FlowVersion.SupportedPlatform : null);
 
         // For - Update existing machine
         config.NewConfig<UpdateMachineDto, Machine>()

@@ -16,7 +16,7 @@ interface JobCrudDialogContentProps {
 }
 
 /** Prefill params injected when opening the create-job dialog from a machine. */
-const JOB_CREATE_PREFILL_KEYS = ["mid", "fv"];
+const JOB_CREATE_PREFILL_KEYS = ["mid", "fv", "fvp"];
 
 /**
  * Content adapter for the job CRUD dialog.
@@ -27,18 +27,25 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
 
   const rawMid = searchParams.get("mid");
   const rawFv = searchParams.get("fv");
+  // Agent platform carried alongside the flow-version prefill so the create form can
+  // gate cloud execution for the prefilled agent.
+  const rawFvp = searchParams.get("fvp");
 
   // Decode once per raw query value. Memoizing on the raw strings (not the decoded
   // objects) keeps the returned option references stable across re-renders, so
   // downstream form-reset effects don't fire and wipe user edits (e.g. toggling
   // "Execute it on Cloud" off).
-  const { defaultMachineOption, defaultFlowVersionOption } = useMemo(
-    () => ({
+  const { defaultMachineOption, defaultFlowVersionOption } = useMemo(() => {
+    const flowVersionOption = decodePrefilledOption(rawFv);
+
+    return {
       defaultMachineOption: decodePrefilledOption(rawMid),
-      defaultFlowVersionOption: decodePrefilledOption(rawFv),
-    }),
-    [rawMid, rawFv],
-  );
+      defaultFlowVersionOption:
+        flowVersionOption && rawFvp
+          ? { ...flowVersionOption, supportedPlatform: rawFvp }
+          : flowVersionOption,
+    };
+  }, [rawMid, rawFv, rawFvp]);
 
   const handleJobCreated = () => {
     // Remove the prefill params and the dialog params in a single URL update,

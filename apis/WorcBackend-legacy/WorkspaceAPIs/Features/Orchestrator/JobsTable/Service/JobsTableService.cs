@@ -223,6 +223,7 @@ public class JobsTableService : IJobsTableService
                                     FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.Agent,
                                     FlowVersionNumber = s.VersionNumber,
                                     IsFlowVersionPublished = s.IsPublished,
+                                    SupportedPlatform = s.SupportedPlatform,
                                     FlowVersionHistoryId = s.FlowVersionHistories
                                                                 .OrderByDescending(o => o.CreatedOn)
                                                                 .Select(s2 => s2.Id)
@@ -239,6 +240,14 @@ public class JobsTableService : IJobsTableService
             // "Cloud"/"Web Server" sentinel for an unassigned job.
             if (flowVersion.IsFlowVersionPublished && string.IsNullOrEmpty(jobInsertDto.ExecutionLocation))
                 return serviceResponse.Update("Machine name is required for published agents.", 400);
+
+            // Cloud execution is not available on every platform: agents published for the
+            // "windows" platform must run on a machine and can never be dispatched to the cloud.
+            // An empty/unknown platform is not blocked so existing agents keep working.
+            if (flowVersion.IsFlowVersionPublished
+                && JobsAssignmentHelpers.IsCloudExecutionLocation(jobInsertDto.ExecutionLocation)
+                && JobsAssignmentHelpers.IsCloudExecutionUnsupported(flowVersion.SupportedPlatform))
+                return serviceResponse.Update("Cloud execution is not supported for this agent.", 400);
 
             // The tenant credit gate is the production source of truth for commercial tenants.
             // Fail closed here so a credit-less job is never created or dispatched.
