@@ -70,11 +70,8 @@ export const JobCreateForm = ({
     return (selectedFlowVersionId as FlowVersionSelectOption).supportedPlatform;
   }, [selectedFlowVersionId]);
 
-  // Cloud is disabled unless the selected agent explicitly supports it. A null/empty platform
-  // (including no agent selected) counts as unsupported.
   const isCloudSupported = !isCloudExecutionBlocked(selectedAgentPlatform);
 
-  // Force cloud off for agents that cannot run there so the job is bound to a machine instead.
   useEffect(() => {
     if (isCloudSupported || !executeOnCloud) return;
     form.setValue("executeOnCloud", false, { shouldValidate: true });

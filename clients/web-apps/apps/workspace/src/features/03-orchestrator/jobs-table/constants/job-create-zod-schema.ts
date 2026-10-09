@@ -42,13 +42,11 @@ const extractSelectedId = (value: unknown, idKey: string): unknown => {
   return value;
 };
 
-/** Reads the selected agent id from either the raw option object or a plain string. */
 const getFlowVersionId = (value: unknown): string => {
   const id = extractSelectedId(value, "value");
   return typeof id === "string" ? id.trim() : "";
 };
 
-/** Reads the selected agent's supported platform from the raw option object, when present. */
 const getFlowVersionPlatform = (value: unknown): string | undefined => {
   if (value && typeof value === "object" && "supportedPlatform" in value) {
     const platform = (value as { supportedPlatform?: unknown }).supportedPlatform;
@@ -81,7 +79,6 @@ export const jobCreateZodSchema = z
   })
   .superRefine((value, context) => {
     if (value.executeOnCloud) {
-      // Cloud execution is only valid when the selected agent supports the cloud platform.
       if (
         getFlowVersionId(value.flowVersionId) &&
         isCloudExecutionBlocked(getFlowVersionPlatform(value.flowVersionId))

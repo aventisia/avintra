@@ -27,8 +27,6 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
 
   const rawMid = searchParams.get("mid");
   const rawFv = searchParams.get("fv");
-  // Agent platform carried alongside the flow-version prefill so the create form can
-  // gate cloud execution for the prefilled agent.
   const rawFvp = searchParams.get("fvp");
 
   // Decode once per raw query value. Memoizing on the raw strings (not the decoded
