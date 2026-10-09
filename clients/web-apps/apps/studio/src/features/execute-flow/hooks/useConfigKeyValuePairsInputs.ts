@@ -8,6 +8,7 @@ import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { ConfigKeyValueDto } from "@/features/react-flow/dtos/config-key-value-dto";
 import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { NodeDataType } from "@/types/node-data-type";
+import { getStudioSpaceId } from "@/utils/space-headers";
 
 import { NodeInputType } from "../types/node-input-type";
 import { extractUniqueConfigKeys } from "../utils/config-key-utils";
@@ -130,8 +131,10 @@ export const useConfigKeyValuePairsInputs = () => {
       }
 
       try {
+        const spaceId = getStudioSpaceId();
+
         const configKeyValuePairs = await queryClient.fetchQuery({
-          queryKey: ["CONFIG_STORE", "FETCH", ...configKeys.sort()],
+          queryKey: ["CONFIG_STORE", "FETCH", spaceId, ...configKeys.sort()],
           queryFn: () => fetchConfigKeyValuePairs(configKeys),
         });
 
