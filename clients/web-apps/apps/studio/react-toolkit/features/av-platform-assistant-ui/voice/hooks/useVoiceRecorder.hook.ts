@@ -2,6 +2,7 @@ import { toast } from "@avplatform/ui/sonner";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { STTRequestDto } from "@/features/dynamic-config-panel/dtos/stt-model-dto";
+import { fileToDataUrl } from "@/features/dynamic-config-panel/utils/file-to-data-url";
 import { ModelConfigType } from "@/types/model-config-type";
 
 import { transcribeSpeechToText } from "../apis/voice-apis";
@@ -15,18 +16,12 @@ const PREFERRED_RECORDER_MIME_TYPES = [
   "audio/mp4",
 ];
 
+const MAX_RECORDING_SECONDS = 300;
+
 const resolveRecorderMimeType = (): string | undefined => {
   if (typeof MediaRecorder === "undefined") return undefined;
   return PREFERRED_RECORDER_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
 };
-
-const blobToDataUrl = (blob: Blob): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error ?? new Error("Failed to read the recording."));
-    reader.readAsDataURL(blob);
-  });
 
 type UseVoiceRecorderParams = {
   sttConfig: ModelConfigType | null;
@@ -71,7 +66,7 @@ export const useVoiceRecorder = ({
       if (!sttConfig?.model) return;
       setIsTranscribing(true);
       try {
-        const dataUrl = await blobToDataUrl(blob);
+        const dataUrl = await fileToDataUrl(blob);
         const requestDto: STTRequestDto = {
           input: dataUrl,
           input_mode: "file",
@@ -106,14 +101,6 @@ export const useVoiceRecorder = ({
   transcribeRef.current = transcribe;
 
   const startRecording = useCallback(async () => {
-    if (!sttConfig?.model) {
-      toast.error("Select a Speech to Text model first.");
-      return;
-    }
-    if (sttConfig.is_byok_enabled && !sttConfig.credential_name?.trim()) {
-      toast.error("Select a credential for Speech to Text first.");
-      return;
-    }
     if (!isSupported) {
       toast.error("Microphone recording is not supported in this browser.");
       return;
@@ -153,10 +140,14 @@ export const useVoiceRecorder = ({
       recorderRef.current = recorder;
       setIsRecording(true);
     } catch (error) {
+      // IMPORTANT NOTE: getUserMedia can resolve before the recorder fails to construct
+      // or start; stop the acquired tracks so the microphone does not stay live.
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
       console.error("Microphone access failed:", error);
       toast.error("Microphone access was denied or unavailable.");
     }
-  }, [isSupported, sttConfig]);
+  }, [isSupported]);
 
   const stopRecording = useCallback(() => {
     const recorder = recorderRef.current;
@@ -164,7 +155,8 @@ export const useVoiceRecorder = ({
   }, []);
 
   // IMPORTANT NOTE: 400 ms keeps the displayed seconds boundary close without
-  // re-rendering every frame.
+  // re-rendering every frame; recording stops at MAX_RECORDING_SECONDS so the base64
+  // request payload stays within the nginx body limit.
   useEffect(() => {
     if (!isRecording) {
       setRecordingSeconds(0);
@@ -173,10 +165,12 @@ export const useVoiceRecorder = ({
     const startedAt = Date.now();
     setRecordingSeconds(0);
     const interval = window.setInterval(() => {
-      setRecordingSeconds(Math.floor((Date.now() - startedAt) / 1000));
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      setRecordingSeconds(elapsed);
+      if (elapsed >= MAX_RECORDING_SECONDS) stopRecording();
     }, 400);
     return () => window.clearInterval(interval);
-  }, [isRecording]);
+  }, [isRecording, stopRecording]);
 
   const disabledReason = !isSupported
     ? "Microphone recording is not supported in this browser."

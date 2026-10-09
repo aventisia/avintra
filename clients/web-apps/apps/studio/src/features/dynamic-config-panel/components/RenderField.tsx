@@ -87,6 +87,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "tools-config-select":
       return <ToolsConfigField name={field.name} />;
     case "voice-config-select":
+      // IMPORTANT NOTE: this schema entry stays load-bearing for form defaults and Zod
+      // generation; its UI renders inline inside ModelConfigField for TTS-capable nodes.
       return null;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;

@@ -81,7 +81,7 @@
       "name": "__VoiceConfig__TextToSpeech",
       "defaultValue": {
         "language": "en",
-        "voice": "21m00Tcm4TlvDq8ikWAM",
+        "voice": "",
         "speed": 1
       },
       "required": false,
