@@ -53,8 +53,9 @@ public static class CustomToolTransportHelpers
         }
         catch (HttpRequestException ex)
         {
-            logger.LogWarning(ex, "The upstream API request failed for {Url}.", requestUrl);
-            return (0, string.Empty, $"The upstream API request failed: {ex.Message}");
+            var safeUrl = request.RequestUri?.GetLeftPart(UriPartial.Path);
+            logger.LogWarning(ex, "The upstream API request failed for {Url}.", safeUrl);
+            return (0, string.Empty, "The upstream API request failed.");
         }
 
         using (response)

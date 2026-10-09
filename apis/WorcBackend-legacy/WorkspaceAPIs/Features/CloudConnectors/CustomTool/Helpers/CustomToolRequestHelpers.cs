@@ -10,7 +10,7 @@ public static class CustomToolRequestHelpers
     /// parameters from the payload, and appends the credential's API-key query
     /// when applicable.
     /// </summary>
-    public static (string RequestUrl, Dictionary<string, object> RemainingPayload) BuildRequestUrl(
+    public static (string? RequestUrl, Dictionary<string, object> RemainingPayload, string? Error) BuildRequestUrl(
         Uri baseUri,
         UsableToolOperationDto operation,
         CustomToolPayloadSections sections,
@@ -19,6 +19,7 @@ public static class CustomToolRequestHelpers
         var values = sections.BuildParameterValues();
 
         var resolvedPath = operation.Path!.TrimStart('/');
+        var missingPlaceholders = new List<string>();
         foreach (var placeholder in ExtractPathPlaceholders(operation.Path))
         {
             if (values.TryGetValue(placeholder, out var value))
@@ -27,6 +28,16 @@ public static class CustomToolRequestHelpers
                     $"{{{placeholder}}}",
                     Uri.EscapeDataString(value?.ToString() ?? string.Empty));
             }
+            else
+            {
+                missingPlaceholders.Add(placeholder);
+            }
+        }
+
+        if (missingPlaceholders.Count > 0)
+        {
+            return (null, new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase),
+                $"Missing required path parameter(s): {string.Join(", ", missingPlaceholders)}.");
         }
 
         var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
@@ -62,7 +73,7 @@ public static class CustomToolRequestHelpers
 
         // IMPORTANT NOTE: UriPartial.Authority drops the base URL's path prefix (e.g. "/v1") and causes upstream 404s.
         var baseUrlPrefix = baseUri.GetLeftPart(UriPartial.Path).TrimEnd('/');
-        return ($"{baseUrlPrefix}/{pathAndQuery}", remainingPayload);
+        return ($"{baseUrlPrefix}/{pathAndQuery}", remainingPayload, null);
     }
 
     /// <summary>

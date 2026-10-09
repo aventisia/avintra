@@ -1,4 +1,5 @@
 using Serilog;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
 EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
@@ -72,13 +73,8 @@ builder.Services.AddHttpClient("Corsair", client =>
 });
 builder.Services.AddHttpClient("CustomTool", client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-{
-    // Custom-tool calls target user-configured URLs; redirects are disabled so a
-    // 3xx cannot bypass the base-URL host guardrail.
-    AllowAutoRedirect = false
-});
+      client.Timeout = TimeSpan.FromSeconds(30);
+  }).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
 var app = builder.Build();
