@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using JsonException = System.Text.Json.JsonException;
@@ -79,7 +81,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             }
 
             // Step 2: Reject inactive/disabled tools within the current tenant/environment.
-            if (tool.IsDisabled)
+            if (!tool.IsActive || tool.IsDisabled)
             {
                 serviceResponse.Message = $"Custom tool '{tool.Name}' is not active.";
                 return serviceResponse;
@@ -110,12 +112,19 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse;
             }
 
-            // Step 5: Guardrail - only http/https base URLs are supported.
+            // Step 5: Guardrail - only http/https base URLs that resolve to public
+            // hosts are supported (blocks SSRF to loopback/private/link-local ranges).
             var baseUrl = tool.BaseUrl?.Trim() ?? string.Empty;
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri) ||
                 baseUri.Scheme is not ("http" or "https"))
             {
                 serviceResponse.Message = $"Custom tool '{tool.Name}' has an invalid base URL. Only http/https are supported.";
+                return serviceResponse;
+            }
+
+            if (!IsPublicHost(baseUri))
+            {
+                serviceResponse.Message = $"Custom tool '{tool.Name}' has a base URL that resolves to a non-public address.";
                 return serviceResponse;
             }
 
@@ -522,9 +531,10 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         string? content,
         string contentType)
     {
-        // The default factory client is used; the 30-second guardrail (Q10) is
-        // enforced per-request via the cancellation token source below.
-        var httpClient = _httpClientFactory.CreateClient();
+        // The named client disables automatic redirects so a 3xx cannot bypass the
+        // base-URL host guardrail; the 30-second guardrail is enforced per-request
+        // via the cancellation token source below.
+        var httpClient = _httpClientFactory.CreateClient("CustomTool");
 
         using var request = new HttpRequestMessage(new HttpMethod(method), requestUrl);
         foreach (var header in headers)
@@ -542,7 +552,10 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         HttpResponseMessage response;
         try
         {
-            response = await httpClient.SendAsync(request, timeoutCancellationTokenSource.Token);
+            response = await httpClient.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                timeoutCancellationTokenSource.Token);
         }
         catch (OperationCanceledException) when (timeoutCancellationTokenSource.IsCancellationRequested)
         {
@@ -554,17 +567,94 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             return (0, string.Empty, $"The upstream API request failed: {ex.Message}");
         }
 
-        // Enforce the response size cap without buffering beyond it.
-        await using var responseStream = await response.Content.ReadAsStreamAsync(timeoutCancellationTokenSource.Token);
-        var buffer = new System.IO.MemoryStream();
-        await responseStream.CopyToAsync(buffer, (int)(MaxResponseBytes + 1), timeoutCancellationTokenSource.Token);
-        if (buffer.Length > MaxResponseBytes)
+        using (response)
         {
-            return (0, string.Empty, "The upstream API response exceeded the 5 MB limit.");
+            // Read incrementally and abort as soon as the cap is crossed so the
+            // response is never buffered beyond the limit.
+            await using var responseStream = await response.Content.ReadAsStreamAsync(timeoutCancellationTokenSource.Token);
+            var buffer = new System.IO.MemoryStream();
+            var readBuffer = new byte[8192];
+            int read;
+            while ((read = await responseStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeoutCancellationTokenSource.Token)) > 0)
+            {
+                if (buffer.Length + read > MaxResponseBytes)
+                {
+                    return (0, string.Empty, "The upstream API response exceeded the 5 MB limit.");
+                }
+
+                buffer.Write(readBuffer, 0, read);
+            }
+
+            var body = Encoding.UTF8.GetString(buffer.ToArray());
+            return ((int)response.StatusCode, body, null);
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether a URL's host is a public address, blocking loopback,
+    /// private, link-local and unique-local targets (and their DNS results).
+    /// </summary>
+    private static bool IsPublicHost(Uri uri)
+    {
+        if (uri.IsLoopback)
+        {
+            return false;
         }
 
-        var body = Encoding.UTF8.GetString(buffer.ToArray());
-        return ((int)response.StatusCode, body, null);
+        var host = uri.DnsSafeHost;
+        if (IPAddress.TryParse(host, out var literal))
+        {
+            return IsPublicAddress(literal);
+        }
+
+        try
+        {
+            var addresses = Dns.GetHostAddresses(host);
+            return addresses.Length > 0 && addresses.All(IsPublicAddress);
+        }
+        catch (SocketException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether an IP address is neither loopback, private, link-local
+    /// nor unique-local.
+    /// </summary>
+    private static bool IsPublicAddress(IPAddress address)
+    {
+        if (IPAddress.IsLoopback(address))
+        {
+            return false;
+        }
+
+        if (address.IsIPv4MappedToIPv6)
+        {
+            address = address.MapToIPv4();
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetwork)
+        {
+            var bytes = address.GetAddressBytes();
+            return bytes[0] switch
+            {
+                0 or 10 or 127 => false,
+                _ => !(bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                     && !(bytes[0] == 192 && bytes[1] == 168)
+                     && !(bytes[0] == 169 && bytes[1] == 254),
+            };
+        }
+
+        if (address.AddressFamily == AddressFamily.InterNetworkV6)
+        {
+            var bytes = address.GetAddressBytes();
+            return !address.IsIPv6LinkLocal
+                   && !address.IsIPv6SiteLocal
+                   && (bytes[0] & 0xFE) != 0xFC;
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -383,7 +383,8 @@ public class ToolService : IToolService
                         (w.Type == ComponentTypeEnum.Custom &&
                         w.TenantId == _currentTenantService.CurrentTenantId)
                     ) &&
-                    w.Name.ToLower() == normalizedName.ToLower()
+                    w.Name.ToLower() == normalizedName.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .IgnoreQueryFilters()
                 .AnyAsync();
