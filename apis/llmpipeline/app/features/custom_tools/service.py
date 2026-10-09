@@ -14,6 +14,7 @@ from app.features.custom_tools.custom_tool_executor import (
     path_placeholder_names,
     resolve_path_template,
 )
+from app.features.custom_tools.url_guard import ensure_public_http_url
 
 
 async def execute_tool_test(
@@ -78,6 +79,7 @@ async def execute_tool_test(
     start = time.perf_counter()
 
     try:
+        await ensure_public_http_url(full_url)
         async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:
             response = await client.request(
                 method=method,

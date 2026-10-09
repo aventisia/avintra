@@ -311,11 +311,12 @@ public class ToolService : IToolService
             ? null
             : _currentTenantService.CurrentSpaceId;
 
-        // Unverified custom tools stay visible (flagged via IsVerified) so they can be
-        // selected in flows; the invoke endpoint rejects unverified tools at runtime.
+        // Verification is tracked per operation, so the tool-level aggregate must
+        // not hide tools that still expose verified operations. Unverified
+        // operations stay visible (flagged via the operation's IsVerified) and the
+        // invoke endpoint rejects them at runtime.
         return w =>
             w.IsActive &&
-            w.IsVerified &&
             !w.IsDisabled &&
             (
                 // Platform's default tools are tenant-agnostic and available in every environment.
