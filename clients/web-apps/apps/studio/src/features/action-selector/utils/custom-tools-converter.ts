@@ -377,7 +377,6 @@ export function convertToolOperationsToActions(
 
     return {
       type: "cloudConnectorNode" as const,
-      // IMPORTANT NOTE: node identity is persisted; the runtime routes on the "CustomTool/" prefix.
       name: getCustomToolNodeName(tool.name, operation.operationId),
       label,
       description,

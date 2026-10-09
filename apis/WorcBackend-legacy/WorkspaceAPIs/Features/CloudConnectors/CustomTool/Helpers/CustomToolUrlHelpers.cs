@@ -59,7 +59,7 @@ public static class CustomToolUrlHelpers
         }
     }
 
-    private static bool IsPublicAddress(IPAddress address)
+    public static bool IsPublicAddress(IPAddress address)
     {
         if (IPAddress.IsLoopback(address))
         {
