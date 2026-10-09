@@ -129,6 +129,8 @@ type VoicePlaybackState = {
   enqueue: (key: string, clips: VoiceAudioClip[]) => void;
   /** Stops playback and drops the queue without aborting the run. */
   stop: () => void;
+  /** Stops playback and clears all synthesis bookkeeping (used on teardown). */
+  reset: () => void;
   /** Stops and drops only `key`'s clips, leaving other keys playing. */
   stopKey: (key: string) => void;
   cacheClips: (key: string, clips: VoiceAudioClip[]) => void;
@@ -210,6 +212,11 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
       }
       releaseResolvedUrls();
       set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+    },
+
+    reset: () => {
+      get().stop();
+      set({ isSynthesizing: false, synthesizingKeys: [] });
     },
 
     stopKey: (key) => {

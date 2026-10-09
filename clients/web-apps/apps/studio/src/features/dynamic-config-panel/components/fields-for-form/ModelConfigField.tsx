@@ -29,12 +29,11 @@ interface ModelConfigFieldProps {
   /** If true, show the JSON output toggle in the model settings. */
   showJsonOutput?: boolean;
   /**
-   * Forces the model list to a speech specialty (tenant-enabled models) even
-   * when BYOK is off. Used by the ChatAgent voice configs, which always run
-   * against platform-hosted speech models.
+   * Forces the model list to a speech specialty (tenant-enabled models)
+   * regardless of the node name or BYOK state.
    */
   specialty?: "stt" | "tts";
-  /** Hides the "Bring your own API key" switch (platform-hosted models only). */
+  /** Hides the "Bring your own API key" switch. */
   hideByok?: boolean;
 }
 
@@ -74,7 +73,7 @@ const ModelConfigField = ({
   const isStt = specialty === "stt" || nodeKey === "SpeechToText";
   const isTts = specialty === "tts" || nodeKey === "TextToSpeech";
   const isEmbedding = nodeKey === "Embedding";
-  // Voice sub-configs (specialty set) are tenant-gated and never BYOK.
+  // Specialty-flagged speech sub-configs use tenant-enabled models.
   const isSpeechSpecialty = specialty === "stt" || specialty === "tts";
 
   // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
@@ -355,9 +354,8 @@ const ModelConfigField = ({
 
     // STT / TTS / tenant-config-based providers (e.g. Ollama On-prem) do not fetch
     // models dynamically via a credential, so the model dropdown must show the models
-    // that were ENABLED for that provider in the tenant config. Voice sub-configs
-    // (specialty set) use tenant models even without BYOK since they run against
-    // platform-hosted speech models.
+    // that were ENABLED for that provider in the tenant config. Specialty-flagged
+    // sub-configs use tenant models regardless of BYOK.
     if (
       isSpeechSpecialty ||
       (is_byok_enabled && (isStt || isTts || TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue)))
