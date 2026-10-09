@@ -12,9 +12,17 @@ import { DATA_QUERY_KEY } from "../constants";
 export const useInsertFlowVersionMutation = ({
   flowId,
   versionId,
+  skipUnsavedGuard = false,
 }: {
   flowId: string;
   versionId: string;
+  /**
+   * Skip the unsaved-changes alert when navigating to the created version.
+   *
+   * IMPORTANT NOTE: only set this when the caller has already confirmed
+   * discarding changes. Otherwise uncommitted work is dropped without a prompt.
+   */
+  skipUnsavedGuard?: boolean;
 }) => {
   // Get query client
   const queryClient = useQueryClient();
@@ -43,10 +51,11 @@ export const useInsertFlowVersionMutation = ({
             flowVariablesObject: flowData.data.flowVariablesObject ?? JSON.stringify([]),
           });
           setVersionTransition(httpResponse.data.id);
-          // The discard confirm already happened in FVIDraftAction, so don't
-          // prompt again while navigating to the newly created version.
+          // The discard confirm is handled by the caller that opted in via
+          // `skipUnsavedGuard`, so don't prompt again while navigating to the
+          // newly created version.
           await handleOpenFlowAction(httpResponse.data.flowId, httpResponse.data.id, {
-            skipUnsavedGuard: true,
+            skipUnsavedGuard,
           });
         } catch (error) {
           setVersionTransition(null);
