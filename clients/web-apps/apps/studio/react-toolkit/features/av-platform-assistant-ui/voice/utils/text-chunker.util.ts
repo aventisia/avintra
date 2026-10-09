@@ -1,38 +1,19 @@
-/**
- * Utilities that turn (streamed) assistant markdown into short, speakable
- * chunks for the Text-to-Speech pipeline.
- *
- * Speech engines synthesize best on sentence-sized inputs, so the chunker keeps
- * prose sentences together and only falls back to a word budget when a single
- * sentence (or clause) is unusually long.
- */
-
-/** Default maximum number of words per synthesized chunk. */
 export const DEFAULT_MAX_CHUNK_WORDS = 15;
 
-/**
- * Removes Markdown syntax that should not be read aloud — fenced/inline code,
- * image and link targets, heading/list/quote markers, and emphasis markers.
- * The result is collapsed prose with single spaces.
- */
+/** Removes Markdown syntax that should not be read aloud. */
 export const stripMarkdownForSpeech = (text: string): string =>
   text
-    // Fenced code blocks and inline code: read neither.
     .replace(/```[\s\S]*?```/g, " ")
     .replace(/`([^`]*)`/g, "$1")
-    // Images: keep only the alt text. Links: keep only the label.
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    // Leading heading / blockquote / list markers.
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
     .replace(/^\s{0,3}>\s?/gm, "")
     .replace(/^\s{0,3}(?:[-*+]|\d+\.)\s+/gm, "")
-    // Emphasis and strikethrough markers.
     .replace(/[*_~]{1,3}/g, "")
     .replace(/\s+/g, " ")
     .trim();
 
-/** Splits a single over-long segment on its words into budget-sized pieces. */
 const splitByWordBudget = (words: string[], maxWords: number): string[] => {
   const parts: string[] = [];
   for (let index = 0; index < words.length; index += maxWords) {
@@ -42,11 +23,7 @@ const splitByWordBudget = (words: string[], maxWords: number): string[] => {
   return parts;
 };
 
-/**
- * Splits prose into speech chunks. Sentences are kept whole when they fit the
- * word budget; longer sentences are packed at clause boundaries first, then
- * hard-split by word count as a last resort.
- */
+/** Splits prose into sentence-sized speech chunks bounded by a word budget. */
 export const splitIntoSpeechChunks = (
   text: string,
   maxWords: number = DEFAULT_MAX_CHUNK_WORDS,
@@ -54,7 +31,6 @@ export const splitIntoSpeechChunks = (
   const clean = stripMarkdownForSpeech(text);
   if (!clean) return [];
 
-  // Sentence boundaries, keeping the terminator attached to its sentence.
   const sentences = clean.match(/[^.!?…]+[.!?…]+|[^.!?…]+$/g) ?? [clean];
   const chunks: string[] = [];
 
@@ -66,7 +42,6 @@ export const splitIntoSpeechChunks = (
       continue;
     }
 
-    // Long sentence: prefer clause boundaries, then a plain word budget.
     const clauses = sentence.match(/[^,;:—–]+[,;:—–]*/g) ?? [sentence];
     let current: string[] = [];
     const flush = () => {
@@ -100,11 +75,7 @@ export type StreamingSpeechChunker = {
   reset: () => void;
 };
 
-/**
- * Incrementally chunks streamed deltas. Text up to the last completed sentence
- * is emitted as soon as its terminator arrives; the remainder is buffered until
- * either more deltas complete it or the run finishes and calls `flush`.
- */
+/** Emits streamed deltas sentence-by-sentence, buffering the partial trailing sentence. */
 export const createStreamingSpeechChunker = (
   maxWords: number = DEFAULT_MAX_CHUNK_WORDS,
 ): StreamingSpeechChunker => {
@@ -113,8 +84,6 @@ export const createStreamingSpeechChunker = (
   return {
     push: (delta) => {
       buffer += delta;
-      // Emit everything up to the last sentence terminator followed by a
-      // space or the end of the buffer; keep the partial sentence buffered.
       const match = buffer.match(/^[\s\S]*[.!?…](?=\s|$)/);
       if (!match) return [];
       const completed = match[0];

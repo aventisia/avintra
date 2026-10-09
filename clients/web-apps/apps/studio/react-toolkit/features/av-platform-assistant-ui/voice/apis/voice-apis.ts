@@ -6,11 +6,7 @@ import { getStudioConfigHeaders } from "@/utils/space-headers";
 
 const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}`;
 
-/**
- * Transcribes recorded audio to text.
- * Uses the llmpipeline LiteLLM v2 route (`POST /v2/llm/stt/transcribe`).
- * The response is a flat `STTResponseDto` (not wrapped in `ServiceResponse`).
- */
+/** Transcribes recorded audio to text through the llmpipeline STT route. */
 export const transcribeSpeechToText = (requestDto: STTRequestDto) => {
   return axiosInstance
     .post<STTResponseDto>(`${baseAPIURL}/v2/llm/stt/transcribe`, requestDto, {
@@ -19,14 +15,7 @@ export const transcribeSpeechToText = (requestDto: STTRequestDto) => {
     .then((res) => res.data);
 };
 
-/**
- * Synthesizes speech from text.
- * Uses the llmpipeline LiteLLM v2 route (`POST /v2/llm/tts/synthesize`).
- * The response is a flat `TTSResponseDto` (not wrapped in `ServiceResponse`).
- *
- * Pass an `AbortSignal` to cancel an in-flight request (e.g. when the user
- * mutes spoken replies while the answer is still streaming).
- */
+/** Synthesizes speech from text through the llmpipeline TTS route. */
 export const synthesizeTts = (requestDto: TTSRequestDto, signal?: AbortSignal) => {
   return axiosInstance
     .post<TTSResponseDto>(`${baseAPIURL}/v2/llm/tts/synthesize`, requestDto, {

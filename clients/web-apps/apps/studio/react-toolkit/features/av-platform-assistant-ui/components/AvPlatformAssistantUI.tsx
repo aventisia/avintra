@@ -173,8 +173,6 @@ const RuntimeWrapper = ({
   const activeSuggestionsRef = useRef<string[]>([]);
   const queryClient = useQueryClient();
 
-  // Studio-only voice wiring: the Chat AI node's speech config feeds both the
-  // per-message playback controller and the composer microphone recorder.
   const {
     stt: sttConfig,
     tts: ttsConfig,
@@ -286,8 +284,6 @@ const RuntimeWrapper = ({
           getConversationId, // Pass the dynamic getter
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
-          // Stream the reply text into sentence-sized speech requests, then
-          // flush the trailing sentence when the run settles.
           onTextDelta: assistantVoice.onTextDelta,
           onRunFinished: assistantVoice.onRunFinished,
           isTempChat: mode === "temporary",
@@ -313,12 +309,10 @@ const RuntimeWrapper = ({
     },
   );
 
-  // Shared with the thread's composer (mic) and message action bar (play/pause).
   const voiceContextValue = useMemo<AssistantVoiceContextValue>(
     () => ({
       speakReplies: assistantVoice.speakReplies,
       isPlaying: assistantVoice.isPlaying,
-      activeKey: assistantVoice.activeKey,
       activeKeys: assistantVoice.activeKeys,
       synthesizingKeys: assistantVoice.synthesizingKeys,
       isLiveSpeaking: assistantVoice.isLiveSpeaking,
@@ -334,7 +328,6 @@ const RuntimeWrapper = ({
     [
       assistantVoice.speakReplies,
       assistantVoice.isPlaying,
-      assistantVoice.activeKey,
       assistantVoice.activeKeys,
       assistantVoice.synthesizingKeys,
       assistantVoice.isLiveSpeaking,

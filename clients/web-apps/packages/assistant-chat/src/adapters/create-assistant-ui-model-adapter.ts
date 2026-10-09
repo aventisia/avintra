@@ -12,16 +12,9 @@ export type CreateAssistantUIModelAdapterParams = {
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
   onSuggestionsUpdate?: (actions: string[]) => void;
-  /**
-   * Called for each streamed text delta (`{ type: "delta" }` frame) with the
-   * partial text. Studio uses this to synthesize speech sentence-by-sentence;
-   * Workspace omits it.
-   */
+  /** Called for every streamed text delta so observers can synthesize speech incrementally. */
   onTextDelta?: (delta: string) => void;
-  /**
-   * Called once per run when streaming settles (success, error, or abort), so
-   * observers can flush pending work and reset run-scoped state.
-   */
+  /** Called once per run when streaming settles (success, error, or abort). */
   onRunFinished?: () => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
   isTempChat?: boolean;
@@ -257,8 +250,6 @@ export const createAssistantUIModelAdapter = ({
             onSuggestionsUpdate?.(frame.output as string[]);
           }
 
-          // Surface streamed text deltas to external observers (voice
-          // synthesis) as they arrive, before folding them into content parts.
           if (frame?.type === "delta" && typeof frame.output === "string" && frame.output) {
             onTextDelta?.(frame.output);
           }
@@ -345,8 +336,6 @@ export const createAssistantUIModelAdapter = ({
         }
         yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
       } finally {
-        // Runs on success, error, and consumer abort (generator return), so
-        // voice playback can flush the current reply's queue exactly once.
         onRunFinished?.();
       }
     },

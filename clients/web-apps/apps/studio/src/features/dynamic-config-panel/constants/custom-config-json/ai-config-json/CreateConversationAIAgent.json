@@ -53,6 +53,7 @@
       "required": false,
       "showJsonOutput": false,
       "hideByok": true,
+      "specialty": "stt",
       "category": "Voice"
     },
     {
@@ -71,6 +72,7 @@
       "required": false,
       "showJsonOutput": false,
       "hideByok": true,
+      "specialty": "tts",
       "category": "Voice"
     },
     {

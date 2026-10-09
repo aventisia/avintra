@@ -1,15 +1,11 @@
 import { create } from "zustand";
 
-/** MIME type assumed for synthesized clips without an explicit data URL. */
 const DEFAULT_AUDIO_MIME_TYPE = "audio/mpeg";
 
-/** localStorage key for the opt-in "Speak replies" preference. */
 const SPEAK_REPLIES_STORAGE_KEY = "studio.chatAgent.speakReplies";
 
-/** Playback key reserved for the live reply stream (never a persisted message). */
 export const LIVE_SPEECH_KEY = "live";
 
-/** A single synthesized audio clip ready for playback. */
 export type VoiceAudioClip = {
   /** Stable id, used to cache the resolved object URL. */
   id: string;
@@ -19,10 +15,8 @@ export type VoiceAudioClip = {
   mimeType: string;
 };
 
-/** A queued clip tagged with the message/stream it belongs to. */
 type QueuedClip = VoiceAudioClip & { key: string };
 
-/** Reads the persisted "Speak replies" preference (off by default). */
 const readSpeakRepliesPreference = (): boolean => {
   try {
     return localStorage.getItem(SPEAK_REPLIES_STORAGE_KEY) === "true";
@@ -31,23 +25,19 @@ const readSpeakRepliesPreference = (): boolean => {
   }
 };
 
-/** Persists the "Speak replies" preference; storage failures are ignored. */
 const writeSpeakRepliesPreference = (value: boolean): void => {
   try {
     localStorage.setItem(SPEAK_REPLIES_STORAGE_KEY, String(value));
   } catch {
-    // Private mode / storage disabled: the toggle still works in memory.
+    // IMPORTANT NOTE: private mode or disabled storage rejects writes; the toggle still works in memory.
   }
 };
 
-// ─── Module-level player state ───────────────────────────────────────────────
-// Kept outside the store so audio element lifecycle never triggers re-renders.
 let audioElement: HTMLAudioElement | null = null;
 let queue: QueuedClip[] = [];
 let current: QueuedClip | null = null;
 const resolvedUrls = new Map<string, string>();
 
-/** Lazily creates the single audio element shared by every clip. */
 const getAudioElement = (onEnded: () => void): HTMLAudioElement => {
   if (!audioElement) {
     audioElement = new Audio();
@@ -56,10 +46,6 @@ const getAudioElement = (onEnded: () => void): HTMLAudioElement => {
   return audioElement;
 };
 
-/**
- * Resolves a clip to a playable URL. Data/blob/http payloads pass through;
- * raw base64 is wrapped in a Blob so the audio element can stream it.
- */
 const resolveClipUrl = (clip: VoiceAudioClip): string => {
   const cached = resolvedUrls.get(clip.id);
   if (cached) return cached;
@@ -81,7 +67,6 @@ const resolveClipUrl = (clip: VoiceAudioClip): string => {
   return url;
 };
 
-/** Releases every cached object URL (non-blob payloads are skipped). */
 const releaseResolvedUrls = (): void => {
   resolvedUrls.forEach((url) => {
     if (url.startsWith("blob:")) URL.revokeObjectURL(url);
@@ -89,14 +74,12 @@ const releaseResolvedUrls = (): void => {
   resolvedUrls.clear();
 };
 
-/** Revokes and forgets the object URL for a single clip. */
 const releaseClipUrl = (clip: VoiceAudioClip): void => {
   const url = resolvedUrls.get(clip.id);
   if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
   resolvedUrls.delete(clip.id);
 };
 
-/** Collects the keys that currently own a clip (playing or queued). */
 const collectActiveKeys = (): string[] => {
   const keys = new Set<string>();
   if (current) keys.add(current.key);
@@ -109,12 +92,6 @@ type VoicePlaybackState = {
   speakReplies: boolean;
   /** Whether the player is actively producing audio. */
   isPlaying: boolean;
-  /** Whether a Text-to-Speech request is currently in flight. */
-  isSynthesizing: boolean;
-  /** Playback key of the clip currently playing (null when idle). */
-  activeKey: string | null;
-  /** Clips waiting behind the one currently playing. */
-  queueSize: number;
   /** Keys with a clip currently playing or waiting in the queue. */
   activeKeys: string[];
   /** Keys with an in-flight Text-to-Speech request. */
@@ -138,37 +115,32 @@ type VoicePlaybackState = {
 };
 
 export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
-  /** Advances to the next queued clip, settling to idle when drained. */
   const playNext = (): void => {
     if (queue.length === 0) {
       current = null;
-      set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+      set({ isPlaying: false, activeKeys: [] });
       return;
     }
 
     const next = queue.shift() as QueuedClip;
     current = next;
-    set({
-      isPlaying: true,
-      activeKey: next.key,
-      queueSize: queue.length,
-      activeKeys: collectActiveKeys(),
-    });
+    set({ isPlaying: true, activeKeys: collectActiveKeys() });
 
     const element = getAudioElement(playNext);
     element.src = resolveClipUrl(next);
     element.play().catch(() => {
-      // Autoplay may be blocked without a prior user gesture.
-      set({ isPlaying: false });
+      // IMPORTANT NOTE: browsers block autoplay without a prior user gesture; drop the
+      // clip and advance instead of wedging the queue behind audio that cannot start.
+      releaseClipUrl(next);
+      current = null;
+      set({ isPlaying: false, activeKeys: collectActiveKeys() });
+      playNext();
     });
   };
 
   return {
     speakReplies: readSpeakRepliesPreference(),
     isPlaying: false,
-    isSynthesizing: false,
-    activeKey: null,
-    queueSize: 0,
     activeKeys: [],
     synthesizingKeys: [],
     clipCache: {},
@@ -176,29 +148,25 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
     setSpeakReplies: (value) => {
       writeSpeakRepliesPreference(value);
       set({ speakReplies: value });
-      // Disabling is a mute, not an abort: stop audio but leave the run alone.
       if (!value) get().stop();
     },
 
     markSynthesizing: (key, value) =>
-      set((state) => {
-        const synthesizingKeys = value
+      set((state) => ({
+        synthesizingKeys: value
           ? state.synthesizingKeys.includes(key)
             ? state.synthesizingKeys
             : [...state.synthesizingKeys, key]
-          : state.synthesizingKeys.filter((existing) => existing !== key);
-        return { synthesizingKeys, isSynthesizing: synthesizingKeys.length > 0 };
-      }),
+          : state.synthesizingKeys.filter((existing) => existing !== key),
+      })),
 
     enqueue: (key, clips) => {
       if (clips.length === 0) return;
-      // Live replies must never (re)start playback while muted; a synthesis
-      // task that resolves just after a mute would otherwise resume the audio.
-      // Other keys are explicit per-message playback and stay allowed.
+      // IMPORTANT NOTE: a live synthesis task can resolve just after a mute, so live
+      // clips must never (re)start playback unless replies are still unmuted.
       if (key === LIVE_SPEECH_KEY && !get().speakReplies) return;
       queue.push(...clips.map((clip) => ({ ...clip, key })));
-      set({ queueSize: queue.length, activeKeys: collectActiveKeys() });
-      // Only auto-start when idle; a paused player waits for an explicit resume.
+      set({ activeKeys: collectActiveKeys() });
       if (current === null) playNext();
     },
 
@@ -211,19 +179,18 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
         audioElement.load();
       }
       releaseResolvedUrls();
-      set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+      set({ isPlaying: false, activeKeys: [] });
     },
 
     reset: () => {
       get().stop();
-      set({ isSynthesizing: false, synthesizingKeys: [] });
+      set({ synthesizingKeys: [] });
     },
 
     stopKey: (key) => {
       const removed = queue.filter((clip) => clip.key === key);
       queue = queue.filter((clip) => clip.key !== key);
 
-      // If the stopped key owns the audio element, halt it and release its URLs.
       if (current && current.key === key) {
         removed.push(current);
         current = null;
@@ -235,17 +202,15 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
       }
       removed.forEach(releaseClipUrl);
 
-      // Nothing was playing for this key: just resync the derived state.
       if (current === null && queue.length === 0) {
-        set({ isPlaying: false, activeKey: null, queueSize: 0, activeKeys: [] });
+        set({ isPlaying: false, activeKeys: [] });
         return;
       }
-      // Continue with whatever other keys still have clips queued.
       if (current === null) {
         playNext();
         return;
       }
-      set({ queueSize: queue.length, activeKeys: collectActiveKeys() });
+      set({ activeKeys: collectActiveKeys() });
     },
 
     cacheClips: (key, clips) => {
