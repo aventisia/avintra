@@ -73,8 +73,6 @@ public static class ProdResourceShareGuard
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
             ResourceTypeEnum.KeyStore => await unitOfWork.KeyStoreRepo.GetByConditionAsync(w =>
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
-            ResourceTypeEnum.Vault => await unitOfWork.VaultRepo.GetByConditionAsync(w =>
-                resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
             ResourceTypeEnum.AppSecret => await unitOfWork.AppSecretRepo.GetByConditionAsync(w =>
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
             ResourceTypeEnum.KnowledgeBase => await unitOfWork.KnowledgeBaseRepo.GetByConditionAsync(w =>
@@ -92,7 +90,6 @@ public static class ProdResourceShareGuard
         ResourceTypeEnum.Queue => "queue",
         ResourceTypeEnum.Trigger => "trigger",
         ResourceTypeEnum.KeyStore => "key store",
-        ResourceTypeEnum.Vault => "vault",
         ResourceTypeEnum.AppSecret => "credential",
         ResourceTypeEnum.KnowledgeBase => "knowledge base",
         ResourceTypeEnum.Skill => "skill",
@@ -115,8 +112,6 @@ public static class ProdResourceShareGuard
                 return (true, await IsProdAsync(unitOfWork.TriggerRepo, w => w.Id == resourceId, e => e.EnvType), "trigger");
             case ResourceTypeEnum.KeyStore:
                 return (true, await IsProdAsync(unitOfWork.KeyStoreRepo, w => w.Id == resourceId, e => e.EnvType), "key store");
-            case ResourceTypeEnum.Vault:
-                return (true, await IsProdAsync(unitOfWork.VaultRepo, w => w.Id == resourceId, e => e.EnvType), "vault");
             case ResourceTypeEnum.AppSecret:
                 return (true, await IsProdAsync(unitOfWork.AppSecretRepo, w => w.Id == resourceId, e => e.EnvType), "credential");
             case ResourceTypeEnum.KnowledgeBase:

@@ -24,12 +24,6 @@ public enum ResourceTypeEnum
     KeyStore,
 
     /// <summary>
-    /// Represents a vault resource used for securely storing sensitive information.
-    /// </summary>
-    [Description("Represents a vault resource used for securely storing sensitive information.")]
-    Vault,
-
-    /// <summary>
     /// Represents an application secret resource used for managing application credentials.
     /// </summary>
     [Description("Represents an application secret resource used for managing application credentials.")]

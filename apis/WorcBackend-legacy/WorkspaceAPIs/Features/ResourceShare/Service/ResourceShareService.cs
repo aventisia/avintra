@@ -485,21 +485,6 @@ public class ResourceShareService : IResourceShareService
                         break;
                     }
 
-                case ResourceTypeEnum.Vault:
-                    {
-                        // Retrieve the Vault resource.
-                        var vault = await _unitOfWork.VaultRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (vault == null)
-                            return serviceResponse;
-
-                        vault.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.VaultRepo.Update(vault);
-                        break;
-                    }
-
                 case ResourceTypeEnum.AppSecret:
                     {
                         // Retrieve the AppSecret resource.

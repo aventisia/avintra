@@ -51,12 +51,10 @@ export const useFetchVaults = () => {
   const isError = results.some((r) => r.isError);
   const error = results.find((r) => r.error)?.error;
 
-  // Show toast on fetch error
   useEffect(() => {
     if (isError) toast.error(error?.toString() ?? "Failed to fetch vault credentials");
   }, [error, isError]);
 
-  // Return merged data plus isFetching and isLoading flags
   return {
     data,
     isFetching: results.some((r) => r.isFetching),

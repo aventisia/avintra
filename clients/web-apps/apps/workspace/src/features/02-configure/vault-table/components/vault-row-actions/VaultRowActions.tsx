@@ -29,18 +29,15 @@ export const VaultRowActions = ({
   accessLevel = ResourceAccessTypeEnum.View,
   isTenantWideAccess,
 }: VaultRowActionsProps) => {
-  // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
 
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
   return (
-    // Dropdown menu for config table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="vault" />}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="vault" />}
 
-      {/* Share Access */}
       {resourceActions.share && (
         <ResourceShareRowAction
           rowId={rowId}
@@ -51,19 +48,15 @@ export const VaultRowActions = ({
         />
       )}
 
-      {/* Reconnect OAuth for OAuth-capable credentials */}
       {actions?.update && isOAuthCredentialType(type) && <VaultRowReconnectAction rowId={rowId} />}
       {actions?.update && isCorsairCredentialType(type) && !isOAuthCredentialType(type) && (
         <VaultRowTestConnectionAction rowId={rowId} />
       )}
 
-      {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 
-      {/* Triggers Config delete alert dialog  */}
       {resourceActions.delete && <VaultRowDeleteAction rowId={rowId} />}
 
-      {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}

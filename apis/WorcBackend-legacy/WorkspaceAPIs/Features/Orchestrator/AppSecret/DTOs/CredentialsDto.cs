@@ -136,8 +136,6 @@ public class TwilioCredentialsDto
     public string ApiKeySecret { get; set; } = string.Empty;
 }
 
-// -------------------- AuthenticationType --------------------
-
 /// <summary>
 /// Specifies the supported authentication methods for Twilio API integration.
 /// </summary>
@@ -358,7 +356,7 @@ public class GoogleWorkspaceCredentialsDto
     public string ClientSecret { get; set; } = string.Empty;
 }
 
-// <summary>
+/// <summary>
 /// Represents the credentials required to authenticate requests to the Azure Open AI.
 /// </summary>
 public class AzureOpenAiCredentialsDto

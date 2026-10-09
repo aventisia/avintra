@@ -32,7 +32,6 @@ public class UnitOfWork : IUnitOfWork
     public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
     public IJobNodeExecutionLogRepo JobNodeExecutionLogRepo => new JobNodeExecutionLogRepo(_workspaceDbContext);
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
-    public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
     public ITimeTriggerRepo TimeTriggerRepo => new TimeTriggerRepo(_workspaceDbContext);
     public ITimeTriggerFlowRepo TimeTriggerFlowRepo => new TimeTriggerFlowRepo(_workspaceDbContext);
     public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);

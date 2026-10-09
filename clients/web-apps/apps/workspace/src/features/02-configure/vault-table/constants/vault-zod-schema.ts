@@ -25,7 +25,6 @@ export const vaultZodSchema = z
     description: z.string().optional(),
 
     isDisabled: z.boolean().default(false),
-    // Read (view) only fields
     createdBy: z.string(),
     createdOn: z.date(),
     lastModifiedBy: z.string(),

@@ -11,7 +11,6 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "createdOn", value: "Created On" },
 ];
 
-// Get the column display name for the given column key.
 export const getColumnName = (key: string): string => {
   const column = columnDisplayNames.find((column) => column.key === key);
   return column?.value ?? key;

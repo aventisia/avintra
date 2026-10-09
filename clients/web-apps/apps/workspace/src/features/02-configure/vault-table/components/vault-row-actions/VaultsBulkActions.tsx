@@ -12,23 +12,18 @@ interface VaultsBulkActionsProps {
 }
 
 export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
-  // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
-  // Get rowIds of selected rows
   const selectedRowIds = table
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
-  // Get mutation function to delete the credential
   const { mutate: deleteConfigs } = useListOptimisticMutation<
     string[],
     VaultsTableDto | boolean,
     VaultsTableDto
   >(selectedRowIds, vaultOptimisticMutationFn, DATA_QUERY_KEY);
-
-  // TODO: Rollback selection if there is an error
 
   return (
     <>
@@ -38,16 +33,13 @@ export function VaultsBulkActions({ table }: Readonly<VaultsBulkActionsProps>) {
           <Separator orientation="vertical" className="h-6 w-[0.5px]" />
           <DTBulkDeleteAction
             onClick={() => {
-              // Show alert dialog to confirm delete
               showDefaultAlertDialog({
                 confirmActionFn: () => {
-                  // Delete selected credentials
                   deleteConfigs({
                     payload: selectedRowIds,
                     crudAction: "delete-multiple",
                   });
 
-                  // Remove selection
                   table.toggleAllRowsSelected(false);
                 },
                 alertType: "delete-multiple",

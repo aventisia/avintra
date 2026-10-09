@@ -6,22 +6,20 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// Props for the AppSelector component
-export interface AppOption {
+type AppOption = {
   label: string;
   value: string;
-}
+};
 
-interface AppSelectorProps {
+type AppSelectorProps = {
   options: AppOption[];
   selectedItem: AppOption | null;
   onItemSelect: (item: AppOption) => void;
   onItemClear: () => void;
   placeholder?: string;
-  autoFocus?: boolean; // TODO: We should extend React.InputHTMLAttributes<HTMLInputElement> or similar to support other input props
-}
+  autoFocus?: boolean;
+};
 
-// The most commonly used apps/services/providers, shown first in the "Popular" section.
 const POPULAR_VALUES = new Set([
   "OpenAI",
   "AWS",
@@ -52,7 +50,6 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
   options,
   selectedItem,
   onItemSelect,
-  // onItemClear,
   placeholder = "Search and select item...",
   autoFocus = false,
 }) => {
@@ -90,14 +87,14 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
     return selectedItem?.value === value;
   };
 
-  // Sort options alphabetically by label (case-insensitive).
   const sortedOptions = useMemo(
     () =>
-      [...options].sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" })),
+      [...options].sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+      ),
     [options],
   );
 
-  // Filter options based on input value.
   const filteredResults = useMemo(
     () =>
       sortedOptions.filter((option) =>
@@ -106,7 +103,6 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
     [sortedOptions, inputValue],
   );
 
-  // Split into "Popular" (top 20) and "Others" (remaining), each sorted alphabetically.
   const { popularOptions, otherOptions } = useMemo(() => {
     const popular: AppOption[] = [];
     const others: AppOption[] = [];
@@ -168,7 +164,6 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
         </div>
       </div>
 
-      {/* Dropdown */}
       {isOpen && (
         <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
           <div className="p-2">

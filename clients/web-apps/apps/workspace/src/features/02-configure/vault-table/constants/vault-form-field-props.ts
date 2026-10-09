@@ -1,13 +1,11 @@
 import { InputFieldProps, SwitchFieldProps, TextareaFieldProps } from "@avplatform/ui/form";
 
-// Config Id
 export const idProps: InputFieldProps = {
   name: "id",
   label: "Config Id",
   disabled: true,
 };
 
-// Name
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
@@ -17,7 +15,6 @@ export const nameProps: InputFieldProps = {
     "A **unique** name for the credential.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
 
-// User Name
 export const userNameProps: InputFieldProps = {
   name: "username",
   label: "User Name",
@@ -26,7 +23,6 @@ export const userNameProps: InputFieldProps = {
   description: "The username associated with the credential.",
 };
 
-// password
 export const passwordProps: InputFieldProps = {
   name: "password",
   label: "Password",
@@ -35,7 +31,6 @@ export const passwordProps: InputFieldProps = {
   description: "The password for the credential.",
 };
 
-//confirm password
 export const confirmPasswordProps: InputFieldProps = {
   name: "confirmPassword",
   label: "Confirm Password",
@@ -44,7 +39,6 @@ export const confirmPasswordProps: InputFieldProps = {
   description: "Re-enter the password to confirm it matches.",
 };
 
-// Description
 export const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
@@ -52,7 +46,6 @@ export const descriptionProps: TextareaFieldProps = {
   className: "min-h-[6rem]",
 };
 
-// Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Credentials",
