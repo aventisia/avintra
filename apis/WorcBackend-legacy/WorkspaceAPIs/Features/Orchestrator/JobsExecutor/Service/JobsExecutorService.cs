@@ -1,6 +1,3 @@
-using ExecutorLibrary.Helpers;
-using ExecutorLibrary.Models;
-
 namespace WorkspaceAPIs.Services;
 
 public class JobsExecutorService : IJobsExecutorService
@@ -11,14 +8,9 @@ public class JobsExecutorService : IJobsExecutorService
     private readonly IHubContext<OrchestratorHub> _hubContext;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICreditGateService _creditGateService;
-    private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
-    private readonly EnvironmentConfig _environmentConfig;
-
-    private const string CloudProdEnvType = "prod";
-    private const string CloudDevEnvType = "dev";
+    private readonly ICloudJobExecutionService _cloudJobExecutionService;
 
     private readonly Guid _userId;
-    private readonly string _accessToken;
 
     // Constructor
     public JobsExecutorService(
@@ -29,12 +21,9 @@ public class JobsExecutorService : IJobsExecutorService
         IClientStatusStore clientStatusStore,
         WorkspaceInternalDbContext workspaceInternalDbContext,
         ICreditGateService creditGateService,
-        IExecuteFlowStep2Service executeFlowStep2Service,
-        EnvironmentConfig environmentConfig)
+        ICloudJobExecutionService cloudJobExecutionService)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -42,8 +31,7 @@ public class JobsExecutorService : IJobsExecutorService
         _clientStatusStore = clientStatusStore;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _creditGateService = creditGateService;
-        _executeFlowStep2Service = executeFlowStep2Service;
-        _environmentConfig = environmentConfig;
+        _cloudJobExecutionService = cloudJobExecutionService;
     }
 
     // Method to execute a job command
@@ -81,17 +69,16 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            if (JobsAssignmentHelpers.IsCloudExecutionLocation(jobDetails.ExecutedOn))
+            if (JobsAssignmentHelpers.IsCloudExecutionLocation(jobDetails.ExecutedOn)
+                || JobsAssignmentHelpers.IsAgentBuilderLocation(jobDetails.ExecutedOn))
             {
-                await ExecuteOnCloudAsync(jobDetails);
+                await _cloudJobExecutionService.ExecuteAsync(jobDetails);
                 return;
             }
 
-            var isNonMachineOrigin = !string.IsNullOrEmpty(jobDetails.ExecutedOn)
-                && (jobDetails.ExecutedOn.StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase)
-                    || jobDetails.ExecutedOn.StartsWith("Agent Builder", StringComparison.OrdinalIgnoreCase));
+            var isDesktopAppOrigin = JobsAssignmentHelpers.IsDesktopAppLocation(jobDetails.ExecutedOn);
 
-            if (!isNonMachineOrigin && (jobDetails.MachineId == null || jobDetails.MachineId == Guid.Empty))
+            if (!isDesktopAppOrigin && (jobDetails.MachineId == null || jobDetails.MachineId == Guid.Empty))
             {
                 var machineList = (await _clientStatusStore.GetMachineStatusesAsync(jobDetails.TenantId)).ToList();
 
@@ -118,14 +105,12 @@ public class JobsExecutorService : IJobsExecutorService
                 jobDetails.MachineId = targetMachine.ClientId;
                 jobDetails.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
 
-                targetMachine.JobId = jobDetails.Id;
-                targetMachine.AgentId = jobDetails.FlowVersionId;
-                targetMachine.LastSeen = DateTimeOffset.UtcNow;
+                MachineReservationHelpers.Reserve(targetMachine, jobDetails.Id, jobDetails.FlowVersionId);
                 await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
 
                 _logger.LogInformation("Job {JobId} assigned to machine {MachineName}.", jobDetails.Id, jobDetails.ExecutedOn);
             }
-            else if (!isNonMachineOrigin)
+            else if (!isDesktopAppOrigin)
             {
                 var boundMachine = await _clientStatusStore.GetClientByIdAsync(jobDetails.MachineId!.Value);
                 if (boundMachine?.ClientName is string boundMachineName && !string.IsNullOrWhiteSpace(boundMachineName))
@@ -162,93 +147,6 @@ public class JobsExecutorService : IJobsExecutorService
         }
     }
 
-    private async Task<bool> TryClaimJobForCloudAsync(Job job)
-    {
-        var claimedRows = await _unitOfWork.JobRepo
-            .GetByConditionAsync(w => w.Id == job.Id && w.Status == JobStatusEnum.Created)
-            .IgnoreQueryFilters()
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(j => j.Status, JobStatusEnum.Running)
-                .SetProperty(j => j.StartTime, DateTimeOffset.UtcNow));
-
-        return claimedRows == 1;
-    }
-
-    private async Task ExecuteOnCloudAsync(Job job)
-    {
-        var flowVersion = await _unitOfWork.FlowVersionRepo
-            .GetByConditionAsync(w => w.Id == job.FlowVersionId)
-            .IgnoreQueryFilters()
-            .Include(i => i.Flow)
-            .AsNoTracking()
-            .SingleOrDefaultAsync();
-
-        if (flowVersion == null)
-        {
-            _logger.LogWarning("Cloud execution skipped for job {JobId}: flow version {FlowVersionId} not found.", job.Id, job.FlowVersionId);
-            return;
-        }
-
-        var parsedFlow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
-        if (parsedFlow == null)
-        {
-            _logger.LogWarning("Cloud execution skipped for job {JobId}: flow version {FlowVersionId} has an invalid flow graph.", job.Id, job.FlowVersionId);
-            return;
-        }
-
-        if (!await TryClaimJobForCloudAsync(job))
-        {
-            _logger.LogWarning("Cloud execution skipped for job {JobId}: already claimed by another dispatch.", job.Id);
-            return;
-        }
-
-        var executionUserId = _userId != Guid.Empty ? _userId : job.RefId ?? Guid.Empty;
-        var accessToken = _accessToken;
-        if (string.IsNullOrEmpty(accessToken) && executionUserId != Guid.Empty)
-        {
-            var executionUser = await _unitOfWork.WorkspaceUserRepo
-                .GetByConditionAsync(user => user.Id == executionUserId && user.TenantId == job.TenantId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-
-            if (executionUser != null)
-            {
-                accessToken = MachineAuthTokenHelper.CreateMachineJwt(
-                    _environmentConfig,
-                    job.TenantId,
-                    executionUser.Id,
-                    executionUser.UserName,
-                    null).Jwt;
-            }
-        }
-
-        if (string.IsNullOrEmpty(accessToken))
-        {
-            _logger.LogError("Cloud execution for job {JobId} has no execution access token.", job.Id);
-            job.Status = JobStatusEnum.Failed;
-            job.EndTime = DateTimeOffset.UtcNow;
-            job.Remark = "Cloud execution failed: no execution access token.";
-            _unitOfWork.JobRepo.Update(job);
-            await _unitOfWork.SaveAsync();
-            return;
-        }
-
-        var flowExecutionArgs = new FlowExecutionArgs
-        {
-            TenantId = job.TenantId,
-            JobId = job.Id,
-            FlowVersionId = job.FlowVersionId,
-            FlowName = flowVersion.Flow?.Name ?? string.Empty,
-            FlowData = parsedFlow,
-            UserId = executionUserId,
-            AccessToken = accessToken,
-            EnvType = flowVersion.IsPublished ? CloudProdEnvType : CloudDevEnvType
-        };
-
-        _executeFlowStep2Service.StartExecution(flowExecutionArgs);
-        _logger.LogInformation("Job {JobId} dispatched to the cloud engine.", job.Id);
-    }
-
     // Method to trigger the job execution on the assigned machine
     public async Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto)
     {
@@ -260,7 +158,7 @@ public class JobsExecutorService : IJobsExecutorService
 
             // Local Desktop App runs (initiated from Studio dev mode) handle execution on the
             // runner side without joining the backend WebSocket hub, so skip hub dispatch entirely.
-            if (!string.IsNullOrEmpty(machineName) && machineName.StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase))
+            if (JobsAssignmentHelpers.IsDesktopAppLocation(machineName))
             {
                 return;
             }
@@ -325,12 +223,9 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            // Update machine's last seen timestamp to ensure it's up-to-date
-            clientDataStore.LastSeen = DateTimeOffset.UtcNow;
-            clientDataStore.JobId = executionCommandDto.JobId;
-            clientDataStore.AgentId = executionCommandDto.AgentId;
-
             // Update machine status based on the execution command.
+            MachineReservationHelpers.Reserve(clientDataStore, executionCommandDto.JobId, executionCommandDto.AgentId);
+
             // NOTE: Initiate no longer flips the machine to Running. The machine stays Online/Idle with
             // the JobId acting as a pending marker until the runner actually calls StartJob, which is the
             // single source of truth for the Running transition.
@@ -513,9 +408,7 @@ public class JobsExecutorService : IJobsExecutorService
                         job.MachineId = targetMachine.ClientId;
                         job.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
 
-                        targetMachine.JobId = job.Id;
-                        targetMachine.AgentId = job.FlowVersionId;
-                        targetMachine.LastSeen = DateTimeOffset.UtcNow;
+                        MachineReservationHelpers.Reserve(targetMachine, job.Id, job.FlowVersionId);
                         await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
 
                         jobsNeedToUpdate.Add(job);

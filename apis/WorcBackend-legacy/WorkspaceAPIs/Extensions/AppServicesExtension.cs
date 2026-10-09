@@ -162,6 +162,7 @@ public static class AppServicesExtension
         services.AddSingleton<ConcurrentDictionary<Guid, int>>();
         services.AddScoped<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
+        services.AddScoped<ICloudJobExecutionService, CloudJobExecutionService>();
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();

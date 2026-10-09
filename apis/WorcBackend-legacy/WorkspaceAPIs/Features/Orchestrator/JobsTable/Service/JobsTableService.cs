@@ -916,12 +916,8 @@ public class JobsTableService : IJobsTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found.", 404);
 
-            var machineStatus = await _clientStatusStore.GetClientByIdAsync(machineId);
-            if (machineStatus == null)
+            if (await _clientStatusStore.GetClientByIdAsync(machineId) == null)
                 return serviceResponse.Update("Machine is not connected.", 409);
-
-            if (machineStatus != null && await _unitOfWork.JobRepo.GetAllAsync().IgnoreQueryFilters().HasLivePendingJobAsync(machineStatus))
-                return serviceResponse.Update(null, 200, null);
 
             var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
                 .GetByConditionAsync(w => w.MachineId == machineId && w.TenantId == tenantId)
@@ -936,6 +932,17 @@ public class JobsTableService : IJobsTableService
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
+                // IMPORTANT NOTE: serialize concurrent polls for the same machine. The advisory lock is
+                // transaction-scoped, so the second poller re-reads the machine marker after the first commits.
+                await _unitOfWork.AcquireAdvisoryLockAsync(PendingJobHelpers.PendingJobPollLockKey(machineId));
+
+                var machineStatus = await _clientStatusStore.GetClientByIdAsync(machineId);
+                if (machineStatus == null)
+                    return;
+
+                if (await _unitOfWork.JobRepo.GetAllAsync().IgnoreQueryFilters().HasLivePendingJobAsync(machineStatus))
+                    return;
+
                 var lockedJobId = await LockNextBoundJobIdAsync(tenantId, machineId, flowVersionIds);
 
                 if (lockedJobId == Guid.Empty)
@@ -967,9 +974,7 @@ public class JobsTableService : IJobsTableService
                 if (!await _unitOfWork.SaveAsync())
                     throw new InvalidOperationException("Failed to assign pending job.");
 
-                machineStatus.AgentId = nextJob.FlowVersionId;
-                machineStatus.JobId = nextJob.Id;
-                machineStatus.LastSeen = DateTimeOffset.UtcNow;
+                MachineReservationHelpers.Reserve(machineStatus, nextJob.Id, nextJob.FlowVersionId);
                 await _clientStatusStore.UpdateClientStatusAsync(machineStatus);
             });
 

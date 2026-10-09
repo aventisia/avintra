@@ -6,6 +6,11 @@ namespace WorkspaceAPIs.Helpers;
 public static class PendingJobHelpers
 {
     /// <summary>
+    /// Returns the transaction-scoped advisory lock key that serializes concurrent pending-job polls for one machine.
+    /// </summary>
+    public static string PendingJobPollLockKey(Guid machineId) => $"pending-job-poll:{machineId}";
+
+    /// <summary>
     /// Returns true when the machine's pending job marker still refers to a live, un-started job assigned to that machine.
     /// </summary>
     public static Task<bool> HasLivePendingJobAsync(this IQueryable<Job> jobs, ClientDataStore? machine)

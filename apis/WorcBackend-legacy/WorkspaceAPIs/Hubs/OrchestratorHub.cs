@@ -427,9 +427,7 @@ public class OrchestratorHub : Hub
             await _workspaceInternalDbContext.SaveChangesAsync();
 
             // Reserve the machine before dispatch so a concurrent selection sees the pending job.
-            clientDataStore.LastSeen = DateTimeOffset.UtcNow;
-            clientDataStore.AgentId = agentId;
-            clientDataStore.JobId = job.Id;
+            MachineReservationHelpers.Reserve(clientDataStore, job.Id, agentId);
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
             // Trigger the agent execution on the assigned machine
@@ -464,8 +462,7 @@ public class OrchestratorHub : Hub
     // Releases a machine reservation taken before dispatch when the run cannot proceed.
     private async Task ClearMachineReservationAsync(ClientDataStore machine)
     {
-        machine.AgentId = null;
-        machine.JobId = null;
+        MachineReservationHelpers.Release(machine);
         await _clientStatusStore.UpdateClientStatusAsync(machine);
     }
 
