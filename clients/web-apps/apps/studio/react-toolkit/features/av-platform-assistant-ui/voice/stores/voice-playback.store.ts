@@ -80,51 +80,30 @@ const releaseClipUrl = (clip: VoiceAudioClip): void => {
   resolvedUrls.delete(clip.id);
 };
 
-const collectActiveKeys = (): string[] => {
-  const keys = new Set<string>();
-  if (current) keys.add(current.key);
-  queue.forEach((clip) => keys.add(clip.key));
-  return [...keys];
-};
-
 type VoicePlaybackState = {
   /** Whether streamed replies are spoken aloud (persisted). */
   speakReplies: boolean;
   /** Whether the player is actively producing audio. */
   isPlaying: boolean;
-  /** Keys with a clip currently playing or waiting in the queue. */
-  activeKeys: string[];
-  /** Keys with an in-flight Text-to-Speech request. */
-  synthesizingKeys: string[];
-  /** Per-message clip cache so replays skip synthesis. */
-  clipCache: Record<string, VoiceAudioClip[]>;
 
   setSpeakReplies: (value: boolean) => void;
-  /** Marks a key as synthesizing (or done) for the per-message Stop control. */
-  markSynthesizing: (key: string, value: boolean) => void;
-  /** Appends clips to the FIFO queue; playback starts when idle. */
+  /** Appends clips to the FIFO queue; playback starts when the player is idle. */
   enqueue: (key: string, clips: VoiceAudioClip[]) => void;
   /** Stops playback and drops the queue without aborting the run. */
   stop: () => void;
-  /** Stops playback and clears all synthesis bookkeeping (used on teardown). */
-  reset: () => void;
-  /** Stops and drops only `key`'s clips, leaving other keys playing. */
-  stopKey: (key: string) => void;
-  cacheClips: (key: string, clips: VoiceAudioClip[]) => void;
-  getCachedClips: (key: string) => VoiceAudioClip[] | undefined;
 };
 
 export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
   const playNext = (): void => {
     if (queue.length === 0) {
       current = null;
-      set({ isPlaying: false, activeKeys: [] });
+      set({ isPlaying: false });
       return;
     }
 
     const next = queue.shift() as QueuedClip;
     current = next;
-    set({ isPlaying: true, activeKeys: collectActiveKeys() });
+    set({ isPlaying: true });
 
     const element = getAudioElement(playNext);
     element.src = resolveClipUrl(next);
@@ -133,7 +112,7 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
       // clip and advance instead of wedging the queue behind audio that cannot start.
       releaseClipUrl(next);
       current = null;
-      set({ isPlaying: false, activeKeys: collectActiveKeys() });
+      set({ isPlaying: false });
       playNext();
     });
   };
@@ -141,9 +120,6 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
   return {
     speakReplies: readSpeakRepliesPreference(),
     isPlaying: false,
-    activeKeys: [],
-    synthesizingKeys: [],
-    clipCache: {},
 
     setSpeakReplies: (value) => {
       writeSpeakRepliesPreference(value);
@@ -151,22 +127,12 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
       if (!value) get().stop();
     },
 
-    markSynthesizing: (key, value) =>
-      set((state) => ({
-        synthesizingKeys: value
-          ? state.synthesizingKeys.includes(key)
-            ? state.synthesizingKeys
-            : [...state.synthesizingKeys, key]
-          : state.synthesizingKeys.filter((existing) => existing !== key),
-      })),
-
     enqueue: (key, clips) => {
       if (clips.length === 0) return;
       // IMPORTANT NOTE: a live synthesis task can resolve just after a mute, so live
       // clips must never (re)start playback unless replies are still unmuted.
       if (key === LIVE_SPEECH_KEY && !get().speakReplies) return;
       queue.push(...clips.map((clip) => ({ ...clip, key })));
-      set({ activeKeys: collectActiveKeys() });
       if (current === null) playNext();
     },
 
@@ -179,45 +145,7 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
         audioElement.load();
       }
       releaseResolvedUrls();
-      set({ isPlaying: false, activeKeys: [] });
+      set({ isPlaying: false });
     },
-
-    reset: () => {
-      get().stop();
-      set({ synthesizingKeys: [] });
-    },
-
-    stopKey: (key) => {
-      const removed = queue.filter((clip) => clip.key === key);
-      queue = queue.filter((clip) => clip.key !== key);
-
-      if (current && current.key === key) {
-        removed.push(current);
-        current = null;
-        if (audioElement) {
-          audioElement.pause();
-          audioElement.removeAttribute("src");
-          audioElement.load();
-        }
-      }
-      removed.forEach(releaseClipUrl);
-
-      if (current === null && queue.length === 0) {
-        set({ isPlaying: false, activeKeys: [] });
-        return;
-      }
-      if (current === null) {
-        playNext();
-        return;
-      }
-      set({ activeKeys: collectActiveKeys() });
-    },
-
-    cacheClips: (key, clips) => {
-      if (clips.length === 0) return;
-      set((state) => ({ clipCache: { ...state.clipCache, [key]: clips } }));
-    },
-
-    getCachedClips: (key) => get().clipCache[key],
   };
 });

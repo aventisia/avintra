@@ -177,7 +177,7 @@ const RuntimeWrapper = ({
     stt: sttConfig,
     tts: ttsConfig,
     voice: voiceConfig,
-    isConfigured: isVoiceConfigured,
+    isTextToSpeechConfigured,
   } = useChatAgentVoiceConfig();
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const refId = currentFlow?.id ?? "";
@@ -187,7 +187,7 @@ const RuntimeWrapper = ({
   const assistantVoice = useAssistantVoice({
     ttsConfig,
     voiceConfig,
-    isConfigured: isVoiceConfigured,
+    isTextToSpeechConfigured,
     refId,
     refName,
     agentName,
@@ -313,11 +313,7 @@ const RuntimeWrapper = ({
     () => ({
       speakReplies: assistantVoice.speakReplies,
       isPlaying: assistantVoice.isPlaying,
-      activeKeys: assistantVoice.activeKeys,
-      synthesizingKeys: assistantVoice.synthesizingKeys,
-      isLiveSpeaking: assistantVoice.isLiveSpeaking,
       setSpeakReplies: assistantVoice.setSpeakReplies,
-      toggleMessageSpeech: assistantVoice.toggleMessageSpeech,
       sttConfig,
       ttsConfig,
       language: voiceConfig?.language ?? null,
@@ -328,11 +324,7 @@ const RuntimeWrapper = ({
     [
       assistantVoice.speakReplies,
       assistantVoice.isPlaying,
-      assistantVoice.activeKeys,
-      assistantVoice.synthesizingKeys,
-      assistantVoice.isLiveSpeaking,
       assistantVoice.setSpeakReplies,
-      assistantVoice.toggleMessageSpeech,
       sttConfig,
       ttsConfig,
       voiceConfig?.language,

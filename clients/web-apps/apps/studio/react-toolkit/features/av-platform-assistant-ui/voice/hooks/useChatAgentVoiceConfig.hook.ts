@@ -16,8 +16,8 @@ export type ChatAgentVoiceConfig = {
   tts: ModelConfigType | null;
   /** Voice settings (language/voice/speed), or null when not configured. */
   voice: VoiceConfigType | null;
-  /** True when both speech models are configured and voice controls can run. */
-  isConfigured: boolean;
+  /** True when a Text-to-Speech model is configured, so replies can be spoken. */
+  isTextToSpeechConfigured: boolean;
 };
 
 /** Reads the Chat AI node's voice configuration from the current flow graph. */
@@ -30,7 +30,8 @@ export const useChatAgentVoiceConfig = (): ChatAgentVoiceConfig => {
         node.type === "aiNode" &&
         (node.data as NodeDataType | undefined)?.name === CHAT_AGENT_NODE_NAME,
     );
-    const inputs: NodeInputType[] = (chatNode?.data as NodeDataType | undefined)?.inputs ?? [];
+    const nodeData = chatNode?.data as NodeDataType | undefined;
+    const inputs: NodeInputType[] = nodeData?.inputs ?? [];
     const findValue = (key: string): unknown => inputs.find((input) => input.key === key)?.value;
 
     const stt = (findValue(STT_INPUT_KEY) as ModelConfigType | undefined) ?? null;
@@ -41,7 +42,7 @@ export const useChatAgentVoiceConfig = (): ChatAgentVoiceConfig => {
       stt,
       tts,
       voice,
-      isConfigured: Boolean(stt?.model) && Boolean(tts?.model),
+      isTextToSpeechConfigured: Boolean(tts?.model),
     };
   }, [nodes]);
 };

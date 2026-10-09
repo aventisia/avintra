@@ -39,7 +39,6 @@ import {
   Mic,
   MoreHorizontalIcon,
   PencilIcon,
-  PlayIcon,
   Plus,
   RefreshCwIcon,
   SparklesIcon,
@@ -516,9 +515,10 @@ const ChainOfThought: FC<{
     .map((index) => parts[index])
     .filter((part): part is PartState => Boolean(part));
 
-  // IMPORTANT NOTE: the group object exposes no per-status counts, so the incomplete
-  // warning state must be derived from the group's own parts.
-  const isRunning = status.type === "running";
+  // IMPORTANT NOTE: the group object exposes no per-status counts, so the running and
+  // incomplete state must be derived from the group's own parts.
+  const isRunning =
+    status.type === "running" || groupParts.some((part) => part.status.type === "running");
   const isOpen = isRunning || open;
   const toolCount = groupParts.filter((part) => part.type === "tool-call").length;
   const hasReasoning = groupParts.some((part) => part.type === "reasoning");
@@ -676,50 +676,12 @@ const AssistantMessage: FC = () => {
 };
 
 const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
-  const voice = useAssistantVoiceContext();
-  const messageId = useAuiState((s) => s.message.id);
-  const messageText = useAuiState((s) =>
-    s.message.content
-      .map((part) => (part.type === "text" ? part.text : ""))
-      .join("\n")
-      .trim(),
-  );
-
-  const isLast = useAuiState((s) => s.message.isLast);
-  const isMuted = Boolean(voice && !voice.speakReplies);
-  const isLiveTarget = Boolean(voice?.isLiveSpeaking && isLast);
-  const isSpeaking = Boolean(
-    voice &&
-    (isLiveTarget ||
-      voice.activeKeys.includes(messageId) ||
-      voice.synthesizingKeys.includes(messageId)),
-  );
-  const disabledReason = isMuted ? "Audio is muted. Unmute to play." : null;
-  const speakTooltip = disabledReason ?? (isSpeaking ? "Stop" : "Read aloud");
-
   return (
     <ActionBarPrimitive.Root
       hideWhenRunning
       autohide="not-last"
       className="aui-assistant-action-bar-root col-start-3 row-start-2 -ml-1 flex gap-1 text-muted-foreground"
     >
-      {voice && messageText.length > 0 && (
-        <TooltipIconButton
-          tooltip={speakTooltip}
-          className="aui-assistant-action-bar-speak data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
-          aria-label={speakTooltip}
-          aria-pressed={isSpeaking && !isMuted}
-          aria-disabled={isMuted}
-          data-disabled={isMuted ? "true" : undefined}
-          onClick={() => {
-            if (isMuted) return;
-            voice.toggleMessageSpeech(messageId, messageText, isLiveTarget);
-          }}
-        >
-          {isSpeaking && !isMuted ? <SquareIcon /> : <PlayIcon />}
-        </TooltipIconButton>
-      )}
-
       <ActionBarPrimitive.Copy asChild>
         <TooltipIconButton tooltip="Copy">
           <AuiIf condition={(s) => s.message.isCopied}>
