@@ -81,10 +81,8 @@ public interface IToolService
     /// Deletes the specified tools.
     /// </summary>
     /// <param name="toolIds">The identifiers of the tools to delete.</param>
-    /// <returns>
-    /// <c>true</c> if the tools were deleted successfully; otherwise, <c>false</c>.
-    /// </returns>
-    Task<ServiceResponse<bool>> DeleteToolsAsync(List<Guid> toolIds);
+    /// <returns>The number of tools deleted.</returns>
+    Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds);
 
     /// <summary>
     /// Tests a tool operation.

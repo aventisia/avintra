@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using JsonException = System.Text.Json.JsonException;
 using WorkspaceAPIs.Features.CloudConnectors;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
@@ -29,22 +28,19 @@ public class CustomToolConnectorService : ICustomToolConnectorService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly Guid _currentUserId;
 
     public CustomToolConnectorService(
         ILogger<CustomToolConnectorService> logger,
         IUnitOfWork unitOfWork,
         IHttpClientFactory httpClientFactory,
         ICloudConnectorsVaultService cloudConnectorsVaultService,
-        ICurrentTenantService currentTenantService,
-        IHttpContextAccessor httpContextAccessor)
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _httpClientFactory = httpClientFactory;
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
         _currentTenantService = currentTenantService;
-        _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
     public async Task<ServiceResponse<CloudConnectorResDto>> InvokeAsync(CloudConnectorReqDto request)
@@ -65,18 +61,11 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             // Step 1: Resolve the tool from the "{toolName}.{operationId}" action.
             // Names may contain dots, so every split candidate is tried until one
             // matches a real custom tool (legacy "{toolId}.{operationId}" included).
-            var candidates = CustomToolActionHelpers.SplitActionCandidates(request.Action).ToList();
-            if (candidates.Count == 0)
-            {
-                serviceResponse.Message = $"Invalid action '{request.Action}'. Expected the '{{toolName}}.{{operationId}}' format.";
-                return serviceResponse;
-            }
-
             var (tool, operationId) = await CustomToolActionHelpers.ResolveToolAsync(
                 _unitOfWork.ToolRepo, _currentTenantService, request.Action);
             if (tool is null)
             {
-                serviceResponse.Message = $"Custom tool '{candidates[0].ToolName}' was not found.";
+                serviceResponse.Message = $"Custom tool for action '{request.Action}' was not found.";
                 return serviceResponse;
             }
 
@@ -122,7 +111,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse;
             }
 
-            if (!IsPublicHost(baseUri))
+            if (!await IsPublicHostAsync(baseUri))
             {
                 serviceResponse.Message = $"Custom tool '{tool.Name}' has a base URL that resolves to a non-public address.";
                 return serviceResponse;
@@ -593,8 +582,10 @@ public class CustomToolConnectorService : ICustomToolConnectorService
     /// <summary>
     /// Indicates whether a URL's host is a public address, blocking loopback,
     /// private, link-local and unique-local targets (and their DNS results).
+    /// Hostname resolution is bounded by <see cref="RequestTimeout"/> so a slow or
+    /// unresponsive DNS resolver cannot block the invoke indefinitely.
     /// </summary>
-    private static bool IsPublicHost(Uri uri)
+    private static async Task<bool> IsPublicHostAsync(Uri uri)
     {
         if (uri.IsLoopback)
         {
@@ -607,12 +598,17 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             return IsPublicAddress(literal);
         }
 
+        using var dnsCancellationTokenSource = new CancellationTokenSource(RequestTimeout);
         try
         {
-            var addresses = Dns.GetHostAddresses(host);
+            var addresses = await Dns.GetHostAddressesAsync(host, dnsCancellationTokenSource.Token);
             return addresses.Length > 0 && addresses.All(IsPublicAddress);
         }
         catch (SocketException)
+        {
+            return false;
+        }
+        catch (OperationCanceledException)
         {
             return false;
         }

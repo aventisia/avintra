@@ -66,10 +66,11 @@ export const deleteTool = (id: string) => {
 
 /**
  * Deletes multiple tools by their identifiers.
+ * The backend returns the number of tools actually deleted.
  */
 export const deleteTools = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
