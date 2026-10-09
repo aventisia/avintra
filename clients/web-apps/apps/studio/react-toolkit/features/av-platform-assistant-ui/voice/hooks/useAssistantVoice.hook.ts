@@ -52,6 +52,7 @@ export const useAssistantVoice = ({
   const synthesizingKeys = useVoicePlaybackStore((state) => state.synthesizingKeys);
   const setSpeakReplies = useVoicePlaybackStore((state) => state.setSpeakReplies);
   const stop = useVoicePlaybackStore((state) => state.stop);
+  const reset = useVoicePlaybackStore((state) => state.reset);
   const isLiveSpeaking =
     activeKeys.includes(LIVE_SPEECH_KEY) || synthesizingKeys.includes(LIVE_SPEECH_KEY);
 
@@ -83,6 +84,7 @@ export const useAssistantVoice = ({
   // late-resolving response cannot restart playback after a Stop/mute.
   const abortRef = useRef<Map<string, AbortController>>(new Map());
   const epochRef = useRef<Map<string, number>>(new Map());
+  const disposedRef = useRef(false);
 
   const synthesizeChunk = useCallback(
     async (text: string, signal?: AbortSignal): Promise<VoiceAudioClip | null> => {
@@ -154,13 +156,13 @@ export const useAssistantVoice = ({
       chainRef.current = chainRef.current
         .then(task)
         .catch((error: unknown) => {
-          // An abort is an intentional Stop/mute, not a synthesis failure.
-          if (signal?.aborted || getEpoch(key) !== epoch) return;
+          // An abort or unmount is intentional, not a synthesis failure.
+          if (disposedRef.current || signal?.aborted || getEpoch(key) !== epoch) return;
           console.error("Chat agent voice synthesis failed:", error);
           toast.error("Could not generate speech for this reply.");
         })
         .finally(() => {
-          if (getEpoch(key) !== epoch) return;
+          if (disposedRef.current || getEpoch(key) !== epoch) return;
           abortRef.current.delete(key);
           useVoicePlaybackStore.getState().markSynthesizing(key, false);
         });
@@ -195,6 +197,7 @@ export const useAssistantVoice = ({
   /** Adapter callback: turns streamed reply deltas into queued speech. */
   const onTextDelta = useCallback(
     (delta: string) => {
+      if (disposedRef.current) return;
       const config = configRef.current;
       if (!config.speakReplies || !config.isConfigured) return;
       queueSpeech(LIVE_SPEECH_KEY, chunkerRef.current.push(delta), getSignal(LIVE_SPEECH_KEY));
@@ -204,6 +207,7 @@ export const useAssistantVoice = ({
 
   /** Adapter callback: flushes the trailing sentence when a run settles. */
   const onRunFinished = useCallback(() => {
+    if (disposedRef.current) return;
     const remaining = chunkerRef.current.flush();
     const config = configRef.current;
     if (config.speakReplies && config.isConfigured && remaining.length > 0) {
@@ -292,14 +296,20 @@ export const useAssistantVoice = ({
   }, [isConfigured, stop]);
 
   // Release in-flight synthesis and playback when the controller unmounts.
-  useEffect(
-    () => () => {
-      abortRef.current.forEach((controller) => controller.abort());
-      abortRef.current.clear();
-      stop();
-    },
-    [stop],
-  );
+  useEffect(() => {
+    disposedRef.current = false;
+    const abortControllers = abortRef.current;
+    const epochs = epochRef.current;
+    const chunker = chunkerRef.current;
+    return () => {
+      disposedRef.current = true;
+      abortControllers.forEach((controller) => controller.abort());
+      abortControllers.clear();
+      epochs.clear();
+      chunker.reset();
+      reset();
+    };
+  }, [reset]);
 
   return {
     speakReplies,
