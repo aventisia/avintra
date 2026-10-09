@@ -5,8 +5,8 @@ import { STTRequestDto } from "@/features/dynamic-config-panel/dtos/stt-model-dt
 import { ModelConfigType } from "@/types/model-config-type";
 
 import { transcribeSpeechToText } from "../apis/voice-apis";
+import { resolveMissingSpeechConfigReason } from "../utils/voice-controls.util";
 
-/** Preferred recorder MIME types, in priority order. */
 const PREFERRED_RECORDER_MIME_TYPES = [
   "audio/webm;codecs=opus",
   "audio/webm",
@@ -15,13 +15,11 @@ const PREFERRED_RECORDER_MIME_TYPES = [
   "audio/mp4",
 ];
 
-/** Returns the first recorder MIME type the current browser supports. */
 const resolveRecorderMimeType = (): string | undefined => {
   if (typeof MediaRecorder === "undefined") return undefined;
   return PREFERRED_RECORDER_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
 };
 
-/** Reads a Blob into a base64 data URL, as required by the STT request. */
 const blobToDataUrl = (blob: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -31,23 +29,17 @@ const blobToDataUrl = (blob: Blob): Promise<string> =>
   });
 
 type UseVoiceRecorderParams = {
-  /** STT model config; recording is unavailable without it. */
   sttConfig: ModelConfigType | null;
-  /** Envelope fields shared with the chat execution request. */
   refId: string;
   refName: string;
   agentName?: string | null;
-  /** Language hint forwarded to the STT provider (BCP-47), if any. */
   language?: string | null;
-  /** Receives the final transcript when transcription succeeds. */
   onTranscript: (text: string) => void;
 };
 
 /**
  * Records microphone audio with MediaRecorder, transcribes it through the
  * llmpipeline STT endpoint, and hands the transcript back to the caller.
- * Failures (permission denied, unsupported browser, STT error) are surfaced via
- * toast and leave the rest of the chat untouched.
  */
 export const useVoiceRecorder = ({
   sttConfig,
@@ -59,7 +51,6 @@ export const useVoiceRecorder = ({
 }: UseVoiceRecorderParams) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  /** Elapsed recording time in whole seconds, shown next to the mic while recording. */
   const [recordingSeconds, setRecordingSeconds] = useState(0);
 
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -67,7 +58,6 @@ export const useVoiceRecorder = ({
   const chunksRef = useRef<Blob[]>([]);
   const isMountedRef = useRef(true);
 
-  // Keep the latest transcript handler without re-creating the recorder.
   const onTranscriptRef = useRef(onTranscript);
   onTranscriptRef.current = onTranscript;
 
@@ -112,7 +102,6 @@ export const useVoiceRecorder = ({
     [sttConfig, refId, refName, agentName, language],
   );
 
-  // Keep the recorder's onstop handler pointing at the latest transcribe callback.
   const transcribeRef = useRef(transcribe);
   transcribeRef.current = transcribe;
 
@@ -174,8 +163,8 @@ export const useVoiceRecorder = ({
     if (recorder && recorder.state !== "inactive") recorder.stop();
   }, []);
 
-  // Tick an elapsed-time counter while recording (400 ms keeps the seconds
-  // boundary close without re-rendering every frame).
+  // IMPORTANT NOTE: 400 ms keeps the displayed seconds boundary close without
+  // re-rendering every frame.
   useEffect(() => {
     if (!isRecording) {
       setRecordingSeconds(0);
@@ -189,24 +178,10 @@ export const useVoiceRecorder = ({
     return () => window.clearInterval(interval);
   }, [isRecording]);
 
-  // Derive the mic control's tooltip and disabled state from the required
-  // configuration: a model is always needed; a credential only when the agent
-  // runs BYOK (the ChatAgent voice config does).
-  const missingModel = !sttConfig?.model?.trim();
-  const missingCredential =
-    Boolean(sttConfig?.is_byok_enabled) && !sttConfig?.credential_name?.trim();
-
   const disabledReason = !isSupported
     ? "Microphone recording is not supported in this browser."
-    : missingModel && missingCredential
-      ? "Select a Speech to Text model and credential to start recording."
-      : missingModel
-        ? "Select a Speech to Text model to start recording."
-        : missingCredential
-          ? "Select a credential for Speech to Text to start recording."
-          : isTranscribing
-            ? "Transcribing your recording\u2026"
-            : null;
+    : (resolveMissingSpeechConfigReason(sttConfig, "recording") ??
+      (isTranscribing ? "Transcribing your recording\u2026" : null));
 
   const isMicDisabled = disabledReason !== null;
   const micTooltip = isMicDisabled
@@ -216,7 +191,6 @@ export const useVoiceRecorder = ({
       : "Start voice recording";
 
   const toggleRecording = useCallback(() => {
-    // Refuse while unconfigured or transcribing; the tooltip explains why.
     if (isMicDisabled) return;
     if (isRecording) stopRecording();
     else void startRecording();
@@ -226,7 +200,6 @@ export const useVoiceRecorder = ({
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      // Release the mic and discard any in-flight recording on unmount.
       const recorder = recorderRef.current;
       if (recorder && recorder.state !== "inactive") recorder.stop();
       streamRef.current?.getTracks().forEach((track) => track.stop());

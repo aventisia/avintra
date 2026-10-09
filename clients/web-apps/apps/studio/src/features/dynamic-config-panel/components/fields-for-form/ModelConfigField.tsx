@@ -28,12 +28,7 @@ interface ModelConfigFieldProps {
   name: string;
   /** If true, show the JSON output toggle in the model settings. */
   showJsonOutput?: boolean;
-  /**
-   * Forces the model list to a speech specialty (tenant-enabled models)
-   * regardless of the node name or BYOK state.
-   */
   specialty?: "stt" | "tts";
-  /** Hides the "Bring your own API key" switch. */
   hideByok?: boolean;
 }
 
@@ -67,13 +62,9 @@ const ModelConfigField = ({
   const { control, setValue, getValues, watch } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
 
-  // Resolve the active specialty from the explicit prop or the node name so the
-  // same component can drive standalone STT/TTS nodes and the ChatAgent's voice
-  // sub-configs.
   const isStt = specialty === "stt" || nodeKey === "SpeechToText";
   const isTts = specialty === "tts" || nodeKey === "TextToSpeech";
   const isEmbedding = nodeKey === "Embedding";
-  // Specialty-flagged speech sub-configs use tenant-enabled models.
   const isSpeechSpecialty = specialty === "stt" || specialty === "tts";
 
   // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
@@ -354,8 +345,7 @@ const ModelConfigField = ({
 
     // STT / TTS / tenant-config-based providers (e.g. Ollama On-prem) do not fetch
     // models dynamically via a credential, so the model dropdown must show the models
-    // that were ENABLED for that provider in the tenant config. Specialty-flagged
-    // sub-configs use tenant models regardless of BYOK.
+    // that were ENABLED for that provider in the tenant config.
     if (
       isSpeechSpecialty ||
       (is_byok_enabled && (isStt || isTts || TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue)))
@@ -387,8 +377,6 @@ const ModelConfigField = ({
     enabledConfigByProvider,
   ]);
 
-  // Voice sub-configs are tenant-gated: warn when the tenant has no speech
-  // models enabled for the provider instead of showing an empty picker.
   const hasEnabledSpeechModels = useMemo(() => {
     if (!isSpeechSpecialty) return true;
     const enabledIds = enabledConfigByProvider[providerValue]?.enabledModelIds ?? [];
@@ -458,9 +446,6 @@ const ModelConfigField = ({
     </>
   );
 
-  // Speech model configs render inside a titled group box. Text-to-speech also
-  // renders its sibling voice settings (language/voice/speed) inline so the
-  // whole sub-config shares one box.
   const groupName = isStt ? "Speech to Text" : isTts ? "Text to Speech" : undefined;
   const showInlineVoiceConfig = isTts;
   const voiceConfigName = name.replace("__ModelConfig__", "__VoiceConfig__");

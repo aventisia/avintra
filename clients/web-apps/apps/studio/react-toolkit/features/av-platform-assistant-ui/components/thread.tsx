@@ -54,6 +54,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
 import { useVoiceRecorder } from "../voice/hooks/useVoiceRecorder.hook";
+import { resolveMissingSpeechConfigReason } from "../voice/utils/voice-controls.util";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
@@ -199,40 +200,19 @@ const ThreadHeader = ({
   );
 };
 
-/**
- * Enter inside the composer must always send the message. Composer buttons
- * other than the send button (mic, speaker) are kept non-submit and must not
- * swallow Enter as their own activation — otherwise pressing Enter while the
- * mic is focused restarts the recording instead of submitting.
- */
+// IMPORTANT NOTE: composer buttons other than send are non-submit, so Enter while the
+// mic or speaker is focused would trigger that button instead of sending; force submit.
 const submitComposerOnEnter = (event: KeyboardEvent<HTMLButtonElement>) => {
   if (event.key !== "Enter") return;
   event.preventDefault();
   event.currentTarget.closest("form")?.requestSubmit();
 };
 
-/**
- * Composer toggle for spoken replies. Turning it off mutes playback without
- * aborting the run. It stays hoverable while unconfigured (aria-disabled, not
- * the native `disabled`) so the tooltip can explain what is missing.
- */
 const SpeakerToggle: FC = () => {
   const voice = useAssistantVoiceContext();
   if (!voice) return null;
 
-  const missingModel = !voice.ttsConfig?.model?.trim();
-  const missingCredential =
-    Boolean(voice.ttsConfig?.is_byok_enabled) && !voice.ttsConfig?.credential_name?.trim();
-
-  const disabledReason =
-    missingModel && missingCredential
-      ? "Select a Text to Speech model and credential to hear replies."
-      : missingModel
-        ? "Select a Text to Speech model to hear replies."
-        : missingCredential
-          ? "Select a credential for Text to Speech to hear replies."
-          : null;
-
+  const disabledReason = resolveMissingSpeechConfigReason(voice.ttsConfig, "replies");
   const isDisabled = disabledReason !== null;
   const label = voice.speakReplies ? "Mute spoken replies" : "Speak replies";
   const tooltip = disabledReason ?? label;
@@ -369,7 +349,6 @@ const Composer: FC = () => {
   );
 };
 
-/** Formats an elapsed second count as `m:ss` for the recording indicator. */
 const formatRecordingTime = (totalSeconds: number): string => {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -383,7 +362,6 @@ const ComposerAction: FC = () => {
   const aui = useAui();
   const voice = useAssistantVoiceContext();
 
-  // Append the transcript to whatever the user has already typed.
   const handleTranscript = useCallback(
     (text: string) => {
       const existing = aui.composer.getState().text;
@@ -412,9 +390,9 @@ const ComposerAction: FC = () => {
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
       <div className="flex items-center gap-1">
         <ComposerAddAttachment />
-        {/* Keep the mic hoverable while unconfigured: use aria-disabled (not the native
-            `disabled`, which applies pointer-events-none) so the tooltip can explain what
-            is missing. The click is ignored inside `toggleRecording`. */}
+        {/* IMPORTANT NOTE: aria-disabled (not native `disabled`, which is pointer-events-none)
+            keeps the mic hoverable so its tooltip can explain what is missing; the click is
+            ignored inside `toggleRecording`. */}
         {voice && (
           <>
             <TooltipIconButton
@@ -538,9 +516,8 @@ const ChainOfThought: FC<{
     .map((index) => parts[index])
     .filter((part): part is PartState => Boolean(part));
 
-  // The library reports a group as `running` while any contained part streams;
-  // compute the warning state from the parts themselves since the group object
-  // exposes no per-status counts.
+  // IMPORTANT NOTE: the group object exposes no per-status counts, so the incomplete
+  // warning state must be derived from the group's own parts.
   const isRunning = status.type === "running";
   const isOpen = isRunning || open;
   const toolCount = groupParts.filter((part) => part.type === "tool-call").length;
@@ -701,7 +678,6 @@ const AssistantMessage: FC = () => {
 const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
   const voice = useAssistantVoiceContext();
   const messageId = useAuiState((s) => s.message.id);
-  // Only answer text is spoken; reasoning/thinking parts stay silent.
   const messageText = useAuiState((s) =>
     s.message.content
       .map((part) => (part.type === "text" ? part.text : ""))
@@ -709,9 +685,6 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
       .trim(),
   );
 
-  // The button is a Play/Stop toggle. It reflects both explicit per-message
-  // playback and the live stream (which speaks the last reply), and it is
-  // disabled while spoken replies are muted.
   const isLast = useAuiState((s) => s.message.isLast);
   const isMuted = Boolean(voice && !voice.speakReplies);
   const isLiveTarget = Boolean(voice?.isLiveSpeaking && isLast);

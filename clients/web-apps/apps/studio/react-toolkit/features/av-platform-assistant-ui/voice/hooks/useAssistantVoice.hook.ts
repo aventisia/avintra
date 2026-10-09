@@ -13,29 +13,18 @@ import {
 import { createStreamingSpeechChunker, splitIntoSpeechChunks } from "../utils/text-chunker.util";
 
 type UseAssistantVoiceParams = {
-  /** Text-to-Speech model config, or null when not configured. */
   ttsConfig: ModelConfigType | null;
-  /** Voice settings applied to every synthesis request. */
   voiceConfig: VoiceConfigType | null;
-  /** True when the agent has both speech models configured. */
   isConfigured: boolean;
-  /** Envelope fields shared with the chat execution request. */
   refId: string;
   refName: string;
   agentName?: string | null;
 };
 
-/** Extracts the MIME type from a data URL, defaulting to ElevenLabs MP3. */
 const resolveAudioMimeType = (audio: string): string =>
   /^data:([^;,]+)/.exec(audio)?.[1] ?? "audio/mpeg";
 
-/**
- * Orchestrates spoken replies for the Studio ChatAgent test panel.
- *
- * It exposes the adapter callbacks (`onTextDelta`/`onRunFinished`) that stream
- * reply text into sentence-sized TTS requests, plus a per-message play/pause
- * toggle backed by the shared FIFO player in `voice-playback.store`.
- */
+/** Drives spoken replies and per-message playback for the Studio ChatAgent test panel. */
 export const useAssistantVoice = ({
   ttsConfig,
   voiceConfig,
@@ -46,8 +35,6 @@ export const useAssistantVoice = ({
 }: UseAssistantVoiceParams) => {
   const speakReplies = useVoicePlaybackStore((state) => state.speakReplies);
   const isPlaying = useVoicePlaybackStore((state) => state.isPlaying);
-  const isSynthesizing = useVoicePlaybackStore((state) => state.isSynthesizing);
-  const activeKey = useVoicePlaybackStore((state) => state.activeKey);
   const activeKeys = useVoicePlaybackStore((state) => state.activeKeys);
   const synthesizingKeys = useVoicePlaybackStore((state) => state.synthesizingKeys);
   const setSpeakReplies = useVoicePlaybackStore((state) => state.setSpeakReplies);
@@ -56,7 +43,6 @@ export const useAssistantVoice = ({
   const isLiveSpeaking =
     activeKeys.includes(LIVE_SPEECH_KEY) || synthesizingKeys.includes(LIVE_SPEECH_KEY);
 
-  // Latest config for the stable callbacks handed to the chat adapter.
   const configRef = useRef({
     ttsConfig,
     voiceConfig,
@@ -77,13 +63,10 @@ export const useAssistantVoice = ({
   };
 
   const chunkerRef = useRef(createStreamingSpeechChunker());
-  // Serializes synthesis requests so clips enqueue in their original order.
   const chainRef = useRef<Promise<void>>(Promise.resolve());
-  // Per-key synthesis controls. Aborting a key cancels its in-flight request;
-  // bumping its epoch invalidates anything already scheduled for that key so a
-  // late-resolving response cannot restart playback after a Stop/mute.
   const abortRef = useRef<Map<string, AbortController>>(new Map());
   const epochRef = useRef<Map<string, number>>(new Map());
+  const pendingRef = useRef<Map<string, number>>(new Map());
   const disposedRef = useRef(false);
 
   const synthesizeChunk = useCallback(
@@ -119,10 +102,8 @@ export const useAssistantVoice = ({
     [],
   );
 
-  /** Reads a key's current invalidation epoch. */
   const getEpoch = useCallback((key: string): number => epochRef.current.get(key) ?? 0, []);
 
-  /** Returns (creating if needed) the abort signal guarding a key's synthesis. */
   const getSignal = useCallback((key: string): AbortSignal => {
     let controller = abortRef.current.get(key);
     if (!controller) {
@@ -132,36 +113,37 @@ export const useAssistantVoice = ({
     return controller.signal;
   }, []);
 
-  /**
-   * Cancels a key's in-flight request and invalidates anything already
-   * scheduled for it, so a late response cannot restart playback.
-   */
   const abortKey = useCallback(
     (key: string) => {
       abortRef.current.get(key)?.abort();
       abortRef.current.delete(key);
+      pendingRef.current.delete(key);
       epochRef.current.set(key, getEpoch(key) + 1);
       useVoicePlaybackStore.getState().markSynthesizing(key, false);
     },
     [getEpoch],
   );
 
-  /** Runs a synthesis task after any in-flight ones, tracking the busy state. */
   const trackSynthesis = useCallback(
     (key: string, task: () => Promise<void>, signal?: AbortSignal) => {
-      // Capture the epoch so a Stop can invalidate this task's bookkeeping.
       const epoch = getEpoch(key);
+      pendingRef.current.set(key, (pendingRef.current.get(key) ?? 0) + 1);
       useVoicePlaybackStore.getState().markSynthesizing(key, true);
 
       chainRef.current = chainRef.current
         .then(task)
         .catch((error: unknown) => {
-          // An abort or unmount is intentional, not a synthesis failure.
           if (disposedRef.current || signal?.aborted || getEpoch(key) !== epoch) return;
           console.error("Chat agent voice synthesis failed:", error);
           toast.error("Could not generate speech for this reply.");
         })
         .finally(() => {
+          const pending = (pendingRef.current.get(key) ?? 1) - 1;
+          if (pending > 0) {
+            pendingRef.current.set(key, pending);
+            return;
+          }
+          pendingRef.current.delete(key);
           if (disposedRef.current || getEpoch(key) !== epoch) return;
           abortRef.current.delete(key);
           useVoicePlaybackStore.getState().markSynthesizing(key, false);
@@ -170,7 +152,6 @@ export const useAssistantVoice = ({
     [getEpoch],
   );
 
-  /** Synthesizes each text in order and enqueues the resulting clips. */
   const queueSpeech = useCallback(
     (key: string, texts: string[], signal?: AbortSignal) => {
       if (texts.length === 0) return;
@@ -179,12 +160,10 @@ export const useAssistantVoice = ({
         async () => {
           const clips: VoiceAudioClip[] = [];
           for (const text of texts) {
-            // Stop before issuing the next request once cancelled.
             if (signal?.aborted) break;
             const clip = await synthesizeChunk(text, signal);
             if (clip) clips.push(clip);
           }
-          // Drop the batch entirely if the user cancelled mid-synthesis.
           if (signal?.aborted || clips.length === 0) return;
           useVoicePlaybackStore.getState().enqueue(key, clips);
         },
@@ -194,7 +173,6 @@ export const useAssistantVoice = ({
     [synthesizeChunk, trackSynthesis],
   );
 
-  /** Adapter callback: turns streamed reply deltas into queued speech. */
   const onTextDelta = useCallback(
     (delta: string) => {
       if (disposedRef.current) return;
@@ -205,7 +183,6 @@ export const useAssistantVoice = ({
     [queueSpeech, getSignal],
   );
 
-  /** Adapter callback: flushes the trailing sentence when a run settles. */
   const onRunFinished = useCallback(() => {
     if (disposedRef.current) return;
     const remaining = chunkerRef.current.flush();
@@ -215,11 +192,6 @@ export const useAssistantVoice = ({
     }
   }, [queueSpeech, getSignal]);
 
-  /**
-   * Per-message Play/Stop. Starts synthesis (or replays cached clips) when the
-   * message is idle; when it is synthesizing or playing, cancels the request,
-   * drops its queued clips and halts playback.
-   */
   const toggleMessageSpeech = useCallback(
     (key: string, text: string, stopLive = false) => {
       const store = useVoicePlaybackStore.getState();
@@ -229,8 +201,6 @@ export const useAssistantVoice = ({
       if (isBusy) {
         abortKey(key);
         store.stopKey(key);
-        // The live stream is speaking the last reply: cancel it too so no
-        // further chunks are synthesized or played until Play is pressed again.
         if (stopLive) {
           abortKey(LIVE_SPEECH_KEY);
           store.stopKey(LIVE_SPEECH_KEY);
@@ -268,21 +238,13 @@ export const useAssistantVoice = ({
     [abortKey, getSignal, synthesizeChunk, trackSynthesis],
   );
 
-  /** Aborts the live stream's synthesis and drops its buffered text on mute. */
   const abortLiveSynthesis = useCallback(() => {
     abortKey(LIVE_SPEECH_KEY);
     chunkerRef.current.reset();
   }, [abortKey]);
 
-  /**
-   * Toggles the persisted "Speak replies" preference. Muting aborts any
-   * in-flight TTS requests and playback immediately; unmuting lets subsequent
-   * stream deltas be spoken again.
-   */
   const handleSetSpeakReplies = useCallback(
     (value: boolean) => {
-      // Gate the stream synchronously so a delta arriving before the next
-      // render cannot schedule new speech.
       configRef.current = { ...configRef.current, speakReplies: value };
       setSpeakReplies(value);
       if (!value) abortLiveSynthesis();
@@ -290,22 +252,22 @@ export const useAssistantVoice = ({
     [setSpeakReplies, abortLiveSynthesis],
   );
 
-  // Stop playback if the voice config disappears (e.g. models cleared).
   useEffect(() => {
     if (!isConfigured) stop();
   }, [isConfigured, stop]);
 
-  // Release in-flight synthesis and playback when the controller unmounts.
   useEffect(() => {
     disposedRef.current = false;
     const abortControllers = abortRef.current;
     const epochs = epochRef.current;
+    const pending = pendingRef.current;
     const chunker = chunkerRef.current;
     return () => {
       disposedRef.current = true;
       abortControllers.forEach((controller) => controller.abort());
       abortControllers.clear();
       epochs.clear();
+      pending.clear();
       chunker.reset();
       reset();
     };
@@ -314,8 +276,6 @@ export const useAssistantVoice = ({
   return {
     speakReplies,
     isPlaying,
-    isSynthesizing,
-    activeKey,
     activeKeys,
     synthesizingKeys,
     isLiveSpeaking,

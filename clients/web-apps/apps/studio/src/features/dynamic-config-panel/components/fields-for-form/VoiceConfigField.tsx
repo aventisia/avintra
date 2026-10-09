@@ -15,10 +15,7 @@ import { voiceProviderData } from "../../constants/voice-providers";
 export interface VoiceConfigFieldProps {
   /** The base name of the form field */
   name: string;
-  /**
-   * Form path of the provider this field watches. Defaults to the standalone
-   * Text-to-Speech node so existing nodes keep working unchanged.
-   */
+  /** Form path of the provider this field watches. */
   providerPath?: string;
 }
 

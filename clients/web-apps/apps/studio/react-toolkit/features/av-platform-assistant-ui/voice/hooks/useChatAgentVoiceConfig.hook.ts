@@ -5,7 +5,6 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 
-/** Chat AI input keys that hold the voice-related configuration. */
 const STT_INPUT_KEY = "__ModelConfig__SpeechToText";
 const TTS_INPUT_KEY = "__ModelConfig__TextToSpeech";
 const VOICE_INPUT_KEY = "__VoiceConfig__TextToSpeech";
@@ -21,10 +20,7 @@ export type ChatAgentVoiceConfig = {
   isConfigured: boolean;
 };
 
-/**
- * Reads the Chat AI node's voice configuration from the current flow graph.
- * Missing keys yield nulls so the UI can disable the voice controls gracefully.
- */
+/** Reads the Chat AI node's voice configuration from the current flow graph. */
 export const useChatAgentVoiceConfig = (): ChatAgentVoiceConfig => {
   const nodes = useReactFlowExtStore((state) => state.nodes);
 

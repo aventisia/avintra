@@ -87,9 +87,6 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "tools-config-select":
       return <ToolsConfigField name={field.name} />;
     case "voice-config-select":
-      // Voice settings are rendered inline by their sibling text-to-speech
-      // model config field, inside the same group box. Skip the standalone
-      // render to avoid a duplicate section.
       return null;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
