@@ -24,6 +24,20 @@ public static class JobsAssignmentHelpers
            && executionLocation.Trim().Equals(CloudExecutionLocation, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
+    /// Returns true when the execution location marks a cloud Agent Builder run that must execute in-process.
+    /// </summary>
+    public static bool IsAgentBuilderLocation(string? executionLocation)
+        => !string.IsNullOrWhiteSpace(executionLocation)
+           && executionLocation.Trim().StartsWith("Agent Builder", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Returns true when the execution location marks a local Desktop App run handled by the runner outside the hub.
+    /// </summary>
+    public static bool IsDesktopAppLocation(string? executionLocation)
+        => !string.IsNullOrWhiteSpace(executionLocation)
+           && executionLocation.Trim().StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Returns true when the agent's <c>SupportedPlatform</c> excludes cloud execution; a null/empty value is treated as unsupported.
     /// </summary>
     public static bool IsCloudExecutionUnsupported(string? supportedPlatform)
