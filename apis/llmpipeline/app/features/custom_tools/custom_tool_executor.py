@@ -121,7 +121,6 @@ def _extract_body(parameters: dict[str, Any], request_body: dict[str, Any]) -> d
 
 
 def _extract_body_property_names(request_body: dict[str, Any]) -> list[str]:
-    # Raw OpenAPI: content -> media type -> schema -> properties (name map).
     content = request_body.get("content")
     if isinstance(content, dict):
         for media in content.values():
@@ -131,7 +130,6 @@ def _extract_body_property_names(request_body: dict[str, Any]) -> list[str]:
             if names:
                 return names
 
-    # Flattened summary: properties may sit under "schema" or on the body itself.
     for container in (request_body.get("schema"), request_body):
         names = _property_names(container)
         if names:

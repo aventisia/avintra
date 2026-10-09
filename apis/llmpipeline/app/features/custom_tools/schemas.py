@@ -13,7 +13,6 @@ class ToolOperation(BaseModel):
     parameters: list[dict[str, Any]] = Field(default_factory=list)
     request_body: dict[str, Any] | None = Field(default=None)
     response_schema: dict[str, Any] | None = Field(default=None)
-    # Per-operation verification: True only after a test call returned HTTP 200.
     is_verified: bool = Field(default=False)
 
 

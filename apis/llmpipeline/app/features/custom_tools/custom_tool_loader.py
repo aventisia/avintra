@@ -42,8 +42,6 @@ async def load_custom_tools(
         (Tool.space_id.is_(None), 1),
         else_=2,
     )
-    # Verification is tracked per operation, so unverifed tools are not filtered
-    # out here; each operation is filtered below (with a legacy tool-level fallback).
     stmt = (
         select(Tool)
         .where(Tool.tenant_id == tenant_id)
@@ -85,8 +83,6 @@ async def load_custom_tools(
             continue
 
         for operation in operations:
-            # Per-operation verification, with the tool-level flag as a legacy
-            # fallback for records saved before operation-level tracking existed.
             if not operation.is_verified and not tool.is_verified:
                 continue
 

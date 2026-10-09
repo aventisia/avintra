@@ -47,13 +47,11 @@ async def execute_tool_test(
         except json.JSONDecodeError:
             logger.warning("Failed to parse OpenAPI spec for operation resolution")
 
-    # Substitute {placeholder} path segments (e.g. /users/{id}) before the call.
     path_placeholders = path_placeholder_names(path)
     resolved_path = resolve_path_template(path, parameters or {})
 
     full_url = urljoin(base_url.rstrip("/") + "/", resolved_path.lstrip("/"))
 
-    # Resolve authentication from the credential vault when an identity is provided.
     if credential_name and access_token:
         vault_manager = VaultManager()
         credential = vault_manager.get_vault_secret_by_name(
@@ -66,8 +64,6 @@ async def execute_tool_test(
         apply_credential_auth(headers, query_params, credential)
 
     if parameters:
-        # Path placeholders were already consumed into the URL; keep the rest as
-        # query parameters (GET/DELETE) or the JSON request body.
         remaining_parameters = {
             key: value for key, value in parameters.items() if key not in path_placeholders
         }
@@ -111,4 +107,3 @@ async def execute_tool_test(
             "body": f"Error: {str(e)}",
             "duration_ms": round(elapsed, 2),
         }
-

@@ -130,8 +130,14 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 credentialQuery = auth.Query;
             }
 
-            var (requestUrl, remainingPayload) = CustomToolRequestHelpers.BuildRequestUrl(
+            var (requestUrl, remainingPayload, requestError) = CustomToolRequestHelpers.BuildRequestUrl(
                 baseUri, operation, sections, credentialQuery);
+            if (requestError is not null || requestUrl is null)
+            {
+                serviceResponse.Message = requestError ?? "The custom tool request URL could not be built.";
+                return serviceResponse;
+            }
+
             CustomToolRequestHelpers.BuildRequestHeaders(operation, sections, requestHeaders, credentialHeaders);
             var (content, contentType) = CustomToolRequestHelpers.BuildRequestContent(operation, sections, remainingPayload);
 
