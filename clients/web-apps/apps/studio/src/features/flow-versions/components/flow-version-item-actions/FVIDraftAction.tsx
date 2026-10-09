@@ -20,6 +20,8 @@ export const FVIDraftAction = ({ flowId, versionId }: FVIDraftActionProps) => {
   const { mutate: insertVersion } = useInsertFlowVersionMutation({
     flowId,
     versionId,
+    // This component guards the action below, so suppress the follow-up prompt.
+    skipUnsavedGuard: true,
   });
   const closePopover = useFlowVersionPopoverStore(useShallow((state) => state.togglePopoverOpen));
 
