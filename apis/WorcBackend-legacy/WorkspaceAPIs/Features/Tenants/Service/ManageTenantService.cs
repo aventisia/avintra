@@ -63,10 +63,6 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.AppSecretRepo, a => a.TenantId == tenantIdToBeDeleted, nameof(AppSecret), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete Vault
-            if (!await DeleteEntitiesAsync(_unitOfWork.VaultRepo, v => v.TenantId == tenantIdToBeDeleted, nameof(Vault), tenantIdToBeDeleted))
-                return serviceResponse;
-
             // Delete Job
             if (!await DeleteEntitiesAsync(_unitOfWork.JobRepo, j => j.TenantId == tenantIdToBeDeleted, nameof(Job), tenantIdToBeDeleted))
                 return serviceResponse;

@@ -34,17 +34,14 @@ public class AppSecretService : IAppSecretService
         _environmentConfig = environmentConfig;
         _corsairConfigRepository = corsairConfigRepository;
 
-        // Extract user ID from the HTTP context, if available
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _resourceShareService = resourceShareService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
 
-    // Retrieve all vault credentials
     public async Task<ServiceResponse<IEnumerable<AppSecretDto>>> GetAllAppSecretsAsync(bool isPersonal)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<AppSecretDto>>
         {
             Data = null,
@@ -57,7 +54,6 @@ public class AppSecretService : IAppSecretService
             Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
             if (isPersonal)
             {
-                // Retrieve user's personal app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(w => w.CreatedOn)
@@ -67,7 +63,6 @@ public class AppSecretService : IAppSecretService
             }
             else
             {
-                // Retrieve accessible resource ids with access levels
                 resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.AppSecret,
@@ -79,7 +74,6 @@ public class AppSecretService : IAppSecretService
                     }
                 );
 
-                // Retrieve tenant-wide and shared app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
@@ -95,13 +89,8 @@ public class AppSecretService : IAppSecretService
                     .ToListAsync();
             }
 
-            // Map the app secret entities to DTOs
             var appSecretData = appSecrets.Adapt<IEnumerable<AppSecretDto>>().ToList();
 
-            // Set the access level for each app secret:
-            // - Personal app secrets are always owned by the current user.
-            // - Shared app secrets use the access level from the resource access map,
-            //   defaulting to View when no explicit permission is found.
             appSecretData.ForEach(fe =>
             {
                 fe.AccessLevel = isPersonal
@@ -109,8 +98,6 @@ public class AppSecretService : IAppSecretService
                     : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
-            // For OAuth-capable credentials, check the Corsair sidecar connection status in
-            // parallel so the vault list can show whether consent has been completed.
             var oauthStatusTasks = appSecretData
                 .Where(dto => MapAppSecretTypeToCorsairOAuthPlugin(dto.Type) is not null)
                 .Select(async dto =>
@@ -131,25 +118,20 @@ public class AppSecretService : IAppSecretService
 
             await Task.WhenAll(oauthStatusTasks);
 
-            // Adapt the data to the DTO format and assign to service response
             serviceResponse.Data = appSecretData;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials fetched successfully.";
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during the process
             _logger.LogError(ex, "Error occurred while fetching credentials.");
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Checks the availability of a credential name.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsAppSecretNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
-        // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<TrueFalseResultDto>
         {
             Data = null,
@@ -158,7 +140,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Trim and normalize the credential name input
             var appSecretName = checkAvailabilityDto.UserInput?.Trim();
 
             if (string.IsNullOrWhiteSpace(appSecretName))
@@ -169,7 +150,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Check if credential with the same name exists (case-insensitive) within the current environment
             var existingAppSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
@@ -179,7 +159,6 @@ public class AppSecretService : IAppSecretService
                 .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
-            // Credential name already exists
             if (existingAppSecret != null)
             {
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
@@ -188,7 +167,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Name is available
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Credential name '{appSecretName}' is available.";
@@ -202,10 +180,8 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
-    // Retrieve credentials as selectable options (e.g., for a dropdown)
     public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
@@ -214,7 +190,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Use ResourceShareService
             var accessibleSecretIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
                 _userId,
                 ResourceTypeEnum.AppSecret,
@@ -226,7 +201,6 @@ public class AppSecretService : IAppSecretService
                 }
             );
 
-            // Attempt to fetch the selectable credential options from the repository
             var accessibleSecrets = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.EnvType == _currentTenantService.CurrentEnvType &&
@@ -235,25 +209,20 @@ public class AppSecretService : IAppSecretService
                 )
                 .ToListAsync();
 
-            // Assign the options to the service response
             serviceResponse.Data = accessibleSecrets.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials list fetched successfully.";
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during the process
             _logger.LogError(ex, "Error occurred while fetching credentials list options.");
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Retrieve a specific credential by its ID
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretByIdAsync(Guid appSecretId)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -262,13 +231,11 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credential by its ID
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            // If no credential is found, log and return an appropriate message
             if (appSecret == null)
             {
                 _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
@@ -276,8 +243,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-
-            // Validate decrypt/view access
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
@@ -299,25 +264,20 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Adapt the entity to a DTO and assign to the service response
             serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during the process
             _logger.LogError(ex, "An error occurred while fetching credential with ID: {AppSecretId}", appSecretId);
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Retrieve a specific credential by its name
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretByNameAsync(string appSecretName)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -326,7 +286,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credential by its name within the current environment
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.Name == appSecretName &&
@@ -334,7 +293,6 @@ public class AppSecretService : IAppSecretService
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
-            // If no credential is found, log and return an appropriate message
             if (appSecret == null)
             {
                 _logger.LogWarning("No credential found with name: {AppSecretName}", appSecretName);
@@ -342,7 +300,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Validate decrypt/view access
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
@@ -368,28 +325,23 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Adapt the entity to a DTO and assign to the service response
             serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during the process
             _logger.LogError(
                 ex,
                 "An error occurred while fetching credential with name: {AppSecretName}",
                 appSecretName);
         }
 
-        // Return the service response
         return serviceResponse;
     }
 
-    // Create a new credential
     public async Task<ServiceResponse<AppSecretDto>> CreateAppSecretAsync(AppSecretDto appSecretDto)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -398,7 +350,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Block creating new credentials while in the PROD environment.
             var prodBlock = CreateResourceGuard.Validate<AppSecretDto>(
                 _currentTenantService.CurrentEnvType,
                 "credential");
@@ -407,22 +358,16 @@ public class AppSecretService : IAppSecretService
                 return prodBlock;
             }
 
-            // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
-            // Validate the data, Pass the cleaned-up credential data to the validation function
             var validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
 
-            // Check if validation was successful, If the sanitized data is empty or invalid, return the service response with the validation remark
             if (string.IsNullOrEmpty(validateData.SanitizedDataJson))
             {
                 serviceResponse.Message = validateData.Remark;
                 return serviceResponse;
             }
 
-            // Enforce global uniqueness on (TenantId, EnvType, Name): a credential name cannot be
-            // reused in any space under the same tenant and environment. The global SpaceId query
-            // filter scopes queries to the current space only, so we bypass it to check every space.
             var existingSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
@@ -444,29 +389,22 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Create a single credential record scoped to the current space. The space is
-            // auto-stamped by WorkspaceDbContext on save: when in a specific space the record
-            // is assigned to that space; when in Central it stays in the Central (null) space.
             var newAppSecret = appSecretDto.Adapt<AppSecret>();
             newAppSecret.Data = validateData.SanitizedDataJson;
             newAppSecret.CreatedByUserId = _userId;
             newAppSecret.LastModifiedByUserId = _userId;
             newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
 
-            // Insert the new credential into the repository
             await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
 
-            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to save newly created credential: {AppSecretName}", appSecretDto.Name);
                 return serviceResponse;
             }
 
-            // Add encrypted key-value entries for the created credential record.
             foreach (var kv in validateData.EncryptedValues)
             {
-                // Create new key-value entry
                 var newEncryptedValue = new EncryptedKeyValue
                 {
                     Name = kv.Key,
@@ -476,14 +414,12 @@ public class AppSecretService : IAppSecretService
                 await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(newEncryptedValue);
             }
 
-            // Save changes
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to insert encrypted key-values for Credential ID: {AppSecretId}", appSecretDto.Id);
                 return serviceResponse;
             }
 
-            // Assign ownership for the created credential record.
             if (!await _resourceShareService.AssignOwnerAsync(_userId, newAppSecret.Id, ResourceTypeEnum.AppSecret))
             {
                 serviceResponse.Message = "Failed assigning ownership.";
@@ -491,17 +427,12 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Mirror the credential to the Corsair sidecar for supported API-key plugins.
             await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
-            // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
             await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
-            // Adapt the created entity to DTO and return success response
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
 
-            // For OAuth-capable credential types, mint a connect link so the frontend can
-            // complete consent immediately after creation.
             if (MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type) is not null)
             {
                 var link = await _corsairSidecarService.CreateConnectLinkAsync(newAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type)!);
@@ -516,18 +447,14 @@ public class AppSecretService : IAppSecretService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during Credential creation
             _logger.LogError(ex, "An unexpected error occurred while creating credential: {AppSecretName}", appSecretDto.Name);
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Update an existing credential
     public async Task<ServiceResponse<AppSecretDto>> UpdateAppSecretAsync(AppSecretDto appSecretDto)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -536,7 +463,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credential by ID
             var existingAppSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     string.IsNullOrEmpty(appSecretDto.Name)
@@ -546,7 +472,6 @@ public class AppSecretService : IAppSecretService
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
 
-            // If the credential doesn't exist, return an error message
             if (existingAppSecret == null)
             {
                 _logger.LogWarning("Update failed. No credential found with ID: {AppSecretId}", appSecretDto.Id);
@@ -554,7 +479,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Require OM for PROD edits based on the persisted credential environment.
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AppSecretDto>(
                 existingAppSecret.EnvType,
                 _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
@@ -564,7 +488,6 @@ public class AppSecretService : IAppSecretService
                 return prodUpdateBlock;
             }
 
-            // Validate update access
             var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 existingAppSecret.Id,
@@ -585,9 +508,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Check for a duplicate credential by name within the current tenant and environment.
-            // The global SpaceId query filter scopes queries to the current space, so bypass it to
-            // enforce the tenant-wide (TenantId, EnvType, Name) uniqueness constraint.
             var duplicateSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
@@ -597,7 +517,6 @@ public class AppSecretService : IAppSecretService
                 .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
-            // If a duplicate exists, return a conflict message
             if (duplicateSecret != null)
             {
                 _logger.LogWarning("Update failed. Credential with name '{AppSecretName}' already exists.", appSecretDto.Name);
@@ -606,102 +525,78 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Clean up input DTO (trim strings, remove extra spaces, etc.)
             appSecretDto = TrimDtoStringPropsUtil.TrimDtoStringProps(appSecretDto);
 
             CredentialValidationResult? validateData = null;
 
-            // Determine whether the secret data has changed.
             var existingJson = JsonNode.Parse(existingAppSecret.Data);
             var newJson = System.Text.Json.JsonSerializer.SerializeToNode(appSecretDto.Data);
             bool isDataChanged = !JsonNode.DeepEquals(existingJson, newJson);
 
-            // A type change requires re-validating the data against the new type and re-syncing the
-            // Corsair sidecar mirror, since the previous type's plugin(s)/field names may no longer apply.
             var typeChanged = existingAppSecret.Type != appSecretDto.Type;
             var previousType = existingAppSecret.Type;
             var needsRevalidation = isDataChanged || typeChanged;
 
             if (needsRevalidation)
             {
-                // Validate the updated secret data.
                 validateData = ValidateData(appSecretDto.Type, appSecretDto.Data);
 
-                // Return if validation fails.
                 if (string.IsNullOrEmpty(validateData.SanitizedDataJson))
                 {
                     serviceResponse.Message = validateData.Remark;
                     return serviceResponse;
                 }
 
-                // Update the sanitized secret data.
                 existingAppSecret.Data = validateData.SanitizedDataJson;
             }
 
-            // Update the disabled status only if a new value was provided and it has changed.
             if (appSecretDto.IsDisabled.HasValue && existingAppSecret.IsDisabled != appSecretDto.IsDisabled.Value)
             {
                 existingAppSecret.IsDisabled = appSecretDto.IsDisabled.Value;
             }
 
-            // Update the description only if it has changed.
             if (existingAppSecret.Description != appSecretDto.Description)
             {
                 existingAppSecret.Description = appSecretDto.Description;
             }
 
-            // Update the tenant-wide access flag only if it has changed.
-            // No sidecar re-mirror is needed: the connectionId used for mirroring is the
-            // AppSecret.Id, and tenant-wide/shared access is enforced by WorkspaceAPIs before
-            // the credential is mirrored or invoked.
             if (existingAppSecret.IsTenantWideAccess != appSecretDto.IsTenantWideAccess)
             {
                 existingAppSecret.IsTenantWideAccess = appSecretDto.IsTenantWideAccess;
             }
 
-            // Update the secret type only if it has changed.
             if (typeChanged)
             {
                 existingAppSecret.Type = appSecretDto.Type;
             }
 
-            // Record the user who last modified the secret.
             existingAppSecret.LastModifiedByUserId = _userId;
 
-            // Update the credential in the repository
             _unitOfWork.AppSecretRepo.Update(existingAppSecret);
 
-            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to save updated credential: {AppSecretId}", appSecretDto.Id);
                 return serviceResponse;
             }
 
-            // Update encrypted key-values only if the secret data has changed.
             if (needsRevalidation)
             {
-                // Get existing encrypted key-values from the database
                 var existingKeyValues = existingAppSecret.EncryptedKeyValues;
 
-                // Prepare keys from request
                 var incomingKeys = validateData.EncryptedValues;
 
                 var hasChanges = false;
                 var keysToInsert = new List<EncryptedKeyValue>();
 
-                // Update existing entries or collect new ones for insertion
                 foreach (var kv in incomingKeys)
                 {
-                    // Skip if the value is null or empty
                     if (string.IsNullOrEmpty(kv.Value))
                         continue;
 
-                    // Try to find an existing key-value pair by name
                     var existing = existingKeyValues?.FirstOrDefault(e => e.Name == kv.Key);
                     if (existing != null)
                     {
-                        // Update only if the value has actually changed
                         if (existing.Value != kv.Value)
                         {
                             existing.Value = kv.Value;
@@ -711,7 +606,6 @@ public class AppSecretService : IAppSecretService
                     }
                     else
                     {
-                        // Prepare a new key-value entry for insertion
                         var newEncryptedValue = new EncryptedKeyValue
                         {
                             Name = kv.Key,
@@ -724,13 +618,11 @@ public class AppSecretService : IAppSecretService
                     }
                 }
 
-                // Insert new entries, if any
                 if (keysToInsert.Any())
                 {
                     await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(keysToInsert);
                 }
 
-                // Identify keys that exist in DB but not in the incoming request (to be deleted)
                 var keysToDelete = existingKeyValues?
                     .Where(e => e != null && !incomingKeys.ContainsKey(e.Name))
                     .ToList() ?? new List<EncryptedKeyValue>();
@@ -741,7 +633,6 @@ public class AppSecretService : IAppSecretService
                     hasChanges = true;
                 }
 
-                // Save changes if any insert, update, or delete occurred
                 if (hasChanges)
                 {
                     if (!await _unitOfWork.SaveAsync())
@@ -752,13 +643,10 @@ public class AppSecretService : IAppSecretService
                 }
             }
 
-            // Mirror the credential to the Corsair sidecar for supported API-key plugins.
             if (needsRevalidation && validateData != null)
             {
                 if (typeChanged)
                 {
-                    // Remove the previous type's mirrored credential(s); the new type's plugin(s)
-                    // may differ entirely, so the old sidecar rows would otherwise be orphaned.
                     await UnmirrorCredentialFromCorsairAsync(existingAppSecret.Id, previousType);
                 }
 
@@ -766,11 +654,8 @@ public class AppSecretService : IAppSecretService
                 await MirrorOAuthCredentialToCorsairAsync(existingAppSecret, validateData.EncryptedValues);
             }
 
-            // Return success response
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
 
-            // For OAuth-capable credential types, mint a connect link so the frontend can
-            // complete (or re-complete) consent after an update.
             if (MapAppSecretTypeToCorsairOAuthPlugin(existingAppSecret.Type) is not null)
             {
                 var link = await _corsairSidecarService.CreateConnectLinkAsync(existingAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(existingAppSecret.Type)!);
@@ -785,18 +670,14 @@ public class AppSecretService : IAppSecretService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the update
             _logger.LogError(ex, "Error occurred while updating credential with ID: {AppSecretId}", appSecretDto.Id);
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Delete a single credential by ID
     public async Task<ServiceResponse<bool>> DeleteAppSecretAsync(Guid appSecretId)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -805,12 +686,10 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credential by ID
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
-            // If no credential is found, return an error message
             if (appSecret == null)
             {
                 _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
@@ -818,7 +697,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // PROD-guard: block deletion of PROD credentials or credentials with a same-name PROD twin.
             var guardBlock = await DeleteResourceGuard.ValidateAsync(
                 _unitOfWork.AppSecretRepo,
                 appSecret.EnvType,
@@ -833,7 +711,6 @@ public class AppSecretService : IAppSecretService
                 return guardBlock;
             }
 
-            // Validate update access
             var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
@@ -855,38 +732,30 @@ public class AppSecretService : IAppSecretService
 
             await _resourceShareService.DeleteResourceSharesAsync(appSecret.Id, ResourceTypeEnum.AppSecret);
 
-            // Delete the credential from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecret);
 
-            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogWarning("Failed to delete credential with ID: {AppSecretId} due to database save error.", appSecretId);
                 return serviceResponse;
             }
 
-            // Best-effort: clear the mirrored credential from the Corsair sidecar.
             await UnmirrorCredentialFromCorsairAsync(appSecret.Id, appSecret.Type);
 
-            // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential deleted successfully.";
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the deletion
             _logger.LogError(ex, "Unexpected error while deleting credential with ID: {AppSecretId}", appSecretId);
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Delete multiple credentials by their IDs
     public async Task<ServiceResponse<bool>> DeleteAppSecretsAsync(List<Guid> appSecretIds)
     {
-        // Initialize service response with default failure message
         var serviceResponse = new ServiceResponse<bool>
         {
             Data = false,
@@ -895,12 +764,10 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credentials by their IDs
             var appSecrets = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => appSecretIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
-            // If no credentials are found, return an error message
             if (appSecrets == null || appSecrets.Count == 0)
             {
                 _logger.LogWarning("No credentials found for deletion.");
@@ -928,7 +795,6 @@ public class AppSecretService : IAppSecretService
                     return serviceResponse;
                 }
 
-                // PROD-guard: block the whole batch if any credential is PROD or has a same-name PROD twin.
                 var guardBlock = await DeleteResourceGuard.ValidateAsync(
                     _unitOfWork.AppSecretRepo,
                     appSecret.EnvType,
@@ -944,7 +810,6 @@ public class AppSecretService : IAppSecretService
                 }
             }
 
-            // Reject the entire batch when any selected credential is protected by the PROD guard.
             if (blockedNames.Count > 0)
             {
                 serviceResponse.Message =
@@ -954,41 +819,33 @@ public class AppSecretService : IAppSecretService
 
             await _resourceShareService.DeleteResourceSharesAsync(appSecretIds, ResourceTypeEnum.AppSecret);
 
-            // Delete the credentials from the repository
             _unitOfWork.AppSecretRepo.Delete(appSecrets);
 
-            // Attempt to save changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogWarning("Failed to commit bulk deletion of credentials.");
                 return serviceResponse;
             }
 
-            // Best-effort: clear mirrored credentials from the Corsair sidecar.
             foreach (var appSecret in appSecrets)
             {
                 await UnmirrorCredentialFromCorsairAsync(appSecret.Id, appSecret.Type);
             }
 
-            // Return success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials deleted successfully.";
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the bulk deletion
             _logger.LogError(ex, "Unexpected error while bulk deleting credentials.");
         }
 
-        // Return the service response (could be success or failure)
         return serviceResponse;
     }
 
-    // Retrieves the details of a specific Credential, including decrypted key-value data.
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailAsync(Guid appSecretId)
     {
-        // Prepare default response in case of failure
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -997,7 +854,6 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Fetch the credential entity along with its encrypted key-value pairs
             var appSecret = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
@@ -1011,7 +867,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Validate view access
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
@@ -1033,10 +888,8 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Map entity to DTO
             var appSecretDto = appSecret.Adapt<AppSecretDto>();
 
-            // Decrypt and merge key-value pairs into the DTO's data object
             var encryptedValues = appSecret.EncryptedKeyValues?.ToList();
             if (encryptedValues != null && encryptedValues.Any())
             {
@@ -1047,7 +900,6 @@ public class AppSecretService : IAppSecretService
                 appSecretDto.Data = UpdateObjectProperties(appSecretDto.Data, decryptedMap);
             }
 
-            // Prepare successful response
             serviceResponse.Data = appSecretDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
@@ -1060,10 +912,8 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
-    // Retrieves the details (with decrypted key-value pairs) of a specific App Secret by its name within the current environment.
     public async Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailByNameAsync(string appSecretName)
     {
-        // Prepare default response in case of failure
         var serviceResponse = new ServiceResponse<AppSecretDto>
         {
             Data = null,
@@ -1071,16 +921,12 @@ public class AppSecretService : IAppSecretService
         };
         try
         {
-            // Validate the provided credential name
             if (string.IsNullOrWhiteSpace(appSecretName))
             {
                 serviceResponse.Message = "Credential name is required.";
                 return serviceResponse;
             }
 
-            // Fetch the credential entity by name within the current environment, including its
-            // encrypted key-value pairs. Space filters are bypassed because credentials are resolved
-            // tenant-wide, but the query can therefore surface same-name rows from other spaces.
             var appSecretCandidates = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
@@ -1093,8 +939,6 @@ public class AppSecretService : IAppSecretService
                 .OrderBy(w => w.CreatedOn)
                 .ToListAsync();
 
-            // Resolve deterministically (the unique index is TenantId + SpaceId + EnvType + Name):
-            // prefer the request's space, then Central (null), then the oldest record.
             var requestSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
                 ? (Guid?)null
                 : _currentTenantService.CurrentSpaceId;
@@ -1110,7 +954,6 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Validate view access
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
                 appSecret.Id,
@@ -1132,10 +975,8 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Map entity to DTO
             var appSecretDto = appSecret.Adapt<AppSecretDto>();
 
-            // Decrypt and merge key-value pairs into the DTO's data object
             var encryptedValues = appSecret.EncryptedKeyValues?.ToList();
             if (encryptedValues != null && encryptedValues.Any())
             {
@@ -1146,7 +987,6 @@ public class AppSecretService : IAppSecretService
                 appSecretDto.Data = UpdateObjectProperties(appSecretDto.Data, decryptedMap);
             }
 
-            // Prepare successful response
             serviceResponse.Data = appSecretDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
@@ -1202,8 +1042,6 @@ public class AppSecretService : IAppSecretService
     /// </summary>
     public async Task<bool> SyncCredentialToCorsairAsync(Guid appSecretId)
     {
-        // Query filters are bypassed because publish runs against a freshly inserted clone whose
-        // tenant/space match the request but may not be resolvable through the space filter.
         var appSecret = await _unitOfWork.AppSecretRepo
             .GetByConditionAsync(w => w.Id == appSecretId)
             .IgnoreQueryFilters()
@@ -1216,13 +1054,10 @@ public class AppSecretService : IAppSecretService
             return false;
         }
 
-        // Persisted values are ciphertext; the mirror helpers decrypt them before sending.
         var encryptedValues = (appSecret.EncryptedKeyValues ?? new List<EncryptedKeyValue>())
             .GroupBy(kv => kv.Name)
             .ToDictionary(group => group.Key, group => group.First().Value);
 
-        // API-key plugins and OAuth plugins are mutually exclusive per credential type; both
-        // return true when their plugin does not apply.
         var apiKeyMirrored = await MirrorCredentialToCorsairAsync(appSecret, encryptedValues);
         var oauthMirrored = await MirrorOAuthCredentialToCorsairAsync(appSecret, encryptedValues);
         return apiKeyMirrored && oauthMirrored;
@@ -1326,14 +1161,11 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
-    // Validates and sanitizes credential data, encrypting sensitive information like API keys.
     private CredentialValidationResult ValidateData(AppSecretTypesEnum type, object data)
     {
-        // Result object to hold encrypted value and sanitized JSON
         var validationResult = new CredentialValidationResult();
         var sanitizedDataJson = string.Empty;
 
-        // JSON deserialization options (case-insensitive for property names)
         var jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
@@ -1341,21 +1173,17 @@ public class AppSecretService : IAppSecretService
 
         };
 
-        // Serialize the input object to a JSON string
         var rawJson = System.Text.Json.JsonSerializer.Serialize(data, jsonOptions);
 
-        // Generated Corsair forms use metadata-defined fields rather than dedicated DTOs.
         if (_corsairConfigRepository.GetPluginIdForVaultType(type.ToString()) is not null)
         {
             return ValidateGeneratedCorsairData(rawJson, jsonOptions);
         }
 
-        // Switch statement based on the type of credential
         switch (type)
         {
             case AppSecretTypesEnum.OpenAI:
                 {
-                    // Deserialize JSON into OpenAICredentialsDto
                     var openAiCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenAICredentialsDto>(rawJson, jsonOptions);
                     if (openAiCredentials != null)
                     {
@@ -1370,7 +1198,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.AWS:
                 {
-                    // Deserialize JSON into AWSCredentialsDto
                     var awsCredentials = System.Text.Json.JsonSerializer.Deserialize<AWSCredentialsDto>(rawJson, jsonOptions);
                     if (awsCredentials != null)
                     {
@@ -1399,7 +1226,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Twilio:
                 {
-                    // Deserialize JSON into TwilioCredentialsDto
                     var twilioCredentials = System.Text.Json.JsonSerializer.Deserialize<TwilioCredentialsDto>(rawJson, jsonOptions);
                     if (twilioCredentials != null)
                     {
@@ -1426,7 +1252,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.SendGrid:
                 {
-                    // Deserialize JSON into SendGridCredentialsDto
                     var sendGridCredentials = System.Text.Json.JsonSerializer.Deserialize<SendGridCredentialsDto>(rawJson, jsonOptions);
                     if (sendGridCredentials != null)
                     {
@@ -1493,7 +1318,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Anthropic:
                 {
-                    // Deserialize JSON into AnthropicCredentialsDto
                     var anthropicCredentials = System.Text.Json.JsonSerializer.Deserialize<AnthropicCredentialsDto>(rawJson, jsonOptions);
                     if (anthropicCredentials != null)
                     {
@@ -1510,7 +1334,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Ollama:
                 {
-                    // Deserialize JSON into OllamaCredentialsDto
                     var ollamaCredentials = System.Text.Json.JsonSerializer.Deserialize<OllamaCredentialsDto>(rawJson, jsonOptions);
                     if (ollamaCredentials != null)
                     {
@@ -1527,7 +1350,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.OllamaCloud:
                 {
-                    // Deserialize JSON into OllamaCloudCredentialsDto
                     var ollamaCloudCredentials = System.Text.Json.JsonSerializer.Deserialize<OllamaCloudCredentialsDto>(rawJson, jsonOptions);
                     if (ollamaCloudCredentials != null)
                     {
@@ -1544,7 +1366,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.GoogleGemini:
                 {
-                    // Deserialize JSON into GoogleGeminiCredentialsDto
                     var googleGeminiCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleGeminiCredentialsDto>(rawJson, jsonOptions);
                     if (googleGeminiCredentials != null)
                     {
@@ -1562,7 +1383,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.GoogleWorkspace:
                 {
-                    // Deserialize JSON into GoogleWorkspaceCredentialsDto
                     var googleWorkspaceCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleWorkspaceCredentialsDto>(rawJson, jsonOptions);
                     if (googleWorkspaceCredentials != null)
                     {
@@ -1582,7 +1402,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.AzureOpenAI:
                 {
-                    //Deserelize JSON Into AzureOpenAiCredentialsDto
                     var azureOpenAiCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureOpenAiCredentialsDto>(rawJson, jsonOptions);
                     if (azureOpenAiCredentials != null)
                     {
@@ -1599,7 +1418,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.ElevenLabs:
                 {
-                    // Deserialize JSON into ElevenLabsCredentialsDto
                     var elevenLabsCredentials = System.Text.Json.JsonSerializer.Deserialize<ElevenLabsCredentialsDto>(rawJson, jsonOptions);
                     if (elevenLabsCredentials != null)
                     {
@@ -1617,7 +1435,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.OpenRouter:
                 {
-                    // Deserialize JSON into OpenRouterCredentialsDto
                     var openRouterCredentials = System.Text.Json.JsonSerializer.Deserialize<OpenRouterCredentialsDto>(rawJson, jsonOptions);
                     if (openRouterCredentials != null)
                     {
@@ -1634,7 +1451,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.AzureStorage:
                 {
-                    // Deserialize JSON into AzureStorageCredentialsDto
                     var azureStorageCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureStorageCredentialsDto>(rawJson, jsonOptions);
                     if (azureStorageCredentials != null)
                     {
@@ -1651,7 +1467,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.AzureBlobStorage:
                 {
-                    // Deserialize JSON into AzureBlobStorageCredentialsDto
                     var azureBlobCredentials = System.Text.Json.JsonSerializer.Deserialize<AzureBolbStorageCredentialsDto>(rawJson, jsonOptions);
                     if (azureBlobCredentials != null)
                     {
@@ -1668,7 +1483,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.ConnectionString:
                 {
-                    // Deserialize incoming JSON into PostgreSQL DTO
                     var postgresCredentials = System.Text.Json.JsonSerializer.Deserialize<ConnectionStringCredentialsDto>(rawJson, jsonOptions);
                     if (postgresCredentials != null)
                     {
@@ -1684,7 +1498,6 @@ public class AppSecretService : IAppSecretService
                 }
             case AppSecretTypesEnum.Qdrant:
                 {
-                    // Deserialize incoming JSON into Qdrant DTO
                     var qdrantCredentials = System.Text.Json.JsonSerializer.Deserialize<QdrantCredentialsDto>(rawJson, jsonOptions);
                     if (qdrantCredentials != null && !string.IsNullOrWhiteSpace(qdrantCredentials.ApiKey))
                     {
@@ -1700,32 +1513,25 @@ public class AppSecretService : IAppSecretService
                 }
             case AppSecretTypesEnum.CustomApiTool:
                 {
-                    // Deserialize the incoming JSON into the custom API tool credentials DTO.
                     var credentials = System.Text.Json.JsonSerializer.Deserialize<CustomApiToolCredentialsDto>(rawJson, jsonOptions);
 
-                    // Ensure authentication parameters are present.
                     if (credentials?.Parameters?.Count > 0)
                     {
-                        // Encrypt each authentication parameter and remove the plaintext value  before persisting the sanitized JSON.
                         foreach (var key in credentials.Parameters.Keys.ToList())
                         {
                             var value = credentials.Parameters[key];
 
                             if (!string.IsNullOrWhiteSpace(value))
                             {
-                                // Store the encrypted value separately.
                                 validationResult.EncryptedValues[key] = _encryptionService.EncryptString(value);
 
-                                // Clear the sensitive value from the serialized payload.
                                 credentials.Parameters[key] = string.Empty;
                             }
                         }
-                        // Serialize the sanitized credentials back to JSON.
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(credentials, jsonOptions);
                     }
                     else
                     {
-                        // Validation failed because no authentication parameters were provided.
                         validationResult.Remark = "Invalid Custom API Tool credentials: authentication parameters are missing or invalid.";
                     }
                     break;
@@ -1733,7 +1539,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Groq:
                 {
-                    // Deserialize JSON into GroqCredentialsDto
                     var groqCredentials = System.Text.Json.JsonSerializer.Deserialize<GroqCredentialsDto>(rawJson, jsonOptions);
                     if (groqCredentials != null)
                     {
@@ -1750,7 +1555,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Bedrock:
                 {
-                    // Deserialize JSON into BedrockCredentialsDto
                     var bedrockCredentials = System.Text.Json.JsonSerializer.Deserialize<BedrockCredentialsDto>(rawJson, jsonOptions);
                     if (bedrockCredentials != null)
                     {
@@ -1774,7 +1578,6 @@ public class AppSecretService : IAppSecretService
 
             case AppSecretTypesEnum.Mistral:
                 {
-                    // Deserialize JSON into MistralCredentialsDto
                     var mistralCredentials = System.Text.Json.JsonSerializer.Deserialize<MistralCredentialsDto>(rawJson, jsonOptions);
                     if (mistralCredentials != null)
                     {
@@ -4006,19 +3809,14 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
-
-            // Default case for unsupported credential types
             default:
-                // Log an error for unsupported credential types and set an error remark
                 _logger.LogError("Unsupported credential type: {CredentialType}", type);
                 validationResult.Remark = $"Unsupported credential type: {type}";
                 break;
         }
 
-        // Assign the encrypted value and sanitized JSON to the validation result
         validationResult.SanitizedDataJson = sanitizedDataJson;
 
-        // Return the result containing both the encrypted value, sanitized JSON, and remark
         return validationResult;
     }
 
@@ -4096,13 +3894,10 @@ public class AppSecretService : IAppSecretService
     {
         var mappedPlugin = type switch
         {
-            // M365 credentials carry ClientId/ClientSecret and map to the Corsair Outlook plugin.
             AppSecretTypesEnum.M365 => "outlook",
             AppSecretTypesEnum.Teams => "teams",
             AppSecretTypesEnum.Onedrive => "onedrive",
             AppSecretTypesEnum.Sharepoint => "sharepoint",
-            // Google Workspace credentials use the shared Google OAuth account family. Gmail is
-            // the OAuth entry point; the resulting account can be used by the other Google plugins.
             AppSecretTypesEnum.GoogleWorkspace => "gmail",
             _ => null
         };
@@ -4178,8 +3973,6 @@ public class AppSecretService : IAppSecretService
             kv => kv.Key,
             kv => _encryptionService.DecryptString(kv.Value));
 
-        // OAuth credentials are mirrored by MirrorOAuthCredentialToCorsairAsync;
-        // sending their ClientSecret to API-key plugins produces a 400 response.
         if (decryptedValues.ContainsKey("ClientSecret"))
         {
             return true;
@@ -4267,7 +4060,6 @@ public class AppSecretService : IAppSecretService
             return true;
         }
 
-        // ClientId and RedirectUrl are stored in the sanitized JSON (not encrypted).
         var clientId = GetFirstCredentialValue(decryptedValues, "ClientID", "ClientId", "my_client_id")
             ?? GetSanitized(appSecret.Data, "ClientID")
             ?? GetSanitized(appSecret.Data, "ClientId")
@@ -4310,17 +4102,13 @@ public class AppSecretService : IAppSecretService
         }
     }
 
-    // Updates the properties of an object using a dictionary of key-value pairs, where the keys are property names and the values are their new values.
     private object UpdateObjectProperties(object data, Dictionary<string, string> updatedProperties)
     {
-        // Convert the object to JSON string
         string jsonString = System.Text.Json.JsonSerializer.Serialize(data);
 
-        // Parse the JSON into JsonNode
         var jsonObject = System.Text.Json.Nodes.JsonNode.Parse(jsonString)?.AsObject();
         if (jsonObject == null) return data;
 
-        // Apply updates
         foreach (var kv in updatedProperties)
         {
             if (jsonObject["Parameters"] is JsonObject parameters && parameters.ContainsKey(kv.Key))
@@ -4337,10 +4125,8 @@ public class AppSecretService : IAppSecretService
             }
         }
 
-        // Deserialize the updated JSON back into an object
         var updatedObject = System.Text.Json.JsonSerializer.Deserialize<object>(jsonObject.ToJsonString());
 
-        // Return the updated object, or original if deserialization failed
         return updatedObject ?? data;
     }
 }
