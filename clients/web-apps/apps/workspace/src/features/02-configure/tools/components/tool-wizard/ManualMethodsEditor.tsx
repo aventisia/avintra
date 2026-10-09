@@ -411,7 +411,11 @@ export const ManualMethodsEditor = ({
                       disabled={disabled}
                       onClick={() => {
                         onChange(operations.filter((_, i) => i !== index));
-                        if (editIndex === index) closeForm();
+                        if (editIndex === index) {
+                          closeForm();
+                        } else if (editIndex !== null && editIndex > index) {
+                          setEditIndex(editIndex - 1);
+                        }
                       }}
                       className="rounded p-1 text-muted-foreground hover:text-destructive disabled:opacity-50"
                       aria-label={`Remove ${operation.name}`}

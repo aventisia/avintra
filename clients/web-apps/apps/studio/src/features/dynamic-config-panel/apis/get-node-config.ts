@@ -27,18 +27,21 @@ const nodeConfigInFlight: Record<string, Promise<NodeConfigValue> | undefined> =
 
 // Single-flight fetch of the usable-tool catalog, used to enrich custom-tool
 // node configs with the operation schema (declared headers, path/query
-// parameters and request-body properties). A failed fetch resets the promise
-// so a later panel open can retry.
+// parameters and request-body properties). The promise only dedupes concurrent
+// callers; it is reset once settled so catalog/tenant changes are picked up and
+// a failed fetch is retried on the next open.
 let usableToolCatalogPromise: Promise<UsableToolCatalogItemDto[] | null> | undefined;
 
-const getUsableToolCatalogOnce = async (): Promise<UsableToolCatalogItemDto[] | null> => {
+const getUsableToolCatalogOnce = (): Promise<UsableToolCatalogItemDto[] | null> => {
   if (!usableToolCatalogPromise) {
     usableToolCatalogPromise = getUsableToolCatalog()
       .then((res) => res.data ?? [])
       .catch((error) => {
         console.error("Custom tool catalog fetch error:", error);
-        usableToolCatalogPromise = undefined;
         return null;
+      })
+      .finally(() => {
+        usableToolCatalogPromise = undefined;
       });
   }
   return usableToolCatalogPromise;
@@ -91,9 +94,8 @@ const getJsonFilepath = (nodeUniqueName: string): string => {
 /**
  * Builds a custom-tool node config, mapping the operation schema from the
  * usable-tool catalog into the JSON editors when the tool and operation can be
- * resolved. Returns null on a catalog miss (tool not yet in the catalog) so
- * the caller can skip caching and retry on the next panel open; falls back to
- * the generic schema-less form when the catalog cannot be fetched.
+ * resolved. Returns null when the catalog cannot be fetched or the tool/operation
+ * is not found, so the caller skips caching and retries on the next panel open.
  */
 const buildSchemaAwareCustomToolConfig = async (
   nodeUniqueName: string,
@@ -101,19 +103,16 @@ const buildSchemaAwareCustomToolConfig = async (
   const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
   const catalog = await getUsableToolCatalogOnce();
   if (catalog === null) {
-    // Fetch failed — serve the generic form without caching it, so the next
-    // open retries the catalog.
-    return buildCustomToolNodeConfig(nodeUniqueName);
+    return null;
   }
 
   const operation = catalog
     .find((tool) => tool.name === toolName)
     ?.operations?.find((candidate) => candidate.operationId === operationId);
   if (!operation) {
-    // Tool/operation not (yet) in the catalog — serve the generic form
-    // uncached so newly created tools are picked up on the next open.
     return null;
   }
+
   return buildCustomToolNodeConfig(nodeUniqueName, operation);
 };
 
@@ -165,20 +164,14 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
 
   if (isCustomToolNodeName(nodeUniqueName)) {
     // Custom-tool action nodes ("CustomTool/{toolName}.{operationId}") have no
-    // static config JSON: the form is built on the client. When the tool's
-    // parsed OpenAPI schema is available, the operation's declared headers,
-    // path/query parameters and request-body properties are mapped into the
-    // JSON editors as defaults, and a section editor only appears when the
-    // schema declares entries for it (empty/null sections are omitted from
-    // the form). Catalog fetch failures or unknown tools fall back to the
-    // generic schema-less form, which is not cached so the next open can
-    // retry.
+    // static config JSON: the form is built on the client and rebuilt per open
+    // (never cached) so catalog/tenant changes and newly created tools are
+    // always reflected. When the tool's parsed OpenAPI schema is available, the
+    // operation's declared headers, path/query parameters and request-body
+    // properties are mapped into the JSON editors as defaults; otherwise the
+    // generic schema-less form is used.
     const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
-    if (!customToolConfig) {
-      return buildCustomToolNodeConfig(nodeUniqueName);
-    }
-    nodeConfigCache[nodeUniqueName] = customToolConfig;
-    return customToolConfig;
+    return customToolConfig ?? buildCustomToolNodeConfig(nodeUniqueName);
   }
 
   // Try the original nodeUniqueName first

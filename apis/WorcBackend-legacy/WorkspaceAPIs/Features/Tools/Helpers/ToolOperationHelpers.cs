@@ -258,7 +258,7 @@ public static class ToolOperationHelpers
                 foreach (var operationNode in operationsArray)
                 {
                     if (operationNode is JsonObject operationObject &&
-                        MatchesOperationId(operationObject, operationId))
+                        MatchesOperationId(operationObject, operationId, method: null, path: null))
                     {
                         operationObject["isVerified"] = isVerified;
                         updated = true;
@@ -277,7 +277,11 @@ public static class ToolOperationHelpers
                     foreach (var methodProperty in methods)
                     {
                         if (methodProperty.Value is JsonObject operationObject &&
-                            MatchesOperationId(operationObject, operationId))
+                            MatchesOperationId(
+                                operationObject,
+                                operationId,
+                                methodProperty.Key.ToUpperInvariant(),
+                                pathProperty.Key))
                         {
                             operationObject["isVerified"] = isVerified;
                             updated = true;
@@ -336,11 +340,28 @@ public static class ToolOperationHelpers
     }
 
     /// <summary>
-    /// Compares an operation JSON object's <c>operationId</c> to the target id,
-    /// falling back to the object key when the spec omits the identifier.
+    /// Compares an operation JSON object's identifier to the target id, deriving
+    /// the same method/path fallback used by <see cref="ExtractOperations"/> when
+    /// the object carries no explicit <c>operationId</c>.
     /// </summary>
-    private static bool MatchesOperationId(JsonObject operationObject, string operationId) =>
-        string.Equals(GetNodeString(operationObject["operationId"]), operationId, StringComparison.OrdinalIgnoreCase);
+    private static bool MatchesOperationId(
+        JsonObject operationObject,
+        string operationId,
+        string? method,
+        string? path)
+    {
+        var candidate = GetNodeString(operationObject["operationId"]);
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            var resolvedMethod = GetNodeString(operationObject["method"]) ?? method;
+            var resolvedPath = GetNodeString(operationObject["path"]) ?? path;
+            candidate = string.IsNullOrWhiteSpace(resolvedMethod) || string.IsNullOrWhiteSpace(resolvedPath)
+                ? null
+                : $"{resolvedMethod}_{resolvedPath}";
+        }
+
+        return string.Equals(candidate, operationId, StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>
     /// Reads a non-empty string from a JSON node.
