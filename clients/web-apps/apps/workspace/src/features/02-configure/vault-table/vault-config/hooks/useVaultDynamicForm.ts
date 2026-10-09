@@ -35,15 +35,15 @@ interface UseVaultDynamicFormOptions {
 }
 
 export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOptions) => {
-  // Set credential name state (required for availability check)
   const [credName, setCredName] = useState("");
 
-  // Local state for vault config and zod schema
   const [vaultConfig, setVaultConfig] = useState<DCPFieldSchemaType[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
+  // IMPORTANT NOTE: All form fields must have default values or React throws
+  // "A component is changing an uncontrolled input to be controlled".
+  const [isFormReady, setIsFormReady] = useState(false);
 
   const [vaultConfigZodSchema, setVaultConfigZodSchema] = useState<
     z.ZodObject<Record<string, ZodTypeAny>>
@@ -51,34 +51,25 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
 
   const { setIsDirty } = useCrudDialogDirty();
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
-  // Get query client
   const queryClient = useQueryClient();
 
-  // Get vaults data from the merged Personal/Shared lists in the cache
   const vaultsData = getMergedQueryData<VaultsTableDto>(queryClient, queryKey);
 
-  // Get vault data by id
   const vaultData = vaultsData?.data.find((item) => item.id === rowId);
 
-  // Define form with zod schema.
   const form = useForm<z.infer<typeof vaultConfigZodSchema>>({
     resolver: zodResolver(vaultConfigZodSchema),
   });
 
-  // CustomApiTool uses a dedicated form schema instead of dynamic config.
   const selectedTypeValue = vaultData?.type ?? form.watch("selectedType")?.value;
   const isCustomApiTool = selectedTypeValue === "CustomApiTool";
 
-  // Extract stable primitive values for effect dependencies
   const selectedType = vaultData ? vaultData?.type : form.watch("selectedType")?.value;
 
-  // Fetch config on mount or when vaultData changes
   useEffect(() => {
     if (!selectedType) return;
 
-    // CustomApiTool uses a dedicated form schema; skip dynamic config loading.
     if (isCustomApiTool) {
       setVaultConfig([]);
       setVaultConfigZodSchema(getCustomApiToolVaultSchema());
@@ -87,7 +78,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
 
     setIsLoading(true);
 
-    // Get vault config from API and Set vault config and zod schema
     getNodeConfig(selectedType)
       .then((config) => {
         if (config) {
@@ -106,9 +96,8 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
         setIsLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType]); // ✅ Only primitive deps
+  }, [selectedType]);
 
-  // Get input and output keys (required at the time of form submission)
   const inputKeys: string[] = vaultConfig
     ?.filter((f) => f.direction === "Input")
     ?.map((f) => f.name);
@@ -137,7 +126,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
       {} as Record<string, T>,
     );
   }
-  // Get check availability state and methods
   const {
     isAvailable,
     isCheckPending,
@@ -152,7 +140,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
     checkAvailabilityAPIFn: isVaultNameAvailable,
   });
 
-  // Reset form values when vaultConfig or inputs/outputs change
   useEffect(() => {
     const schemaKeys = Object.keys(vaultConfigZodSchema.shape);
     if (schemaKeys.length === 0) return;
@@ -171,7 +158,6 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
 
     if (crudAction == "create") checkAvailabilityMutation({ userInput: name });
 
-    // CustomApiTool has its own form schema and default values.
     if (isCustomApiTool) {
       const mapped = mapCustomApiToolDataToFormValues(vaultData);
       const isCreate = crudAction === "create";
@@ -205,18 +191,16 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
         convertFromObject(savedData) as unknown as NodeInputType[],
       ),
     });
-    setIsFormReady(true); // Set form ready to true after resetting the form
+    setIsFormReady(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vaultConfig, vaultConfigZodSchema]);
 
-  // Destructor form values and methods
   const {
     control,
     formState: { isDirty },
     watch,
   } = form;
 
-  // Save the form dirty state
   useEffect(() => {
     setIsDirty(isDirty);
   }, [isDirty, setIsDirty]);

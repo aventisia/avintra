@@ -1,26 +1,30 @@
 ---
-name: audit-implementation
-description: "Review an issue's changed code against its approved architecture plan, save the audit report, and restart the architect loop when findings remain."
+name: audit
+description: "Review an issue's changed code against its approved plan, save a separate audit report for that round, then stop or request a fresh Architect session."
 argument-hint: "Issue number; optionally include a Gitea PR number or URL"
 user-invocable: true
 ---
 
 # Auditor: Review an Issue
 
-Stage 4 of the issue workflow. Review the implementation against the approved plan using the `code-review` skill, save the result, and either close the loop or request another Architect → Heavy Typist → Auditor cycle. This stage is read-only except for its audit report.
+Stage 4 of the issue workflow. Review the implementation against the approved plan using the `code-review` skill, save the result, and stop. If findings remain, ask the user to start a new Architect session; do not continue the loop here. This stage is read-only except for its audit report.
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
-- `start-implementation` has completed its slices and handed off the issue.
+- `build` has completed its slices and handed off the issue.
 - The user asks to audit/re-audit an issue implementation.
 
 ## Procedure
 
 ### 1. Read the approved artifacts
 
-- Read `local-issues/<issue-number>/02-architect-plan.md` and `03-heavy-typist-slices.md`.
-- If `04-audit-report.md` already exists, retain its history and treat the newest round as current.
-- If the plan or slices are missing, stop and ask for the missing artifact; do not infer the approved architecture from conversation history.
+- Resolve `N` as the latest numbered round with a matching approved plan and complete build report that has not yet received a completed audit. For `N` greater than 1, confirm the preceding audit is `NEEDS_REWORK`.
+- Read the matching `local-issues/<issue-number>/s2-architect-plan-r<N>.md` and `s3-build-report-r<N>.md`; confirm both use the same round and that every build slice is complete with validation recorded. Read earlier audit reports as needed to track finding history and remediation status.
+- If the matching plan or build report is missing, the rounds do not match, or an audit report for this round is already complete, stop and ask for clarification. Do not infer the approved architecture from conversation history or overwrite a completed report.
 
 ### 2. Establish the exact review scope
 
@@ -39,39 +43,39 @@ For the plan comparison, record a compact traceability table in the report: plan
 
 ### 4. Save the audit report
 
-Save or update:
+Save the audit for the same round as the reviewed plan and build report:
 
 ```text
-local-issues/<issue-number>/04-audit-report.md
+local-issues/<issue-number>/s4-audit-report-r<N>.md
 ```
 
 Include:
 
-- Audit round, date, issue, reviewed plan revision, and review target (PR or local base/commit).
+- Audit round, date, issue, reviewed plan/build paths, and review target (PR or local base/commit).
 - The code-review skill's review output and verdict, preserving its scope summary, diffstat, format, and section headings.
 - Plan conformance traceability and validation coverage, including gaps or unavailable checks.
-- Findings with stable IDs, severity, file/location, impact, and recommended remediation. Preserve earlier rounds when re-auditing and clearly label the latest round/status.
+- Findings with stable IDs, severity, file/location, impact, and recommended remediation. For rework, trace prior finding IDs as resolved or still open; keep each round's report separate.
 - A final status of exactly `NEEDS_REWORK` or `CLEAR`.
 
 Use `NEEDS_REWORK` for any actionable defect, missed acceptance criterion, unjustified plan deviation, or material validation gap. Use `CLEAR` only when no rework is required and the implementation conforms to the approved plan. Map `CLEAR` to the code-review verdict `pass`; map `NEEDS_REWORK` to `needs revision` or `reject`.
 
 ### 5. Close or restart the loop
 
-- **NEEDS_REWORK:** present the findings and ask the user to restart with `start-architect`, providing the issue number and audit report path. The Architect must plan against each finding before Heavy Typist changes code; then rerun this audit. Do not hand findings directly to implementation or fix them yourself.
-- **CLEAR:** report that the audit loop is complete and provide the report path. Do not merge, approve, or otherwise change the PR.
+- **NEEDS_REWORK:** present the findings and ask the user to start `architect` in a fresh session using a different model (recommended: advanced reasoning), providing the issue number and audit report path. The Architect must plan against each finding before Builder changes code. Do not load or invoke the Architect, hand findings directly to implementation, or fix them yourself. Stop after reporting.
+- **CLEAR:** report that the audit loop is complete and provide the report path. Do not merge, approve, or otherwise change the PR. Stop.
 
-Repeat Architect → Heavy Typist → Auditor until the latest report is `CLEAR`.
+For rework, the human starts each Architect → Heavy Typist → Auditor stage in its own fresh session with a different model from the preceding stage. Repeat until the latest report is `CLEAR`.
 
 ## Quality Criteria
 
-- The approved plan and slices are compared against every issue-specific change and recorded validation.
+- The matching approved plan and build report are compared against every issue-specific change and recorded validation.
 - Rework items have stable IDs and are traced through subsequent rounds until resolved.
-- The audit report exists at the canonical issue path and records the latest round clearly.
+- The audit report exists at `s4-audit-report-r<N>.md` and records the result for that round without overwriting earlier rounds.
 - The result is `NEEDS_REWORK` when any required correction remains, otherwise `CLEAR`.
 - The Auditor makes no implementation or PR changes and routes findings back through the Architect.
 
 ## See Also
 
 - `code-review` — strict implementation review, including Gitea PR and local change review.
-- `start-architect` — plan the implementation or address audit findings.
-- `start-implementation` — implement the approved plan and remediation slices.
+- `architect` — plan the implementation or address audit findings.
+- `build` — implement the approved plan and remediation slices.

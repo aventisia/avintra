@@ -208,7 +208,20 @@ Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`
 
 ## Issue workflow
 
-Gitea-driven, `tea`-CLI, staged skills live in `.agents/skills/`: `start-issue` (scout) → `start-architect` (plan) → `start-implementation` (build) → `audit-implementation` (verify). Intermediate artifacts are written under `local-issues/<issue-number>/`.
+Gitea-driven, `tea`-CLI, staged skills live in `.agents/skills/`: `scout` → `architect` → `build` → `audit`. Intermediate artifacts are written under `local-issues/<issue-number>/`.
+
+Each stage runs in its own fresh session using a different model from the preceding stage. The stage agent must complete its artifact/report, name the next skill and model role when another stage is required, then stop. It must not load/invoke the next skill or continue into another stage. The human starts each subsequent stage in a new session and selects the different model. An Auditor `CLEAR` result is terminal. Apply the same session boundary to every rework cycle after an audit finding.
+
+Use one file per workflow stage and round:
+
+```text
+local-issues/<issue-number>/s1-scout-report.md
+local-issues/<issue-number>/s2-architect-plan-r<N>.md
+local-issues/<issue-number>/s3-build-report-r<N>.md
+local-issues/<issue-number>/s4-audit-report-r<N>.md
+```
+
+A round is one Architect → Builder → Auditor cycle. Start with `r1`; only a `NEEDS_REWORK` audit at `rN` starts the next cycle at `rN+1`. All three round files use the same number. The build report contains its slices, progress, validation, and final summary. Never combine rounds or overwrite a completed round; resume only an incomplete artifact for that same round. Existing unnumbered artifacts (`01-scout-report.md`, `02-architect-plan.md`, `03-heavy-typist-slices.md`, `04-audit-report.md`) are read-only legacy context and must not be renamed, deleted, or overwritten. If no numbered round exists, the first new round is `r1`.
 
 ## Toolchain versions
 

@@ -1,17 +1,21 @@
 ---
-name: start-issue
+name: scout
 disable-model-invocation: true
 argument-hint: "Gitea issue number or URL"
-description: "Scout a Gitea issue, verify a focused investigation report with the user, create and push its branch, then hand off to start-architect."
+description: "Scout a Gitea issue, verify a focused investigation report with the user, create and push its branch, then stop for a fresh Architect session."
 ---
 
 # Scout an Issue
 
-Stage 1 of the issue workflow: read the issue, investigate enough to identify the relevant code and boundaries, save the scout report, create the issue branch, and hand off to `start-architect`. Do not design or implement the solution here.
+Stage 1 of the issue workflow: read the issue, investigate enough to identify the relevant code and boundaries, save the scout report, create the issue branch, and stop. Do not design or implement the solution here.
+
+## Session Boundary
+
+Each stage runs in its own fresh session and uses a different model from the preceding stage. The human starts the next stage; never load or invoke it from this session.
 
 ## When to Use
 
-- The user asks to start or investigate a Gitea issue, such as `start #42` or `/start-issue 42`.
+- The user asks to scout or investigate a Gitea issue, such as `start #42` or `/scout 42`.
 - The input is an issue number (`42`, `#42`) or a Gitea issue URL.
 
 If no issue reference is provided, ask for one. This skill is issue-only; do not infer a branch-only workflow.
@@ -45,7 +49,7 @@ If no issue reference is provided, ask for one. This skill is issue-only; do not
 - Inspect neighboring conventions, area-specific `AGENTS.md` files, and local feature `README.md` files.
 - Verify every proposed manifest path exists. Include the symbol or behavior to inspect and why it is relevant.
 - Separate confirmed findings from hypotheses, open questions, and unrelated paths that were checked and excluded.
-- Do not propose a detailed implementation plan or change code; planning belongs to `start-architect`.
+- Do not propose a detailed implementation plan or change code; planning belongs to `architect`.
 
 ### 5. Save and verify the scout report
 
@@ -54,10 +58,10 @@ Before writing the report, verify this is a Git worktree and inspect `git status
 Save the report at the repository root as:
 
 ```text
-local-issues/<issue-number>/01-scout-report.md
+local-issues/<issue-number>/s1-scout-report.md
 ```
 
-Create the issue directory if needed. If this report already exists, review and update that issue's report; do not overwrite unrelated content.
+Create the issue directory if needed. If this report already exists from an interrupted Scout stage, review and update it; do not overwrite unrelated content. Leave any legacy `01-scout-report.md` untouched.
 
 Include concise sections for:
 
@@ -93,9 +97,9 @@ Branch creation happens only after the user verifies the scout report. Never dis
 
 Do not commit or otherwise modify the issue or implementation as part of branch creation.
 
-### 7. Hand off to Architect
+### 7. Complete Scout stage and stop
 
-After successful branch creation, hand off to `start-architect` with the issue number and report path. Do not write the architecture plan or start implementation in this skill.
+After branch creation, report the issue, branch, scout-report path, and any push failure. Say the next step is `architect` in a fresh session using a different model (recommended: advanced reasoning). Do not load or invoke that skill, start planning, or continue into another stage. Stop here.
 
 ## Branch Naming
 
@@ -121,13 +125,13 @@ Examples:
 
 - The issue was read but never modified.
 - Questions were targeted to investigation-relevant unknowns; irrelevant code was excluded with rationale.
-- The final scout report exists at the exact issue path and its file manifest was verified by the user.
+- The final scout report exists at `local-issues/<issue-number>/s1-scout-report.md` and its file manifest was verified by the user.
 - The branch was created from fetched `origin/main` only after report confirmation; unrelated work was not moved.
 - The branch is pushed with upstream tracking, or the exact push failure is reported.
-- The Architect receives the issue number and scout report path.
+- The user receives the issue number and scout report path for a fresh Architect session; this session stops without invoking another stage.
 
 ## See Also
 
-- `start-architect` — turn the scout report into an approved implementation plan.
-- `start-implementation` — slice and implement the approved plan.
-- `audit-implementation` — review the implementation against the approved plan.
+- `architect` — turn the scout report into an approved implementation plan.
+- `build` — slice and implement the approved plan.
+- `audit` — review the implementation against the approved plan.

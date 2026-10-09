@@ -169,9 +169,9 @@ export const vaultAppIconMapper: Record<string, string> = {
 for (const integration of catalog) {
   if (integration.vaultType in vaultAppIconMapper) continue;
 
-  // Several catalog plugins can share one vaultType (e.g. OneDrive, Outlook,
-  // SharePoint and Teams all map to "M365"). When the vaultType is already a
-  // curated VaultAppsEnum member, reuse that icon instead of letting the first
+  // IMPORTANT NOTE: Several catalog plugins can share one vaultType (e.g. OneDrive,
+  // Outlook, SharePoint and Teams all map to "M365"). When the vaultType is already
+  // a curated VaultAppsEnum member, reuse that icon instead of letting the first
   // catalog plugin overwrite it.
   const enumValue = VaultAppsEnum[integration.vaultType as keyof typeof VaultAppsEnum];
   vaultAppIconMapper[integration.vaultType] = vaultAppIconMapper[enumValue] ?? integration.icon;
