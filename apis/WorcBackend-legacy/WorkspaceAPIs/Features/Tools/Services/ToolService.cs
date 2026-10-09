@@ -594,6 +594,7 @@ public class ToolService : IToolService
 
             // Map DTO to entity, force custom type, and set audit fields.
             var toolToCreate = toolDto.Adapt<Tool>();
+            toolToCreate.IsActive = true;
             toolToCreate.Type = ComponentTypeEnum.Custom;
             toolToCreate.EnvType = _currentTenantService.CurrentEnvType;
             toolToCreate.CreatedByUserId = _currentUserId;
@@ -876,11 +877,11 @@ public class ToolService : IToolService
     }
 
     // Deletes multiple tools by their IDs.
-    public async Task<ServiceResponse<bool>> DeleteToolsAsync(List<Guid> toolIds)
+    public async Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds)
     {
-        var serviceResponse = new ServiceResponse<bool>
+        var serviceResponse = new ServiceResponse<int>
         {
-            Data = false,
+            Data = 0,
             Message = "Failed to delete tools."
         };
 
@@ -935,7 +936,7 @@ public class ToolService : IToolService
                 return serviceResponse.Update(
                     $"Cannot delete the following tool(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}",
                     400,
-                    false);
+                    0);
             }
 
             // Remove related resource shares and delete the tools.
@@ -951,7 +952,7 @@ public class ToolService : IToolService
             return serviceResponse.Update(
                 $"{toolsToDelete.Count} tool(s) deleted successfully.",
                 200,
-                true);
+                toolsToDelete.Count);
         }
         catch (Exception ex)
         {

@@ -7,104 +7,135 @@ public class ToolsController : BaseApiController
 {
     private readonly IToolService _toolService;
 
-    // Initializes a new instance of the <see cref="ToolsController"/> class.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ToolsController"/> class.
+    /// </summary>
+    /// <param name="toolService">The tool service.</param>
     public ToolsController(IToolService toolService)
     {
         _toolService = toolService;
     }
 
-    // Gets all personal tools.
+    /// <summary>
+    /// Gets all personal tools.
+    /// </summary>
     [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ToolDto>>>> GetPersonalTools()
     {
         return ResultHelper(await _toolService.GetToolsAsync(true));
     }
 
-    // Gets all shared tools.
+    /// <summary>
+    /// Gets all shared tools.
+    /// </summary>
     [HttpGet("list/shared")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ToolDto>>>> GetSharedTools()
     {
         return ResultHelper(await _toolService.GetToolsAsync(false));
     }
 
-    // Gets the custom tools the current user can use.
+    /// <summary>
+    /// Gets the custom tools the current user can use.
+    /// </summary>
     [HttpGet("usable")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolDto>>>> GetUsableTools()
     {
         return ResultHelper(await _toolService.GetUsableToolsAsync());
     }
 
-    // Gets the operations exposed by a usable tool.
+    /// <summary>
+    /// Gets the operations exposed by a usable tool.
+    /// </summary>
     [HttpGet("usable/{toolId}/operations")]
     public async Task<ActionResult<ServiceResponse<UsableToolOperationsDto>>> GetUsableToolOperations(Guid toolId)
     {
         return ResultHelper(await _toolService.GetUsableToolOperationsAsync(toolId));
     }
 
-    // Gets the usable tools together with their enriched operations in a single payload.
+    /// <summary>
+    /// Gets the usable tools together with their enriched operations in a single payload.
+    /// </summary>
     [HttpGet("usable/catalog")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>>> GetUsableToolCatalog()
     {
         return ResultHelper(await _toolService.GetUsableToolCatalogAsync());
     }
 
-    // Checks whether a tool name is available.
+    /// <summary>
+    /// Checks whether a tool name is available.
+    /// </summary>
     [HttpPost("is-available")]
     public async Task<ActionResult<ServiceResponse<TrueFalseResultDto>>> IsToolNameAvailable([FromBody] CheckAvailabilityDto checkAvailabilityDto)
     {
         return ResultHelper(await _toolService.IsToolNameAvailableAsync(checkAvailabilityDto));
     }
 
-    // Gets a tool by its ID.
+    /// <summary>
+    /// Gets a tool by its ID.
+    /// </summary>
     [HttpGet("{toolId}")]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> GetToolById(Guid toolId)
     {
         return ResultHelper(await _toolService.GetToolByIdAsync(toolId));
     }
 
-    // Gets a tool by its name within the current environment.
+    /// <summary>
+    /// Gets a tool by its name within the current environment.
+    /// </summary>
     [HttpGet("by-name/{toolName}")]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> GetToolByName(string toolName)
     {
         return ResultHelper(await _toolService.GetToolByNameAsync(toolName));
     }
 
-    // Creates a new tool.
+    /// <summary>
+    /// Creates a new tool.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> CreateTool([FromBody] ToolDto toolDto)
     {
         return ResultHelper(await _toolService.InsertToolAsync(toolDto));
     }
 
-    // Updates an existing tool.
+    /// <summary>
+    /// Updates an existing tool.
+    /// </summary>
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> UpdateTool([FromBody] ToolDto toolDto)
     {
         return ResultHelper(await _toolService.UpdateToolAsync(toolDto));
     }
 
-    // Deletes a tool.
+    /// <summary>
+    /// Deletes a tool.
+    /// </summary>
     [HttpDelete("{toolId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteTool(Guid toolId)
     {
         return ResultHelper(await _toolService.DeleteToolAsync(toolId));
     }
 
-    // Deletes multiple tools.
+    /// <summary>
+    /// Deletes multiple tools.
+    /// </summary>
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteMultipleTools([FromBody] List<Guid> toolIds)
+    public async Task<ActionResult<ServiceResponse<int>>> DeleteMultipleTools([FromBody] List<Guid> toolIds)
     {
         return ResultHelper(await _toolService.DeleteToolsAsync(toolIds));
     }
 
-    // Tests a tool operation.
+    /// <summary>
+    /// Tests a tool operation.
+    /// </summary>
     [HttpPost("{toolId}/test")]
     public async Task<ActionResult<ServiceResponse<TestToolResponseDto>>> TestTool(Guid toolId, [FromBody] TestToolDto testToolDto)
     {
         return ResultHelper(await _toolService.TestToolAsync(toolId, testToolDto));
     }
 
-    // Activates or deactivates a tool.
+    /// <summary>
+    /// Activates or deactivates a tool.
+    /// </summary>
     [HttpPost("{toolId}/active-state")]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> SetToolActiveState(Guid toolId, [FromBody] SetToolActiveStateRequest request)
     {

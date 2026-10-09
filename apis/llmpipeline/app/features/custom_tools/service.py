@@ -9,9 +9,10 @@ import httpx
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.features.custom_tools.credential_client import (
-    extract_credential_material,
-    fetch_decrypted_credential,
+from app.features.custom_tools.credential_client import apply_credential_auth
+from app.features.custom_tools.custom_tool_executor import (
+    path_placeholder_names,
+    resolve_path_template,
 )
 
 
@@ -45,7 +46,11 @@ async def execute_tool_test(
         except json.JSONDecodeError:
             logger.warning("Failed to parse OpenAPI spec for operation resolution")
 
-    full_url = urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
+    # Substitute {placeholder} path segments (e.g. /users/{id}) before the call.
+    path_placeholders = path_placeholder_names(path)
+    resolved_path = resolve_path_template(path, parameters or {})
+
+    full_url = urljoin(base_url.rstrip("/") + "/", resolved_path.lstrip("/"))
 
     # Resolve authentication from the credential vault when an identity is provided.
     if credential_name and access_token:
@@ -57,18 +62,23 @@ async def execute_tool_test(
             tenant_id=tenant_id,
             space_id=space_id,
         )
-        _inject_auth(headers, query_params, credential)
+        apply_credential_auth(headers, query_params, credential)
 
     if parameters:
+        # Path placeholders were already consumed into the URL; keep the rest as
+        # query parameters (GET/DELETE) or the JSON request body.
+        remaining_parameters = {
+            key: value for key, value in parameters.items() if key not in path_placeholders
+        }
         if method in ("GET", "DELETE"):
-            query_params = {**query_params, **parameters}
+            query_params = {**query_params, **remaining_parameters}
         else:
-            body_data = parameters
+            body_data = remaining_parameters or None
 
     start = time.perf_counter()
 
     try:
-        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:
             response = await client.request(
                 method=method,
                 url=full_url,
@@ -100,25 +110,3 @@ async def execute_tool_test(
             "duration_ms": round(elapsed, 2),
         }
 
-
-def _inject_auth(
-    headers: dict[str, str],
-    query_params: dict[str, Any],
-    credential: dict[str, Any],
-) -> None:
-    credential_type, parameters = extract_credential_material(credential)
-
-    if credential_type == "ApiKeyHeader":
-        key_name = parameters.get("KeyName") or parameters.get("key_name") or "X-API-Key"
-        headers[key_name] = parameters.get("ApiKey") or parameters.get("api_key") or ""
-    elif credential_type == "ApiKeyQuery":
-        key_name = parameters.get("KeyName") or parameters.get("key_name") or "api_key"
-        query_params[key_name] = parameters.get("ApiKey") or parameters.get("api_key") or ""
-    elif credential_type == "Bearer":
-        headers["Authorization"] = f"Bearer {parameters.get('Token') or parameters.get('token', '')}"
-    elif credential_type == "Basic":
-        import base64
-        username = parameters.get("Username") or parameters.get("basic_username") or ""
-        password = parameters.get("Password") or parameters.get("basic_password") or ""
-        encoded = base64.b64encode(f"{username}:{password}".encode()).decode()
-        headers["Authorization"] = f"Basic {encoded}"

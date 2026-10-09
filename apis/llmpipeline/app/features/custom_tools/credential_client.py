@@ -1,3 +1,5 @@
+import base64
+from typing import Any
 from uuid import UUID
 
 import httpx
@@ -59,3 +61,54 @@ def extract_credential_material(
     credential_type = credential.get("Type") or credential.get("type")
     parameters = credential.get("Parameters") or credential.get("parameters") or {}
     return credential_type, parameters
+
+
+def apply_credential_auth(
+    headers: dict[str, str],
+    query_params: dict[str, Any],
+    credential: dict | None,
+    fallback_type: str | None = None,
+) -> None:
+    """Resolve a vault credential into concrete HTTP auth for a custom tool.
+
+    Mirrors the backend ``CustomApiTool`` credential contract (see
+    ``CustomToolConnectorService.ResolveAuthenticationAsync``) so the Python
+    runtime and the .NET runtime read the same parameter keys:
+
+    - ``ApiKeyHeader``: ``headerName`` + ``apiKey``
+    - ``ApiKeyQuery``:  ``parameterName`` + ``apiKey``
+    - ``Bearer``:       ``token``
+    - ``Basic``:        ``username`` + ``password``
+
+    ``fallback_type`` is used when the credential carries no ``Type`` (e.g. the
+    tool's own ``authentication_type``). Legacy camelCase/PascalCase keys are
+    still accepted as fallbacks.
+    """
+    credential_type, parameters = extract_credential_material(credential)
+    credential_type = credential_type or fallback_type
+    if not credential_type or credential_type.lower() == "none":
+        return
+
+    if credential_type == "ApiKeyHeader":
+        key_name = _first_value(parameters, "headerName", "keyName", "KeyName") or "X-API-Key"
+        headers[key_name] = _first_value(parameters, "apiKey", "ApiKey") or ""
+    elif credential_type == "ApiKeyQuery":
+        key_name = _first_value(parameters, "parameterName", "keyName", "KeyName") or "api_key"
+        query_params[key_name] = _first_value(parameters, "apiKey", "ApiKey") or ""
+    elif credential_type == "Bearer":
+        token = _first_value(parameters, "token", "Token")
+        headers["Authorization"] = f"Bearer {token or ''}"
+    elif credential_type == "Basic":
+        username = _first_value(parameters, "username", "Username") or ""
+        password = _first_value(parameters, "password", "Password") or ""
+        encoded = base64.b64encode(f"{username}:{password}".encode()).decode()
+        headers["Authorization"] = f"Basic {encoded}"
+
+
+def _first_value(parameters: dict, *keys: str) -> str | None:
+    """Return the first non-empty value among ``keys`` as a string."""
+    for key in keys:
+        value = parameters.get(key)
+        if value:
+            return str(value)
+    return None
