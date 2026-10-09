@@ -69,6 +69,15 @@ builder.Services.AddHttpClient("Corsair", client =>
     // so disable automatic redirect following.
     AllowAutoRedirect = false
 });
+builder.Services.AddHttpClient("CustomTool", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // Custom-tool calls target user-configured URLs; redirects are disabled so a
+    // 3xx cannot bypass the base-URL host guardrail.
+    AllowAutoRedirect = false
+});
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
 var app = builder.Build();
