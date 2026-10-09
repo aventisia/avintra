@@ -1,6 +1,6 @@
 ---
-name: start-architect
-description: "Read an issue's scout report and any audit findings, recommend a planning mode, produce an approved architecture plan, then stop for a fresh Heavy Typist session."
+name: architect
+description: "Read an issue's scout report and audit findings, create the approved plan for the next round, then stop for a fresh Heavy Typist session."
 argument-hint: "Issue number"
 user-invocable: true
 ---
@@ -15,16 +15,16 @@ Each stage runs in its own fresh session and uses a different model from the pre
 
 ## When to Use
 
-- `start-issue` has completed and saved `01-scout-report.md`.
-- `audit-implementation` found issues and the user is restarting the plan → implementation → audit loop.
+- `scout` has completed and saved `s1-scout-report.md`.
+- `audit` found issues and the user is restarting the plan → build → audit loop.
 
 ## Procedure
 
 ### 1. Read the source material
 
-- Resolve the issue number and read `local-issues/<issue-number>/01-scout-report.md`.
-- If `local-issues/<issue-number>/04-audit-report.md` exists, read it in full. For an audit loop, plan against every unresolved finding and preserve its finding IDs/references.
-- If the scout report is missing, an audit report referenced by the handoff is missing, or the issue number is ambiguous, stop and ask for the correct input. The audit report is optional on the initial planning pass. Do not reconstruct a report from memory.
+- Resolve the issue number and read `local-issues/<issue-number>/s1-scout-report.md`. For a preexisting issue only, if it is absent, read legacy `01-scout-report.md` without changing it.
+- Determine the round before drafting: use `r1` when no numbered round exists; after a latest numbered audit `s4-audit-report-rN.md` with `NEEDS_REWORK`, use `rN+1`. Read the latest audit and its matching plan/build reports, plus earlier audit reports needed to track finding history. If only a legacy audit exists, read it and any related legacy plan/build reports as context and use `r1` for the first numbered rework round.
+- If the latest audit, numbered or legacy, is `CLEAR`, stop; it is terminal. If a required report is missing, the round is ambiguous, or a completed plan already exists for the selected round, stop and ask for clarification. Do not reconstruct artifacts from memory or overwrite a completed round.
 - Read current code, relevant `AGENTS.md` files, and each affected feature's local `README.md` when present before finalizing technical choices.
 
 ### 2. Recommend a planning mode
@@ -53,29 +53,29 @@ Ask the user to approve, revise, or stop. Do not save the plan until the user ex
 
 ### 4. Save the approved plan
 
-After explicit approval, save the final plan at:
+After explicit approval, save the final plan at the selected round's path:
 
 ```text
-local-issues/<issue-number>/02-architect-plan.md
+local-issues/<issue-number>/s2-architect-plan-r<N>.md
 ```
 
-This is the canonical filename. Do not use `02-architect.md` or create a second copy. Record the approval, selected planning mode, issue number, audit findings addressed (if any), plan content, and validation expectations. Do not overwrite an unrelated plan; if a plan exists, update it only for this approved revision and preserve relevant history or decisions.
+Record the round, approval, selected planning mode, issue number, audit findings addressed (if any), plan content, and validation expectations. Each rework plan gets a new round file; never append rounds to one plan or overwrite an existing round. Keep legacy `02-architect-plan.md` unchanged.
 
 ### 5. Complete Architect stage and stop
 
-After saving the approved plan, report its path, the approval, and any key assumptions. Say the next step is `start-implementation` in a fresh session using a different model (recommended: code-generation model). Do not load or invoke that skill or begin implementation here. Stop.
+After saving the approved plan, report its path, the approval, and any key assumptions. Say the next step is `build` in a fresh session using a different model (recommended: code-generation model). Do not load or invoke that skill or begin implementation here. Stop.
 
 ## Quality Criteria
 
-- The scout report and any audit report were read from their canonical paths.
+- The scout report and all relevant round-specific audit/build/plan reports were read.
 - The planning mode was recommended with a rationale and used consistently.
 - Every known audit finding is addressed or explicitly identified as unresolved with a reason.
 - The full plan received explicit human approval before it was saved.
-- The approved plan exists at `local-issues/<issue-number>/02-architect-plan.md`.
-- The approved plan is ready for the user to start `start-implementation` in a fresh session with a different model; this session stops without invoking it.
+- The approved plan exists at `local-issues/<issue-number>/s2-architect-plan-r<N>.md` for the selected round.
+- The approved plan is ready for the user to start `build` in a fresh session with a different model; this session stops without invoking it.
 
 ## See Also
 
-- `start-issue` — Scout an issue and create its branch.
-- `start-implementation` — slice and implement the approved plan.
-- `audit-implementation` — review the changed code against the plan.
+- `scout` — Scout an issue and create its branch.
+- `build` — slice and implement the approved plan.
+- `audit` — review the changed code against the plan.
