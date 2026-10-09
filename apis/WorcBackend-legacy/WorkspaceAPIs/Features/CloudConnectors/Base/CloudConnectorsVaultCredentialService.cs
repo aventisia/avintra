@@ -6,17 +6,27 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
     private readonly ILogger<CloudConnectorsVaultCredentialService> _logger;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceShareService _resourceShareService;
+    private readonly Guid _currentUserId;
 
     public CloudConnectorsVaultCredentialService(
         IUnitOfWork unitOfWork,
         ILogger<CloudConnectorsVaultCredentialService> logger,
         IStringEncryptionService stringEncryptionService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceShareService resourceShareService,
+        IHttpContextAccessor httpContextAccessor)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _stringEncryptionService = stringEncryptionService;
         _currentTenantService = currentTenantService;
+        _resourceShareService = resourceShareService;
+        _currentUserId = Guid.TryParse(
+            httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"),
+            out var userId)
+            ? userId
+            : Guid.Empty;
     }
 
     public async Task<VaultCredentialObj?> GetVaultCredentialAsync(string credentialName)
@@ -38,6 +48,15 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                 .FirstOrDefaultAsync();
                 
             if (vaultCredential == null) return null;
+
+            if (!await CanUseCredentialAsync(vaultCredential))
+            {
+                _logger.LogWarning(
+                    "Denied vault access to credential {CredentialName} for user {UserId}.",
+                    credentialName,
+                    _currentUserId);
+                return null;
+            }
 
             // Decrypt and merge key-value pairs into the VaultCredentialObj's data object
             var decryptedData = new Dictionary<string, string>();
@@ -86,5 +105,31 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Indicates whether the current user may read a credential. System/background
+    /// contexts without an authenticated user are allowed.
+    /// </summary>
+    private async Task<bool> CanUseCredentialAsync(AppSecret credential)
+    {
+        if (_currentUserId == Guid.Empty ||
+            credential.CreatedByUserId == _currentUserId ||
+            credential.IsTenantWideAccess)
+        {
+            return true;
+        }
+
+        var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            _currentUserId,
+            credential.Id,
+            ResourceTypeEnum.AppSecret,
+            credential.CreatedByUserId,
+            credential.IsTenantWideAccess,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.View,
+            ResourceAccessTypeEnum.Edit);
+
+        return hasAccess;
     }
 }

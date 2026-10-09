@@ -3,19 +3,14 @@ using System.Net;
 
 namespace NodeLibrary.CloudConnectorNodes;
 
-// This node is not visible in the node selector; it is the runtime node that
-// executes a custom tool operation. It calls the Workspace API custom-tool
-// adapter, which resolves the tool, its operation and its Vault credential
-// server-side, builds the outbound HTTP request and proxies it to the tool's
-// base URL. The executor's cloudConnectorNode preprocessing routes
-// "CustomTool/{toolName}.{operationId}" nodes here.
+/// <summary>
+/// Executes a custom tool operation through the Workspace API custom-tool adapter.
+/// </summary>
 public class ProcessCustomToolRequestNode : BaseNode
 {
     private static readonly HttpClient _httpClient = new()
     {
-        // The adapter enforces its own 30-second upstream timeout, so the client
-        // waits longer to let the adapter report the timeout instead of failing
-        // the node with an opaque cancellation.
+        // IMPORTANT NOTE: the adapter enforces a 30-second upstream timeout, so this client waits longer to let it report the timeout.
         Timeout = TimeSpan.FromSeconds(60)
     };
 
@@ -42,8 +37,7 @@ public class ProcessCustomToolRequestNode : BaseNode
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
 
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
-            // EnvironmentConfig.AppBaseUrl is typically just a host (e.g. "avintra.aventisia.com"),
-            // so ensure we have an absolute HTTPS URI before calling the backend.
+            // IMPORTANT NOTE: AppBaseUrl is configured as a bare host, so it must be made absolute here.
             var normalizedBaseUrl = baseUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
                                     baseUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
                 ? baseUrl.TrimEnd('/')
@@ -57,7 +51,7 @@ public class ProcessCustomToolRequestNode : BaseNode
                 provider = "customtool",
                 action = action ?? string.Empty,
                 credentialName = credentialName ?? string.Empty,
-                payload = ParsePayload(payload) // Parse the envelope into JSON when valid, else send the raw string
+                payload = ParsePayload(payload)
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
@@ -71,8 +65,7 @@ public class ProcessCustomToolRequestNode : BaseNode
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            // Non-2xx responses carry a plain-text message (BaseApiController), so surface
-            // that instead of an opaque transport failure.
+            // IMPORTANT NOTE: non-2xx responses carry a plain-text message, not the response envelope.
             if (!response.IsSuccessStatusCode)
             {
                 StatusMessage.Set(context, BuildErrorStatus(response.StatusCode, responseContent));
@@ -130,7 +123,6 @@ public class ProcessCustomToolRequestNode : BaseNode
         }
         catch (JsonException)
         {
-            // Error responses are plain text, not JSON.
             return responseContent.Trim();
         }
     }

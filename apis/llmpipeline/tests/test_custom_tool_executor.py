@@ -10,18 +10,26 @@ Covers the three runtime defects fixed alongside the review:
   keys (``headerName``/``parameterName``/``apiKey``/``username``/``password``/
   ``token``).
 - ``resolve_path_template`` / ``path_placeholder_names`` must substitute and
-  report ``{placeholder}`` path segments.
+  report ``{placeholder}`` path segments, percent-encoding each value.
+- ``validate_public_http_url`` must reject non-http schemes and hosts that
+  resolve to non-public addresses.
 
 Run from ``apis/llmpipeline``:
 
     ./.venv/Scripts/python.exe -m pytest tests/test_custom_tool_executor.py -q
 """
 
+import pytest
+
 from app.features.custom_tools.credential_client import apply_credential_auth
 from app.features.custom_tools.custom_tool_executor import (
     _extract_body,
     path_placeholder_names,
     resolve_path_template,
+)
+from app.features.custom_tools.url_guard import (
+    UnsafeUrlError,
+    validate_public_http_url,
 )
 
 
@@ -127,5 +135,37 @@ def test_path_placeholder_helpers():
     assert path_placeholder_names("/users/{id}/posts/{postId}") == {"id", "postId"}
     assert (
         resolve_path_template("/users/{id}/posts/{postId}", {"id": 7, "postId": "a b"})
-        == "/users/7/posts/a b"
+        == "/users/7/posts/a%20b"
     )
+
+
+def test_path_placeholder_encoding_blocks_traversal():
+    assert (
+        resolve_path_template("/files/{name}", {"name": "../secrets"})
+        == "/files/..%2Fsecrets"
+    )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1/internal",
+        "http://10.0.0.5/internal",
+        "http://169.254.169.254/latest/meta-data",
+        "http://[::1]/internal",
+        "http://192.168.1.10/admin",
+    ],
+)
+def test_validate_public_http_url_blocks_non_public_hosts(url):
+    with pytest.raises(UnsafeUrlError):
+        validate_public_http_url(url)
+
+
+@pytest.mark.parametrize("url", ["ftp://example.com/x", "file:///etc/passwd", "/relative"])
+def test_validate_public_http_url_blocks_non_http_schemes(url):
+    with pytest.raises(UnsafeUrlError):
+        validate_public_http_url(url)
+
+
+def test_validate_public_http_url_allows_public_hosts():
+    assert validate_public_http_url("https://93.184.216.34/api") == "https://93.184.216.34/api"
