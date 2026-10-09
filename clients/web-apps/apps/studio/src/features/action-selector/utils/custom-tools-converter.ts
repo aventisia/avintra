@@ -236,12 +236,8 @@ export function buildCustomToolNodeConfig(
   nodeUniqueName: string,
   operation?: UsableToolOperation,
 ): NodeConfigSchemaType {
-  // Display-only: the node name carries "{toolName}.{operationId}" (tool names
-  // may contain dots, so the operation is the segment after the final dot).
   const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
 
-  // Schema-derived defaults: sections the operation's schema declares are
-  // scaffolded into the JSON editors instead of starting blank.
   const headersDefault = buildHeadersDefault(operation);
   const parametersDefault = buildParametersDefault(operation);
   const requestPayloadDefault = buildRequestPayloadDefault(operation);
@@ -257,12 +253,6 @@ export function buildCustomToolNodeConfig(
     },
   ];
 
-  // Section editors: each editor only appears when the operation schema
-  // declares entries for that section — empty/null sections are omitted from
-  // the form entirely. The payload editor additionally requires a
-  // body-capable method (POST, PUT, PATCH); the backend ignores the payload
-  // section for every other method. When the operation schema is unknown the
-  // generic three-editor form is kept so values remain authorable manually.
   const headersField: DCPFieldSchemaType = {
     direction: "Input",
     type: "json-editor",
@@ -356,25 +346,15 @@ export function convertToolOperationsToActions(
     const method = operation.method?.toUpperCase() ?? "";
     const path = operation.path ?? "";
 
-    // Action label: `operation.summary`, else a formatted `operationId`.
     const label = operation.summary?.trim() || formatOperationId(operation.operationId);
 
-    // Description: operation description, then summary, then METHOD + path.
     const description =
       operation.description?.trim() || operation.summary?.trim() || `${method} ${path}`.trim();
 
-    // Icon: per-operation x-agent-node icon first, then the tool icon, then the
-    // shared wrench glyph key — the same resolution L2 renders with.
     const icon = operation.icon || toolIcon;
 
-    // Color: per-operation x-agent-node accent color, else the platform default.
     const color = operation.color || DEFAULT_TOOL_NODE_COLOR;
 
-    // Inputs: credential selector plus the three JSON editors the DCP renders
-    // (headers, parameters, request payload). Sections the operation's schema
-    // declares are mapped in as the initial values; the Request Payload input
-    // is only added for POST, PUT and PATCH, since the backend ignores the
-    // payload section for every other method.
     const inputs: NodeInputType[] = [{ key: CUSTOM_TOOL_CREDENTIAL_FIELD, value: "" }];
     const headersDefault = buildHeadersDefault(operation);
     const parametersDefault = buildParametersDefault(operation);
@@ -385,7 +365,6 @@ export function convertToolOperationsToActions(
     if (requestPayloadDefault)
       inputs.push({ key: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD, value: requestPayloadDefault });
 
-    // Output: the upstream response body, exposed as `Result`.
     const outputs: NodeOutputType[] = [
       {
         key: "Result",
@@ -398,8 +377,7 @@ export function convertToolOperationsToActions(
 
     return {
       type: "cloudConnectorNode" as const,
-      // Unique node identity: "CustomTool/{toolName}.{operationId}" so the runtime
-      // routes on the keyword and the backend resolves the tool by name.
+      // IMPORTANT NOTE: node identity is persisted; the runtime routes on the "CustomTool/" prefix.
       name: getCustomToolNodeName(tool.name, operation.operationId),
       label,
       description,
@@ -410,9 +388,6 @@ export function convertToolOperationsToActions(
       supportedPlatforms: ["cloud", "windows"],
       inputs,
       outputs,
-      // Actions are disabled when the operation is unverified OR the tool itself
-      // is inactive: unverified actions stay visible (flagged) but cannot be
-      // selected, and inactive tools never emit enabled actions.
       isVerified: operation.isVerified === true,
       disabled: operation.isVerified !== true || !tool.isActive,
     };

@@ -149,8 +149,7 @@ public sealed class CustomToolPayloadSections
             return;
         }
 
-        // Preserve the exact JSON text (arrays/scalars) rather than a re-formatted
-        // CLR rendering, so the upstream receives the authored body unchanged.
+        // IMPORTANT NOTE: array/scalar bodies must be forwarded verbatim, not re-rendered from CLR.
         RequestPayload = element.Value.GetRawText();
     }
 
@@ -205,7 +204,6 @@ public sealed class CustomToolPayloadSections
                 }
                 catch (JsonException)
                 {
-                    // Not JSON: treat raw text as a string body value.
                     return JsonSerializer.SerializeToElement(text);
                 }
 

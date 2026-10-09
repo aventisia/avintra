@@ -76,6 +76,10 @@ public static class CustomToolActionHelpers
         ICurrentTenantService currentTenantService,
         string? reference)
     {
+        Guid? targetSpaceId = currentTenantService.CurrentSpaceId == Guid.Empty
+            ? null
+            : currentTenantService.CurrentSpaceId;
+
         foreach (var candidate in SplitActionCandidates(reference))
         {
             // Current convention: the tool-name portion.
@@ -84,7 +88,8 @@ public static class CustomToolActionHelpers
                     w.Name.ToLower() == candidate.ToolName.ToLower() &&
                     w.Type == ComponentTypeEnum.Custom &&
                     w.TenantId == currentTenantService.CurrentTenantId &&
-                    w.EnvType == currentTenantService.CurrentEnvType)
+                    w.EnvType == currentTenantService.CurrentEnvType &&
+                    w.SpaceId == targetSpaceId)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
@@ -96,7 +101,8 @@ public static class CustomToolActionHelpers
                         w.Id == candidate.ToolId &&
                         w.Type == ComponentTypeEnum.Custom &&
                         w.TenantId == currentTenantService.CurrentTenantId &&
-                        w.EnvType == currentTenantService.CurrentEnvType)
+                        w.EnvType == currentTenantService.CurrentEnvType &&
+                        w.SpaceId == targetSpaceId)
                     .IgnoreQueryFilters()
                     .FirstOrDefaultAsync();
             }

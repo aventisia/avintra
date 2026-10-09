@@ -1,15 +1,16 @@
 import re
 import time
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from app.core.logger import logger
 from app.features.custom_tools.vault_credential_client import (
     apply_credential_auth,
     fetch_decrypted_vault_credential,
 )
 from app.features.custom_tools.schemas import ToolOperation
+from app.features.custom_tools.url_guard import UnsafeUrlError, ensure_public_http_url
 
 _PATH_PLACEHOLDER_PATTERN = re.compile(r"\{([^/{}]+)\}")
 
@@ -55,8 +56,18 @@ async def execute_operation(
 
     url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
 
+    try:
+        await ensure_public_http_url(url)
+    except UnsafeUrlError as error:
+        return {
+            "success": False,
+            "status_code": None,
+            "body": str(error),
+            "duration_ms": 0.0,
+        }
+
     start = time.perf_counter()
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:
         response = await client.request(
             method=method,
             url=url,
@@ -83,7 +94,7 @@ def resolve_path_template(path_template: str, parameters: dict[str, Any]) -> str
     """Substitute ``{placeholder}`` tokens in a path template from ``parameters``."""
     result = path_template
     for key, value in parameters.items():
-        result = result.replace(f"{{{key}}}", str(value))
+        result = result.replace(f"{{{key}}}", quote(str(value), safe=""))
     return result
 
 
