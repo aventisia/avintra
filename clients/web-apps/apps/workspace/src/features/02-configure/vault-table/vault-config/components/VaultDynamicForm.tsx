@@ -31,10 +31,9 @@ interface VaultDynamicFormProps {
 
 const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const [showOutputFields, setShowOutputFields] = useState(false);
-  // Tracks the full submit lifecycle (including the OAuth consent flow) so the
-  // loader stays visible until the dialog is ready to close. `isPending` from
-  // react-query turns off as soon as the API responds, but for OAuth credentials
-  // the dialog must remain busy until consent completes.
+  // IMPORTANT NOTE: The loader must stay visible for the whole submit lifecycle (API + OAuth
+  // consent). `isPending` from react-query clears as soon as the API responds, but OAuth
+  // credentials require the dialog to remain busy until consent completes.
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { onCloseConfirmed } = useCrudDialogDirty();
 
@@ -59,10 +58,8 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
     vaultData,
   } = useVaultDynamicForm({ rowId, crudAction });
 
-  // Watch all form values
   const watchedValues = watch();
 
-  // Check if output fields should be shown based on node configuration and watched values
   useEffect(() => {
     const renderedOutputFields = vaultConfig.filter((field) =>
       shouldRenderField("Output", field, watchedValues),
@@ -83,13 +80,11 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const isCustomApiToolSelected = isType === "CustomApiTool" || vaultData?.type === "CustomApiTool";
   const isOAuthCredential = Boolean(isType && OAUTH_CREDENTIAL_TYPES.has(isType));
 
-  // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
-    // Keep the loader visible for the whole submit lifecycle (API + OAuth consent).
     setIsSubmitting(true);
 
     if (isCustomApiToolSelected) {
-      // Use the live form values instead of the parsed resolver output so that
+      // IMPORTANT NOTE: Use live form values instead of the parsed resolver output so
       // transient/initial empty schemas do not strip the CustomApiTool fields.
       const rawValues = form.getValues();
 
@@ -120,10 +115,8 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
       return;
     }
 
-    // Extract node inputs and outputs from formData
     const { inputs } = refineSubmittedIO("nodeUniqueName", formData, inputKeys, outputKeys);
     if (action == "create") {
-      // Create or update the config
       mutate({
         type: formData.selectedType?.value,
         name: formData.name,
@@ -145,7 +138,6 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
     }
   };
 
-  // Close dialog after successful create or update
   useEffect(() => {
     if ((action === "create" && isCreateComplete) || (action === "update" && isUpdateComplete)) {
       setIsSubmitting(false);
@@ -163,7 +155,6 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
         className="px-2.5 pb-5"
         disabled={isReadOnly || isUpdating || isSubmitting}
       >
-        {/* Vault Id */}
         {isReadOnly && <InputField name="id" label="Vault Id" value={rowId} />}
         {action == "create" && (
           <>
@@ -212,25 +203,19 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
                   nonErrorMessage={availabilityMessage}
                 />
 
-                {/* Input fields */}
                 <div className="mt-1 space-y-3.5">
                   {vaultConfig.map((field) => {
-                    // Check if the field should be rendered based on direction and renderIf conditions
                     if (!shouldRenderField("Input", field, watchedValues)) {
-                      //Remove the key from inputKeys if the field is not rendered
                       if (inputKeys.includes(field.name))
                         inputKeys.splice(inputKeys.indexOf(field.name), 1);
                       return null;
                     }
 
-                    // Add the field name to inputKeys if not already present
                     if (!inputKeys.includes(field.name)) inputKeys.push(field.name);
 
-                    // Render the field
                     return <RenderField key={field.name} {...field} />;
                   })}
                 </div>
-                {/* Output fields */}
                 {showOutputFields ? (
                   <>
                     <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
@@ -240,15 +225,12 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
 
                     <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
                       {vaultConfig.map((field) => {
-                        // Check if the field should be rendered based on direction and renderIf conditions
                         if (!shouldRenderField("Output", field, watchedValues)) {
-                          //Remove the key from outputKeys if the field is not rendered
                           if (outputKeys.includes(field.name))
                             outputKeys.splice(outputKeys.indexOf(field.name), 1);
                           return null;
                         }
 
-                        // Add the field name to outputKeys if not already present
                         if (!outputKeys.includes(field.name)) outputKeys.push(field.name);
 
                         return <RenderField key={field.name} {...field} />;
@@ -268,7 +250,6 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
           </>
         ) : null}
 
-        {/* OAuth consent notice */}
         {isType && !isReadOnly && isOAuthCredential && (
           <div className="flex items-start gap-2 rounded-lg border bg-blue-50 px-3 py-2 text-sm text-blue-900">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
@@ -280,7 +261,6 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
           </div>
         )}
 
-        {/* OAuth redirect URL (read-only, with copy button) */}
         {isType && isOAuthCredential && (
           <div className="mt-1 space-y-1.5">
             <label className="text-sm font-medium">OAuth Redirect URL</label>
@@ -297,7 +277,6 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
           </div>
         )}
 
-        {/* Save button */}
         {isType && !isReadOnly && (
           <div className="!mt-5 flex w-full justify-end">
             <SubmitButton

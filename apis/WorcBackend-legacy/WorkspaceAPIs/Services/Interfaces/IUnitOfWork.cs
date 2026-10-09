@@ -25,7 +25,6 @@ public interface IUnitOfWork
     IJobRepo JobRepo { get; }
     IJobNodeExecutionLogRepo JobNodeExecutionLogRepo { get; }
     IKeyStoreRepo KeyStoreRepo { get; }
-    IVaultRepo VaultRepo { get; }
     ITimeTriggerRepo TimeTriggerRepo { get; }
     ITimeTriggerFlowRepo TimeTriggerFlowRepo { get; }
     ITriggerRepo TriggerRepo { get; }

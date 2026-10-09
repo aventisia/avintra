@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { getOAuthConnectionStatus } from "../../apis/vaults-table-apis";
 
 const POLL_INTERVAL_MS = 3000;
-const MAX_POLL_ATTEMPTS = 60; // ~3 minutes
+const MAX_POLL_ATTEMPTS = 60;
 
 /**
  * Helpers for the Corsair OAuth connect flow.
@@ -34,8 +34,6 @@ export const useOAuthConnect = () => {
       `width=${width},height=${height},left=${left},top=${top}`,
     );
 
-    // Some browsers block popups even when opened in a user gesture. Warn so
-    // the caller can fall back to opening the URL in the current window.
     if (!popup || popup.closed) {
       console.warn("OAuth popup was blocked by the browser.");
     }
@@ -52,7 +50,6 @@ export const useOAuthConnect = () => {
       popup.location.replace(url);
       return popup;
     }
-    // Fallback: the original popup was blocked or closed before we got the URL.
     return window.open(url, "corsair-oauth");
   }, []);
 
@@ -108,7 +105,7 @@ export const useOAuthConnect = () => {
               resolve(true);
             }
           } catch {
-            // Ignore transient polling errors; keep trying.
+            // IMPORTANT NOTE: Transient polling errors are ignored so the poll keeps retrying.
           }
         }, POLL_INTERVAL_MS);
       });

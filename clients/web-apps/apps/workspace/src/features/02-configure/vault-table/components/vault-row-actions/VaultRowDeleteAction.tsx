@@ -10,19 +10,15 @@ interface VaultRowDeleteActionProps {
 }
 
 export const VaultRowDeleteAction = ({ rowId }: VaultRowDeleteActionProps) => {
-  // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
-  // Get mutation function to delete the config
   const { mutate: deleteConfig } = useListOptimisticMutation<
     string,
     VaultsTableDto | boolean,
     VaultsTableDto
   >([rowId], vaultOptimisticMutationFn, queryKey);
 
-  // Return Delete alert dialog trigger
   return (
     <DeleteDDMenuItem
       onClick={() => {

@@ -9,10 +9,8 @@ import { isOAuthCredentialType } from "../constants/oauth-credential-types";
 import { useOAuthConnect } from "./useOAuthConnect";
 
 export const useUpdateCredMutation = () => {
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
-  // // Get the query client for cache management
   const queryClient = useQueryClient();
 
   const { openOAuthPopup, navigateOAuthPopup, pollOAuthStatus } = useOAuthConnect();
@@ -20,10 +18,8 @@ export const useUpdateCredMutation = () => {
   const [isComplete, setIsComplete] = useState(false);
 
   const mutation = useMutation({
-    // API call to update cred
     mutationFn: updateVault,
 
-    // Show error toast if the mutation fails
     onError: (error) => {
       oauthPopupRef.current?.close();
       setIsComplete(true);
@@ -36,8 +32,6 @@ export const useUpdateCredMutation = () => {
 
       const isOAuth = isOAuthCredentialType(payload?.type);
 
-      // If the credential is OAuth-capable, navigate the already-open popup to
-      // the connect URL and poll status until consent completes.
       const response = httpResponse as typeof httpResponse & {
         oauthConnectUrl?: string;
         OAuthConnectUrl?: string;
@@ -57,9 +51,12 @@ export const useUpdateCredMutation = () => {
             className: "sonner-toaster-sm",
           });
         } else {
-          toast.error("OAuth connection was not completed. You can reconnect from the vault row actions.", {
-            className: "sonner-toaster-sm",
-          });
+          toast.error(
+            "OAuth connection was not completed. You can reconnect from the vault row actions.",
+            {
+              className: "sonner-toaster-sm",
+            },
+          );
         }
       } else if (isOAuth) {
         oauthPopupRef.current?.close();
