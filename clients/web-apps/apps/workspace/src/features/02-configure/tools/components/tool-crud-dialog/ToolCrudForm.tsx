@@ -35,7 +35,7 @@ export const ToolCrudForm = ({
     mutate: mutateTool,
     isPending: isMutating,
     isSuccess,
-  } = useListOptimisticMutation<ToolDto, ToolDto | boolean, ToolDto>(
+  } = useListOptimisticMutation<ToolDto, ToolDto | boolean | number, ToolDto>(
     [rowId],
     toolOptimisticMutationFn,
     queryKey,

@@ -118,8 +118,15 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     );
   };
 
-  const updateManualOperations = (operations: ManualToolOperation[]) =>
+  // Methods-section validation (missing/duplicate method) only renders once the
+  // section has been interacted with; mark it touched on focus, blur or change.
+  const markMethodsTouched = () =>
+    setTouched((prev) => (prev.openApiSpec ? prev : { ...prev, openApiSpec: true }));
+
+  const updateManualOperations = (operations: ManualToolOperation[]) => {
+    markMethodsTouched();
     rebuildManualArtifacts(operations);
+  };
 
   return (
     <div className="space-y-4">
@@ -200,11 +207,13 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           isRequired
           description="Each method is a distinct call this tool can make — its own type, endpoint, headers, parameters, and payload. The OpenAPI spec is generated from these methods."
         />
-        <ManualMethodsEditor
-          operations={draftTool?.manualOperations ?? []}
-          onChange={updateManualOperations}
-          disabled={crudAction === "read"}
-        />
+        <div onFocus={markMethodsTouched} onBlur={markMethodsTouched}>
+          <ManualMethodsEditor
+            operations={draftTool?.manualOperations ?? []}
+            onChange={updateManualOperations}
+            disabled={crudAction === "read"}
+          />
+        </div>
         {crudAction !== "read" &&
           touched.openApiSpec &&
           !(draftTool?.manualOperations ?? []).some(

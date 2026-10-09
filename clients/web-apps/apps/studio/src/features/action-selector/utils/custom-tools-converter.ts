@@ -55,17 +55,22 @@ export function getCustomToolNodeName(toolName: string, operationId: string): st
  * Minimal structural view of a tool consumed by the L2/L3 converters. Satisfied
  * by both the personal-tools list (`ToolDto`) and the usable-tools view.
  */
-type CustomToolLike = Pick<ToolDto, "id" | "name" | "description" | "icon" | "iconUrl">;
+type CustomToolLike = Pick<
+  ToolDto,
+  "id" | "name" | "description" | "icon" | "iconUrl" | "isActive"
+>;
 
 /**
  * Filters the usable-tool catalog down to active custom tools (type=Custom,
- * not disabled) — the same rule that drives the Custom Tools section's L2
- * directory. Shared so the L1 count badge and the directory never disagree.
+ * active, not disabled) — the same rule that drives the Custom Tools section's
+ * L2 directory. Shared so the L1 count badge and the directory never disagree.
  */
 export function getActiveCustomTools(
   tools?: UsableToolCatalogItemDto[],
 ): UsableToolCatalogItemDto[] {
-  return (tools ?? []).filter((tool) => tool.type === ComponentTypeEnum.Custom && !tool.isDisabled);
+  return (tools ?? []).filter(
+    (tool) => tool.type === ComponentTypeEnum.Custom && tool.isActive && !tool.isDisabled,
+  );
 }
 
 /**
@@ -405,10 +410,11 @@ export function convertToolOperationsToActions(
       supportedPlatforms: ["cloud", "windows"],
       inputs,
       outputs,
-      // Verification is per operation (L3): unverified actions stay visible but
-      // are disabled in the selector and rejected by the runtime.
+      // Actions are disabled when the operation is unverified OR the tool itself
+      // is inactive: unverified actions stay visible (flagged) but cannot be
+      // selected, and inactive tools never emit enabled actions.
       isVerified: operation.isVerified === true,
-      disabled: operation.isVerified !== true,
+      disabled: operation.isVerified !== true || !tool.isActive,
     };
   });
 }
