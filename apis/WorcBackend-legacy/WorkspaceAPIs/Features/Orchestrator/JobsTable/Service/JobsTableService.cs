@@ -236,74 +236,36 @@ public class JobsTableService : IJobsTableService
             if (flowVersion == null)
                 return serviceResponse.Update("Agent not found.", 404);
 
-            // Published flow versions need an ExecutionLocation: a machine id, or the
-            // "Cloud"/"Web Server" sentinel for an unassigned job.
             if (flowVersion.IsFlowVersionPublished && string.IsNullOrEmpty(jobInsertDto.ExecutionLocation))
                 return serviceResponse.Update("Machine name is required for published agents.", 400);
 
-            // Cloud execution is not available on every platform: agents published for the
-            // "windows" platform must run on a machine and can never be dispatched to the cloud.
-            // An empty/unknown platform is not blocked so existing agents keep working.
             if (flowVersion.IsFlowVersionPublished
                 && JobsAssignmentHelpers.IsCloudExecutionLocation(jobInsertDto.ExecutionLocation)
                 && JobsAssignmentHelpers.IsCloudExecutionUnsupported(flowVersion.SupportedPlatform))
                 return serviceResponse.Update("Cloud execution is not supported for this agent.", 400);
 
-            // The tenant credit gate is the production source of truth for commercial tenants.
-            // Fail closed here so a credit-less job is never created or dispatched.
             if (!await _creditGateService.HasSufficientCreditsAsync(tenantId))
             {
                 _logger.LogWarning("Blocking job creation for tenant {TenantId}: insufficient credits.", tenantId);
                 return serviceResponse.Update("Insufficient credits to create this job.", 402);
             }
 
-            // TODO: Need to check this
-            // Machine? machine = null;
-            // // If the OSId is provided, attempt to find a matching machine.
-            // if (!string.IsNullOrEmpty(jobInsertDto.OSId))
-            // {
-            //     machine = await _unitOfWork.MachineRepo
-            //         .GetByConditionAsync(w =>
-            //             w.OSId.ToLower() == jobInsertDto.OSId.ToLower())
-            //         .FirstOrDefaultAsync();
-
-            //     // Log the outcome of the machine search.
-            //     if (machine != null)
-            //     {
-            //         // If a machine is found, assign its ID to the job DTO.
-            //         jobInsertDto.MachineId = machine.Id;
-            //         _logger.LogInformation("Machine found with ID: {MachineId}", machine.Id);
-            //     }
-            //     else
-            //     {
-            //         _logger.LogWarning("No machine found with OSId: {OSId}", jobInsertDto.OSId);
-            //     }
-            // }
-
             // Trim the string properties in the DTO to remove any leading/trailing spaces (if applicable).
             jobInsertDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobInsertDto);
 
-            // Bind the job to the machine it was created for. For published flows the
-            // ExecutionLocation carries the machine's unique name ([username]_os_osId); the
-            // machine must exist in the tenant and be mapped to the flow version. Sentinels
-            // ("Cloud"/"Web Server") stay unassigned and are resolved deterministically at
-            // dispatch time.
             Guid? resolvedMachineId = null;
             string? resolvedMachineName = null;
             if (flowVersion.IsFlowVersionPublished && !JobsAssignmentHelpers.IsUnassignedExecutionLocation(jobInsertDto.ExecutionLocation))
             {
-                var requestedMachineName = jobInsertDto.ExecutionLocation!.ToLower();
+                var requestedMachineName = jobInsertDto.ExecutionLocation!;
 
-                // Resolve the machine by its unique name within the current tenant (Machine is
-                // tenant-scoped); an unknown name cannot identify a machine.
                 var requestedMachine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w => w.Name.ToLower() == requestedMachineName)
+                    .GetByConditionAsync(w => w.Name.Equals(requestedMachineName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefaultAsync();
 
                 if (requestedMachine == null)
                     return serviceResponse.Update("Invalid execution location.", 400);
 
-                // The machine must be mapped to the job's flow version.
                 var isMachineMappedToFlow = await _unitOfWork.Machine_FlowVersionRepo
                     .GetByConditionAsync(w => w.MachineId == requestedMachine.Id && w.FlowVersionId == jobInsertDto.FlowVersionId)
                     .AnyAsync();
@@ -321,7 +283,6 @@ public class JobsTableService : IJobsTableService
             newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
             newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
 
-            // Persist the machine binding. ExecutedOn mirrors the machine NAME (hub dispatch resolves by name).
             if (resolvedMachineId.HasValue)
             {
                 newJob.MachineId = resolvedMachineId;
@@ -386,12 +347,7 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.FlowVersionNumber = $"v{flowVersion.FlowVersionNumber}";
             jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
 
-            // Dispatch the job: "Cloud" runs on the cloud engine, a selected machine is dispatched
-            // to that runner (see JobsExecutorService.ExecuteJobCommandAsync).
-            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: job {JobId} created (status={Status}, machine={MachineId}, flowVersionId={FlowVersionId}, tenantId={TenantId}). Dispatching now.",
-                newJob.Id, newJob.Status, jobRecordDto.ExecutionLocation, newJob.FlowVersionId, newJob.TenantId);
             await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
-            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: ExecuteJobCommandAsync returned for job {JobId}.", newJob.Id);
 
             // Return Success response
             return serviceResponse.Update("Job created", 201, jobRecordDto);
@@ -719,8 +675,7 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-            // A machine token may only start a job bound to that machine.
-            if (!DoesCallerOwnJobMachine(job))
+            if (!CanCallerActOnJobMachine(job))
                 return serviceResponse.Update("Job is assigned to a different machine.", 403);
 
             // CANNOT START THE JOB: Job must be in Created status to start.
@@ -794,8 +749,7 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-            // A machine token may only close a job bound to that machine.
-            if (!DoesCallerOwnJobMachine(job))
+            if (!CanCallerActOnJobMachine(job))
                 return serviceResponse.Update("Job is assigned to a different machine.", 403);
 
             // CANNOT CLOSE THE JOB: Job is already in a terminal status
@@ -950,7 +904,6 @@ public class JobsTableService : IJobsTableService
 
         try
         {
-            // The caller must be polling for its own machine.
             if (!await DoesCallerMatchMachineAsync(machineId))
                 return serviceResponse.Update("Machine identity does not match the requested machine.", 403);
 
@@ -963,9 +916,11 @@ public class JobsTableService : IJobsTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found.", 404);
 
-            // Do not hand out another job while this machine already holds a live pending one.
             var machineStatus = await _clientStatusStore.GetClientByIdAsync(machineId);
-            if (machineStatus != null && await HasLivePendingJobAsync(machineStatus))
+            if (machineStatus == null)
+                return serviceResponse.Update("Machine is not connected.", 409);
+
+            if (machineStatus != null && await _unitOfWork.JobRepo.GetAllAsync().IgnoreQueryFilters().HasLivePendingJobAsync(machineStatus))
                 return serviceResponse.Update(null, 200, null);
 
             var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
@@ -979,9 +934,6 @@ public class JobsTableService : IJobsTableService
             Job? nextJob = null;
             var insufficientCredits = false;
 
-            // Atomically claim the oldest Created job already bound to this machine. Machines are
-            // space-free (TenantId-only scoping), so the global space filter is bypassed. FOR UPDATE
-            // SKIP LOCKED makes concurrent pollers for the same machine pick disjoint jobs.
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
                 var lockedJobId = await LockNextBoundJobIdAsync(tenantId, machineId, flowVersionIds);
@@ -999,8 +951,6 @@ public class JobsTableService : IJobsTableService
                 if (nextJob == null)
                     return;
 
-                // Credit gate: cancel rather than hand a pending job to a runner when the tenant
-                // cannot afford execution.
                 if (!await _creditGateService.HasSufficientCreditsAsync(nextJob.TenantId))
                 {
                     _creditGateService.CancelForInsufficientCredits(nextJob);
@@ -1008,7 +958,19 @@ public class JobsTableService : IJobsTableService
                     await _unitOfWork.SaveAsync();
                     insufficientCredits = true;
                     nextJob = null;
+                    return;
                 }
+
+                nextJob.MachineId = machineId;
+                nextJob.ExecutedOn = machine.Name ?? machineId.ToString();
+                _unitOfWork.JobRepo.Update(nextJob);
+                if (!await _unitOfWork.SaveAsync())
+                    throw new InvalidOperationException("Failed to assign pending job.");
+
+                machineStatus.AgentId = nextJob.FlowVersionId;
+                machineStatus.JobId = nextJob.Id;
+                machineStatus.LastSeen = DateTimeOffset.UtcNow;
+                await _clientStatusStore.UpdateClientStatusAsync(machineStatus);
             });
 
             if (insufficientCredits)
@@ -1019,22 +981,6 @@ public class JobsTableService : IJobsTableService
 
             if (nextJob == null)
                 return serviceResponse.Update(null, 200, null);
-
-            // The job is already bound to this machine; refresh the machine NAME for display.
-            nextJob.ExecutedOn = machine.Name ?? machineId.ToString();
-            _unitOfWork.JobRepo.Update(nextJob);
-            if (!await _unitOfWork.SaveAsync())
-                return serviceResponse.Update("Failed to assign pending job.", 500);
-
-            // Record the machine's pending marker so a later poll does not hand out another job
-            // before this one starts.
-            if (machineStatus != null)
-            {
-                machineStatus.AgentId = nextJob.FlowVersionId;
-                machineStatus.JobId = nextJob.Id;
-                machineStatus.LastSeen = DateTimeOffset.UtcNow;
-                await _clientStatusStore.UpdateClientStatusAsync(machineStatus);
-            }
 
             // Mapping profile fills FlowName/FlowVersionNumber/FlowType/IsFlowVersionPublished from
             // the included FlowVersion + Flow navigation properties.
@@ -1048,18 +994,13 @@ public class JobsTableService : IJobsTableService
         }
     }
 
-    // Verifies the caller's machine identity matches the requested machine id. Prefers the "mid"
-    // claim; falls back to the machine's owning user matching the caller's "uid" claim. Returns
-    // false when the caller presents no machine identity (the executor poll endpoint requires one).
     private async Task<bool> DoesCallerMatchMachineAsync(Guid machineId)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        // Machine tokens carry the machine id directly.
         if (MachineIdentityClaims.TryGetMachineId(user, out var callerMachineId))
             return callerMachineId == machineId;
 
-        // Fallback for tokens minted before "mid": the caller's linked user must own the machine.
         if (!MachineIdentityClaims.TryGetUserId(user, out var userId))
             return false;
 
@@ -1068,9 +1009,7 @@ public class JobsTableService : IJobsTableService
             .AnyAsync();
     }
 
-    // Verifies a machine token may act on the given job. Only enforced when the caller presents a
-    // machine id ("mid") claim; other callers keep their existing behaviour.
-    private bool DoesCallerOwnJobMachine(Job job)
+    private bool CanCallerActOnJobMachine(Job job)
     {
         if (job.MachineId == null || job.MachineId == Guid.Empty)
             return true;
@@ -1082,21 +1021,7 @@ public class JobsTableService : IJobsTableService
         return callerMachineId == job.MachineId.Value;
     }
 
-    // Returns true when a machine's pending JobId still refers to a live (Created) job.
-    private async Task<bool> HasLivePendingJobAsync(ClientDataStore machine)
-    {
-        if (machine?.JobId is not Guid pendingJobId || pendingJobId == Guid.Empty)
-            return false;
-
-        return await _unitOfWork.JobRepo
-            .GetByConditionAsync(w => w.Id == pendingJobId && w.Status == JobStatusEnum.Created)
-            .IgnoreQueryFilters()
-            .AnyAsync();
-    }
-
-    // Locks and returns the oldest Created job id already bound to the machine, using
-    // FOR UPDATE SKIP LOCKED so concurrent pollers for the same machine pick disjoint jobs.
-    // Must run inside an active transaction so the lock is held until commit or rollback.
+    // IMPORTANT NOTE: must run inside an active transaction so the FOR UPDATE SKIP LOCKED lock is held until commit or rollback.
     private async Task<Guid> LockNextBoundJobIdAsync(Guid tenantId, Guid machineId, List<Guid> flowVersionIds)
     {
         var dbConnection = _workspaceDbContext.Database.GetDbConnection();
@@ -1106,7 +1031,7 @@ public class JobsTableService : IJobsTableService
         await using var command = dbConnection.CreateCommand();
         command.Transaction = _workspaceDbContext.Database.CurrentTransaction?.GetDbTransaction();
         command.CommandText =
-            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"MachineId\" = @machineId AND \"FlowVersionId\" = ANY(@flowVersionIds) ORDER BY \"CreatedOn\" DESC LIMIT 1 FOR UPDATE SKIP LOCKED";
+            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR (\"MachineId\" IS NULL AND LOWER(\"ExecutedOn\") = 'web server')) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
 
         var tenantParam = command.CreateParameter();
         tenantParam.ParameterName = "tenantId";
@@ -1115,8 +1040,7 @@ public class JobsTableService : IJobsTableService
 
         var statusParam = command.CreateParameter();
         statusParam.ParameterName = "status";
-        // "Status" is persisted as text (EnumToStringConverter<JobStatusEnum>), so the parameter
-        // must be the enum name, not its integer value, to avoid "text = integer" in Postgres.
+        // IMPORTANT NOTE: "Status" is persisted as text (EnumToStringConverter<JobStatusEnum>), so the parameter must be the enum name, not its integer value.
         statusParam.Value = JobStatusEnum.Created.ToString();
         statusParam.DbType = DbType.String;
         command.Parameters.Add(statusParam);
@@ -1126,9 +1050,10 @@ public class JobsTableService : IJobsTableService
         machineParam.Value = machineId;
         command.Parameters.Add(machineParam);
 
-        var flowVersionsParam = command.CreateParameter();
+        var flowVersionsParam = (Npgsql.NpgsqlParameter)command.CreateParameter();
         flowVersionsParam.ParameterName = "flowVersionIds";
         flowVersionsParam.Value = flowVersionIds.ToArray();
+        flowVersionsParam.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Uuid;
         command.Parameters.Add(flowVersionsParam);
 
         var result = await command.ExecuteScalarAsync();
@@ -1159,6 +1084,9 @@ public class JobsTableService : IJobsTableService
 
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
+
+            if (!CanCallerActOnJobMachine(job))
+                return serviceResponse.Update("Job is assigned to a different machine.", 403);
 
             // CANNOT ABORT THE JOB: Job is not running.
             if (job.Status != JobStatusEnum.Running)

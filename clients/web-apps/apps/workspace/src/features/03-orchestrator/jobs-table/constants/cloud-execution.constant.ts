@@ -1,17 +1,13 @@
 /**
- * Sentinel written to a job's `executionLocation` when the job runs on the cloud instead of a
- * specific machine. The agent (flow version) `supportedPlatform` field uses the same marker, so
- * this is the single source of truth for cloud execution.
+ * Sentinel written to a job's `executionLocation` when the job runs on the cloud instead of a specific machine.
  */
 export const CLOUD_EXECUTION_LOCATION = "Cloud";
 
-/** Case-insensitive match against the cloud execution marker. */
 const isCloudLocation = (value: string): boolean =>
   value.trim().toLowerCase() === CLOUD_EXECUTION_LOCATION.toLowerCase();
 
 /**
- * Returns true when the agent's platform does not allow cloud execution. A null/empty platform is
- * treated as unsupported; the server enforces the same rule.
+ * Returns true when the agent's platform does not allow cloud execution; a null/empty platform is treated as unsupported.
  */
 export const isCloudExecutionBlocked = (supportedPlatform?: string): boolean => {
   if (!supportedPlatform) return true;

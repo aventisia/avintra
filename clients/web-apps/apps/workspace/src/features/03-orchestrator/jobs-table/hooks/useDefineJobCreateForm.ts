@@ -35,8 +35,6 @@ export const useDefineJobCreateForm = ({
   const { setIsDirty } = useCrudDialogDirty();
 
   const defaultValues: JobCreateFormData = useMemo(() => {
-    // Cloud can only be pre-enabled when the prefilled agent explicitly supports it; a
-    // null/empty platform (or no prefilled agent) keeps cloud off.
     const defaultPlatform = (defaultFlowVersionOption as FlowVersionSelectOption | undefined)
       ?.supportedPlatform;
     const isCloudAllowed = !defaultMachineOption && !isCloudExecutionBlocked(defaultPlatform);
