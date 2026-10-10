@@ -1,5 +1,5 @@
-import { VaultAppsEnum } from "@/features/02-configure/vault-table/enums/vault-apps-enum";
-import { vaultAppIconMapper } from "@/features/02-configure/vault-table/vault-config/constants/vault-app-icon-mapper";
+import { VaultAppsEnum } from "@/features/02-configure/vault-credentials/enums/vault-apps-enum";
+import { vaultAppIconMapper } from "@/features/02-configure/vault-credentials/vault-config/constants/vault-app-icon-mapper";
 
 import { ModelProviderEnum } from "../enums/model-provider-enum";
 

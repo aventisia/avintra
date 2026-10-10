@@ -194,7 +194,7 @@ def _resolve_corsair_credential_id(
 
     The frontend sends the credential by NAME (consistent with every other
     feature). Corsair, however, keys connections by the credential ID (the
-    AppSecret Id), which it uses as the tenant/connection identifier. So when
+    VaultCredential Id), which it uses as the tenant/connection identifier. So when
     only a ``credential_name`` is supplied we resolve it to its Id via the
     vault. An explicit ``credential_id`` is still honored for backward
     compatibility.
@@ -229,7 +229,7 @@ def _resolve_credential_id_by_name(
     credential_name: str,
     user: User,
 ) -> str | None:
-    """Resolve a credential NAME to its AppSecret Id via the vault.
+    """Resolve a credential NAME to its VaultCredential Id via the vault.
 
     Corsair uses the credential Id as the ``connectionId`` (tenant identifier),
     but the frontend only sends the credential name. Look the secret up by name
@@ -258,7 +258,7 @@ def _resolve_credential_id_by_name(
         )
         return None
 
-    # The vault API serializes the AppSecret DTO with camelCase keys.
+    # The vault API serializes the VaultCredential DTO with camelCase keys.
     credential_id = credential.get("Id") or credential.get("id")
     if not credential_id:
         logger.warning(

@@ -8,7 +8,7 @@ public interface ICorsairSidecarService
     /// <summary>
     /// Mirrors an API-key credential into the Corsair sidecar.
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id).</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id).</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="credentials">Decrypted credential fields to store.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -20,7 +20,7 @@ public interface ICorsairSidecarService
     /// <summary>
     /// Clears a mirrored API-key credential from the Corsair sidecar.
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id).</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id).</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><c>true</c> when the sidecar acknowledged the delete.</returns>
@@ -30,7 +30,7 @@ public interface ICorsairSidecarService
     /// Stores tenant-scoped OAuth integration keys (client_id, client_secret, redirect_url)
     /// for a plugin in the Corsair sidecar.
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="clientId">OAuth client id.</param>
     /// <param name="clientSecret">OAuth client secret.</param>
@@ -42,7 +42,7 @@ public interface ICorsairSidecarService
     /// <summary>
     /// Mints a connect link for a tenant/plugin so the user can complete OAuth consent.
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The connect URL and expiry, or <c>null</c> on failure.</returns>
@@ -51,7 +51,7 @@ public interface ICorsairSidecarService
     /// <summary>
     /// Checks whether a tenant has connected a plugin (OAuth consent completed).
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The connection status, or <c>null</c> on failure.</returns>
@@ -60,7 +60,7 @@ public interface ICorsairSidecarService
     /// <summary>
     /// Invokes a Corsair plugin operation using a stored credential.
     /// </summary>
-    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
     /// <param name="plugin">Target plugin identifier.</param>
     /// <param name="action">Dotted operation path, e.g. "github.issues.create".</param>
     /// <param name="payload">Operation payload.</param>

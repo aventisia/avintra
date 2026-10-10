@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the ConfigsTable component.
 const ConfigsTable = lazy(() =>
-  import("@/features/02-configure/vault-table/components/VaultTable").then((module) => ({
+  import("@/features/02-configure/vault-credentials/components/VaultTable").then((module) => ({
     default: module.VaultTable,
   })),
 );

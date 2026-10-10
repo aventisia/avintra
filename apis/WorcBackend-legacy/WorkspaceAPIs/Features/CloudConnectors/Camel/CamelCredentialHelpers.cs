@@ -32,7 +32,7 @@ public static class CamelCredentialHelpers
     /// Access-token authentication (e.g. GitHub PATs). Reads the <c>AccessToken</c>
     /// key from the credential data.
     /// </summary>
-    public static CamelAuthResult AccessToken(AppSecretDto credential)
+    public static CamelAuthResult AccessToken(VaultCredentialDto credential)
     {
         var token = GetString(credential, "AccessToken");
         if (string.IsNullOrWhiteSpace(token))
@@ -53,7 +53,7 @@ public static class CamelCredentialHelpers
     /// are passed through as auth properties when present.
     /// </summary>
     public static CamelAuthResult Basic(
-        AppSecretDto credential,
+        VaultCredentialDto credential,
         Dictionary<string, object> payload,
         string family,
         params string[] extraKeys)
@@ -104,7 +104,7 @@ public static class CamelCredentialHelpers
     /// parsed credentials are always injected into the auth properties.
     /// </summary>
     public static CamelAuthResult Database(
-        AppSecretDto credential,
+        VaultCredentialDto credential,
         Dictionary<string, object> payload,
         string family)
     {
@@ -228,7 +228,7 @@ public static class CamelCredentialHelpers
     /// Client-credentials authentication (e.g. Microsoft 365). Reads
     /// <c>AzureTenantId</c>, <c>ClientId</c> and <c>ClientSecret</c>.
     /// </summary>
-    public static CamelAuthResult ClientCredentials(AppSecretDto credential)
+    public static CamelAuthResult ClientCredentials(VaultCredentialDto credential)
     {
         var tenantId = GetString(credential, "AzureTenantId");
         var clientId = GetString(credential, "ClientId");
@@ -252,7 +252,7 @@ public static class CamelCredentialHelpers
     }
 
     /// <summary>OAuth2 credentials used by Salesforce and similar providers.</summary>
-    public static CamelAuthResult OAuth2(AppSecretDto credential)
+    public static CamelAuthResult OAuth2(VaultCredentialDto credential)
     {
         var auth = new Dictionary<string, object?> { ["type"] = "oauth2" };
         AddCredentialValue(auth, credential, "ClientId", "clientId");
@@ -265,7 +265,7 @@ public static class CamelCredentialHelpers
             : CamelAuthResult.Success(auth);
     }
 
-    private static string? GetString(AppSecretDto credential, string key)
+    private static string? GetString(VaultCredentialDto credential, string key)
     {
         if (credential.Data == null)
         {
@@ -311,7 +311,7 @@ public static class CamelCredentialHelpers
 
     private static void AddCredentialValue(
         Dictionary<string, object?> auth,
-        AppSecretDto credential,
+        VaultCredentialDto credential,
         string credentialKey,
         string authKey)
     {

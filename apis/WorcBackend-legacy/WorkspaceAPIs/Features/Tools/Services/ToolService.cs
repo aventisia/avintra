@@ -275,7 +275,7 @@ public class ToolService : IToolService
         // Custom tools always use the CustomApiTool credential type.
         if (tool.Type == ComponentTypeEnum.Custom)
         {
-            return AppSecretTypesEnum.CustomApiTool.ToString();
+            return VaultCredentialTypesEnum.CustomApiTool.ToString();
         }
 
         // Platform Corsair tools map their plugin id to a vault type via the integration catalog.

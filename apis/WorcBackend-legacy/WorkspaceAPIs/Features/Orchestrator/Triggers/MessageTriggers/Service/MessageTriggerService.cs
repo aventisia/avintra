@@ -1314,7 +1314,7 @@ public class MessageTriggerService : IMessageTriggerService
             // Fetch the credential entity along with its encrypted key-value pairs.
             // Scoped by Name + TenantId (+ EnvType) so the (credential_name, tenant_id)
             // combination resolves the correct, unique credential.
-            var vaultCredential = await _unitOfWork.AppSecretRepo
+            var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == credentialName &&
                     !w.IsDisabled &&
@@ -1425,7 +1425,7 @@ public class MessageTriggerService : IMessageTriggerService
         if (string.IsNullOrWhiteSpace(credentialName))
             return existingCredentialId;
 
-        var credential = await _unitOfWork.AppSecretRepo
+        var credential = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
 
