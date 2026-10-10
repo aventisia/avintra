@@ -5,7 +5,7 @@ import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { CredSelectDto } from "../dtos/cred-select-dto.ts";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/vault/credentials`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/vault-credential`;
 
 const getCredSelectOptions = (type = "M365") => {
   // Build URL with optional query
