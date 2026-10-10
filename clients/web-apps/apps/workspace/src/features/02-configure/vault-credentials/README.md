@@ -2,14 +2,14 @@
 
 Configure-page feature that lists, creates, updates, shares, and deletes vault
 credentials. The product label is "vault"; the backend feature, entity, and route are
-`VaultCredential` (`/vault/credentials`).
+`VaultCredential` (`/vault-credential`).
 
 ## Data flow
 
 `useFetchVaults` runs two TanStack queries and merges them into one list:
 
-- personal credentials: `GET /vault/credentials/list`
-- credentials shared with the current user: `GET /vault/credentials/list/shared`
+- personal credentials: `GET /vault-credential/list`
+- credentials shared with the current user: `GET /vault-credential/list/shared`
 
 Both queries are keyed by space and environment, so switching space or environment
 refetches. The merge keeps the widest status code and concatenates rows.
@@ -41,7 +41,7 @@ OAuth-capable credential types (M365, Google Workspace, and catalog integrations
 
 1. On submit, the mutation opens a popup inside the user gesture to avoid popup blockers.
 2. The API response carries `oauthConnectUrl`; the popup is navigated to it.
-3. `useOAuthConnect` polls `GET /vault/credentials/{id}/oauth-status` (and listens for the
+3. `useOAuthConnect` polls `GET /vault-credential/{id}/oauth-status` (and listens for the
    callback `postMessage`) until consent completes, then the dialog closes.
 
 Row actions allow reconnecting, testing the connection, and deleting.

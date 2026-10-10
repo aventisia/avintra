@@ -10,7 +10,7 @@ import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { VaultCredentialDto } from "../dtos/vaults-table-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/vault/credentials`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/vault-credential`;
 
 /**
  * Retrieves list of vault credentials.

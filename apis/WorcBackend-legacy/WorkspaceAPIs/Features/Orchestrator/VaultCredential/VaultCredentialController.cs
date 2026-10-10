@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Controllers;
 
-[Route("vault/credentials")]
+[Route("vault-credential")]
 [ApiController]
 [Authorize]
 public class VaultCredentialController : BaseApiController

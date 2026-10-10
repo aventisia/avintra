@@ -5,7 +5,7 @@ page; the persisted record is a vault credential.
 
 ## API surface
 
-`VaultCredentialController` exposes `[Route("vault/credentials")]`:
+`VaultCredentialController` exposes `[Route("vault-credential")]`:
 
 | Method | Route | Purpose |
 | ------ | ----- | ------- |
