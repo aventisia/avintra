@@ -15,6 +15,7 @@ import path from "node:path";
 import { createCorsair } from "corsair";
 import { plugins } from "../plugins.js";
 import { PLUGIN_DISPLAY_NAMES } from "./plugin-metadata.js";
+import { humanizeFieldKey } from "./schema-to-fields.js";
 import { generateDcpFiles } from "./index.js";
 
 const corsair = createCorsair({
@@ -192,6 +193,144 @@ async function main() {
       assert(
         credField.name === expected,
         `config ${file} credential field '${credField.name}' does not match canonical vault type '${expected}'`,
+      );
+    }
+
+    // 7. Gmail uses the hand-authored field mapping: shared fields resolve from
+    //    one source, node-level overrides win, and other plugins are untouched.
+    const gmailDir = path.join(configRoot, "Gmail");
+    const readGmail = (file: string) =>
+      JSON.parse(fs.readFileSync(path.join(gmailDir, file), "utf8"));
+    const fieldOf = (config: any, name: string) =>
+      config.fields.find((f: any) => f.name === name);
+
+    const messagesList = readGmail("MessagesListConnector.json");
+    assert(fieldOf(messagesList, "userId")?.label === "User", "Gmail userId label is not mapped");
+    assert(
+      (fieldOf(messagesList, "userId")?.description ?? "").length > 0,
+      "Gmail userId description is empty",
+    );
+    assert(fieldOf(messagesList, "q")?.label === "Search Query", "Gmail q label is not mapped");
+
+    // Raw message field documents its rules, example and Google reference.
+    const messagesSend = readGmail("MessagesSendConnector.json");
+    const rawField = fieldOf(messagesSend, "raw");
+    assert(
+      (rawField?.description ?? "").includes(
+        "developers.google.com/workspace/gmail/api/guides/sending",
+      ),
+      "Gmail raw description is missing the Google reference URL",
+    );
+    assert(
+      (rawField?.description ?? "").includes("Content-Type: text/plain") &&
+        (rawField?.description ?? "").includes("{{body}}") &&
+        (rawField?.description ?? "").includes("Content-Disposition: attachment") &&
+        (rawField?.description ?? "").includes("Cc: {{cc}}") &&
+        (rawField?.description ?? "").includes("Bcc: {{bcc}}") &&
+        (rawField?.description ?? "").includes("remove trailing '=' padding"),
+      "Gmail raw description is missing the message example or encoding rules",
+    );
+
+    // Shared field: same metadata resolves in a different node.
+    const labelsList = readGmail("LabelsListConnector.json");
+    assert(
+      fieldOf(labelsList, "userId")?.description === fieldOf(messagesList, "userId")?.description,
+      "Gmail userId does not resolve from a single shared source",
+    );
+
+    // Node-level field override: threads.get excludes the 'raw' format.
+    const messagesGet = readGmail("MessagesGetConnector.json");
+    assert(
+      fieldOf(messagesGet, "format")?.label === "Response Format",
+      "Gmail format label is not mapped",
+    );
+    const threadsGet = readGmail("ThreadsGetConnector.json");
+    assert(
+      (fieldOf(threadsGet, "format")?.description ?? "").includes("not supported for threads"),
+      "Gmail ThreadsGet format node override was not applied",
+    );
+
+    // Node (command) description override.
+    const messagesDelete = readGmail("MessagesDeleteConnector.json");
+    assert(
+      messagesDelete.description === "Permanently delete a message. This cannot be undone.",
+      "Gmail MessagesDelete description override was not applied",
+    );
+    assert(
+      !JSON.stringify(messagesDelete).includes("[DESTRUCTIVE"),
+      "Gmail MessagesDelete still contains the bracketed Corsair marker",
+    );
+
+    // Selector mapping reflects the node override too.
+    const gmailCategory = appIntegrations.actionCategories.find((c: any) => c.label === "Gmail");
+    const deleteAction = gmailCategory?.actions.find(
+      (a: any) => a.name === "Corsair/Gmail/MessagesDeleteConnector",
+    );
+    assert(
+      deleteAction?.description === "Permanently delete a message. This cannot be undone.",
+      "Gmail selector mapping did not apply the node description override",
+    );
+
+    // The same mapping enriches the generated tool OpenAPI specs (seeded into ws_Tools).
+    const gmailSpec = JSON.parse(
+      fs.readFileSync(path.join(configRoot, "openapi", "gmail.openapi.json"), "utf8"),
+    );
+    const schemaProps = (pathKey: string) =>
+      gmailSpec.paths[pathKey].post.requestBody.content["application/json"].schema.properties;
+    const listProps = schemaProps("/corsair/gmail/messages.list");
+    assert(listProps.q?.title === "Search Query", "Gmail tool q title is not mapped");
+    assert(
+      (listProps.q?.description ?? "").includes("Gmail search query"),
+      "Gmail tool q description is not mapped",
+    );
+    assert(listProps.userId?.title === "User", "Gmail tool userId title is not mapped");
+    assert(
+      schemaProps("/corsair/gmail/messages.get").format?.title === "Response Format",
+      "Gmail tool format title is not mapped",
+    );
+    assert(
+      gmailSpec.paths["/corsair/gmail/messages.delete"].post.description ===
+        "Permanently delete a message. This cannot be undone.",
+      "Gmail tool operation description override was not applied",
+    );
+
+    // 7d. Repo-wide OpenAPI behavior: field titles/descriptions are emitted for
+    //     every plugin (previously the specs carried neither). Mapping wins where
+    //     authored; otherwise the Corsair schema description is surfaced.
+    const abstractSpec = JSON.parse(
+      fs.readFileSync(path.join(configRoot, "openapi", "abstract.openapi.json"), "utf8"),
+    );
+    const abstractEmail =
+      abstractSpec.paths["/corsair/abstract/email.validate"].post.requestBody.content[
+        "application/json"
+      ].schema.properties.email;
+    assert(
+      abstractEmail?.description === "The email address to validate",
+      "non-mapped plugin schema field description was not surfaced in the tool OpenAPI spec",
+    );
+
+    // Fields with no authored/schema text stay unannotated (no invented titles).
+    const githubSpec = JSON.parse(
+      fs.readFileSync(path.join(configRoot, "openapi", "github.openapi.json"), "utf8"),
+    );
+    const githubOwner =
+      githubSpec.paths["/corsair/github/issues.list"].post.requestBody.content["application/json"]
+        .schema.properties.owner;
+    assert(
+      githubOwner?.title === undefined && githubOwner?.description === undefined,
+      "field without authored or schema text should not gain a title/description",
+    );
+
+    // Non-mapped plugin keeps the humanized fallback.
+    const githubDir = path.join(configRoot, "Github");
+    const githubFile = fs.readdirSync(githubDir).find((f) => f.endsWith(".json"));
+    assert(!!githubFile, "no Github config generated");
+    const githubConfig = JSON.parse(fs.readFileSync(path.join(githubDir, githubFile as string), "utf8"));
+    for (const field of githubConfig.fields) {
+      if (field.type === "credentials-select" || field.direction === "Output") continue;
+      assert(
+        field.label === humanizeFieldKey(field.name),
+        `non-mapped plugin field '${field.name}' label is not humanized`,
       );
     }
 

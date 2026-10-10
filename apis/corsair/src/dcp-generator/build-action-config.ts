@@ -4,6 +4,7 @@
  */
 import type { ActionConfig, CorsairActionInvocation, DcpField, PluginMetadata } from "./types.js";
 import { corsairSchemaToDcpFields } from "./schema-to-fields.js";
+import { resolveNodeDescription, resolveNodeFieldMapping } from "./node-field-mappings/resolve.js";
 
 /** Convert a dotted Corsair action path into a PascalCase action segment. */
 function actionToPascal(action: string): string {
@@ -56,10 +57,12 @@ function buildCredentialField(plugin: PluginMetadata): DcpField {
 /**
  * Build a single action config from a Corsair tool descriptor.
  *
+ * IMPORTANT NOTE: the Studio node name is derived from `action` alone so it
+ * stays identical to the node name used when resolving overrides in the action
+ * selector and OpenAPI spec builders. Do not introduce a separate node path.
+ *
  * @param plugin      normalized plugin metadata
  * @param action      dotted action path passed to the sidecar (e.g. "issues.list")
- * @param nodeAction  dotted action path used to build the Studio node name
- *                    (e.g. "api.issues.list"). Defaults to <paramref name="action"/>.
  * @param description action description (from endpointMeta or schema)
  * @param input       Corsair input schema
  * @param output      Corsair output schema
@@ -71,18 +74,23 @@ export function buildActionConfig(
   description: string,
   input: any,
   output: any,
-  nodeAction?: string,
 ): { config: ActionConfig; invocation: CorsairActionInvocation } {
-  const nodeName = actionToNodeName(plugin.id, nodeAction ?? action);
+  const nodeName = actionToNodeName(plugin.id, action);
 
-  const inputFields = corsairSchemaToDcpFields(input, "Input");
+  // Resolve optional hand/AI-authored field + node (command) overrides.
+  const { nodeOverride, fieldMetadata } = resolveNodeFieldMapping(
+    plugin.nodeFieldMapping,
+    nodeName,
+  );
+
+  const inputFields = corsairSchemaToDcpFields(input, "Input", "", fieldMetadata);
   const outputFields = buildOutputFields();
 
   const credentialField = buildCredentialField(plugin);
 
   const config: ActionConfig = {
     name: nodeName,
-    description: description || actionToLabel(action),
+    description: resolveNodeDescription(nodeOverride, description, actionToLabel(action)),
     version: "1.0.0",
     author: "@aventisia",
     // Runtime is a platform-agnostic backend call (ProcessCorsairRequestNode), so desktop can run it too.

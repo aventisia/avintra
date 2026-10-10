@@ -15,6 +15,7 @@ import type {
   PluginMetadata,
 } from "./types.js";
 import { actionToLabel, actionToNodeName } from "./build-action-config.js";
+import { resolveNodeDescription, resolveNodeFieldMapping } from "./node-field-mappings/resolve.js";
 
 /** The L1 category label Corsair actions live under. */
 export const APP_INTEGRATIONS_LABEL = "App Integrations";
@@ -25,12 +26,15 @@ export function buildActionSelectorAction(
   action: string,
   description: string,
 ): ActionSelectorAction {
+  const nodeName = actionToNodeName(plugin.id, action);
+  // Optional hand/AI-authored node (command) label/description override.
+  const { nodeOverride } = resolveNodeFieldMapping(plugin.nodeFieldMapping, nodeName);
   return {
     type: "cloudConnectorNode",
-    name: actionToNodeName(plugin.id, action),
-    // Label is the action name in PascalCase, space-separated.
-    label: actionToLabel(action),
-    description: description || actionToLabel(action),
+    name: nodeName,
+    // Label is the action name in PascalCase, space-separated (override wins).
+    label: nodeOverride?.label ?? actionToLabel(action),
+    description: resolveNodeDescription(nodeOverride, description, actionToLabel(action)),
     docsLink: "https://docs.aventisia.com",
     icon: null,
     img: plugin.img,

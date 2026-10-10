@@ -4,6 +4,8 @@
  * labels and descriptions from the field key and Corsair-provided metadata.
  */
 import type { DcpField } from "./types.js";
+import type { FieldMetadata } from "./node-field-mappings/types.js";
+import { resolveFieldMetadata } from "./node-field-mappings/resolve.js";
 
 /** Map Corsair kind → DCP control type. */
 export function kindToDcpType(kind: string): string {
@@ -44,23 +46,28 @@ export function humanizeFieldKey(key: string): string {
  * Convert a Corsair `{ kind, optional, fields }` schema into DCP fields.
  * Nested objects/arrays are flattened into a single JSON-editor/tag-input
  * field because the Studio DCP form does not support arbitrary nesting.
+ *
+ * @param fieldMetadata optional plugin/node field label+description overrides.
+ *   Precedence: fieldMetadata > schema description > humanizeFieldKey.
  */
 export function corsairSchemaToDcpFields(
   schema: any,
   direction: "Input" | "Output",
   prefix = "",
+  fieldMetadata?: Record<string, FieldMetadata>,
 ): DcpField[] {
   if (!schema || typeof schema !== "object") return [];
   if (schema.kind !== "object") {
     // A non-object root (rare) becomes a single field.
     const name = prefix || "value";
+    const meta = resolveFieldMetadata(fieldMetadata, name, name);
     return [
       {
         direction,
         type: kindToDcpType(schema.kind ?? "string"),
         name,
-        label: humanizeFieldKey(name),
-        description: schema.description ?? "",
+        label: meta?.label ?? humanizeFieldKey(name),
+        description: meta?.description ?? schema.description ?? "",
         defaultValue: "",
       },
     ];
@@ -72,8 +79,9 @@ export function corsairSchemaToDcpFields(
   for (const [name, fieldSchema] of Object.entries<any>(fields)) {
     const fieldName = prefix ? `${prefix}.${name}` : name;
     const kind = fieldSchema?.kind ?? "string";
-    const label = humanizeFieldKey(name);
-    const description = fieldSchema?.description ?? "";
+    const meta = resolveFieldMetadata(fieldMetadata, name, fieldName);
+    const label = meta?.label ?? humanizeFieldKey(name);
+    const description = meta?.description ?? fieldSchema?.description ?? "";
 
     if (kind === "object") {
       // Flatten nested objects into a JSON-editor field.
