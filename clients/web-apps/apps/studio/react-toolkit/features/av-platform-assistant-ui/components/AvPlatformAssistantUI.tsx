@@ -12,12 +12,19 @@ import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 // API imports are kept as they are internal domain logic for this specific feature
 import { createHistoryAdapter } from "../adapters/history-adaptor";
 import { insertConversation } from "../apis/assist-conversations-apis";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
+import {
+  AssistantVoiceContext,
+  AssistantVoiceContextValue,
+} from "../voice/context/assistant-voice.context";
+import { useAssistantVoice } from "../voice/hooks/useAssistantVoice.hook";
+import { useChatAgentVoiceConfig } from "../voice/hooks/useChatAgentVoiceConfig.hook";
 import { Thread } from "./thread";
 
 export interface AvPlatformAssistantUIProps {
@@ -166,6 +173,26 @@ const RuntimeWrapper = ({
   const activeSuggestionsRef = useRef<string[]>([]);
   const queryClient = useQueryClient();
 
+  const {
+    stt: sttConfig,
+    tts: ttsConfig,
+    voice: voiceConfig,
+    isTextToSpeechConfigured,
+  } = useChatAgentVoiceConfig();
+  const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+  const refId = currentFlow?.id ?? "";
+  const refName = currentFlow?.name ?? "";
+  const agentName = currentFlow?.name ?? null;
+
+  const assistantVoice = useAssistantVoice({
+    ttsConfig,
+    voiceConfig,
+    isTextToSpeechConfigured,
+    refId,
+    refName,
+    agentName,
+  });
+
   const handleSuggestionsUpdate = useCallback((actions: string[]) => {
     activeSuggestionsRef.current = Array.isArray(actions) ? actions : [];
   }, []);
@@ -257,11 +284,21 @@ const RuntimeWrapper = ({
           getConversationId, // Pass the dynamic getter
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
+          onTextDelta: assistantVoice.onTextDelta,
+          onRunFinished: assistantVoice.onRunFinished,
           isTempChat: mode === "temporary",
           // Chat streams are scoped to the current flow's space.
           getExtraHeaders: getStudioSpaceHeaders,
         }),
-      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
+      [
+        flowVersionId,
+        getConversationId,
+        onRequestComplete,
+        handleSuggestionsUpdate,
+        mode,
+        assistantVoice.onTextDelta,
+        assistantVoice.onRunFinished,
+      ],
     ),
     {
       initialMessages,
@@ -272,17 +309,44 @@ const RuntimeWrapper = ({
     },
   );
 
+  const voiceContextValue = useMemo<AssistantVoiceContextValue>(
+    () => ({
+      speakReplies: assistantVoice.speakReplies,
+      isPlaying: assistantVoice.isPlaying,
+      setSpeakReplies: assistantVoice.setSpeakReplies,
+      sttConfig,
+      ttsConfig,
+      language: voiceConfig?.language ?? null,
+      refId,
+      refName,
+      agentName,
+    }),
+    [
+      assistantVoice.speakReplies,
+      assistantVoice.isPlaying,
+      assistantVoice.setSpeakReplies,
+      sttConfig,
+      ttsConfig,
+      voiceConfig?.language,
+      refId,
+      refName,
+      agentName,
+    ],
+  );
+
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <SuggestionsProvider defaultActions={defaultActions}>
-        <Thread
-          title={title}
-          description={description}
-          badge={badge}
-          allowNewSession={allowNewSession}
-          onNewSession={onNewSession}
-        />
-      </SuggestionsProvider>
+      <AssistantVoiceContext.Provider value={voiceContextValue}>
+        <SuggestionsProvider defaultActions={defaultActions}>
+          <Thread
+            title={title}
+            description={description}
+            badge={badge}
+            allowNewSession={allowNewSession}
+            onNewSession={onNewSession}
+          />
+        </SuggestionsProvider>
+      </AssistantVoiceContext.Provider>
     </AssistantRuntimeProvider>
   );
 };

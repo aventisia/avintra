@@ -12,6 +12,10 @@ export type CreateAssistantUIModelAdapterParams = {
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
   onSuggestionsUpdate?: (actions: string[]) => void;
+  /** Called for every streamed text delta so observers can synthesize speech incrementally. */
+  onTextDelta?: (delta: string) => void;
+  /** Called once per run when streaming settles (success, error, or abort). */
+  onRunFinished?: () => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
   isTempChat?: boolean;
   /**
@@ -128,6 +132,8 @@ export const createAssistantUIModelAdapter = ({
   getConversationId,
   onRequestComplete,
   onSuggestionsUpdate,
+  onTextDelta,
+  onRunFinished,
   isTempChat = false,
   getExtraHeaders,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
@@ -244,6 +250,10 @@ export const createAssistantUIModelAdapter = ({
             onSuggestionsUpdate?.(frame.output as string[]);
           }
 
+          if (frame?.type === "delta" && typeof frame.output === "string" && frame.output) {
+            onTextDelta?.(frame.output);
+          }
+
           builder.apply(frame);
           yield* maybeYield();
         }
@@ -325,6 +335,8 @@ export const createAssistantUIModelAdapter = ({
           builder.pushText(`\n\n${note}`);
         }
         yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
+      } finally {
+        onRunFinished?.();
       }
     },
   };
