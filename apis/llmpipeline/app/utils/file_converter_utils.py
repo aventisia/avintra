@@ -22,6 +22,7 @@ MIME_TO_EXTENSION = {
     "audio/flac": ".flac",
     "audio/ogg": ".ogg",
     "audio/mp4": ".m4a",
+    "audio/webm": ".webm",
 
     # Video
     "video/mp4": ".mp4",

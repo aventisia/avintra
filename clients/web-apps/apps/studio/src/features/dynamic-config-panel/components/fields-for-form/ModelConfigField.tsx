@@ -20,12 +20,16 @@ import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
 import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { CredentialsSelectField } from "./CredentialsSelectField";
+import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { VoiceConfigField } from "./VoiceConfigField";
 
 interface ModelConfigFieldProps {
   /** The name of the form field. */
   name: string;
   /** If true, show the JSON output toggle in the model settings. */
   showJsonOutput?: boolean;
+  specialty?: "stt" | "tts";
+  hideByok?: boolean;
 }
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -45,13 +49,23 @@ const PROVIDER_MAP: Record<string, string> = {
 // fetched dynamically via a credential (e.g. Ollama On-prem).
 const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
 
-const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps) => {
+const ModelConfigField = ({
+  name,
+  showJsonOutput = true,
+  specialty,
+  hideByok = false,
+}: ModelConfigFieldProps) => {
   const [byokModels, setByokModels] = useState<Model[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { control, setValue, getValues, watch } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
+
+  const isStt = specialty === "stt" || nodeKey === "SpeechToText";
+  const isTts = specialty === "tts" || nodeKey === "TextToSpeech";
+  const isEmbedding = nodeKey === "Embedding";
+  const isSpeechSpecialty = specialty === "stt" || specialty === "tts";
 
   // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
   const { data: tenantProvidersData } = useFetchTenantModelProviders();
@@ -156,9 +170,9 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(nodeKey);
 
-    if (nodeKey == "SpeechToText") return sttModelProviders;
-    if (nodeKey == "TextToSpeech") return ttsModelProviders;
-    if (nodeKey == "Embedding") return embeddingModelProviders;
+    if (isStt) return sttModelProviders;
+    if (isTts) return ttsModelProviders;
+    if (isEmbedding) return embeddingModelProviders;
 
     // When BYOK is enabled, only show providers that are enabled for this tenant
     // (per the Tenant Admin "Model Providers" section).
@@ -176,26 +190,26 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
         return specialtyMatch && m.available;
       }),
     }));
-  }, [is_byok_enabled, enabledConfigByProvider, nodeKey]);
+  }, [isStt, isTts, isEmbedding, is_byok_enabled, enabledConfigByProvider, nodeKey]);
 
   // 4. Initial Load Logic
   useEffect(() => {
     const init = async () => {
       if (is_byok_enabled && credentialsValue && providerValue) {
         try {
-          if (nodeKey == "SpeechToText") {
+          if (isStt) {
             setByokModels(sttModelProviders[0].models as Model[]);
             setIsInitialized(true);
 
             return;
           }
-          if (nodeKey == "TextToSpeech") {
+          if (isTts) {
             setByokModels(ttsModelProviders[0].models as Model[]);
             setIsInitialized(true);
 
             return;
           }
-          if (nodeKey == "Embedding") {
+          if (isEmbedding) {
             setByokModels(embeddingModelProviders[0].models as Model[]);
             setIsInitialized(true);
 
@@ -261,17 +275,17 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
     if (prevValues.current.credentialsValue === credentialsValue) return;
 
     prevValues.current.credentialsValue = credentialsValue;
-    if (nodeKey == "SpeechToText") {
+    if (isStt) {
       setByokModels(sttModelProviders[0].models as Model[]);
 
       return;
     }
-    if (nodeKey == "TextToSpeech") {
+    if (isTts) {
       setByokModels(ttsModelProviders[0].models as Model[]);
 
       return;
     }
-    if (nodeKey == "Embedding") {
+    if (isEmbedding) {
       setByokModels(embeddingModelProviders[0].models as Model[]);
       return;
     }
@@ -333,10 +347,8 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
     // models dynamically via a credential, so the model dropdown must show the models
     // that were ENABLED for that provider in the tenant config.
     if (
-      is_byok_enabled &&
-      (nodeKey == "SpeechToText" ||
-        nodeKey == "TextToSpeech" ||
-        TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue))
+      isSpeechSpecialty ||
+      (is_byok_enabled && (isStt || isTts || TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue)))
     ) {
       const enabledIds = enabledConfig?.enabledModelIds ?? [];
       return uniqueAndNormalizeArray(
@@ -356,12 +368,20 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
     return uniqueAndNormalizeArray(models);
   }, [
     is_byok_enabled,
+    isSpeechSpecialty,
+    isStt,
+    isTts,
     byokModels,
     filteredProviders,
     providerValue,
     enabledConfigByProvider,
-    nodeKey,
   ]);
+
+  const hasEnabledSpeechModels = useMemo(() => {
+    if (!isSpeechSpecialty) return true;
+    const enabledIds = enabledConfigByProvider[providerValue]?.enabledModelIds ?? [];
+    return enabledIds.length > 0;
+  }, [isSpeechSpecialty, enabledConfigByProvider, providerValue]);
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
@@ -426,14 +446,20 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
     </>
   );
 
-  return (
+  const groupName = isStt ? "Speech to Text" : isTts ? "Text to Speech" : undefined;
+  const showInlineVoiceConfig = isTts;
+  const voiceConfigName = name.replace("__ModelConfig__", "__VoiceConfig__");
+
+  const content = (
     <div className="w-full space-y-3.5">
-      <SwitchField
-        size="sm"
-        name={fieldNames.is_byok_enabled}
-        label="Bring your own API key"
-        description="Use your own provider API key instead of platform-hosted models."
-      />
+      {!hideByok && (
+        <SwitchField
+          size="sm"
+          name={fieldNames.is_byok_enabled}
+          label="Bring your own API key"
+          description="Use your own provider API key instead of platform-hosted models."
+        />
+      )}
 
       <div className="flex items-end gap-2">
         {providerIcon && (
@@ -467,11 +493,19 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
         isLoading={isLoading}
         disabled={
           !isInitialized ||
+          (isSpeechSpecialty && !hasEnabledSpeechModels) ||
           (is_byok_enabled &&
             !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) &&
             !credentialsValue)
         }
       />
+
+      {isSpeechSpecialty && isInitialized && !hasEnabledSpeechModels && (
+        <p className="text-xs text-muted-foreground">
+          No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
+          Enable one under Tenant Admin &gt; Model Providers.
+        </p>
+      )}
 
       {enableModelSetup && <div className="space-y-3.5">{modelAdvancedSettings}</div>}
 
@@ -483,7 +517,17 @@ const ModelConfigField = ({ name, showJsonOutput = true }: ModelConfigFieldProps
           label="Voice"
         />
       ) : null}
+
+      {showInlineVoiceConfig && (
+        <VoiceConfigField name={voiceConfigName} providerPath={fieldNames.provider} />
+      )}
     </div>
+  );
+
+  return groupName ? (
+    <GroupedFieldsWrapper groupName={groupName}>{content}</GroupedFieldsWrapper>
+  ) : (
+    content
   );
 };
 

@@ -22,7 +22,6 @@ import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
-import { VoiceConfigField } from "./fields-for-form/VoiceConfigField";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
@@ -77,11 +76,20 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "config-panel-model-output":
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
-      return <ModelConfigField name={field.name} showJsonOutput={field.showJsonOutput} />;
+      return (
+        <ModelConfigField
+          name={field.name}
+          showJsonOutput={field.showJsonOutput}
+          specialty={field.specialty}
+          hideByok={field.hideByok}
+        />
+      );
     case "tools-config-select":
       return <ToolsConfigField name={field.name} />;
     case "voice-config-select":
-      return <VoiceConfigField name={field.name} />;
+      // IMPORTANT NOTE: this schema entry stays load-bearing for form defaults and Zod
+      // generation; its UI renders inline inside ModelConfigField for TTS-capable nodes.
+      return null;
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "prompt-input-v2":

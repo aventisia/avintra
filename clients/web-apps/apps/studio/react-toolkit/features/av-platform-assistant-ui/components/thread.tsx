@@ -36,18 +36,24 @@ import {
   CopyIcon,
   DownloadIcon,
   LoaderCircleIcon,
+  Mic,
   MoreHorizontalIcon,
   PencilIcon,
   Plus,
   RefreshCwIcon,
   SparklesIcon,
   SquareIcon,
+  Volume2Icon,
+  VolumeXIcon,
 } from "lucide-react";
-import type { FC } from "react";
-import { useState } from "react";
+import type { FC, KeyboardEvent } from "react";
+import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
+import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
+import { useVoiceRecorder } from "../voice/hooks/useVoiceRecorder.hook";
+import { resolveMissingSpeechConfigReason } from "../voice/utils/voice-controls.util";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
@@ -176,18 +182,64 @@ const ThreadHeader = ({
           </span>
         )}
       </div>
-      <TooltipIconButton
-        tooltip="New chat"
-        side="left"
-        variant="ghost"
-        size="icon8"
-        className="aui-thread-new-session size-8 shrink-0 rounded-md"
-        aria-label="Start new chat"
-        onClick={handleNewSession}
-      >
-        <Plus className="size-4 text-[var(--icon-color)]" />
-      </TooltipIconButton>
+      <div className="flex shrink-0 items-center gap-1">
+        <TooltipIconButton
+          tooltip="New chat"
+          side="left"
+          variant="ghost"
+          size="icon8"
+          className="aui-thread-new-session size-8 shrink-0 rounded-md"
+          aria-label="Start new chat"
+          onClick={handleNewSession}
+        >
+          <Plus className="size-4 text-[var(--icon-color)]" />
+        </TooltipIconButton>
+      </div>
     </div>
+  );
+};
+
+// IMPORTANT NOTE: composer buttons other than send are non-submit, so Enter while the
+// mic or speaker is focused would trigger that button instead of sending; force submit.
+const submitComposerOnEnter = (event: KeyboardEvent<HTMLButtonElement>) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  event.currentTarget.closest("form")?.requestSubmit();
+};
+
+const SpeakerToggle: FC = () => {
+  const voice = useAssistantVoiceContext();
+  if (!voice) return null;
+
+  const disabledReason = resolveMissingSpeechConfigReason(voice.ttsConfig, "replies");
+  const isDisabled = disabledReason !== null;
+  const label = voice.speakReplies ? "Mute spoken replies" : "Speak replies";
+  const tooltip = disabledReason ?? label;
+
+  return (
+    <TooltipIconButton
+      tooltip={tooltip}
+      side="bottom"
+      type="button"
+      variant="ghost"
+      size="icon8"
+      className="aui-composer-speak-replies size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
+      aria-label={tooltip}
+      aria-pressed={voice.speakReplies}
+      aria-disabled={isDisabled}
+      data-disabled={isDisabled ? "true" : undefined}
+      onKeyDown={submitComposerOnEnter}
+      onClick={() => {
+        if (isDisabled) return;
+        voice.setSpeakReplies(!voice.speakReplies);
+      }}
+    >
+      {voice.speakReplies ? (
+        <Volume2Icon className={cn("size-4", voice.isPlaying && "text-primary")} />
+      ) : (
+        <VolumeXIcon className="size-4 text-[var(--icon-color)]" />
+      )}
+    </TooltipIconButton>
   );
 };
 
@@ -296,14 +348,86 @@ const Composer: FC = () => {
   );
 };
 
+const formatRecordingTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
 const ComposerAction: FC = () => {
   const hasPending = useHasPendingToolCalls();
 
   const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
+  const aui = useAui();
+  const voice = useAssistantVoiceContext();
+
+  const handleTranscript = useCallback(
+    (text: string) => {
+      const existing = aui.composer.getState().text;
+      aui.composer.setText(existing.trim() ? `${existing.trimEnd()} ${text}` : text);
+    },
+    [aui],
+  );
+
+  const {
+    isRecording,
+    isTranscribing,
+    recordingSeconds,
+    isMicDisabled,
+    micTooltip,
+    toggleRecording,
+  } = useVoiceRecorder({
+    sttConfig: voice?.sttConfig ?? null,
+    refId: voice?.refId ?? "",
+    refName: voice?.refName ?? "",
+    agentName: voice?.agentName ?? null,
+    language: voice?.language ?? null,
+    onTranscript: handleTranscript,
+  });
 
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
-      <ComposerAddAttachment />
+      <div className="flex items-center gap-1">
+        <ComposerAddAttachment />
+        {/* IMPORTANT NOTE: aria-disabled (not native `disabled`, which is pointer-events-none)
+            keeps the mic hoverable so its tooltip can explain what is missing; the click is
+            ignored inside `toggleRecording`. */}
+        {voice && (
+          <>
+            <TooltipIconButton
+              tooltip={micTooltip}
+              side="bottom"
+              type="button"
+              variant="ghost"
+              size="icon8"
+              className="aui-composer-mic size-8 shrink-0 rounded-full data-[disabled]:cursor-not-allowed data-[disabled]:opacity-80 data-[disabled]:hover:bg-transparent"
+              aria-label={micTooltip}
+              aria-pressed={isRecording}
+              aria-disabled={isMicDisabled}
+              data-disabled={isMicDisabled ? "true" : undefined}
+              onKeyDown={submitComposerOnEnter}
+              onClick={toggleRecording}
+            >
+              {isTranscribing ? (
+                <LoaderCircleIcon className="size-4 animate-spin" />
+              ) : isRecording ? (
+                <SquareIcon className="size-3 fill-current text-destructive" />
+              ) : (
+                <Mic className="size-4" />
+              )}
+            </TooltipIconButton>
+            {isRecording && (
+              <span
+                className="aui-composer-recording-timer text-xs font-medium tabular-nums text-muted-foreground"
+                aria-live="polite"
+              >
+                {formatRecordingTime(recordingSeconds)}
+              </span>
+            )}
+            <SpeakerToggle />
+          </>
+        )}
+      </div>
 
       <AuiIf condition={(s) => !s.thread.isRunning && !hasPending}>
         <ComposerPrimitive.Send asChild>
@@ -382,20 +506,23 @@ const groupMessageParts = (
 const ChainOfThought: FC<{
   status: { type: string };
   indices: readonly number[];
-  counts: { running: number; incomplete: number; requiresAction: number };
   children: React.ReactNode;
-}> = ({ status, indices, counts, children }) => {
+}> = ({ status, indices, children }) => {
   const [open, setOpen] = useState(false);
   const parts = useAuiState((s) => s.message.parts);
-  const isRunning = status.type === "running" || counts.running > 0;
-  const isOpen = isRunning || open;
 
   const groupParts = indices
     .map((index) => parts[index])
     .filter((part): part is PartState => Boolean(part));
+
+  // IMPORTANT NOTE: the group object exposes no per-status counts, so the running and
+  // incomplete state must be derived from the group's own parts.
+  const isRunning =
+    status.type === "running" || groupParts.some((part) => part.status.type === "running");
+  const isOpen = isRunning || open;
   const toolCount = groupParts.filter((part) => part.type === "tool-call").length;
   const hasReasoning = groupParts.some((part) => part.type === "reasoning");
-  const hasIncomplete = counts.incomplete > 0;
+  const hasIncomplete = groupParts.some((part) => part.status.type === "incomplete");
   const lastPart = groupParts[groupParts.length - 1];
 
   // While running, name the current step (tool or skill) like a live status;
@@ -492,7 +619,7 @@ const AssistantMessage: FC = () => {
             switch (part.type) {
               case "group-thought":
                 return (
-                  <ChainOfThought status={part.status} indices={part.indices} counts={part.counts}>
+                  <ChainOfThought status={part.status} indices={part.indices}>
                     {children}
                   </ChainOfThought>
                 );
