@@ -10,7 +10,7 @@ public class CamelConnectorService : ICamelConnectorService
 {
     private readonly ILogger<CamelConnectorService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
-    private readonly IAppSecretService _appSecretService;
+    private readonly IVaultCredentialService _vaultCredentialService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly CamelConnectorsConfigRepository _configRepository;
     private readonly CamelCatalogClient _catalogClient;
@@ -19,7 +19,7 @@ public class CamelConnectorService : ICamelConnectorService
     public CamelConnectorService(
         ILogger<CamelConnectorService> logger,
         EnvironmentConfig environmentConfig,
-        IAppSecretService appSecretService  ,
+        IVaultCredentialService vaultCredentialService  ,
         IHttpClientFactory httpClientFactory,
         CamelConnectorsConfigRepository configRepository,
         CamelCatalogClient catalogClient,
@@ -27,7 +27,7 @@ public class CamelConnectorService : ICamelConnectorService
     {
         _logger = logger;
         _environmentConfig = environmentConfig;
-        _appSecretService = appSecretService;
+        _vaultCredentialService = vaultCredentialService;
         _httpClientFactory = httpClientFactory;
         _configRepository = configRepository;
         _catalogClient = catalogClient;
@@ -514,14 +514,14 @@ public class CamelConnectorService : ICamelConnectorService
         };
     }
 
-    private async Task<AppSecretDto?> GetCredentialAsync(string? credentialName)
+    private async Task<VaultCredentialDto?> GetCredentialAsync(string? credentialName)
     {
         if (string.IsNullOrWhiteSpace(credentialName))
         {
             return null;
         }
 
-        var response = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName);
+        var response = await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(credentialName);
         if (response.StatusCode != 200 || response.Data == null)
         {
             _logger.LogWarning("Unable to resolve Camel credential '{CredentialName}': {Message}", credentialName, response.Message);

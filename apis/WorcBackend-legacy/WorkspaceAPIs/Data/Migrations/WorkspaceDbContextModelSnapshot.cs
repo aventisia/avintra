@@ -262,78 +262,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("ws_ApiKeys");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EnvType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("Dev");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTenantWideAccess")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("SpaceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UsageCount")
-                        .HasColumnType("integer");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
-                        .IsUnique();
-
-                    b.ToTable("AppSecrets");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.Conversation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -429,9 +357,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AppSecretId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -440,11 +365,14 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("VaultCredentialId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AppSecretId");
+                    b.HasIndex("VaultCredentialId");
 
-                    b.ToTable("EncryptedKeyValues");
+                    b.ToTable("ws_EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
@@ -2919,6 +2847,78 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_TriggerFlowVersions");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ws_VaultCredentials");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.VectorStore", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3080,25 +3080,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.Conversation", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -3147,13 +3128,13 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.EncryptedKeyValue", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.AppSecret", "AppSecret")
+                    b.HasOne("WorkspaceAPIs.Entities.VaultCredential", "VaultCredential")
                         .WithMany("EncryptedKeyValues")
-                        .HasForeignKey("AppSecretId")
+                        .HasForeignKey("VaultCredentialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AppSecret");
+                    b.Navigation("VaultCredential");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
@@ -3962,9 +3943,23 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Trigger");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
                 {
-                    b.Navigation("EncryptedKeyValues");
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Conversation", b =>
@@ -4071,6 +4066,11 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.Trigger", b =>
                 {
                     b.Navigation("TriggerFlowVersions");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
+                {
+                    b.Navigation("EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>

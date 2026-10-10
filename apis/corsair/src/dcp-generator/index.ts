@@ -136,7 +136,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   const vaultTypeMapFile = path.join(outputDir, "CorsairVaultTypeToPluginId.json");
   const frontendCatalogFile = path.resolve(
     moduleDir,
-    "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-table/vault-config/constants/corsair-integration-catalog.json",
+    "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials/vault-config/constants/corsair-integration-catalog.json",
   );
   const openApiDir = path.join(configRootResolved, "openapi");
 

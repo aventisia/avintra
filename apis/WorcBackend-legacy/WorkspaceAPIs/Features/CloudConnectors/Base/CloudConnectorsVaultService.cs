@@ -26,7 +26,7 @@ public class CloudConnectorsVaultService : ICloudConnectorsVaultService
             // Fetch the credential entity along with its encrypted key-value pairs by NAME.
             // Scoped by Name + TenantId (+ EnvType) so the (credential_name, tenant_id)
             // combination resolves the correct, unique credential.
-            var vaultCredential = await _unitOfWork.AppSecretRepo
+            var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == credentialName &&
                     !w.IsDisabled &&

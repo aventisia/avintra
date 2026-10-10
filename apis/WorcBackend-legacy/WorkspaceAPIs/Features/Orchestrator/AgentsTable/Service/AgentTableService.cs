@@ -987,7 +987,7 @@ public class AgentTableService : IAgentTableService
             if (usedNames.Contains(name))
                 continue;
 
-            var credential = await _unitOfWork.AppSecretRepo
+            var credential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
             if (credential == null || credential.IsTenantWideAccess)
@@ -997,14 +997,14 @@ public class AgentTableService : IAgentTableService
                 continue;
 
             // Owned key-value pairs go with the credential.
-            await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.AppSecretId == credential.Id);
-            await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.AppSecret);
-            _unitOfWork.AppSecretRepo.Delete(credential);
+            await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.VaultCredentialId == credential.Id);
+            await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.VaultCredential);
+            _unitOfWork.VaultCredentialRepo.Delete(credential);
         }
     }
 
     // Checks whether a credential is still referenced by a knowledge base, queue or tool.
-    private async Task<bool> IsCredentialReferencedElsewhereAsync(AppSecret credential, string name)
+    private async Task<bool> IsCredentialReferencedElsewhereAsync(VaultCredential credential, string name)
     {
         var normalizedName = name.ToLower();
 

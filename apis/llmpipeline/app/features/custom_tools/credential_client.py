@@ -12,7 +12,7 @@ async def fetch_decrypted_credential(
     env_type: str = "dev",
 ) -> dict:
     """Fetch a decrypted credential by its unique NAME from the Workspace API."""
-    url = f"{workspace_api.rstrip('/')}/api/app-secret/decrypted-data/by-name/{credential_name}"
+    url = f"{workspace_api.rstrip('/')}/api/vault/credentials/decrypted-data/by-name/{credential_name}"
     headers = {"X-Env-Type": env_type}
     if access_token:
         # The token is already a full Authorization value (e.g. "Bearer <token>")

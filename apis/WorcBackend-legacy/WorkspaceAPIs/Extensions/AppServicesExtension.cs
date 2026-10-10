@@ -70,7 +70,7 @@ public static class AppServicesExtension
         config.Apply(new JobsTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new FlowUserMappingProfile());
-        config.Apply(new AppSecretMappingProfile());
+        config.Apply(new VaultCredentialMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new EmailTriggerMappingProfile());
         config.Apply(new MessageTriggerMappingProfile());
@@ -153,7 +153,7 @@ public static class AppServicesExtension
         services.AddScoped<IWebhookCallbackService, WebhookCallbackService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
-        services.AddScoped<IAppSecretService, AppSecretService>();
+        services.AddScoped<IVaultCredentialService, VaultCredentialService>();
         services.AddScoped<ICorsairSidecarService, CorsairSidecarService>();
         services.AddScoped<ICorsairInvokeService, CorsairInvokeService>();
         services.AddSingleton<CorsairConfigRepository>();

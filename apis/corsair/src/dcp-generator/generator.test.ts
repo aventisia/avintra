@@ -180,7 +180,7 @@ async function main() {
     assert(m365Scopes.has("Sites.FullControl.All"), "M365 scopes are missing SharePoint permissions");
 
     // 6. Every credential-select field name must use the canonical catalog vault type
-    //    (AppSecretTypesEnum-compatible), never the display providerName.
+    //    (VaultCredentialTypesEnum-compatible), never the display providerName.
     const vaultTypeByPlugin = new Map(
       catalog.map((entry: any) => [entry.pluginId, entry.vaultType]),
     );

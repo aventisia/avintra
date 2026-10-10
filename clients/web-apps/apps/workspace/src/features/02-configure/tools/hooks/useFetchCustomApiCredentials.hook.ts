@@ -12,7 +12,7 @@ import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 /**
  * Fetches credentials that can be assigned to a tool.
  *
- * Uses the shared app-secret select-options endpoint filtered to
+ * Uses the shared vault credential select-options endpoint filtered to
  * CustomApiTool. This keeps the hook isolated in the tools feature.
  */
 export const useFetchCustomApiCredentials = () => {

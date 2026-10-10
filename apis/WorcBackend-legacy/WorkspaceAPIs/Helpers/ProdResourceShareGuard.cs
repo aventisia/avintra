@@ -73,7 +73,7 @@ public static class ProdResourceShareGuard
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
             ResourceTypeEnum.KeyStore => await unitOfWork.KeyStoreRepo.GetByConditionAsync(w =>
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
-            ResourceTypeEnum.AppSecret => await unitOfWork.AppSecretRepo.GetByConditionAsync(w =>
+            ResourceTypeEnum.VaultCredential => await unitOfWork.VaultCredentialRepo.GetByConditionAsync(w =>
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
             ResourceTypeEnum.KnowledgeBase => await unitOfWork.KnowledgeBaseRepo.GetByConditionAsync(w =>
                 resourceIds.Contains(w.Id) && w.EnvType == ConfigureEnvironmentType.Prod).AnyAsync(),
@@ -90,7 +90,7 @@ public static class ProdResourceShareGuard
         ResourceTypeEnum.Queue => "queue",
         ResourceTypeEnum.Trigger => "trigger",
         ResourceTypeEnum.KeyStore => "key store",
-        ResourceTypeEnum.AppSecret => "credential",
+        ResourceTypeEnum.VaultCredential => "credential",
         ResourceTypeEnum.KnowledgeBase => "knowledge base",
         ResourceTypeEnum.Skill => "skill",
         ResourceTypeEnum.Tool => "tool",
@@ -112,8 +112,8 @@ public static class ProdResourceShareGuard
                 return (true, await IsProdAsync(unitOfWork.TriggerRepo, w => w.Id == resourceId, e => e.EnvType), "trigger");
             case ResourceTypeEnum.KeyStore:
                 return (true, await IsProdAsync(unitOfWork.KeyStoreRepo, w => w.Id == resourceId, e => e.EnvType), "key store");
-            case ResourceTypeEnum.AppSecret:
-                return (true, await IsProdAsync(unitOfWork.AppSecretRepo, w => w.Id == resourceId, e => e.EnvType), "credential");
+            case ResourceTypeEnum.VaultCredential:
+                return (true, await IsProdAsync(unitOfWork.VaultCredentialRepo, w => w.Id == resourceId, e => e.EnvType), "credential");
             case ResourceTypeEnum.KnowledgeBase:
                 return (true, await IsProdAsync(unitOfWork.KnowledgeBaseRepo, w => w.Id == resourceId, e => e.EnvType), "knowledge base");
             case ResourceTypeEnum.Skill:

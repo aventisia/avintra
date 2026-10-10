@@ -13,7 +13,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly INotificationEventService _notificationEventService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly ICollaborationStore _collaborationStore;
-    private readonly IAppSecretService _appSecretService;
+    private readonly IVaultCredentialService _vaultCredentialService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -27,7 +27,7 @@ public class FlowBuilderService : IFlowBuilderService
         INotificationEventService notificationEventService,
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
-        IAppSecretService appSecretService)
+        IVaultCredentialService vaultCredentialService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -45,7 +45,7 @@ public class FlowBuilderService : IFlowBuilderService
         _notificationEventService = notificationEventService;
         _currentTenantService = currentTenantService;
         _collaborationStore = collaborationStore;
-        _appSecretService = appSecretService;
+        _vaultCredentialService = vaultCredentialService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -728,7 +728,7 @@ public class FlowBuilderService : IFlowBuilderService
             // Legacy GUID value -> resolve to the actual credential name.
             if (Guid.TryParse(value, out var guid))
             {
-                var byId = await _unitOfWork.AppSecretRepo
+                var byId = await _unitOfWork.VaultCredentialRepo
                     .GetByConditionAsync(w => w.Id == guid && w.EnvType == _currentTenantService.CurrentEnvType)
                     .FirstOrDefaultAsync();
                 if (byId != null)
@@ -740,7 +740,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             // A reference that does not resolve in the current environment must fail the publish:
             // silently dropping it would publish a flow pointing at a missing credential.
-            var byName = await _unitOfWork.AppSecretRepo
+            var byName = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w => w.Name == value && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
             if (byName == null)
@@ -765,7 +765,7 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
 
-        missing.AddRange(await EnsureProdAppSecretsAsync(references["credentials"]));
+        missing.AddRange(await EnsureProdVaultCredentialsAsync(references["credentials"]));
         missing.AddRange(await EnsureProdQueuesAsync(references["queues"]));
         missing.AddRange(await EnsureProdToolsAsync(references["tools"]));
         missing.AddRange(await EnsureProdKnowledgeBasesAsync(references["knowledgeBases"]));
@@ -787,7 +787,7 @@ public class FlowBuilderService : IFlowBuilderService
         if (sourceCredentialId is null || sourceCredentialId == Guid.Empty)
             return null;
 
-        var sourceSecret = await _unitOfWork.AppSecretRepo
+        var sourceSecret = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Id == sourceCredentialId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
         if (sourceSecret == null)
@@ -795,7 +795,7 @@ public class FlowBuilderService : IFlowBuilderService
                 $"Cannot publish: credential '{sourceCredentialId}' referenced by a knowledge base was not found in the {_currentTenantService.CurrentEnvType} environment.");
 
         await AcquireProdCloneLockAsync("credential", sourceSecret.Name);
-        var prodSecret = await _unitOfWork.AppSecretRepo
+        var prodSecret = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Name == sourceSecret.Name && w.EnvType == ConfigureEnvironmentType.Prod)
             .FirstOrDefaultAsync();
         if (prodSecret != null)
@@ -804,7 +804,7 @@ public class FlowBuilderService : IFlowBuilderService
             return prodSecret.Id;
         }
 
-        var clone = await CloneAppSecretToProdAsync(sourceSecret);
+        var clone = await CloneVaultCredentialToProdAsync(sourceSecret);
         return clone.Id;
     }
 
@@ -812,9 +812,9 @@ public class FlowBuilderService : IFlowBuilderService
     /// Clones a source App Secret into a new Production record, copying its encrypted key-value
     /// pairs, inheriting its space, and assigning ownership to the current user.
     /// </summary>
-    private async Task<AppSecret> CloneAppSecretToProdAsync(AppSecret devSecret)
+    private async Task<VaultCredential> CloneVaultCredentialToProdAsync(VaultCredential devSecret)
     {
-        var clone = new AppSecret
+        var clone = new VaultCredential
         {
             Name = devSecret.Name,
             Type = devSecret.Type,
@@ -827,11 +827,11 @@ public class FlowBuilderService : IFlowBuilderService
             CreatedByUserId = _userId,
             LastModifiedByUserId = _userId,
         };
-        await _unitOfWork.AppSecretRepo.InsertAsync(clone);
+        await _unitOfWork.VaultCredentialRepo.InsertAsync(clone);
         await _unitOfWork.SaveAsync();
 
         var devKeyValues = await _unitOfWork.EncryptedKeyValueRepo
-            .GetByConditionAsync(kv => kv.AppSecretId == devSecret.Id)
+            .GetByConditionAsync(kv => kv.VaultCredentialId == devSecret.Id)
             .ToListAsync();
         foreach (var kv in devKeyValues)
         {
@@ -839,12 +839,12 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 Name = kv.Name,
                 Value = kv.Value,
-                AppSecretId = clone.Id,
+                VaultCredentialId = clone.Id,
             });
         }
         await _unitOfWork.SaveAsync();
 
-        await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.AppSecret);
+        await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.VaultCredential);
 
         // Corsair keys connections by the App Secret Id, so mirroring the clone is what makes the
         // Production credential usable by platform tool calls.
@@ -852,13 +852,13 @@ public class FlowBuilderService : IFlowBuilderService
         return clone;
     }
 
-    private async Task<List<string>> EnsureProdAppSecretsAsync(List<string> names)
+    private async Task<List<string>> EnsureProdVaultCredentialsAsync(List<string> names)
     {
         var missing = new List<string>();
         foreach (var name in names)
         {
             await AcquireProdCloneLockAsync("credential", name);
-            var devSecret = await _unitOfWork.AppSecretRepo
+            var devSecret = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
             if (devSecret == null)
@@ -867,7 +867,7 @@ public class FlowBuilderService : IFlowBuilderService
                 continue;
             }
 
-            var prodSecret = await _unitOfWork.AppSecretRepo
+            var prodSecret = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
             if (prodSecret != null)
@@ -877,7 +877,7 @@ public class FlowBuilderService : IFlowBuilderService
                 continue;
             }
 
-            await CloneAppSecretToProdAsync(devSecret);
+            await CloneVaultCredentialToProdAsync(devSecret);
         }
 
         return missing;
@@ -889,9 +889,9 @@ public class FlowBuilderService : IFlowBuilderService
     /// is invoked. Publishing fails when the mirror cannot be created, so a broken clone is never
     /// persisted.
     /// </summary>
-    private async Task EnsureProdCredentialMirroredAsync(AppSecret prodSecret)
+    private async Task EnsureProdCredentialMirroredAsync(VaultCredential prodSecret)
     {
-        if (!await _appSecretService.SyncCredentialToCorsairAsync(prodSecret.Id))
+        if (!await _vaultCredentialService.SyncCredentialToCorsairAsync(prodSecret.Id))
         {
             throw new InvalidOperationException(
                 $"Cannot publish: failed to mirror credential '{prodSecret.Name}' to the Corsair sidecar for the {ConfigureEnvironmentType.Prod} environment.");

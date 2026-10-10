@@ -26,7 +26,7 @@ Bind `:tenant_id` and the Dev resource names before running each block. All
 clones inherit the Dev source `SpaceId`; uniqueness is
 `(TenantId, SpaceId, EnvType, Name)`.
 
-### 2.1 Credentials (AppSecrets + EncryptedKeyValues)
+### 2.1 Credentials (VaultCredentials + EncryptedKeyValues)
 
 ```sql
 -- A Prod twin must exist for every referenced Dev credential, and must never
@@ -38,8 +38,8 @@ SELECT d."Name",
        p."Id"   AS prod_id,
        p."EnvType" AS prod_env,
        p."SpaceId" AS prod_space
-FROM "AppSecrets" d
-LEFT JOIN "AppSecrets" p
+FROM "ws_VaultCredentials" d
+LEFT JOIN "ws_VaultCredentials" p
        ON p."TenantId" = d."TenantId"
       AND p."Name" = d."Name"
       AND p."EnvType" = 'Prod'
@@ -55,11 +55,11 @@ WHERE d."TenantId" = :tenant_id
 SELECT d."Name",
        count(dkv."Id") AS dev_kv,
        count(pkv."Id") AS prod_kv
-FROM "AppSecrets" d
-LEFT JOIN "EncryptedKeyValues" dkv ON dkv."AppSecretId" = d."Id"
-JOIN "AppSecrets" p
+FROM "ws_VaultCredentials" d
+LEFT JOIN "ws_EncryptedKeyValues" dkv ON dkv."VaultCredentialId" = d."Id"
+JOIN "ws_VaultCredentials" p
      ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
-LEFT JOIN "EncryptedKeyValues" pkv ON pkv."AppSecretId" = p."Id"
+LEFT JOIN "ws_EncryptedKeyValues" pkv ON pkv."VaultCredentialId" = p."Id"
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
   AND d."Name" IN (:credential_names)

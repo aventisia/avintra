@@ -93,7 +93,7 @@ export type PluginOAuthConfig = {
 export type PluginMetadata = {
   id: string;
   providerName: string;
-  /** Canonical in-house credential type (AppSecretTypesEnum-compatible) used for credential field names. */
+  /** Canonical in-house credential type (VaultCredentialTypesEnum-compatible) used for credential field names. */
   vaultType: string;
   description: string;
   img: string | null;

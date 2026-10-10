@@ -27,7 +27,7 @@ public enum ResourceTypeEnum
     /// Represents an application secret resource used for managing application credentials.
     /// </summary>
     [Description("Represents an application secret resource used for managing application credentials.")]
-    AppSecret,
+    VaultCredential,
 
     /// <summary>
     /// Represents a knowledge base resource used for storing and retrieving knowledge assets.
