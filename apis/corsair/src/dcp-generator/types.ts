@@ -1,6 +1,7 @@
 /**
  * Shared types for the Corsair → Studio Cloud Connector DCP generator.
  */
+import type { PluginNodeFieldMapping } from "./node-field-mappings/types.js";
 
 /** A single Studio DCP field (dynamic-config-panel schema). */
 export type DcpField = {
@@ -101,6 +102,11 @@ export type PluginMetadata = {
   oauthConfig?: PluginOAuthConfig;
   /** dotted action path → human-readable description (from endpointMeta). */
   actionDescriptions: Record<string, string>;
+  /**
+   * Optional hand/AI-authored field label/description mapping for this plugin.
+   * Absent for plugins that have not been mapped yet (fallback behavior applies).
+   */
+  nodeFieldMapping?: PluginNodeFieldMapping;
 };
 
 /** Options for the generator orchestrator. */

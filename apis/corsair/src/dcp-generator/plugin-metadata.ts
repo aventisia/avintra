@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.js";
 
 import { getVaultType } from "./integration-catalog.js";
+import { getNodeFieldMapping } from "./node-field-mappings/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -734,6 +735,7 @@ export function toPluginMetadata(
     authModes,
     oauthConfig: raw.oauthConfig,
     actionDescriptions,
+    nodeFieldMapping: getNodeFieldMapping(id),
   };
 }
 
