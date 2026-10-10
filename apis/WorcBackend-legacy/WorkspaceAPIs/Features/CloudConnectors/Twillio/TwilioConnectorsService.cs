@@ -8,14 +8,14 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 {
     private readonly ILogger<TwilioConnectorsService> _logger;
     private readonly IM365ConnectorsService _m365ConnectorsService;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
 
     public TwilioConnectorsService(ILogger<TwilioConnectorsService> logger,
-        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultService cloudConnectorsVaultService)
+        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService)
     {
         _logger = logger;
         _m365ConnectorsService = m365ConnectorsService;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
     }
 
     public async Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto)
@@ -103,7 +103,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
     // Get twilio auth token and accountSid.
     private async Task<(string AccountSid, string AuthToken)?> GetTwilioAccountSidAndAuthTokenAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential == null)
         {
             _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);

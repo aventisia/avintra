@@ -6,19 +6,19 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
 {
     private readonly ILogger<LLMProviderConnectorsService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly string _jwt;
 
     public LLMProviderConnectorsService(
         ILogger<LLMProviderConnectorsService> logger,
         EnvironmentConfig environmentConfig,
-        ICloudConnectorsVaultService cloudConnectorsVaultService,
+        ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _environmentConfig = environmentConfig;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
         _httpContextAccessor = httpContextAccessor;
 
         _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
@@ -225,7 +225,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
     // Get openAi apikey from the vault credential name.
     private async Task<(string ApiKey, string? Organization)?> GetOpenAICredentialsAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential == null)
         {
             _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);

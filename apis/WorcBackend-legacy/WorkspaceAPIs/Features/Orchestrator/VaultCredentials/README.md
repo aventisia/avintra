@@ -76,7 +76,7 @@ store tenant-scoped integration keys and require a consent flow:
   (for example during Production publish cloning).
 
 Types are supported through `CorsairConfigRepository` plugin mappings; the
-"VaultType"/"Vault credential" terminology in Corsair/CloudConnectors code refers to a
+"VaultCredentialType"/"Vault credential" terminology in Corsair/CloudConnectors code refers to a
 credential type, not a legacy entity.
 
 ## Persistence and compatibility

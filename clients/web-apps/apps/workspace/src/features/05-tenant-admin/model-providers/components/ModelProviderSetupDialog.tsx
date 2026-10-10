@@ -21,15 +21,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
+import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
 
-import {
-  getLlmModelsV2,
-  upsertModelProvider,
-} from "../apis/model-provider-apis";
+import { getLlmModelsV2, upsertModelProvider } from "../apis/model-provider-apis";
 import {
   getProviderIcon,
-  getVaultTypeForProvider,
+  getVaultCredentialTypeForProvider,
 } from "../constants/model-provider-definitions";
 import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
@@ -79,7 +76,7 @@ export const ModelProviderSetupDialog = () => {
     resetState();
 
     setIsCredentialLoading(true);
-    getCredSelectOptions(getVaultTypeForProvider(provider.value))
+    getVaultCredentialSelectOptions(getVaultCredentialTypeForProvider(provider.value))
       .then((res) => {
         const options = res?.data ?? [];
         setCredentialOptions(options);
@@ -341,8 +338,7 @@ export const ModelProviderSetupDialog = () => {
                   <Button
                     onClick={handleSave}
                     disabled={
-                      upsertMutation.isPending ||
-                      (!selectedCredentialName && !config?.credentialId)
+                      upsertMutation.isPending || (!selectedCredentialName && !config?.credentialId)
                     }
                   >
                     {upsertMutation.isPending ? "Saving..." : "Save"}

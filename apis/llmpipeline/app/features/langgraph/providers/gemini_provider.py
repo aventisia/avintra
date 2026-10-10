@@ -6,7 +6,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from app.core.config import settings
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
@@ -49,16 +49,16 @@ def create_gemini_model(
     # Use user-provided credentials when BYOK is enabled
     if llm_request.is_byok_enabled and llm_request.credential_name:
 
-        # Initialize vault client
-        vault_manager = VaultManager()
+        # Initialize vault credential client
+        vault_credential_manager = VaultCredentialManager()
 
         logger.debug(
             "Fetching Gemini BYOK credentials. credential_name=%s",
             llm_request.credential_name,
         )
 
-        # Retrieve credentials from vault
-        credential = vault_manager.get_vault_secret_by_name(
+        # Retrieve credentials from the vault credential
+        credential = vault_credential_manager.get_vault_credential_secret_by_name(
             credential=llm_request.credential_name,
             jwt=user.access_token,
             env_type=user.env_type,

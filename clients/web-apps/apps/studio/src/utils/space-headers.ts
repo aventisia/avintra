@@ -54,7 +54,7 @@ export const getStudioSpaceHeaders = (): Record<string, string> => {
  * A published agent runs against the `prod` environment, while an unpublished
  * (draft) agent runs against `dev`. This mirrors the backend pattern in
  * `StreamingChatService` where `X-Env-Type` is set to `prod`/`dev` based on
- * `IsPublished`, so the LLM pipeline resolves credentials/vaults against the
+ * `IsPublished`, so the LLM pipeline resolves vault credentials against the
  * same environment the agent is configured for.
  */
 export const getStudioEnvHeaders = (): Record<string, string> => {

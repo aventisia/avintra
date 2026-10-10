@@ -94,7 +94,7 @@ export type PluginMetadata = {
   id: string;
   providerName: string;
   /** Canonical in-house credential type (VaultCredentialTypesEnum-compatible) used for credential field names. */
-  vaultType: string;
+  vaultCredentialType: string;
   description: string;
   img: string | null;
   authType: string;

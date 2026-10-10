@@ -31,7 +31,7 @@ import {
   loadExistingMapping,
 } from "./build-mapping.js";
 import { buildOpenApiSpec } from "./build-openapi.js";
-import { buildIntegrationCatalog, buildVaultConfigs } from "./integration-catalog.js";
+import { buildIntegrationCatalog, buildVaultCredentialConfigs } from "./integration-catalog.js";
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -71,13 +71,13 @@ function writeJson(filePath: string, data: unknown): void {
 }
 
 /** Generate only new vault forms; reviewed legacy forms remain authoritative. */
-function writeMissingVaultConfigs(configs: ReturnType<typeof buildVaultConfigs>): void {
-  const vaultConfigDir = process.env.CORSAIR_VAULT_CONFIG_DIR
+function writeMissingVaultCredentialConfigs(configs: ReturnType<typeof buildVaultCredentialConfigs>): void {
+  const vaultCredentialConfigDir = process.env.CORSAIR_VAULT_CONFIG_DIR
     ? path.resolve(process.env.CORSAIR_VAULT_CONFIG_DIR)
     : path.resolve(moduleDir, "../../../../clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json");
 
   for (const config of configs) {
-    const filePath = path.join(vaultConfigDir, config.vaultType + ".json");
+    const filePath = path.join(vaultCredentialConfigDir, config.vaultCredentialType + ".json");
     if (!fs.existsSync(filePath)) {
       writeJson(filePath, config.fields);
       continue;
@@ -133,10 +133,10 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     ?? path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
   const actionMapFile = path.join(outputDir, "CorsairActionMap.json");
   const integrationCatalogFile = path.join(outputDir, "CorsairIntegrationCatalog.json");
-  const vaultTypeMapFile = path.join(outputDir, "CorsairVaultTypeToPluginId.json");
+  const vaultCredentialTypeMapFile = path.join(outputDir, "CorsairVaultCredentialTypeToPluginId.json");
   const frontendCatalogFile = path.resolve(
     moduleDir,
-    "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials/vault-config/constants/corsair-integration-catalog.json",
+    "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials/vault-credential-config/constants/corsair-integration-catalog.json",
   );
   const openApiDir = path.join(configRootResolved, "openapi");
 
@@ -201,15 +201,15 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // Write the credential mapping consumed by vault and backend integrations.
   const integrationCatalog = buildIntegrationCatalog(pluginMetas);
   writeJson(integrationCatalogFile, integrationCatalog);
-  const vaultTypeToPluginId = Object.fromEntries(
+  const vaultCredentialTypeToPluginId = Object.fromEntries(
     integrationCatalog.reduce<Map<string, string>>((map, entry) => {
-      if (!map.has(entry.vaultType)) map.set(entry.vaultType, entry.pluginId);
+      if (!map.has(entry.vaultCredentialType)) map.set(entry.vaultCredentialType, entry.pluginId);
       return map;
     }, new Map()),
   );
-  writeJson(vaultTypeMapFile, vaultTypeToPluginId);
+  writeJson(vaultCredentialTypeMapFile, vaultCredentialTypeToPluginId);
   writeJson(frontendCatalogFile, integrationCatalog);
-  writeMissingVaultConfigs(buildVaultConfigs(integrationCatalog));
+  writeMissingVaultCredentialConfigs(buildVaultCredentialConfigs(integrationCatalog));
 
   // Write per-plugin OpenAPI specs.
   for (const [pluginId, spec] of Object.entries(openApiByPlugin)) {

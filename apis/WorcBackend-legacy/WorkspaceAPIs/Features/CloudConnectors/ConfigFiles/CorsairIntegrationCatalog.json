@@ -15,7 +15,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ably.svg",
-    "vaultType": "Ably",
+    "vaultCredentialType": "Ably",
     "configFile": "Ably.json"
   },
   {
@@ -36,7 +36,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/abstract.svg",
-    "vaultType": "Abstract",
+    "vaultCredentialType": "Abstract",
     "configFile": "Abstract.json"
   },
   {
@@ -53,7 +53,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/abuseipdb.png",
-    "vaultType": "Abuseipdb",
+    "vaultCredentialType": "Abuseipdb",
     "configFile": "Abuseipdb.json"
   },
   {
@@ -70,7 +70,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/abyssale.png",
-    "vaultType": "Abyssale",
+    "vaultCredentialType": "Abyssale",
     "configFile": "Abyssale.json"
   },
   {
@@ -87,7 +87,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/accrediblecertificates.png",
-    "vaultType": "Accrediblecertificates",
+    "vaultCredentialType": "Accrediblecertificates",
     "configFile": "Accrediblecertificates.json"
   },
   {
@@ -106,7 +106,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/activecampaign.png",
-    "vaultType": "Activecampaign",
+    "vaultCredentialType": "Activecampaign",
     "configFile": "Activecampaign.json"
   },
   {
@@ -123,7 +123,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/activetrail.png",
-    "vaultType": "Activetrail",
+    "vaultCredentialType": "Activetrail",
     "configFile": "Activetrail.json"
   },
   {
@@ -140,7 +140,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/addresszen.svg",
-    "vaultType": "Addresszen",
+    "vaultCredentialType": "Addresszen",
     "configFile": "Addresszen.json"
   },
   {
@@ -159,7 +159,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/aeroleads.png",
-    "vaultType": "Aeroleads",
+    "vaultCredentialType": "Aeroleads",
     "configFile": "Aeroleads.json"
   },
   {
@@ -176,7 +176,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/affinda.png",
-    "vaultType": "Affinda",
+    "vaultCredentialType": "Affinda",
     "configFile": "Affinda.json"
   },
   {
@@ -193,7 +193,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agencyzoom.png",
-    "vaultType": "Agencyzoom",
+    "vaultCredentialType": "Agencyzoom",
     "configFile": "Agencyzoom.json"
   },
   {
@@ -210,7 +210,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agentmail.png",
-    "vaultType": "Agentmail",
+    "vaultCredentialType": "Agentmail",
     "configFile": "Agentmail.json"
   },
   {
@@ -227,7 +227,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agentql.png",
-    "vaultType": "Agentql",
+    "vaultCredentialType": "Agentql",
     "configFile": "Agentql.json"
   },
   {
@@ -244,7 +244,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agenty.png",
-    "vaultType": "Agenty",
+    "vaultCredentialType": "Agenty",
     "configFile": "Agenty.json"
   },
   {
@@ -263,7 +263,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agiled.png",
-    "vaultType": "Agiled",
+    "vaultCredentialType": "Agiled",
     "configFile": "Agiled.json"
   },
   {
@@ -282,7 +282,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/agilitycms.png",
-    "vaultType": "Agilitycms",
+    "vaultCredentialType": "Agilitycms",
     "configFile": "Agilitycms.json"
   },
   {
@@ -301,7 +301,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ahrefs.svg",
-    "vaultType": "Ahrefs",
+    "vaultCredentialType": "Ahrefs",
     "configFile": "Ahrefs.json"
   },
   {
@@ -320,7 +320,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/aimlapi.png",
-    "vaultType": "Aimlapi",
+    "vaultCredentialType": "Aimlapi",
     "configFile": "Aimlapi.json"
   },
   {
@@ -348,7 +348,7 @@
       "tokenAuthMethod": "basic"
     },
     "icon": "/brand-img/airtable.svg",
-    "vaultType": "Airtable",
+    "vaultCredentialType": "Airtable",
     "configFile": "Airtable.json"
   },
   {
@@ -367,7 +367,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/aivoov.png",
-    "vaultType": "Aivoov",
+    "vaultCredentialType": "Aivoov",
     "configFile": "Aivoov.json"
   },
   {
@@ -384,7 +384,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/alchemy.svg",
-    "vaultType": "Alchemy",
+    "vaultCredentialType": "Alchemy",
     "configFile": "Alchemy.json"
   },
   {
@@ -403,7 +403,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/algolia.svg",
-    "vaultType": "Algolia",
+    "vaultCredentialType": "Algolia",
     "configFile": "Algolia.json"
   },
   {
@@ -422,7 +422,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/allimagesai.png",
-    "vaultType": "Allimagesai",
+    "vaultCredentialType": "Allimagesai",
     "configFile": "Allimagesai.json"
   },
   {
@@ -441,7 +441,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/alphavantage.svg",
-    "vaultType": "Alphavantage",
+    "vaultCredentialType": "Alphavantage",
     "configFile": "Alphavantage.json"
   },
   {
@@ -458,7 +458,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/altoviz.png",
-    "vaultType": "Altoviz",
+    "vaultCredentialType": "Altoviz",
     "configFile": "Altoviz.json"
   },
   {
@@ -475,7 +475,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/alttextai.svg",
-    "vaultType": "Alttextai",
+    "vaultCredentialType": "Alttextai",
     "configFile": "Alttextai.json"
   },
   {
@@ -494,7 +494,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/amara.png",
-    "vaultType": "Amara",
+    "vaultCredentialType": "Amara",
     "configFile": "Amara.json"
   },
   {
@@ -513,7 +513,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ambee.png",
-    "vaultType": "Ambee",
+    "vaultCredentialType": "Ambee",
     "configFile": "Ambee.json"
   },
   {
@@ -532,7 +532,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ambientweather.png",
-    "vaultType": "Ambientweather",
+    "vaultCredentialType": "Ambientweather",
     "configFile": "Ambientweather.json"
   },
   {
@@ -551,7 +551,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/amcards.png",
-    "vaultType": "Amcards",
+    "vaultCredentialType": "Amcards",
     "configFile": "Amcards.json"
   },
   {
@@ -568,7 +568,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/amplitude.svg",
-    "vaultType": "Amplitude",
+    "vaultCredentialType": "Amplitude",
     "configFile": "Amplitude.json"
   },
   {
@@ -585,7 +585,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/anchorbrowser.png",
-    "vaultType": "Anchorbrowser",
+    "vaultCredentialType": "Anchorbrowser",
     "configFile": "Anchorbrowser.json"
   },
   {
@@ -604,7 +604,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/anonyflow.png",
-    "vaultType": "Anonyflow",
+    "vaultCredentialType": "Anonyflow",
     "configFile": "Anonyflow.json"
   },
   {
@@ -625,7 +625,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/anthropicadministrator.png",
-    "vaultType": "Anthropic",
+    "vaultCredentialType": "Anthropic",
     "configFile": "Anthropic.json"
   },
   {
@@ -654,7 +654,7 @@
       ]
     },
     "icon": "/brand-img/apaleo.png",
-    "vaultType": "Apaleo",
+    "vaultCredentialType": "Apaleo",
     "configFile": "Apaleo.json"
   },
   {
@@ -671,7 +671,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/api2pdf.png",
-    "vaultType": "Api2pdf",
+    "vaultCredentialType": "Api2pdf",
     "configFile": "Api2pdf.json"
   },
   {
@@ -688,7 +688,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apibible.png",
-    "vaultType": "Apibible",
+    "vaultCredentialType": "Apibible",
     "configFile": "Apibible.json"
   },
   {
@@ -705,7 +705,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apify.svg",
-    "vaultType": "Apify",
+    "vaultCredentialType": "Apify",
     "configFile": "Apify.json"
   },
   {
@@ -722,7 +722,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apilabz.png",
-    "vaultType": "Apilabz",
+    "vaultCredentialType": "Apilabz",
     "configFile": "Apilabz.json"
   },
   {
@@ -741,7 +741,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apininjas.png",
-    "vaultType": "Apininjas",
+    "vaultCredentialType": "Apininjas",
     "configFile": "Apininjas.json"
   },
   {
@@ -760,7 +760,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apipie.png",
-    "vaultType": "Apipie",
+    "vaultCredentialType": "Apipie",
     "configFile": "Apipie.json"
   },
   {
@@ -777,7 +777,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/apisports.png",
-    "vaultType": "Apisports",
+    "vaultCredentialType": "Apisports",
     "configFile": "Apisports.json"
   },
   {
@@ -794,7 +794,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/appointo.png",
-    "vaultType": "Appointo",
+    "vaultCredentialType": "Appointo",
     "configFile": "Appointo.json"
   },
   {
@@ -849,7 +849,7 @@
       ]
     },
     "icon": "/brand-img/asana.svg",
-    "vaultType": "Asana",
+    "vaultCredentialType": "Asana",
     "configFile": "Asana.json"
   },
   {
@@ -866,7 +866,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ascora.png",
-    "vaultType": "Ascora",
+    "vaultCredentialType": "Ascora",
     "configFile": "Ascora.json"
   },
   {
@@ -885,7 +885,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ashby.png",
-    "vaultType": "Ashby",
+    "vaultCredentialType": "Ashby",
     "configFile": "Ashby.json"
   },
   {
@@ -902,7 +902,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/asindataapi.png",
-    "vaultType": "Asindataapi",
+    "vaultCredentialType": "Asindataapi",
     "configFile": "Asindataapi.json"
   },
   {
@@ -921,7 +921,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/asticaai.png",
-    "vaultType": "Asticaai",
+    "vaultCredentialType": "Asticaai",
     "configFile": "Asticaai.json"
   },
   {
@@ -938,7 +938,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/asyncinterview.png",
-    "vaultType": "Asyncinterview",
+    "vaultCredentialType": "Asyncinterview",
     "configFile": "Asyncinterview.json"
   },
   {
@@ -983,7 +983,7 @@
       "tokenAuthMethod": "body"
     },
     "icon": "/brand-img/attio.svg",
-    "vaultType": "Attio",
+    "vaultCredentialType": "Attio",
     "configFile": "Attio.json"
   },
   {
@@ -1002,7 +1002,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/autom.png",
-    "vaultType": "Autom",
+    "vaultCredentialType": "Autom",
     "configFile": "Autom.json"
   },
   {
@@ -1021,7 +1021,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ayrshare.svg",
-    "vaultType": "Ayrshare",
+    "vaultCredentialType": "Ayrshare",
     "configFile": "Ayrshare.json"
   },
   {
@@ -1042,7 +1042,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/backendless.svg",
-    "vaultType": "Backendless",
+    "vaultCredentialType": "Backendless",
     "configFile": "Backendless.json"
   },
   {
@@ -1061,7 +1061,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bannerbear.png",
-    "vaultType": "Bannerbear",
+    "vaultCredentialType": "Bannerbear",
     "configFile": "Bannerbear.json"
   },
   {
@@ -1078,7 +1078,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bart.png",
-    "vaultType": "Bart",
+    "vaultCredentialType": "Bart",
     "configFile": "Bart.json"
   },
   {
@@ -1103,7 +1103,7 @@
       "scopes": []
     },
     "icon": "/brand-img/basecamp.svg",
-    "vaultType": "Basecamp",
+    "vaultCredentialType": "Basecamp",
     "configFile": "Basecamp.json"
   },
   {
@@ -1120,7 +1120,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/baselinker.png",
-    "vaultType": "Baselinker",
+    "vaultCredentialType": "Baselinker",
     "configFile": "Baselinker.json"
   },
   {
@@ -1139,7 +1139,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/basin.png",
-    "vaultType": "Basin",
+    "vaultCredentialType": "Basin",
     "configFile": "Basin.json"
   },
   {
@@ -1158,7 +1158,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/beaconstac.png",
-    "vaultType": "Beaconstac",
+    "vaultCredentialType": "Beaconstac",
     "configFile": "Beaconstac.json"
   },
   {
@@ -1183,7 +1183,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/beeminder.png",
-    "vaultType": "Beeminder",
+    "vaultCredentialType": "Beeminder",
     "configFile": "Beeminder.json"
   },
   {
@@ -1200,7 +1200,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/benchmarkemail.png",
-    "vaultType": "Benchmarkemail",
+    "vaultCredentialType": "Benchmarkemail",
     "configFile": "Benchmarkemail.json"
   },
   {
@@ -1217,7 +1217,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bestbuy.png",
-    "vaultType": "Bestbuy",
+    "vaultCredentialType": "Bestbuy",
     "configFile": "Bestbuy.json"
   },
   {
@@ -1236,7 +1236,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bettercontact.png",
-    "vaultType": "Bettercontact",
+    "vaultCredentialType": "Bettercontact",
     "configFile": "Bettercontact.json"
   },
   {
@@ -1255,7 +1255,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/betterproposals.png",
-    "vaultType": "Betterproposals",
+    "vaultCredentialType": "Betterproposals",
     "configFile": "Betterproposals.json"
   },
   {
@@ -1272,7 +1272,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/betterstack.svg",
-    "vaultType": "Betterstack",
+    "vaultCredentialType": "Betterstack",
     "configFile": "Betterstack.json"
   },
   {
@@ -1291,7 +1291,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bigdatacloud.png",
-    "vaultType": "Bigdatacloud",
+    "vaultCredentialType": "Bigdatacloud",
     "configFile": "Bigdatacloud.json"
   },
   {
@@ -1308,7 +1308,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bigmailer.png",
-    "vaultType": "Bigmailer",
+    "vaultCredentialType": "Bigmailer",
     "configFile": "Bigmailer.json"
   },
   {
@@ -1327,7 +1327,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bigml.png",
-    "vaultType": "Bigml",
+    "vaultCredentialType": "Bigml",
     "configFile": "Bigml.json"
   },
   {
@@ -1370,7 +1370,7 @@
       ]
     },
     "icon": "/brand-img/bitbucket.svg",
-    "vaultType": "Bitbucket",
+    "vaultCredentialType": "Bitbucket",
     "configFile": "Bitbucket.json"
   },
   {
@@ -1387,7 +1387,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/bitwarden.svg",
-    "vaultType": "Bitwarden",
+    "vaultCredentialType": "Bitwarden",
     "configFile": "Bitwarden.json"
   },
   {
@@ -1406,7 +1406,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/blazemeter.svg",
-    "vaultType": "Blazemeter",
+    "vaultCredentialType": "Blazemeter",
     "configFile": "Blazemeter.json"
   },
   {
@@ -1425,7 +1425,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/blocknative.png",
-    "vaultType": "Blocknative",
+    "vaultCredentialType": "Blocknative",
     "configFile": "Blocknative.json"
   },
   {
@@ -1444,7 +1444,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bluesky.svg",
-    "vaultType": "Bluesky",
+    "vaultCredentialType": "Bluesky",
     "configFile": "Bluesky.json"
   },
   {
@@ -1461,7 +1461,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/boldsign.png",
-    "vaultType": "Boldsign",
+    "vaultCredentialType": "Boldsign",
     "configFile": "Boldsign.json"
   },
   {
@@ -1480,7 +1480,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/boloforms.svg",
-    "vaultType": "Boloforms",
+    "vaultCredentialType": "Boloforms",
     "configFile": "Boloforms.json"
   },
   {
@@ -1499,7 +1499,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/boltiot.png",
-    "vaultType": "Boltiot",
+    "vaultCredentialType": "Boltiot",
     "configFile": "Boltiot.json"
   },
   {
@@ -1518,7 +1518,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bonsai.png",
-    "vaultType": "Bonsai",
+    "vaultCredentialType": "Bonsai",
     "configFile": "Bonsai.json"
   },
   {
@@ -1537,7 +1537,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bookingmood.svg",
-    "vaultType": "Bookingmood",
+    "vaultCredentialType": "Bookingmood",
     "configFile": "Bookingmood.json"
   },
   {
@@ -1562,7 +1562,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/borneo.png",
-    "vaultType": "Borneo",
+    "vaultCredentialType": "Borneo",
     "configFile": "Borneo.json"
   },
   {
@@ -1579,7 +1579,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/botbaba.png",
-    "vaultType": "Botbaba",
+    "vaultCredentialType": "Botbaba",
     "configFile": "Botbaba.json"
   },
   {
@@ -1598,7 +1598,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/botpress.png",
-    "vaultType": "Botpress",
+    "vaultCredentialType": "Botpress",
     "configFile": "Botpress.json"
   },
   {
@@ -1615,7 +1615,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/botsonic.svg",
-    "vaultType": "Botsonic",
+    "vaultCredentialType": "Botsonic",
     "configFile": "Botsonic.json"
   },
   {
@@ -1634,7 +1634,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bouncer.png",
-    "vaultType": "Bouncer",
+    "vaultCredentialType": "Bouncer",
     "configFile": "Bouncer.json"
   },
   {
@@ -1651,7 +1651,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/box.svg",
-    "vaultType": "Box",
+    "vaultCredentialType": "Box",
     "configFile": "Box.json"
   },
   {
@@ -1668,7 +1668,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/boxhero.svg",
-    "vaultType": "Boxhero",
+    "vaultCredentialType": "Boxhero",
     "configFile": "Boxhero.json"
   },
   {
@@ -1687,7 +1687,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/brandfetch.svg",
-    "vaultType": "Brandfetch",
+    "vaultCredentialType": "Brandfetch",
     "configFile": "Brandfetch.json"
   },
   {
@@ -1706,7 +1706,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/breathehr.png",
-    "vaultType": "Breathehr",
+    "vaultCredentialType": "Breathehr",
     "configFile": "Breathehr.json"
   },
   {
@@ -1723,7 +1723,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/brevo.svg",
-    "vaultType": "Brevo",
+    "vaultCredentialType": "Brevo",
     "configFile": "Brevo.json"
   },
   {
@@ -1769,7 +1769,7 @@
       "tokenAuthMethod": "body"
     },
     "icon": "/brand-img/brex.svg",
-    "vaultType": "Brex",
+    "vaultCredentialType": "Brex",
     "configFile": "Brex.json"
   },
   {
@@ -1788,7 +1788,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/brightdata.png",
-    "vaultType": "Brightdata",
+    "vaultCredentialType": "Brightdata",
     "configFile": "Brightdata.json"
   },
   {
@@ -1805,7 +1805,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/browseai.png",
-    "vaultType": "Browseai",
+    "vaultCredentialType": "Browseai",
     "configFile": "Browseai.json"
   },
   {
@@ -1824,7 +1824,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/browserless.png",
-    "vaultType": "Browserless",
+    "vaultCredentialType": "Browserless",
     "configFile": "Browserless.json"
   },
   {
@@ -1841,7 +1841,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/browsertool.png",
-    "vaultType": "Browsertool",
+    "vaultCredentialType": "Browsertool",
     "configFile": "Browsertool.json"
   },
   {
@@ -1860,7 +1860,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bubble.png",
-    "vaultType": "Bubble",
+    "vaultCredentialType": "Bubble",
     "configFile": "Bubble.json"
   },
   {
@@ -1877,7 +1877,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bugsnag.svg",
-    "vaultType": "Bugsnag",
+    "vaultCredentialType": "Bugsnag",
     "configFile": "Bugsnag.json"
   },
   {
@@ -1896,7 +1896,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/buildkite.svg",
-    "vaultType": "Buildkite",
+    "vaultCredentialType": "Buildkite",
     "configFile": "Buildkite.json"
   },
   {
@@ -1915,7 +1915,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/bunnycdn.png",
-    "vaultType": "Bunnycdn",
+    "vaultCredentialType": "Bunnycdn",
     "configFile": "Bunnycdn.json"
   },
   {
@@ -1932,7 +1932,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/cal.svg",
-    "vaultType": "Cal",
+    "vaultCredentialType": "Cal",
     "configFile": "Cal.json"
   },
   {
@@ -1949,7 +1949,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/calendly.svg",
-    "vaultType": "Calendly",
+    "vaultCredentialType": "Calendly",
     "configFile": "Calendly.json"
   },
   {
@@ -1966,7 +1966,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/campayn.png",
-    "vaultType": "Campayn",
+    "vaultCredentialType": "Campayn",
     "configFile": "Campayn.json"
   },
   {
@@ -2004,7 +2004,7 @@
       ]
     },
     "icon": "/brand-img/canva.svg",
-    "vaultType": "Canva",
+    "vaultCredentialType": "Canva",
     "configFile": "Canva.json"
   },
   {
@@ -2029,7 +2029,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/canvas.svg",
-    "vaultType": "Canvas",
+    "vaultCredentialType": "Canvas",
     "configFile": "Canvas.json"
   },
   {
@@ -2062,7 +2062,7 @@
       ]
     },
     "icon": "/brand-img/capsulecrm.png",
-    "vaultType": "Capsulecrm",
+    "vaultCredentialType": "Capsulecrm",
     "configFile": "Capsulecrm.json"
   },
   {
@@ -2079,7 +2079,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/castingwords.png",
-    "vaultType": "Castingwords",
+    "vaultCredentialType": "Castingwords",
     "configFile": "Castingwords.json"
   },
   {
@@ -2096,7 +2096,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/cdrplatform.png",
-    "vaultType": "Cdrplatform",
+    "vaultCredentialType": "Cdrplatform",
     "configFile": "Cdrplatform.json"
   },
   {
@@ -2113,7 +2113,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/certifier.png",
-    "vaultType": "Certifier",
+    "vaultCredentialType": "Certifier",
     "configFile": "Certifier.json"
   },
   {
@@ -2132,7 +2132,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/chatbotkit.png",
-    "vaultType": "Chatbotkit",
+    "vaultCredentialType": "Chatbotkit",
     "configFile": "Chatbotkit.json"
   },
   {
@@ -2151,7 +2151,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/chatfai.png",
-    "vaultType": "Chatfai",
+    "vaultCredentialType": "Chatfai",
     "configFile": "Chatfai.json"
   },
   {
@@ -2168,7 +2168,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/chmeetings.png",
-    "vaultType": "Chmeetings",
+    "vaultCredentialType": "Chmeetings",
     "configFile": "Chmeetings.json"
   },
   {
@@ -2185,7 +2185,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/circleci.svg",
-    "vaultType": "Circleci",
+    "vaultCredentialType": "Circleci",
     "configFile": "Circleci.json"
   },
   {
@@ -2204,7 +2204,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/clickhouse.svg",
-    "vaultType": "Clickhouse",
+    "vaultCredentialType": "Clickhouse",
     "configFile": "Clickhouse.json"
   },
   {
@@ -2223,7 +2223,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/clientary.png",
-    "vaultType": "Clientary",
+    "vaultCredentialType": "Clientary",
     "configFile": "Clientary.json"
   },
   {
@@ -2240,7 +2240,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/clockify.svg",
-    "vaultType": "Clockify",
+    "vaultCredentialType": "Clockify",
     "configFile": "Clockify.json"
   },
   {
@@ -2257,7 +2257,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/cloudflare.svg",
-    "vaultType": "Cloudflare",
+    "vaultCredentialType": "Cloudflare",
     "configFile": "Cloudflare.json"
   },
   {
@@ -2277,7 +2277,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/cloudinary.svg",
-    "vaultType": "Cloudinary",
+    "vaultCredentialType": "Cloudinary",
     "configFile": "Cloudinary.json"
   },
   {
@@ -2294,7 +2294,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/collegefootballdata.png",
-    "vaultType": "Collegefootballdata",
+    "vaultCredentialType": "Collegefootballdata",
     "configFile": "Collegefootballdata.json"
   },
   {
@@ -2336,7 +2336,7 @@
       }
     },
     "icon": "/brand-img/confluence.svg",
-    "vaultType": "Confluence",
+    "vaultCredentialType": "Confluence",
     "configFile": "Confluence.json"
   },
   {
@@ -2355,7 +2355,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/connecteam.png",
-    "vaultType": "Connecteam",
+    "vaultCredentialType": "Connecteam",
     "configFile": "Connecteam.json"
   },
   {
@@ -2375,7 +2375,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/contentfulgraphql.svg",
-    "vaultType": "Contentfulgraphql",
+    "vaultCredentialType": "Contentfulgraphql",
     "configFile": "Contentfulgraphql.json"
   },
   {
@@ -2392,7 +2392,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/contextsevenmcp.png",
-    "vaultType": "Contextsevenmcp",
+    "vaultCredentialType": "Contextsevenmcp",
     "configFile": "Contextsevenmcp.json"
   },
   {
@@ -2409,7 +2409,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/convoloai.png",
-    "vaultType": "Convoloai",
+    "vaultCredentialType": "Convoloai",
     "configFile": "Convoloai.json"
   },
   {
@@ -2428,7 +2428,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/countdownapi.png",
-    "vaultType": "Countdownapi",
+    "vaultCredentialType": "Countdownapi",
     "configFile": "Countdownapi.json"
   },
   {
@@ -2445,7 +2445,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/crowterminal.png",
-    "vaultType": "Crowterminal",
+    "vaultCredentialType": "Crowterminal",
     "configFile": "Crowterminal.json"
   },
   {
@@ -2462,7 +2462,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/cursor.svg",
-    "vaultType": "Cursor",
+    "vaultCredentialType": "Cursor",
     "configFile": "Cursor.json"
   },
   {
@@ -2479,7 +2479,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/customgpt.png",
-    "vaultType": "Customgpt",
+    "vaultCredentialType": "Customgpt",
     "configFile": "Customgpt.json"
   },
   {
@@ -2498,7 +2498,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dadataru.png",
-    "vaultType": "Dadataru",
+    "vaultCredentialType": "Dadataru",
     "configFile": "Dadataru.json"
   },
   {
@@ -2523,7 +2523,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/databricks.svg",
-    "vaultType": "Databricks",
+    "vaultCredentialType": "Databricks",
     "configFile": "Databricks.json"
   },
   {
@@ -2543,7 +2543,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/datadog.svg",
-    "vaultType": "Datadog",
+    "vaultCredentialType": "Datadog",
     "configFile": "Datadog.json"
   },
   {
@@ -2562,7 +2562,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/datarobot.png",
-    "vaultType": "Datarobot",
+    "vaultCredentialType": "Datarobot",
     "configFile": "Datarobot.json"
   },
   {
@@ -2581,7 +2581,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/deepseek.svg",
-    "vaultType": "Deepseek",
+    "vaultCredentialType": "Deepseek",
     "configFile": "Deepseek.json"
   },
   {
@@ -2600,7 +2600,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/devinmcp.png",
-    "vaultType": "Devinmcp",
+    "vaultCredentialType": "Devinmcp",
     "configFile": "Devinmcp.json"
   },
   {
@@ -2619,7 +2619,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/diffbot.png",
-    "vaultType": "Diffbot",
+    "vaultCredentialType": "Diffbot",
     "configFile": "Diffbot.json"
   },
   {
@@ -2636,7 +2636,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/digitalocean.svg",
-    "vaultType": "Digitalocean",
+    "vaultCredentialType": "Digitalocean",
     "configFile": "Digitalocean.json"
   },
   {
@@ -2653,7 +2653,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/discord.svg",
-    "vaultType": "Discord",
+    "vaultCredentialType": "Discord",
     "configFile": "Discord.json"
   },
   {
@@ -2672,7 +2672,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dockerhub.svg",
-    "vaultType": "Dockerhub",
+    "vaultCredentialType": "Dockerhub",
     "configFile": "Dockerhub.json"
   },
   {
@@ -2689,7 +2689,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dodopayments.svg",
-    "vaultType": "Dodopayments",
+    "vaultCredentialType": "Dodopayments",
     "configFile": "Dodopayments.json"
   },
   {
@@ -2706,7 +2706,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/doppler.svg",
-    "vaultType": "Doppler",
+    "vaultCredentialType": "Doppler",
     "configFile": "Doppler.json"
   },
   {
@@ -2725,7 +2725,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dreamstudio.png",
-    "vaultType": "Dreamstudio",
+    "vaultCredentialType": "Dreamstudio",
     "configFile": "Dreamstudio.json"
   },
   {
@@ -2744,7 +2744,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dripcel.png",
-    "vaultType": "Dripcel",
+    "vaultCredentialType": "Dripcel",
     "configFile": "Dripcel.json"
   },
   {
@@ -2785,7 +2785,7 @@
       }
     },
     "icon": "/brand-img/dropbox.svg",
-    "vaultType": "Dropbox",
+    "vaultCredentialType": "Dropbox",
     "configFile": "Dropbox.json"
   },
   {
@@ -2806,7 +2806,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/dropboxsign.png",
-    "vaultType": "Dropboxsign",
+    "vaultCredentialType": "Dropboxsign",
     "configFile": "Dropboxsign.json"
   },
   {
@@ -2823,7 +2823,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/dynapictures.png",
-    "vaultType": "Dynapictures",
+    "vaultCredentialType": "Dynapictures",
     "configFile": "Dynapictures.json"
   },
   {
@@ -2842,7 +2842,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/emelia.png",
-    "vaultType": "Emelia",
+    "vaultCredentialType": "Emelia",
     "configFile": "Emelia.json"
   },
   {
@@ -2861,7 +2861,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/epicgames.svg",
-    "vaultType": "Epicgames",
+    "vaultCredentialType": "Epicgames",
     "configFile": "Epicgames.json"
   },
   {
@@ -2878,7 +2878,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/exa.svg",
-    "vaultType": "Exa",
+    "vaultCredentialType": "Exa",
     "configFile": "Exa.json"
   },
   {
@@ -2940,7 +2940,7 @@
       "tokenAuthMethod": "body"
     },
     "icon": "/brand-img/exist.png",
-    "vaultType": "Exist",
+    "vaultCredentialType": "Exist",
     "configFile": "Exist.json"
   },
   {
@@ -2977,7 +2977,7 @@
       ]
     },
     "icon": "/brand-img/facebook.svg",
-    "vaultType": "Facebook",
+    "vaultCredentialType": "Facebook",
     "configFile": "Facebook.json"
   },
   {
@@ -2996,7 +2996,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/faraday.svg",
-    "vaultType": "Faraday",
+    "vaultCredentialType": "Faraday",
     "configFile": "Faraday.json"
   },
   {
@@ -3013,7 +3013,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/figma.svg",
-    "vaultType": "Figma",
+    "vaultCredentialType": "Figma",
     "configFile": "Figma.json"
   },
   {
@@ -3044,7 +3044,7 @@
       "scopes": []
     },
     "icon": "/brand-img/filloutforms.png",
-    "vaultType": "Filloutforms",
+    "vaultCredentialType": "Filloutforms",
     "configFile": "Filloutforms.json"
   },
   {
@@ -3061,7 +3061,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/firecrawl.svg",
-    "vaultType": "Firecrawl",
+    "vaultCredentialType": "Firecrawl",
     "configFile": "Firecrawl.json"
   },
   {
@@ -3078,7 +3078,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/fireflies.png",
-    "vaultType": "Fireflies",
+    "vaultCredentialType": "Fireflies",
     "configFile": "Fireflies.json"
   },
   {
@@ -3097,7 +3097,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/flexisign.png",
-    "vaultType": "Flexisign",
+    "vaultCredentialType": "Flexisign",
     "configFile": "Flexisign.json"
   },
   {
@@ -3114,7 +3114,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/formbricks.svg",
-    "vaultType": "Formbricks",
+    "vaultCredentialType": "Formbricks",
     "configFile": "Formbricks.json"
   },
   {
@@ -3131,7 +3131,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/gemini.svg",
-    "vaultType": "GoogleGemini",
+    "vaultCredentialType": "GoogleGemini",
     "configFile": "GoogleGemini.json"
   },
   {
@@ -3172,7 +3172,7 @@
       ]
     },
     "icon": "/brand-img/github.svg",
-    "vaultType": "GitHub",
+    "vaultCredentialType": "GitHub",
     "configFile": "GitHub.json"
   },
   {
@@ -3211,7 +3211,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/gitlab.svg",
-    "vaultType": "Gitlab",
+    "vaultCredentialType": "Gitlab",
     "configFile": "Gitlab.json"
   },
   {
@@ -3230,7 +3230,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/gladia.png",
-    "vaultType": "Gladia",
+    "vaultCredentialType": "Gladia",
     "configFile": "Gladia.json"
   },
   {
@@ -3274,7 +3274,7 @@
       }
     },
     "icon": "/brand-img/gmail.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3302,7 +3302,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/googleaddressvalidation.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3332,7 +3332,7 @@
       }
     },
     "icon": "/brand-img/googleanalytics.svg",
-    "vaultType": "Googleanalytics",
+    "vaultCredentialType": "Googleanalytics",
     "configFile": "Googleanalytics.json"
   },
   {
@@ -3373,7 +3373,7 @@
       }
     },
     "icon": "/brand-img/googlebigquery.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3413,7 +3413,7 @@
       }
     },
     "icon": "/brand-img/googlecalendar.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3447,7 +3447,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/googlecloudvision.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3489,7 +3489,7 @@
       }
     },
     "icon": "/brand-img/googledocs.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3530,7 +3530,7 @@
       }
     },
     "icon": "/brand-img/googledrive.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3564,7 +3564,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/googlemaps.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3603,7 +3603,7 @@
       }
     },
     "icon": "/brand-img/googlemeet.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3644,7 +3644,7 @@
       }
     },
     "icon": "/brand-img/googlesheets.svg",
-    "vaultType": "GoogleWorkspace",
+    "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
   },
   {
@@ -3663,7 +3663,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/grafana.svg",
-    "vaultType": "Grafana",
+    "vaultCredentialType": "Grafana",
     "configFile": "Grafana.json"
   },
   {
@@ -3682,7 +3682,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/griptape.png",
-    "vaultType": "Griptape",
+    "vaultCredentialType": "Griptape",
     "configFile": "Griptape.json"
   },
   {
@@ -3701,7 +3701,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/groqcloud.svg",
-    "vaultType": "Groqcloud",
+    "vaultCredentialType": "Groqcloud",
     "configFile": "Groqcloud.json"
   },
   {
@@ -3720,7 +3720,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/habitica.png",
-    "vaultType": "Habitica",
+    "vaultCredentialType": "Habitica",
     "configFile": "Habitica.json"
   },
   {
@@ -3737,7 +3737,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/hackernews.svg",
-    "vaultType": "Hackernews",
+    "vaultCredentialType": "Hackernews",
     "configFile": "Hackernews.json"
   },
   {
@@ -3756,7 +3756,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/harvest.svg",
-    "vaultType": "Harvest",
+    "vaultCredentialType": "Harvest",
     "configFile": "Harvest.json"
   },
   {
@@ -3775,7 +3775,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/hashnode.svg",
-    "vaultType": "Hashnode",
+    "vaultCredentialType": "Hashnode",
     "configFile": "Hashnode.json"
   },
   {
@@ -3794,7 +3794,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/here.svg",
-    "vaultType": "Here",
+    "vaultCredentialType": "Here",
     "configFile": "Here.json"
   },
   {
@@ -3813,7 +3813,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/heygen.png",
-    "vaultType": "Heygen",
+    "vaultCredentialType": "Heygen",
     "configFile": "Heygen.json"
   },
   {
@@ -3830,7 +3830,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/htmltoimage.png",
-    "vaultType": "Htmltoimage",
+    "vaultCredentialType": "Htmltoimage",
     "configFile": "Htmltoimage.json"
   },
   {
@@ -3874,7 +3874,7 @@
       ]
     },
     "icon": "/brand-img/hubspot.svg",
-    "vaultType": "Hubspot",
+    "vaultCredentialType": "Hubspot",
     "configFile": "Hubspot.json"
   },
   {
@@ -3899,7 +3899,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/huggingface.svg",
-    "vaultType": "Huggingface",
+    "vaultCredentialType": "Huggingface",
     "configFile": "Huggingface.json"
   },
   {
@@ -3916,7 +3916,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/imgbb.png",
-    "vaultType": "Imgbb",
+    "vaultCredentialType": "Imgbb",
     "configFile": "Imgbb.json"
   },
   {
@@ -3941,7 +3941,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/insightoai.png",
-    "vaultType": "Insightoai",
+    "vaultCredentialType": "Insightoai",
     "configFile": "Insightoai.json"
   },
   {
@@ -3974,7 +3974,7 @@
       ]
     },
     "icon": "/brand-img/instagram.svg",
-    "vaultType": "Instagram",
+    "vaultCredentialType": "Instagram",
     "configFile": "Instagram.json"
   },
   {
@@ -3991,7 +3991,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/intercom.svg",
-    "vaultType": "Intercom",
+    "vaultCredentialType": "Intercom",
     "configFile": "Intercom.json"
   },
   {
@@ -4008,7 +4008,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/jigsawstack.svg",
-    "vaultType": "Jigsawstack",
+    "vaultCredentialType": "Jigsawstack",
     "configFile": "Jigsawstack.json"
   },
   {
@@ -4042,7 +4042,7 @@
       }
     },
     "icon": "/brand-img/jira.svg",
-    "vaultType": "Jira",
+    "vaultCredentialType": "Jira",
     "configFile": "Jira.json"
   },
   {
@@ -4061,7 +4061,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/kaggle.svg",
-    "vaultType": "Kaggle",
+    "vaultCredentialType": "Kaggle",
     "configFile": "Kaggle.json"
   },
   {
@@ -4081,7 +4081,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/kibana.svg",
-    "vaultType": "Kibana",
+    "vaultCredentialType": "Kibana",
     "configFile": "Kibana.json"
   },
   {
@@ -4124,7 +4124,7 @@
       }
     },
     "icon": "/brand-img/linear.svg",
-    "vaultType": "Linear",
+    "vaultCredentialType": "Linear",
     "configFile": "Linear.json"
   },
   {
@@ -4163,7 +4163,7 @@
       ]
     },
     "icon": "/brand-img/linkedin.svg",
-    "vaultType": "Linkedin",
+    "vaultCredentialType": "Linkedin",
     "configFile": "Linkedin.json"
   },
   {
@@ -4180,7 +4180,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/loyverse.png",
-    "vaultType": "Loyverse",
+    "vaultCredentialType": "Loyverse",
     "configFile": "Loyverse.json"
   },
   {
@@ -4197,7 +4197,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/mailboxlayer.png",
-    "vaultType": "Mailboxlayer",
+    "vaultCredentialType": "Mailboxlayer",
     "configFile": "Mailboxlayer.json"
   },
   {
@@ -4222,7 +4222,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/mailchimp.svg",
-    "vaultType": "Mailchimp",
+    "vaultCredentialType": "Mailchimp",
     "configFile": "Mailchimp.json"
   },
   {
@@ -4241,7 +4241,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/mailtrap.svg",
-    "vaultType": "Mailtrap",
+    "vaultCredentialType": "Mailtrap",
     "configFile": "Mailtrap.json"
   },
   {
@@ -4258,7 +4258,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/marketstack.png",
-    "vaultType": "Marketstack",
+    "vaultCredentialType": "Marketstack",
     "configFile": "Marketstack.json"
   },
   {
@@ -4275,7 +4275,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/merriamwebsterdict.png",
-    "vaultType": "Merriamwebsterdict",
+    "vaultCredentialType": "Merriamwebsterdict",
     "configFile": "Merriamwebsterdict.json"
   },
   {
@@ -4292,7 +4292,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/monday.svg",
-    "vaultType": "Monday",
+    "vaultCredentialType": "Monday",
     "configFile": "Monday.json"
   },
   {
@@ -4309,7 +4309,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/neon.svg",
-    "vaultType": "Neon",
+    "vaultCredentialType": "Neon",
     "configFile": "Neon.json"
   },
   {
@@ -4326,7 +4326,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/nextdns.svg",
-    "vaultType": "Nextdns",
+    "vaultCredentialType": "Nextdns",
     "configFile": "Nextdns.json"
   },
   {
@@ -4365,7 +4365,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/notion.svg",
-    "vaultType": "Notion",
+    "vaultCredentialType": "Notion",
     "configFile": "Notion.json"
   },
   {
@@ -4384,7 +4384,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ocrspace.png",
-    "vaultType": "Ocrspace",
+    "vaultCredentialType": "Ocrspace",
     "configFile": "Ocrspace.json"
   },
   {
@@ -4403,7 +4403,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/ocrwebservice.png",
-    "vaultType": "Ocrwebservice",
+    "vaultCredentialType": "Ocrwebservice",
     "configFile": "Ocrwebservice.json"
   },
   {
@@ -4428,7 +4428,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/ollama.svg",
-    "vaultType": "Ollama",
+    "vaultCredentialType": "Ollama",
     "configFile": "Ollama.json"
   },
   {
@@ -4483,7 +4483,7 @@
       ]
     },
     "icon": "/brand-img/onedrive.svg",
-    "vaultType": "M365",
+    "vaultCredentialType": "M365",
     "configFile": "M365.json"
   },
   {
@@ -4500,7 +4500,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/onepassword.png",
-    "vaultType": "Onepassword",
+    "vaultCredentialType": "Onepassword",
     "configFile": "Onepassword.json"
   },
   {
@@ -4517,7 +4517,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/openai.svg",
-    "vaultType": "OpenAI",
+    "vaultCredentialType": "OpenAI",
     "configFile": "OpenAI.json"
   },
   {
@@ -4534,7 +4534,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/openrouter.svg",
-    "vaultType": "Openrouter",
+    "vaultCredentialType": "Openrouter",
     "configFile": "Openrouter.json"
   },
   {
@@ -4551,7 +4551,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/openweathermap.svg",
-    "vaultType": "Openweathermap",
+    "vaultCredentialType": "Openweathermap",
     "configFile": "Openweathermap.json"
   },
   {
@@ -4568,7 +4568,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/oura.png",
-    "vaultType": "Oura",
+    "vaultCredentialType": "Oura",
     "configFile": "Oura.json"
   },
   {
@@ -4623,7 +4623,7 @@
       ]
     },
     "icon": "/brand-img/outlook.svg",
-    "vaultType": "M365",
+    "vaultCredentialType": "M365",
     "configFile": "M365.json"
   },
   {
@@ -4640,7 +4640,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/pagerduty.svg",
-    "vaultType": "Pagerduty",
+    "vaultCredentialType": "Pagerduty",
     "configFile": "Pagerduty.json"
   },
   {
@@ -4659,7 +4659,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/parseur.png",
-    "vaultType": "Parseur",
+    "vaultCredentialType": "Parseur",
     "configFile": "Parseur.json"
   },
   {
@@ -4678,7 +4678,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/pdfmonkey.svg",
-    "vaultType": "Pdfmonkey",
+    "vaultCredentialType": "Pdfmonkey",
     "configFile": "Pdfmonkey.json"
   },
   {
@@ -4697,7 +4697,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/perplexityai.svg",
-    "vaultType": "Perplexityai",
+    "vaultCredentialType": "Perplexityai",
     "configFile": "Perplexityai.json"
   },
   {
@@ -4716,7 +4716,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/pinecone.svg",
-    "vaultType": "Pinecone",
+    "vaultCredentialType": "Pinecone",
     "configFile": "Pinecone.json"
   },
   {
@@ -4733,7 +4733,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/posthog.svg",
-    "vaultType": "Posthog",
+    "vaultCredentialType": "Posthog",
     "configFile": "Posthog.json"
   },
   {
@@ -4750,7 +4750,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/razorpay.svg",
-    "vaultType": "Razorpay",
+    "vaultCredentialType": "Razorpay",
     "configFile": "Razorpay.json"
   },
   {
@@ -4767,7 +4767,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/reddit.svg",
-    "vaultType": "Reddit",
+    "vaultCredentialType": "Reddit",
     "configFile": "Reddit.json"
   },
   {
@@ -4786,7 +4786,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/removebg.png",
-    "vaultType": "Removebg",
+    "vaultCredentialType": "Removebg",
     "configFile": "Removebg.json"
   },
   {
@@ -4803,7 +4803,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/resend.svg",
-    "vaultType": "SendGrid",
+    "vaultCredentialType": "SendGrid",
     "configFile": "SendGrid.json"
   },
   {
@@ -4828,7 +4828,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/retailed.png",
-    "vaultType": "Retailed",
+    "vaultCredentialType": "Retailed",
     "configFile": "Retailed.json"
   },
   {
@@ -4847,7 +4847,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/runpod.svg",
-    "vaultType": "Runpod",
+    "vaultCredentialType": "Runpod",
     "configFile": "Runpod.json"
   },
   {
@@ -4883,7 +4883,7 @@
       ]
     },
     "icon": "/brand-img/salesforce.svg",
-    "vaultType": "Salesforce",
+    "vaultCredentialType": "Salesforce",
     "configFile": "Salesforce.json"
   },
   {
@@ -4918,7 +4918,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/sapsuccessfactors.png",
-    "vaultType": "Sapsuccessfactors",
+    "vaultCredentialType": "Sapsuccessfactors",
     "configFile": "Sapsuccessfactors.json"
   },
   {
@@ -4935,7 +4935,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/scaleai.png",
-    "vaultType": "Scaleai",
+    "vaultCredentialType": "Scaleai",
     "configFile": "Scaleai.json"
   },
   {
@@ -4952,7 +4952,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/scrapegraphai.png",
-    "vaultType": "Scrapegraphai",
+    "vaultCredentialType": "Scrapegraphai",
     "configFile": "Scrapegraphai.json"
   },
   {
@@ -4971,7 +4971,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/securitytrails.png",
-    "vaultType": "Securitytrails",
+    "vaultCredentialType": "Securitytrails",
     "configFile": "Securitytrails.json"
   },
   {
@@ -4990,7 +4990,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/sendgrid.svg",
-    "vaultType": "Sendgrid",
+    "vaultCredentialType": "Sendgrid",
     "configFile": "Sendgrid.json"
   },
   {
@@ -5007,7 +5007,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/sentry.svg",
-    "vaultType": "Sentry",
+    "vaultCredentialType": "Sentry",
     "configFile": "Sentry.json"
   },
   {
@@ -5024,7 +5024,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/serpapi.png",
-    "vaultType": "Serpapi",
+    "vaultCredentialType": "Serpapi",
     "configFile": "Serpapi.json"
   },
   {
@@ -5081,7 +5081,7 @@
       ]
     },
     "icon": "/brand-img/sharepoint.png",
-    "vaultType": "M365",
+    "vaultCredentialType": "M365",
     "configFile": "M365.json"
   },
   {
@@ -5140,7 +5140,7 @@
       ]
     },
     "icon": "/brand-img/slack.svg",
-    "vaultType": "Slack",
+    "vaultCredentialType": "Slack",
     "configFile": "Slack.json"
   },
   {
@@ -5159,7 +5159,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/sourcegraph.svg",
-    "vaultType": "Sourcegraph",
+    "vaultCredentialType": "Sourcegraph",
     "configFile": "Sourcegraph.json"
   },
   {
@@ -5202,7 +5202,7 @@
       }
     },
     "icon": "/brand-img/spotify.svg",
-    "vaultType": "Spotify",
+    "vaultCredentialType": "Spotify",
     "configFile": "Spotify.json"
   },
   {
@@ -5219,7 +5219,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/strava.svg",
-    "vaultType": "Strava",
+    "vaultCredentialType": "Strava",
     "configFile": "Strava.json"
   },
   {
@@ -5236,7 +5236,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/streamtime.png",
-    "vaultType": "Streamtime",
+    "vaultCredentialType": "Streamtime",
     "configFile": "Streamtime.json"
   },
   {
@@ -5271,7 +5271,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/stripe.svg",
-    "vaultType": "Stripe",
+    "vaultCredentialType": "Stripe",
     "configFile": "Stripe.json"
   },
   {
@@ -5290,7 +5290,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/studiobyai21labs.png",
-    "vaultType": "Studiobyai21labs",
+    "vaultCredentialType": "Studiobyai21labs",
     "configFile": "Studiobyai21labs.json"
   },
   {
@@ -5320,7 +5320,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/supabase.svg",
-    "vaultType": "Supabase",
+    "vaultCredentialType": "Supabase",
     "configFile": "Supabase.json"
   },
   {
@@ -5339,7 +5339,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/synthflowai.png",
-    "vaultType": "Synthflowai",
+    "vaultCredentialType": "Synthflowai",
     "configFile": "Synthflowai.json"
   },
   {
@@ -5356,7 +5356,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/tally.svg",
-    "vaultType": "Tally",
+    "vaultCredentialType": "Tally",
     "configFile": "Tally.json"
   },
   {
@@ -5373,7 +5373,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/tavily.svg",
-    "vaultType": "Tavily",
+    "vaultCredentialType": "Tavily",
     "configFile": "Tavily.json"
   },
   {
@@ -5392,7 +5392,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/tavilymcp.svg",
-    "vaultType": "Tavilymcp",
+    "vaultCredentialType": "Tavilymcp",
     "configFile": "Tavilymcp.json"
   },
   {
@@ -5447,7 +5447,7 @@
       ]
     },
     "icon": "/brand-img/teams.svg",
-    "vaultType": "M365",
+    "vaultCredentialType": "M365",
     "configFile": "M365.json"
   },
   {
@@ -5466,7 +5466,7 @@
     ],
     "defaultAuthMode": "bot_token",
     "icon": "/brand-img/telegram.svg",
-    "vaultType": "Telegram",
+    "vaultCredentialType": "Telegram",
     "configFile": "Telegram.json"
   },
   {
@@ -5485,7 +5485,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/textrazor.png",
-    "vaultType": "Textrazor",
+    "vaultCredentialType": "Textrazor",
     "configFile": "Textrazor.json"
   },
   {
@@ -5513,7 +5513,7 @@
       ]
     },
     "icon": "/brand-img/ticktick.svg",
-    "vaultType": "Ticktick",
+    "vaultCredentialType": "Ticktick",
     "configFile": "Ticktick.json"
   },
   {
@@ -5530,7 +5530,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/timecamp.png",
-    "vaultType": "Timecamp",
+    "vaultCredentialType": "Timecamp",
     "configFile": "Timecamp.json"
   },
   {
@@ -5549,7 +5549,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/timelink.png",
-    "vaultType": "Timelink",
+    "vaultCredentialType": "Timelink",
     "configFile": "Timelink.json"
   },
   {
@@ -5566,7 +5566,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/tinyurl.png",
-    "vaultType": "Tinyurl",
+    "vaultCredentialType": "Tinyurl",
     "configFile": "Tinyurl.json"
   },
   {
@@ -5583,7 +5583,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/tisane.png",
-    "vaultType": "Tisane",
+    "vaultCredentialType": "Tisane",
     "configFile": "Tisane.json"
   },
   {
@@ -5600,7 +5600,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/todoist.svg",
-    "vaultType": "Todoist",
+    "vaultCredentialType": "Todoist",
     "configFile": "Todoist.json"
   },
   {
@@ -5619,7 +5619,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/toggl.svg",
-    "vaultType": "Toggl",
+    "vaultCredentialType": "Toggl",
     "configFile": "Toggl.json"
   },
   {
@@ -5636,7 +5636,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/trello.svg",
-    "vaultType": "Trello",
+    "vaultCredentialType": "Trello",
     "configFile": "Trello.json"
   },
   {
@@ -5653,7 +5653,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/twentyonerisk.png",
-    "vaultType": "Twentyonerisk",
+    "vaultCredentialType": "Twentyonerisk",
     "configFile": "Twentyonerisk.json"
   },
   {
@@ -5672,7 +5672,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/twilio.svg",
-    "vaultType": "Twilio",
+    "vaultCredentialType": "Twilio",
     "configFile": "Twilio.json"
   },
   {
@@ -5689,7 +5689,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/twitter.svg",
-    "vaultType": "Twitter",
+    "vaultCredentialType": "Twitter",
     "configFile": "Twitter.json"
   },
   {
@@ -5706,7 +5706,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/twitterapiio.svg",
-    "vaultType": "Twitterapiio",
+    "vaultCredentialType": "Twitterapiio",
     "configFile": "Twitterapiio.json"
   },
   {
@@ -5723,7 +5723,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/twochat.png",
-    "vaultType": "Twochat",
+    "vaultCredentialType": "Twochat",
     "configFile": "Twochat.json"
   },
   {
@@ -5740,7 +5740,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/typeform.svg",
-    "vaultType": "Typeform",
+    "vaultCredentialType": "Typeform",
     "configFile": "Typeform.json"
   },
   {
@@ -5759,7 +5759,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/unione.png",
-    "vaultType": "Unione",
+    "vaultCredentialType": "Unione",
     "configFile": "Unione.json"
   },
   {
@@ -5778,7 +5778,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/uniswapapi.png",
-    "vaultType": "Uniswapapi",
+    "vaultCredentialType": "Uniswapapi",
     "configFile": "Uniswapapi.json"
   },
   {
@@ -5795,7 +5795,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/uploadcare.png",
-    "vaultType": "Uploadcare",
+    "vaultCredentialType": "Uploadcare",
     "configFile": "Uploadcare.json"
   },
   {
@@ -5812,7 +5812,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/vapi.svg",
-    "vaultType": "Vapi",
+    "vaultCredentialType": "Vapi",
     "configFile": "Vapi.json"
   },
   {
@@ -5829,7 +5829,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/vercel.svg",
-    "vaultType": "Vercel",
+    "vaultCredentialType": "Vercel",
     "configFile": "Vercel.json"
   },
   {
@@ -5846,7 +5846,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/veriphone.png",
-    "vaultType": "Veriphone",
+    "vaultCredentialType": "Veriphone",
     "configFile": "Veriphone.json"
   },
   {
@@ -5865,7 +5865,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/vestaboard.png",
-    "vaultType": "Vestaboard",
+    "vaultCredentialType": "Vestaboard",
     "configFile": "Vestaboard.json"
   },
   {
@@ -5882,7 +5882,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/wakatime.svg",
-    "vaultType": "Wakatime",
+    "vaultCredentialType": "Wakatime",
     "configFile": "Wakatime.json"
   },
   {
@@ -5925,7 +5925,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/webflow.svg",
-    "vaultType": "Webflow",
+    "vaultCredentialType": "Webflow",
     "configFile": "Webflow.json"
   },
   {
@@ -5944,7 +5944,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/webvizio.png",
-    "vaultType": "Webvizio",
+    "vaultCredentialType": "Webvizio",
     "configFile": "Webvizio.json"
   },
   {
@@ -5965,7 +5965,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/whatsapp.svg",
-    "vaultType": "Whatsapp",
+    "vaultCredentialType": "Whatsapp",
     "configFile": "Whatsapp.json"
   },
   {
@@ -5984,7 +5984,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/witai.png",
-    "vaultType": "Witai",
+    "vaultCredentialType": "Witai",
     "configFile": "Witai.json"
   },
   {
@@ -6009,7 +6009,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/wix.svg",
-    "vaultType": "Wix",
+    "vaultCredentialType": "Wix",
     "configFile": "Wix.json"
   },
   {
@@ -6028,7 +6028,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/wiza.png",
-    "vaultType": "Wiza",
+    "vaultCredentialType": "Wiza",
     "configFile": "Wiza.json"
   },
   {
@@ -6064,7 +6064,7 @@
       "requiresRegisteredRedirect": true
     },
     "icon": "/brand-img/workday.svg",
-    "vaultType": "Workday",
+    "vaultCredentialType": "Workday",
     "configFile": "Workday.json"
   },
   {
@@ -6083,7 +6083,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/workiom.png",
-    "vaultType": "Workiom",
+    "vaultCredentialType": "Workiom",
     "configFile": "Workiom.json"
   },
   {
@@ -6100,7 +6100,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/worldnewsapi.png",
-    "vaultType": "Worldnewsapi",
+    "vaultCredentialType": "Worldnewsapi",
     "configFile": "Worldnewsapi.json"
   },
   {
@@ -6120,7 +6120,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/xquik.svg",
-    "vaultType": "Xquik",
+    "vaultCredentialType": "Xquik",
     "configFile": "Xquik.json"
   },
   {
@@ -6139,7 +6139,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/youcom.png",
-    "vaultType": "Youcom",
+    "vaultCredentialType": "Youcom",
     "configFile": "Youcom.json"
   },
   {
@@ -6156,7 +6156,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/youtube.svg",
-    "vaultType": "Youtube",
+    "vaultCredentialType": "Youtube",
     "configFile": "Youtube.json"
   },
   {
@@ -6175,7 +6175,7 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/zendesk.svg",
-    "vaultType": "Zendesk",
+    "vaultCredentialType": "Zendesk",
     "configFile": "Zendesk.json"
   },
   {
@@ -6213,7 +6213,7 @@
       "tokenAuthMethod": "body"
     },
     "icon": "/brand-img/zohoinventory.png",
-    "vaultType": "Zohoinventory",
+    "vaultCredentialType": "Zohoinventory",
     "configFile": "Zohoinventory.json"
   },
   {
@@ -6253,7 +6253,7 @@
       "tokenAuthMethod": "body"
     },
     "icon": "/brand-img/zohomail.svg",
-    "vaultType": "Zohomail",
+    "vaultCredentialType": "Zohomail",
     "configFile": "Zohomail.json"
   },
   {
@@ -6270,7 +6270,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/zoom.svg",
-    "vaultType": "Zoom",
+    "vaultCredentialType": "Zoom",
     "configFile": "Zoom.json"
   },
   {
@@ -6289,7 +6289,7 @@
     ],
     "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/zoominfo.png",
-    "vaultType": "Zoominfo",
+    "vaultCredentialType": "Zoominfo",
     "configFile": "Zoominfo.json"
   }
 ]

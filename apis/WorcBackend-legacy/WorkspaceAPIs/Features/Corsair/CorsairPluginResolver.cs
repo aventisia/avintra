@@ -21,6 +21,6 @@ internal static class CorsairPluginResolver
             _ => null
         };
 
-        return mappedPlugin ?? configRepository.GetPluginIdForVaultType(type.ToString());
+        return mappedPlugin ?? configRepository.GetPluginIdForVaultCredentialType(type.ToString());
     }
 }

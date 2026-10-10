@@ -11,7 +11,7 @@ from fastapi import HTTPException
 
 from app.core.config import settings
 from app.core.logger import logger, log_exception
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.core.byok_usage_manager import ByokUsageManager
 from app.features.litellm.core.credentials import resolve_credential_name
@@ -257,9 +257,9 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         """
 
         if req.is_byok_enabled and req.credential_name:
-            vault = VaultManager()
+            vault_credential = VaultCredentialManager()
 
-            credential = vault.get_vault_secret_by_name(
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 credential=req.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,

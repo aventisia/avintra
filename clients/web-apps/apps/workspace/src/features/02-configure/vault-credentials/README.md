@@ -6,7 +6,7 @@ credentials. The product label is "vault"; the backend feature, entity, and rout
 
 ## Data flow
 
-`useFetchVaults` runs two TanStack queries and merges them into one list:
+`useFetchVaultCredentials` runs two TanStack queries and merges them into one list:
 
 - personal credentials: `GET /vault-credential/list`
 - credentials shared with the current user: `GET /vault-credential/list/shared`
@@ -14,7 +14,7 @@ credentials. The product label is "vault"; the backend feature, entity, and rout
 Both queries are keyed by space and environment, so switching space or environment
 refetches. The merge keeps the widest status code and concatenates rows.
 
-`VaultTable` renders `VaultTableSkeleton` while either query is loading or refetching
+`VaultCredentialTable` renders `VaultCredentialTableSkeleton` while either query is loading or refetching
 (`isLoading || isFetching`) and only renders the table or the empty state after both
 queries have finished, so a partially loaded list never shows as empty.
 

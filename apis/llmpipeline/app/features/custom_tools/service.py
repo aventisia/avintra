@@ -4,12 +4,12 @@ from typing import Any
 from uuid import UUID
 from urllib.parse import urljoin
 
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 import httpx
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.features.custom_tools.credential_client import fetch_decrypted_credential
+from app.features.custom_tools.vault_credential_client import fetch_decrypted_vault_credential
 
 
 async def execute_tool_test(
@@ -44,10 +44,10 @@ async def execute_tool_test(
 
     full_url = urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
 
-    # Resolve authentication from the credential vault when an identity is provided.
+    # Resolve authentication from the vault credential when an identity is provided.
     if credential_name and access_token:
-        vault_manager = VaultManager()
-        credential = vault_manager.get_vault_secret_by_name(
+        vault_credential_manager = VaultCredentialManager()
+        credential = vault_credential_manager.get_vault_credential_secret_by_name(
             credential_name,
             jwt=access_token,
             env_type=env_type,

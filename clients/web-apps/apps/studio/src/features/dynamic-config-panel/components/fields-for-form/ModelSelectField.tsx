@@ -22,7 +22,7 @@ interface ModelSelectFieldProps extends SelectFieldProps, BaseFieldProps {
 }
 
 /**
- * A custom select form field component to select models form app secret api
+ * A custom select form field component to select models from the vault credential API
  */
 const ModelSelectField = ({
   name,

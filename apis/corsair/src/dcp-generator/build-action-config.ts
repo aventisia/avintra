@@ -41,9 +41,9 @@ export function actionToLabel(action: string): string {
 function buildCredentialField(plugin: PluginMetadata): DcpField {
   const label = plugin.providerName;
   // The field name must be the canonical in-house credential type (VaultCredentialTypesEnum-compatible)
-  // so the Studio selector can filter via /vault-credential/option-to-select?type=<vaultType>.
+  // so the Studio selector can filter via /vault-credential/option-to-select?type=<vaultCredentialType>.
   // The visible label stays friendly (providerName).
-  const credentialType = plugin.vaultType;
+  const credentialType = plugin.vaultCredentialType;
   return {
     direction: "Input",
     type: "credentials-select",

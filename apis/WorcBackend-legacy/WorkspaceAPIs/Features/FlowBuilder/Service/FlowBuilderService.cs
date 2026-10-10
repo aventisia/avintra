@@ -778,8 +778,8 @@ public class FlowBuilderService : IFlowBuilderService
     }
 
     /// <summary>
-    /// Finds or creates the Production clone of a credential (App Secret), including its encrypted
-    /// key-value pairs. Returns the Production App Secret ID. A Dev credential GUID is never written
+    /// Finds or creates the Production clone of a vault credential, including its encrypted
+    /// key-value pairs. Returns the Production vault credential ID. A Dev credential GUID is never written
     /// onto a Production record: a missing source or failed clone fails the publish.
     /// </summary>
     private async Task<Guid?> ResolveProdCredentialIdAsync(Guid? sourceCredentialId)
@@ -809,7 +809,7 @@ public class FlowBuilderService : IFlowBuilderService
     }
 
     /// <summary>
-    /// Clones a source App Secret into a new Production record, copying its encrypted key-value
+    /// Clones a source vault credential into a new Production record, copying its encrypted key-value
     /// pairs, inheriting its space, and assigning ownership to the current user.
     /// </summary>
     private async Task<VaultCredential> CloneVaultCredentialToProdAsync(VaultCredential devSecret)
@@ -846,7 +846,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.VaultCredential);
 
-        // Corsair keys connections by the App Secret Id, so mirroring the clone is what makes the
+        // Corsair keys connections by the vault credential Id, so mirroring the clone is what makes the
         // Production credential usable by platform tool calls.
         await EnsureProdCredentialMirroredAsync(clone);
         return clone;

@@ -51,7 +51,7 @@ export const useDynamicForm = ({ config }: { config: DCPFieldSchemaType[] }) => 
 
   const inputKeys: string[] = config?.filter((f) => f.direction === "Input")?.map((f) => f.name);
 
-  // Reset form values when vaultConfig or inputs/outputs change
+  // Reset form values when config or inputs/outputs change
   useEffect(() => {
     if (config.length > 0 && Object.keys(configZodSchema.shape).length > 0) {
       form.reset({

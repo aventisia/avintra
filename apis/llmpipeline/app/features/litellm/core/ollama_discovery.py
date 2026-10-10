@@ -12,7 +12,7 @@ import httpx
 from fastapi import HTTPException
 
 from app.core.logger import log_exception, logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.auth.authenticated_user import User
 
 from .provider_registry import capability_for_model, model_metadata, normalize_provider
@@ -84,13 +84,13 @@ def _credential_base_url_and_key(
 ) -> tuple[str, str | None]:
     """Fetch the Ollama base URL and API key from the credential manager.
 
-    Reads the credential directly from the vault by credential name/reference and
-    extracts the `ApiKey` and `Url`/`Host` fields (PascalCase, matching the vault
+    Reads the credential directly from the vault credential by name/reference and
+    extracts the `ApiKey` and `Url`/`Host` fields (PascalCase, matching the vault credential
     payload). Raises `HTTPException(400)` on invalid/missing credentials or a
     missing URL.
     """
-    vault = VaultManager()
-    credential = vault.get_vault_secret_by_name(
+    vault_credential = VaultCredentialManager()
+    credential = vault_credential.get_vault_credential_secret_by_name(
         credential=credential_name,
         jwt=user.access_token,
         env_type=user.env_type,
