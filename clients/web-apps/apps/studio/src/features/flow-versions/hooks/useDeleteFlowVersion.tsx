@@ -14,7 +14,7 @@ export const useDeleteFlowVersionMutation = () => {
   const flowId = queryParams.get("f");
   const queryClient = useQueryClient();
 
-  const { isPending, mutate } = useMutation({
+  const { isPending, mutateAsync } = useMutation({
     mutationFn: deleteFlowVersion,
     onSuccess: (httpResponse) => {
       // Only if you absolutely need immediate refetch regardless of component state
@@ -32,6 +32,6 @@ export const useDeleteFlowVersionMutation = () => {
   });
   return {
     isPending,
-    mutate,
+    mutateAsync,
   };
 };

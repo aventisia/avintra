@@ -35,7 +35,7 @@ export const FlowVersionItemActions = ({
         <FVIDraftAction flowId={flowId} versionId={versionId} />
         {currVersionId == versionId
           ? null
-          : !isPublished && <FVIDeleteAction versionId={versionId} />}
+          : !isPublished && <FVIDeleteAction versionId={versionId} versionNumber={versionNumber} />}
       </DropdownMenuContent>
     </DropdownMenu>
   );
