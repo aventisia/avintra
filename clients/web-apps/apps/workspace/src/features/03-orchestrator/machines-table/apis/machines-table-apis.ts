@@ -11,10 +11,16 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
 
 /**
  * Retrieves list of machines.
+ *
+ * NOTE: We need to pass the X-Space-Id so that the agent count reflects the
+ * current space only. Machines are shared across spaces, so without the header
+ * the list resolves to the Central space.
  */
 const getMachines = () => {
   return axiosInstance
-    .get<IHttpResponse<MachinesTableRowDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<MachinesTableRowDto[]>>(`${baseAPIURL}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -38,7 +44,9 @@ const getMachine = (machineId: string) => {
  */
 const updateMachine = (updateMachineDto: UpdateMachineDto) => {
   return axiosInstance
-    .put<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}`, updateMachineDto)
+    .put<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}`, updateMachineDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

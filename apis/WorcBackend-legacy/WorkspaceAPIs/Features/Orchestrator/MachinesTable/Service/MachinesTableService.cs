@@ -36,6 +36,27 @@ public class MachinesTableService : IMachinesTableService
                             .ProjectToType<MachinesTableRowDto>()
                             .ToListAsync();
 
+            // Agent counts must reflect the current space only.
+            // The Machine_FlowVersion join table has no SpaceId, so count the assignments whose
+            // FlowVersion belongs to the current space (the FlowVersion query is constrained by
+            // its tenant + space scoped global filter).
+            var currentSpaceFlowVersionIds = _unitOfWork.FlowVersionRepo
+                .GetAllAsync()
+                .Select(flowVersion => flowVersion.Id);
+
+            var machineAgentCounts = await _unitOfWork.Machine_FlowVersionRepo
+                .GetAllAsync()
+                .Where(w => currentSpaceFlowVersionIds.Contains(w.FlowVersionId))
+                .GroupBy(w => w.MachineId)
+                .Select(group => new { group.Key, Count = group.Count() })
+                .ToListAsync();
+
+            var machineAgentCountLookup = machineAgentCounts.ToDictionary(x => x.Key, x => x.Count);
+
+            // Override the tenant-wide count from the mapping with the current-space count (0 when none).
+            foreach (var machine in machines)
+                machine.FlowVersionCount = machineAgentCountLookup.TryGetValue(machine.Id, out var agentCount) ? agentCount : 0;
+
             // Retrieve live machine statuses for the current tenant
             var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
@@ -143,7 +164,9 @@ public class MachinesTableService : IMachinesTableService
             {
                 var distinctFlowVersionIds = MachinesTableHelpers.GetDistinctGuids(updateMachineDto.FlowVersionIds);
 
-                // Retrieve existing Machine_FlowVersion records for the machine
+                // Retrieve existing Machine_FlowVersion records for the machine.
+                // The join table has no SpaceId and is tenant-scoped only, so this returns
+                // assignments from every space.
                 var existingMachineFlowVersions = await _unitOfWork.Machine_FlowVersionRepo
                     .GetByConditionAsync(w => w.MachineId == machine.Id)
                     .ToListAsync();
@@ -152,17 +175,33 @@ public class MachinesTableService : IMachinesTableService
                     .Select(s => s.FlowVersionId)
                     .ToHashSet();
 
-                // Remove Machine_FlowVersion records that are no longer requested
+                // Space lives on FlowVersion, not on the join table, so resolve which of the
+                // machine's existing and requested flow versions belong to the current space.
+                // The space-scoped global filter on FlowVersion limits this query to that space.
+                var candidateFlowVersionIds = existingFlowVersionIds
+                    .Union(distinctFlowVersionIds)
+                    .ToList();
+
+                var currentSpaceFlowVersionIds = (await _unitOfWork.FlowVersionRepo
+                        .GetByConditionAsync(w => candidateFlowVersionIds.Contains(w.Id))
+                        .Select(w => w.Id)
+                        .ToListAsync())
+                    .ToHashSet();
+
+                // Remove current-space assignments that are no longer requested.
+                // Assignments referencing other spaces' flow versions are never touched.
                 var machineFlowVersionsToRemove = existingMachineFlowVersions
-                    .Where(w => !distinctFlowVersionIds.Contains(w.FlowVersionId))
+                    .Where(w => currentSpaceFlowVersionIds.Contains(w.FlowVersionId)
+                                && !distinctFlowVersionIds.Contains(w.FlowVersionId))
                     .ToList();
 
                 if (machineFlowVersionsToRemove.Any())
                     _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlowVersionsToRemove);
 
-                // Get new FlowVersionIds that need to be added
+                // Get current-space FlowVersionIds that need to be added
                 var newFlowVersionIds = distinctFlowVersionIds
-                    .Where(flowVersionId => !existingFlowVersionIds.Contains(flowVersionId))
+                    .Where(flowVersionId => currentSpaceFlowVersionIds.Contains(flowVersionId)
+                                            && !existingFlowVersionIds.Contains(flowVersionId))
                     .ToList();
 
                 // Create new Machine_FlowVersion records for the new FlowVersionIds
