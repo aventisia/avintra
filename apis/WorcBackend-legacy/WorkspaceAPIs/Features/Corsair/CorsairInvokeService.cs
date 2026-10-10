@@ -110,7 +110,7 @@ public class CorsairInvokeService : ICorsairInvokeService
 
             // Validate the requested plugin/action against the credential type.
             var mappedPlugin = MapVaultCredentialTypeToCorsairPlugin(vaultCredential.Type);
-            var supportedPlugins = _configRepository.GetPluginIdsForVaultType(vaultCredential.Type.ToString());
+            var supportedPlugins = _configRepository.GetPluginIdsForVaultCredentialType(vaultCredential.Type.ToString());
             if (string.IsNullOrWhiteSpace(mappedPlugin) ||
                 (supportedPlugins.Count > 0 && !supportedPlugins.Contains(request.Plugin, StringComparer.OrdinalIgnoreCase)) ||
                 (supportedPlugins.Count == 0 && !string.Equals(mappedPlugin, request.Plugin, StringComparison.OrdinalIgnoreCase)))

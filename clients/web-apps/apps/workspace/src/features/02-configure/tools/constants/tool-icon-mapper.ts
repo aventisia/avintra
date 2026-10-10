@@ -1,4 +1,4 @@
-import { getCorsairPluginIcon } from "../../vault-credentials/vault-config/constants/corsair-integration-mapper";
+import { getCorsairPluginIcon } from "../../vault-credentials/vault-credential-config/constants/corsair-integration-mapper";
 
 /**
  * Maps tool names/ids to their brand icons from corsair DCP generator.

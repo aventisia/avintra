@@ -13,8 +13,8 @@ import { useShallow } from "zustand/react/shallow";
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
-import { getCredSelectOptions } from "../apis/app-secret-apis";
 import { isNameAvailable } from "../apis/queues-table-apis";
+import { getVaultCredentialSelectOptions } from "../apis/vault-credential-select.apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 import { useTableTab } from "./useTableTab";
@@ -156,7 +156,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   useEffect(() => {
     setIsOptionsLoading(true);
 
-    getCredSelectOptions("M365")
+    getVaultCredentialSelectOptions("M365")
       .then((data) => {
         setSelectOptions(data?.data as ISelectOption[]);
         setIsOptionsLoading(false);

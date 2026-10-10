@@ -500,16 +500,16 @@ public class CamelConnectorService : ICamelConnectorService
         var credential = await GetCredentialAsync(credentialName);
         if (credential == null)
         {
-            return CamelCredentialHelpers.MissingCredential(credentialName ?? "unknown", credentialName);
+            return CamelVaultCredentialHelpers.MissingCredential(credentialName ?? "unknown", credentialName);
         }
 
         return normalized switch
         {
-            "accesstoken" or "access_token" or "pat" => CamelCredentialHelpers.AccessToken(credential),
-            "basic" => CamelCredentialHelpers.Basic(credential, payload, credentialName ?? "unknown"),
-            "database" or "db" => CamelCredentialHelpers.Database(credential, payload, credentialName ?? "unknown"),
-            "clientcredentials" or "client_credentials" => CamelCredentialHelpers.ClientCredentials(credential),
-            "oauth2" or "oauth" => CamelCredentialHelpers.OAuth2(credential),
+            "accesstoken" or "access_token" or "pat" => CamelVaultCredentialHelpers.AccessToken(credential),
+            "basic" => CamelVaultCredentialHelpers.Basic(credential, payload, credentialName ?? "unknown"),
+            "database" or "db" => CamelVaultCredentialHelpers.Database(credential, payload, credentialName ?? "unknown"),
+            "clientcredentials" or "client_credentials" => CamelVaultCredentialHelpers.ClientCredentials(credential),
+            "oauth2" or "oauth" => CamelVaultCredentialHelpers.OAuth2(credential),
             _ => CamelAuthResult.Failure(400, $"Unsupported authentication type '{authType}' for Camel connector.")
         };
     }
@@ -652,7 +652,7 @@ public class CamelConnectorService : ICamelConnectorService
             var credential = await GetCredentialAsync(request.CredentialName);
             if (credential != null)
             {
-                var auth = CamelCredentialHelpers.AccessToken(credential);
+                var auth = CamelVaultCredentialHelpers.AccessToken(credential);
                 if (auth.IsSuccess)
                 {
                     authentication = (Dictionary<string, object?>?)BuildAuthentication(auth, request.CredentialName);

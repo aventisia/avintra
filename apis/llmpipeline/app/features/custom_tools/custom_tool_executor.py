@@ -4,7 +4,7 @@ from typing import Any
 import httpx
 
 from app.core.logger import logger
-from app.features.custom_tools.credential_client import fetch_decrypted_credential
+from app.features.custom_tools.vault_credential_client import fetch_decrypted_vault_credential
 from app.features.custom_tools.schemas import ToolOperation
 
 
@@ -40,7 +40,7 @@ async def execute_operation(
 
     if authentication_type and authentication_type != "none":
         if credential_name and workspace_api:
-            credential = await fetch_decrypted_credential(
+            credential = await fetch_decrypted_vault_credential(
                 workspace_api, credential_name, access_token, env_type=env_type
             )
             _inject_auth(headers, query_params, authentication_type, credential)

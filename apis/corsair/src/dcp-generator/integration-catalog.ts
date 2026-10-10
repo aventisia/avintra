@@ -9,16 +9,16 @@ export type CorsairIntegrationCatalogEntry = {
   defaultAuthMode: string;
   oauthConfig?: PluginMetadata["oauthConfig"];
   icon: string;
-  vaultType: string;
+  vaultCredentialType: string;
   configFile: string;
 };
 
-export type VaultConfig = {
-  vaultType: string;
+export type VaultCredentialConfig = {
+  vaultCredentialType: string;
   fields: DcpField[];
 };
 
-const LEGACY_VAULT_ALIASES: Record<string, string> = {
+const LEGACY_VAULT_CREDENTIAL_ALIASES: Record<string, string> = {
   github: "GitHub",
   openai: "OpenAI",
   outlook: "M365",
@@ -54,9 +54,9 @@ function fieldLabel(field: string): string {
   return field.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (value) => value.toUpperCase());
 }
 
-export function getVaultType(pluginId: string): string {
+export function getVaultCredentialType(pluginId: string): string {
   if (GOOGLE_WORKSPACE_PLUGINS.has(pluginId)) return "GoogleWorkspace";
-  return LEGACY_VAULT_ALIASES[pluginId] ?? titleCase(pluginId);
+  return LEGACY_VAULT_CREDENTIAL_ALIASES[pluginId] ?? titleCase(pluginId);
 }
 
 /** Build the generated source of truth used by vault and backend consumers. */
@@ -70,7 +70,7 @@ export function buildIntegrationCatalog(
   )].sort();
 
   const entries = pluginMetas.map((meta) => {
-    const vaultType = getVaultType(meta.id);
+    const vaultCredentialType = getVaultCredentialType(meta.id);
     const pluginIds = GOOGLE_WORKSPACE_PLUGINS.has(meta.id)
       ? [...GOOGLE_WORKSPACE_PLUGINS].sort()
       : M365_PLUGINS.has(meta.id)
@@ -87,8 +87,8 @@ export function buildIntegrationCatalog(
         ? { ...meta.oauthConfig, scopes: m365Scopes }
         : meta.oauthConfig,
       icon: meta.img ?? "/function.png",
-      vaultType,
-      configFile: `${vaultType}.json`,
+      vaultCredentialType,
+      configFile: `${vaultCredentialType}.json`,
     };
   });
 
@@ -96,13 +96,13 @@ export function buildIntegrationCatalog(
 }
 
 /** Build one generic vault form for each generated credential type. */
-export function buildVaultConfigs(
+export function buildVaultCredentialConfigs(
   entries: readonly CorsairIntegrationCatalogEntry[],
-): VaultConfig[] {
-  const fieldsByVaultType = new Map<string, DcpField[]>();
+): VaultCredentialConfig[] {
+  const fieldsByVaultCredentialType = new Map<string, DcpField[]>();
 
   for (const entry of entries) {
-    const fields = fieldsByVaultType.get(entry.vaultType) ?? [];
+    const fields = fieldsByVaultCredentialType.get(entry.vaultCredentialType) ?? [];
     const declaredFields = entry.authModes.flatMap(({ accountFields }) => accountFields);
     const fieldNames = entry.defaultAuthMode === "oauth_2"
       ? ["ClientId", "ClientSecret"]
@@ -127,10 +127,10 @@ export function buildVaultConfigs(
       });
     }
 
-    fieldsByVaultType.set(entry.vaultType, fields);
+    fieldsByVaultCredentialType.set(entry.vaultCredentialType, fields);
   }
 
-  return [...fieldsByVaultType.entries()]
+  return [...fieldsByVaultCredentialType.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
-    .map(([vaultType, fields]) => ({ vaultType, fields }));
+    .map(([vaultCredentialType, fields]) => ({ vaultCredentialType, fields }));
 }

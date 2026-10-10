@@ -19,8 +19,8 @@ import { ttsModelProviders } from "../../constants/tts-model-proivder";
 import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
 import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
-import { CredentialsSelectField } from "./CredentialsSelectField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 import { VoiceConfigField } from "./VoiceConfigField";
 
 interface ModelConfigFieldProps {
@@ -476,7 +476,7 @@ const ModelConfigField = ({
       </div>
 
       {is_byok_enabled && currentProviderHasEnabledModels && (
-        <CredentialsSelectField
+        <VaultCredentialSelectField
           name={fieldNames.credential_name}
           size="sm"
           label={`${currentProviderLabel ?? ""} Credentials`}

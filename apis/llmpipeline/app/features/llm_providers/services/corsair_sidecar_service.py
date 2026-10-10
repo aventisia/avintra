@@ -16,7 +16,7 @@ import httpx
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
 
@@ -196,7 +196,7 @@ def _resolve_corsair_credential_id(
     feature). Corsair, however, keys connections by the credential ID (the
     VaultCredential Id), which it uses as the tenant/connection identifier. So when
     only a ``credential_name`` is supplied we resolve it to its Id via the
-    vault. An explicit ``credential_id`` is still honored for backward
+    vault credential. An explicit ``credential_id`` is still honored for backward
     compatibility.
     """
     if not llm_request.tool_config:
@@ -229,15 +229,15 @@ def _resolve_credential_id_by_name(
     credential_name: str,
     user: User,
 ) -> str | None:
-    """Resolve a credential NAME to its VaultCredential Id via the vault.
+    """Resolve a credential NAME to its VaultCredential Id via the vault credential.
 
     Corsair uses the credential Id as the ``connectionId`` (tenant identifier),
     but the frontend only sends the credential name. Look the secret up by name
     and return its ``Id``.
     """
     try:
-        vault = VaultManager()
-        credential = vault.get_vault_secret_by_name(
+        vault_credential = VaultCredentialManager()
+        credential = vault_credential.get_vault_credential_secret_by_name(
             credential=credential_name,
             jwt=user.access_token,
             env_type=user.env_type,
@@ -258,7 +258,7 @@ def _resolve_credential_id_by_name(
         )
         return None
 
-    # The vault API serializes the VaultCredential DTO with camelCase keys.
+    # The vault credential API serializes the VaultCredential DTO with camelCase keys.
     credential_id = credential.get("Id") or credential.get("id")
     if not credential_id:
         logger.warning(
@@ -318,7 +318,7 @@ async def invoke_corsair_tool(
     if not credential_id:
         raise CorsairSidecarServiceError(
             f"No credential configured for Corsair tool {tool_name}. "
-            "Re-save the credential in the vault to mirror it to the Corsair sidecar."
+            "Re-save the credential in the vault credential to mirror it to the Corsair sidecar."
         )
 
     endpoint = f"{base_url}/api/corsair/invoke"
@@ -363,7 +363,7 @@ async def invoke_corsair_tool(
         if isinstance(body, dict) and body.get("needsConnect"):
             message = (
                 f"{message}. The credential is not mirrored to Corsair; "
-                "re-save it in the vault to trigger the mirror."
+                "re-save it in the vault credential to trigger the mirror."
             )
         logger.exception("Corsair sidecar invocation failed for %s", tool_name)
         raise CorsairSidecarServiceError(

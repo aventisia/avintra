@@ -1,7 +1,7 @@
 namespace AspNetToolkit.Enums;
 
 /// <summary>
-/// Specifies the types of application secrets used to integrate with third-party services.
+/// Specifies the credential types used to integrate with third-party services.
 /// </summary>
 public enum VaultCredentialTypesEnum
 {

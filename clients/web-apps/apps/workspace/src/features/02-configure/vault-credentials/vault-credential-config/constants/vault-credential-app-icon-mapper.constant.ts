@@ -1,0 +1,200 @@
+import { VaultCredentialAppsEnum } from "../../enums/vault-credential-apps.enum";
+import catalog from "./corsair-integration-catalog.json";
+
+export const vaultCredentialAppIconMapper: Record<string, string> = {
+  [VaultCredentialAppsEnum.OpenAI]: "/brand-img/openai.svg",
+  [VaultCredentialAppsEnum.AWS]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.Twilio]: "/brand-img/twilio.svg",
+  [VaultCredentialAppsEnum.SendGrid]: "/brand-img/sendgrid.svg",
+  [VaultCredentialAppsEnum.GitHub]: "/brand-img/github.svg",
+  [VaultCredentialAppsEnum.M365]: "/brand-img/m365.svg",
+  [VaultCredentialAppsEnum.GeneralCredentials]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.GoogleGemini]: "/brand-img/gemini.svg",
+  [VaultCredentialAppsEnum.GoogleWorkspace]: "/assets/GoogleWorkspace.svg",
+  [VaultCredentialAppsEnum.OpenRouter]: "/brand-img/openrouter.svg",
+  [VaultCredentialAppsEnum.ElevenLabs]: "/brand-img/elevenlabs.svg",
+  [VaultCredentialAppsEnum.AzureStorage]: "/assets/Azure.svg",
+  [VaultCredentialAppsEnum.ConnectionString]: "/assets/Database.svg",
+  [VaultCredentialAppsEnum.Qdrant]: "/assets/Qdrant.svg",
+  [VaultCredentialAppsEnum.Anthropic]: "/brand-img/anthropic.svg",
+  [VaultCredentialAppsEnum.CustomApiTool]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Ollama]: "/brand-img/ollama.webp",
+  [VaultCredentialAppsEnum.OllamaCloud]: "/brand-img/ollama.webp",
+  [VaultCredentialAppsEnum.Groq]: "/brand-img/groq.png",
+  [VaultCredentialAppsEnum.Bedrock]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.Mistral]: "/brand-img/mistral.svg",
+
+  // --- Individual LiteLLM provider types (generated) ---
+  [VaultCredentialAppsEnum.A2a]: "/brand-img/a2a.png",
+  [VaultCredentialAppsEnum.A2aAgent]: "/brand-img/a2a.png",
+  [VaultCredentialAppsEnum.Ai21]: "/brand-img/ai21.png",
+  [VaultCredentialAppsEnum.Ai21Chat]: "/brand-img/ai21.png",
+  [VaultCredentialAppsEnum.Aiml]: "/brand-img/aiml.svg",
+  [VaultCredentialAppsEnum.AiohttpOpenai]: "/brand-img/aiohttp.svg",
+  [VaultCredentialAppsEnum.AmazonNova]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.AnthropicText]: "/brand-img/anthropic.svg",
+  [VaultCredentialAppsEnum.Apertis]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Assemblyai]: "/brand-img/assemblyai.png",
+  [VaultCredentialAppsEnum.AutoRouter]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.AwsPolly]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.Azure]: "/brand-img/azure.svg",
+  [VaultCredentialAppsEnum.AzureAi]: "/brand-img/azure.svg",
+  [VaultCredentialAppsEnum.AzureText]: "/brand-img/azure.svg",
+  [VaultCredentialAppsEnum.Baseten]: "/brand-img/baseten.png",
+  [VaultCredentialAppsEnum.BedrockMantle]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.BlackForestLabs]: "/brand-img/black-forest-labs.png",
+  [VaultCredentialAppsEnum.Bytez]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Cerebras]: "/brand-img/cerebras.png",
+  [VaultCredentialAppsEnum.CharityEngine]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Chatgpt]: "/brand-img/chatgpt.png",
+  [VaultCredentialAppsEnum.Chutes]: "/brand-img/chutes.png",
+  [VaultCredentialAppsEnum.Clarifai]: "/brand-img/clarifai.svg",
+  [VaultCredentialAppsEnum.Cloudflare]: "/brand-img/cloudflare.svg",
+  [VaultCredentialAppsEnum.Codestral]: "/brand-img/mistral.svg",
+  [VaultCredentialAppsEnum.Cohere]: "/brand-img/cohere.png",
+  [VaultCredentialAppsEnum.CohereChat]: "/brand-img/cohere.png",
+  [VaultCredentialAppsEnum.Cometapi]: "/brand-img/cometapi.svg",
+  [VaultCredentialAppsEnum.Compactifai]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Cursor]: "/brand-img/cursor.svg",
+  [VaultCredentialAppsEnum.Custom]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.CustomOpenai]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Darkbloom]: "/brand-img/darkbloom.png",
+  [VaultCredentialAppsEnum.Dashscope]: "/brand-img/alibaba.svg",
+  [VaultCredentialAppsEnum.Databricks]: "/brand-img/databricks.svg",
+  [VaultCredentialAppsEnum.Datarobot]: "/brand-img/datarobot.png",
+  [VaultCredentialAppsEnum.Deepgram]: "/brand-img/deepgram.svg",
+  [VaultCredentialAppsEnum.Deepinfra]: "/brand-img/deepinfra.png",
+  [VaultCredentialAppsEnum.Deepseek]: "/brand-img/deepseek.svg",
+  [VaultCredentialAppsEnum.DockerModelRunner]: "/brand-img/docker.svg",
+  [VaultCredentialAppsEnum.Dotprompt]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Empower]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.FalAi]: "/brand-img/fal-ai.png",
+  [VaultCredentialAppsEnum.FeatherlessAi]: "/brand-img/featherless-ai.png",
+  [VaultCredentialAppsEnum.FireworksAi]: "/brand-img/fireworks-ai.png",
+  [VaultCredentialAppsEnum.Friendliai]: "/brand-img/friendliai.svg",
+  [VaultCredentialAppsEnum.Galadriel]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Gdc]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Gigachat]: "/brand-img/gigachat.png",
+  [VaultCredentialAppsEnum.GithubCopilot]: "/brand-img/github-copilot.svg",
+  [VaultCredentialAppsEnum.GradientAi]: "/brand-img/gradient.png",
+  [VaultCredentialAppsEnum.Helicone]: "/brand-img/helicone.png",
+  [VaultCredentialAppsEnum.Heroku]: "/brand-img/heroku.svg",
+  [VaultCredentialAppsEnum.HostedVllm]: "/brand-img/vllm.png",
+  [VaultCredentialAppsEnum.Huggingface]: "/brand-img/huggingface.svg",
+  [VaultCredentialAppsEnum.Humanloop]: "/brand-img/humanloop.png",
+  [VaultCredentialAppsEnum.Hyperbolic]: "/brand-img/hyperbolic.png",
+  [VaultCredentialAppsEnum.Inception]: "/brand-img/inception.png",
+  [VaultCredentialAppsEnum.Infinity]: "/brand-img/infinity.png",
+  [VaultCredentialAppsEnum.JinaAi]: "/brand-img/jina.png",
+  [VaultCredentialAppsEnum.LambdaAi]: "/brand-img/lambda.svg",
+  [VaultCredentialAppsEnum.Langflow]: "/brand-img/langflow.svg",
+  [VaultCredentialAppsEnum.Langfuse]: "/brand-img/langfuse.png",
+  [VaultCredentialAppsEnum.Langgraph]: "/brand-img/langgraph.svg",
+  [VaultCredentialAppsEnum.Lemonade]: "/brand-img/lemonade.png",
+  [VaultCredentialAppsEnum.Libertai]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.LitellmAgent]: "/brand-img/litellm.jpg",
+  [VaultCredentialAppsEnum.LitellmProxy]: "/brand-img/litellm.jpg",
+  [VaultCredentialAppsEnum.Llamafile]: "/brand-img/llama.svg",
+  [VaultCredentialAppsEnum.LmStudio]: "/brand-img/lmstudio.svg",
+  [VaultCredentialAppsEnum.Manus]: "/brand-img/manus.png",
+  [VaultCredentialAppsEnum.Maritalk]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Meta]: "/brand-img/meta.svg",
+  [VaultCredentialAppsEnum.MetaLlama]: "/brand-img/llama.svg",
+  [VaultCredentialAppsEnum.Milvus]: "/brand-img/milvus.svg",
+  [VaultCredentialAppsEnum.Minimax]: "/brand-img/minimax.png",
+  [VaultCredentialAppsEnum.Modelscope]: "/brand-img/modelscope.png",
+  [VaultCredentialAppsEnum.Moonshot]: "/brand-img/moonshot.png",
+  [VaultCredentialAppsEnum.Morph]: "/brand-img/morph.svg",
+  [VaultCredentialAppsEnum.NanoGpt]: "/brand-img/nano.svg",
+  [VaultCredentialAppsEnum.Nebius]: "/brand-img/nebius.png",
+  [VaultCredentialAppsEnum.Neosantara]: "/brand-img/neosantara.png",
+  [VaultCredentialAppsEnum.NlpCloud]: "/brand-img/nlpcloud.png",
+  [VaultCredentialAppsEnum.Novita]: "/brand-img/novita.png",
+  [VaultCredentialAppsEnum.Nscale]: "/brand-img/nscale.png",
+  [VaultCredentialAppsEnum.NvidiaNim]: "/brand-img/nvidia.svg",
+  [VaultCredentialAppsEnum.NvidiaRiva]: "/brand-img/nvidia.svg",
+  [VaultCredentialAppsEnum.Oci]: "/brand-img/oracle.png",
+  [VaultCredentialAppsEnum.OllamaChat]: "/brand-img/ollama.webp",
+  [VaultCredentialAppsEnum.Oobabooga]: "/brand-img/oobabooga.png",
+  [VaultCredentialAppsEnum.OpenaiLike]: "/brand-img/openai.svg",
+  [VaultCredentialAppsEnum.Ovhcloud]: "/brand-img/ovhcloud.svg",
+  [VaultCredentialAppsEnum.Parasail]: "/brand-img/parasail.png",
+  [VaultCredentialAppsEnum.Perplexity]: "/brand-img/perplexity.svg",
+  [VaultCredentialAppsEnum.Petals]: "/brand-img/petals.png",
+  [VaultCredentialAppsEnum.PgVector]: "/brand-img/postgresql.svg",
+  [VaultCredentialAppsEnum.Pinstripes]: "/brand-img/pinstripes.png",
+  [VaultCredentialAppsEnum.Poe]: "/brand-img/poe.svg",
+  [VaultCredentialAppsEnum.Predibase]: "/brand-img/predibase.png",
+  [VaultCredentialAppsEnum.Publicai]: "/brand-img/publicai.png",
+  [VaultCredentialAppsEnum.Ragflow]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Recraft]: "/brand-img/recraft.svg",
+  [VaultCredentialAppsEnum.Reducto]: "/brand-img/reducto.png",
+  [VaultCredentialAppsEnum.Replicate]: "/brand-img/replicate.svg",
+  [VaultCredentialAppsEnum.Runwayml]: "/brand-img/runwayml.png",
+  [VaultCredentialAppsEnum.S3Vectors]: "/brand-img/s3-vector.png",
+  [VaultCredentialAppsEnum.Sagemaker]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.SagemakerChat]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.SagemakerNova]: "/brand-img/aws.svg",
+  [VaultCredentialAppsEnum.Sambanova]: "/brand-img/sambanova.png",
+  [VaultCredentialAppsEnum.Sap]: "/brand-img/sap.svg",
+  [VaultCredentialAppsEnum.Scaleway]: "/brand-img/scaleway.svg",
+  [VaultCredentialAppsEnum.Snowflake]: "/brand-img/snowflake.svg",
+  [VaultCredentialAppsEnum.Soniox]: "/brand-img/soniox.png",
+  [VaultCredentialAppsEnum.Stability]: "/brand-img/stability.png",
+  [VaultCredentialAppsEnum.Synthetic]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.Tencent]: "/brand-img/tencent.png",
+  [VaultCredentialAppsEnum.Tensormesh]: "/brand-img/default-provider.svg",
+  [VaultCredentialAppsEnum.TextCompletionCodestral]: "/brand-img/mistral.svg",
+  [VaultCredentialAppsEnum.TextCompletionInception]: "/brand-img/inception.png",
+  [VaultCredentialAppsEnum.TextCompletionOpenai]: "/brand-img/openai.svg",
+  [VaultCredentialAppsEnum.TogetherAi]: "/brand-img/together.png",
+  [VaultCredentialAppsEnum.Topaz]: "/brand-img/topaz.svg",
+  [VaultCredentialAppsEnum.Triton]: "/brand-img/triton.png",
+  [VaultCredentialAppsEnum.V0]: "/brand-img/v0.svg",
+  [VaultCredentialAppsEnum.VercelAiGateway]: "/brand-img/vercel.png",
+  [VaultCredentialAppsEnum.VertexAi]: "/brand-img/gemini.svg",
+  [VaultCredentialAppsEnum.VertexAiBeta]: "/brand-img/gemini.svg",
+  [VaultCredentialAppsEnum.Vllm]: "/brand-img/vllm.png",
+  [VaultCredentialAppsEnum.Volcengine]: "/brand-img/volcengine.png",
+  [VaultCredentialAppsEnum.Voyage]: "/brand-img/voyage.png",
+  [VaultCredentialAppsEnum.Wandb]: "/brand-img/wandb.png",
+  [VaultCredentialAppsEnum.Watsonx]: "/brand-img/watsonx.svg",
+  [VaultCredentialAppsEnum.WatsonxText]: "/brand-img/watsonx.svg",
+  [VaultCredentialAppsEnum.Xai]: "/brand-img/xai.svg",
+  [VaultCredentialAppsEnum.XiaomiMimo]: "/brand-img/xiaomi_mimo.svg",
+  [VaultCredentialAppsEnum.Xinference]: "/brand-img/xinference.svg",
+  [VaultCredentialAppsEnum.Zai]: "/brand-img/zai-org.png",
+};
+
+for (const integration of catalog) {
+  if (integration.vaultCredentialType in vaultCredentialAppIconMapper) continue;
+
+  // IMPORTANT NOTE: Several catalog plugins can share one vaultCredentialType (e.g. OneDrive,
+  // Outlook, SharePoint and Teams all map to "M365"). When the vaultCredentialType is already
+  // a curated VaultCredentialAppsEnum member, reuse that icon instead of letting the first
+  // catalog plugin overwrite it.
+  const enumValue =
+    VaultCredentialAppsEnum[
+      integration.vaultCredentialType as keyof typeof VaultCredentialAppsEnum
+    ];
+  vaultCredentialAppIconMapper[integration.vaultCredentialType] =
+    vaultCredentialAppIconMapper[enumValue] ?? integration.icon;
+}
+
+/**
+ * Resolves the brand icon for a vault credential type.
+ *
+ * The map is keyed by both `VaultCredentialAppsEnum` members and raw type strings, so a
+ * single lookup covers curated types and catalog-only integrations alike.
+ * Curated entries always win: the catalog backfill above reuses the enum's
+ * icon whenever a catalog `vaultCredentialType` is already a curated member.
+ *
+ * @param type Credential type as stored on the vault record (e.g. "M365").
+ * @returns The icon path, or undefined when the type is unknown.
+ */
+export function getVaultCredentialAppIcon(type: string | undefined): string | undefined {
+  if (!type) return undefined;
+
+  const enumValue = VaultCredentialAppsEnum[type as keyof typeof VaultCredentialAppsEnum];
+  return vaultCredentialAppIconMapper[type] ?? vaultCredentialAppIconMapper[enumValue];
+}

@@ -527,7 +527,7 @@ public class VaultCredentialService : IVaultCredentialService
 
             vaultCredentialDto = TrimDtoStringPropsUtil.TrimDtoStringProps(vaultCredentialDto);
 
-            CredentialValidationResult? validateData = null;
+            VaultCredentialValidationResult? validateData = null;
 
             var existingJson = JsonNode.Parse(existingVaultCredential.Data);
             var newJson = System.Text.Json.JsonSerializer.SerializeToNode(vaultCredentialDto.Data);
@@ -1153,9 +1153,9 @@ public class VaultCredentialService : IVaultCredentialService
         return serviceResponse;
     }
 
-    private CredentialValidationResult ValidateData(VaultCredentialTypesEnum type, object data)
+    private VaultCredentialValidationResult ValidateData(VaultCredentialTypesEnum type, object data)
     {
-        var validationResult = new CredentialValidationResult();
+        var validationResult = new VaultCredentialValidationResult();
         var sanitizedDataJson = string.Empty;
 
         var jsonOptions = new JsonSerializerOptions
@@ -1167,7 +1167,7 @@ public class VaultCredentialService : IVaultCredentialService
 
         var rawJson = System.Text.Json.JsonSerializer.Serialize(data, jsonOptions);
 
-        if (_corsairConfigRepository.GetPluginIdForVaultType(type.ToString()) is not null)
+        if (_corsairConfigRepository.GetPluginIdForVaultCredentialType(type.ToString()) is not null)
         {
             return ValidateGeneratedCorsairData(rawJson, jsonOptions);
         }
@@ -3812,9 +3812,9 @@ public class VaultCredentialService : IVaultCredentialService
         return validationResult;
     }
 
-    private CredentialValidationResult ValidateGeneratedCorsairData(string rawJson, JsonSerializerOptions jsonOptions)
+    private VaultCredentialValidationResult ValidateGeneratedCorsairData(string rawJson, JsonSerializerOptions jsonOptions)
     {
-        var result = new CredentialValidationResult();
+        var result = new VaultCredentialValidationResult();
         using var document = System.Text.Json.JsonDocument.Parse(rawJson);
         if (document.RootElement.ValueKind != JsonValueKind.Object)
         {
@@ -3879,7 +3879,7 @@ public class VaultCredentialService : IVaultCredentialService
     /// </summary>
     /// <remarks>
     /// Explicit cases below are legacy aliases kept for clarity/back-compat. Any other OAuth-capable
-    /// credential type falls back to <see cref="CorsairConfigRepository.GetOAuthPluginIdForVaultType"/>,
+    /// credential type falls back to <see cref="CorsairConfigRepository.GetOAuthPluginIdForVaultCredentialType"/>,
     /// so newly generated Corsair OAuth plugins work without a code change here.
     /// </remarks>
     private string? MapVaultCredentialTypeToCorsairOAuthPlugin(VaultCredentialTypesEnum type)
@@ -3894,7 +3894,7 @@ public class VaultCredentialService : IVaultCredentialService
             _ => null
         };
 
-        return mappedPlugin ?? _corsairConfigRepository.GetOAuthPluginIdForVaultType(type.ToString());
+        return mappedPlugin ?? _corsairConfigRepository.GetOAuthPluginIdForVaultCredentialType(type.ToString());
     }
 
     /// <summary>
@@ -3934,7 +3934,7 @@ public class VaultCredentialService : IVaultCredentialService
     private async Task UnmirrorCredentialFromCorsairAsync(Guid vaultCredentialId, VaultCredentialTypesEnum type)
     {
         var plugin = MapVaultCredentialTypeToCorsairPlugin(type);
-        var plugins = _corsairConfigRepository.GetPluginIdsForVaultType(type.ToString());
+        var plugins = _corsairConfigRepository.GetPluginIdsForVaultCredentialType(type.ToString());
         if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
         {
             return;
@@ -3955,7 +3955,7 @@ public class VaultCredentialService : IVaultCredentialService
     private async Task<bool> MirrorCredentialToCorsairAsync(VaultCredential vaultCredential, Dictionary<string, string> encryptedValues)
     {
         var plugin = MapVaultCredentialTypeToCorsairPlugin(vaultCredential.Type);
-        var plugins = _corsairConfigRepository.GetPluginIdsForVaultType(vaultCredential.Type.ToString());
+        var plugins = _corsairConfigRepository.GetPluginIdsForVaultCredentialType(vaultCredential.Type.ToString());
         if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
         {
             return true;

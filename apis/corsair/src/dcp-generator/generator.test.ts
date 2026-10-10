@@ -169,7 +169,7 @@ async function main() {
       ["outlook", "teams", "onedrive", "sharepoint"].includes(entry.pluginId),
     );
     assert(microsoftEntries.length === 4, "M365 catalog is missing a Microsoft plugin");
-    assert(microsoftEntries.every((entry: any) => entry.vaultType === "M365"), "Microsoft plugins do not share M365");
+    assert(microsoftEntries.every((entry: any) => entry.vaultCredentialType === "M365"), "Microsoft plugins do not share M365");
     assert(
       microsoftEntries.every((entry: any) => entry.pluginIds.join(",") === "onedrive,outlook,sharepoint,teams"),
       "M365 catalog does not contain the complete shared plugin family",
@@ -181,15 +181,15 @@ async function main() {
 
     // 6. Every credential-select field name must use the canonical catalog vault type
     //    (VaultCredentialTypesEnum-compatible), never the display providerName.
-    const vaultTypeByPlugin = new Map(
-      catalog.map((entry: any) => [entry.pluginId, entry.vaultType]),
+    const vaultCredentialTypeByPlugin = new Map(
+      catalog.map((entry: any) => [entry.pluginId, entry.vaultCredentialType]),
     );
     for (const file of configFiles) {
       const config = JSON.parse(fs.readFileSync(file, "utf8"));
       const credField = config.fields.find((f: any) => f.type === "credentials-select");
       if (!credField) continue;
       const pluginId = config.name.split("/")[1]?.toLowerCase();
-      const expected = `__CredentialName__${vaultTypeByPlugin.get(pluginId)}`;
+      const expected = `__CredentialName__${vaultCredentialTypeByPlugin.get(pluginId)}`;
       assert(
         credField.name === expected,
         `config ${file} credential field '${credField.name}' does not match canonical vault type '${expected}'`,

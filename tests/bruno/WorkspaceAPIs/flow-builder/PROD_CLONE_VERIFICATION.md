@@ -214,14 +214,14 @@ WHERE "Name" IN (:platform_skill_names)
 ### 2.8 Corsair credential mirror (CorsairDb)
 
 Platform tools invoke through the Corsair sidecar, which keys connections by the
-App Secret **Id** (`corsair_accounts.tenant_id`). Runtime resolves the credential
+vault credential **Id** (`corsair_accounts.tenant_id`). Runtime resolves the credential
 **name** in the active env to that Id, so every Prod credential clone must be
 mirrored or tool calls fail with "credential is not mirrored to Corsair".
 
 Run against **CorsairDb** (not WorkspaceDb), binding the Prod clone Ids from §2.1:
 
 ```sql
--- One account per (Prod App Secret Id, integration) the credential maps to.
+-- One account per (Prod vault credential Id, integration) the credential maps to.
 SELECT a.tenant_id, i.name AS integration, a.updated_at
 FROM corsair_accounts a
 JOIN corsair_integrations i ON i.id = a.integration_id
@@ -229,7 +229,7 @@ WHERE a.tenant_id IN (:prod_credential_ids)
 ORDER BY a.tenant_id, i.name;
 
 -- Expect: a row for the plugin the credential type maps to (e.g. `openai` for an
--- OpenAI credential), keyed by the *Prod* App Secret Id — never the Dev Id.
+-- OpenAI credential), keyed by the *Prod* vault credential Id — never the Dev Id.
 -- Re-publishing must upsert, not duplicate.
 ```
 

@@ -152,16 +152,16 @@ public class CorsairConfigRepository
         }
     }
 
-    public string? GetPluginIdForVaultType(string vaultType)
+    public string? GetPluginIdForVaultCredentialType(string vaultCredentialType)
     {
-        if (string.IsNullOrWhiteSpace(vaultType))
+        if (string.IsNullOrWhiteSpace(vaultCredentialType))
         {
             return null;
         }
 
-        vaultType = NormalizeVaultType(vaultType);
+        vaultCredentialType = NormalizeVaultCredentialType(vaultCredentialType);
 
-        var mapPath = ResolveArtifactPath("CorsairVaultTypeToPluginId.json");
+        var mapPath = ResolveArtifactPath("CorsairVaultCredentialTypeToPluginId.json");
         if (mapPath == null)
         {
             return null;
@@ -172,7 +172,7 @@ public class CorsairConfigRepository
             var map = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
                 File.ReadAllText(mapPath),
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return map?.GetValueOrDefault(vaultType);
+            return map?.GetValueOrDefault(vaultCredentialType);
         }
         catch (Exception ex)
         {
@@ -181,14 +181,14 @@ public class CorsairConfigRepository
         }
     }
 
-    public IReadOnlyList<string> GetPluginIdsForVaultType(string vaultType)
+    public IReadOnlyList<string> GetPluginIdsForVaultCredentialType(string vaultCredentialType)
     {
-        if (string.IsNullOrWhiteSpace(vaultType))
+        if (string.IsNullOrWhiteSpace(vaultCredentialType))
         {
             return Array.Empty<string>();
         }
 
-        vaultType = NormalizeVaultType(vaultType);
+        vaultCredentialType = NormalizeVaultCredentialType(vaultCredentialType);
 
         var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
         if (catalogPath == null)
@@ -202,7 +202,7 @@ public class CorsairConfigRepository
                 File.ReadAllText(catalogPath),
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             return catalog?
-                .Where(entry => string.Equals(entry.VaultType, vaultType, StringComparison.OrdinalIgnoreCase))
+                .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase))
                 .Select(entry => entry.PluginId)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(plugin => plugin, StringComparer.OrdinalIgnoreCase)
@@ -219,7 +219,7 @@ public class CorsairConfigRepository
     /// Resolves the vault type for a Corsair plugin id, if any. Used to filter
     /// credentials to the type a platform tool can be invoked with.
     /// </summary>
-    public string? GetVaultTypeForPluginId(string pluginId)
+    public string? GetVaultCredentialTypeForPluginId(string pluginId)
     {
         if (string.IsNullOrWhiteSpace(pluginId))
         {
@@ -239,8 +239,8 @@ public class CorsairConfigRepository
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             return catalog?
                 .Where(entry => string.Equals(entry.PluginId, pluginId, StringComparison.OrdinalIgnoreCase))
-                .Select(entry => entry.VaultType)
-                .FirstOrDefault(vaultType => !string.IsNullOrWhiteSpace(vaultType));
+                .Select(entry => entry.VaultCredentialType)
+                .FirstOrDefault(vaultCredentialType => !string.IsNullOrWhiteSpace(vaultCredentialType));
         }
         catch (Exception ex)
         {
@@ -249,10 +249,10 @@ public class CorsairConfigRepository
         }
     }
 
-    private static string NormalizeVaultType(string vaultType) => vaultType.Trim() switch
+    private static string NormalizeVaultCredentialType(string vaultCredentialType) => vaultCredentialType.Trim() switch
     {
         "Teams" or "Onedrive" or "Sharepoint" => "M365",
-        _ => vaultType.Trim(),
+        _ => vaultCredentialType.Trim(),
     };
 
     /// <summary>
@@ -289,14 +289,14 @@ public class CorsairConfigRepository
     /// Resolves the OAuth-capable plugin id for a vault type, if any. Used as a dynamic
     /// fallback so newly generated OAuth plugins do not require a hardcoded mapping.
     /// </summary>
-    public string? GetOAuthPluginIdForVaultType(string vaultType)
+    public string? GetOAuthPluginIdForVaultCredentialType(string vaultCredentialType)
     {
-        if (string.IsNullOrWhiteSpace(vaultType))
+        if (string.IsNullOrWhiteSpace(vaultCredentialType))
         {
             return null;
         }
 
-        vaultType = NormalizeVaultType(vaultType);
+        vaultCredentialType = NormalizeVaultCredentialType(vaultCredentialType);
 
         var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
         if (catalogPath == null)
@@ -310,7 +310,7 @@ public class CorsairConfigRepository
                 File.ReadAllText(catalogPath),
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             return catalog?
-                .Where(entry => string.Equals(entry.VaultType, vaultType, StringComparison.OrdinalIgnoreCase)
+                .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase)
                     && string.Equals(entry.DefaultAuthMode, "oauth_2", StringComparison.OrdinalIgnoreCase))
                 .Select(entry => entry.PluginId)
                 .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
@@ -326,7 +326,7 @@ public class CorsairConfigRepository
     private sealed class CorsairIntegrationCatalogEntry
     {
         public string PluginId { get; set; } = string.Empty;
-        public string VaultType { get; set; } = string.Empty;
+        public string VaultCredentialType { get; set; } = string.Empty;
         public string DefaultAuthMode { get; set; } = string.Empty;
     }
 

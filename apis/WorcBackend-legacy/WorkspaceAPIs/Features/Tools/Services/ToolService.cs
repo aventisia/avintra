@@ -282,7 +282,7 @@ public class ToolService : IToolService
         var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
         return string.IsNullOrWhiteSpace(pluginId)
             ? null
-            : _corsairConfigRepository.GetVaultTypeForPluginId(pluginId);
+            : _corsairConfigRepository.GetVaultCredentialTypeForPluginId(pluginId);
     }
 
     // Checks whether a tool name is available for use.

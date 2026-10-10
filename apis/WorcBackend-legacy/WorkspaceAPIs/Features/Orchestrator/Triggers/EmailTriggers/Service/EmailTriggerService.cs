@@ -1273,7 +1273,7 @@ public class EmailTriggerService : IEmailTriggerService
         try
         {
             // Step 1: Get credentials from vault (by name, scoped to the current tenant)
-            var vaultCredential = await GetCredentialFromVaultAsync(credentialName);
+            var vaultCredential = await GetVaultCredentialAsync(credentialName);
             if (vaultCredential == null)
             {
                 _logger.LogWarning("No credential found with Name: {CredentialName} for M365", credentialName);
@@ -1322,7 +1322,7 @@ public class EmailTriggerService : IEmailTriggerService
         }
     }
 
-    private async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(string credentialName)
+    private async Task<VaultCredentialObj?> GetVaultCredentialAsync(string credentialName)
     {
         try
         {

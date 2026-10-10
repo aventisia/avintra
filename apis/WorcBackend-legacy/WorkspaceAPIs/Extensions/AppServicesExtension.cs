@@ -196,7 +196,7 @@ public static class AppServicesExtension
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
 
         // Cloud Connectors feature
-        services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
+        services.AddScoped<ICloudConnectorsVaultCredentialService, CloudConnectorsVaultCredentialService>();
         // Generic catalog-driven Camel connector service (all families): config
         // resolution, catalog client, unified seeding, startup seeding.
         services.AddSingleton<CamelConnectorsConfigRepository>();
