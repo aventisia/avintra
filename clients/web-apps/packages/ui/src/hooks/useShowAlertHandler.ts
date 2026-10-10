@@ -63,6 +63,7 @@ export const useShowAlertHandler = () => {
     setAlertDialogState({
       isAlertDialogOpen: true,
       confirmActionFn: defaultOptions.confirmActionFn,
+      showLoadingOnConfirm: defaultOptions.showLoadingOnConfirm,
       ...getOptionsBasedOnAlertType(defaultOptions),
     });
   };

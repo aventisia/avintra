@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { LoadingSpinner } from "@/ui/components/LoadingSpinner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +21,8 @@ import { useAlertDialogStore } from "@/ui/stores";
  * This component wraps the main app to show the alert dialog.
  */
 export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const [isConfirmPending, setIsConfirmPending] = useState(false);
+
   // Get alert dialog store state
   const {
     isAlertDialogOpen,
@@ -30,6 +34,7 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
     content,
     cancelBtnText,
     confirmBtnText,
+    showLoadingOnConfirm,
   } = useAlertDialogStore(
     useShallow((state) => ({
       isAlertDialogOpen: state.isAlertDialogOpen,
@@ -41,15 +46,34 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
       content: state.content,
       cancelBtnText: state.cancelBtnText,
       confirmBtnText: state.confirmBtnText,
+      showLoadingOnConfirm: state.showLoadingOnConfirm,
     })),
   );
+
+  const handleConfirmAction = () => {
+    if (isConfirmPending) return;
+
+    const actionResult = confirmActionFn();
+    if (!actionResult || typeof actionResult.then !== "function") {
+      toggleAlertDialogOpen(false);
+      return;
+    }
+
+    setIsConfirmPending(true);
+    void Promise.resolve(actionResult)
+      .then(() => toggleAlertDialogOpen(false))
+      .catch(() => undefined)
+      .finally(() => setIsConfirmPending(false));
+  };
 
   // Return wrapper
   return (
     // Alert dialog provider/root
     <AlertDialog
       open={isAlertDialogOpen}
-      onOpenChange={() => toggleAlertDialogOpen(!isAlertDialogOpen)}
+      onOpenChange={(open) => {
+        if (!isConfirmPending) toggleAlertDialogOpen(open);
+      }}
     >
       {/* Main app */}
       {children}
@@ -69,7 +93,9 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
           {/* Cancel button */}
-          {cancelBtnText?.length ? <AlertDialogCancel>{cancelBtnText}</AlertDialogCancel> : null}
+          {cancelBtnText?.length ? (
+            <AlertDialogCancel disabled={isConfirmPending}>{cancelBtnText}</AlertDialogCancel>
+          ) : null}
 
           {/* Continue button */}
           <AlertDialogAction
@@ -77,8 +103,19 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
               buttonVariants(isDestructive ? { variant: "destructive" } : { variant: "default" }),
               "min-w-24",
             )}
-            onClick={confirmActionFn}
+            disabled={showLoadingOnConfirm && isConfirmPending}
+            onClick={(event) => {
+              if (showLoadingOnConfirm) {
+                event.preventDefault();
+                handleConfirmAction();
+              } else {
+                confirmActionFn();
+              }
+            }}
           >
+            {showLoadingOnConfirm && isConfirmPending ? (
+              <LoadingSpinner className="mr-1 h-4 w-4" />
+            ) : null}
             {confirmBtnText}
           </AlertDialogAction>
         </AlertDialogFooter>
