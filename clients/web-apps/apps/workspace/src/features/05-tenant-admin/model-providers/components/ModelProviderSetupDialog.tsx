@@ -1,5 +1,6 @@
 import { Separator, Switch } from "@avplatform/ui";
 import { Input } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import {
   DialogContent,
@@ -33,7 +34,7 @@ import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
-import { toModelCapability } from "../utils/model-capability.util";
+import { formatCapabilityLabel, toModelCapability } from "../utils/model-capability.util";
 
 type Step = "credential" | "models";
 
@@ -186,12 +187,17 @@ export const ModelProviderSetupDialog = () => {
     );
   };
 
-  // Apply the model-name search to the selected provider's models.
   const filteredModels = useMemo(() => {
     const query = modelSearch.trim().toLowerCase();
     return providerModels.filter((m) => {
-      if (query && !m.id.toLowerCase().includes(query)) return false;
-      return true;
+      if (!query) return true;
+      const capability = m.capability?.toLowerCase() ?? "";
+      const capabilityLabel = formatCapabilityLabel(m.capability)?.toLowerCase() ?? "";
+      return (
+        m.id.toLowerCase().includes(query) ||
+        capability.includes(query) ||
+        capabilityLabel.includes(query)
+      );
     });
   }, [providerModels, modelSearch]);
 
@@ -312,7 +318,7 @@ export const ModelProviderSetupDialog = () => {
                     <Input
                       value={modelSearch}
                       onChange={(e) => setModelSearch(e.target.value)}
-                      placeholder="Search models..."
+                      placeholder="Search by model or capability..."
                       className="pl-8"
                     />
                   </div>
@@ -323,19 +329,29 @@ export const ModelProviderSetupDialog = () => {
                     </p>
                   ) : (
                     <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
-                      {filteredModels.map((model) => (
-                        <div
-                          key={model.id}
-                          className="flex items-center justify-between rounded-lg border px-3 py-2"
-                        >
-                          <span className="truncate pr-2 text-sm">{model.id}</span>
-                          <Switch
-                            checked={enabledModelIds.includes(model.id)}
-                            onCheckedChange={() => toggleModel(model)}
-                            size="sm"
-                          />
-                        </div>
-                      ))}
+                      {filteredModels.map((model) => {
+                        const capabilityLabel = formatCapabilityLabel(model.capability);
+                        return (
+                          <div
+                            key={model.id}
+                            className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2"
+                          >
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="truncate text-sm">{model.id}</span>
+                              {capabilityLabel ? (
+                                <Badge className="bg-slate-200 text-slate-600">
+                                  {capabilityLabel}
+                                </Badge>
+                              ) : null}
+                            </div>
+                            <Switch
+                              checked={enabledModelIds.includes(model.id)}
+                              onCheckedChange={() => toggleModel(model)}
+                              size="sm"
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </>
