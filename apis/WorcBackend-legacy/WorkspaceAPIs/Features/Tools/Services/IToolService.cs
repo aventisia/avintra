@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
-/// Provides methods for managing and testing tools.
+/// Provides methods for managing tools.
 /// </summary>
 public interface IToolService
 {
@@ -13,27 +13,6 @@ public interface IToolService
     /// </param>
     /// <returns>A collection of tools.</returns>
     Task<ServiceResponse<IEnumerable<ToolDto>>> GetToolsAsync(bool isPersonal);
-
-    /// <summary>
-    /// Gets the platform, personal, shared and tenant-wide tools the current user can use,
-    /// within the current environment and space.
-    /// </summary>
-    /// <returns>A collection of usable tools.</returns>
-    Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync();
-
-    /// <summary>
-    /// Gets the operations exposed by a usable tool, together with the credential type
-    /// required to invoke it.
-    /// </summary>
-    /// <param name="toolId">The tool identifier.</param>
-    /// <returns>The tool's operations and credential type.</returns>
-    Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId);
-
-    /// <summary>
-    /// Gets the usable tools together with their enriched operations in a single payload.
-    /// </summary>
-    /// <returns>The usable tool catalog.</returns>
-    Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync();
 
     /// <summary>
     /// Checks whether a tool name is available.
@@ -85,24 +64,10 @@ public interface IToolService
     Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds);
 
     /// <summary>
-    /// Tests a tool operation.
-    /// </summary>
-    /// <param name="toolId">The tool identifier.</param>
-    /// <param name="testToolDto">The test request.</param>
-    /// <returns>The test result.</returns>
-    Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(Guid toolId, TestToolDto testToolDto);
-
-    /// <summary>
     /// Activates or deactivates a tool.
     /// </summary>
     /// <param name="toolId">The tool identifier.</param>
     /// <param name="isActive"><c>true</c> to activate; <c>false</c> to deactivate.</param>
     /// <returns>The updated tool.</returns>
     Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive);
-
-    /// <summary>
-    /// Gets all platform's default tools available to the current tenant.
-    /// </summary>
-    /// <returns>A collection of platform's default tools.</returns>
-    Task<ServiceResponse<IEnumerable<ToolDto>>> GetPlatformToolsAsync();
 }

@@ -54,10 +54,10 @@ async def execute_operation(
                 headers, query_params, credential, fallback_type=authentication_type
             )
 
-    url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
-
+    # IMPORTANT NOTE: the host is only validated here, so DNS may resolve differently at
+    # connection time; httpx exposes no hook to re-validate the resolved address on connect.
     try:
-        await ensure_public_http_url(url)
+        await ensure_public_http_url(base_url)
     except UnsafeUrlError as error:
         return {
             "success": False,
@@ -65,6 +65,8 @@ async def execute_operation(
             "body": str(error),
             "duration_ms": 0.0,
         }
+
+    url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
 
     start = time.perf_counter()
     async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:

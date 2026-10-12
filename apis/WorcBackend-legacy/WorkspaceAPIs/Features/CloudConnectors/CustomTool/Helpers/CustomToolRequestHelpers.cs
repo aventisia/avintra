@@ -5,10 +5,24 @@ namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 /// </summary>
 public static class CustomToolRequestHelpers
 {
+    private static readonly HashSet<string> ForbiddenHeaderNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Host",
+        "Content-Length",
+        "Connection",
+        "Transfer-Encoding",
+        "Upgrade",
+        "Keep-Alive",
+        "TE",
+        "Trailer",
+        "Expect",
+        "Proxy-Connection",
+        "Proxy-Authenticate",
+        "Proxy-Authorization",
+    };
+
     /// <summary>
-    /// Builds the request URL: substitutes path placeholders, appends query
-    /// parameters from the payload, and appends the credential's API-key query
-    /// when applicable.
+    /// Builds the request URL from the base URL, path placeholders, query parameters and credential key.
     /// </summary>
     public static (string? RequestUrl, Dictionary<string, object> RemainingPayload, string? Error) BuildRequestUrl(
         Uri baseUri,
@@ -77,10 +91,7 @@ public static class CustomToolRequestHelpers
     }
 
     /// <summary>
-    /// Applies the request headers: the Headers JSON editor first, then the
-    /// operation's header parameters resolved from the Parameters section, and
-    /// finally the credential headers (which win, since authentication must not
-    /// be overridden by user input).
+    /// Applies the operation's header parameters and credential headers, with credentials winning.
     /// </summary>
     public static void BuildRequestHeaders(
         UsableToolOperationDto operation,
@@ -90,7 +101,9 @@ public static class CustomToolRequestHelpers
     {
         foreach (var header in sections.Headers)
         {
-            if (string.IsNullOrWhiteSpace(header.Key) || header.Value is null)
+            if (string.IsNullOrWhiteSpace(header.Key) ||
+                header.Value is null ||
+                IsForbiddenHeader(header.Key))
             {
                 continue;
             }
@@ -103,6 +116,7 @@ public static class CustomToolRequestHelpers
         {
             if (!string.Equals(parameter.In, "header", StringComparison.OrdinalIgnoreCase) ||
                 string.IsNullOrWhiteSpace(parameter.Name) ||
+                IsForbiddenHeader(parameter.Name) ||
                 !values.TryGetValue(parameter.Name, out var headerValue))
             {
                 continue;
@@ -118,9 +132,7 @@ public static class CustomToolRequestHelpers
     }
 
     /// <summary>
-    /// Builds the request body for methods that support one. Body properties are
-    /// collected from the Request Payload JSON editor; when the operation declares
-    /// no body schema, the payload is sent as-is so free-form specs still work.
+    /// Builds the JSON request body for body-capable methods, or nothing for the others.
     /// </summary>
     public static (string? Content, string ContentType) BuildRequestContent(
         UsableToolOperationDto operation,
@@ -168,8 +180,7 @@ public static class CustomToolRequestHelpers
     }
 
     /// <summary>
-    /// Parses the upstream body into JSON when possible so the flow engine receives
-    /// a queryable object; otherwise the raw text is returned.
+    /// Parses the upstream body as JSON when possible, otherwise returns the raw text.
     /// </summary>
     public static object? ParseResponseBody(string responseText)
     {
@@ -187,6 +198,9 @@ public static class CustomToolRequestHelpers
             return responseText;
         }
     }
+
+    private static bool IsForbiddenHeader(string headerName) =>
+        ForbiddenHeaderNames.Contains(headerName);
 
     private static List<string> ExtractPathPlaceholders(string path)
     {

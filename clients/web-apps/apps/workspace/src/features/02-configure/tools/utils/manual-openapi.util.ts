@@ -18,18 +18,13 @@ const SUPPORTED_METHODS = new Set(["get", "post", "put", "patch", "delete"]);
 
 const PARAMETER_LOCATIONS = new Set(["query", "header"]);
 
-// Normalizes an operationId segment to uppercase alphanumerics joined by single
-// underscores, mirroring the backend's GenerateOperationId sanitization.
 const sanitizeOperationIdPart = (value?: string): string =>
   (value ?? "")
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
 
-// Generates an operationId from the tool name and operation name, e.g.
-// ("Product api test", "Get all list data") -> "PRODUCT_API_TEST_GET_ALL_LIST_DATA".
-// The tool-name prefix keeps operation ids unique across tools, and the shared
-// sanitization matches the backend's ManualOpenApiSynthesizer.GenerateOperationId.
+/** Builds the operation id from the tool name prefix and the operation name. */
 export const generateOperationId = (
   toolName: string | undefined,
   operationName: string,
@@ -40,8 +35,13 @@ export const generateOperationId = (
   return combined.length === 0 ? "operation" : combined;
 };
 
-// Infers a JSON schema node from a JSON payload sample, recursing through
-// objects and arrays — mirrors the backend's InferSchema.
+/** Indicates whether every "{" in an endpoint template has a matching "}". */
+export const hasBalancedPathPlaceholders = (endpoint: string): boolean => {
+  const openings = endpoint.match(/\{/g)?.length ?? 0;
+  const closings = endpoint.match(/\}/g)?.length ?? 0;
+  return openings === closings;
+};
+
 const inferSchema = (value: unknown): JsonSchemaObject => {
   if (Array.isArray(value)) {
     const schema: JsonSchemaObject = { type: "array" };
@@ -65,7 +65,6 @@ const inferSchema = (value: unknown): JsonSchemaObject => {
   return { type: "string" };
 };
 
-// Extracts unique path placeholder names from an endpoint template.
 const extractPathParameters = (endpoint: string): string[] => {
   const parameters: string[] = [];
   const regex = /\{([^}]+)\}/g;
@@ -80,11 +79,7 @@ const extractPathParameters = (endpoint: string): string[] => {
 };
 
 /**
- * Synthesizes an OpenAPI 3.0.3 JSON specification from manually authored
- * operations, mirroring the backend's ManualOpenApiSynthesizer so the wizard
- * can persist a ready-to-flatten spec before the tool is saved.
- *
- * Returns null when no valid operation (method + endpoint) is provided.
+ * Synthesizes an OpenAPI 3.0.3 JSON specification from manually authored operations.
  */
 export const synthesizeOpenApiSpec = (
   operations: ManualToolOperation[],
@@ -102,14 +97,12 @@ export const synthesizeOpenApiSpec = (
     const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
     const pathItem = (paths[normalizedEndpoint] ??= {});
     if (pathItem[method]) {
-      // Keep the first definition when the same endpoint+method repeats.
       continue;
     }
 
     const pathParameters = extractPathParameters(normalizedEndpoint);
     const parameters: JsonSchemaObject[] = [];
 
-    // Path placeholders become required string parameters.
     for (const parameterName of pathParameters) {
       parameters.push({
         name: parameterName,
@@ -120,7 +113,6 @@ export const synthesizeOpenApiSpec = (
       });
     }
 
-    // User-defined parameters follow path parameters.
     for (const parameter of operation.parameters ?? []) {
       if (
         !parameter.name?.trim() ||
@@ -138,7 +130,6 @@ export const synthesizeOpenApiSpec = (
       });
     }
 
-    // Static headers become optional header parameters.
     for (const header of operation.headers ?? []) {
       if (!header.key?.trim() || pathParameters.includes(header.key)) {
         continue;
@@ -161,7 +152,6 @@ export const synthesizeOpenApiSpec = (
       operationObject.parameters = parameters;
     }
 
-    // Infer the request body schema from the JSON payload sample.
     if (["post", "put", "patch"].includes(method) && operation.jsonPayload?.trim()) {
       try {
         operationObject.requestBody = {
@@ -173,11 +163,10 @@ export const synthesizeOpenApiSpec = (
           },
         };
       } catch {
-        // Ignore malformed payloads; the operation is created without a body.
+        // IMPORTANT NOTE: malformed payloads are dropped so the operation is created without a request body.
       }
     }
 
-    // Declare a 2xx response so the flattener persists response metadata.
     operationObject.responses = {
       "200": {
         description: "Successful response.",
@@ -202,8 +191,6 @@ export const synthesizeOpenApiSpec = (
       title: options.name?.trim() || "Manual Custom Tool",
       version: options.version?.trim() || "1.0.0",
       ...(options.description?.trim() ? { description: options.description.trim() } : {}),
-      // Marks specs synthesized from the wizard's manual methods so they can be
-      // safely regenerated on edit without clobbering an imported spec.
       "x-manual-tool": true,
     },
     paths,
@@ -234,12 +221,7 @@ interface ParsedOperation {
 }
 
 /**
- * Builds the wizard's parsed schema shape from manual operations so the
- * playground step and operation lists work before the backend flattens the
- * synthesized spec. The optional verification map carries per-operation
- * verification across method edits, matched on operationId + method + path.
- * Operation ids combine the tool name and the operation name; an operation's
- * existing id is only kept when `preserveOperationIds` is set (imported specs).
+ * Builds the wizard's parsed schema shape from manual operations.
  */
 export const toParsedSchema = (
   operations: ManualToolOperation[],
@@ -272,11 +254,7 @@ export const toParsedSchema = (
 });
 
 /**
- * Resolves the editable method list for a tool draft: persisted manual
- * operations when present, otherwise derived from the parsed schema (e.g. an
- * existing spec-based tool opened for editing). Since operation ids combine the
- * tool name and the operation name, the tool-name prefix is stripped back off
- * so the original operation name is restored for editing.
+ * Resolves the editable method list for a tool draft from its manual operations or parsed schema.
  */
 export const toManualOperations = (tool?: ToolDto): ManualToolOperation[] => {
   if (tool?.manualOperations?.length) {

@@ -75,6 +75,15 @@ builder.Services.AddHttpClient("CustomTool", client =>
 {
       client.Timeout = TimeSpan.FromSeconds(30);
   }).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
+builder.Services.AddHttpClient("LLMPipeline", client =>
+{
+    var appBaseUrl = config["EnvironmentConfig:AppBaseUrl"]?.Trim().TrimEnd('/');
+    if (!string.IsNullOrWhiteSpace(appBaseUrl))
+    {
+        client.BaseAddress = new Uri($"https://{appBaseUrl}/llmpipeline/");
+    }
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
 var app = builder.Build();

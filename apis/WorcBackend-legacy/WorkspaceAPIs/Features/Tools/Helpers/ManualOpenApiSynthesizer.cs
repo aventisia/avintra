@@ -5,9 +5,7 @@ using WorkspaceAPIs.DTOs;
 namespace WorkspaceAPIs.Features.Tools.Helpers;
 
 /// <summary>
-/// Provides helper methods for synthesizing a standard OpenAPI specification from
-/// manually authored tool operations, so manual tools flow through the same
-/// flatten/test/execute pipeline as spec-based tools.
+/// Synthesizes an OpenAPI specification from manually authored tool operations.
 /// </summary>
 public static class ManualOpenApiSynthesizer
 {
@@ -26,9 +24,6 @@ public static class ManualOpenApiSynthesizer
         "header",
     };
 
-    // Generates an operationId from the tool name and operation name, sanitized
-    // to uppercase alphanumerics joined by single underscores. The tool-name
-    // prefix keeps operation ids unique across tools.
     public static string GenerateOperationId(string? toolName, string operationName)
     {
         var toolPart = SanitizeOperationIdPart(toolName);
@@ -41,8 +36,6 @@ public static class ManualOpenApiSynthesizer
         return combined.Length == 0 ? "operation" : combined;
     }
 
-    // Normalizes an operationId segment to uppercase alphanumerics joined by
-    // single underscores, trimming leading/trailing separators.
     private static string SanitizeOperationIdPart(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -71,12 +64,8 @@ public static class ManualOpenApiSynthesizer
     }
 
     /// <summary>
-    /// Synthesizes a raw OpenAPI 3.0 JSON specification from the tool's base URL
-    /// and manually authored operations.
+    /// Synthesizes a raw OpenAPI 3.0 JSON specification from the tool's manually authored operations.
     /// </summary>
-    /// <param name="manualOperations">The manually authored operations.</param>
-    /// <param name="toolName">The tool name, used as the operationId prefix.</param>
-    /// <returns>The OpenAPI spec as a JSON string; <c>null</c> when no operations are provided.</returns>
     public static string? Synthesize(
         IReadOnlyCollection<ManualToolOperationDto> manualOperations,
         string? toolName = null)
@@ -107,7 +96,6 @@ public static class ManualOpenApiSynthesizer
             var pathItem = paths[endpoint] as JsonObject ?? [];
             if (pathItem.ContainsKey(method))
             {
-                // Keep the first definition when the same endpoint+method repeats.
                 continue;
             }
 
@@ -131,8 +119,6 @@ public static class ManualOpenApiSynthesizer
             {
                 ["title"] = string.IsNullOrWhiteSpace(toolName) ? "Manual Custom Tool" : toolName.Trim(),
                 ["version"] = "1.0.0",
-                // Marks specs synthesized from manual methods so they can be
-                // regenerated on edit without clobbering an imported spec.
                 ["x-manual-tool"] = true,
             },
             ["paths"] = paths,
@@ -141,11 +127,6 @@ public static class ManualOpenApiSynthesizer
         return spec.ToJsonString();
     }
 
-    /// <summary>
-    /// Builds the OpenAPI operation object for a manually authored operation,
-    /// including parameters from path placeholders, user parameters, static
-    /// headers, and a request body inferred from the JSON payload sample.
-    /// </summary>
     private static JsonObject BuildOperationObject(
         ManualToolOperationDto operation,
         string method,
@@ -162,7 +143,6 @@ public static class ManualOpenApiSynthesizer
 
         var parameters = new JsonArray();
 
-        // Path placeholders become required string parameters.
         foreach (var pathParameter in pathParameters)
         {
             parameters.Add(new JsonObject
@@ -175,7 +155,6 @@ public static class ManualOpenApiSynthesizer
             });
         }
 
-        // User-defined parameters follow path parameters.
         foreach (var parameter in operation.Parameters ?? [])
         {
             var parameterIn = parameter.In?.Trim().ToLowerInvariant();
@@ -200,7 +179,6 @@ public static class ManualOpenApiSynthesizer
             });
         }
 
-        // Static headers become optional header parameters.
         foreach (var header in operation.Headers ?? [])
         {
             if (string.IsNullOrWhiteSpace(header.Key) ||
@@ -224,14 +202,12 @@ public static class ManualOpenApiSynthesizer
             operationObject["parameters"] = parameters;
         }
 
-        // Infer the request body schema from the JSON payload sample.
         var requestBody = BuildRequestBody(operation.JsonPayload, SupportsRequestBody(method));
         if (requestBody is not null)
         {
             operationObject["requestBody"] = requestBody;
         }
 
-        // Declare a 2xx response so the flattener persists response metadata.
         operationObject["responses"] = new JsonObject
         {
             ["200"] = new JsonObject
@@ -250,15 +226,9 @@ public static class ManualOpenApiSynthesizer
         return operationObject;
     }
 
-    /// <summary>
-    /// Determines whether the HTTP method semantically supports a request body.
-    /// </summary>
     private static bool SupportsRequestBody(string method) =>
         method is "post" or "put" or "patch";
 
-    /// <summary>
-    /// Builds the OpenAPI request body object from a JSON payload sample.
-    /// </summary>
     private static JsonObject? BuildRequestBody(string? jsonPayload, bool supportsRequestBody)
     {
         if (!supportsRequestBody || string.IsNullOrWhiteSpace(jsonPayload))
@@ -273,7 +243,6 @@ public static class ManualOpenApiSynthesizer
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed payloads; the operation is created without a body.
             return null;
         }
 
@@ -295,10 +264,6 @@ public static class ManualOpenApiSynthesizer
         };
     }
 
-    /// <summary>
-    /// Infers a JSON schema node from a JSON payload sample, recursing through
-    /// objects and arrays.
-    /// </summary>
     private static JsonObject InferSchema(JsonNode? node)
     {
         if (node is JsonObject jsonObject)
@@ -352,13 +317,9 @@ public static class ManualOpenApiSynthesizer
             }
         }
 
-        // Strings and any unrecognized nodes map to string.
         return new JsonObject { ["type"] = "string" };
     }
 
-    /// <summary>
-    /// Extracts unique path placeholder names from an endpoint template.
-    /// </summary>
     private static List<string> ExtractPathParameters(string endpoint)
     {
         var parameters = new List<string>();
