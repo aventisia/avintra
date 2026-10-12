@@ -42,6 +42,11 @@ public class TenantModelProviderDto
     public List<string> EnabledModelIds { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets the list of enabled models together with their capabilities.
+    /// </summary>
+    public List<EnabledModelDto>? EnabledModels { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the provider is disabled.
     /// Nullable to differentiate between 'true', 'false' and undefined.
     /// </summary>

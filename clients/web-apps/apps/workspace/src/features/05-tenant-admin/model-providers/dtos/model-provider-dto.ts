@@ -1,4 +1,5 @@
 import { ModelProviderEnum } from "../enums/model-provider-enum";
+import { EnabledModelDto } from "./enabled-model.dto";
 
 /**
  * Data Transfer Object representing a tenant-scoped model provider configuration,
@@ -22,6 +23,9 @@ export interface TenantModelProviderDto {
 
   /** The list of model identifiers enabled for this provider. */
   enabledModelIds: string[];
+
+  /** The list of enabled models together with their capabilities. */
+  enabledModels?: EnabledModelDto[] | null;
 
   /** Whether this provider is disabled. Nullable to differentiate true/false/undefined. */
   isDisabled?: boolean | null;

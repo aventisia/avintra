@@ -26,6 +26,12 @@ public class TenantModelProviderController : BaseApiController
         return ResultHelper(await _tenantModelProviderService.GetModelProviderByIdAsync(modelProviderId));
     }
 
+    [HttpGet("enabled-models")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantEnabledModelDto>>>> GetEnabledModels(LLMProviderTypesEnum? providerType, ModelCapabilityEnum? capability)
+    {
+        return ResultHelper(await _tenantModelProviderService.GetEnabledModelsAsync(providerType, capability));
+    }
+
     // Create or update a model provider configuration for the current tenant.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TenantModelProviderDto>>> UpsertModelProvider([FromBody] TenantModelProviderDto modelProviderDto)
