@@ -1,20 +1,21 @@
+import asyncio
 import json
 import time
-from typing import Any
-from uuid import UUID
 from urllib.parse import urljoin
 
 from app.core.vault_credential_manager import VaultCredentialManager
 import httpx
 
-from app.core.config import settings
 from app.core.logger import logger
 from app.features.custom_tools.vault_credential_client import apply_credential_auth
 from app.features.custom_tools.custom_tool_executor import (
-    path_placeholder_names,
-    resolve_path_template,
+    ResponseTooLargeError,
+    build_request_parts,
+    create_client,
+    send_capped_request,
 )
-from app.features.custom_tools.url_guard import ensure_public_http_url
+from app.features.custom_tools.openapi_parser import parse_openapi_spec
+from app.features.custom_tools.schemas import ToolOperation
 
 
 async def execute_tool_test(
@@ -28,82 +29,95 @@ async def execute_tool_test(
     tenant_id: str | None = None,
     space_id: str | None = None,
 ) -> dict:
-    method = "GET"
-    path = "/"
-    headers: dict[str, str] = {}
-    query_params: dict[str, Any] = {}
-    body_data: Any = None
+    resolved_operation = _resolve_operation(open_api_spec, operation_id)
+    if resolved_operation is None:
+        return _failure(
+            f"Operation '{operation_id}' was not found in the tool's OpenAPI specification.",
+            0.0,
+            status_code=400,
+        )
 
-    if open_api_spec:
-        try:
-            spec = json.loads(open_api_spec)
-            paths = spec.get("paths", {})
-            for spec_path, methods in paths.items():
-                for spec_method, details in methods.items():
-                    if details.get("operationId") == operation_id:
-                        method = spec_method.upper()
-                        path = spec_path
-                        break
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse OpenAPI spec for operation resolution")
-
-    path_placeholders = path_placeholder_names(path)
-    resolved_path = resolve_path_template(path, parameters or {})
-
-    full_url = urljoin(base_url.rstrip("/") + "/", resolved_path.lstrip("/"))
+    parts = build_request_parts(resolved_operation, parameters or {})
 
     if credential_name and access_token:
         vault_credential_manager = VaultCredentialManager()
         credential = vault_credential_manager.get_vault_credential_secret_by_name(
             credential_name,
-            jwt=access_token,
-            env_type=env_type,
-            tenant_id=tenant_id,
-            space_id=space_id,
+            access_token,
+            env_type,
+            tenant_id,
+            space_id,
         )
-        apply_credential_auth(headers, query_params, credential)
+        apply_credential_auth(parts.headers, parts.query_params, credential)
 
-    if parameters:
-        remaining_parameters = {
-            key: value for key, value in parameters.items() if key not in path_placeholders
-        }
-        if method in ("GET", "DELETE"):
-            query_params = {**query_params, **remaining_parameters}
-        else:
-            body_data = remaining_parameters or None
+    full_url = urljoin(base_url.rstrip("/") + "/", parts.path.lstrip("/"))
 
     start = time.perf_counter()
+    try:
+        async with create_client() as client:
+            status_code, content = await send_capped_request(
+                client,
+                method=parts.method,
+                url=full_url,
+                headers=parts.headers,
+                params=parts.query_params,
+                json_body=parts.body,
+            )
+    except ResponseTooLargeError:
+        return _failure(
+            "The upstream API response exceeded the 5 MB limit.", start, status_code=502
+        )
+    except httpx.TimeoutException:
+        return _failure("Request timed out after 30 seconds", start)
+    except Exception as error:
+        logger.error("Custom tool test request failed: %s", error)
+        return _failure("The upstream API request failed.", start)
+
+    return {
+        "success": 200 <= status_code < 300,
+        "status_code": status_code,
+        "body": content.decode("utf-8", errors="replace"),
+        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+    }
+
+
+def _resolve_operation(open_api_spec: str | None, operation_id: str) -> ToolOperation | None:
+    if not open_api_spec:
+        return None
 
     try:
-        await ensure_public_http_url(full_url)
-        async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:
-            response = await client.request(
-                method=method,
-                url=full_url,
-                params=query_params,
-                json=body_data,
-                headers=headers,
-            )
-        elapsed = (time.perf_counter() - start) * 1000
-        return {
-            "success": response.is_success,
-            "status_code": response.status_code,
-            "body": response.text,
-            "duration_ms": round(elapsed, 2),
-        }
-    except httpx.TimeoutException:
-        elapsed = (time.perf_counter() - start) * 1000
-        return {
-            "success": False,
-            "status_code": None,
-            "body": "Request timed out after 30 seconds",
-            "duration_ms": round(elapsed, 2),
-        }
-    except Exception as e:
-        elapsed = (time.perf_counter() - start) * 1000
-        return {
-            "success": False,
-            "status_code": None,
-            "body": f"Error: {str(e)}",
-            "duration_ms": round(elapsed, 2),
-        }
+        operations = parse_openapi_spec(json.loads(open_api_spec))
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        logger.warning("Failed to parse OpenAPI spec for operation resolution")
+        return None
+
+    for operation in operations:
+        if operation.operation_id == operation_id:
+            return operation
+
+    return None
+
+
+def _fetch_scoped_credential(
+    credential_name: str,
+    access_token: str,
+    env_type: str,
+    tenant_id: str | None,
+    space_id: str | None,
+) -> dict:
+    return VaultManager().get_vault_secret_by_name(
+        credential_name,
+        access_token,
+        env_type,
+        tenant_id,
+        space_id,
+    )
+
+
+def _failure(message: str, start: float, status_code: int | None = None) -> dict:
+    return {
+        "success": False,
+        "status_code": status_code,
+        "body": message,
+        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+    }

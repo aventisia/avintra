@@ -11,7 +11,7 @@ public class UsableToolDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the tool.
+    /// Gets or sets the name of the tool (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }

@@ -1,0 +1,62 @@
+meta {
+  name: Create custom tool ignores client verification claims
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tools
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Bruno Self Verified Rejected Tool",
+    "description": "Asserts that client-supplied verification flags are ignored",
+    "type": "Custom",
+    "baseUrl": "https://api.example.com",
+    "openApiSpec": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"Sample API\",\"version\":\"1.0.0\"},\"paths\":{\"/users\":{\"get\":{\"operationId\":\"listUsers\",\"summary\":\"List users\"}}}}",
+    "parsedSchema": {
+      "paths": {
+        "/users": {
+          "get": {
+            "operationId": "listUsers",
+            "method": "GET",
+            "path": "/users",
+            "isVerified": true
+          }
+        }
+      }
+    },
+    "isVerified": true
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+  const body = res.getBody();
+
+  test("creates the tool without honouring the client verification claim", function() {
+    if (status === 409 || status === 400) {
+      expect(typeof body).to.equal("string");
+      return;
+    }
+
+    expect([200, 201]).to.include(status);
+    expect(body).to.have.property("statusCode");
+    expect(body).to.have.property("data");
+    expect(body.data).to.have.property("isVerified", false);
+    expect(body.data.parsedSchema).to.have.property("paths");
+  });
+}
+
+tests {
+  // Invariant: verification state is server-owned. A payload that claims isVerified
+  // (at the tool level or per operation in parsedSchema) must persist as unverified,
+  // and the invoke endpoint must reject the operation until it is tested through
+  // tools/{toolId}/test.
+  //
+  // A 409 response means the fixed tool name already exists in the environment, in
+  // which case delete it (tools/delete-tool) or use a clean tenant before asserting.
+}

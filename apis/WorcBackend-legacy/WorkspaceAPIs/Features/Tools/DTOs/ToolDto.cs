@@ -6,8 +6,9 @@ namespace WorkspaceAPIs.DTOs;
 public class ToolDto
 {
     /// <summary>
-        /// Gets or sets the tool identifier.
+    /// Gets or sets the tool identifier.
     /// </summary>
+    [RequiredGuid]
     public Guid Id { get; set; }
 
     /// <summary>

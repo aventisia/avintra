@@ -1,6 +1,6 @@
 import {
-  ToolDto,
   UsableToolCatalogItemDto,
+  UsableToolDto,
   UsableToolOperation,
 } from "@/features/dynamic-config-panel/dtos/tool-dto";
 import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/component-type-enum";
@@ -8,54 +8,50 @@ import { DCPFieldSchemaType } from "@/features/dynamic-config-panel/types/dcp-fi
 import { NodeConfigSchemaType } from "@/features/dynamic-config-panel/types/node-config-schema-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
-import { DEFAULT_TOOL_NODE_COLOR, getToolIcon, getToolIconUrl } from "./custom-tool-icon.util";
+import { CUSTOM_TOOLS_L1_LABEL, CUSTOM_TOOLS_L2_LABEL } from "../constants/custom-tools.constant";
+import { PrimaryCategoryType } from "../types/primary-category-type";
+import {
+  DEFAULT_TOOL_NODE_COLOR,
+  getToolIconUrl,
+  resolveToolIconKey,
+} from "./custom-tool-icon.util";
 
 export {
   DEFAULT_TOOL_ICON_KEY,
   DEFAULT_TOOL_NODE_COLOR,
-  getToolIcon,
   getToolIconUrl,
+  resolveToolIconKey,
 } from "./custom-tool-icon.util";
 
-/** Form field name carrying the credential selection for custom-tool nodes. */
 export const CUSTOM_TOOL_CREDENTIAL_FIELD = "__CredentialName__CustomApiTool";
 
-/**
- * Form field name carrying the additional request headers as a JSON object.
- * The executor forwards the value to the request as HTTP headers.
- */
 export const CUSTOM_TOOL_HEADERS_FIELD = "Headers";
 
-/**
- * Form field name carrying the path/query/header parameter values as a JSON
- * object. The executor forwards the value to the request URL and headers.
- */
 export const CUSTOM_TOOL_PARAMETERS_FIELD = "Parameters";
 
-/**
- * Form field name carrying the JSON request body. The executor forwards the
- * value as the outbound request body for body-capable methods.
- */
 export const CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD = "RequestPayload";
 
-/**
- * Node-name prefix identifying a custom-tool action node. The runtime executor
- * and the node-config loader both route on this keyword, so the prefix is part of
- * the persisted node identity and must not change without a migration.
- */
+// IMPORTANT NOTE: the runtime executor and the node-config loader route on this node-name prefix, so it is part of the persisted node identity and must not change without a migration.
 export const CUSTOM_TOOL_NODE_PREFIX = "CustomTool/";
+
+const LEGACY_CUSTOM_NODES_LABEL = "Custom Nodes";
+
+const CUSTOM_TOOLS_ICON_KEY = "CustomNodesIcon";
+
+const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
+
+const isBodyCapableMethod = (method?: string): boolean =>
+  BODY_CAPABLE_METHODS.has((method ?? "").toUpperCase());
 
 /**
  * Builds the unique node name for a tool operation: "CustomTool/{toolName}.{operationId}".
- * The tool name keeps the node human-readable; the backend resolves the tool by
- * name (with a legacy toolId fallback) so dotted tool names stay unambiguous.
  */
 export function getCustomToolNodeName(toolName: string, operationId: string): string {
   return `${CUSTOM_TOOL_NODE_PREFIX}${toolName}.${operationId}`;
 }
 
 type CustomToolLike = Pick<
-  ToolDto,
+  UsableToolDto,
   "id" | "name" | "description" | "icon" | "iconUrl" | "isActive"
 >;
 
@@ -71,8 +67,7 @@ export function getActiveCustomTools(
 }
 
 /**
- * Formats an OpenAPI `operationId` into a human-readable label.
- * "get_user_by_id" → "Get User By Id"; "users.create" → "Users Create".
+ * Formats an OpenAPI operationId into a human-readable label.
  */
 export function formatOperationId(operationId: string): string {
   if (!operationId) return "Untitled action";
@@ -85,16 +80,12 @@ export function formatOperationId(operationId: string): string {
     .join(" ");
 }
 
-/** L2 tool display name, mirroring the OpenAPI `info.title` convention. */
+/**
+ * Returns the tool display name, mirroring the OpenAPI info.title convention.
+ */
 export function getToolName(tool: CustomToolLike): string {
   return tool.name || "Untitled tool";
 }
-
-/** HTTP methods that accept a JSON request body. */
-const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
-
-const isBodyCapableMethod = (method?: string): boolean =>
-  BODY_CAPABLE_METHODS.has((method ?? "").toUpperCase());
 
 /**
  * Splits a custom-tool node name into its tool reference and operation id.
@@ -287,7 +278,7 @@ export function convertToolOperationsToActions(
 }[] {
   if (!operations?.length) return [];
 
-  const toolIcon = getToolIcon(tool);
+  const toolIcon = resolveToolIconKey(tool);
   const toolIconUrl = getToolIconUrl(tool);
 
   return operations.map((operation) => {
@@ -339,4 +330,34 @@ export function convertToolOperationsToActions(
       disabled: operation.isVerified !== true || !tool.isActive,
     };
   });
+}
+
+/**
+ * Builds the client-defined "Custom Tools" L1 category.
+ */
+export function buildCustomToolsPrimaryCategory(): PrimaryCategoryType {
+  return {
+    label: CUSTOM_TOOLS_L1_LABEL,
+    description: "Create and use custom tools to extend your agents beyond the built-in set",
+    icon: CUSTOM_TOOLS_ICON_KEY,
+    actionCategories: [
+      {
+        label: CUSTOM_TOOLS_L2_LABEL,
+        description: "Custom tools available to your agents",
+        icon: CUSTOM_TOOLS_ICON_KEY,
+        actions: [],
+      },
+    ],
+  };
+}
+
+/**
+ * Replaces the backend "Custom Nodes" placeholder L1 with the client-defined "Custom Tools" L1.
+ */
+export function applyCustomToolsL1(categories: PrimaryCategoryType[]): PrimaryCategoryType[] {
+  const withoutPlaceholder = categories.filter(
+    (category) =>
+      category.label !== LEGACY_CUSTOM_NODES_LABEL && category.label !== CUSTOM_TOOLS_L1_LABEL,
+  );
+  return [...withoutPlaceholder, buildCustomToolsPrimaryCategory()];
 }

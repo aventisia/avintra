@@ -15,7 +15,7 @@ import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools";
+import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { triggersList } from "../constants/trigger-data";
 import { useAddCustomTool } from "../hooks/useAddCustomTool.hook";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
@@ -24,7 +24,7 @@ import {
   convertToolOperationsToActions,
   getActiveCustomTools,
   getToolName,
-} from "../utils/custom-tools-converter";
+} from "../utils/custom-tools.util";
 import ActionsList from "./ActionsList";
 import { CustomToolIcon } from "./CustomToolIcon";
 import { FallbackImageIcon } from "./FallbackImageIcon";
@@ -61,7 +61,11 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   const isCustomToolsSection = !query && primaryCategoryLabel === CUSTOM_TOOLS_L1_LABEL;
 
-  const { data: catalogResponse, isLoading: isCatalogLoading } = useUsableToolCatalog();
+  const {
+    data: catalogResponse,
+    isLoading: isCatalogLoading,
+    isError: isCatalogError,
+  } = useUsableToolCatalog();
   const customTools = useMemo(
     () => getActiveCustomTools(catalogResponse?.data).sort((a, b) => a.name.localeCompare(b.name)),
     [catalogResponse],
@@ -241,7 +245,6 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   if (isCustomToolsSection) {
     return (
       <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
-        {/* L2 — back header + custom tools directory (left pane) */}
         <div className="flex min-h-0 flex-col border-r bg-background">
           <div className="flex shrink-0 items-center border-b p-2">
             <Button
@@ -282,6 +285,13 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
                 className="h-4 w-4 animate-spin text-muted-foreground"
                 aria-hidden="true"
               />
+            </div>
+          ) : isCatalogError ? (
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
+              <p className="text-sm font-medium">Couldn’t load custom tools</p>
+              <p className="text-sm text-muted-foreground">
+                The tool catalog request failed. Close this dialog and try again.
+              </p>
             </div>
           ) : customTools.length === 0 ? (
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
@@ -325,7 +335,6 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
           )}
         </div>
 
-        {/* L3 — fills the right pane from below the search bar to the bottom */}
         <div className="flex min-h-0 flex-col overflow-hidden bg-background">
           {selectedTool ? (
             customToolActions.length === 0 ? (

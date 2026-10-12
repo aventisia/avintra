@@ -2,11 +2,11 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { toast } from "@avplatform/ui/sonner";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
-import { testToolDirectly } from "../../apis/tools.apis";
+import { testTool, testToolDirectly } from "../../apis/tools.apis";
 import { TestToolResponseDto } from "../../dtos/index";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 import {
@@ -14,6 +14,9 @@ import {
   setParsedSchemaOperationVerification,
 } from "../../utils/tool-operations.util";
 import { FieldLabel } from "./FieldLabel";
+
+type OperationTestResult =
+  { status: "tested"; response: TestToolResponseDto } | { status: "failed"; message: string };
 
 const serializeResponseBody = (body: unknown): string => {
   if (body === undefined || body === null) return "{}";
@@ -25,22 +28,42 @@ const serializeResponseBody = (body: unknown): string => {
   }
 };
 
-const isVerifiedResult = (result: TestToolResponseDto | "error" | undefined): boolean =>
-  result !== undefined && result !== "error" && result.status_code === 200;
+const toErrorMessage = (error: unknown): string =>
+  typeof error === "string"
+    ? error
+    : error instanceof Error
+      ? error.message
+      : "The test call failed.";
+
+const isVerifiedResult = (result?: OperationTestResult): boolean =>
+  result?.status === "tested" && result.response.status_code === 200;
+
+interface StepPlaygroundProps {
+  crudAction: "create" | "read" | "update";
+}
 
 /**
- * Playground step. The user selects the operations to test; only the selected
- * operations are called against the live API (a test is verified only when it
- * returns HTTP 200). Results are recorded per operation in the parsed schema so
- * the persisted tool and the L3 selector can reflect them.
+ * Playground step. Only a server-recorded HTTP 200 test marks an operation
+ * verified; the wizard never trusts a client-side flag when saving.
  */
-export const StepPlayground = () => {
-  const { draftTool, setDraftTool } = useToolWizardStore();
-  const [results, setResults] = useState<Record<string, TestToolResponseDto | "error">>({});
+export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
+  const { draftTool, setDraftTool, resetVersion } = useToolWizardStore();
+  const [results, setResults] = useState<Record<string, OperationTestResult>>({});
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isTesting, setIsTesting] = useState(false);
-  const [parametersText, setParametersText] = useState("{}");
+  const [parametersByOperation, setParametersByOperation] = useState<Record<string, string>>({});
   const [lastTestedId, setLastTestedId] = useState("");
+
+  const isCreate = crudAction === "create";
+  const isTestingRef = useRef(false);
+  const batchTokenRef = useRef(0);
+
+  useEffect(
+    () => () => {
+      batchTokenRef.current += 1;
+    },
+    [resetVersion],
+  );
 
   const operations = useMemo(
     () => normalizeParsedSchemaOperations(draftTool?.parsedSchema),
@@ -48,13 +71,16 @@ export const StepPlayground = () => {
   );
 
   const applyVerifications = useCallback(
-    (entries: Array<{ operationId: string; result: TestToolResponseDto | "error" }>) => {
-      if (!draftTool || entries.length === 0) return;
+    (token: number, entries: Array<{ operationId: string; result: OperationTestResult }>) => {
+      if (batchTokenRef.current !== token) return;
 
-      const nextResults = { ...results };
-      let nextSchema = draftTool.parsedSchema;
+      const currentDraft = useToolWizardStore.getState().draftTool;
+      if (!currentDraft || entries.length === 0) return;
+
+      let nextSchema = currentDraft.parsedSchema;
+      const resultPatch: Record<string, OperationTestResult> = {};
       for (const { operationId, result } of entries) {
-        nextResults[operationId] = result;
+        resultPatch[operationId] = result;
         nextSchema = setParsedSchemaOperationVerification(
           nextSchema,
           operationId,
@@ -62,53 +88,78 @@ export const StepPlayground = () => {
         );
       }
 
+      const nextOperations = normalizeParsedSchemaOperations(nextSchema);
       const allVerified =
-        operations.length > 0 &&
-        normalizeParsedSchemaOperations(nextSchema).every(
-          (operation) => operation.isVerified === true,
-        );
+        nextOperations.length > 0 && nextOperations.every((operation) => operation.isVerified);
 
-      setResults(nextResults);
-      setDraftTool({ ...draftTool, parsedSchema: nextSchema, isVerified: allVerified });
+      setResults((previous) => ({ ...previous, ...resultPatch }));
+      setDraftTool({ ...currentDraft, parsedSchema: nextSchema, isVerified: allVerified });
     },
-    [draftTool, operations.length, results, setDraftTool],
+    [setDraftTool],
   );
 
   const testOperation = useCallback(
     async (
       operationId: string,
       parameters: Record<string, unknown>,
-    ): Promise<TestToolResponseDto | "error"> => {
+    ): Promise<OperationTestResult> => {
+      if (isCreate || !draftTool?.id) {
+        try {
+          const response = await testToolDirectly({
+            operationId,
+            parameters,
+            baseUrl: draftTool?.baseUrl ?? "",
+            openApiSpec: draftTool?.openApiSpec,
+            credentialName: draftTool?.credentialName,
+          });
+          useToolWizardStore.getState().setPendingVerification(operationId, parameters);
+          return { status: "tested", response };
+        } catch (error) {
+          return { status: "failed", message: toErrorMessage(error) };
+        }
+      }
+
       try {
-        return await testToolDirectly({
+        const response = await testTool(draftTool.id, {
           operationId,
           parameters,
-          baseUrl: draftTool?.baseUrl ?? "",
-          openApiSpec: draftTool?.openApiSpec,
-          credentialName: draftTool?.credentialName,
+          credentialName: draftTool.credentialName,
         });
-      } catch {
-        return "error";
+        if (!response.data) {
+          return { status: "failed", message: response.message };
+        }
+        return { status: "tested", response: response.data };
+      } catch (error) {
+        return { status: "failed", message: toErrorMessage(error) };
       }
     },
-    [draftTool?.baseUrl, draftTool?.openApiSpec, draftTool?.credentialName],
+    [draftTool, isCreate],
   );
 
   const testOperations = useCallback(
     async (operationIds: string[], parameters: Record<string, unknown>) => {
-      if (!draftTool || operationIds.length === 0 || isTesting) return;
+      if (!draftTool || operationIds.length === 0 || isTestingRef.current) return;
 
+      isTestingRef.current = true;
       setIsTesting(true);
-      const entries: Array<{ operationId: string; result: TestToolResponseDto | "error" }> = [];
-      for (const operationId of operationIds) {
-        entries.push({ operationId, result: await testOperation(operationId, parameters) });
-      }
+      const token = (batchTokenRef.current += 1);
 
-      applyVerifications(entries);
-      setLastTestedId(operationIds[operationIds.length - 1]);
-      setIsTesting(false);
+      try {
+        const entries: Array<{ operationId: string; result: OperationTestResult }> = [];
+        for (const operationId of operationIds) {
+          entries.push({ operationId, result: await testOperation(operationId, parameters) });
+        }
+
+        applyVerifications(token, entries);
+        if (batchTokenRef.current === token) {
+          setLastTestedId(operationIds[operationIds.length - 1]);
+        }
+      } finally {
+        isTestingRef.current = false;
+        setIsTesting(false);
+      }
     },
-    [applyVerifications, draftTool, isTesting, testOperation],
+    [applyVerifications, draftTool, testOperation],
   );
 
   const toggleSelection = (operationId: string) => {
@@ -117,7 +168,6 @@ export const StepPlayground = () => {
         ? previous.filter((id) => id !== operationId)
         : [...previous, operationId],
     );
-    setParametersText("{}");
   };
 
   const handleTestSelected = async () => {
@@ -129,7 +179,7 @@ export const StepPlayground = () => {
     let parameters: Record<string, unknown> = {};
     if (targetIds.length === 1) {
       try {
-        parameters = JSON.parse(parametersText);
+        parameters = JSON.parse(parametersByOperation[targetIds[0]] ?? "{}");
       } catch {
         toast.error("Parameters must be valid JSON");
         return;
@@ -137,6 +187,10 @@ export const StepPlayground = () => {
     }
 
     await testOperations(targetIds, parameters);
+  };
+
+  const updateParameters = (operationId: string, value: string) => {
+    setParametersByOperation((previous) => ({ ...previous, [operationId]: value }));
   };
 
   const selectedSingle =
@@ -163,7 +217,7 @@ export const StepPlayground = () => {
       <div className="flex items-center justify-between gap-3">
         <FieldLabel
           label="Operation Verification"
-          description="Select the operations to test. An operation is marked Verified only when its test returns HTTP 200."
+          description="Select the operations to test. An operation is marked Verified only when the server records a successful HTTP 200 test."
         />
         {operations.length > 0 && (
           <div className="flex shrink-0 items-center gap-2 text-xs">
@@ -185,6 +239,13 @@ export const StepPlayground = () => {
           </div>
         )}
       </div>
+
+      {isCreate && (
+        <p className="text-xs text-muted-foreground">
+          This tool does not exist yet: successful tests are saved as verification when you create
+          it.
+        </p>
+      )}
 
       {operations.length === 0 ? (
         <p className="text-sm text-muted-foreground">
@@ -247,8 +308,8 @@ export const StepPlayground = () => {
             description="The JSON payload to send for the operation, e.g. a key/value pair object."
           />
           <JsonEditor
-            value={parametersText}
-            onChange={setParametersText}
+            value={parametersByOperation[selectedSingle.operationId] ?? "{}"}
+            onChange={(value) => updateParameters(selectedSingle.operationId, value)}
             placeholder='{"key": "value"}'
             className="min-h-[6rem]"
           />
@@ -276,20 +337,20 @@ export const StepPlayground = () => {
           <p className="text-sm">
             Verification: {isVerifiedResult(lastTestedResponse) ? "Verified" : "Unverified"}
           </p>
-          {lastTestedResponse !== "error" && lastTestedResponse.status_code && (
-            <p className="text-sm">Status: {lastTestedResponse.status_code}</p>
+          {lastTestedResponse.status === "tested" && lastTestedResponse.response.status_code && (
+            <p className="text-sm">Status: {lastTestedResponse.response.status_code}</p>
           )}
-          {lastTestedResponse !== "error" && lastTestedResponse.duration_ms && (
-            <p className="text-sm">Duration: {lastTestedResponse.duration_ms}ms</p>
+          {lastTestedResponse.status === "tested" && lastTestedResponse.response.duration_ms && (
+            <p className="text-sm">Duration: {lastTestedResponse.response.duration_ms}ms</p>
           )}
-          {lastTestedResponse === "error" && (
-            <p className="text-sm text-destructive">The test call failed.</p>
+          {lastTestedResponse.status === "failed" && (
+            <p className="text-sm text-destructive">{lastTestedResponse.message}</p>
           )}
-          {lastTestedResponse !== "error" &&
-            lastTestedResponse.body !== undefined &&
-            lastTestedResponse.body !== null && (
+          {lastTestedResponse.status === "tested" &&
+            lastTestedResponse.response.body !== undefined &&
+            lastTestedResponse.response.body !== null && (
               <JsonViewer
-                jsonData={serializeResponseBody(lastTestedResponse.body)}
+                jsonData={serializeResponseBody(lastTestedResponse.response.body)}
                 enableValueClipboard
                 className="mt-2 max-h-48 overflow-auto rounded bg-muted p-2 text-xs"
               />

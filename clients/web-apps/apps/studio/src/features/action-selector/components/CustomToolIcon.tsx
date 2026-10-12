@@ -2,8 +2,9 @@ import { cn } from "@avplatform/ui/lib";
 import { useState } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
+import { isSafeAssetSrc } from "@/utils/resolve-asset-src.util";
 
-import { DEFAULT_TOOL_ICON_KEY } from "../utils/custom-tools-converter";
+import { DEFAULT_TOOL_ICON_KEY } from "../utils/custom-tools.util";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
 interface CustomToolIconProps {
@@ -15,10 +16,7 @@ interface CustomToolIconProps {
 }
 
 /**
- * Renders a custom tool's icon with layered fallbacks: user-supplied icon URL →
- * icon-mapper glyph → brand image (with load-error fallback) → the shared
- * WrenchIcon mapper glyph, so L2 rows and L3 actions always render the same
- * default icon when no icon is configured.
+ * Renders a custom tool's icon with layered fallbacks: user-supplied icon URL, icon-mapper glyph, brand image, then the shared Wrench glyph.
  */
 export const CustomToolIcon = ({ icon, iconUrl, className }: CustomToolIconProps) => {
   const [hasImageError, setHasImageError] = useState(false);
@@ -26,8 +24,7 @@ export const CustomToolIcon = ({ icon, iconUrl, className }: CustomToolIconProps
   const resolved = icon || DEFAULT_TOOL_ICON_KEY;
   const wrapperClass = cn("flex h-5 w-5 shrink-0 items-center justify-center", className);
 
-  // User-supplied icon URL wins; on load failure fall through to the glyphs below.
-  if (iconUrl?.trim() && !hasImageError) {
+  if (isSafeAssetSrc(iconUrl) && iconUrl?.trim() && !hasImageError) {
     return (
       <div className={wrapperClass}>
         <FallbackImageIcon
@@ -39,12 +36,10 @@ export const CustomToolIcon = ({ icon, iconUrl, className }: CustomToolIconProps
     );
   }
 
-  // Icon-mapper key (shared wrench fallback or a registered glyph).
   if (resolved in iconMapper) {
     return <div className={wrapperClass}>{iconMapper[resolved]}</div>;
   }
 
-  // Brand asset path; falls back to the wrench when missing or broken.
   if (icon && !hasImageError) {
     return (
       <div className={wrapperClass}>
@@ -53,7 +48,5 @@ export const CustomToolIcon = ({ icon, iconUrl, className }: CustomToolIconProps
     );
   }
 
-  // Should be unreachable (DEFAULT_TOOL_ICON_KEY is a mapper key) but kept as a
-  // hard guarantee that a glyph always renders.
   return <div className={wrapperClass}>{iconMapper[DEFAULT_TOOL_ICON_KEY]}</div>;
 };

@@ -20,6 +20,10 @@ export interface ISearchableSelectOption extends ISelectOption {
   icon?: string;
 }
 
+const ABSOLUTE_SRC_PATTERN = /^(?:https?:|\/\/)/i;
+
+const isAbsoluteUrl = (value: string): boolean => ABSOLUTE_SRC_PATTERN.test(value);
+
 interface SearchableSelectProps {
   value?: string;
   onValueChange: (value: string) => void;
@@ -93,7 +97,7 @@ export const SearchableSelect = ({
               <img
                 className="flex h-4 w-4 shrink-0 items-center justify-center"
                 src={
-                  selectedOption.icon.includes("http")
+                  isAbsoluteUrl(selectedOption.icon)
                     ? selectedOption.icon
                     : basePath + selectedOption.icon
                 }
@@ -144,9 +148,7 @@ export const SearchableSelect = ({
                         {option.icon ? (
                           <img
                             className="flex h-4 w-4 shrink-0 items-center justify-center"
-                            src={
-                              option.icon.includes("http") ? option.icon : basePath + option.icon
-                            }
+                            src={isAbsoluteUrl(option.icon) ? option.icon : basePath + option.icon}
                           />
                         ) : (
                           fallbackIcon

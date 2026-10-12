@@ -2,44 +2,6 @@ import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
 
 /**
- * Full tool record as returned by the personal tools list endpoint.
- */
-export interface ToolDto {
-  id: string;
-
-  /**
-   * Name of the tool (max 255 chars).
-   */
-  name: string;
-
-  /**
-   * Brand icon path for platform tools; undefined for custom/unknown tools.
-   */
-  icon?: string;
-
-  description?: string;
-
-  iconUrl?: string;
-
-  type?: ComponentTypeEnum;
-
-  baseUrl?: string;
-
-  authenticationType?: ToolAuthenticationTypeEnum;
-
-  credentialName?: string;
-
-  isActive: boolean;
-
-  /**
-   * Indicates whether the tool has passed playground verification.
-   */
-  isVerified: boolean;
-
-  isDisabled?: boolean;
-}
-
-/**
  * A single invocable operation exposed by a tool's OpenAPI specification.
  */
 export interface UsableToolOperation {

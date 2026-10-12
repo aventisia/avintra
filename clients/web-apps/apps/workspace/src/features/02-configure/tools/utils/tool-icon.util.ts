@@ -1,14 +1,14 @@
+const SUPPORTED_ICON_URL_PROTOCOLS = new Set(["http:", "https:"]);
+
 /**
- * Validates an optional icon URL. Empty values are treated as valid because the
- * field is optional and the renderer falls back to the default placeholder icon.
+ * Validates an optional icon URL, accepting only http and https schemes.
  */
 export const isValidIconUrl = (iconUrl?: string): boolean => {
   const value = iconUrl?.trim();
   if (!value) return true;
 
   try {
-    new URL(value);
-    return true;
+    return SUPPORTED_ICON_URL_PROTOCOLS.has(new URL(value).protocol);
   } catch {
     return false;
   }

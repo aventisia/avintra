@@ -31,7 +31,6 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
 
   const isCreate = crudAction === "create";
 
-  // Debounced availability check for the tool name (create mode only).
   useEffect(() => {
     const name = draftTool?.name?.trim() ?? "";
     if (!isCreate || !name) {
@@ -81,19 +80,14 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     return null;
   };
 
-  // Rebuilds the derived artifacts (synthesized OpenAPI spec + parsed schema)
-  // from the current manual operations so operation ids stay aligned with the
-  // tool name. New tools and wizard-synthesized specs are regenerated; an
-  // imported spec is preserved as-is while method details are edited separately.
   const rebuildManualArtifacts = (
     operations: ManualToolOperation[],
     overrides: Partial<ToolDto> = {},
   ) => {
     const name = overrides.name ?? draftTool?.name;
-    const description = overrides.description ?? draftTool?.description;
     const shouldSynthesize = isCreate || isSynthesizedSpec(draftTool?.openApiSpec);
     const synthesizedSpec = shouldSynthesize
-      ? (synthesizeOpenApiSpec(operations, { name, description }) ?? "")
+      ? (synthesizeOpenApiSpec(operations, { name }) ?? "")
       : undefined;
 
     setDraftTool(
@@ -103,14 +97,10 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             ...overrides,
             manualOperations: operations,
             ...(synthesizedSpec !== undefined ? { openApiSpec: synthesizedSpec } : {}),
-            // Preserve per-operation verification for methods that were not edited.
-            // Operations default to unverified unless they carry an explicit flag.
             parsedSchema: toParsedSchema(
               operations,
               getOperationVerificationMap(draftTool.parsedSchema),
               name,
-              // Imported specs keep their original operation ids; synthesized
-              // specs regenerate them from the tool name and operation name.
               !shouldSynthesize,
             ),
           }
@@ -118,8 +108,6 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     );
   };
 
-  // Methods-section validation (missing/duplicate method) only renders once the
-  // section has been interacted with; mark it touched on focus, blur or change.
   const markMethodsTouched = () =>
     setTouched((prev) => (prev.openApiSpec ? prev : { ...prev, openApiSpec: true }));
 
@@ -221,20 +209,6 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           ) && (
             <p className="text-xs text-destructive">
               At least one method with a name and endpoint is required.
-            </p>
-          )}
-        {crudAction !== "read" &&
-          touched.openApiSpec &&
-          (draftTool?.manualOperations ?? []).some(
-            (op, index, operations) =>
-              operations.findIndex(
-                (other) =>
-                  other.method === op.method &&
-                  other.endpoint.trim().toLowerCase() === op.endpoint.trim().toLowerCase(),
-              ) !== index,
-          ) && (
-            <p className="text-xs text-destructive">
-              Each method must use a unique HTTP method and endpoint combination.
             </p>
           )}
       </div>

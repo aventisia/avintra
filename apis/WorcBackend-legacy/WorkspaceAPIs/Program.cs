@@ -73,8 +73,8 @@ builder.Services.AddHttpClient("Corsair", client =>
 });
 builder.Services.AddHttpClient("CustomTool", client =>
 {
-      client.Timeout = TimeSpan.FromSeconds(30);
-  }).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
 builder.Services.AddHttpClient("LLMPipeline", client =>
 {
     var appBaseUrl = config["EnvironmentConfig:AppBaseUrl"]?.Trim().TrimEnd('/');
