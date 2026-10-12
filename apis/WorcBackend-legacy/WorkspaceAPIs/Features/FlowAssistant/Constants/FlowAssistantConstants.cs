@@ -1,9 +1,11 @@
+using WorkspaceAPIs.Features.FlowAssistant.Generated;
+
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace WorkspaceAPIs.Features.FlowAssistant.Constants;
 
 /// <summary>
-/// Fixed configuration, curated node allowlist, and prompt/schema text for the flow assistant.
+/// Fixed configuration and prompt/schema text for the flow assistant.
 /// </summary>
 public static class FlowAssistantConstants
 {
@@ -22,18 +24,6 @@ public static class FlowAssistantConstants
     public const double TopP = 1.0;
 
     /// <summary>
-    /// Node types the assistant may propose, grounded from the studio action catalog.
-    /// </summary>
-    public static readonly IReadOnlyList<(string Type, string Name)> AllowedNodes =
-        new List<(string Type, string Name)>
-        {
-            ("activityNode", "CreateWorkItemNode"),
-            ("activityNode", "GetQueueNode"),
-            ("activityNode", "GetWorkItemByIdNode"),
-            ("aiNode", "CreateInferencingAIAgent"),
-        };
-
-    /// <summary>
     /// System prompt grounding the model on the curated allowlist and output rules.
     /// </summary>
     public static string SystemPrompt { get; } = BuildSystemPrompt();
@@ -46,13 +36,19 @@ public static class FlowAssistantConstants
     private static string BuildSystemPrompt()
     {
         var allowlist = JsonSerializer.Serialize(
-            AllowedNodes.Select(node => new { type = node.Type, name = node.Name }));
+            FlowAssistantCatalog.AllowedNodesForPrompt.Select(node => new
+            {
+                type = node.Type,
+                name = node.Name,
+                label = node.Label,
+                description = node.Description,
+            }));
 
         return $@"You are the Flow Assistant for an automation platform. Translate the user's natural-language request into a single JSON graph proposal for a React Flow agent.
 
 Respond with a JSON object only, matching the required schema. Never include markdown or prose.
 
-Allowed node types. Use these exact type and name values and never invent others:
+Allowed node types. Use these exact type and name values and never invent others. Pick the entry whose label and description best match the user's intent:
 {allowlist}
 
 Output fields:

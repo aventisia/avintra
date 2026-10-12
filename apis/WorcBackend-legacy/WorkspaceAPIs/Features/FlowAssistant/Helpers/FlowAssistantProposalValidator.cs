@@ -1,5 +1,5 @@
-using WorkspaceAPIs.Features.FlowAssistant.Constants;
 using WorkspaceAPIs.Features.FlowAssistant.DTOs;
+using WorkspaceAPIs.Features.FlowAssistant.Generated;
 
 namespace WorkspaceAPIs.Features.FlowAssistant.Helpers;
 
@@ -150,7 +150,7 @@ public static class FlowAssistantProposalValidator
         TryGetString(node, "type", out var type) && (type == "triggerNode" || type == "flowEndNode");
 
     private static bool IsAllowedNode(string type, string name) =>
-        FlowAssistantConstants.AllowedNodes.Any(node => node.Type == type && node.Name == name);
+        FlowAssistantCatalog.AllowedNodes.Any(node => node.Type == type && node.Name == name);
 
     private static bool TryGetString(JsonElement element, string propertyName, out string value)
     {

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port 3006",
     "typecheck": "tsc -b",
-    "pregit": "tsc -b && prettier --write .",
+    "generate:flow-assistant-catalog": "node scripts/generate-flow-assistant-catalog.mjs",
+    "pregit": "npm run generate:flow-assistant-catalog && tsc -b && prettier --write .",
     "build": "tsc -b && vite build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\"",
     "lint": "eslint . --max-warnings 0",

@@ -3,6 +3,8 @@ import { Edge, Node } from "@xyflow/react";
 import { NodeDataType } from "@/types/node-data-type";
 import { createDottedEdgeObj } from "@/utils/create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
+import { createConditionalNode } from "@/utils/create-nodes/create-conditional-node";
+import { createForLoopNode } from "@/utils/create-nodes/create-for-loop-node";
 import { createNodeObj } from "@/utils/create-nodes/create-node-obj";
 import { createSupportNodeObj } from "@/utils/create-nodes/create-support-node-obj";
 
@@ -11,6 +13,15 @@ import { GraphProposalNodeSpec } from "../types/graph-proposal-type";
 import { findGroundedNode } from "./grounding.util";
 
 type GraphProposalApplyResult = { nodes: Node[]; edges: Edge[] };
+
+type ControlNodeScaffold = {
+  nodes: Node[];
+  edges: Edge[];
+  controlNodeId: string;
+  mergeNodeId: string;
+};
+
+const CONTROL_NODE_TYPES = new Set(["conditionalNode", "forLoopNode"]);
 
 const buildNodeData = (spec: GraphProposalNodeSpec): NodeDataType => {
   const grounded = findGroundedNode(spec);
@@ -58,6 +69,34 @@ const createAiSupportNode = (aiNodeId: string): { node: Node; edge: Edge } => {
   return { node: modelNode, edge: modelEdge };
 };
 
+const createControlScaffold = (spec: GraphProposalNodeSpec): ControlNodeScaffold => {
+  const placeholderSourceId = `__flow-assistant-control-source-${spec.id}`;
+  const built =
+    spec.type === "conditionalNode"
+      ? createConditionalNode(buildNodeData(spec), placeholderSourceId)
+      : createForLoopNode(buildNodeData(spec), placeholderSourceId);
+  const controlNode = built.newNodes.find((node) => node.type === spec.type) ?? built.newNodes[0];
+
+  return {
+    nodes: built.newNodes,
+    edges: built.newEdges.filter((edge) => edge.source !== placeholderSourceId),
+    controlNodeId: controlNode.id,
+    mergeNodeId: built.lastNode.id,
+  };
+};
+
+const resolveTargetNodeId = (proposalId: string, nodeIdMap: Map<string, string>): string =>
+  nodeIdMap.get(proposalId) ?? proposalId;
+
+const resolveSourceNodeId = (
+  proposalId: string,
+  nodeIdMap: Map<string, string>,
+  controlMergeNodeIdMap: Map<string, string>,
+): string => {
+  const realId = nodeIdMap.get(proposalId) ?? proposalId;
+  return controlMergeNodeIdMap.get(realId) ?? realId;
+};
+
 const buildFromScratch = (
   currentNodes: Node[],
   proposal: GraphProposalDto,
@@ -65,7 +104,8 @@ const buildFromScratch = (
   const trigger = currentNodes.find((node) => node.type === "triggerNode") ?? createTriggerNode();
   const flowEnd = createSupportNodeObj("flowEndNode");
 
-  const idMap = new Map<string, string>();
+  const nodeIdMap = new Map<string, string>();
+  const controlMergeNodeIdMap = new Map<string, string>();
   const nodes: Node[] = [trigger];
   const edges: Edge[] = [];
   const supportNodes: Node[] = [];
@@ -73,9 +113,20 @@ const buildFromScratch = (
 
   for (const operation of proposal.operations) {
     if (operation.type !== "addNode") continue;
+    const spec = operation.node;
+
+    if (CONTROL_NODE_TYPES.has(spec.type)) {
+      const scaffold = createControlScaffold(spec);
+      nodeIdMap.set(spec.id, scaffold.controlNodeId);
+      controlMergeNodeIdMap.set(scaffold.controlNodeId, scaffold.mergeNodeId);
+      supportNodes.push(...scaffold.nodes);
+      supportEdges.push(...scaffold.edges);
+      continue;
+    }
+
     const realId = window.crypto.randomUUID();
-    idMap.set(operation.node.id, realId);
-    const node = createProposalNode(operation.node, realId);
+    nodeIdMap.set(spec.id, realId);
+    const node = createProposalNode(spec, realId);
     nodes.push(node);
 
     if (node.type === "aiNode") {
@@ -89,8 +140,8 @@ const buildFromScratch = (
     if (operation.type !== "addEdge") continue;
     edges.push(
       createProposalEdge(
-        idMap.get(operation.edge.source) ?? operation.edge.source,
-        idMap.get(operation.edge.target) ?? operation.edge.target,
+        resolveSourceNodeId(operation.edge.source, nodeIdMap, controlMergeNodeIdMap),
+        resolveTargetNodeId(operation.edge.target, nodeIdMap),
         operation.edge.sourceHandle,
         operation.edge.targetHandle,
       ),
@@ -99,12 +150,14 @@ const buildFromScratch = (
 
   const incoming = new Set(edges.map((edge) => edge.target));
   const outgoing = new Set(edges.map((edge) => edge.source));
-  const proposalNodeIds = [...idMap.values()];
+  const proposalNodeIds = [...nodeIdMap.values()];
 
   for (const rootId of proposalNodeIds.filter((id) => !incoming.has(id))) {
     edges.push(createProposalEdge(trigger.id, rootId));
   }
-  for (const tailId of proposalNodeIds.filter((id) => !outgoing.has(id))) {
+  for (const tailId of proposalNodeIds
+    .map((id) => controlMergeNodeIdMap.get(id) ?? id)
+    .filter((id) => !outgoing.has(id))) {
     edges.push(createProposalEdge(tailId, flowEnd.id));
   }
 
@@ -118,15 +171,27 @@ const mergeIntoGraph = (
   currentEdges: Edge[],
   proposal: GraphProposalDto,
 ): GraphProposalApplyResult => {
-  const idMap = new Map<string, string>();
+  const nodeIdMap = new Map<string, string>();
+  const controlMergeNodeIdMap = new Map<string, string>();
   let nodes = [...currentNodes];
   let edges = [...currentEdges];
 
   for (const operation of proposal.operations) {
     if (operation.type !== "addNode") continue;
+    const spec = operation.node;
+
+    if (CONTROL_NODE_TYPES.has(spec.type)) {
+      const scaffold = createControlScaffold(spec);
+      nodeIdMap.set(spec.id, scaffold.controlNodeId);
+      controlMergeNodeIdMap.set(scaffold.controlNodeId, scaffold.mergeNodeId);
+      nodes.push(...scaffold.nodes);
+      edges.push(...scaffold.edges);
+      continue;
+    }
+
     const realId = window.crypto.randomUUID();
-    idMap.set(operation.node.id, realId);
-    const node = createProposalNode(operation.node, realId);
+    nodeIdMap.set(spec.id, realId);
+    const node = createProposalNode(spec, realId);
     nodes.push(node);
 
     if (node.type === "aiNode") {
@@ -138,7 +203,7 @@ const mergeIntoGraph = (
 
   for (const operation of proposal.operations) {
     if (operation.type === "updateNode") {
-      const realId = idMap.get(operation.node.id) ?? operation.node.id;
+      const realId = nodeIdMap.get(operation.node.id) ?? operation.node.id;
       const patch = buildNodeData(operation.node);
       nodes = nodes.map((node) =>
         node.id === realId ? { ...node, data: { ...(node.data as NodeDataType), ...patch } } : node,
@@ -152,8 +217,8 @@ const mergeIntoGraph = (
     if (operation.type === "addEdge") {
       edges.push(
         createProposalEdge(
-          idMap.get(operation.edge.source) ?? operation.edge.source,
-          idMap.get(operation.edge.target) ?? operation.edge.target,
+          resolveSourceNodeId(operation.edge.source, nodeIdMap, controlMergeNodeIdMap),
+          resolveTargetNodeId(operation.edge.target, nodeIdMap),
           operation.edge.sourceHandle,
           operation.edge.targetHandle,
         ),
