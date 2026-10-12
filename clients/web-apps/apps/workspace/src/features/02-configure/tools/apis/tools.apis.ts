@@ -46,9 +46,9 @@ export const getToolById = (id: string) => {
 };
 
 /**
- * Inserts a new tool.
+ * Creates a new tool.
  */
-export const insertTool = (newTool: ToolDto) => {
+export const createTool = (newTool: ToolDto) => {
   return axiosInstance
     .post<IHttpResponse<ToolDto>>(`${baseAPIURL}`, newTool, { headers: getSpaceHeaders() })
     .then((res) => res.data);
@@ -100,7 +100,7 @@ export const testTool = (id: string, dto: TestToolDto) => {
  * Tests a tool operation by calling the LLM pipeline API directly.
  * Authentication is forwarded via the existing JWT cookie/Authorization header.
  */
-export const testToolDirectly = (dto: TestToolDto) => {
+export const testToolDirectly = (dto: TestToolDto & { baseUrl: string; openApiSpec?: string }) => {
   const llmPipelineBaseUrl = import.meta.env.VITE_LLMPIPELINE_API_PATH;
   return axiosInstance
     .post<TestToolResponseDto>(`${llmPipelineBaseUrl}/custom-tools/test`, dto, {
@@ -142,7 +142,7 @@ export const toolOptimisticMutationFn = ({
 }: IOptimisticMutation<ToolDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTool(payload as ToolDto);
+      return createTool(payload as ToolDto);
     case "update":
       return updateTool(payload as ToolDto);
     case "delete":

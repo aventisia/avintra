@@ -25,8 +25,14 @@ def parse_openapi_spec(spec: dict[str, Any]) -> list[ToolOperation]:
                     description=operation.get("description"),
                     parameters=parameters,
                     request_body=request_body,
-                    response_schema=_extract_response_schema(operation),
-                    is_verified=bool(operation.get("isVerified", False)),
+                    response_schema=(
+                        operation.get("responseSchema")
+                        or operation.get("response_schema")
+                        or _extract_response_schema(operation)
+                    ),
+                    is_verified=bool(
+                        operation.get("isVerified", operation.get("is_verified", False))
+                    ),
                 )
             )
 

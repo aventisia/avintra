@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
 
-import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools";
+import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
@@ -28,10 +28,6 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
 
   const isDisabled = data.disabled;
 
-  // Custom Tools L1: its directory is sourced live from the usable-tool
-  // catalog (no static actions), so the badge shows the custom-tool node
-  // count (summed operations across active tools) fetched at flow load;
-  // "…" while the catalog request is in flight.
   const isCustomToolsL1 = data.label === CUSTOM_TOOLS_L1_LABEL;
   const customToolNodesCount = useNodeSelectorStore((state) => state.customToolNodesCount);
 

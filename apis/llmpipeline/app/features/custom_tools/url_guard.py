@@ -1,4 +1,4 @@
-import asyncio
+import concurrent.futures
 import ipaddress
 import socket
 from urllib.parse import urlparse
@@ -51,17 +51,17 @@ def validate_public_http_url(url: str) -> str:
     if not host:
         raise UnsafeUrlError("URL host is required.")
 
+    resolve_public_addresses(host)
+    return url
+
+
+def resolve_public_addresses(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Address]:
+    """Resolve a host to its addresses, rejecting any that are not publicly routable."""
     addresses = _resolve_host(host)
     for address in addresses:
         if not _is_public_address(address):
             raise UnsafeUrlError("URL resolves to a non-public address.")
-
-    return url
-
-
-async def ensure_public_http_url(url: str) -> str:
-    """Validate a URL to a public host without blocking the event loop."""
-    return await asyncio.to_thread(validate_public_http_url, url)
+    return addresses
 
 
 def _resolve_host(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Address]:
@@ -70,10 +70,7 @@ def _resolve_host(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Addre
     except ValueError:
         pass
 
-    try:
-        infos = _getaddrinfo_with_timeout(host)
-    except socket.gaierror as exc:
-        raise UnsafeUrlError(f"Unable to resolve host '{host}'.") from exc
+    infos = _getaddrinfo_with_timeout(host)
 
     addresses: list[ipaddress.IPv4Address | ipaddress.IPv6Address] = []
     for info in infos:
@@ -88,10 +85,15 @@ def _resolve_host(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Addre
 
 
 def _getaddrinfo_with_timeout(host: str) -> list[tuple]:
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     try:
-        return asyncio.run(asyncio.wait_for(asyncio.to_thread(socket.getaddrinfo, host, None), _DNS_TIMEOUT_SECONDS))
-    except (asyncio.TimeoutError, socket.gaierror) as exc:
-        raise UnsafeUrlError(f"Unable to resolve host '{host}'.") from exc
+        future = executor.submit(socket.getaddrinfo, host, None)
+        try:
+            return future.result(timeout=_DNS_TIMEOUT_SECONDS)
+        except (concurrent.futures.TimeoutError, socket.gaierror) as exc:
+            raise UnsafeUrlError(f"Unable to resolve host '{host}'.") from exc
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
 
 
 def _is_public_address(

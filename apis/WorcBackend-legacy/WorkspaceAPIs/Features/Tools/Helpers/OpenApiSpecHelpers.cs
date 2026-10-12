@@ -18,12 +18,10 @@ public static class OpenApiSpecHelpers
     {
         try
         {
-            // Step 1: Parse the incoming OpenAPI JSON document.
             var openApiDocument = JsonDocument.Parse(openApiSpec);
             var rootElement = openApiDocument.RootElement;
             var flattenedPaths = new JsonObject();
 
-            // Step 2: Transform each path and its operations into a simplified structure.
             if (rootElement.TryGetProperty("paths", out var pathsElement))
             {
                 foreach (var pathProperty in pathsElement.EnumerateObject())
@@ -54,7 +52,6 @@ public static class OpenApiSpecHelpers
                 }
             }
 
-            // Step 3: Assemble the final flattened document.
             var flattenedSpec = new JsonObject
             {
                 ["info"] = ExtractInfo(rootElement),
@@ -70,9 +67,6 @@ public static class OpenApiSpecHelpers
         }
     }
 
-    /// <summary>
-    /// Extracts a string value from a JSON element, returning an empty string when missing.
-    /// </summary>
     private static JsonNode? GetStringValue(JsonElement element, string propertyName)
     {
         if (element.TryGetProperty(propertyName, out var property))
@@ -83,9 +77,6 @@ public static class OpenApiSpecHelpers
         return JsonValue.Create("");
     }
 
-    /// <summary>
-    /// Extracts the OpenAPI info object (title, version, description).
-    /// </summary>
     private static JsonNode ExtractInfo(JsonElement rootElement)
     {
         var result = new JsonObject();
@@ -101,9 +92,6 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Extracts the OpenAPI servers array.
-    /// </summary>
     private static JsonNode ExtractServers(JsonElement rootElement)
     {
         var result = new JsonArray();
@@ -125,9 +113,6 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Extracts operation parameters into a simplified array.
-    /// </summary>
     private static JsonNode ExtractParameters(JsonElement operationElement)
     {
         var result = new JsonArray();
@@ -152,9 +137,6 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Extracts header parameters into the editable method header shape.
-    /// </summary>
     private static JsonNode ExtractHeaders(JsonElement operationElement)
     {
         var result = new JsonArray();
@@ -182,10 +164,6 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Extracts the primitive type of a parameter, resolving a bare type or the
-    /// type of a single-item schema or content entry (OpenAPI 3.x styles).
-    /// </summary>
     private static JsonNode? GetParameterValue(JsonElement parameterElement)
     {
         if (parameterElement.TryGetProperty("type", out var typeElement) &&
@@ -205,9 +183,6 @@ public static class OpenApiSpecHelpers
         return null;
     }
 
-    /// <summary>
-    /// Extracts the preferred (2xx first, then first entry) response metadata.
-    /// </summary>
     private static JsonNode? ExtractResponses(JsonElement operationElement)
     {
         if (!operationElement.TryGetProperty("responses", out var responsesElement) ||
@@ -256,15 +231,9 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Parses a response status code key, supporting the literal "default" entry.
-    /// </summary>
     private static int? ParseStatusCode(string statusCodeName) =>
         int.TryParse(statusCodeName, out var statusCode) ? statusCode : null;
 
-    /// <summary>
-    /// Extracts the x-agent-node branding extension (icon, color) from an operation.
-    /// </summary>
     private static JsonNode? ExtractAgentNode(JsonElement operationElement)
     {
         if (!operationElement.TryGetProperty("x-agent-node", out var agentNodeElement) ||
@@ -287,9 +256,6 @@ public static class OpenApiSpecHelpers
         return result.Count == 0 ? null : result;
     }
 
-    /// <summary>
-    /// Extracts the request body metadata, including required flag, content type, and schema summary.
-    /// </summary>
     private static JsonNode ExtractRequestBody(JsonElement operationElement)
     {
         var result = new JsonObject();
@@ -318,11 +284,6 @@ public static class OpenApiSpecHelpers
         return result;
     }
 
-    /// <summary>
-    /// Extracts a schema summary: the schema type plus a simplified property list
-    /// with name, type, description and required flags. Array schemas are followed
-    /// into their items schema so element properties are surfaced.
-    /// </summary>
     private static JsonNode ExtractSchemaSummary(JsonElement schemaElement)
     {
         var result = new JsonObject
@@ -330,7 +291,6 @@ public static class OpenApiSpecHelpers
             ["type"] = GetStringValue(schemaElement, "type"),
         };
 
-        // Follow arrays to their item schema so element properties are surfaced.
         if (schemaElement.TryGetProperty("items", out var itemsElement) &&
             itemsElement.ValueKind == JsonValueKind.Object)
         {

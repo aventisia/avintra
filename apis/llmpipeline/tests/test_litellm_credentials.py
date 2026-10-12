@@ -10,15 +10,24 @@ from unittest.mock import patch
 import pytest
 from fastapi import HTTPException
 
+from app.core.config import settings
 from app.features.litellm.core.credentials import resolve_credentials
 
 
 class _FakeUser:
     """Minimal stand-in for the authenticated user carrying a JWT."""
 
-    def __init__(self, access_token: str = "fake-jwt", env_type: str = "dev"):
+    def __init__(
+        self,
+        access_token: str = "fake-jwt",
+        env_type: str = "dev",
+        tenant_id: str | None = None,
+        space_id: str | None = None,
+    ):
         self.access_token = access_token
         self.env_type = env_type
+        self.tenant_id = tenant_id
+        self.space_id = space_id
 
 
 def _credential_data(payload: dict) -> dict:

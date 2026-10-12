@@ -8,7 +8,10 @@ namespace NodeLibrary.CloudConnectorNodes;
 /// </summary>
 public class ProcessCustomToolRequestNode : BaseNode
 {
-    private static readonly HttpClient _httpClient = new()
+    private static readonly HttpClient _httpClient = new(new SocketsHttpHandler
+    {
+        AllowAutoRedirect = false
+    })
     {
         // IMPORTANT NOTE: the adapter enforces a 30-second upstream timeout, so this client waits longer to let it report the timeout.
         Timeout = TimeSpan.FromSeconds(60)
@@ -92,10 +95,6 @@ public class ProcessCustomToolRequestNode : BaseNode
         }
     }
 
-    /// <summary>
-    /// Builds a readable failure message, preferring the service-response message
-    /// (or error/details when present) and falling back to the raw response text.
-    /// </summary>
     private static string BuildErrorStatus(HttpStatusCode statusCode, string responseContent)
     {
         var detail = ExtractErrorDetail(responseContent);
@@ -137,12 +136,6 @@ public class ProcessCustomToolRequestNode : BaseNode
             ? GetString(parent, propertyName)
             : null;
 
-    /// <summary>
-    /// Parses the executor-built payload envelope, preserving key casing exactly:
-    /// the DCP JSON editors let the user author the headers, parameter names and
-    /// request body verbatim, and upstream APIs treat body/parameter names as
-    /// case-sensitive. Invalid JSON falls back to the raw string.
-    /// </summary>
     private static object? ParsePayload(string? payloadString)
     {
         if (string.IsNullOrWhiteSpace(payloadString))
@@ -151,11 +144,11 @@ public class ProcessCustomToolRequestNode : BaseNode
         try
         {
             var doc = JsonDocument.Parse(payloadString);
-            return doc.RootElement.Clone(); // preserve author casing
+            return doc.RootElement.Clone();
         }
         catch
         {
-            return payloadString; // fallback: send as string if not valid JSON
+            return null;
         }
     }
 }

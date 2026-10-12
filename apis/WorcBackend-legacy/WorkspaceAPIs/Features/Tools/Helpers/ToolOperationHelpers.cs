@@ -5,7 +5,7 @@ using WorkspaceAPIs.DTOs;
 namespace WorkspaceAPIs.Features.Tools.Helpers;
 
 /// <summary>
-/// Provides helper methods for extracting invocable operations from a tool's parsed OpenAPI schema.
+/// Extracts invocable operations from a tool's parsed OpenAPI schema and manages their verification flags.
 /// </summary>
 public static class ToolOperationHelpers
 {
@@ -23,17 +23,10 @@ public static class ToolOperationHelpers
 
     /// <summary>
     /// Extracts the flat list of operations from a tool's parsed OpenAPI schema.
-    /// Supports both the flattened `paths` shape and a pre-flattened `operations` array.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <param name="fallbackIsVerified">
-    /// Tool-level verification used for operations that carry no explicit
-    /// <c>isVerified</c> flag (legacy records and freshly flattened specs).
-    /// </param>
-    /// <returns>The list of operations; empty when the schema is missing or malformed.</returns>
     public static List<UsableToolOperationDto> ExtractOperations(
         JsonDocument? parsedSchema,
-        bool fallbackIsVerified = false)
+        bool persistedIsVerified = false)
     {
         var operations = new List<UsableToolOperationDto>();
         if (parsedSchema is null)
@@ -45,13 +38,12 @@ public static class ToolOperationHelpers
         {
             var root = parsedSchema.RootElement;
 
-            // Already-flattened operations array.
             if (root.TryGetProperty("operations", out var operationsElement) &&
                 operationsElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (var operationElement in operationsElement.EnumerateArray())
                 {
-                    var operation = ReadOperation(operationElement, method: null, path: null, fallbackIsVerified);
+                    var operation = ReadOperation(operationElement, method: null, path: null, persistedIsVerified);
                     if (operation is not null)
                     {
                         operations.Add(operation);
@@ -61,7 +53,6 @@ public static class ToolOperationHelpers
                 return operations;
             }
 
-            // OpenAPI paths -> path -> method -> details.
             if (!root.TryGetProperty("paths", out var pathsElement) ||
                 pathsElement.ValueKind != JsonValueKind.Object)
             {
@@ -86,7 +77,7 @@ public static class ToolOperationHelpers
                         methodProperty.Value,
                         methodProperty.Name.ToUpperInvariant(),
                         pathProperty.Name,
-                        fallbackIsVerified);
+                        persistedIsVerified);
 
                     if (operation is not null)
                     {
@@ -97,7 +88,6 @@ public static class ToolOperationHelpers
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed schemas and return what was collected.
         }
 
         return operations;
@@ -105,10 +95,7 @@ public static class ToolOperationHelpers
 
     /// <summary>
     /// Extracts the Corsair plugin id from a tool's parsed OpenAPI schema, when present.
-    /// Corsair specs expose paths shaped as <c>/corsair/{pluginId}/{action}</c>.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <returns>The plugin id; <c>null</c> when the schema is not a Corsair spec.</returns>
     public static string? TryGetCorsairPluginId(JsonDocument? parsedSchema)
     {
         if (parsedSchema is null)
@@ -133,7 +120,6 @@ public static class ToolOperationHelpers
                 }
             }
 
-            // Fall back to the operationId prefix ("{pluginId}.{action}").
             if (root.TryGetProperty("operations", out var operationsElement) &&
                 operationsElement.ValueKind == JsonValueKind.Array)
             {
@@ -153,15 +139,11 @@ public static class ToolOperationHelpers
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed schemas.
         }
 
         return null;
     }
 
-    /// <summary>
-    /// Parses the plugin id segment from a <c>/corsair/{pluginId}/{action}</c> path.
-    /// </summary>
     private static string? ParseCorsairPath(string path)
     {
         const string prefix = "/corsair/";
@@ -177,14 +159,11 @@ public static class ToolOperationHelpers
         return string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
     }
 
-    /// <summary>
-    /// Reads a single operation from its JSON element, falling back to the method/path for the identifier.
-    /// </summary>
     private static UsableToolOperationDto? ReadOperation(
         JsonElement element,
         string? method,
         string? path,
-        bool fallbackIsVerified = false)
+        bool persistedIsVerified = false)
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
@@ -195,7 +174,6 @@ public static class ToolOperationHelpers
         var resolvedMethod = GetString(element, "method") ?? method;
         var resolvedPath = GetString(element, "path") ?? path;
 
-        // Fall back to a derived identifier when the spec omits operationId.
         if (string.IsNullOrWhiteSpace(operationId))
         {
             if (string.IsNullOrWhiteSpace(resolvedMethod) || string.IsNullOrWhiteSpace(resolvedPath))
@@ -218,22 +196,13 @@ public static class ToolOperationHelpers
             Response = ReadResponse(element),
             Icon = ReadAgentNodeValue(element, "icon"),
             Color = ReadAgentNodeValue(element, "color"),
-            IsVerified = GetBool(element, "isVerified") ?? fallbackIsVerified,
+            IsVerified = GetBool(element, "isVerified") ?? persistedIsVerified,
         };
     }
 
     /// <summary>
-    /// Returns a copy of the parsed schema with the given operation's
-    /// <c>isVerified</c> flag set, supporting both the flattened <c>paths</c>
-    /// shape and the pre-flattened <c>operations</c> array.
+    /// Returns a copy of the parsed schema with the given operation's <c>isVerified</c> flag set.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <param name="operationId">The operation identifier to update.</param>
-    /// <param name="isVerified">The verification flag to persist.</param>
-    /// <returns>
-    /// A new document with the flag applied, or the original document when the
-    /// operation cannot be located or the schema is malformed.
-    /// </returns>
     public static JsonDocument? SetOperationVerification(
         JsonDocument? parsedSchema,
         string operationId,
@@ -294,20 +263,20 @@ public static class ToolOperationHelpers
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed schemas and keep the original document.
             return parsedSchema;
         }
     }
 
     /// <summary>
-    /// Indicates whether every operation in the schema is verified. Returns false
-    /// when the schema exposes no operations.
+    /// Indicates whether every operation in the schema is verified; false when the schema exposes no operations.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <param name="fallbackIsVerified">Legacy tool-level fallback for operations without an explicit flag.</param>
-    public static bool AreAllOperationsVerified(JsonDocument? parsedSchema, bool fallbackIsVerified = false)
+    /// <remarks>
+    /// <paramref name="persistedIsVerified"/> is the tool's stored verification flag and must never come from a
+    /// request payload: it only backfills operations of legacy schemas that predate the per-operation flag.
+    /// </remarks>
+    public static bool AreAllOperationsVerified(JsonDocument? parsedSchema, bool persistedIsVerified = false)
     {
-        var operations = ExtractOperations(parsedSchema, fallbackIsVerified);
+        var operations = ExtractOperations(parsedSchema, persistedIsVerified);
         return operations.Count > 0 && operations.All(operation => operation.IsVerified);
     }
 
@@ -323,25 +292,22 @@ public static class ToolOperationHelpers
     }
 
     /// <summary>
-    /// Carries the verified operation ids from <paramref name="source"/> onto
-    /// <paramref name="target"/>. Used when a tool's OpenAPI spec is re-flattened
-    /// so per-operation verification survives a create/update.
+    /// Copies the verified operation ids of a tool's stored schema onto a freshly flattened schema.
     /// </summary>
-    /// <param name="source">The incoming schema that carries explicit verification flags.</param>
-    /// <param name="target">The freshly flattened schema to apply the flags to.</param>
-    /// <returns>The target schema with verified operations marked.</returns>
-    public static JsonDocument? CopyOperationVerification(JsonDocument? source, JsonDocument? target)
+    public static JsonDocument? CopyOperationVerification(
+        JsonDocument? persistedSchema,
+        JsonDocument? flattenedSchema)
     {
-        if (source is null || target is null)
+        if (persistedSchema is null || flattenedSchema is null)
         {
-            return target;
+            return flattenedSchema;
         }
 
-        var verifiedOperationIds = ExtractOperations(source)
+        var verifiedOperationIds = ExtractOperations(persistedSchema)
             .Where(operation => operation.IsVerified && !string.IsNullOrWhiteSpace(operation.OperationId))
             .Select(operation => operation.OperationId);
 
-        var result = target;
+        var result = flattenedSchema;
         foreach (var operationId in verifiedOperationIds)
         {
             result = SetOperationVerification(result, operationId, isVerified: true);
@@ -350,11 +316,6 @@ public static class ToolOperationHelpers
         return result;
     }
 
-    /// <summary>
-    /// Compares an operation JSON object's identifier to the target id, deriving
-    /// the same method/path fallback used by <see cref="ExtractOperations"/> when
-    /// the object carries no explicit <c>operationId</c>.
-    /// </summary>
     private static bool MatchesOperationId(
         JsonObject operationObject,
         string operationId,
@@ -374,17 +335,11 @@ public static class ToolOperationHelpers
         return string.Equals(candidate, operationId, StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>
-    /// Reads a non-empty string from a JSON node.
-    /// </summary>
     private static string? GetNodeString(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue<string>(out var text) && !string.IsNullOrWhiteSpace(text)
             ? text
             : null;
 
-    /// <summary>
-    /// Reads a boolean property from a JSON object, or <c>null</c> when absent/not boolean.
-    /// </summary>
     private static bool? GetBool(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property))
@@ -400,9 +355,6 @@ public static class ToolOperationHelpers
         };
     }
 
-    /// <summary>
-    /// Reads the flattened parameter summaries of an operation.
-    /// </summary>
     private static List<UsableToolOperationParameterDto>? ReadParameters(JsonElement element)
     {
         if (!element.TryGetProperty("parameters", out var parametersElement) ||
@@ -434,9 +386,6 @@ public static class ToolOperationHelpers
         return parameters;
     }
 
-    /// <summary>
-    /// Reads the flattened request body summary of an operation.
-    /// </summary>
     private static UsableToolOperationRequestBodyDto? ReadRequestBody(JsonElement element)
     {
         if (!element.TryGetProperty("requestBody", out var requestBodyElement) ||
@@ -456,9 +405,6 @@ public static class ToolOperationHelpers
         return requestBody;
     }
 
-    /// <summary>
-    /// Reads the flattened preferred response summary of an operation.
-    /// </summary>
     private static UsableToolOperationResponseDto? ReadResponse(JsonElement element)
     {
         if (!element.TryGetProperty("responses", out var responsesElement) ||
@@ -480,9 +426,6 @@ public static class ToolOperationHelpers
         return response;
     }
 
-    /// <summary>
-    /// Reads the flattened properties array of a request body or response summary.
-    /// </summary>
     private static List<UsableToolOperationPropertyDto>? ReadProperties(JsonElement element)
     {
         if (!element.TryGetProperty("schema", out var schemaElement) ||
@@ -515,9 +458,6 @@ public static class ToolOperationHelpers
         return properties;
     }
 
-    /// <summary>
-    /// Reads a branding value from the flattened x-agent-node extension.
-    /// </summary>
     private static string? ReadAgentNodeValue(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty("x-agent-node", out var agentNodeElement) ||
@@ -529,9 +469,6 @@ public static class ToolOperationHelpers
         return GetString(agentNodeElement, propertyName);
     }
 
-    /// <summary>
-    /// Reads a non-empty string property from a JSON object.
-    /// </summary>
     private static string? GetString(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property) ||
@@ -544,3 +481,4 @@ public static class ToolOperationHelpers
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 }
+

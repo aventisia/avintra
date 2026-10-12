@@ -6,31 +6,31 @@ namespace WorkspaceAPIs.DTOs;
 public class UsableToolOperationDto
 {
     /// <summary>
-    /// Gets or sets the OpenAPI operation identifier.
+    /// Gets or sets the OpenAPI operation identifier (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string OperationId { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTTP method of the operation.
+    /// Gets or sets the HTTP method of the operation (max 20 chars).
     /// </summary>
     [StringLength(20)]
     public string? Method { get; set; }
 
     /// <summary>
-    /// Gets or sets the request path of the operation.
+    /// Gets or sets the request path of the operation (max 500 chars).
     /// </summary>
     [StringLength(500)]
     public string? Path { get; set; }
 
     /// <summary>
-    /// Gets or sets the human-readable summary of the operation.
+    /// Gets or sets the human-readable summary of the operation (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? Summary { get; set; }
 
     /// <summary>
-    /// Gets or sets the long-form description of the operation.
+    /// Gets or sets the long-form description of the operation (max 4000 chars).
     /// </summary>
     [StringLength(4000)]
     public string? Description { get; set; }
@@ -51,13 +51,13 @@ public class UsableToolOperationDto
     public UsableToolOperationResponseDto? Response { get; set; }
 
     /// <summary>
-    /// Gets or sets the icon key resolved from the spec's x-agent-node extension.
+    /// Gets or sets the icon key resolved from the spec's x-agent-node extension (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public string? Icon { get; set; }
 
     /// <summary>
-    /// Gets or sets the brand color resolved from the spec's x-agent-node extension.
+    /// Gets or sets the brand color resolved from the spec's x-agent-node extension (max 100 chars).
     /// </summary>
     [StringLength(100)]
     public string? Color { get; set; }
@@ -75,13 +75,13 @@ public class UsableToolOperationDto
 public class UsableToolOperationParameterDto
 {
     /// <summary>
-    /// Gets or sets the parameter name.
+    /// Gets or sets the parameter name (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the parameter location (path, query, header).
+    /// Gets or sets the parameter location (path, query, header) (max 50 chars).
     /// </summary>
     [StringLength(50)]
     public string? In { get; set; }
@@ -92,13 +92,13 @@ public class UsableToolOperationParameterDto
     public bool Required { get; set; }
 
     /// <summary>
-    /// Gets or sets the parameter description.
+    /// Gets or sets the parameter description (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the primitive type of the parameter (string, integer, number, boolean).
+    /// Gets or sets the primitive type of the parameter (string, integer, number, boolean) (max 50 chars).
     /// </summary>
     [StringLength(50)]
     public string? Type { get; set; }
@@ -115,7 +115,7 @@ public class UsableToolOperationRequestBodyDto
     public bool Required { get; set; }
 
     /// <summary>
-    /// Gets or sets the content type (e.g. application/json).
+    /// Gets or sets the content type (e.g. application/json) (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public string? ContentType { get; set; }
@@ -137,7 +137,7 @@ public class UsableToolOperationResponseDto
     public int? StatusCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the content type (e.g. application/json).
+    /// Gets or sets the content type (e.g. application/json) (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public string? ContentType { get; set; }
@@ -154,19 +154,19 @@ public class UsableToolOperationResponseDto
 public class UsableToolOperationPropertyDto
 {
     /// <summary>
-    /// Gets or sets the property name.
+    /// Gets or sets the property name (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the primitive type of the property.
+    /// Gets or sets the primitive type of the property (max 50 chars).
     /// </summary>
     [StringLength(50)]
     public string? Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the property description.
+    /// Gets or sets the property description (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? Description { get; set; }

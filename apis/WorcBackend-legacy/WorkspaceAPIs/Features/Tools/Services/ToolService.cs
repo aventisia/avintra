@@ -26,10 +26,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetToolsAsync(bool isPersonal)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<ToolDto>>
-        {
-            Message = "Failed to fetch tools."
-        };
+        var serviceResponse = ServiceResponse<IEnumerable<ToolDto>>.Create("Failed to fetch tools.", 500);
 
         try
         {
@@ -93,10 +90,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<TrueFalseResultDto>> IsToolNameAvailableAsync(CheckAvailabilityDto availabilityDto)
     {
-        var serviceResponse = new ServiceResponse<TrueFalseResultDto>
-        {
-            Message = "Failed to check tool name availability."
-        };
+        var serviceResponse = ServiceResponse<TrueFalseResultDto>.Create("Failed to check tool name availability.", 500);
 
         try
         {
@@ -147,10 +141,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<ToolDto>> GetToolByIdAsync(Guid toolId)
     {
-        var serviceResponse = new ServiceResponse<ToolDto>
-        {
-            Message = "Failed to fetch tool."
-        };
+        var serviceResponse = ServiceResponse<ToolDto>.Create("Failed to fetch tool.", 500);
 
         try
         {
@@ -199,10 +190,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<ToolDto>> GetToolByNameAsync(string toolName)
     {
-        var serviceResponse = new ServiceResponse<ToolDto>
-        {
-            Message = "Failed to fetch tool."
-        };
+        var serviceResponse = ServiceResponse<ToolDto>.Create("Failed to fetch tool.", 500);
 
         try
         {
@@ -224,8 +212,8 @@ public class ToolService : IToolService
                 .OrderBy(w => w.CreatedOn)
                 .ToListAsync();
 
-            // The unique index is TenantId + SpaceId + EnvType + Name, so resolve deterministically:
-            // prefer the request's space, then Central (null), then the oldest record.
+            // IMPORTANT NOTE: the unique index is TenantId + SpaceId + EnvType + Name, so resolution is
+            // deterministic: the request's space first, then Central (null), then the oldest record.
             var requestSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
                 ? (Guid?)null
                 : _currentTenantService.CurrentSpaceId;
@@ -272,10 +260,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<ToolDto>> InsertToolAsync(ToolDto toolDto)
     {
-        var serviceResponse = new ServiceResponse<ToolDto>
-        {
-            Message = "Failed to create tool."
-        };
+        var serviceResponse = ServiceResponse<ToolDto>.Create("Failed to create tool.", 500);
 
         try
         {
@@ -323,59 +308,72 @@ public class ToolService : IToolService
             toolToCreate.LastModifiedByUserId = currentUserId;
             toolToCreate.CreatedOn = DateTimeOffset.UtcNow;
             toolToCreate.LastModifiedOn = DateTimeOffset.UtcNow;
+            toolToCreate.ParsedSchema = null;
 
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
             {
-                toolToCreate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
-                    toolDto.ParsedSchema,
-                    OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec));
+                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
+                if (parsedSchema is null)
+                {
+                    return serviceResponse.Update("The OpenAPI specification could not be parsed.", 400);
+                }
+
+                toolToCreate.ParsedSchema = parsedSchema;
             }
             else if (toolDto.ManualOperations is { Count: > 0 })
             {
                 var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
                     toolDto.ManualOperations,
                     toolDto.Name);
-                if (synthesizedSpec is not null)
-                {
-                    toolToCreate.OpenApiSpec = synthesizedSpec;
-                    toolToCreate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
-                        toolDto.ParsedSchema,
-                        OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec));
-                }
-                else
+                if (synthesizedSpec is null)
                 {
                     return serviceResponse.Update(
                         "At least one valid operation (method and endpoint) is required.",
                         400);
                 }
+
+                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+                if (parsedSchema is null)
+                {
+                    return serviceResponse.Update("The synthesized OpenAPI specification could not be parsed.", 400);
+                }
+
+                toolToCreate.OpenApiSpec = synthesizedSpec;
+                toolToCreate.ParsedSchema = parsedSchema;
             }
 
-            toolToCreate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
-                toolToCreate.ParsedSchema,
-                toolToCreate.IsVerified);
+            toolToCreate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(toolToCreate.ParsedSchema);
 
             if (!ToolOperationHelpers.HasUniqueOperationNames(toolToCreate.ParsedSchema))
             {
                 return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
 
-            await _unitOfWork.ToolRepo.InsertAsync(toolToCreate);
-
-            if (!await _unitOfWork.SaveAsync())
+            try
             {
-                _logger.LogError("Failed to save new tool '{ToolName}'.", toolDto.Name);
-                return serviceResponse;
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
+                {
+                    await _unitOfWork.ToolRepo.InsertAsync(toolToCreate);
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        throw new InvalidOperationException("The new tool was not persisted.");
+                    }
+
+                    if (!await _resourceShareService.AssignOwnerAsync(currentUserId, toolToCreate.Id, ResourceTypeEnum.Tool))
+                    {
+                        throw new InvalidOperationException("Tool ownership assignment failed.");
+                    }
+                });
             }
-
-            if (!await _resourceShareService.AssignOwnerAsync(currentUserId, toolToCreate.Id, ResourceTypeEnum.Tool))
+            catch (Exception ex)
             {
-                _logger.LogError("Failed to assign ownership for tool {ToolId}.", toolToCreate.Id);
-                return serviceResponse.Update("Failed assigning ownership.", 500);
+                _logger.LogError(ex, "Failed to create tool '{ToolName}' with its ownership share.", toolDto.Name);
+                return serviceResponse.Update("Failed to create the tool and assign its ownership.", 500);
             }
 
             return serviceResponse.Update(
                 "Tool created successfully.",
-                200,
+                201,
                 toolToCreate.Adapt<ToolDto>());
         }
         catch (Exception ex)
@@ -388,10 +386,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<ToolDto>> UpdateToolAsync(ToolDto toolDto)
     {
-        var serviceResponse = new ServiceResponse<ToolDto>
-        {
-            Message = "Failed to update tool."
-        };
+        var serviceResponse = ServiceResponse<ToolDto>.Create("Failed to update tool.", 500);
 
         try
         {
@@ -441,10 +436,16 @@ public class ToolService : IToolService
 
             var otherToolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
+                    (
+                        w.Type == ComponentTypeEnum.Platform ||
+                        (w.Type == ComponentTypeEnum.Custom &&
+                        w.TenantId == _currentTenantService.CurrentTenantId)
+                    ) &&
                     EF.Functions.ILike(w.Name, namePattern) &&
-                    w.Id != toolDto.Id &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
-                .SingleOrDefaultAsync();
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    w.Id != toolDto.Id)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
 
             if (otherToolWithSameName != null)
             {
@@ -465,16 +466,41 @@ public class ToolService : IToolService
                 toolToUpdate.IsDisabled = toolDto.IsDisabled.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) && toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
+            if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) &&
+                toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
             {
+                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
+                if (parsedSchema is null)
+                {
+                    return serviceResponse.Update("The OpenAPI specification could not be parsed.", 400);
+                }
+
                 toolToUpdate.OpenApiSpec = toolDto.OpenApiSpec;
-                toolToUpdate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
-                    toolDto.ParsedSchema,
-                    OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec));
+                toolToUpdate.ParsedSchema =
+                    ToolOperationHelpers.CopyOperationVerification(toolToUpdate.ParsedSchema, parsedSchema);
             }
-            else if (toolDto.ParsedSchema is not null)
+            else if (toolDto.ManualOperations is { Count: > 0 } &&
+                     string.IsNullOrWhiteSpace(toolToUpdate.OpenApiSpec))
             {
-                toolToUpdate.ParsedSchema = toolDto.ParsedSchema;
+                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
+                    toolDto.ManualOperations,
+                    toolDto.Name);
+                if (synthesizedSpec is null)
+                {
+                    return serviceResponse.Update(
+                        "At least one valid operation (method and endpoint) is required.",
+                        400);
+                }
+
+                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+                if (parsedSchema is null)
+                {
+                    return serviceResponse.Update("The synthesized OpenAPI specification could not be parsed.", 400);
+                }
+
+                toolToUpdate.OpenApiSpec = synthesizedSpec;
+                toolToUpdate.ParsedSchema =
+                    ToolOperationHelpers.CopyOperationVerification(toolToUpdate.ParsedSchema, parsedSchema);
             }
 
             toolToUpdate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
@@ -509,11 +535,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<bool>> DeleteToolAsync(Guid toolId)
     {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete tool."
-        };
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to delete tool.", 500, false);
 
         try
         {
@@ -575,11 +597,7 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds)
     {
-        var serviceResponse = new ServiceResponse<int>
-        {
-            Data = 0,
-            Message = "Failed to delete tools."
-        };
+        var serviceResponse = ServiceResponse<int>.Create("Failed to delete tools.", 500, 0);
 
         try
         {
@@ -593,17 +611,15 @@ public class ToolService : IToolService
             }
 
             var currentUserId = _currentTenantService.CurrentUserId;
+            var ownerAccessMap = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                currentUserId,
+                ResourceTypeEnum.Tool,
+                new[] { ResourceAccessTypeEnum.Owner });
+
             var blockedNames = new List<string>();
             foreach (var tool in toolsToDelete)
             {
-                var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
-                    currentUserId,
-                    tool.Id,
-                    ResourceTypeEnum.Tool,
-                    tool.CreatedByUserId ?? Guid.Empty,
-                    false,
-                    new[] { ResourceAccessTypeEnum.Owner });
-
+                var canDelete = tool.CreatedByUserId == currentUserId || ownerAccessMap.ContainsKey(tool.Id);
                 if (!canDelete)
                 {
                     return serviceResponse.Update("You do not have access to delete one or more selected tools.", 403);
@@ -657,20 +673,28 @@ public class ToolService : IToolService
 
     public async Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive)
     {
-        var serviceResponse = new ServiceResponse<ToolDto>
-        {
-            Message = $"Failed to {(isActive ? "activate" : "deactivate")} tool."
-        };
+        var serviceResponse = ServiceResponse<ToolDto>.Create(
+            $"Failed to {(isActive ? "activate" : "deactivate")} tool.",
+            500);
 
         try
         {
             var toolToUpdate = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (toolToUpdate == null)
             {
                 return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<ToolDto>(
+                toolToUpdate.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "tool");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
             }
 
             var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(

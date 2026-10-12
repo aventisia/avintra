@@ -8,6 +8,7 @@ from app.core.env_utils import normalize_env_type
 from app.core.space_utils import normalize_space_id
 from app.features.custom_tools.custom_tool_executor import execute_operation
 from app.features.custom_tools.models import Tool
+from app.features.custom_tools.openapi_parser import parse_openapi_spec
 from app.features.custom_tools.schemas import ToolOperation
 
 
@@ -69,7 +70,6 @@ async def load_custom_tools(
 
         operations_data = tool.parsed_schema
         if isinstance(operations_data, dict) and "paths" in operations_data:
-            from app.features.custom_tools.openapi_parser import parse_openapi_spec
             operations = parse_openapi_spec(operations_data)
         elif isinstance(operations_data, list):
             operations = [_coerce_operation(op) for op in operations_data if isinstance(op, dict)]
@@ -88,7 +88,7 @@ async def load_custom_tools(
 
             langchain_tools.append(
                 _build_langchain_tool(
-                    tool=tool,
+                    tool_record=tool,
                     operation=operation,
                     workspace_api=workspace_api,
                     access_token=access_token,
@@ -109,13 +109,13 @@ def _coerce_operation(operation: dict) -> ToolOperation:
         description=operation.get("description"),
         parameters=operation.get("parameters") or [],
         request_body=operation.get("requestBody") or operation.get("request_body"),
-        response_schema=operation.get("response_schema"),
+        response_schema=operation.get("responseSchema") or operation.get("response_schema"),
         is_verified=bool(operation.get("isVerified", operation.get("is_verified", False))),
     )
 
 
 def _build_langchain_tool(
-    tool: Tool,
+    tool_record: Tool,
     operation: ToolOperation,
     workspace_api: str | None = None,
     access_token: str | None = None,
@@ -124,17 +124,18 @@ def _build_langchain_tool(
 
     @tool
     async def invoke(**kwargs) -> dict:
+        """Invokes this operation against the custom tool's endpoint."""
         return await execute_operation(
-            base_url=tool.base_url,
+            base_url=tool_record.base_url,
             operation=operation,
             parameters=kwargs,
-            authentication_type=tool.authentication_type,
-            credential_name=tool.credential_name,
+            authentication_type=tool_record.authentication_type,
+            credential_name=tool_record.credential_name,
             workspace_api=workspace_api,
             access_token=access_token,
             env_type=env_type,
         )
 
-    invoke.name = f"{tool.name}_{operation.operation_id}"
+    invoke.name = f"{tool_record.name}_{operation.operation_id}"
     invoke.description = operation.summary or operation.description or f"Execute {operation.operation_id}"
     return invoke

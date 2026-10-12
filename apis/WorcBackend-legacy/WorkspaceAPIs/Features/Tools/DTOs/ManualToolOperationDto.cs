@@ -8,25 +8,25 @@ namespace WorkspaceAPIs.DTOs;
 public class ManualToolOperationDto
 {
     /// <summary>
-    /// Gets or sets the display name of the operation.
+    /// Gets or sets the display name of the operation (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the long-form description of the operation.
+    /// Gets or sets the long-form description of the operation (max 4000 chars).
     /// </summary>
     [StringLength(4000)]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTTP method (GET, POST, PUT, PATCH, DELETE).
+    /// Gets or sets the HTTP method (GET, POST, PUT, PATCH, DELETE) (max 10 chars).
     /// </summary>
     [StringLength(10)]
     public required string Method { get; set; }
 
     /// <summary>
-    /// Gets or sets the endpoint path template (e.g. <c>/users/{id}</c>).
+    /// Gets or sets the endpoint path template (e.g. <c>/users/{id}</c>) (max 500 chars).
     /// </summary>
     [StringLength(500)]
     public required string Endpoint { get; set; }
@@ -42,8 +42,9 @@ public class ManualToolOperationDto
     public List<ManualToolOperationParameterDto>? Parameters { get; set; }
 
     /// <summary>
-    /// Gets or sets the JSON payload sample used to infer the request body schema.
+    /// Gets or sets the JSON payload sample used to infer the request body schema (max 10000 chars).
     /// </summary>
+    [StringLength(10000)]
     public string? JsonPayload { get; set; }
 }
 
@@ -53,13 +54,13 @@ public class ManualToolOperationDto
 public class ManualToolOperationHeaderDto
 {
     /// <summary>
-    /// Gets or sets the header name.
+    /// Gets or sets the header name (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Key { get; set; }
 
     /// <summary>
-    /// Gets or sets the header description.
+    /// Gets or sets the header description (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? Description { get; set; }
@@ -73,19 +74,19 @@ public class ManualToolOperationHeaderDto
 public class ManualToolOperationParameterDto
 {
     /// <summary>
-    /// Gets or sets the parameter name.
+    /// Gets or sets the parameter name (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the parameter location (query, header).
+    /// Gets or sets the parameter location (query, header) (max 50 chars).
     /// </summary>
     [StringLength(50)]
     public string In { get; set; } = "query";
 
     /// <summary>
-    /// Gets or sets the parameter description.
+    /// Gets or sets the parameter description (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? Description { get; set; }

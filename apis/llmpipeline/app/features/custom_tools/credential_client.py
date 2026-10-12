@@ -1,11 +1,17 @@
 import base64
 from typing import Any
-from uuid import UUID
+from urllib.parse import quote
 
 import httpx
 
 from app.core.config import settings
-from app.core.logger import logger
+
+_CREDENTIAL_TIMEOUT_SECONDS = 30.0
+_KNOWN_CREDENTIAL_TYPES = frozenset({"ApiKeyHeader", "ApiKeyQuery", "Bearer", "Basic"})
+
+
+class UnsupportedCredentialTypeError(ValueError):
+    """Raised when a vault credential carries an unsupported authentication type."""
 
 
 async def fetch_decrypted_credential(
@@ -15,14 +21,17 @@ async def fetch_decrypted_credential(
     env_type: str = "dev",
 ) -> dict:
     """Fetch a decrypted credential by its unique NAME from the Workspace API."""
-    url = f"{workspace_api.rstrip('/')}/api/app-secret/decrypted-data/by-name/{credential_name}"
+    url = (
+        f"{workspace_api.rstrip('/')}/api/app-secret/decrypted-data/by-name/"
+        f"{quote(credential_name, safe='')}"
+    )
     headers = {"X-Env-Type": env_type}
     if access_token:
-        # The token is already a full Authorization value (e.g. "Bearer <token>")
-        # when forwarded from the .NET Workspace API.
         headers["Authorization"] = access_token
 
-    async with httpx.AsyncClient(verify=settings.SSL_VERIFY) as client:
+    async with httpx.AsyncClient(
+        verify=settings.SSL_VERIFY, timeout=_CREDENTIAL_TIMEOUT_SECONDS
+    ) as client:
         response = await client.get(url, headers=headers)
         response.raise_for_status()
         payload = response.json()
@@ -64,18 +73,33 @@ def apply_credential_auth(
     if not credential_type or credential_type.lower() == "none":
         return
 
+    if credential_type not in _KNOWN_CREDENTIAL_TYPES:
+        raise UnsupportedCredentialTypeError(
+            f"Credential has an unsupported authentication type '{credential_type}'."
+        )
+
     if credential_type == "ApiKeyHeader":
         key_name = _first_value(parameters, "headerName", "keyName", "KeyName") or "X-API-Key"
-        headers[key_name] = _first_value(parameters, "apiKey", "ApiKey") or ""
+        api_key = _first_value(parameters, "apiKey", "ApiKey")
+        if not api_key:
+            raise UnsupportedCredentialTypeError("Credential has no 'apiKey' value.")
+        headers[key_name] = api_key
     elif credential_type == "ApiKeyQuery":
         key_name = _first_value(parameters, "parameterName", "keyName", "KeyName") or "api_key"
-        query_params[key_name] = _first_value(parameters, "apiKey", "ApiKey") or ""
+        api_key = _first_value(parameters, "apiKey", "ApiKey")
+        if not api_key:
+            raise UnsupportedCredentialTypeError("Credential has no 'apiKey' value.")
+        query_params[key_name] = api_key
     elif credential_type == "Bearer":
         token = _first_value(parameters, "token", "Token")
-        headers["Authorization"] = f"Bearer {token or ''}"
+        if not token:
+            raise UnsupportedCredentialTypeError("Credential has no 'token' value.")
+        headers["Authorization"] = f"Bearer {token}"
     elif credential_type == "Basic":
-        username = _first_value(parameters, "username", "Username") or ""
+        username = _first_value(parameters, "username", "Username")
         password = _first_value(parameters, "password", "Password") or ""
+        if not username:
+            raise UnsupportedCredentialTypeError("Credential has no 'username' value.")
         encoded = base64.b64encode(f"{username}:{password}".encode()).decode()
         headers["Authorization"] = f"Basic {encoded}"
 
