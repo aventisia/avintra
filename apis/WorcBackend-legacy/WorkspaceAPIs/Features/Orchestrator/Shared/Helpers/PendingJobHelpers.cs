@@ -20,6 +20,6 @@ public static class PendingJobHelpers
 
         return jobs.AnyAsync(w => w.Id == pendingJobId
             && w.Status == JobStatusEnum.Created
-            && (w.MachineId == machine.ClientId || w.MachineId == null));
+            && w.MachineId == machine.ClientId);
     }
 }

@@ -237,7 +237,7 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Agent not found.", 404);
 
             if (flowVersion.IsFlowVersionPublished && string.IsNullOrEmpty(jobInsertDto.ExecutionLocation))
-                return serviceResponse.Update("Machine name is required for published agents.", 400);
+                return serviceResponse.Update("Execution location is required for published agents.", 400);
 
             if (flowVersion.IsFlowVersionPublished
                 && JobsAssignmentHelpers.IsCloudExecutionLocation(jobInsertDto.ExecutionLocation)
@@ -257,7 +257,7 @@ public class JobsTableService : IJobsTableService
             string? resolvedMachineName = null;
             if (flowVersion.IsFlowVersionPublished && !JobsAssignmentHelpers.IsUnassignedExecutionLocation(jobInsertDto.ExecutionLocation))
             {
-                var requestedMachineName = jobInsertDto.ExecutionLocation!;
+                var requestedMachineName = jobInsertDto.ExecutionLocation!.Trim();
 
                 var requestedMachine = await _unitOfWork.MachineRepo
                     .GetByConditionAsync(w => w.Name.Equals(requestedMachineName, StringComparison.OrdinalIgnoreCase))
@@ -987,8 +987,6 @@ public class JobsTableService : IJobsTableService
             if (nextJob == null)
                 return serviceResponse.Update(null, 200, null);
 
-            // Mapping profile fills FlowName/FlowVersionNumber/FlowType/IsFlowVersionPublished from
-            // the included FlowVersion + Flow navigation properties.
             var jobRecordDto = nextJob.Adapt<JobRecordDto>();
             return serviceResponse.Update("Pending job found", 200, jobRecordDto);
         }
@@ -1016,14 +1014,14 @@ public class JobsTableService : IJobsTableService
 
     private bool CanCallerActOnJobMachine(Job job)
     {
-        if (job.MachineId == null || job.MachineId == Guid.Empty)
-            return true;
-
         var user = _httpContextAccessor.HttpContext?.User;
+
         if (!MachineIdentityClaims.TryGetMachineId(user, out var callerMachineId))
             return true;
 
-        return callerMachineId == job.MachineId.Value;
+        return job.MachineId.HasValue
+            && job.MachineId.Value != Guid.Empty
+            && callerMachineId == job.MachineId.Value;
     }
 
     // IMPORTANT NOTE: must run inside an active transaction so the FOR UPDATE SKIP LOCKED lock is held until commit or rollback.
