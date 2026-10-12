@@ -260,9 +260,10 @@ public class JobsTableService : IJobsTableService
                 var requestedMachineName = jobInsertDto.ExecutionLocation!.Trim();
 
                 var requestedMachine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w => w.Name.Equals(requestedMachineName, StringComparison.OrdinalIgnoreCase))
+                    .GetByConditionAsync(w =>
+                        w.Name.ToLower() == requestedMachineName.ToLower())
                     .FirstOrDefaultAsync();
-
+                    
                 if (requestedMachine == null)
                     return serviceResponse.Update("Invalid execution location.", 400);
 
