@@ -271,6 +271,7 @@ export function convertToolOperationsToActions(
   img?: string;
   color?: string;
   supportedPlatforms: string[];
+  docsLink: string;
   inputs?: NodeInputType[];
   outputs?: NodeOutputType[];
   isVerified: boolean;
@@ -323,6 +324,7 @@ export function convertToolOperationsToActions(
       iconUrl: toolIconUrl,
       img: undefined,
       color,
+      docsLink: "https://docs.aventisia.com",
       supportedPlatforms: ["cloud", "windows"],
       inputs,
       outputs,
