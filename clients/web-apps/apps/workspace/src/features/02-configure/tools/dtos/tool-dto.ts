@@ -20,14 +20,10 @@ export interface ToolDto {
    */
   code?: string;
 
-  /**
-   * Description of the tool.
-   */
   description?: string;
 
   /**
-   * Optional URL of the icon that represents the tool. When omitted, the
-   * default placeholder icon is used.
+   * Optional icon URL of the tool (max 1000 chars); blank uses the default placeholder icon.
    */
   iconUrl?: string;
 
@@ -36,14 +32,8 @@ export interface ToolDto {
    */
   type: ComponentTypeEnum;
 
-  /**
-   * Base URL of the external API.
-   */
   baseUrl: string;
 
-  /**
-   * Raw OpenAPI specification for the tool.
-   */
   openApiSpec?: string;
 
   /**
@@ -52,29 +42,16 @@ export interface ToolDto {
   parsedSchema?: object;
 
   /**
-   * Manually authored operations. Synthesized into an OpenAPI spec by the
-   * backend when no spec is provided.
+   * Manually authored operations, synthesized into an OpenAPI spec by the backend when no spec is provided.
    */
   manualOperations?: ManualToolOperation[];
 
-  /**
-   * Authentication method required by the tool.
-   */
   authenticationType?: ToolAuthenticationTypeEnum;
 
-  /**
-   * Unique name of the credential associated with the tool.
-   */
   credentialName?: string;
 
-  /**
-   * Indicates whether the tool is accessible to all users within the tenant.
-   */
   isTenantWideAccess: boolean;
 
-  /**
-   * Indicates whether the tool is active and available for use.
-   */
   isActive: boolean;
 
   /**
@@ -82,33 +59,15 @@ export interface ToolDto {
    */
   isVerified: boolean;
 
-  /**
-   * Optional flag indicating whether the tool record is disabled.
-   */
   isDisabled?: boolean;
 
-  /**
-   * Access level of the tool record.
-   */
   accessLevel: ResourceAccessTypeEnum;
 
-  /**
-   * Username of the user who created the tool record.
-   */
   createdBy?: string;
 
-  /**
-   * Date and time when the tool record was created.
-   */
   createdOn?: string;
 
-  /**
-   * Username of the user who last modified the tool record.
-   */
   lastModifiedBy?: string;
 
-  /**
-   * Date and time when the tool record was last modified.
-   */
   lastModifiedOn?: string;
 }

@@ -5,6 +5,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 
 import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
+import { hasBalancedPathPlaceholders } from "../utils/manual-openapi.util";
 
 export const toolNameSchema = z
   .string()
@@ -17,7 +18,6 @@ export const toolBaseUrlSchema = z
   .max(1000, { message: maxLenError("Base URL", 1000) })
   .url({ message: "Base URL must be a valid URL" });
 
-// Manual operation schemas (build-manually mode).
 export const manualToolOperationHeaderSchema = z.object({
   key: z
     .string()
@@ -55,8 +55,11 @@ export const manualToolOperationSchema = z.object({
     .string()
     .min(1, { message: reqError("Endpoint") })
     .max(500, { message: maxLenError("Endpoint", 500) })
-    .regex(/^\/?[\w\-./{}%&=]*$/, {
+    .regex(/^\/?[\w\-./{}]+(?:\/[\w\-./{}]+)*$/, {
       message: "Endpoint must be a valid path template (e.g. /users/{id})",
+    })
+    .refine(hasBalancedPathPlaceholders, {
+      message: "Endpoint must close every path placeholder (e.g. /users/{id})",
     }),
   headers: z.array(manualToolOperationHeaderSchema).optional(),
   parameters: z.array(manualToolOperationParameterSchema).optional(),
@@ -101,7 +104,6 @@ export const toolZodSchema = z.object({
     .refine(
       (operations) => {
         if (!operations?.length) return true;
-        // Routes are identified by the HTTP method + endpoint pair.
         const routes = operations.map((operation) => {
           const endpoint = operation.endpoint.trim().toLowerCase();
           return `${operation.method.toUpperCase()} ${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;

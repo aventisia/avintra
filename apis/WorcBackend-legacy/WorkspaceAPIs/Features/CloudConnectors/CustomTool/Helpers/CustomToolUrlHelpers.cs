@@ -10,6 +10,37 @@ public static class CustomToolUrlHelpers
 {
     private static readonly TimeSpan ResolutionTimeout = TimeSpan.FromSeconds(30);
 
+    private static readonly (byte[] Network, int PrefixLength)[] BlockedIPv4Networks =
+    [
+        (new byte[] { 0, 0, 0, 0 }, 8),
+        (new byte[] { 10, 0, 0, 0 }, 8),
+        (new byte[] { 100, 64, 0, 0 }, 10),
+        (new byte[] { 127, 0, 0, 0 }, 8),
+        (new byte[] { 169, 254, 0, 0 }, 16),
+        (new byte[] { 172, 16, 0, 0 }, 12),
+        (new byte[] { 192, 0, 0, 0 }, 24),
+        (new byte[] { 192, 0, 2, 0 }, 24),
+        (new byte[] { 192, 88, 99, 0 }, 24),
+        (new byte[] { 192, 168, 0, 0 }, 16),
+        (new byte[] { 198, 18, 0, 0 }, 15),
+        (new byte[] { 198, 51, 100, 0 }, 24),
+        (new byte[] { 203, 0, 113, 0 }, 24),
+        (new byte[] { 224, 0, 0, 0 }, 4),
+        (new byte[] { 240, 0, 0, 0 }, 4),
+    ];
+
+    private static readonly (byte[] Network, int PrefixLength)[] BlockedIPv6Networks =
+    [
+        (new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 128),
+        (new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, 128),
+        (new byte[] { 0x00, 0x64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 64),
+        (new byte[] { 0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 32),
+        (new byte[] { 0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 7),
+        (new byte[] { 0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 10),
+        (new byte[] { 0xfe, 0xc0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 10),
+        (new byte[] { 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 8),
+    ];
+
     /// <summary>
     /// Parses a base URL string into an absolute http/https URI.
     /// </summary>
@@ -27,10 +58,9 @@ public static class CustomToolUrlHelpers
     }
 
     /// <summary>
-    /// Indicates whether a URL's host resolves only to public addresses, blocking
-    /// loopback, private, link-local and unique-local targets and their DNS results.
+    /// Indicates whether a URL's host resolves only to public addresses.
     /// </summary>
-    public static async Task<bool> IsPublicHostAsync(Uri uri)
+    public static async Task<bool> IsPublicHostAsync(Uri uri, CancellationToken cancellationToken = default)
     {
         if (uri.IsLoopback)
         {
@@ -43,10 +73,12 @@ public static class CustomToolUrlHelpers
             return IsPublicAddress(literal);
         }
 
-        using var dnsCancellationTokenSource = new CancellationTokenSource(ResolutionTimeout);
+        using var resolutionCancellationTokenSource =
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        resolutionCancellationTokenSource.CancelAfter(ResolutionTimeout);
         try
         {
-            var addresses = await Dns.GetHostAddressesAsync(host, dnsCancellationTokenSource.Token);
+            var addresses = await Dns.GetHostAddressesAsync(host, resolutionCancellationTokenSource.Token);
             return addresses.Length > 0 && addresses.All(IsPublicAddress);
         }
         catch (SocketException)
@@ -59,13 +91,11 @@ public static class CustomToolUrlHelpers
         }
     }
 
+    /// <summary>
+    /// Indicates whether an address is publicly routable, matching the Python url_guard blocklist.
+    /// </summary>
     public static bool IsPublicAddress(IPAddress address)
     {
-        if (IPAddress.IsLoopback(address))
-        {
-            return false;
-        }
-
         if (address.IsIPv4MappedToIPv6)
         {
             address = address.MapToIPv4();
@@ -74,23 +104,36 @@ public static class CustomToolUrlHelpers
         if (address.AddressFamily == AddressFamily.InterNetwork)
         {
             var bytes = address.GetAddressBytes();
-            return bytes[0] switch
-            {
-                0 or 10 or 127 => false,
-                _ => !(bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-                     && !(bytes[0] == 192 && bytes[1] == 168)
-                     && !(bytes[0] == 169 && bytes[1] == 254),
-            };
+            return !BlockedIPv4Networks.Any(network => IsInNetwork(bytes, network.Network, network.PrefixLength));
         }
 
         if (address.AddressFamily == AddressFamily.InterNetworkV6)
         {
             var bytes = address.GetAddressBytes();
-            return !address.IsIPv6LinkLocal
-                   && !address.IsIPv6SiteLocal
-                   && (bytes[0] & 0xFE) != 0xFC;
+            return !BlockedIPv6Networks.Any(network => IsInNetwork(bytes, network.Network, network.PrefixLength));
         }
 
         return false;
+    }
+
+    private static bool IsInNetwork(byte[] address, byte[] network, int prefixLength)
+    {
+        var fullBytes = prefixLength / 8;
+        for (var index = 0; index < fullBytes; index++)
+        {
+            if (address[index] != network[index])
+            {
+                return false;
+            }
+        }
+
+        var remainingBits = prefixLength % 8;
+        if (remainingBits == 0)
+        {
+            return true;
+        }
+
+        var mask = (byte)(0xFF << (8 - remainingBits));
+        return (address[fullBytes] & mask) == (network[fullBytes] & mask);
     }
 }

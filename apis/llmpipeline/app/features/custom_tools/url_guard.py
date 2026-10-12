@@ -5,6 +5,36 @@ from urllib.parse import urlparse
 
 _ALLOWED_SCHEMES = ("http", "https")
 
+# IMPORTANT NOTE: this blocklist must stay in sync with the .NET CustomToolUrlHelpers blocklist.
+_BLOCKED_IPV4_NETWORKS = (
+    ipaddress.ip_network("0.0.0.0/8"),
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("100.64.0.0/10"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.0.0.0/24"),
+    ipaddress.ip_network("192.0.2.0/24"),
+    ipaddress.ip_network("192.88.99.0/24"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("198.18.0.0/15"),
+    ipaddress.ip_network("198.51.100.0/24"),
+    ipaddress.ip_network("203.0.113.0/24"),
+    ipaddress.ip_network("224.0.0.0/4"),
+    ipaddress.ip_network("240.0.0.0/4"),
+)
+
+_BLOCKED_IPV6_NETWORKS = (
+    ipaddress.ip_network("::/128"),
+    ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("100::/64"),
+    ipaddress.ip_network("2001:db8::/32"),
+    ipaddress.ip_network("fc00::/7"),
+    ipaddress.ip_network("fe80::/10"),
+    ipaddress.ip_network("fec0::/10"),
+    ipaddress.ip_network("ff00::/8"),
+)
+
 
 class UnsafeUrlError(ValueError):
     """Raised when a custom-tool URL targets a non-public address."""
@@ -61,4 +91,10 @@ def _is_public_address(
 ) -> bool:
     if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped is not None:
         address = address.ipv4_mapped
-    return address.is_global
+
+    blocked_networks = (
+        _BLOCKED_IPV6_NETWORKS
+        if isinstance(address, ipaddress.IPv6Address)
+        else _BLOCKED_IPV4_NETWORKS
+    )
+    return not any(address in network for network in blocked_networks)

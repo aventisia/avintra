@@ -37,18 +37,7 @@ async def fetch_decrypted_vault_credential(
 def extract_credential_material(
     credential: dict | None,
 ) -> tuple[str | None, dict]:
-    """Normalize a vault secret DTO into ``(auth_type, parameters)``.
-
-    The vault endpoint returns the full secret DTO, e.g.::
-
-        {"type": "CustomApiTool",
-         "data": {"Type": "Bearer", "Parameters": {"token": "..."}}}
-
-    The actual auth material lives under the nested ``data`` field, while the
-    top-level ``type`` is the credential kind (``CustomApiTool``) rather than
-    the auth scheme. Some callers may already pass the inner payload directly,
-    so both shapes are supported.
-    """
+    """Normalize a vault secret DTO into ``(credential_type, parameters)``."""
     if not credential:
         return None, {}
 
@@ -69,21 +58,7 @@ def apply_credential_auth(
     credential: dict | None,
     fallback_type: str | None = None,
 ) -> None:
-    """Resolve a vault credential into concrete HTTP auth for a custom tool.
-
-    Mirrors the backend ``CustomApiTool`` credential contract (see
-    ``CustomToolConnectorService.ResolveAuthenticationAsync``) so the Python
-    runtime and the .NET runtime read the same parameter keys:
-
-    - ``ApiKeyHeader``: ``headerName`` + ``apiKey``
-    - ``ApiKeyQuery``:  ``parameterName`` + ``apiKey``
-    - ``Bearer``:       ``token``
-    - ``Basic``:        ``username`` + ``password``
-
-    ``fallback_type`` is used when the credential carries no ``Type`` (e.g. the
-    tool's own ``authentication_type``). Legacy camelCase/PascalCase keys are
-    still accepted as fallbacks.
-    """
+    """Apply a vault credential to the outbound request as HTTP auth headers and query parameters."""
     credential_type, parameters = extract_credential_material(credential)
     credential_type = credential_type or fallback_type
     if not credential_type or credential_type.lower() == "none":
@@ -106,7 +81,6 @@ def apply_credential_auth(
 
 
 def _first_value(parameters: dict, *keys: str) -> str | None:
-    """Return the first non-empty value among ``keys`` as a string."""
     for key in keys:
         value = parameters.get(key)
         if value:

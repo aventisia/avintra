@@ -22,14 +22,12 @@ public class Tool : IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the space this tool belongs to.
-    /// Null indicates the tool is in the default "Central" space (shared across the tenant).
+    /// Gets or sets the space this tool belongs to; null indicates the default Central space.
     /// </summary>
     public Guid? SpaceId { get; set; }
 
     /// <summary>
     /// Gets or sets the deployment environment this tool belongs to.
-    /// Combined with tenant/space/name this enforces uniqueness per environment.
     /// </summary>
     public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
 
@@ -46,7 +44,6 @@ public class Tool : IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the optional URL of the icon that represents the tool.
-    /// When null, the default placeholder icon is used.
     /// </summary>
     [MaxLength(1000)]
     public string? IconUrl { get; set; }
@@ -102,7 +99,6 @@ public class Tool : IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the ID of the user who created the record.
-    /// Null indicates the tool was created by the platform (e.g. seeded platform tools).
     /// </summary>
     public Guid? CreatedByUserId { get; set; }
 
@@ -119,7 +115,6 @@ public class Tool : IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the ID of the user who modified the record last.
-    /// Null indicates the tool was last modified by the platform (e.g. seeded platform tools).
     /// </summary>
     public Guid? LastModifiedByUserId { get; set; }
 
@@ -135,17 +130,13 @@ public class Tool : IMustHaveTenant
     public DateTimeOffset LastModifiedOn { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the record is disabled. Use this to mark a record as disabled if it's outdated or no longer required when deletion is not possible.
+    /// Gets or sets a value indicating whether the record is disabled.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.
+    /// Gets or sets the row version used to detect concurrent updates.
     /// </summary>
-    /// <remarks>
-    /// It is a hidden system column and won't be visible in table's column list.
-    /// For more information, see https://www.npgsql.org/efcore/modeling/concurrency.html?tabs=data-annotations
-    /// </remarks>
     [Timestamp]
     public uint Version { get; set; }
 }

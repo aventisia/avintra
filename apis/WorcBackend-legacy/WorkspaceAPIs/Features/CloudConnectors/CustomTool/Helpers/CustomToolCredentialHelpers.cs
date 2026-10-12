@@ -6,8 +6,7 @@ namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 public static class CustomToolCredentialHelpers
 {
     /// <summary>
-    /// Resolves the decrypted vault credential into HTTP auth headers and an
-    /// optional API-key query parameter.
+    /// Resolves the decrypted vault credential into HTTP auth headers and an optional API-key query parameter.
     /// </summary>
     public static async Task<CustomToolAuthResult> ResolveAuthenticationAsync(
         ICloudConnectorsVaultService cloudConnectorsVaultService,
@@ -88,9 +87,6 @@ public static class CustomToolCredentialHelpers
         return CustomToolAuthResult.Succeeded(headers, query);
     }
 
-    /// <summary>
-    /// Reads the decrypted "Parameters" object of a CustomApiTool credential.
-    /// </summary>
     private static Dictionary<string, string> GetCredentialParameters(Dictionary<string, object> data)
     {
         var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -117,10 +113,6 @@ public static class CustomToolCredentialHelpers
         return parameters;
     }
 
-    /// <summary>
-    /// Resolves the credential's authentication type from the "Type" key, accepting
-    /// both the enum-name string ("Bearer") and numeric encodings.
-    /// </summary>
     private static ToolAuthenticationTypeEnum ResolveAuthType(Dictionary<string, object> data)
     {
         if (!data.TryGetValue("Type", out var typeValue) || typeValue is null)
@@ -147,9 +139,6 @@ public static class CustomToolCredentialHelpers
             : ToolAuthenticationTypeEnum.None;
     }
 
-    /// <summary>
-    /// Reads a non-empty string from the credential parameters.
-    /// </summary>
     private static string? GetString(Dictionary<string, string> parameters, string key) =>
         parameters.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : null;
 }

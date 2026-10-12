@@ -59,30 +59,14 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
-  // Custom Tools section: client-defined L1 (injected by
-  // applyCustomToolsL1 in get-action-selector-data.ts). Two-pane layout: L2
-  // lists the custom tools created in workspace (name, icon); selecting one
-  // populates L3 with draggable actions generated from the tool's OpenAPI
-  // operations. "+ Add" opens the workspace tool-creation wizard in a new
-  // window (confirmed same-tab redirect as fallback). Inactive in search mode
-  // (aggregated L3 search must not be hijacked by this panel).
   const isCustomToolsSection = !query && primaryCategoryLabel === CUSTOM_TOOLS_L1_LABEL;
 
-  // Usable-tool catalog (GET /tools/usable/catalog): every tool the user can
-  // use with its operations inlined in a single payload. Filtered to active
-  // custom tools, sorted by name — this is both the L2 directory and the L3
-  // action source (no second round-trip on selection). Unverified entries
-  // remain visible (flagged) so tools can be offered before verification;
-  // the invoke endpoint rejects them at runtime.
   const { data: catalogResponse, isLoading: isCatalogLoading } = useUsableToolCatalog();
   const customTools = useMemo(
     () => getActiveCustomTools(catalogResponse?.data).sort((a, b) => a.name.localeCompare(b.name)),
     [catalogResponse],
   );
 
-  // L2 selection state + L3 data: operations come straight from the selected
-  // catalog item and are converted into draggable connector actions. The first
-  // tool is preselected so L3 is populated as soon as the section opens.
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
   const selectedTool = useMemo(
     () => customTools.find((tool) => tool.id === selectedToolId) ?? customTools[0] ?? null,
@@ -95,11 +79,6 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
     [selectedTool],
   );
 
-  // Opens the workspace Create Tool page: a new window when possible (browser
-  // window on the web, app window in the desktop shell), otherwise a confirmed
-  // same-tab redirect. The builder tab never navigates away on success, and
-  // the usable-tool catalog refetches on window focus (React Query default),
-  // so a tool created in the new window appears here when the user returns.
   const { addCustomTool: handleAddCustomTool } = useAddCustomTool();
 
   const actionCategories = useMemo(() => {
@@ -109,7 +88,6 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
       actionSelectorData.forEach((primary) => {
         primary.actionCategories.forEach((category) => {
-          // If the category name itself matches, surface all of its actions.
           const categoryMatches = category.label.toLowerCase().includes(normalizedQuery);
 
           const matchingActions = categoryMatches
@@ -258,15 +236,8 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
     );
   }
 
-  // Custom Tools section: two-pane layout matching App Integrations. Rendered
-  // BEFORE the "No actions found" early-return because its single L2 carries no
-  // static actions (the directory is sourced live from useUsableToolCatalog,
-  // and useActionSelectorData strips empty actionCategories).
-  // L2 (left) lists custom tools with name and icon; selecting a tool loads its
-  // OpenAPI operations and renders them as draggable actions in L3 (right).
-  // The back button returns to the L1 grid; "+ Add" opens the workspace
-  // tool-creation wizard in a new window (confirmed same-tab redirect as
-  // fallback).
+  // IMPORTANT NOTE: this block must stay before the "No actions found" early-return because the
+  // custom-tools directory is sourced live from useUsableToolCatalog instead of static actions.
   if (isCustomToolsSection) {
     return (
       <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">

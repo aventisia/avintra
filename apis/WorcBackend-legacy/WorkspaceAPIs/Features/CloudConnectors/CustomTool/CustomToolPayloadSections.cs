@@ -5,16 +5,7 @@ using JsonValueKind = System.Text.Json.JsonValueKind;
 namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 
 /// <summary>
-/// The three configuration sections the custom-tool dynamic-config-panel exposes
-/// (credential selection is handled separately by the vault):
-/// <list type="bullet">
-/// <item><see cref="Headers"/> — additional HTTP request headers, as a JSON object.</item>
-/// <item><see cref="Parameters"/> — path/query/header parameter values, as a JSON object.</item>
-/// <item><see cref="RequestBodyProperties"/> — the JSON request body, as a property map.</item>
-/// </list>
-/// The executor always emits the sectioned envelope; any remaining top-level
-/// payload entries (legacy flows, or free-form specs) are carried through in
-/// <see cref="Extras"/> so the existing schema-driven builders keep working.
+/// Splits the custom-tool dynamic-config-panel payload into its headers, parameters and request-body sections.
 /// </summary>
 public sealed class CustomToolPayloadSections
 {
@@ -44,36 +35,28 @@ public sealed class CustomToolPayloadSections
     public Dictionary<string, object> Parameters { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Gets the request body's top-level properties. Empty when the payload
-    /// editor supplied nothing, or supplied a non-object body.
+    /// Gets the request body's top-level properties.
     /// </summary>
     public Dictionary<string, object> RequestBodyProperties { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Gets the raw request payload text when the payload editor supplied a
-    /// non-object value (e.g. a JSON array, scalar or non-JSON text). Sent
-    /// verbatim as the request body.
+    /// Gets the raw request payload text when the payload editor supplied a non-object value.
     /// </summary>
     public string? RequestPayload { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether the payload editor supplied a raw
-    /// (non-object) value that should be forwarded verbatim.
+    /// Gets a value indicating whether the payload editor supplied a raw non-object value to forward verbatim.
     /// </summary>
     public bool IsRawRequestPayload => RequestPayload is not null && RequestBodyProperties.Count == 0;
 
     /// <summary>
-    /// Gets the payload entries that are neither a section nor consumed, so
-    /// free-form/legacy payloads still resolve against the operation schema.
+    /// Gets the payload entries that are neither a section nor consumed.
     /// </summary>
     public Dictionary<string, object> Extras { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Splits a raw payload into the sectioned view. Returns an empty instance
-    /// when the payload is <c>null</c>.
+    /// Splits a raw payload into the sectioned view.
     /// </summary>
-    /// <param name="payload">The inbound payload from the executor.</param>
-    /// <returns>The sectioned payload.</returns>
     public static CustomToolPayloadSections From(Dictionary<string, object>? payload)
     {
         var sections = new CustomToolPayloadSections();
@@ -109,11 +92,8 @@ public sealed class CustomToolPayloadSections
     }
 
     /// <summary>
-    /// Builds a single lookup dictionary for schema-driven parameter resolution:
-    /// the Parameters section first, then any legacy top-level payload entries
-    /// (which take precedence, matching the pre-sectioned behavior).
+    /// Builds a single lookup dictionary for schema-driven parameter resolution.
     /// </summary>
-    /// <returns>The merged parameter values.</returns>
     public Dictionary<string, object> BuildParameterValues()
     {
         var merged = new Dictionary<string, object>(Parameters, StringComparer.OrdinalIgnoreCase);
@@ -125,12 +105,6 @@ public sealed class CustomToolPayloadSections
         return merged;
     }
 
-    /// <summary>
-    /// Assigns the Request Payload section: JSON objects are decomposed into
-    /// top-level properties (so schema-driven body building applies), while
-    /// arrays/scalars/non-JSON text are preserved as raw body text for verbatim
-    /// forwarding.
-    /// </summary>
     private void AssignRequestBody(object? value)
     {
         var element = ToJsonElement(value);
@@ -153,10 +127,6 @@ public sealed class CustomToolPayloadSections
         RequestPayload = element.Value.GetRawText();
     }
 
-    /// <summary>
-    /// Converts a section value (JSON string, JsonElement, or object) into a
-    /// name → value map, adding each entry to <paramref name="target"/>.
-    /// </summary>
     private void CopyObjectInto(Dictionary<string, object> target, object? value)
     {
         var element = ToJsonElement(value);
@@ -171,10 +141,6 @@ public sealed class CustomToolPayloadSections
         }
     }
 
-    /// <summary>
-    /// Parses a section value into a <see cref="System.Text.Json.JsonElement"/>,
-    /// accepting raw JSON strings and already-deserialized JsonElement-backed objects.
-    /// </summary>
     private static System.Text.Json.JsonElement? ToJsonElement(object? value)
     {
         switch (value)
@@ -212,9 +178,6 @@ public sealed class CustomToolPayloadSections
         }
     }
 
-    /// <summary>
-    /// Converts a JSON element into the CLR shape used by the request builders.
-    /// </summary>
     private static object? ConvertElement(System.Text.Json.JsonElement element) =>
         element.ValueKind switch
         {

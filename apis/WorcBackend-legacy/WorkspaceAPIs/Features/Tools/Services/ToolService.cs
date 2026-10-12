@@ -8,10 +8,7 @@ public class ToolService : IToolService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolService> _logger;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResourceShareService _resourceShareService;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly CorsairConfigRepository _corsairConfigRepository;
@@ -25,8 +22,6 @@ public class ToolService : IToolService
         ILogger<ToolService> logger,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
-        IHttpClientFactory httpClientFactory,
-        EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
         CorsairConfigRepository corsairConfigRepository,
@@ -35,10 +30,7 @@ public class ToolService : IToolService
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _httpContextAccessor = httpContextAccessor;
         _resourceShareService = resourceShareService;
-        _httpClientFactory = httpClientFactory;
-        _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
         _corsairConfigRepository = corsairConfigRepository;
@@ -48,7 +40,6 @@ public class ToolService : IToolService
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
 
-    // Retrieves list of tools based on ownership scope.
     public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetToolsAsync(bool isPersonal)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<ToolDto>>
@@ -63,7 +54,6 @@ public class ToolService : IToolService
 
             if (isPersonal)
             {
-                // Fetch tools owned by the current user.
                 toolList = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _currentUserId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
@@ -73,7 +63,6 @@ public class ToolService : IToolService
             }
             else
             {
-                // Resolve shared resource access for the current user.
                 resourceAccessMap = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
                     _currentUserId,
                     ResourceTypeEnum.Tool,
@@ -84,7 +73,6 @@ public class ToolService : IToolService
                         ResourceAccessTypeEnum.Edit,
                     });
 
-                // Fetch shared and tenant-wide tools not owned by the current user.
                 toolList = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _currentUserId &&
@@ -96,7 +84,6 @@ public class ToolService : IToolService
                     .ToListAsync();
             }
 
-            // Map entities to DTOs and assign effective access level.
             var mappedTools = toolList.Adapt<IEnumerable<ToolDto>>().ToList();
             mappedTools.ForEach(toolDto =>
             {
@@ -290,7 +277,7 @@ public class ToolService : IToolService
     // Resolves the shared resource access map used to scope usable tools.
     private Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetUsableToolsResourceAccessAsync() =>
         _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-            _currentUserId,
+            _currentTenantService.CurrentUserId,
             ResourceTypeEnum.Tool,
             new[]
             {
@@ -332,12 +319,12 @@ public class ToolService : IToolService
                  w.EnvType == currentEnvType &&
                  w.SpaceId == targetSpaceId &&
                  (w.IsTenantWideAccess ||
-                  (w.CreatedByUserId == _currentUserId && !w.IsTenantWideAccess) ||
+                  (w.CreatedByUserId == _currentTenantService.CurrentUserId && !w.IsTenantWideAccess) ||
                   resourceAccessMap.Keys.Contains(w.Id)))
             );
     }
 
-    // Resolves the vault credential type a tool is invoked with.
+    // Resolves the credential (vault) type a tool is invoked with.
     private string? ResolveCredentialType(Tool tool)
     {
         // Custom tools always use the CustomApiTool credential type.
@@ -346,12 +333,11 @@ public class ToolService : IToolService
             return VaultCredentialTypesEnum.CustomApiTool.ToString();
         }
 
-        // Platform Corsair tools map their plugin id to a vault credential type via the
-        // integration catalog.
+        // Platform Corsair tools map their plugin id to a vault type via the integration catalog.
         var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
         return string.IsNullOrWhiteSpace(pluginId)
             ? null
-            : _corsairConfigRepository.GetVaultCredentialTypeForPluginId(pluginId);
+            : _corsairConfigRepository.GetPluginIdForVaultCredentialType(pluginId);
     }
 
     // Checks whether a tool name is available for use.
@@ -364,7 +350,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Validate and normalize the provided tool name.
             var normalizedName = availabilityDto.UserInput?.Trim();
             if (string.IsNullOrWhiteSpace(normalizedName))
             {
@@ -374,9 +359,8 @@ public class ToolService : IToolService
                     new TrueFalseResultDto { Result = false });
             }
 
-            // Search for an existing tool with the same name (case-insensitive) within the current
-            // environment. AnyAsync avoids a duplicate-name throw when same-name tools exist across
-            // spaces (the space filter is intentionally bypassed for platform/tool uniqueness).
+            var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(normalizedName.ToLowerInvariant());
+
             var toolNameExists = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     (
@@ -384,7 +368,7 @@ public class ToolService : IToolService
                         (w.Type == ComponentTypeEnum.Custom &&
                         w.TenantId == _currentTenantService.CurrentTenantId)
                     ) &&
-                    w.Name.ToLower() == normalizedName.ToLower() &&
+                    EF.Functions.ILike(w.Name, namePattern) &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .IgnoreQueryFilters()
@@ -411,7 +395,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Retrieves a tool by its ID.
     public async Task<ServiceResponse<ToolDto>> GetToolByIdAsync(Guid toolId)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
@@ -421,9 +404,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Fetch the requested tool.
-            // Bypass global tenant/space filters so platform's default tools with
-            // TenantId = Guid.Empty are visible to every tenant.
             var tool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType && (w.TenantId == _currentTenantService.CurrentTenantId || w.TenantId == Guid.Empty))
                 .Include(i => i.CreatedByUser)
@@ -436,9 +416,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            // Verify the current user can view the tool.
             var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
+                _currentTenantService.CurrentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
                 tool.CreatedByUserId ?? Guid.Empty,
@@ -468,7 +447,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Retrieves a tool by its name within the current environment and tenant.
     public async Task<ServiceResponse<ToolDto>> GetToolByNameAsync(string toolName)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
@@ -478,21 +456,17 @@ public class ToolService : IToolService
 
         try
         {
-            // Validate the provided tool name.
             if (string.IsNullOrWhiteSpace(toolName))
             {
                 return serviceResponse.Update("Tool name is required.", 400);
             }
 
-            // Normalize input for case-insensitive comparison.
             var normalizedName = toolName.Trim().ToLowerInvariant();
+            var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(normalizedName);
 
-            // Fetch the requested tool by name within the current environment.
-            // Bypass global tenant/space filters so platform's default tools with
-            // TenantId = Guid.Empty are visible to every tenant.
             var toolCandidates = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == normalizedName &&
+                    EF.Functions.ILike(w.Name, namePattern) &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
@@ -500,7 +474,7 @@ public class ToolService : IToolService
                 .OrderBy(w => w.CreatedOn)
                 .ToListAsync();
 
-            // Resolve deterministically (the unique index is TenantId + SpaceId + EnvType + Name):
+            // The unique index is TenantId + SpaceId + EnvType + Name, so resolve deterministically:
             // prefer the request's space, then Central (null), then the oldest record.
             var requestSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
                 ? (Guid?)null
@@ -515,9 +489,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            // Verify the current user can view the tool.
             var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
+                _currentTenantService.CurrentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
                 tool.CreatedByUserId ?? Guid.Empty,
@@ -547,7 +520,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Inserts a new tool.
     public async Task<ServiceResponse<ToolDto>> InsertToolAsync(ToolDto toolDto)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
@@ -557,7 +529,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Block creating new tools while in the PROD environment.
             var prodBlock = CreateResourceGuard.Validate<ToolDto>(
                 _currentTenantService.CurrentEnvType,
                 "tool");
@@ -566,16 +537,15 @@ public class ToolService : IToolService
                 return prodBlock;
             }
 
-            // Normalize string properties to avoid case-sensitivity issues.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
-            // Store blank icon URLs as null so the optional column stays clean.
             if (string.IsNullOrWhiteSpace(toolDto.IconUrl))
             {
                 toolDto.IconUrl = null;
             }
 
-            // Ensure the tool name is unique within the current environment.
+            var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolDto.Name.ToLowerInvariant());
+
             var toolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     (
@@ -583,7 +553,7 @@ public class ToolService : IToolService
                         (w.Type == ComponentTypeEnum.Custom &&
                         w.TenantId == _currentTenantService.CurrentTenantId)
                     ) &&
-                    w.Name.ToLower() == toolDto.Name.ToLower() &&
+                    EF.Functions.ILike(w.Name, namePattern) &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .IgnoreQueryFilters()
@@ -594,7 +564,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update($"Tool '{toolDto.Name}' already exists.", 409);
             }
 
-            // Map DTO to entity, force custom type, and set audit fields.
             var toolToCreate = toolDto.Adapt<Tool>();
             toolToCreate.IsActive = true;
             toolToCreate.Type = ComponentTypeEnum.Custom;
@@ -604,8 +573,6 @@ public class ToolService : IToolService
             toolToCreate.CreatedOn = DateTimeOffset.UtcNow;
             toolToCreate.LastModifiedOn = DateTimeOffset.UtcNow;
 
-            // Parse OpenAPI spec into an LLM-friendly schema when provided. Retain
-            // the per-operation verification flags the wizard collected before save.
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
             {
                 toolToCreate.ParsedSchema = ToolOperationHelpers.CopyOperationVerification(
@@ -614,8 +581,6 @@ public class ToolService : IToolService
             }
             else if (toolDto.ManualOperations is { Count: > 0 })
             {
-                // Synthesize an OpenAPI spec from manually authored operations so
-                // manual tools flow through the same flatten/test/execute pipeline.
                 var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
                     toolDto.ManualOperations,
                     toolDto.Name);
@@ -634,8 +599,6 @@ public class ToolService : IToolService
                 }
             }
 
-            // Derive the tool-level aggregate from the per-operation flags, keeping
-            // the incoming tool-level flag as the legacy fallback.
             toolToCreate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
                 toolToCreate.ParsedSchema,
                 toolToCreate.IsVerified);
@@ -645,7 +608,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
 
-            // Persist the new tool.
             await _unitOfWork.ToolRepo.InsertAsync(toolToCreate);
 
             if (!await _unitOfWork.SaveAsync())
@@ -654,7 +616,6 @@ public class ToolService : IToolService
                 return serviceResponse;
             }
 
-            // Assign ownership for resource sharing.
             if (!await _resourceShareService.AssignOwnerAsync(_currentUserId, toolToCreate.Id, ResourceTypeEnum.Tool))
             {
                 _logger.LogError("Failed to assign ownership for tool {ToolId}.", toolToCreate.Id);
@@ -674,7 +635,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Updates an existing tool.
     public async Task<ServiceResponse<ToolDto>> UpdateToolAsync(ToolDto toolDto)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
@@ -684,16 +644,13 @@ public class ToolService : IToolService
 
         try
         {
-            // Normalize string properties.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
-            // Store blank icon URLs as null so the optional column stays clean.
             if (string.IsNullOrWhiteSpace(toolDto.IconUrl))
             {
                 toolDto.IconUrl = null;
             }
 
-            // Fetch the existing tool.
             var toolToUpdate = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
@@ -703,7 +660,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            // Require OM for PROD edits based on the persisted tool environment.
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<ToolDto>(
                 toolToUpdate.EnvType,
                 _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
@@ -713,9 +669,8 @@ public class ToolService : IToolService
                 return prodUpdateBlock;
             }
 
-            // Verify the current user can edit the tool.
             var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
+                _currentTenantService.CurrentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
                 toolToUpdate.CreatedByUserId ?? Guid.Empty,
@@ -731,10 +686,11 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to update this tool.", 403);
             }
 
-            // Ensure no other tool uses the requested name within the current environment.
+            var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolDto.Name.ToLowerInvariant());
+
             var otherToolWithSameName = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == toolDto.Name.ToLower() &&
+                    EF.Functions.ILike(w.Name, namePattern) &&
                     w.Id != toolDto.Id &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
@@ -744,7 +700,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update($"Tool '{toolDto.Name}' already exists.", 409);
             }
 
-            // Apply scalar updates.
             toolToUpdate.Description = toolDto.Description;
             toolToUpdate.IconUrl = toolDto.IconUrl;
             toolToUpdate.BaseUrl = toolDto.BaseUrl;
@@ -759,10 +714,6 @@ public class ToolService : IToolService
                 toolToUpdate.IsDisabled = toolDto.IsDisabled.Value;
             }
 
-            // Keep the raw OpenAPI specification exactly as supplied. Parsed
-            // method details are stored independently so they can be edited.
-            // Re-flattening must retain the per-operation verification flags the
-            // wizard collected, so they are copied from the incoming schema.
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) && toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
             {
                 toolToUpdate.OpenApiSpec = toolDto.OpenApiSpec;
@@ -775,8 +726,6 @@ public class ToolService : IToolService
                 toolToUpdate.ParsedSchema = toolDto.ParsedSchema;
             }
 
-            // Derive the tool-level aggregate from the per-operation flags, keeping
-            // the existing tool-level flag as the legacy fallback.
             toolToUpdate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
                 toolToUpdate.ParsedSchema,
                 toolToUpdate.IsVerified);
@@ -786,7 +735,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
 
-            // Persist changes.
             _unitOfWork.ToolRepo.Update(toolToUpdate);
 
             if (!await _unitOfWork.SaveAsync())
@@ -808,7 +756,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Deletes an existing tool.
     public async Task<ServiceResponse<bool>> DeleteToolAsync(Guid toolId)
     {
         var serviceResponse = new ServiceResponse<bool>
@@ -819,7 +766,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Fetch the tool to delete.
             var toolToDelete = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
@@ -829,12 +775,12 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            // PROD-guard: block deletion of PROD tools or tools with a same-name PROD twin.
+            var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolToDelete.Name.ToLowerInvariant());
             var guardBlock = await DeleteResourceGuard.ValidateAsync(
                 _unitOfWork.ToolRepo,
                 toolToDelete.EnvType,
                 toolToDelete.Name,
-                w => w.Name.ToLower() == toolToDelete.Name.ToLower() &&
+                w => EF.Functions.ILike(w.Name, namePattern) &&
                      w.EnvType == ConfigureEnvironmentType.Prod &&
                      w.TenantId == toolToDelete.TenantId &&
                      w.SpaceId == toolToDelete.SpaceId,
@@ -844,9 +790,8 @@ public class ToolService : IToolService
                 return guardBlock;
             }
 
-            // Verify the current user is the owner.
             var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
+                _currentTenantService.CurrentUserId,
                 toolToDelete.Id,
                 ResourceTypeEnum.Tool,
                 toolToDelete.CreatedByUserId ?? Guid.Empty,
@@ -858,7 +803,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to delete this tool.", 403);
             }
 
-            // Remove related resource shares and delete the tool.
             await _resourceShareService.DeleteResourceSharesAsync(toolToDelete.Id, ResourceTypeEnum.Tool);
             _unitOfWork.ToolRepo.Delete(toolToDelete);
 
@@ -878,7 +822,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Deletes multiple tools by their IDs.
     public async Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds)
     {
         var serviceResponse = new ServiceResponse<int>
@@ -889,7 +832,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Fetch all tools matching the provided identifiers.
             var toolsToDelete = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => toolIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
@@ -899,7 +841,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update("No tools found to delete.", 404);
             }
 
-            // Verify ownership + PROD-guard for every selected tool.
             var blockedNames = new List<string>();
             foreach (var tool in toolsToDelete)
             {
@@ -916,12 +857,12 @@ public class ToolService : IToolService
                     return serviceResponse.Update("You do not have access to delete one or more selected tools.", 403);
                 }
 
-                // PROD-guard: block the whole batch if any tool is PROD or has a same-name PROD twin.
+                var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(tool.Name.ToLowerInvariant());
                 var guardBlock = await DeleteResourceGuard.ValidateAsync(
                     _unitOfWork.ToolRepo,
                     tool.EnvType,
                     tool.Name,
-                    w => w.Name.ToLower() == tool.Name.ToLower() &&
+                    w => EF.Functions.ILike(w.Name, namePattern) &&
                          w.EnvType == ConfigureEnvironmentType.Prod &&
                          w.TenantId == tool.TenantId &&
                          w.SpaceId == tool.SpaceId,
@@ -932,7 +873,6 @@ public class ToolService : IToolService
                 }
             }
 
-            // Reject the entire batch when any selected tool is protected by the PROD guard.
             if (blockedNames.Count > 0)
             {
                 return serviceResponse.Update(
@@ -941,7 +881,6 @@ public class ToolService : IToolService
                     0);
             }
 
-            // Remove related resource shares and delete the tools.
             await _resourceShareService.DeleteResourceSharesAsync(toolIds, ResourceTypeEnum.Tool);
             _unitOfWork.ToolRepo.Delete(toolsToDelete);
 
@@ -964,126 +903,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Tests a tool by executing the specified operation.
-    public async Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(Guid toolId, TestToolDto testToolDto)
-    {
-        var serviceResponse = new ServiceResponse<TestToolResponseDto>
-        {
-            Message = "Failed to test tool."
-        };
-
-        try
-        {
-            // Fetch the tool to test.
-            var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId)
-                .SingleOrDefaultAsync();
-
-            if (tool == null)
-            {
-                return serviceResponse.Update("Tool not found.", 404);
-            }
-
-            // Verify the current user can test the tool.
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
-                tool.Id,
-                ResourceTypeEnum.Tool,
-                tool.CreatedByUserId ?? Guid.Empty,
-                tool.IsTenantWideAccess,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                });
-
-            if (!canView)
-            {
-                return serviceResponse.Update("You do not have permission to test this tool.", 403);
-            }
-
-            // Pass credential identity to the LLM pipeline so it can decrypt and apply auth.
-            var credentialName = testToolDto.CredentialName ?? tool.CredentialName;
-
-            // Build the test payload for the LLM pipeline.
-            var testPayload = new
-            {
-                baseUrl = tool.BaseUrl,
-                operationId = testToolDto.OperationId,
-                parameters = testToolDto.Parameters,
-                credentialName,
-                openApiSpec = tool.OpenApiSpec,
-            };
-
-            var requestJson = System.Text.Json.JsonSerializer.Serialize(testPayload);
-            var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
-
-            // Execute the test request with a dedicated HttpClient instance.
-            using var llmPipelineClient = new HttpClient();
-            llmPipelineClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_accessToken}");
-            llmPipelineClient.Timeout = TimeSpan.FromSeconds(30);
-
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-            var llmResponse = await llmPipelineClient.PostAsync($"{_environmentConfig.LlmPipelineApiBaseUrl}/api/custom-tools/test", requestContent);
-            stopwatch.Stop();
-
-            var responseBody = await llmResponse.Content.ReadAsStringAsync();
-
-            // Parse the Python response when it returns a successful JSON body.
-            TestToolResponseDto? testResult = null;
-            if (llmResponse.IsSuccessStatusCode)
-            {
-                try
-                {
-                    testResult = System.Text.Json.JsonSerializer.Deserialize<TestToolResponseDto>(responseBody, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
-                catch (Exception parseEx)
-                {
-                    _logger.LogWarning(parseEx, "Failed to parse LLM pipeline test response body as JSON.");
-                }
-            }
-
-            testResult ??= new TestToolResponseDto
-            {
-                Success = llmResponse.IsSuccessStatusCode,
-                StatusCode = (int)llmResponse.StatusCode,
-                Body = responseBody,
-                DurationMs = stopwatch.Elapsed.TotalMilliseconds,
-            };
-
-            // Record per-operation verification (HTTP 200 only, regardless of the
-            // response body) and persist immediately. The tool-level flag is kept
-            // as an aggregate of its operations for the existing L2 surfaces.
-            var isOperationVerified = testResult.StatusCode == 200;
-            tool.ParsedSchema = ToolOperationHelpers.SetOperationVerification(
-                tool.ParsedSchema,
-                testToolDto.OperationId,
-                isOperationVerified);
-            tool.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(tool.ParsedSchema, tool.IsVerified);
-            tool.LastModifiedByUserId = _currentUserId;
-            tool.LastModifiedOn = DateTimeOffset.UtcNow;
-            _unitOfWork.ToolRepo.Update(tool);
-            await _unitOfWork.SaveAsync();
-
-            return serviceResponse.Update(
-                testResult.Success ? "Tool test completed successfully." : "Tool test failed.",
-                200,
-                testResult);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to test tool {ToolId}.", toolId);
-        }
-
-        return serviceResponse;
-    }
-
-    // Activates or deactivates a tool for use in flows.
     public async Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
@@ -1093,7 +912,6 @@ public class ToolService : IToolService
 
         try
         {
-            // Fetch the tool to update.
             var toolToUpdate = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId)
                 .SingleOrDefaultAsync();
@@ -1103,9 +921,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            // Verify the current user can edit the tool.
             var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
-                _currentUserId,
+                _currentTenantService.CurrentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
                 toolToUpdate.CreatedByUserId ?? Guid.Empty,
@@ -1121,7 +938,6 @@ public class ToolService : IToolService
                 return serviceResponse.Update($"You do not have access to {(isActive ? "activate" : "deactivate")} this tool.", 403);
             }
 
-            // Update the active state and record the modifier.
             toolToUpdate.IsActive = isActive;
             toolToUpdate.LastModifiedByUserId = _currentUserId;
             toolToUpdate.LastModifiedOn = DateTimeOffset.UtcNow;
@@ -1146,42 +962,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Retrieves all platform's tools available to the current tenant.
-    public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetPlatformToolsAsync()
-    {
-        var serviceResponse = new ServiceResponse<IEnumerable<ToolDto>>
-        {
-            Message = "Failed to fetch platform tools."
-        };
-
-        try
-        {
-            // Step 1: Load platform-managed tools.
-            var platformTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .IgnoreQueryFilters()
-                .ToListAsync();
-
-            // Step 2: Map to DTOs and assign view access.
-            var mappedTools = platformTools.Adapt<IEnumerable<ToolDto>>().ToList();
-            mappedTools.ForEach(toolDto => toolDto.AccessLevel = ResourceAccessTypeEnum.View);
-
-            return serviceResponse.Update(
-                "Platform tools retrieved successfully.",
-                200,
-                mappedTools);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch platform tools.");
-        }
-
-        return serviceResponse;
-    }
-
     private static bool HasUniqueOperationNames(JsonDocument? parsedSchema)
     {
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1189,6 +969,4 @@ public class ToolService : IToolService
             .All(operation => !string.IsNullOrWhiteSpace(operation.OperationId) &&
                               names.Add(operation.OperationId.Trim()));
     }
-
-
 }

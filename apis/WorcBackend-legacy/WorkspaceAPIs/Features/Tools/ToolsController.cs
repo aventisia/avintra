@@ -6,14 +6,20 @@ namespace WorkspaceAPIs.Controllers;
 public class ToolsController : BaseApiController
 {
     private readonly IToolService _toolService;
+    private readonly IToolCatalogService _toolCatalogService;
+    private readonly IToolVerificationService _toolVerificationService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ToolsController"/> class.
     /// </summary>
-    /// <param name="toolService">The tool service.</param>
-    public ToolsController(IToolService toolService)
+    public ToolsController(
+        IToolService toolService,
+        IToolCatalogService toolCatalogService,
+        IToolVerificationService toolVerificationService)
     {
         _toolService = toolService;
+        _toolCatalogService = toolCatalogService;
+        _toolVerificationService = toolVerificationService;
     }
 
     /// <summary>
@@ -40,7 +46,7 @@ public class ToolsController : BaseApiController
     [HttpGet("usable")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolDto>>>> GetUsableTools()
     {
-        return ResultHelper(await _toolService.GetUsableToolsAsync());
+        return ResultHelper(await _toolCatalogService.GetUsableToolsAsync());
     }
 
     /// <summary>
@@ -49,7 +55,7 @@ public class ToolsController : BaseApiController
     [HttpGet("usable/{toolId}/operations")]
     public async Task<ActionResult<ServiceResponse<UsableToolOperationsDto>>> GetUsableToolOperations(Guid toolId)
     {
-        return ResultHelper(await _toolService.GetUsableToolOperationsAsync(toolId));
+        return ResultHelper(await _toolCatalogService.GetUsableToolOperationsAsync(toolId));
     }
 
     /// <summary>
@@ -58,7 +64,7 @@ public class ToolsController : BaseApiController
     [HttpGet("usable/catalog")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>>> GetUsableToolCatalog()
     {
-        return ResultHelper(await _toolService.GetUsableToolCatalogAsync());
+        return ResultHelper(await _toolCatalogService.GetUsableToolCatalogAsync());
     }
 
     /// <summary>
@@ -130,7 +136,7 @@ public class ToolsController : BaseApiController
     [HttpPost("{toolId}/test")]
     public async Task<ActionResult<ServiceResponse<TestToolResponseDto>>> TestTool(Guid toolId, [FromBody] TestToolDto testToolDto)
     {
-        return ResultHelper(await _toolService.TestToolAsync(toolId, testToolDto));
+        return ResultHelper(await _toolVerificationService.TestToolAsync(toolId, testToolDto));
     }
 
     /// <summary>
@@ -142,10 +148,12 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.SetToolActiveStateAsync(toolId, request.IsActive));
     }
 
-    // Retrieves all platform tools.
+    /// <summary>
+    /// Retrieves all platform tools.
+    /// </summary>
     [HttpGet("platform")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ToolDto>>>> GetPlatformTools()
     {
-        return ResultHelper(await _toolService.GetPlatformToolsAsync());
+        return ResultHelper(await _toolCatalogService.GetPlatformToolsAsync());
     }
 }
