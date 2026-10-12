@@ -35,4 +35,10 @@ public class TenantModelProvider : BaseEntity, IMustHaveTenant
     /// Stored as a JSON column.
     /// </summary>
     public List<string> EnabledModelIds { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the list of enabled models together with their capabilities.
+    /// Stored as a JSON column.
+    /// </summary>
+    public List<EnabledModel> EnabledModels { get; set; } = new();
 }

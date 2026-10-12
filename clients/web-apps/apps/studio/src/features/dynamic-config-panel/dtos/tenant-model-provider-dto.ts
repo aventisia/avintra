@@ -1,3 +1,5 @@
+import { EnabledModelDto } from "./enabled-model.dto";
+
 /**
  * Represents a tenant-scoped model provider configuration,
  * matching the Workspace `tenant-model-provider` DTO.
@@ -20,6 +22,9 @@ export interface TenantModelProviderDto {
 
   /** The list of model identifiers enabled for this provider. */
   enabledModelIds: string[];
+
+  /** The list of enabled models together with their capabilities. */
+  enabledModels?: EnabledModelDto[] | null;
 
   /** Whether this provider is disabled. */
   isDisabled?: boolean | null;

@@ -1,3 +1,5 @@
+using WorkspaceAPIs.Features.TenantModelProvider.Helpers;
+
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
@@ -40,14 +42,15 @@ public class TenantModelProviderService : ITenantModelProviderService
 
         try
         {
-            var modelProviders = await _unitOfWork.TenantModelProviderRepo
+            var providerEntities = await _unitOfWork.TenantModelProviderRepo
                 .GetByConditionAsync(w => w.TenantId == _tenantId)
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .OrderBy(o => o.ProviderType)
-                .ProjectToType<TenantModelProviderDto>()
                 .ToListAsync();
+
+            var modelProviders = providerEntities.Adapt<List<TenantModelProviderDto>>();
 
             // Resolve each stored credential Id to its display name so the Agent
             // Builder can pre-select the previously chosen credential.
@@ -76,20 +79,21 @@ public class TenantModelProviderService : ITenantModelProviderService
 
         try
         {
-            var modelProvider = await _unitOfWork.TenantModelProviderRepo
+            var providerEntity = await _unitOfWork.TenantModelProviderRepo
                 .GetByConditionAsync(w => w.Id == modelProviderId && w.TenantId == _tenantId)
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .ProjectToType<TenantModelProviderDto>()
                 .FirstOrDefaultAsync();
 
-            if (modelProvider == null)
+            if (providerEntity == null)
             {
                 serviceResponse.Message = "Model provider configuration not found.";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
             }
+
+            var modelProvider = providerEntity.Adapt<TenantModelProviderDto>();
 
             // Resolve the stored credential Id to its display name so the Agent
             // Builder can pre-select the currently configured credential.
@@ -102,6 +106,47 @@ public class TenantModelProviderService : ITenantModelProviderService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while retrieving model provider {ModelProviderId} for tenant {TenantId}.", modelProviderId, _tenantId);
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<TenantEnabledModelDto>>> GetEnabledModelsAsync(LLMProviderTypesEnum? providerType, ModelCapabilityEnum? capability)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<TenantEnabledModelDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve enabled models. Please try again later."
+        };
+
+        try
+        {
+            var providers = await _unitOfWork.TenantModelProviderRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId
+                    && !w.IsDisabled
+                    && (providerType == null || w.ProviderType == providerType))
+                .AsNoTracking()
+                .ToListAsync();
+
+            var enabledModels = providers.SelectMany(GetProviderEnabledModels).ToList();
+
+            if (capability.HasValue)
+            {
+                enabledModels = enabledModels.Where(m => m.Capability == capability.Value).ToList();
+            }
+
+            serviceResponse.Data = enabledModels
+                .GroupBy(m => new { m.ProviderType, m.ModelId, m.Capability })
+                .Select(g => g.First())
+                .OrderBy(m => m.ProviderType)
+                .ThenBy(m => m.ModelId)
+                .ToList();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Enabled models retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving enabled models for tenant {TenantId}.", _tenantId);
         }
 
         return serviceResponse;
@@ -123,6 +168,22 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .Where(w => !string.IsNullOrWhiteSpace(w))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+
+            // Normalize the capability-aware enabled models and mirror their identifiers
+            // into the legacy list so legacy readers keep working.
+            if (modelProviderDto.EnabledModels != null)
+            {
+                modelProviderDto.EnabledModels = modelProviderDto.EnabledModels
+                    .Where(m => !string.IsNullOrWhiteSpace(m.ModelId))
+                    .Select(m => new EnabledModelDto { ModelId = m.ModelId.Trim(), Capability = m.Capability })
+                    .GroupBy(m => m.ModelId, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => g.Last())
+                    .ToList();
+
+                modelProviderDto.EnabledModelIds = modelProviderDto.EnabledModels
+                    .Select(m => m.ModelId)
+                    .ToList();
+            }
 
             // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
             if (!string.IsNullOrWhiteSpace(modelProviderDto.CredentialName))
@@ -168,6 +229,12 @@ public class TenantModelProviderService : ITenantModelProviderService
                 existingProvider.CredentialId = modelProviderDto.CredentialId;
                 existingProvider.ProviderUrl = modelProviderDto.ProviderUrl;
                 existingProvider.EnabledModelIds = modelProviderDto.EnabledModelIds;
+                if (modelProviderDto.EnabledModels != null)
+                {
+                    existingProvider.EnabledModels = modelProviderDto.EnabledModels
+                        .Select(m => new EnabledModel { ModelId = m.ModelId, Capability = m.Capability?.ToString() })
+                        .ToList();
+                }
                 // Honor the disable/enable toggle when explicitly provided; otherwise preserve current state.
                 if (modelProviderDto.IsDisabled.HasValue)
                 {
@@ -284,5 +351,28 @@ public class TenantModelProviderService : ITenantModelProviderService
                 provider.CredentialName = name;
             }
         }
+    }
+
+    private static IEnumerable<TenantEnabledModelDto> GetProviderEnabledModels(TenantModelProvider provider)
+    {
+        var legacyModels = (provider.EnabledModelIds ?? new List<string>())
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Select(id => new TenantEnabledModelDto
+            {
+                ProviderType = provider.ProviderType,
+                ModelId = id.Trim(),
+                Capability = null
+            });
+
+        var capabilityModels = (provider.EnabledModels ?? new List<EnabledModel>())
+            .Where(m => !string.IsNullOrWhiteSpace(m.ModelId))
+            .Select(m => new TenantEnabledModelDto
+            {
+                ProviderType = provider.ProviderType,
+                ModelId = m.ModelId.Trim(),
+                Capability = EnabledModelHelpers.ParseCapability(m.Capability)
+            });
+
+        return legacyModels.Concat(capabilityModels);
     }
 }
