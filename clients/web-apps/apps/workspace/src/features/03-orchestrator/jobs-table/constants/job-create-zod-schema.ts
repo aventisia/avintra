@@ -3,6 +3,7 @@ import { reqError, uuidv4Regex } from "@avplatform/ui/utils";
 import { z } from "zod";
 
 import { JobPriorityEnum, TriggerTypesEnum } from "..";
+import { CLOUD_UNSUPPORTED_ERROR, isCloudExecutionBlocked } from "./cloud-execution.constant";
 
 const optionalJsonStringSchema = z.string().refine(
   (value) => {
@@ -41,15 +42,27 @@ const extractSelectedId = (value: unknown, idKey: string): unknown => {
   return value;
 };
 
+const getFlowVersionId = (value: unknown): string => {
+  const id = extractSelectedId(value, "value");
+  return typeof id === "string" ? id.trim() : "";
+};
+
+const getFlowVersionPlatform = (value: unknown): string | undefined => {
+  if (value && typeof value === "object" && "supportedPlatform" in value) {
+    const platform = (value as { supportedPlatform?: unknown }).supportedPlatform;
+    return typeof platform === "string" ? platform : undefined;
+  }
+  return undefined;
+};
+
 /**
  * Zod schema for the create job form.
  */
 export const jobCreateZodSchema = z
   .object({
-    flowVersionId: z.preprocess(
-      (value) => extractSelectedId(value, "value"),
-      z.string().min(1, { message: reqError("Agent") }),
-    ),
+    flowVersionId: z.custom<string | ISelectOption>((value) => getFlowVersionId(value).length > 0, {
+      message: reqError("Agent"),
+    }),
     triggerType: z.nativeEnum(TriggerTypesEnum, {
       message: reqError("Trigger Type"),
     }),
@@ -65,7 +78,19 @@ export const jobCreateZodSchema = z
     existingJobId: optionalUuidSchema,
   })
   .superRefine((value, context) => {
-    if (value.executeOnCloud) return;
+    if (value.executeOnCloud) {
+      if (
+        getFlowVersionId(value.flowVersionId) &&
+        isCloudExecutionBlocked(getFlowVersionPlatform(value.flowVersionId))
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["executeOnCloud"],
+          message: CLOUD_UNSUPPORTED_ERROR,
+        });
+      }
+      return;
+    }
 
     if (!value.executionLocation || value.executionLocation.trim() === "") {
       context.addIssue({

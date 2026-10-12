@@ -1,0 +1,25 @@
+meta {
+  name: Poll identity mismatch is rejected
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/execution/machine/{{$guid}}/next-pending-job
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{MACHINE_JWT}}
+}
+
+assert {
+  res.status: eq 403
+}
+
+docs {
+  > A machine token (whose "mid" claim identifies one machine) must not poll for a different
+  > machine. Polling for a random, unknown machine id is rejected with 403.
+  > Requires `register-machine` to have run so `MACHINE_JWT` is populated.
+}

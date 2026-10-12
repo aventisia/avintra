@@ -1,0 +1,32 @@
+meta {
+  name: Create job rejects unknown machine
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowVersionId": "{{FLOW_VERSION_ID}}",
+    "executionLocation": "unknown-machine-name"
+  }
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  > A published agent job must be bound to an existing machine. A machine name that matches no
+  > machine is rejected with 400, so a job can never silently fall back to another machine.
+  > Requires `ACCESS_TOKEN` (OM role) and a published `FLOW_VERSION_ID`.
+}

@@ -9,6 +9,7 @@ type ExecutionActionProps = {
   rowId: string;
   flowName?: string | null;
   flowVersionNumber?: number;
+  supportedPlatform?: string;
   isDisabled?: boolean;
   jobId?: string;
   executionState: string;
@@ -18,6 +19,7 @@ export const ExecutionAction = ({
   rowId,
   flowName,
   flowVersionNumber,
+  supportedPlatform,
   executionState,
   jobId,
 }: ExecutionActionProps) => {
@@ -33,6 +35,7 @@ export const ExecutionAction = ({
       rowId: window.crypto.randomUUID(),
       extraParams: {
         fv: `${rowId}||${flowName ?? "Agent"} v${flowVersionNumber ?? 0}`,
+        ...(supportedPlatform ? { fvp: supportedPlatform } : {}),
       },
     });
   };

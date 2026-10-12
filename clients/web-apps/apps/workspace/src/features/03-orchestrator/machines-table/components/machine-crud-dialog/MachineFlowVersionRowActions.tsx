@@ -20,6 +20,8 @@ interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
   flowId: string;
   flowVersionId: string;
   flowVersionLabel: string;
+  /** The agent's supported platform, forwarded to the create-job form prefill. */
+  flowVersionPlatform?: string;
   className?: string;
 }
 
@@ -34,6 +36,7 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
   flowId,
   flowVersionId,
   flowVersionLabel,
+  flowVersionPlatform,
   className,
 }) => {
   const { openCrudDialog } = useCrudDialogUrlState();
@@ -61,6 +64,7 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
       extraParams: {
         mid: `${machineId}||${machineName}`,
         fv: `${flowVersionId}||${flowVersionLabel}`,
+        ...(flowVersionPlatform ? { fvp: flowVersionPlatform } : {}),
       },
     });
   };

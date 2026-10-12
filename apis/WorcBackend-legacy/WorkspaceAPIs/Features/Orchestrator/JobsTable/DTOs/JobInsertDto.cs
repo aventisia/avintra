@@ -26,13 +26,16 @@ public class JobInsertDto
 
 
     /// <summary>
-    /// Gets or sets the environment from where the job is being initiated or the platform (machine name or web server) where the job is going to be executed
-    /// For unpublished flows, this will be Agent Builder (web) or Agent Builder (desktop) depending on the platform from where the job is being initiated.
-    /// For published flows, this will be the machine id for desktop execution or "Web Server" for web server execution.
+    /// Gets or sets the execution location: a machine's unique name or an unassigned sentinel.
     /// </summary>
     /// <remarks>
-    /// The MachineId (machine local or virtual machine where the job is supposed to run) is going to be env_os_osid_[username], which is a unique identifier for the machine.
-    /// For example, dev_windows_f9e58876-0de0-452b-8f80-0dfc0e2b88cd_[gaurav], prod_linux_12345678-0de0-452b-8f80-0dfc0e2b88cd_[john doe]
+    /// For unpublished flows this is the Agent Builder origin (web or desktop). For published flows
+    /// this is the machine's unique name ([username]_os_osId), "Cloud", or "Web Server" (the latter
+    /// two keep the job unassigned until dispatch).
+    /// The machine's unique name (local or virtual machine where the job is supposed to run) is
+    /// [username]_os_osid, a unique identifier for the machine.
+    /// For example, [gaurav]_windows_f9e58876-0de0-452b-8f80-0dfc0e2b88cd or
+    /// [john doe]_linux_12345678-0de0-452b-8f80-0dfc0e2b88cd.
     /// </remarks>
     public string? ExecutionLocation { get; set; }
 

@@ -170,16 +170,14 @@ public class OrchestratorHub : Hub
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
 
-                // Search for an active job that is associated with the machine's FlowVersionIds
-                // The job should be in 'Created' status, and either not assigned to a machine or assigned to the current machine
                 var job = await _workspaceInternalDbContext.Jobs
                     .Where(w =>
                         w.TenantId == tenantId &&
                         w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
-                        (w.MachineId == null || w.MachineId == clientId)
+                        (w.MachineId == clientId || (w.MachineId == null && w.ExecutedOn == "Web Server"))
                     )
-                    .OrderByDescending(o => o.CreatedOn)
+                    .OrderBy(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
 
                 // If a job is found, assign it to the machine and update the status
@@ -305,7 +303,7 @@ public class OrchestratorHub : Hub
     }
 
     // Executes the agent on a specified machine. If no machine name is provided or if it's invalid,
-    // it attempts to find an online machine associated with the agent.
+    // it attempts to find an available machine associated with the agent.
     // The method updates the machine's status and triggers the agent execution if all conditions are satisfied.
     // The machine is identified by its unique NAME (hub/websocket contract); it is resolved to the
     // internal machine entry for dispatch.
@@ -337,30 +335,28 @@ public class OrchestratorHub : Hub
             // Initialize variable to hold machine status
             ClientDataStore? clientDataStore = null;
 
-            // If no machine name is provided, attempt to find an available online machine
+            var mappedMachineIds = (agent.FlowVersionMachines?.Select(s => s.MachineId) ?? Enumerable.Empty<Guid>()).ToHashSet();
+
             if (string.IsNullOrEmpty(machineName))
             {
-                // Retrieve all machine IDs assigned to this agent
-                var availableMachineIds = agent.FlowVersionMachines?.Select(s => s.MachineId).ToList();
+                var availableMachines = (await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId))
+                    .Where(m => m.Status == MachineStatusEnum.Online || m.Status == MachineStatusEnum.Idle)
+                    .ToList();
 
-                // Fetch all machine statuses for the current tenant
-                var machines = await _clientStatusStore.GetMachineStatusesAsync(agent.TenantId);
-
-                // Attempt to find an online machine from the list of assigned machines
-                clientDataStore = machines.FirstOrDefault(m =>
-                    availableMachineIds.Contains(m.ClientId) && m.Status == MachineStatusEnum.Online);
-
-                // If no machine found in assigned list, search for any available online machine
-                if (clientDataStore == null)
+                var pendingMachineIds = new HashSet<Guid>();
+                foreach (var machine in availableMachines)
                 {
-                    clientDataStore = machines.FirstOrDefault(m => m.Status == MachineStatusEnum.Online);
+                    if (await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(machine))
+                        pendingMachineIds.Add(machine.ClientId);
                 }
+
+                clientDataStore = JobsAssignmentHelpers.SelectDeterministicTargetMachine(mappedMachineIds, availableMachines, pendingMachineIds);
 
                 // If no valid machine is found, return an error message
                 if (clientDataStore == null)
                 {
-                    _logger.LogWarning("No available online machine found for agent {AgentId}.", agentId);
-                    await Clients.Caller.SendAsync("error", "No available online machine found.");
+                    _logger.LogWarning("No available machine found for agent {AgentId}.", agentId);
+                    await Clients.Caller.SendAsync("error", "No available machine found.");
                     return;
                 }
 
@@ -377,10 +373,25 @@ public class OrchestratorHub : Hub
                     await Clients.Caller.SendAsync("error", "Machine not found.");
                     return;
                 }
+
+                if (!mappedMachineIds.Contains(clientDataStore.ClientId))
+                {
+                    _logger.LogWarning("Machine {MachineName} is not mapped to agent {AgentId}.", machineName, agentId);
+                    await Clients.Caller.SendAsync("error", "Machine is not assigned to this agent.");
+                    return;
+                }
             }
 
+            if (clientDataStore.Status != MachineStatusEnum.Online && clientDataStore.Status != MachineStatusEnum.Idle)
+            {
+                _logger.LogWarning("Machine {MachineName} is not online or idle.", machineName);
+                await Clients.Caller.SendAsync("error", "Machine is not online or idle.");
+                return;
+            }
+
+            var jobId = Guid.NewGuid();
+
             // Retrieve user identity and tenant ID from the HTTP context
-            var httpContext = Context.GetHttpContext();
             var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
 
@@ -396,7 +407,7 @@ public class OrchestratorHub : Hub
             // Create a new job for agent execution
             var job = new Job()
             {
-                Id = Guid.NewGuid(),
+                Id = jobId,
                 FlowVersionId = agent.Id,
                 MachineId = clientDataStore.ClientId,
                 ExecutedOn = clientDataStore.ClientName ?? machineName,
@@ -411,51 +422,30 @@ public class OrchestratorHub : Hub
                     .FirstOrDefault()
             };
 
-            // If the machine is not online, return an error
-            if (clientDataStore.Status != MachineStatusEnum.Online)
+            _workspaceInternalDbContext.Jobs.Add(job);
+            await _workspaceInternalDbContext.SaveChangesAsync();
+
+            MachineReservationHelpers.Reserve(clientDataStore, job.Id, agentId);
+            await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
+
+            if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
             {
-                _logger.LogWarning("Machine {MachineName} is not online or unavailable.", machineName);
-                await Clients.Caller.SendAsync("error", "Machine is not online or unavailable.");
-                return;
-            }
-
-            // If the machine is not running an agent, proceed to execute the agent
-            if (clientDataStore.Status != MachineStatusEnum.Running)
-            {
-                // Keep the machine Online/Idle and record the job as a pending marker. The machine flips
-                // to Running only when the runner actually starts the job via the StartJob endpoint.
-                clientDataStore.LastSeen = DateTimeOffset.UtcNow;
-                clientDataStore.AgentId = agentId;
-                clientDataStore.JobId = job.Id;
-
-                // Save the updated machine status
-                await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
-
-                // Trigger the agent execution on the assigned machine
-                if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
+                var executionRequest = new ExecutionCommandDto()
                 {
-                    var executionRequest = new ExecutionCommandDto()
-                    {
-                        JobId = job.Id,
-                        Command = ExecutionCommandTypesEnum.Initiate,
-                        AgentId = job.FlowVersionId,
-                        MachineName = clientDataStore.ClientName ?? machineName,
-                        TenantId = tenantId,
-                    };
+                    JobId = job.Id,
+                    Command = ExecutionCommandTypesEnum.Initiate,
+                    AgentId = job.FlowVersionId,
+                    MachineName = clientDataStore.ClientName ?? machineName,
+                    TenantId = tenantId,
+                };
 
-                    await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionRequest);
-                }
-                else
-                {
-                    _logger.LogWarning("Machine {MachineName} is not connected. Cannot trigger agent {AgentId}.", machineName, agentId);
-                    await Clients.Caller.SendAsync("error", "Machine connection lost.");
-                }
+                await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionRequest);
             }
             else
             {
-                // If the machine is already running an agent, inform the client
-                _logger.LogWarning("Machine {MachineName} is already running an agent.", machineName);
-                await Clients.Caller.SendAsync("error", "The machine is already running an agent.");
+                await ClearMachineReservationAsync(clientDataStore);
+                _logger.LogWarning("Machine {MachineName} is not connected. Cannot trigger agent {AgentId}.", machineName, agentId);
+                await Clients.Caller.SendAsync("error", "Machine connection lost.");
             }
         }
         catch (Exception ex)
@@ -464,6 +454,12 @@ public class OrchestratorHub : Hub
             _logger.LogError(ex, "An error occurred while executing agent {AgentId}.", agentId);
             await Clients.Caller.SendAsync("error", $"An error occurred while executing the agent: {ex.Message}");
         }
+    }
+
+    private async Task ClearMachineReservationAsync(ClientDataStore machine)
+    {
+        MachineReservationHelpers.Release(machine);
+        await _clientStatusStore.UpdateClientStatusAsync(machine);
     }
 
     // Reports execution progress for a job and relays it to the user who initiated the job.

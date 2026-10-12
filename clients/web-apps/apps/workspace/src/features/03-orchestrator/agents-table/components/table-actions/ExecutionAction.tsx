@@ -23,11 +23,12 @@ export const ExecutionAction = ({
   executionState,
   jobId,
 }: ExecutionActionProps) => {
-  const { flowVersionId, flowName, flowVersionNumber } = useAssignMachineStore(
+  const { flowVersionId, flowName, flowVersionNumber, supportedPlatform } = useAssignMachineStore(
     useShallow((s) => ({
       flowVersionId: s.flowVersionId,
       flowName: s.flowName,
       flowVersionNumber: s.flowVersionNumber,
+      supportedPlatform: s.supportedPlatform,
     })),
   );
 
@@ -44,6 +45,7 @@ export const ExecutionAction = ({
       extraParams: {
         mid: `${rowId}||${machineName}`,
         fv: `${flowVersionId}||${flowName} v${flowVersionNumber}`,
+        ...(supportedPlatform ? { fvp: supportedPlatform } : {}),
       },
     });
   };

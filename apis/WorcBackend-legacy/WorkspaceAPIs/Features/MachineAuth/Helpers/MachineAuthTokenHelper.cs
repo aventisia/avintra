@@ -15,17 +15,17 @@ public static class MachineAuthTokenHelper
     /// <param name="tenantId">The tenant ID claim value.</param>
     /// <param name="userId">The linked workspace user ID claim value.</param>
     /// <param name="userName">The linked workspace user's username claim value.</param>
+    /// <param name="machineId">The optional machine ID this token authenticates.</param>
     /// <returns>The signed JWT string.</returns>
     public static (string Jwt, DateTimeOffset ExpiresOn) CreateMachineJwt(
         EnvironmentConfig environmentConfig,
         Guid tenantId,
         Guid userId,
-        string userName)
+        string userName,
+        Guid? machineId)
     {
-        // Compute the expiry upfront so it can be returned alongside the token
         var expiresOn = DateTimeOffset.UtcNow.AddMinutes(environmentConfig.JwtValidityInMinutes);
 
-        // Base claims (mirror AccountsAPIs CreateJwt core claims)
         var claims = new Dictionary<string, object>
         {
             ["tntid"] = tenantId.ToString(),
@@ -34,12 +34,13 @@ public static class MachineAuthTokenHelper
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
         };
 
-        // Signing credentials using the shared JWT secret
+        if (machineId.HasValue)
+            claims[MachineIdentityClaims.MachineIdClaimType] = machineId.Value.ToString();
+
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environmentConfig.JwtSecretKey)),
             SecurityAlgorithms.HmacSha512);
 
-        // Token descriptor matching the issuer/audience used by AddJwtBearer
         var securityTokenDescriptor = new SecurityTokenDescriptor
         {
             Issuer = $"https://{environmentConfig.AppBaseUrl}",
@@ -53,7 +54,6 @@ public static class MachineAuthTokenHelper
         var jsonWebTokenHandler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
         jsonWebTokenHandler.SetDefaultTimesOnTokenCreation = false;
 
-        // Return the signed JWT and its expiry
         return (jsonWebTokenHandler.CreateToken(securityTokenDescriptor), expiresOn);
     }
 }
