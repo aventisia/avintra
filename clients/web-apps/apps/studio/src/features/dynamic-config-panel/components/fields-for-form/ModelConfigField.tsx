@@ -17,6 +17,7 @@ import { embeddingModelProviders } from "../../constants/embedding-model-provide
 import { sttModelProviders } from "../../constants/stt-model-proivder";
 import { ttsModelProviders } from "../../constants/tts-model-proivder";
 import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
+import { ModelCapabilityEnum } from "../../enums/model-capability-enum";
 import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
@@ -48,6 +49,15 @@ const PROVIDER_MAP: Record<string, string> = {
 // "enabledModelIds" (per the Tenant Admin "Model Providers" section) rather than
 // fetched dynamically via a credential (e.g. Ollama On-prem).
 const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
+
+const getEnabledModelIdsByCapability = (
+  config: TenantModelProviderDto | undefined,
+  capability: ModelCapabilityEnum,
+): string[] => {
+  const enabledModels = config?.enabledModels ?? [];
+  if (enabledModels.length === 0) return config?.enabledModelIds ?? [];
+  return enabledModels.filter((m) => m.capability === capability).map((m) => m.modelId);
+};
 
 const ModelConfigField = ({
   name,
@@ -172,7 +182,15 @@ const ModelConfigField = ({
 
     if (isStt) return sttModelProviders;
     if (isTts) return ttsModelProviders;
-    if (isEmbedding) return embeddingModelProviders;
+    if (isEmbedding) {
+      return embeddingModelProviders.filter(
+        (p) =>
+          getEnabledModelIdsByCapability(
+            enabledConfigByProvider[p.value],
+            ModelCapabilityEnum.Embedding,
+          ).length > 0,
+      );
+    }
 
     // When BYOK is enabled, only show providers that are enabled for this tenant
     // (per the Tenant Admin "Model Providers" section).
@@ -350,7 +368,10 @@ const ModelConfigField = ({
       isSpeechSpecialty ||
       (is_byok_enabled && (isStt || isTts || TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue)))
     ) {
-      const enabledIds = enabledConfig?.enabledModelIds ?? [];
+      const capability = isStt ? ModelCapabilityEnum.Stt : isTts ? ModelCapabilityEnum.Tts : null;
+      const enabledIds = capability
+        ? getEnabledModelIdsByCapability(enabledConfig, capability)
+        : (enabledConfig?.enabledModelIds ?? []);
       return uniqueAndNormalizeArray(
         enabledIds.map((id) => ({ value: id, label: id, available: true }) as Model),
       );
@@ -358,7 +379,11 @@ const ModelConfigField = ({
 
     const models = is_byok_enabled
       ? (() => {
-          const enabledIds = new Set(enabledConfig?.enabledModelIds ?? []);
+          const enabledIds = new Set(
+            isEmbedding
+              ? getEnabledModelIdsByCapability(enabledConfig, ModelCapabilityEnum.Embedding)
+              : (enabledConfig?.enabledModelIds ?? []),
+          );
           // Only show models that were enabled for this provider in the tenant config.
           return byokModels.filter((m) => enabledIds.has(m.value));
         })()
@@ -371,6 +396,7 @@ const ModelConfigField = ({
     isSpeechSpecialty,
     isStt,
     isTts,
+    isEmbedding,
     byokModels,
     filteredProviders,
     providerValue,
@@ -379,9 +405,13 @@ const ModelConfigField = ({
 
   const hasEnabledSpeechModels = useMemo(() => {
     if (!isSpeechSpecialty) return true;
-    const enabledIds = enabledConfigByProvider[providerValue]?.enabledModelIds ?? [];
+    const capability = isStt ? ModelCapabilityEnum.Stt : ModelCapabilityEnum.Tts;
+    const enabledIds = getEnabledModelIdsByCapability(
+      enabledConfigByProvider[providerValue],
+      capability,
+    );
     return enabledIds.length > 0;
-  }, [isSpeechSpecialty, enabledConfigByProvider, providerValue]);
+  }, [isSpeechSpecialty, isStt, enabledConfigByProvider, providerValue]);
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),

@@ -2207,6 +2207,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("EnabledModels")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValueSql("'[]'::jsonb");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 

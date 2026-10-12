@@ -28,10 +28,12 @@ import {
   getProviderIcon,
   getVaultCredentialTypeForProvider,
 } from "../constants/model-provider-definitions";
+import { EnabledModelDto } from "../dtos/enabled-model.dto";
 import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
+import { toModelCapability } from "../utils/model-capability.util";
 
 type Step = "credential" | "models";
 
@@ -50,6 +52,7 @@ export const ModelProviderSetupDialog = () => {
   const [isCredentialLoading, setIsCredentialLoading] = useState(false);
   const [selectedCredentialName, setSelectedCredentialName] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
+  const [enabledModels, setEnabledModels] = useState<EnabledModelDto[]>([]);
   const [isDisabled, setIsDisabled] = useState(false);
 
   // v2 provider/model browsing state (credential-based providers)
@@ -61,6 +64,7 @@ export const ModelProviderSetupDialog = () => {
     setStep("credential");
     setSelectedCredentialName("");
     setEnabledModelIds([]);
+    setEnabledModels([]);
     setCredentialOptions([]);
     setIsDisabled(false);
     setProviderModels([]);
@@ -86,6 +90,7 @@ export const ModelProviderSetupDialog = () => {
           const savedCredential = config.credentialName ?? config.credentialId ?? "";
           setSelectedCredentialName(savedCredential);
           setEnabledModelIds(config.enabledModelIds ?? []);
+          setEnabledModels(config.enabledModels ?? []);
           setIsDisabled(Boolean(config.isDisabled));
           // Skip straight to the models step so existing state is shown, and
           // load the provider's models so the list is populated.
@@ -157,18 +162,27 @@ export const ModelProviderSetupDialog = () => {
 
     if (!credentialName && !credentialId) return;
 
+    const sendEnabledModels = config?.enabledModels != null || enabledModels.length > 0;
+
     upsertMutation.mutate({
       providerType: provider.value,
       credentialName,
       credentialId,
       enabledModelIds,
+      enabledModels: sendEnabledModels ? enabledModels : undefined,
       isDisabled,
     });
   };
 
-  const toggleModel = (modelValue: string) => {
+  const toggleModel = (model: LlmModelInfoDto) => {
+    const isEnabled = enabledModelIds.includes(model.id);
     setEnabledModelIds((prev) =>
-      prev.includes(modelValue) ? prev.filter((m) => m !== modelValue) : [...prev, modelValue],
+      isEnabled ? prev.filter((m) => m !== model.id) : [...prev, model.id],
+    );
+    setEnabledModels((prev) =>
+      isEnabled
+        ? prev.filter((m) => m.modelId !== model.id)
+        : [...prev, { modelId: model.id, capability: toModelCapability(model.capability) }],
     );
   };
 
@@ -317,7 +331,7 @@ export const ModelProviderSetupDialog = () => {
                           <span className="truncate pr-2 text-sm">{model.id}</span>
                           <Switch
                             checked={enabledModelIds.includes(model.id)}
-                            onCheckedChange={() => toggleModel(model.id)}
+                            onCheckedChange={() => toggleModel(model)}
                             size="sm"
                           />
                         </div>
