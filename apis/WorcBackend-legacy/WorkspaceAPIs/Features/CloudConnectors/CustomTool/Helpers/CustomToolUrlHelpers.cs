@@ -8,8 +8,9 @@ namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 /// </summary>
 public static class CustomToolUrlHelpers
 {
-    private static readonly TimeSpan ResolutionTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan ResolutionTimeout = TimeSpan.FromSeconds(5);
 
+    // IMPORTANT NOTE: keep these networks synchronized with llmpipeline/app/features/custom_tools/url_guard.py.
     private static readonly (byte[] Network, int PrefixLength)[] BlockedIPv4Networks =
     [
         (new byte[] { 0, 0, 0, 0 }, 8),

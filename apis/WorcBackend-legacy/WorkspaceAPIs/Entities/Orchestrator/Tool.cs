@@ -5,29 +5,29 @@ using System.Text.Json;
 namespace WorkspaceAPIs.Entities;
 
 /// <summary>
-/// Represents a tenant-scoped tool definition for platform or custom REST API tools.
+/// Represents a tenant-scoped tool definition.
 /// </summary>
 [Table("ws_Tools")]
 public class Tool : IMustHaveTenant
 {
     /// <summary>
-    /// Gets or sets the record's primary key in Guid (globally unique identifier) format.
+        /// Gets or sets the record identifier.
     /// </summary>
     [Key]
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the tenant identifier.
+        /// Gets or sets the tenant identifier.
     /// </summary>
     public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Gets or sets the space this tool belongs to; null indicates the default Central space.
+        /// Gets or sets the owning space identifier.
     /// </summary>
     public Guid? SpaceId { get; set; }
 
     /// <summary>
-    /// Gets or sets the deployment environment this tool belongs to.
+        /// Gets or sets the deployment environment.
     /// </summary>
     public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
 
@@ -43,13 +43,13 @@ public class Tool : IMustHaveTenant
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional URL of the icon that represents the tool.
+        /// Gets or sets the icon URL.
     /// </summary>
     [MaxLength(1000)]
     public string? IconUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the component is platform-managed or custom.
+        /// Gets or sets the component type.
     /// </summary>
     public required ComponentTypeEnum Type { get; set; }
 
@@ -60,82 +60,82 @@ public class Tool : IMustHaveTenant
     public required string BaseUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the OpenAPI specification of the tool.
+        /// Gets or sets the OpenAPI specification.
     /// </summary>
     public string? OpenApiSpec { get; set; }
 
     /// <summary>
-    /// Gets or sets the parsed OpenAPI schema as a JSON document.
+        /// Gets or sets the parsed OpenAPI schema.
     /// </summary>
     [Column(TypeName = "jsonb")]
     public JsonDocument? ParsedSchema { get; set; }
 
     /// <summary>
-    /// Gets or sets the authentication method required by the tool.
+        /// Gets or sets the authentication method.
     /// </summary>
     [MaxLength(50)]
     public ToolAuthenticationTypeEnum? AuthenticationType { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique name of the credential associated with the tool.
+        /// Gets or sets the associated credential name.
     /// </summary>
     [MaxLength(255)]
     public string? CredentialName { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the tool is available to all users within the tenant.
+        /// Gets or sets whether the tool is tenant-wide.
     /// </summary>
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the tool is active.
+        /// Gets or sets whether the tool is active.
     /// </summary>
     public bool IsActive { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the tool has been verified.
+        /// Gets or sets whether the tool is verified.
     /// </summary>
     public bool IsVerified { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the user who created the record.
+        /// Gets or sets the creator identifier.
     /// </summary>
     public Guid? CreatedByUserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the WorkspaceUser who created the record.
+        /// Gets or sets the creator.
     /// </summary>
     [ForeignKey("CreatedByUserId")]
     public virtual WorkspaceUser? CreatedByUser { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the record was created.
+        /// Gets or sets the creation timestamp.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Gets or sets the ID of the user who modified the record last.
+        /// Gets or sets the last modifier identifier.
     /// </summary>
     public Guid? LastModifiedByUserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the WorkspaceUser who modified the record last.
+        /// Gets or sets the last modifier.
     /// </summary>
     [ForeignKey("LastModifiedByUserId")]
     public virtual WorkspaceUser? LastModifiedByUser { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the record was last modified.
+        /// Gets or sets the last modification timestamp.
     /// </summary>
     public DateTimeOffset LastModifiedOn { get; set; } = DateTimeOffset.UtcNow;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the record is disabled.
+        /// Gets or sets whether the record is disabled.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the row version used to detect concurrent updates.
+        /// Gets or sets the concurrency version.
     /// </summary>
     [Timestamp]
     public uint Version { get; set; }

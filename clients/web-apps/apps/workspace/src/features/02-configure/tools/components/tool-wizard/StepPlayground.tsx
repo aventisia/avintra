@@ -25,8 +25,6 @@ const serializeResponseBody = (body: unknown): string => {
   }
 };
 
-// An operation is verified only when its test call returns HTTP 200 exactly,
-// regardless of the response body contents.
 const isVerifiedResult = (result: TestToolResponseDto | "error" | undefined): boolean =>
   result !== undefined && result !== "error" && result.status_code === 200;
 
@@ -49,8 +47,6 @@ export const StepPlayground = () => {
     [draftTool?.parsedSchema],
   );
 
-  // Records each result on the draft: per-operation status plus the recomputed
-  // tool-level aggregate (all operations verified).
   const applyVerifications = useCallback(
     (entries: Array<{ operationId: string; result: TestToolResponseDto | "error" }>) => {
       if (!draftTool || entries.length === 0) return;
@@ -78,7 +74,6 @@ export const StepPlayground = () => {
     [draftTool, operations.length, results, setDraftTool],
   );
 
-  // Runs a single test call and normalizes network/auth failures to "error".
   const testOperation = useCallback(
     async (
       operationId: string,
@@ -99,8 +94,6 @@ export const StepPlayground = () => {
     [draftTool?.baseUrl, draftTool?.openApiSpec, draftTool?.credentialName],
   );
 
-  // Tests exactly the requested operations, sequentially so the upstream API is
-  // not hammered, and applies all results once finished.
   const testOperations = useCallback(
     async (operationIds: string[], parameters: Record<string, unknown>) => {
       if (!draftTool || operationIds.length === 0 || isTesting) return;
@@ -128,14 +121,11 @@ export const StepPlayground = () => {
   };
 
   const handleTestSelected = async () => {
-    // Ignore any selected ids that no longer exist after a method edit.
     const targetIds = selectedIds.filter((id) =>
       operations.some((operation) => operation.operationId === id),
     );
     if (targetIds.length === 0) return;
 
-    // A single selected operation can be tested with a custom payload; multiple
-    // operations share an empty payload.
     let parameters: Record<string, unknown> = {};
     if (targetIds.length === 1) {
       try {

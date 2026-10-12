@@ -6,11 +6,11 @@ import {
 } from "../dtos/manual-tool-operation-dto";
 import { getOperationKey, normalizeToolOperations } from "./tool-operations.util";
 
-interface SynthesizeOptions {
+type SynthesizeOptions = {
   name?: string;
   description?: string;
   version?: string;
-}
+};
 
 type JsonSchemaObject = Record<string, unknown>;
 
@@ -208,7 +208,7 @@ export const isSynthesizedSpec = (spec?: string): boolean => {
   }
 };
 
-interface ParsedOperation {
+type ParsedOperation = {
   operationId: string;
   method: string;
   path: string;
@@ -218,7 +218,7 @@ interface ParsedOperation {
   headers?: ManualToolOperationHeader[];
   jsonPayload?: string;
   isVerified?: boolean;
-}
+};
 
 /**
  * Builds the wizard's parsed schema shape from manual operations.

@@ -32,8 +32,6 @@ type ParsedSchemaOperation = Record<string, unknown>;
 export const getOperationKey = (operationId: string, method: string, path: string): string =>
   `${operationId}|${method.toUpperCase()}|${path}`;
 
-// Reads an explicit `isVerified` flag; operations without one default to
-// unverified so only an HTTP 200 test can mark an operation verified.
 const resolveIsVerified = (details: ParsedSchemaOperation): boolean => details.isVerified === true;
 
 const readParameters = (details: ParsedSchemaOperation): ToolOperationParameter[] | undefined =>

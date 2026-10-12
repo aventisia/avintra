@@ -19,7 +19,7 @@ public class TestToolResponseDto
     /// <summary>
     /// Gets or sets the response body returned by the tool operation.
     /// </summary>
-    public string? Body { get; set; }
+    public JsonElement? Body { get; set; }
 
     /// <summary>
     /// Gets or sets the execution duration of the tool operation, in milliseconds.

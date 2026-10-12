@@ -354,7 +354,7 @@ public class ToolService : IToolService
                 toolToCreate.ParsedSchema,
                 toolToCreate.IsVerified);
 
-            if (!HasUniqueOperationNames(toolToCreate.ParsedSchema))
+            if (!ToolOperationHelpers.HasUniqueOperationNames(toolToCreate.ParsedSchema))
             {
                 return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
@@ -481,7 +481,7 @@ public class ToolService : IToolService
                 toolToUpdate.ParsedSchema,
                 toolToUpdate.IsVerified);
 
-            if (!HasUniqueOperationNames(toolToUpdate.ParsedSchema))
+            if (!ToolOperationHelpers.HasUniqueOperationNames(toolToUpdate.ParsedSchema))
             {
                 return serviceResponse.Update("Method names must be unique, ignoring case.", 400);
             }
@@ -714,11 +714,4 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    private static bool HasUniqueOperationNames(JsonDocument? parsedSchema)
-    {
-        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        return ToolOperationHelpers.ExtractOperations(parsedSchema)
-            .All(operation => !string.IsNullOrWhiteSpace(operation.OperationId) &&
-                              names.Add(operation.OperationId.Trim()));
-    }
 }

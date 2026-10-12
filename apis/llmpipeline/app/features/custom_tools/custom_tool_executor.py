@@ -15,6 +15,18 @@ from app.features.custom_tools.url_guard import UnsafeUrlError, ensure_public_ht
 _PATH_PLACEHOLDER_PATTERN = re.compile(r"\{([^/{}]+)\}")
 
 
+class PublicHostTransport(httpx.AsyncBaseTransport):
+    def __init__(self) -> None:
+        self._transport = httpx.AsyncHTTPTransport()
+
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        await ensure_public_http_url(str(request.url))
+        return await self._transport.handle_async_request(request)
+
+    async def aclose(self) -> None:
+        await self._transport.aclose()
+
+
 async def execute_operation(
     base_url: str,
     operation: ToolOperation,
@@ -54,8 +66,6 @@ async def execute_operation(
                 headers, query_params, credential, fallback_type=authentication_type
             )
 
-    # IMPORTANT NOTE: the host is only validated here, so DNS may resolve differently at
-    # connection time; httpx exposes no hook to re-validate the resolved address on connect.
     try:
         await ensure_public_http_url(base_url)
     except UnsafeUrlError as error:
@@ -69,14 +79,26 @@ async def execute_operation(
     url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
 
     start = time.perf_counter()
-    async with httpx.AsyncClient(timeout=30.0, follow_redirects=False) as client:
-        response = await client.request(
-            method=method,
-            url=url,
-            headers=headers,
-            params=query_params,
-            json=body,
-        )
+    try:
+        async with httpx.AsyncClient(
+            timeout=30.0,
+            follow_redirects=False,
+            transport=PublicHostTransport(),
+        ) as client:
+            response = await client.request(
+                method=method,
+                url=url,
+                headers=headers,
+                params=query_params,
+                json=body,
+            )
+    except (UnsafeUrlError, httpx.HTTPError) as error:
+        return {
+            "success": False,
+            "status_code": None,
+            "body": str(error),
+            "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+        }
     duration_ms = round((time.perf_counter() - start) * 1000, 2)
 
     try:
