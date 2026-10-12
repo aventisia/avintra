@@ -5,9 +5,6 @@ import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-en
  * Full tool record as returned by the personal tools list endpoint.
  */
 export interface ToolDto {
-  /**
-   * Unique identifier of the tool.
-   */
   id: string;
 
   /**
@@ -20,40 +17,18 @@ export interface ToolDto {
    */
   icon?: string;
 
-  /**
-   * Description of the tool.
-   */
   description?: string;
 
-  /**
-   * Optional URL of the icon that represents the tool. Empty/undefined means the
-   * default placeholder icon is used.
-   */
   iconUrl?: string;
 
-  /**
-   * Component type of the tool.
-   */
   type?: ComponentTypeEnum;
 
-  /**
-   * Base URL of the API the tool wraps.
-   */
   baseUrl?: string;
 
-  /**
-   * Authentication method required by the tool.
-   */
   authenticationType?: ToolAuthenticationTypeEnum;
 
-  /**
-   * Unique name of the credential associated with the tool.
-   */
   credentialName?: string;
 
-  /**
-   * Indicates whether the tool is active and available for use.
-   */
   isActive: boolean;
 
   /**
@@ -61,9 +36,6 @@ export interface ToolDto {
    */
   isVerified: boolean;
 
-  /**
-   * Indicates whether the tool record is disabled.
-   */
   isDisabled?: boolean;
 }
 
@@ -71,44 +43,20 @@ export interface ToolDto {
  * A single invocable operation exposed by a tool's OpenAPI specification.
  */
 export interface UsableToolOperation {
-  /**
-   * OpenAPI operation identifier.
-   */
   operationId: string;
 
-  /**
-   * HTTP method of the operation.
-   */
   method?: string;
 
-  /**
-   * Request path of the operation.
-   */
   path?: string;
 
-  /**
-   * Human-readable summary of the operation.
-   */
   summary?: string;
 
-  /**
-   * Detailed description of the operation from the OpenAPI spec.
-   */
   description?: string;
 
-  /**
-   * Simplified parameter list (name, location, required, description, type).
-   */
   parameters?: UsableToolParameter[];
 
-  /**
-   * Simplified request-body metadata (required, content type, properties).
-   */
   requestBody?: UsableToolRequestBody | null;
 
-  /**
-   * Simplified success-response metadata (status code, content type, properties).
-   */
   response?: UsableToolResponse | null;
 
   /**
@@ -122,8 +70,7 @@ export interface UsableToolOperation {
   color?: string;
 
   /**
-   * Indicates whether the operation has been verified (its last test returned
-   * HTTP 200). Unverified operations are not selectable in the action selector.
+   * Indicates whether the operation's last test returned HTTP 200; unverified operations are not selectable.
    */
   isVerified: boolean;
 }
@@ -132,29 +79,14 @@ export interface UsableToolOperation {
  * A single OpenAPI operation parameter in simplified form.
  */
 export interface UsableToolParameter {
-  /**
-   * Parameter name.
-   */
   name: string;
 
-  /**
-   * Parameter location: "path", "query", "header" or "cookie".
-   */
   in?: string;
 
-  /**
-   * Whether the parameter is required.
-   */
   required?: boolean;
 
-  /**
-   * Parameter description.
-   */
   description?: string;
 
-  /**
-   * Simplified schema type ("string", "number", "boolean", …).
-   */
   type?: string;
 }
 
@@ -162,19 +94,10 @@ export interface UsableToolParameter {
  * Simplified request-body metadata of an OpenAPI operation.
  */
 export interface UsableToolRequestBody {
-  /**
-   * Whether the request body is required.
-   */
   required?: boolean;
 
-  /**
-   * Content type of the body (e.g. "application/json").
-   */
   contentType?: string;
 
-  /**
-   * Simplified schema properties of the body.
-   */
   properties?: UsableToolSchemaProperty[];
 }
 
@@ -182,19 +105,10 @@ export interface UsableToolRequestBody {
  * Simplified success-response metadata of an OpenAPI operation.
  */
 export interface UsableToolResponse {
-  /**
-   * HTTP status code of the success response (e.g. "200").
-   */
   statusCode?: string;
 
-  /**
-   * Content type of the response (e.g. "application/json").
-   */
   contentType?: string;
 
-  /**
-   * Simplified schema properties of the response body.
-   */
   properties?: UsableToolSchemaProperty[];
 }
 
@@ -202,19 +116,10 @@ export interface UsableToolResponse {
  * A simplified schema property used in request-body and response summaries.
  */
 export interface UsableToolSchemaProperty {
-  /**
-   * Property name.
-   */
   name: string;
 
-  /**
-   * Property schema type.
-   */
   type?: string;
 
-  /**
-   * Property description.
-   */
   description?: string;
 
   /**
@@ -227,9 +132,6 @@ export interface UsableToolSchemaProperty {
  * Slim view of a tool used for selection in flow configuration.
  */
 export interface UsableToolDto {
-  /**
-   * Unique identifier of the tool.
-   */
   id: string;
 
   /**
@@ -242,15 +144,8 @@ export interface UsableToolDto {
    */
   icon?: string;
 
-  /**
-   * Description of the tool.
-   */
   description?: string;
 
-  /**
-   * Optional URL of the icon that represents the tool. Empty/undefined means the
-   * default placeholder icon is used.
-   */
   iconUrl?: string;
 
   /**
@@ -258,19 +153,10 @@ export interface UsableToolDto {
    */
   type?: ComponentTypeEnum;
 
-  /**
-   * Authentication method required by the tool.
-   */
   authenticationType?: ToolAuthenticationTypeEnum;
 
-  /**
-   * Unique name of the credential associated with the tool.
-   */
   credentialName?: string;
 
-  /**
-   * Indicates whether the tool is active and available for use.
-   */
   isActive: boolean;
 
   /**
@@ -278,35 +164,21 @@ export interface UsableToolDto {
    */
   isVerified: boolean;
 
-  /**
-   * Indicates whether the tool record is disabled.
-   */
   isDisabled: boolean;
 }
 
 /**
- * Operations exposed by a usable tool, together with the credential type required
- * to invoke it.
+ * Operations exposed by a usable tool, together with the credential type required to invoke it.
  */
 export interface UsableToolOperationsDto {
-  /**
-   * Credential (vault) type to filter credentials by, when resolvable.
-   */
   credentialType?: string;
 
-  /**
-   * Operations exposed by the tool's OpenAPI specification.
-   */
   operations: UsableToolOperation[];
 }
 
 /**
- * A usable tool together with its operations, as served by the combined
- * usable-tool catalog endpoint (`GET /tools/usable/catalog`).
+ * A usable tool together with its operations, as served by the combined usable-tool catalog endpoint.
  */
 export interface UsableToolCatalogItemDto extends UsableToolDto {
-  /**
-   * Operations exposed by the tool's OpenAPI specification.
-   */
   operations: UsableToolOperation[];
 }

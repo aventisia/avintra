@@ -9,6 +9,8 @@ public static class CustomToolTransportHelpers
 {
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(30);
     private const long MaxResponseBytes = 5 * 1024 * 1024;
+    private const int BadGatewayStatusCode = 502;
+    private const int GatewayTimeoutStatusCode = 504;
 
     /// <summary>
     /// Sends the proxied request and returns the upstream status code, raw body
@@ -49,13 +51,13 @@ public static class CustomToolTransportHelpers
         }
         catch (OperationCanceledException) when (timeoutCancellationTokenSource.IsCancellationRequested)
         {
-            return (0, string.Empty, "The upstream API request timed out after 30 seconds.");
+            return (GatewayTimeoutStatusCode, string.Empty, "The upstream API request timed out after 30 seconds.");
         }
         catch (HttpRequestException ex)
         {
             var safeUrl = request.RequestUri?.GetLeftPart(UriPartial.Path);
             logger.LogWarning(ex, "The upstream API request failed for {Url}.", safeUrl);
-            return (0, string.Empty, "The upstream API request failed.");
+            return (BadGatewayStatusCode, string.Empty, "The upstream API request failed.");
         }
 
         using (response)
@@ -68,7 +70,7 @@ public static class CustomToolTransportHelpers
             {
                 if (buffer.Length + read > MaxResponseBytes)
                 {
-                    return (0, string.Empty, "The upstream API response exceeded the 5 MB limit.");
+                    return (BadGatewayStatusCode, string.Empty, "The upstream API response exceeded the 5 MB limit.");
                 }
 
                 buffer.Write(readBuffer, 0, read);

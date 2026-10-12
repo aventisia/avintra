@@ -192,6 +192,8 @@ public static class AppServicesExtension
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
+        services.AddScoped<IToolCatalogService, ToolCatalogService>();
+        services.AddScoped<IToolVerificationService, ToolVerificationService>();
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();

@@ -52,8 +52,7 @@ export function getCustomToolNodeName(toolName: string, operationId: string): st
 }
 
 /**
- * Minimal structural view of a tool consumed by the L2/L3 converters. Satisfied
- * by both the personal-tools list (`ToolDto`) and the usable-tools view.
+ * Minimal structural view of a tool consumed by the L2/L3 converters.
  */
 type CustomToolLike = Pick<
   ToolDto,
@@ -61,9 +60,7 @@ type CustomToolLike = Pick<
 >;
 
 /**
- * Filters the usable-tool catalog down to active custom tools (type=Custom,
- * active, not disabled) — the same rule that drives the Custom Tools section's
- * L2 directory. Shared so the L1 count badge and the directory never disagree.
+ * Filters the usable-tool catalog down to active custom tools.
  */
 export function getActiveCustomTools(
   tools?: UsableToolCatalogItemDto[],
@@ -94,9 +91,7 @@ export function getToolIcon(tool: CustomToolLike): string {
 }
 
 /**
- * L2/L3/node image resolution: the tool's trimmed `iconUrl`, or undefined when
- * unset. Renderers treat an undefined value as "use the default glyph" so a
- * null/empty icon URL never breaks the node, L2 row or L3 action.
+ * L2/L3/node image resolution: the tool's trimmed `iconUrl`, or undefined when unset.
  */
 export function getToolIconUrl(tool: CustomToolLike): string | undefined {
   const value = tool.iconUrl?.trim();
@@ -111,13 +106,11 @@ export function getToolName(tool: CustomToolLike): string {
 /** HTTP methods that accept a JSON request body. */
 const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
 
-/** Whether the operation's HTTP method can carry a JSON request body. */
 const isBodyCapableMethod = (method?: string): boolean =>
   BODY_CAPABLE_METHODS.has((method ?? "").toUpperCase());
 
 /**
- * Splits a custom-tool node name ("CustomTool/{toolName}.{operationId}", or the
- * legacy "{toolId}.{operationId}") into its tool reference and operation id.
+ * Splits a custom-tool node name into its tool reference and operation id.
  */
 export function parseCustomToolNodeReference(nodeUniqueName: string): {
   toolName: string;
@@ -133,7 +126,6 @@ export function parseCustomToolNodeReference(nodeUniqueName: string): {
   };
 }
 
-/** Builds a sample value for a simplified schema type, used to scaffold JSON. */
 const sampleValueForType = (type?: string): unknown => {
   switch ((type ?? "string").toLowerCase()) {
     case "number":
@@ -150,10 +142,6 @@ const sampleValueForType = (type?: string): unknown => {
   }
 };
 
-/**
- * Maps an operation's declared header parameters into the Headers JSON default.
- * Returns "" when the schema declares none (leaving the editor empty).
- */
 const buildHeadersDefault = (operation?: UsableToolOperation): string => {
   const headerParameters = (operation?.parameters ?? []).filter(
     (parameter) => parameter.name && (parameter.in ?? "").toLowerCase() === "header",
@@ -171,10 +159,6 @@ const buildHeadersDefault = (operation?: UsableToolOperation): string => {
   );
 };
 
-/**
- * Maps an operation's declared path/query parameters into the Parameters JSON
- * default. Returns "" when the schema declares none.
- */
 const buildParametersDefault = (operation?: UsableToolOperation): string => {
   const parameterEntries = (operation?.parameters ?? []).filter((parameter) => {
     if (!parameter.name) return false;
@@ -194,11 +178,6 @@ const buildParametersDefault = (operation?: UsableToolOperation): string => {
   );
 };
 
-/**
- * Maps an operation's declared request-body properties into the Request Payload
- * JSON default. Returns "" when the method cannot carry a body (only POST, PUT
- * and PATCH can) or the schema declares no properties (free-form body).
- */
 const buildRequestPayloadDefault = (operation?: UsableToolOperation): string => {
   if (!isBodyCapableMethod(operation?.method)) return "";
   const properties = operation?.requestBody?.properties ?? [];
@@ -216,21 +195,7 @@ const buildRequestPayloadDefault = (operation?: UsableToolOperation): string => 
 };
 
 /**
- * Builds the dynamic-config-panel schema for a custom-tool action node on the
- * client. The form is a credential selector plus sectioned JSON editors
- * (headers, parameters, request payload); the backend resolves the tool,
- * operation and vault credential server-side from the node name. When the
- * catalog operation schema is available, the declared headers, path/query
- * parameters and request-body properties are mapped into the matching editors
- * as defaults, and a section editor only appears when the schema declares
- * entries for it — empty/null sections are omitted from the form entirely
- * (the payload editor additionally requires a body-capable method). When the
- * schema is unknown, the generic three-editor form is kept so values can
- * still be supplied manually.
- *
- * @param nodeUniqueName The node name, e.g. "CustomTool/Weather API.get_user".
- * @param operation The tool's catalog operation schema, when resolvable.
- * @returns The node config the DCP renders.
+ * Builds the dynamic-config-panel schema for a custom-tool action node.
  */
 export function buildCustomToolNodeConfig(
   nodeUniqueName: string,
@@ -313,11 +278,7 @@ export function buildCustomToolNodeConfig(
 }
 
 /**
- * Converts a tool's server-parsed OpenAPI operations into dynamic
- * cloudConnectorNode action entries for the L3 pane. Each endpoint becomes one
- * node; the node carries the sectioned custom-tool inputs (credential + headers,
- * parameters and request-payload JSON editors) and a single `Result` output, all
- * of which are resolved server-side at execution time.
+ * Converts a tool's server-parsed OpenAPI operations into L3 cloudConnectorNode action entries.
  */
 export function convertToolOperationsToActions(
   tool: CustomToolLike,

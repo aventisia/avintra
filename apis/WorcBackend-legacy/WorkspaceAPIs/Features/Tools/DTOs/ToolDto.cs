@@ -11,7 +11,7 @@ public class ToolDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the tool.
+    /// Gets or sets the name of the tool (max 255 chars).
     /// </summary>
     [StringLength(255)]
     public required string Name { get; set; }
@@ -22,8 +22,7 @@ public class ToolDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional URL of the icon that represents the tool (max 1000 chars).
-    /// When null, the default placeholder icon is used.
+    /// Gets or sets the optional icon URL of the tool (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public string? IconUrl { get; set; }
@@ -31,10 +30,10 @@ public class ToolDto
     /// <summary>
     /// Gets or sets whether the component is platform-managed or custom.
     /// </summary>
-    public ComponentTypeEnum? Type { get; set; }
+    public ComponentTypeEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the base URL of the tool.
+    /// Gets or sets the base URL of the tool (max 1000 chars).
     /// </summary>
     [StringLength(1000)]
     public required string BaseUrl { get; set; }
@@ -50,8 +49,7 @@ public class ToolDto
     public JsonDocument? ParsedSchema { get; set; }
 
     /// <summary>
-    /// Gets or sets the manually authored operations. When provided without an
-    /// OpenAPI spec, a spec is synthesized from them before persistence.
+    /// Gets or sets the manually authored operations.
     /// </summary>
     public List<ManualToolOperationDto>? ManualOperations { get; set; }
 
