@@ -136,7 +136,9 @@ public class ToolsController : BaseApiController
     [HttpPost("{toolId}/test")]
     public async Task<ActionResult<ServiceResponse<TestToolResponseDto>>> TestTool(Guid toolId, [FromBody] TestToolDto testToolDto)
     {
-        return ResultHelper(await _toolVerificationService.TestToolAsync(toolId, testToolDto));
+        var accessToken = Request.Cookies[CookieNamesEnum.AccessToken.ToString()]
+            ?? Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        return ResultHelper(await _toolVerificationService.TestToolAsync(toolId, testToolDto, accessToken));
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
-import { getPlatformTools, getTools } from "../apis/tools.apis";
+import { getPersonalTools, getPlatformTools, getSharedTools } from "../apis/tools.apis";
 import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 import { useTableTab } from "./useTableTab.hook";
 
@@ -31,13 +31,13 @@ export const useFetchTools = () => {
 
   const personalQuery = useQuery({
     queryKey: [...DATA_QUERY_KEY, space, env],
-    queryFn: () => getTools({ isPersonal: true }),
+    queryFn: getPersonalTools,
     enabled: !isPlatformTab,
   });
 
   const sharedQuery = useQuery({
     queryKey: [...DATA_QUERY_KEY, "SHARED", space, env],
-    queryFn: () => getTools({ isPersonal: false }),
+    queryFn: getSharedTools,
     enabled: !isPlatformTab,
   });
 

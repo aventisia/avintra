@@ -11,27 +11,25 @@ public class ToolVerificationService : IToolVerificationService
     private readonly IResourceShareService _resourceShareService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly string _jwt;
 
     public ToolVerificationService(
         IUnitOfWork unitOfWork,
         ILogger<ToolVerificationService> logger,
         IResourceShareService resourceShareService,
         IHttpClientFactory httpClientFactory,
-        ICurrentTenantService currentTenantService,
-        IHttpContextAccessor httpContextAccessor)
+        ICurrentTenantService currentTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _resourceShareService = resourceShareService;
         _httpClientFactory = httpClientFactory;
         _currentTenantService = currentTenantService;
-        _jwt = httpContextAccessor.HttpContext?.Request.Cookies[CookieNamesEnum.AccessToken.ToString()]
-            ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "")
-            ?? string.Empty;
     }
 
-    public async Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(Guid toolId, TestToolDto testToolDto)
+    public async Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(
+        Guid toolId,
+        TestToolDto testToolDto,
+        string accessToken)
     {
         var serviceResponse = new ServiceResponse<TestToolResponseDto>
         {
@@ -85,7 +83,7 @@ public class ToolVerificationService : IToolVerificationService
 
             var llmPipelineClient = _httpClientFactory.CreateClient(LlmPipelineClientName);
             llmPipelineClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _jwt);
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -114,7 +112,7 @@ public class ToolVerificationService : IToolVerificationService
             {
                 Success = llmResponse.IsSuccessStatusCode,
                 StatusCode = (int)llmResponse.StatusCode,
-                Body = responseBody,
+                Body = ParseResponseBody(responseBody),
                 DurationMs = stopwatch.Elapsed.TotalMilliseconds,
             };
 
@@ -140,5 +138,17 @@ public class ToolVerificationService : IToolVerificationService
         }
 
         return serviceResponse;
+    }
+
+    private static JsonElement? ParseResponseBody(string responseBody)
+    {
+        try
+        {
+            return JsonDocument.Parse(responseBody).RootElement.Clone();
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return System.Text.Json.JsonSerializer.SerializeToElement(responseBody);
+        }
     }
 }

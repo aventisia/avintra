@@ -312,6 +312,17 @@ public static class ToolOperationHelpers
     }
 
     /// <summary>
+    /// Indicates whether all parsed operations have unique identifiers.
+    /// </summary>
+    public static bool HasUniqueOperationNames(JsonDocument? parsedSchema)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        return ExtractOperations(parsedSchema)
+            .All(operation => !string.IsNullOrWhiteSpace(operation.OperationId) &&
+                              names.Add(operation.OperationId.Trim()));
+    }
+
+    /// <summary>
     /// Carries the verified operation ids from <paramref name="source"/> onto
     /// <paramref name="target"/>. Used when a tool's OpenAPI spec is re-flattened
     /// so per-operation verification survives a create/update.
