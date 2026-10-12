@@ -1,8 +1,8 @@
 import { NodeDataType } from "@/types/node-data-type";
 
-// IMPORTANT NOTE: The graph-generation endpoint does not exist yet; the stub
-// drives the UI until the backend ships. Flip this flag when it is live.
-export const FLOW_ASSISTANT_USE_STUB = true;
+// IMPORTANT NOTE: Set to true to use the deterministic local stub instead of the
+// WorkspaceAPIs /assist/flows/stream endpoint.
+export const FLOW_ASSISTANT_USE_STUB = false;
 
 export const FLOW_ASSISTANT_ENDPOINT_SUFFIX = "/assist/flows/stream";
 
