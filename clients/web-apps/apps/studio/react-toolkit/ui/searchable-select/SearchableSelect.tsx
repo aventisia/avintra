@@ -20,6 +20,10 @@ export interface ISearchableSelectOption extends ISelectOption {
   icon?: string;
 }
 
+const ABSOLUTE_SRC_PATTERN = /^(?:https?:|\/\/)/i;
+
+const isAbsoluteUrl = (value: string): boolean => ABSOLUTE_SRC_PATTERN.test(value);
+
 interface SearchableSelectProps {
   value?: string;
   onValueChange: (value: string) => void;
@@ -31,6 +35,8 @@ interface SearchableSelectProps {
   size?: FormFieldSizeType;
   className?: string;
   isLoading?: boolean;
+  /** Rendered in place of the icon for options whose `icon` is not set. */
+  fallbackIcon?: React.ReactNode;
 }
 
 const sizeClasses: Record<FormFieldSizeType, string> = {
@@ -50,6 +56,7 @@ export const SearchableSelect = ({
   size = "base",
   className,
   isLoading,
+  fallbackIcon,
 }: SearchableSelectProps) => {
   const [open, setOpen] = React.useState(false);
 
@@ -84,17 +91,19 @@ export const SearchableSelect = ({
           aria-expanded={open}
           className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
         >
-          {/* 2. Render the icon in the trigger if it exists */}
+          {/* 2. Render the icon in the trigger, falling back when the option has none */}
           <span className="flex items-center gap-2 truncate">
-            {selectedOption?.icon && (
+            {selectedOption?.icon ? (
               <img
                 className="flex h-4 w-4 shrink-0 items-center justify-center"
                 src={
-                  selectedOption.icon.includes("http")
+                  isAbsoluteUrl(selectedOption.icon)
                     ? selectedOption.icon
                     : basePath + selectedOption.icon
                 }
               />
+            ) : (
+              selectedOption && fallbackIcon
             )}
             <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
           </span>
@@ -134,15 +143,15 @@ export const SearchableSelect = ({
                     className={cn(value === option.value && "bg-accent")}
                   >
                     <div className="flex w-full items-center justify-between">
-                      {/* 3. Render the icon in the dropdown list if it exists */}
+                      {/* 3. Render the icon in the dropdown list, falling back when the option has none */}
                       <div className="flex items-center gap-2">
-                        {option.icon && (
+                        {option.icon ? (
                           <img
                             className="flex h-4 w-4 shrink-0 items-center justify-center"
-                            src={
-                              option.icon.includes("http") ? option.icon : basePath + option.icon
-                            }
+                            src={isAbsoluteUrl(option.icon) ? option.icon : basePath + option.icon}
                           />
+                        ) : (
+                          fallbackIcon
                         )}
                         <span>{option.label}</span>
                       </div>

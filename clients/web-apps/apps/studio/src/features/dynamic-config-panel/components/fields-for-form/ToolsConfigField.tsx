@@ -11,6 +11,7 @@ import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
+import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
 import { useUsableToolOperations, useUsableTools } from "../../hooks/useTools.hook";
@@ -23,10 +24,6 @@ interface ToolsConfigFieldProps {
   name: string;
 }
 
-/**
- * Renders a tool's brand icon, falling back to the generic wrench when the tool
- * has no icon or its asset fails to load. Only one of the two is ever shown.
- */
 const ToolBrandIcon = ({ icon }: { icon?: string }) => {
   const [hasError, setHasError] = useState(false);
   const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
@@ -46,10 +43,8 @@ const ToolBrandIcon = ({ icon }: { icon?: string }) => {
 };
 
 export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
-  // Connect to the parent form context
   const { control, setValue } = useFormContext();
 
-  // Manage the dynamic array of configured tools
   const { fields, append, update, remove } = useFieldArray({
     control,
     name: name,
@@ -57,16 +52,12 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
   const { showCustomAlertDialog } = useShowAlertHandler();
 
-  // Track the index of the item currently being edited; null if adding a new item
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  // Track the original tool name when editing begins to determine if dependent fields need resetting
   const [initialEditTool, setInitialEditTool] = useState<string | null>(null);
 
-  // Track if the user tried to save a duplicate, triggering the inline error
   const [duplicateAttempted, setDuplicateAttempted] = useState<boolean>(false);
 
-  // Memoize builder field names to prevent unnecessary re-renders when passing to useWatch/setValue
   const fieldNames = useMemo(
     () => ({
       tool: `${name}_tool`,
@@ -77,7 +68,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     [name],
   );
 
-  // Subscribe to builder input changes to drive conditional rendering and side effects
   const currentTool = useWatch({ control, name: fieldNames.tool });
   const currentCredential = useWatch({
     control,
@@ -86,17 +76,14 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   const currentActions = useWatch({ control, name: fieldNames.actions }) || [];
   const currentApproval = useWatch({ control, name: fieldNames.approval }) || "human";
 
-  // Load the live list of usable tools from the registry
   const { data: usableToolsResponse, isLoading: isUsableToolsLoading } = useUsableTools();
   const usableTools = useMemo(() => usableToolsResponse?.data ?? [], [usableToolsResponse]);
 
-  // Resolve the selected tool's registry entry
   const selectedUsableTool = useMemo(
     () => usableTools.find((tool) => tool.name === currentTool),
     [usableTools, currentTool],
   );
 
-  // Fetch the selected tool's operations and credential type on demand
   const { data: toolOperationsResponse, isLoading: isToolOperationsLoading } =
     useUsableToolOperations(selectedUsableTool?.id);
   const availableOperations = useMemo(
@@ -105,7 +92,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   );
   const credentialType = toolOperationsResponse?.data?.credentialType;
 
-  // Tool select options; inject the raw value as a temporary option when editing a stale entry
   const toolOptions = useMemo(() => {
     const options = usableTools.map((tool) => ({
       label: tool.name,
@@ -118,17 +104,18 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     return options;
   }, [usableTools, currentTool]);
 
-  // Actions are keyed by operationId; the summary is shown as the label when available
+  const isCustomTool = selectedUsableTool?.type === ComponentTypeEnum.Custom;
   const availableActionsForTool = useMemo(
     () =>
-      availableOperations.map((operation) => ({
-        label: operation.summary || operation.operationId,
-        value: operation.operationId,
-      })),
-    [availableOperations],
+      availableOperations
+        .filter((operation) => !isCustomTool || operation.isVerified)
+        .map((operation) => ({
+          label: operation.summary || operation.operationId,
+          value: operation.operationId,
+        })),
+    [availableOperations, isCustomTool],
   );
 
-  // Lookup map for rendering the configured list
   const toolByName = useMemo(
     () => new Map(usableTools.map((tool) => [tool.name, tool])),
     [usableTools],
@@ -136,11 +123,8 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
   const prevToolRef = useRef(currentTool);
 
-  // Clear dependent fields (credential and actions) if the parent tool selection changes.
-  // The credential is pre-filled from the selected tool's default when available.
   useEffect(() => {
     if (prevToolRef.current !== currentTool) {
-      // Only clear if adding a new tool OR if editing but the user explicitly changed the tool type
       if (editingIndex === null || (editingIndex !== null && currentTool !== initialEditTool)) {
         setValue(fieldNames.credential_name, selectedUsableTool?.credentialName ?? "", {
           shouldValidate: true,
@@ -151,21 +135,16 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     }
   }, [currentTool, editingIndex, initialEditTool, selectedUsableTool, setValue, fieldNames]);
 
-  // Hide the duplicate error message as soon as the user changes the tool or approval method
   useEffect(() => {
     setDuplicateAttempted(false);
   }, [currentTool, currentApproval]);
 
-  // A credential is required unless the selected tool requires no authentication.
-  // Stale (unresolved) tools keep the credential requirement.
   const requiresCredential =
     !selectedUsableTool ||
     selectedUsableTool.authenticationType !== ToolAuthenticationTypeEnum.None;
 
-  // Validation: Check if the user is trying to add an exact duplicate (same tool + same approval type)
   const isDuplicate = useMemo(() => {
     return fields.some((f: any, idx: number) => {
-      // Skip duplicate check against the item currently being edited
       if (idx === editingIndex) return false;
 
       const fApproval = f.actions[0]?.approval || "human";
@@ -173,16 +152,13 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     });
   }, [fields, currentTool, currentApproval, editingIndex]);
 
-  // Validation: Ensure required builder fields are populated (Duplicate check excluded so they can click the button to see the error)
   const isAddDisabled =
     !currentTool || (requiresCredential && !currentCredential) || currentActions.length === 0;
 
-  // Validation: Check if the builder form has unsaved data (used to trigger discard warnings)
   const isFieldDirty = Boolean(
     (currentTool || currentCredential || currentActions.length > 0) && editingIndex === null,
   );
 
-  // Helper: Clears the builder inputs and resets editing state
   const handleResetField = () => {
     setEditingIndex(null);
     setInitialEditTool(null);
@@ -193,17 +169,14 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     setValue(fieldNames.approval, "human");
   };
 
-  // Handler: Constructs the final object structure and commits it to the field array
   const handleSaveConfig = () => {
     if (isAddDisabled) return;
 
-    // Show the inline duplicate error and stop the save process
     if (isDuplicate) {
       setDuplicateAttempted(true);
       return;
     }
 
-    // Transform flat array of action strings into the required object array format
     const mappedActions = currentActions.map((a: string) => ({
       approval: currentApproval,
       action: a,
@@ -224,21 +197,16 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     handleResetField();
   };
 
-  // Commit an in-progress builder entry when the form is flushed at a boundary
-  // (panel close / node switch / before Save). No-op unless the builder holds a
-  // new entry; edit-mode and incomplete entries are skipped (the original array
-  // item / nothing is persisted, so nothing is lost).
+  // IMPORTANT NOTE: a flush must commit an in-progress builder entry at panel-close, node-switch and before Save boundaries; incomplete or edit-mode entries are intentionally skipped.
   useRegisterPendingFieldFlush(() => {
     if (!isFieldDirty) return false;
     handleSaveConfig();
     return true;
   });
 
-  // Helper: Populates the builder inputs with data from a specific array index
   const executeEdit = (index: number) => {
     const item = fields[index] as any;
 
-    // Flatten the nested action objects back into an array of strings for the MultiSelect component
     const flatActions = item.actions.map((a: any) => a.action);
     const approval = item.actions[0]?.approval || "human";
 
@@ -252,7 +220,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     setDuplicateAttempted(false);
   };
 
-  // Handler: Initiates edit mode, prompting for confirmation if unsaved builder data exists
   const onEditClick = (index: number) => {
     if (isFieldDirty) {
       showCustomAlertDialog({
@@ -268,7 +235,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     }
   };
 
-  // Handler: Removes an item from the field array after user confirmation
   const onDeleteClick = (index: number) => {
     showCustomAlertDialog({
       title: "Delete Tool Configuration",
@@ -277,7 +243,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
       isDestructive: true,
       confirmActionFn: () => {
         remove(index);
-        // If the user deletes the item they are currently editing, reset the builder
         if (editingIndex === index) {
           handleResetField();
         }
@@ -287,7 +252,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
   return (
     <GroupedFieldsWrapper groupName="Configure Tools">
-      {/* Field Section */}
       <div className="space-y-4">
         <SearchableSelectField
           name={fieldNames.tool}
@@ -297,6 +261,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           placeholder="Select Tool"
           isLoading={isUsableToolsLoading}
           disabled={isUsableToolsLoading}
+          fallbackIcon={<Wrench className="h-4 w-4 shrink-0 text-muted-foreground" />}
         />
 
         <CredentialsSelectField
@@ -323,14 +288,12 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           }}
         />
 
-        {/* Inform the user when the selected tool exposes no operations */}
         {currentTool && !isToolOperationsLoading && availableActionsForTool.length === 0 && (
           <p className="text-2xs ml-1.5 font-medium text-muted-foreground">
             No operations found for this tool.
           </p>
         )}
 
-        {/* Inline Error displays only when the user attempts to save a duplicate */}
         {duplicateAttempted && isDuplicate && (
           <p className="text-2xs ml-1.5 font-medium text-destructive">
             A configuration for this tool with{" "}
@@ -364,7 +327,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
       <hr className="my-6 border-border" />
 
-      {/* Configured List Section */}
       <div className="space-y-2.5">
         {fields.length === 0 ? (
           <NoContentMessage
@@ -379,7 +341,6 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             const approval = field.actions[0]?.approval || "human";
             const credentialName = field.credential_name || "";
 
-            // Format actions for display, capping at 3 with an overflow indicator
             const displayActions = actionNames.slice(0, 3).join(", ");
             const extraCount = actionNames.length > 3 ? actionNames.length - 3 : 0;
 

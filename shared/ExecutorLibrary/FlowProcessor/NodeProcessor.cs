@@ -414,6 +414,8 @@ public class NodeProcessor : INodeProcessor
     ///
     /// Corsair connectors (rawName "Corsair/{Plugin}/{Action}Connector") are routed to
     /// ProcessCorsairRequestNode with (Plugin, Action, CredentialName, Payload) inputs.
+    /// Custom tool actions (rawName "CustomTool/{toolName}.{operationId}") are routed to
+    /// ProcessCustomToolRequestNode with (Action, CredentialName, Payload) inputs.
     /// </summary>
     private static (string, List<ReactFlowNodeInput>) PreprocessCloudConnectorNode(
         string rawName,
@@ -424,6 +426,12 @@ public class NodeProcessor : INodeProcessor
         if (rawName.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase))
         {
             return PreprocessCorsairNode(rawName, inputs, context);
+        }
+
+        // Custom tool actions are cloudConnectorNode type but invoke the custom-tool adapter.
+        if (IsCustomToolNodeName(rawName))
+        {
+            return PreprocessCustomToolNode(rawName, inputs, context);
         }
 
         // rawName format: "{provider}/{actionConnector}" e.g. "Google/SendEmailConnector"
@@ -464,6 +472,109 @@ public class NodeProcessor : INodeProcessor
         });
 
         return ("ProcessConnectorRequestNode", newInputs);
+    }
+
+    private static bool IsCustomToolNodeName(string rawName) =>
+        rawName.StartsWith("CustomTool", StringComparison.OrdinalIgnoreCase) &&
+        rawName.Length > "CustomTool".Length &&
+        rawName["CustomTool".Length] is '/' or '_';
+
+    /// <summary>
+    /// Routes a custom-tool node to ProcessCustomToolRequestNode with (Action, CredentialName, Payload) inputs.
+    /// </summary>
+    private static (string, List<ReactFlowNodeInput>) PreprocessCustomToolNode(
+        string rawName,
+        List<ReactFlowNodeInput> inputs,
+        FlowExecutionContext context)
+    {
+        var action = rawName["CustomTool".Length..].TrimStart('/', '_');
+
+        var newInputs = new List<ReactFlowNodeInput>
+        {
+            new() { Key = "Action", Value = action },
+        };
+
+        var payloadDict = new Dictionary<string, object?>();
+
+        foreach (var input in inputs)
+        {
+            if (IsSystemInput(input.Key)) continue;
+
+            if (input.Key.StartsWith("__OnError__", StringComparison.OrdinalIgnoreCase)) continue;
+
+            if (input.Key.Contains("__CredentialName__"))
+            {
+                if (!string.IsNullOrEmpty(input.Value?.ToString()))
+                {
+                    newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
+                }
+                continue;
+            }
+
+            var resolvedValue = context.ResolveTemplateObject(input.Value);
+
+            if (CustomToolSectionKeys.TryGetValue(input.Key, out var payloadKey))
+            {
+                AddResolvedSection(payloadDict, payloadKey, resolvedValue);
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+
+            payloadDict[input.Key] = resolvedValue;
+        }
+
+        newInputs.Add(new ReactFlowNodeInput
+        {
+            Key = "Payload",
+            Value = JsonSerializer.Serialize(payloadDict)
+        });
+
+        return ("ProcessCustomToolRequestNode", newInputs);
+    }
+
+    private static readonly Dictionary<string, string> CustomToolSectionKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Headers"] = "headers",
+        ["Parameters"] = "parameters",
+        ["RequestPayload"] = "requestPayload",
+    };
+
+    private static void AddResolvedSection(Dictionary<string, object?> payload, string key, object? value)
+    {
+        var parsed = ParseSectionJson(value);
+        if (parsed is null) return;
+
+        payload[key] = parsed;
+    }
+
+    private static object? ParseSectionJson(object? value)
+    {
+        switch (value)
+        {
+            case null:
+                return null;
+
+            case string stringValue:
+                if (string.IsNullOrWhiteSpace(stringValue)) return null;
+                try
+                {
+                    using var document = JsonDocument.Parse(stringValue);
+                    return document.RootElement.Clone();
+                }
+                catch (JsonException)
+                {
+                    return null;
+                }
+
+            case JsonElement element:
+                return element.ValueKind == JsonValueKind.Undefined || element.ValueKind == JsonValueKind.Null
+                    ? null
+                    : element.Clone();
+
+            default:
+                return value;
+        }
     }
 
     /// <summary>

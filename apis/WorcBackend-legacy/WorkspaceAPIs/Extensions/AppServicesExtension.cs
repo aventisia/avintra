@@ -3,6 +3,7 @@ using WorkspaceAPIs.Features.CloudConnectors.Camel;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
@@ -192,6 +193,8 @@ public static class AppServicesExtension
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
+        services.AddScoped<IToolCatalogService, ToolCatalogService>();
+        services.AddScoped<IToolVerificationService, ToolVerificationService>();
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
@@ -220,6 +223,7 @@ public static class AppServicesExtension
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
         services.AddScoped<IVectorConnectorsService, VectorConnectorsService>();
+        services.AddScoped<ICustomToolConnectorService, CustomToolConnectorService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -14,7 +14,7 @@ export const ToolRowDeleteAction = ({ rowId }: ToolRowDeleteActionProps) => {
   const { queryKey } = useTableTab();
   const { mutate: deleteToolMutation } = useListOptimisticMutation<
     string,
-    ToolDto | boolean,
+    ToolDto | boolean | number,
     ToolDto
   >([rowId], toolOptimisticMutationFn, queryKey);
 
