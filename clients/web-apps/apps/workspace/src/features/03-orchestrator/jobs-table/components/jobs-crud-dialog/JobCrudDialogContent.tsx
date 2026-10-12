@@ -29,10 +29,6 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
   const rawFv = searchParams.get("fv");
   const rawFvp = searchParams.get("fvp");
 
-  // Decode once per raw query value. Memoizing on the raw strings (not the decoded
-  // objects) keeps the returned option references stable across re-renders, so
-  // downstream form-reset effects don't fire and wipe user edits (e.g. toggling
-  // "Execute it on Cloud" off).
   const { defaultMachineOption, defaultFlowVersionOption } = useMemo(() => {
     const flowVersionOption = decodePrefilledOption(rawFv);
 
@@ -46,8 +42,6 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
   }, [rawMid, rawFv, rawFvp]);
 
   const handleJobCreated = () => {
-    // Remove the prefill params and the dialog params in a single URL update,
-    // restoring the machine view when the dialog was opened with a `back` state.
     const next = buildDialogCloseParams({
       current: searchParams,
       back,

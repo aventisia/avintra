@@ -80,8 +80,16 @@ public class CloudJobExecutionService : ICloudJobExecutionService
             EnvType = flowVersion.IsPublished ? CloudProdEnvType : CloudDevEnvType
         };
 
-        _executeFlowStep2Service.StartExecution(flowExecutionArgs);
-        _logger.LogInformation("Job {JobId} dispatched to the cloud engine.", job.Id);
+        try
+        {
+            _executeFlowStep2Service.StartExecution(flowExecutionArgs);
+            _logger.LogInformation("Job {JobId} dispatched to the cloud engine.", job.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Job {JobId} failed to start on the cloud engine.", job.Id);
+            await FailJobAsync(job, "Cloud execution failed: the engine could not start the job.");
+        }
     }
 
     private async Task<bool> TryClaimJobAsync(Job job)

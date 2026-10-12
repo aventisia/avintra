@@ -105,9 +105,6 @@ public class JobsExecutorService : IJobsExecutorService
                 jobDetails.MachineId = targetMachine.ClientId;
                 jobDetails.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
 
-                MachineReservationHelpers.Reserve(targetMachine, jobDetails.Id, jobDetails.FlowVersionId);
-                await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
-
                 _logger.LogInformation("Job {JobId} assigned to machine {MachineName}.", jobDetails.Id, jobDetails.ExecutedOn);
             }
             else if (!isDesktopAppOrigin)

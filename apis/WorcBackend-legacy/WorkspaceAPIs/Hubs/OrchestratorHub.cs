@@ -382,7 +382,6 @@ public class OrchestratorHub : Hub
                 }
             }
 
-            // A machine can only start a new run while it is online or idle.
             if (clientDataStore.Status != MachineStatusEnum.Online && clientDataStore.Status != MachineStatusEnum.Idle)
             {
                 _logger.LogWarning("Machine {MachineName} is not online or idle.", machineName);
@@ -426,11 +425,9 @@ public class OrchestratorHub : Hub
             _workspaceInternalDbContext.Jobs.Add(job);
             await _workspaceInternalDbContext.SaveChangesAsync();
 
-            // Reserve the machine before dispatch so a concurrent selection sees the pending job.
             MachineReservationHelpers.Reserve(clientDataStore, job.Id, agentId);
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
-            // Trigger the agent execution on the assigned machine
             if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
             {
                 var executionRequest = new ExecutionCommandDto()
@@ -459,7 +456,6 @@ public class OrchestratorHub : Hub
         }
     }
 
-    // Releases a machine reservation taken before dispatch when the run cannot proceed.
     private async Task ClearMachineReservationAsync(ClientDataStore machine)
     {
         MachineReservationHelpers.Release(machine);
