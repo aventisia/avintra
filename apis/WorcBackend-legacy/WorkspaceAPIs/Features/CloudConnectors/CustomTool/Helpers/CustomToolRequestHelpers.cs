@@ -71,6 +71,11 @@ public static class CustomToolRequestHelpers
         if (!string.IsNullOrEmpty(credentialQuery))
         {
             var separatorIndex = credentialQuery!.IndexOf('=');
+            if (separatorIndex <= 0)
+            {
+                return (null, new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase),
+                    "The credential query must use the name=value format.");
+            }
             var name = credentialQuery[..separatorIndex];
             var value = credentialQuery[(separatorIndex + 1)..];
             query[name] = value;

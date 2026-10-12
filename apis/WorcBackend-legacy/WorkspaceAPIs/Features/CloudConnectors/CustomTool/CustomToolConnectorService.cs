@@ -36,17 +36,14 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         CloudConnectorReqDto request,
         CancellationToken cancellationToken = default)
     {
-        var serviceResponse = new ServiceResponse<CloudConnectorResDto>
-        {
-            Data = new CloudConnectorResDto
+        var serviceResponse = ServiceResponse<CloudConnectorResDto>.Create(
+            "Failed to invoke the custom tool.",
+            500,
+            new CloudConnectorResDto
             {
-                Response = null,
                 Provider = request.Provider,
-                Action = request.Action
-            },
-            Message = "Failed to invoke the custom tool.",
-            StatusCode = 500
-        };
+                Action = request.Action,
+            });
 
         try
         {
@@ -154,12 +151,19 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse.Update(responseError, statusCode >= 400 ? statusCode : 502);
             }
 
-            serviceResponse.Data.Response = CustomToolRequestHelpers.ParseResponseBody(responseText);
             var isUpstreamSuccess = statusCode >= 200 && statusCode < 300;
-            serviceResponse.StatusCode = isUpstreamSuccess ? 200 : 502;
-            serviceResponse.Message = isUpstreamSuccess
-                ? "Custom tool invoked successfully."
-                : $"Upstream API responded with status code {statusCode}.";
+            var responseData = new CloudConnectorResDto
+            {
+                Response = CustomToolRequestHelpers.ParseResponseBody(responseText),
+                Provider = request.Provider,
+                Action = request.Action,
+            };
+            serviceResponse = serviceResponse.Update(
+                isUpstreamSuccess
+                    ? "Custom tool invoked successfully."
+                    : $"Upstream API responded with status code {statusCode}.",
+                isUpstreamSuccess ? 200 : 502,
+                responseData);
             _logger.LogInformation(
                 "Custom tool '{ToolName}' operation '{OperationId}' invoked with upstream status {StatusCode}.",
                 tool.Name, operationId, statusCode);
@@ -167,8 +171,9 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while invoking custom tool action {Action}.", request.Action);
-            serviceResponse.StatusCode = 500;
-            serviceResponse.Message = "An unexpected error occurred while invoking the custom tool.";
+            serviceResponse = serviceResponse.Update(
+                "An unexpected error occurred while invoking the custom tool.",
+                500);
         }
 
         return serviceResponse;

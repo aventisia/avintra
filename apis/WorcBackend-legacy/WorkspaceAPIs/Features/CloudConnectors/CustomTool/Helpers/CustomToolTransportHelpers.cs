@@ -66,7 +66,7 @@ public static class CustomToolTransportHelpers
             var buffer = new System.IO.MemoryStream();
             var readBuffer = new byte[8192];
             int read;
-            while ((read = await responseStream.ReadAsync(readBuffer, 0, readBuffer.Length, timeoutCancellationTokenSource.Token)) > 0)
+            while ((read = await responseStream.ReadAsync(readBuffer.AsMemory(), timeoutCancellationTokenSource.Token)) > 0)
             {
                 if (buffer.Length + read > MaxResponseBytes)
                 {

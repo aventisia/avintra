@@ -15,11 +15,6 @@ export interface ToolDto {
    */
   name: string;
 
-  /**
-   * Optional short code or alias for the tool (max 100 chars).
-   */
-  code?: string;
-
   description?: string;
 
   /**
@@ -59,9 +54,9 @@ export interface ToolDto {
    */
   isVerified: boolean;
 
-  isDisabled?: boolean;
-
   accessLevel: ResourceAccessTypeEnum;
+
+  isDisabled?: boolean;
 
   createdBy?: string;
 

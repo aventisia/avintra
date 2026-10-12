@@ -10,10 +10,18 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/to
 /**
  * Retrieves list of tools based on ownership scope.
  */
-export const getTools = ({ isPersonal = true }: { isPersonal: boolean }) => {
-  const path = isPersonal ? `list` : `list/shared`;
+export const getPersonalTools = () => {
   return axiosInstance
-    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/list`, { headers: getSpaceHeaders() })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves all shared tools.
+ */
+export const getSharedTools = () => {
+  return axiosInstance
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/list/shared`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

@@ -4,6 +4,7 @@ import socket
 from urllib.parse import urlparse
 
 _ALLOWED_SCHEMES = ("http", "https")
+_DNS_TIMEOUT_SECONDS = 5.0
 
 # IMPORTANT NOTE: this blocklist must stay in sync with the .NET CustomToolUrlHelpers blocklist.
 _BLOCKED_IPV4_NETWORKS = (
@@ -70,7 +71,7 @@ def _resolve_host(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Addre
         pass
 
     try:
-        infos = socket.getaddrinfo(host, None)
+        infos = _getaddrinfo_with_timeout(host)
     except socket.gaierror as exc:
         raise UnsafeUrlError(f"Unable to resolve host '{host}'.") from exc
 
@@ -84,6 +85,13 @@ def _resolve_host(host: str) -> list[ipaddress.IPv4Address | ipaddress.IPv6Addre
     if not addresses:
         raise UnsafeUrlError(f"Unable to resolve host '{host}'.")
     return addresses
+
+
+def _getaddrinfo_with_timeout(host: str) -> list[tuple]:
+    try:
+        return asyncio.run(asyncio.wait_for(asyncio.to_thread(socket.getaddrinfo, host, None), _DNS_TIMEOUT_SECONDS))
+    except (asyncio.TimeoutError, socket.gaierror) as exc:
+        raise UnsafeUrlError(f"Unable to resolve host '{host}'.") from exc
 
 
 def _is_public_address(

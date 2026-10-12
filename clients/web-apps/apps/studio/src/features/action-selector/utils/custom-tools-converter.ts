@@ -8,11 +8,14 @@ import { DCPFieldSchemaType } from "@/features/dynamic-config-panel/types/dcp-fi
 import { NodeConfigSchemaType } from "@/features/dynamic-config-panel/types/node-config-schema-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
-/** Icon-mapper key of the shared wrench glyph used when a tool defines no icon. */
-export const DEFAULT_TOOL_ICON_KEY = "WrenchIcon";
+import { DEFAULT_TOOL_NODE_COLOR, getToolIcon, getToolIconUrl } from "./custom-tool-icon.util";
 
-/** Default accent color for custom-tool nodes when the spec defines none. */
-export const DEFAULT_TOOL_NODE_COLOR = "#4f46e5";
+export {
+  DEFAULT_TOOL_ICON_KEY,
+  DEFAULT_TOOL_NODE_COLOR,
+  getToolIcon,
+  getToolIconUrl,
+} from "./custom-tool-icon.util";
 
 /** Form field name carrying the credential selection for custom-tool nodes. */
 export const CUSTOM_TOOL_CREDENTIAL_FIELD = "__CredentialName__CustomApiTool";
@@ -51,9 +54,6 @@ export function getCustomToolNodeName(toolName: string, operationId: string): st
   return `${CUSTOM_TOOL_NODE_PREFIX}${toolName}.${operationId}`;
 }
 
-/**
- * Minimal structural view of a tool consumed by the L2/L3 converters.
- */
 type CustomToolLike = Pick<
   ToolDto,
   "id" | "name" | "description" | "icon" | "iconUrl" | "isActive"
@@ -83,19 +83,6 @@ export function formatOperationId(operationId: string): string {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
-}
-
-/** L2 tool icon resolution: custom icon first, then the shared wrench glyph key. */
-export function getToolIcon(tool: CustomToolLike): string {
-  return tool.icon || DEFAULT_TOOL_ICON_KEY;
-}
-
-/**
- * L2/L3/node image resolution: the tool's trimmed `iconUrl`, or undefined when unset.
- */
-export function getToolIconUrl(tool: CustomToolLike): string | undefined {
-  const value = tool.iconUrl?.trim();
-  return value ? value : undefined;
 }
 
 /** L2 tool display name, mirroring the OpenAPI `info.title` convention. */
