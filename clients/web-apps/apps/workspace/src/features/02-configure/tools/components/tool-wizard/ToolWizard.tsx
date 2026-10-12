@@ -1,5 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { toast } from "@avplatform/ui/sonner";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useEffect, useState } from "react";
@@ -7,7 +8,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
-import { getToolById, insertTool, updateTool } from "../../apis/tools.apis";
+import { createTool, getToolById, testTool, updateTool } from "../../apis/tools.apis";
 import { DATA_QUERY_KEY, DETAIL_DATA_QUERY_KEY } from "../../constants/tools-table.constants";
 import { ToolDto } from "../../dtos/index";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
@@ -15,6 +16,7 @@ import { useTableTab } from "../../hooks/useTableTab.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 import { toManualOperations } from "../../utils/manual-openapi.util";
 import { isValidIconUrl } from "../../utils/tool-icon.util";
+import { normalizeParsedSchemaOperations } from "../../utils/tool-operations.util";
 import { StepAuthenticate } from "./StepAuthenticate";
 import { StepIngestSpec } from "./StepIngestSpec";
 import { StepPlayground } from "./StepPlayground";
@@ -23,6 +25,39 @@ interface ToolWizardProps {
   crudAction: DialogCrudAction;
   rowId: string;
 }
+
+interface PendingVerificationResult {
+  hasFailure: boolean;
+  skippedOperationIds: string[];
+}
+
+const persistPendingVerifications = async (
+  toolId: string,
+  parsedSchema: object | undefined,
+): Promise<PendingVerificationResult> => {
+  const { pendingVerifications } = useToolWizardStore.getState();
+  const operationIds = new Set(
+    normalizeParsedSchemaOperations(parsedSchema).map((operation) => operation.operationId),
+  );
+  const skippedOperationIds: string[] = [];
+  let hasFailure = false;
+
+  for (const [operationId, parameters] of Object.entries(pendingVerifications)) {
+    if (!operationIds.has(operationId)) {
+      skippedOperationIds.push(operationId);
+      continue;
+    }
+
+    try {
+      const response = await testTool(toolId, { operationId, parameters });
+      if (response.statusCode >= 400) hasFailure = true;
+    } catch {
+      hasFailure = true;
+    }
+  }
+
+  return { hasFailure, skippedOperationIds };
+};
 
 export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const {
@@ -36,7 +71,6 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     setCrudAction,
     setDraftTool,
     setDraftSaved,
-    setSpecText,
   } = useToolWizardStore();
   const { onCloseConfirmed, setIsDirty } = useCrudDialogDirty();
   const queryClient = useQueryClient();
@@ -44,7 +78,6 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
 
   const isCreate = crudAction === "create";
 
-  // Name availability gates create mode: the name must be unique (and not being checked).
   const isNameValidForSubmit = !isCreate || (isNameAvailable && !isNameCheckPending);
 
   useEffect(() => {
@@ -83,9 +116,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
 
       if (!tool) return;
 
-      const spec = tool.openApiSpec ?? "";
       setDraftTool({ ...tool, manualOperations: toManualOperations(tool) });
-      setSpecText(spec);
       setDraftSaved(true);
     };
 
@@ -102,22 +133,14 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     setCrudAction,
     setDraftTool,
     setDraftSaved,
-    setSpecText,
     queryClient,
     queryKey,
   ]);
 
-  // The synthesized spec gates progress: manual operations are converted to
-  // JSON and stored in openApiSpec client-side, so a valid method set always
-  // yields a non-empty spec.
-  const hasValidManualOperation = Boolean(
-    draftTool?.manualOperations?.length && draftTool?.openApiSpec?.trim(),
-  );
-
   const isIngestValid = Boolean(
     draftTool?.name?.trim() &&
     draftTool?.baseUrl?.trim() &&
-    (draftTool?.openApiSpec?.trim() || hasValidManualOperation) &&
+    draftTool?.openApiSpec?.trim() &&
     isValidIconUrl(draftTool?.iconUrl),
   );
 
@@ -126,7 +149,11 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const steps = [
     { key: "ingest", label: "Ingest Spec", component: <StepIngestSpec crudAction={crudAction} /> },
     { key: "authenticate", label: "Authenticate", component: <StepAuthenticate /> },
-    { key: "playground", label: "Playground", component: <StepPlayground /> },
+    {
+      key: "playground",
+      label: "Playground",
+      component: <StepPlayground crudAction={crudAction} />,
+    },
   ] as const;
 
   const currentIndex = steps.findIndex((s) => s.key === currentStep);
@@ -143,19 +170,37 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     const saveAndClose = async () => {
       setIsSavePending(true);
       try {
-        const response = isCreate ? await insertTool(draftTool) : await updateTool(draftTool);
+        const response = isCreate ? await createTool(draftTool) : await updateTool(draftTool);
         const savedTool = response.data;
         if (savedTool?.id) {
           setDraftTool({ ...draftTool, ...savedTool, id: savedTool.id });
           setDraftSaved(true);
         }
+
+        if (isCreate && savedTool?.id) {
+          const { hasFailure, skippedOperationIds } = await persistPendingVerifications(
+            savedTool.id,
+            savedTool.parsedSchema,
+          );
+          if (hasFailure) {
+            toast.error(
+              "Tool created, but one or more operation verifications could not be saved.",
+            );
+          }
+          if (skippedOperationIds.length > 0) {
+            toast.warning(
+              `These tested operations were not found in the saved tool and stay unverified: ${skippedOperationIds.join(", ")}`,
+            );
+          }
+        }
+
         queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
         queryClient.invalidateQueries({ queryKey: DETAIL_DATA_QUERY_KEY });
         reset();
         setIsDirty(false);
         onCloseConfirmed();
       } catch {
-        // Error is surfaced by the axios interceptor; no extra toast needed.
+        // IMPORTANT NOTE: the shared axios interceptor already surfaces the save failure.
       } finally {
         setIsSavePending(false);
       }

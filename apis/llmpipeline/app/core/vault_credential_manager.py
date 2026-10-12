@@ -2,6 +2,7 @@ import requests
 from fastapi import HTTPException
 from app.core.logger import logger
 from typing import Dict, Any
+from urllib.parse import quote
 import uuid
 from app.core.config import settings
 
@@ -69,7 +70,7 @@ class VaultCredentialManager:
 
             # Make the request to fetch vault credential data by name
             response = requests.get(
-                f"{self.api_url}/decrypted-data/by-name/{vault_credential_name}",
+                f"{self.api_url}/decrypted-data/by-name/{quote(vault_credential_name, safe='')}",
                 headers=headers,
                 timeout=60,
                 verify=settings.SSL_VERIFY,

@@ -5,25 +5,29 @@ namespace WorkspaceAPIs.Services;
 public class ToolVerificationService : IToolVerificationService
 {
     private const string LlmPipelineClientName = "LLMPipeline";
+    private const string TestEndpointPath = "api/custom-tools/test";
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolVerificationService> _logger;
     private readonly IResourceShareService _resourceShareService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public ToolVerificationService(
         IUnitOfWork unitOfWork,
         ILogger<ToolVerificationService> logger,
         IResourceShareService resourceShareService,
         IHttpClientFactory httpClientFactory,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _resourceShareService = resourceShareService;
         _httpClientFactory = httpClientFactory;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     public async Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(
@@ -31,17 +35,14 @@ public class ToolVerificationService : IToolVerificationService
         TestToolDto testToolDto,
         string accessToken)
     {
-        var serviceResponse = new ServiceResponse<TestToolResponseDto>
-        {
-            Message = "Failed to test tool."
-        };
+        var serviceResponse = ServiceResponse<TestToolResponseDto>.Create("Failed to test tool.", 500);
 
         try
         {
             var currentUserId = _currentTenantService.CurrentUserId;
 
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (tool == null)
@@ -49,20 +50,28 @@ public class ToolVerificationService : IToolVerificationService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<TestToolResponseDto>(
+                tool.EnvType,
+                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                "tool");
+            if (prodUpdateBlock != null)
+            {
+                return prodUpdateBlock;
+            }
+
+            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
                 currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
                 tool.CreatedByUserId ?? Guid.Empty,
-                tool.IsTenantWideAccess,
+                false,
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
                     ResourceAccessTypeEnum.Edit,
                 });
 
-            if (!canView)
+            if (!canEdit)
             {
                 return serviceResponse.Update("You do not have permission to test this tool.", 403);
             }
@@ -82,41 +91,38 @@ public class ToolVerificationService : IToolVerificationService
             var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var llmPipelineClient = _httpClientFactory.CreateClient(LlmPipelineClientName);
-            llmPipelineClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
+            if (llmPipelineClient.BaseAddress is null)
+            {
+                _logger.LogError("The LLMPipeline HTTP client has no base address; EnvironmentConfig:AppBaseUrl is not configured.");
+                return serviceResponse.Update("The tool test service is not configured.", 500);
+            }
+
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                llmPipelineClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", accessToken.Trim());
+            }
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            var llmResponse = await llmPipelineClient.PostAsync("api/custom-tools/test", requestContent);
+            var llmResponse = await llmPipelineClient.PostAsync(TestEndpointPath, requestContent);
             stopwatch.Stop();
 
             var responseBody = await llmResponse.Content.ReadAsStringAsync();
 
-            TestToolResponseDto? testResult = null;
-            if (llmResponse.IsSuccessStatusCode)
-            {
-                try
-                {
-                    testResult = System.Text.Json.JsonSerializer.Deserialize<TestToolResponseDto>(responseBody, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
-                catch (Exception parseEx)
-                {
-                    _logger.LogWarning(parseEx, "Failed to parse LLM pipeline test response body as JSON.");
-                }
-            }
+            var parsedResult = llmResponse.IsSuccessStatusCode
+                ? TryDeserializeTestResult(responseBody)
+                : null;
 
-            testResult ??= new TestToolResponseDto
+            var testResult = parsedResult ?? new TestToolResponseDto
             {
-                Success = llmResponse.IsSuccessStatusCode,
+                Success = false,
                 StatusCode = (int)llmResponse.StatusCode,
                 Body = ParseResponseBody(responseBody),
                 DurationMs = stopwatch.Elapsed.TotalMilliseconds,
             };
 
-            var isOperationVerified = testResult.StatusCode == 200;
+            var isOperationVerified = parsedResult is not null && parsedResult.StatusCode == 200;
             tool.ParsedSchema = ToolOperationHelpers.SetOperationVerification(
                 tool.ParsedSchema,
                 testToolDto.OperationId,
@@ -125,7 +131,12 @@ public class ToolVerificationService : IToolVerificationService
             tool.LastModifiedByUserId = currentUserId;
             tool.LastModifiedOn = DateTimeOffset.UtcNow;
             _unitOfWork.ToolRepo.Update(tool);
-            await _unitOfWork.SaveAsync();
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Failed to save verification state for tool {ToolId}.", toolId);
+                return serviceResponse.Update("Failed to save the tool verification state.", 500);
+            }
 
             return serviceResponse.Update(
                 testResult.Success ? "Tool test completed successfully." : "Tool test failed.",
@@ -138,6 +149,22 @@ public class ToolVerificationService : IToolVerificationService
         }
 
         return serviceResponse;
+    }
+
+    private TestToolResponseDto? TryDeserializeTestResult(string responseBody)
+    {
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<TestToolResponseDto>(responseBody, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+        catch (Exception parseEx)
+        {
+            _logger.LogWarning(parseEx, "Failed to parse LLM pipeline test response body as JSON.");
+            return null;
+        }
     }
 
     private static JsonElement? ParseResponseBody(string responseBody)

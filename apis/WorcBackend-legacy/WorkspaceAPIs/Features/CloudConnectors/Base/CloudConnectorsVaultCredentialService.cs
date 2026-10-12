@@ -95,9 +95,14 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
 
     private async Task<bool> CanUseCredentialAsync(VaultCredential credential, Guid currentUserId)
     {
-        if (currentUserId == Guid.Empty ||
-            credential.CreatedByUserId == currentUserId ||
-            credential.IsTenantWideAccess)
+        // IMPORTANT NOTE: unauthenticated HTTP callers receive a random user id, so an empty id means the
+        // call did not originate from an authorized request and must not fall back to unrestricted access.
+        if (currentUserId == Guid.Empty)
+        {
+            return false;
+        }
+
+        if (credential.CreatedByUserId == currentUserId || credential.IsTenantWideAccess)
         {
             return true;
         }

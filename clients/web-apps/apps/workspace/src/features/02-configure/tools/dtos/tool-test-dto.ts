@@ -1,12 +1,7 @@
 /**
- * Represents a request to test a tool operation via the .NET Workspace API.
+ * Represents a request to test a tool operation.
  */
 export interface TestToolDto {
-  /**
-   * Base URL of the tool.
-   */
-  baseUrl: string;
-
   /**
    * Identifier of the operation to execute.
    */
@@ -18,25 +13,15 @@ export interface TestToolDto {
   parameters?: Record<string, unknown>;
 
   /**
-   * Optional credential NAME override.
+   * Optional credential name override.
    */
   credentialName?: string;
-
-  /**
-   * OpenAPI specification of the tool.
-   */
-  openApiSpec?: string;
 }
 
 /**
  * Represents the response from a tool test call.
- *
- * The wire keys are snake_case because both producers emit them as-is: the
- * Python LLM pipeline returns its Pydantic field names (`status_code`,
- * `duration_ms`), and the Workspace API pins the same names via
- * `[JsonPropertyName]` on `TestToolResponseDto`. The frontend talks to both
- * ends, so the interface mirrors the wire contract.
  */
+// IMPORTANT NOTE: the wire keys are snake_case because both producers emit them as-is; the Workspace API pins the names via [JsonPropertyName] and the Python pipeline returns its Pydantic field names.
 export interface TestToolResponseDto {
   /**
    * Indicates whether the test request succeeded.

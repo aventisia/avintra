@@ -6,6 +6,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
 import { hasBalancedPathPlaceholders } from "../utils/manual-openapi.util";
+import { isValidIconUrl } from "../utils/tool-icon.util";
 
 export const toolNameSchema = z
   .string()
@@ -83,15 +84,11 @@ export const manualToolOperationSchema = z.object({
 export const toolZodSchema = z.object({
   id: z.string().optional(),
   name: toolNameSchema,
-  code: z
-    .string()
-    .max(100, { message: maxLenError("Tool code", 100) })
-    .optional(),
   description: z.string().optional(),
   iconUrl: z
     .string()
     .max(1000, { message: maxLenError("Icon URL", 1000) })
-    .url({ message: "Icon URL must be a valid URL" })
+    .refine(isValidIconUrl, { message: "Icon URL must be a valid http(s) URL" })
     .optional()
     .or(z.literal("")),
   type: z.nativeEnum(ComponentTypeEnum),

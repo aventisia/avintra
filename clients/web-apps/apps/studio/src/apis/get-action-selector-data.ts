@@ -1,9 +1,8 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
-import { applyCustomToolsL1 } from "../features/action-selector/constants/custom-tools";
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
+import { applyCustomToolsL1 } from "../features/action-selector/utils/custom-tools.util";
 
-// Glob all JSON files in the constants folder (used in web mode)
 const modules = import.meta.glob("../features/action-selector/constants/*.json");
 
 function mergeActionSelectorData(
@@ -12,29 +11,22 @@ function mergeActionSelectorData(
 ) {
   const mergedL1Categories: PrimaryCategoryType[] = [];
 
-  // Loop through existing data and merge in new actionCategories from newL1Categories
   existingL1Categories.forEach((existingL1Category) => {
-    // Find matching L1 category in newL1Categories by label
     const newL1Category = newL1Categories.find(
       (newL1Category) => newL1Category.label === existingL1Category.label,
     );
 
     if (!newL1Category) {
-      // If not found in newL1Categories, push as is
       mergedL1Categories.push(existingL1Category);
     } else {
-      // Merge L2 Categories (actionCategories)
       const mergedL2Categories = existingL1Category.actionCategories.map((existingL2Category) => {
-        // Find matching L2 category in newL1Category by label
         const newL2Category = newL1Category.actionCategories.find(
           (newL2Category) => newL2Category.label === existingL2Category.label,
         );
 
         if (!newL2Category) {
-          // If not found in new data, return as is
           return existingL2Category;
         } else {
-          // Merge L3 (actions) if both have actions
           if (existingL2Category.actions && newL2Category.actions) {
             const mergedActions = [
               ...existingL2Category.actions,
@@ -50,19 +42,16 @@ function mergeActionSelectorData(
               actions: mergedActions,
             };
           } else if (newL2Category.actions) {
-            // If only new has actions, use those
             return {
               ...existingL2Category,
               actions: newL2Category.actions,
             };
           } else {
-            // Otherwise keep existing
             return existingL2Category;
           }
         }
       });
 
-      // Add new L2 categories that don't exist in existing data
       const newL2Categories = newL1Category.actionCategories.filter(
         (newL2Category) =>
           !existingL1Category.actionCategories.some(
@@ -77,7 +66,6 @@ function mergeActionSelectorData(
     }
   });
 
-  // Add any new L1 categories from newL1Categories that don't exist in existingL1Categories
   newL1Categories.forEach((newL1Category) => {
     const existingL1Category = existingL1Categories.find(
       (category) => category.label === newL1Category.label,
@@ -91,14 +79,11 @@ function mergeActionSelectorData(
 }
 
 /**
- * Loads the action selector data from the JSON file.
- * When running in Tauri, loads from bundled resources.
- * When running in web, loads from bundled modules.
+ * Loads the action selector data from bundled JSON and the Workspace API.
  */
 export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   let finalNodeList: PrimaryCategoryType[];
 
-  // Load desktop nodes from web bundled modules
   const desktopNodesJson = "../features/action-selector/constants/_ActionSelectorData.json";
   const loader = modules[desktopNodesJson];
   if (!loader) throw new Error("Action selector data JSON not found");
@@ -107,7 +92,6 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   };
   finalNodeList = desktopNodesModule.default;
 
-  // Fetch the global Cloud Connector mapping from the Workspace API.
   try {
     const response = await axiosInstance
       .get<PrimaryCategoryType[]>(
@@ -121,9 +105,6 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
     console.error("Cloud Connector mapping file fetch error:", error);
   }
 
-  // Fetch the dedicated Corsair action-selector mapping and merge it under
-  // "App Integrations". This keeps Corsair UI metadata separate from the
-  // global Cloud Connector mapping.
   try {
     const corsairResponse = await axiosInstance
       .get<PrimaryCategoryType[]>(
@@ -137,11 +118,9 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
     console.error("Corsair action selector mapping file fetch error:", error);
   }
 
-  // Explicitly import AI Integrations module
   const aiIntegrationsJson =
     "../features/action-selector/constants/_AIIntegrationsActionSelectorData.json";
 
-  // Get default AI integrations automation modules
   const AIloader = modules[aiIntegrationsJson];
   if (!AIloader) throw new Error("Action selector data JSON not found for ai nodes");
   const aiIntegrationsModule = (await AIloader()) as {
@@ -151,12 +130,8 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   if (aiIntegrationsModule)
     finalNodeList = mergeActionSelectorData(finalNodeList, aiIntegrationsModule.default);
 
-  // Replace the backend "Custom Nodes" placeholder L1 with the client-defined,
-  // enabled "Custom Tools" category. Done after all merges so the placeholder
-  // never leaks its `disabled: true` state through the label-based merge.
   finalNodeList = applyCustomToolsL1(finalNodeList);
 
-  // Sort finalNodeList.actionCategories by label alphabetically
   finalNodeList.forEach((category) => {
     category.actionCategories.sort((a, b) => a.label.localeCompare(b.label));
   });

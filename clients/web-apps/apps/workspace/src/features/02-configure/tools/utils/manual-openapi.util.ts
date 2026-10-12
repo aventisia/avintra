@@ -8,8 +8,6 @@ import { getOperationKey, normalizeToolOperations } from "./tool-operations.util
 
 type SynthesizeOptions = {
   name?: string;
-  description?: string;
-  version?: string;
 };
 
 type JsonSchemaObject = Record<string, unknown>;
@@ -20,6 +18,7 @@ const PARAMETER_LOCATIONS = new Set(["query", "header"]);
 
 const sanitizeOperationIdPart = (value?: string): string =>
   (value ?? "")
+    .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
@@ -81,6 +80,7 @@ const extractPathParameters = (endpoint: string): string[] => {
 /**
  * Synthesizes an OpenAPI 3.0.3 JSON specification from manually authored operations.
  */
+// IMPORTANT NOTE: the output must match apis/WorcBackend-legacy/WorkspaceAPIs/Features/Tools/Helpers/ManualOpenApiSynthesizer.cs because the backend owns the persisted spec and verification is keyed per operationId.
 export const synthesizeOpenApiSpec = (
   operations: ManualToolOperation[],
   options: SynthesizeOptions = {},
@@ -189,15 +189,16 @@ export const synthesizeOpenApiSpec = (
     openapi: "3.0.3",
     info: {
       title: options.name?.trim() || "Manual Custom Tool",
-      version: options.version?.trim() || "1.0.0",
-      ...(options.description?.trim() ? { description: options.description.trim() } : {}),
+      version: "1.0.0",
       "x-manual-tool": true,
     },
     paths,
   });
 };
 
-// Indicates whether a stored OpenAPI spec was synthesized from manual methods.
+/**
+ * Indicates whether a stored OpenAPI spec was synthesized from manual methods.
+ */
 export const isSynthesizedSpec = (spec?: string): boolean => {
   if (!spec?.trim()) return false;
   try {

@@ -3,6 +3,7 @@ import { Wrench } from "lucide-react";
 import { useState } from "react";
 
 import { getToolIcon } from "../constants/tool-icon-mapper";
+import { isValidIconUrl } from "../utils/tool-icon.util";
 
 interface ToolIconProps {
   /** Tool name, used to resolve a mapped brand asset. */
@@ -13,15 +14,13 @@ interface ToolIconProps {
 }
 
 /**
- * Renders a tool's icon with layered fallbacks: user-supplied icon URL → mapped
- * brand asset → the shared Wrench glyph (the same default the studio canvas node
- * uses). The legacy cloud placeholder is never rendered.
+ * Renders a tool's icon with layered fallbacks: user-supplied icon URL, mapped brand asset, then the shared Wrench glyph.
  */
 export const ToolIcon = ({ name, iconUrl, className }: ToolIconProps) => {
   const [hasError, setHasError] = useState(false);
   const basePath = import.meta.env.VITE_WORKSPACE_PATH?.replace(/\/$/, "") || "";
   const brandIcon = getToolIcon(name);
-  const userIcon = iconUrl?.trim();
+  const userIcon = isValidIconUrl(iconUrl) ? iconUrl?.trim() : undefined;
 
   if (userIcon && !hasError) {
     return (

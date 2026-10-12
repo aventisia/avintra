@@ -34,10 +34,9 @@ public class ToolCatalogService : IToolCatalogService
 
     public async Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync()
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolDto>>
-        {
-            Message = "Failed to fetch usable tools."
-        };
+        var serviceResponse = ServiceResponse<IEnumerable<UsableToolDto>>.Create(
+            "Failed to fetch usable tools.",
+            500);
 
         try
         {
@@ -86,10 +85,9 @@ public class ToolCatalogService : IToolCatalogService
 
     public async Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId)
     {
-        var serviceResponse = new ServiceResponse<UsableToolOperationsDto>
-        {
-            Message = "Failed to fetch usable tool operations."
-        };
+        var serviceResponse = ServiceResponse<UsableToolOperationsDto>.Create(
+            "Failed to fetch usable tool operations.",
+            500);
 
         try
         {
@@ -124,10 +122,9 @@ public class ToolCatalogService : IToolCatalogService
 
     public async Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync()
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>
-        {
-            Message = "Failed to fetch usable tool catalog."
-        };
+        var serviceResponse = ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>.Create(
+            "Failed to fetch usable tool catalog.",
+            500);
 
         try
         {
@@ -138,10 +135,9 @@ public class ToolCatalogService : IToolCatalogService
             ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
 
             var usableTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w =>
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    (w.IsTenantWideAccess || resourceAccessMap.Keys.Contains(w.Id)))
+                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
                 .OrderByDescending(o => o.CreatedOn)
+                .IgnoreQueryFilters()
                 .Select(w => new UsableToolCatalogItemDto
                 {
                     Id = w.Id,
@@ -180,10 +176,9 @@ public class ToolCatalogService : IToolCatalogService
 
     public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetPlatformToolsAsync()
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<ToolDto>>
-        {
-            Message = "Failed to fetch platform tools."
-        };
+        var serviceResponse = ServiceResponse<IEnumerable<ToolDto>>.Create(
+            "Failed to fetch platform tools.",
+            500);
 
         try
         {

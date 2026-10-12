@@ -66,12 +66,8 @@ export const ToolDetailsPage = () => {
         </h2>
       </div>
 
-      {/* Unified detail layout: icon header card plus the operations list, full
-          width. Uses the user-provided icon when present, then a mapped brand
-          asset, otherwise the shared Wrench glyph (the studio node default). */}
       <div className="grid h-[calc(100vh-2.7*var(--header-height))] grid-cols-1 gap-3">
         <div className="space-y-4">
-          {/* Tool header: icon, name, and description */}
           <div className="rounded-lg border bg-background px-5 py-3.5">
             <div className="flex items-center  gap-4">
               <ToolIcon
@@ -88,7 +84,6 @@ export const ToolDetailsPage = () => {
             </div>
           </div>
 
-          {/* Operations Section */}
           <div className="rounded-lg border bg-background px-5 py-3.5">
             <OperationList tool={tool} showTitle />
           </div>

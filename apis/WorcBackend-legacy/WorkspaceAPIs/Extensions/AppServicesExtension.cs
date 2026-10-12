@@ -223,7 +223,6 @@ public static class AppServicesExtension
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
         services.AddScoped<IVectorConnectorsService, VectorConnectorsService>();
-        // Custom tools: .NET-native REST proxy execution (Q1).
         services.AddScoped<ICustomToolConnectorService, CustomToolConnectorService>();
 
         // Common services

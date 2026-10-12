@@ -1,7 +1,6 @@
 from typing import Any
-from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
 
 class ToolOperation(BaseModel):
@@ -30,19 +29,3 @@ class TestToolResponse(BaseModel):
     status_code: int | None = None
     body: str | None = None
     duration_ms: float | None = None
-
-
-class ExecuteToolRequest(BaseModel):
-    tool_id: UUID
-    operation_id: str
-    parameters: dict[str, Any] = Field(default_factory=dict)
-    credential_name: str | None = Field(default=None)
-
-
-class ToolDefinition(BaseModel):
-    id: UUID
-    tenant_id: UUID
-    name: str
-    base_url: str
-    credential_name: str | None = None
-    parsed_schema: list[ToolOperation]
