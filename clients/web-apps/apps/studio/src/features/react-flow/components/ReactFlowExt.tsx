@@ -29,6 +29,13 @@ import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stor
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import {
+  FLOW_ASSISTANT_PANEL_DEFAULT_SIZE,
+  FLOW_ASSISTANT_PANEL_MIN_SIZE,
+  FlowAssistantPanel,
+  FlowAssistantTrigger,
+  useFlowAssistantStore,
+} from "@/features/flow-assistant";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -115,6 +122,8 @@ export const ReactFlowExt = () => {
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
+
+  const isFlowAssistantOpen = useFlowAssistantStore((state) => state.isPanelOpen);
 
   useCopyPasteShortcuts();
 
@@ -362,6 +371,7 @@ export const ReactFlowExt = () => {
           >
             <AutoFollowExecutingNode />
             <ViewControls />
+            {flowType === FlowTypesEnum.Agent && <FlowAssistantTrigger />}
             <ClearRunResultsPanel />
             <BackgroundExt />
             <MiniMapExt />
@@ -402,6 +412,18 @@ export const ReactFlowExt = () => {
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []
               }
             />
+          </ResizablePanel>
+        </>
+      )}
+      {flowType === FlowTypesEnum.Agent && isFlowAssistantOpen && (
+        <>
+          <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
+          <ResizablePanel
+            defaultSize={FLOW_ASSISTANT_PANEL_DEFAULT_SIZE}
+            minSize={FLOW_ASSISTANT_PANEL_MIN_SIZE}
+            className="overflow-hidden rounded-xl bg-white"
+          >
+            <FlowAssistantPanel />
           </ResizablePanel>
         </>
       )}

@@ -1,0 +1,78 @@
+import { FlowAssistantFrame } from "../types/flow-assistant-frame-type";
+
+const collectDataPayloads = (frame: string): string[] => {
+  const payloads: string[] = [];
+  for (const rawLine of frame.split("\n")) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith(":") || !line.startsWith("data:")) continue;
+
+    const payload = line.slice(5).trimStart();
+    if (payload) payloads.push(payload);
+  }
+  return payloads;
+};
+
+/** Yields the `data:` payload strings of an SSE response body. */
+export async function* parseSsePayloads(body: ReadableStream<Uint8Array>): AsyncGenerator<string> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer = (buffer + decoder.decode(value, { stream: true })).replace(/\r\n?/g, "\n");
+
+      let separatorIndex: number;
+      while ((separatorIndex = buffer.indexOf("\n\n")) !== -1) {
+        const frame = buffer.slice(0, separatorIndex);
+        buffer = buffer.slice(separatorIndex + 2);
+        yield* collectDataPayloads(frame);
+      }
+    }
+
+    if (buffer.trim()) yield* collectDataPayloads(buffer);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+/** Parses one SSE data payload into a normalized flow-assistant frame. */
+export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | null => {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(payload);
+  } catch {
+    return null;
+  }
+
+  if (typeof parsed !== "object" || parsed === null) return null;
+
+  const candidate = parsed as { type?: unknown; output?: unknown; message?: unknown };
+  switch (candidate.type) {
+    case "delta":
+      return {
+        type: "delta",
+        output: typeof candidate.output === "string" ? candidate.output : "",
+      };
+    case "graph_proposal":
+      return { type: "graph_proposal", output: candidate.output };
+    case "done":
+      return {
+        type: "done",
+        output: typeof candidate.output === "string" ? candidate.output : undefined,
+      };
+    case "error":
+      return {
+        type: "error",
+        message:
+          typeof candidate.message === "string"
+            ? candidate.message
+            : "The assistant request failed.",
+      };
+    default:
+      return null;
+  }
+};
