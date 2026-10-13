@@ -335,7 +335,40 @@ public class FlowAssistantService : IFlowAssistantService
             selectedNode = BuildSelectedNodeContext(request),
         });
 
-        return $"{FlowAssistantConstants.SystemPrompt}\n\nCurrent flow graph:\n{summary}{BuildReferenceSection(request.ReferenceData)}";
+        return $"{FlowAssistantConstants.BuildSystemPrompt(ResolveRelevantNodeNames(request))}\n\nCurrent flow graph:\n{summary}{BuildReferenceSection(request.ReferenceData)}";
+    }
+
+    private static IReadOnlyCollection<string> ResolveRelevantNodeNames(FlowAssistantRequestDto request)
+    {
+        var queryParts = new List<string>();
+        var alwaysInclude = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(request.UserInput))
+            queryParts.Add(request.UserInput);
+
+        if (request.ThreadMessages is { Count: > 0 })
+        {
+            foreach (var message in request.ThreadMessages)
+            {
+                if (!string.IsNullOrWhiteSpace(message.Content))
+                    queryParts.Add(message.Content);
+            }
+        }
+
+        foreach (var node in request.GraphContext.Nodes)
+        {
+            var nodeName = ReadNestedString(node, "data", "name");
+            if (!string.IsNullOrWhiteSpace(nodeName))
+            {
+                alwaysInclude.Add(nodeName);
+                queryParts.Add(nodeName);
+            }
+        }
+
+        return FlowAssistantCatalogPruner.SelectRelevantNodeNames(
+            string.Join(' ', queryParts),
+            alwaysInclude,
+            FlowAssistantConstants.MaxRelevantNodes);
     }
 
     private static string BuildReferenceSection(FlowAssistantReferenceDataDto? referenceData)
