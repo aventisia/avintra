@@ -1,6 +1,6 @@
 import { Edge, Node } from "@xyflow/react";
 
-import { NodeDataType } from "@/types/node-data-type";
+import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { createDottedEdgeObj } from "@/utils/create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createConditionalNode } from "@/utils/create-nodes/create-conditional-node";
@@ -11,6 +11,7 @@ import { createSupportNodeObj } from "@/utils/create-nodes/create-support-node-o
 import { GraphProposalDto } from "../dtos/graph-proposal-dto";
 import { GraphProposalNodeSpec } from "../types/graph-proposal-type";
 import { findGroundedNode } from "./grounding.util";
+import { findNodeConfigMetadata } from "./node-config-metadata.util";
 
 type GraphProposalApplyResult = { nodes: Node[]; edges: Edge[] };
 
@@ -23,6 +24,24 @@ type ControlNodeScaffold = {
 
 const CONTROL_NODE_TYPES = new Set(["conditionalNode", "forLoopNode"]);
 
+const resolveInputs = (
+  spec: GraphProposalNodeSpec,
+  grounded: NodeDataType | null,
+): NodeInputType[] | undefined => {
+  const metadata = findNodeConfigMetadata(spec.type, spec.name ?? grounded?.name);
+  const defaultedInputs: NodeInputType[] = (metadata?.fields ?? [])
+    .filter((field) => field.direction === "Input" && field.defaultValue !== undefined)
+    .map((field) => ({ key: field.name, value: field.defaultValue }));
+
+  const byKey = new Map<string, NodeInputType>();
+  for (const input of [...defaultedInputs, ...(grounded?.inputs ?? []), ...(spec.inputs ?? [])]) {
+    byKey.set(input.key, input);
+  }
+
+  const inputs = [...byKey.values()];
+  return inputs.length > 0 ? inputs : undefined;
+};
+
 const buildNodeData = (spec: GraphProposalNodeSpec): NodeDataType => {
   const grounded = findGroundedNode(spec);
   return {
@@ -33,8 +52,24 @@ const buildNodeData = (spec: GraphProposalNodeSpec): NodeDataType => {
     img: spec.img ?? grounded?.img,
     icon: spec.icon ?? grounded?.icon,
     supportedPlatforms: spec.supportedPlatforms ?? grounded?.supportedPlatforms,
-    inputs: spec.inputs ?? grounded?.inputs,
+    inputs: resolveInputs(spec, grounded),
+    outputs: spec.outputs ?? grounded?.outputs,
   };
+};
+
+const buildNodePatch = (spec: GraphProposalNodeSpec): Partial<NodeDataType> => {
+  const patch: Partial<NodeDataType> = {};
+
+  if (spec.name !== undefined) patch.name = spec.name;
+  if (spec.label !== undefined) patch.label = spec.label;
+  if (spec.description !== undefined) patch.description = spec.description;
+  if (spec.img !== undefined) patch.img = spec.img;
+  if (spec.icon !== undefined) patch.icon = spec.icon;
+  if (spec.supportedPlatforms !== undefined) patch.supportedPlatforms = spec.supportedPlatforms;
+  if (spec.inputs !== undefined) patch.inputs = spec.inputs;
+  if (spec.outputs !== undefined) patch.outputs = spec.outputs;
+
+  return patch;
 };
 
 const createProposalNode = (spec: GraphProposalNodeSpec, id: string): Node => ({
@@ -204,7 +239,7 @@ const mergeIntoGraph = (
   for (const operation of proposal.operations) {
     if (operation.type === "updateNode") {
       const realId = nodeIdMap.get(operation.node.id) ?? operation.node.id;
-      const patch = buildNodeData(operation.node);
+      const patch = buildNodePatch(operation.node);
       nodes = nodes.map((node) =>
         node.id === realId ? { ...node, data: { ...(node.data as NodeDataType), ...patch } } : node,
       );

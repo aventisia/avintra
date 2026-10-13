@@ -30,7 +30,12 @@ const abortableDelay = (signal: AbortSignal, ms: number): Promise<void> =>
 
 const buildCreateOperations = (): GraphProposalOperation[] => {
   const nodes: GraphProposalNodeSpec[] = [
-    { id: "proposal-node-1", type: "activityNode", name: "GetWorkItemByIdNode" },
+    {
+      id: "proposal-node-1",
+      type: "activityNode",
+      name: "GetWorkItemByIdNode",
+      inputs: [{ key: "WorkItemId", value: "work-item-id" }],
+    },
     { id: "proposal-node-2", type: "aiNode", name: "CreateInferencingAIAgent" },
     { id: "proposal-node-3", type: "activityNode", name: "CreateWorkItemNode" },
   ];

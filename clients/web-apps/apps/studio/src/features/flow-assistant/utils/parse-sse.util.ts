@@ -59,6 +59,11 @@ export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | n
       };
     case "graph_proposal":
       return { type: "graph_proposal", output: candidate.output };
+    case "question":
+      return {
+        type: "question",
+        output: typeof candidate.output === "string" ? candidate.output : "",
+      };
     case "done":
       return {
         type: "done",

@@ -16,4 +16,8 @@ public class FlowAssistantRequestDto
     public List<FlowAssistantMessageDto>? ThreadMessages { get; set; }
 
     public FlowAssistantGraphContextDto GraphContext { get; set; } = new();
+
+    public string? SelectedNodeId { get; set; }
+
+    public FlowAssistantReferenceDataDto? ReferenceData { get; set; }
 }

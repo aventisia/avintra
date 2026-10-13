@@ -33,6 +33,7 @@ export const useFlowAssistant = () => {
   const cancel = useCallback(() => {
     abortRef.current?.abort();
     abortRef.current = null;
+    useFlowAssistantStore.getState().setIsStreaming(false);
   }, []);
 
   useEffect(() => () => cancel(), [cancel]);
@@ -45,6 +46,9 @@ export const useFlowAssistant = () => {
         break;
       case "graph_proposal":
         if (isGraphProposal(frame.output)) store.setPendingProposal(frame.output);
+        break;
+      case "question":
+        store.appendToLastAssistantMessage(frame.output);
         break;
       case "error":
         store.failLastAssistantMessage(frame.message);
@@ -95,6 +99,8 @@ export const useFlowAssistant = () => {
         userInput,
         threadMessages,
         graphContext: { nodes, edges },
+        selectedNodeId: nodes.find((node) => node.selected)?.id,
+        referenceData: useFlowAssistantStore.getState().referenceData ?? undefined,
       };
 
       try {
@@ -116,8 +122,8 @@ export const useFlowAssistant = () => {
       } finally {
         if (abortRef.current === controller) {
           abortRef.current = null;
-          useFlowAssistantStore.getState().setIsStreaming(false);
         }
+        useFlowAssistantStore.getState().setIsStreaming(false);
       }
     },
     [cancel, handleFrame],

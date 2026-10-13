@@ -27,6 +27,11 @@ export const GraphProposalCard = ({ proposal }: GraphProposalCardProps) => {
     (operation) => operation.type === "removeEdge",
   ).length;
 
+  const configuredFieldCount = [...addedNodes, ...updatedNodes].reduce(
+    (total, node) => total + (node.inputs?.length ?? 0) + (node.outputs?.length ?? 0),
+    0,
+  );
+
   return (
     <div className="rounded-lg border bg-card p-3 shadow-sm">
       <div className="flex items-center gap-2">
@@ -68,6 +73,11 @@ export const GraphProposalCard = ({ proposal }: GraphProposalCardProps) => {
         {removedEdgeCount > 0 && (
           <span className="rounded border border-dashed px-1.5 py-0.5 text-3xs text-muted-foreground">
             - {removedEdgeCount} connection{removedEdgeCount > 1 ? "s" : ""}
+          </span>
+        )}
+        {configuredFieldCount > 0 && (
+          <span className="rounded border border-primary/30 bg-primary/5 px-1.5 py-0.5 text-3xs text-foreground">
+            {configuredFieldCount} field{configuredFieldCount > 1 ? "s" : ""} configured
           </span>
         )}
       </div>

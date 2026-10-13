@@ -1,6 +1,7 @@
 using System.Net;
 using WorkspaceAPIs.Features.FlowAssistant.Constants;
 using WorkspaceAPIs.Features.FlowAssistant.DTOs;
+using WorkspaceAPIs.Features.FlowAssistant.Generated;
 using WorkspaceAPIs.Features.FlowAssistant.Helpers;
 
 using JsonException = System.Text.Json.JsonException;
@@ -62,8 +63,6 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
-        yield return SerializeFrame(new { type = "delta", output = "Generating a proposal for your flow…" });
-
         var (proposal, pipelineError) = await RequestProposalAsync(request, flowVersion, cancellationToken);
         if (proposal is null)
         {
@@ -71,9 +70,44 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
+        if (TryGetQuestion(proposal.Value, out var question))
+        {
+            yield return SerializeFrame(new { type = "question", output = question });
+            yield return SerializeFrame(new { type = "done" });
+            yield break;
+        }
+
+        if ((TryGetKind(proposal.Value, out var kind) && kind == "question" && string.IsNullOrWhiteSpace(question)) ||
+            HasNoOperations(proposal.Value))
+        {
+            yield return SerializeFrame(new
+            {
+                type = "question",
+                output = "I couldn't build that flow yet. Which actions should it include, and what inputs should they use?",
+            });
+            yield return SerializeFrame(new { type = "done" });
+            yield break;
+        }
+
+        var configurationQuestion = BuildConfigurationQuestion(proposal.Value);
+        if (configurationQuestion is not null)
+        {
+            yield return SerializeFrame(new { type = "question", output = configurationQuestion });
+            yield return SerializeFrame(new { type = "done" });
+            yield break;
+        }
+
         var validationError = FlowAssistantProposalValidator.Validate(proposal.Value, request.GraphContext);
         if (validationError is not null)
         {
+            // IMPORTANT NOTE: the raw model output is only recoverable via this log.
+            var rawJson = proposal.Value.GetRawText();
+            var truncatedJson = rawJson.Length > 2000 ? rawJson[..2000] : rawJson;
+            _logger.LogWarning(
+                "[FlowAssistant] Proposal rejected by validation. FlowVersionId={FlowVersionId}, Reason={Reason}, ModelOutput={ModelOutput}",
+                request.FlowVersionId,
+                validationError,
+                truncatedJson);
             yield return SerializeFrame(new { type = "error", message = validationError });
             yield break;
         }
@@ -225,7 +259,7 @@ public class FlowAssistantService : IFlowAssistantService
     {
         var messages = new List<object>
         {
-            new { role = "system", content = BuildSystemMessage(request.GraphContext) },
+            new { role = "system", content = BuildSystemMessage(request) },
         };
 
         if (request.ThreadMessages is { Count: > 0 })
@@ -262,8 +296,9 @@ public class FlowAssistantService : IFlowAssistantService
         };
     }
 
-    private static string BuildSystemMessage(FlowAssistantGraphContextDto graph)
+    private static string BuildSystemMessage(FlowAssistantRequestDto request)
     {
+        var graph = request.GraphContext;
         var summary = JsonSerializer.Serialize(new
         {
             nodes = graph.Nodes.Select(node => new
@@ -278,9 +313,149 @@ public class FlowAssistantService : IFlowAssistantService
                 source = ReadString(edge, "source"),
                 target = ReadString(edge, "target"),
             }),
+            selectedNodeId = string.IsNullOrWhiteSpace(request.SelectedNodeId) ? null : request.SelectedNodeId,
+            selectedNode = BuildSelectedNodeContext(request),
         });
 
-        return $"{FlowAssistantConstants.SystemPrompt}\n\nCurrent flow graph:\n{summary}";
+        return $"{FlowAssistantConstants.SystemPrompt}\n\nCurrent flow graph:\n{summary}{BuildReferenceSection(request.ReferenceData)}";
+    }
+
+    private static string BuildReferenceSection(FlowAssistantReferenceDataDto? referenceData)
+    {
+        if (referenceData is null)
+            return string.Empty;
+
+        var hasAnyValue =
+            referenceData.Queues.Count > 0 ||
+            referenceData.Agents.Count > 0 ||
+            referenceData.Blocks.Count > 0 ||
+            referenceData.ModelProviders.Count > 0 ||
+            referenceData.Skills.Count > 0 ||
+            referenceData.KnowledgeBases.Count > 0;
+
+        if (!hasAnyValue)
+            return string.Empty;
+
+        var values = JsonSerializer.Serialize(new
+        {
+            queues = referenceData.Queues,
+            agents = referenceData.Agents,
+            blocks = referenceData.Blocks,
+            modelProviders = referenceData.ModelProviders,
+            skills = referenceData.Skills,
+            knowledgeBases = referenceData.KnowledgeBases,
+        });
+
+        return $"\n\nAvailable reference values (use these exact names where a field expects one):\n{values}";
+    }
+
+    private static bool TryGetQuestion(JsonElement proposal, out string question)
+    {
+        question = string.Empty;
+        if (proposal.ValueKind != JsonValueKind.Object ||
+            !proposal.TryGetProperty("question", out var element) ||
+            element.ValueKind != JsonValueKind.String)
+        {
+            return false;
+        }
+
+        var value = element.GetString();
+        if (string.IsNullOrWhiteSpace(value))
+            return false;
+
+        question = value;
+        return true;
+    }
+
+    private static bool TryGetKind(JsonElement proposal, out string kind)
+    {
+        kind = string.Empty;
+        if (proposal.ValueKind != JsonValueKind.Object ||
+            !proposal.TryGetProperty("kind", out var element) ||
+            element.ValueKind != JsonValueKind.String)
+        {
+            return false;
+        }
+
+        kind = element.GetString() ?? string.Empty;
+        return true;
+    }
+
+    private static bool HasNoOperations(JsonElement proposal)
+    {
+        if (proposal.ValueKind != JsonValueKind.Object)
+            return false;
+
+        if (!proposal.TryGetProperty("operations", out var operations))
+            return true;
+
+        if (operations.ValueKind != JsonValueKind.Array)
+            return true;
+
+        return operations.GetArrayLength() == 0;
+    }
+
+    private static string? BuildConfigurationQuestion(JsonElement proposal)
+    {
+        if (proposal.ValueKind != JsonValueKind.Object ||
+            !proposal.TryGetProperty("operations", out var operations) ||
+            operations.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var missingFields = new List<string>();
+
+        foreach (var operation in operations.EnumerateArray())
+        {
+            if (operation.ValueKind != JsonValueKind.Object || ReadString(operation, "type") != "addNode")
+                continue;
+
+            if (!operation.TryGetProperty("node", out var node) || node.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var nodeType = ReadString(node, "type");
+            var nodeName = ReadString(node, "name");
+            if (string.IsNullOrWhiteSpace(nodeType) || string.IsNullOrWhiteSpace(nodeName))
+                continue;
+
+            var metadata = FlowAssistantConfigCatalog.Nodes.FirstOrDefault(
+                candidate => candidate.Type == nodeType && candidate.Name == nodeName);
+            if (metadata is null)
+                continue;
+
+            var providedKeys = ReadInputKeys(node);
+
+            foreach (var field in metadata.Fields)
+            {
+                if (field.Direction != "Input" || providedKeys.Contains(field.Name))
+                    continue;
+
+                if (field.Required || (providedKeys.Count == 0 && string.IsNullOrEmpty(field.DefaultValueJson)))
+                    missingFields.Add($"{field.Label} ({nodeName})");
+            }
+        }
+
+        if (missingFields.Count == 0)
+            return null;
+
+        return $"I need a few values before I can build this flow: {string.Join(", ", missingFields.Distinct())}. What should they be?";
+    }
+
+    private static HashSet<string> ReadInputKeys(JsonElement node)
+    {
+        var keys = new HashSet<string>();
+        if (!node.TryGetProperty("inputs", out var inputs) || inputs.ValueKind != JsonValueKind.Array)
+            return keys;
+
+        foreach (var input in inputs.EnumerateArray())
+        {
+            var key = ReadString(input, "key");
+            if (!string.IsNullOrWhiteSpace(key))
+                keys.Add(key);
+        }
+
+        return keys;
     }
 
     private static string? ReadString(JsonElement element, string propertyName) =>
@@ -294,6 +469,36 @@ public class FlowAssistantService : IFlowAssistantService
         element.ValueKind == JsonValueKind.Object && element.TryGetProperty(parentName, out var parent)
             ? ReadString(parent, propertyName)
             : null;
+
+    private static JsonElement? ReadNestedElement(JsonElement element, string parentName, string propertyName) =>
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(parentName, out var parent) &&
+        parent.ValueKind == JsonValueKind.Object &&
+        parent.TryGetProperty(propertyName, out var property)
+            ? property.Clone()
+            : null;
+
+    private static object? BuildSelectedNodeContext(FlowAssistantRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.SelectedNodeId))
+            return null;
+
+        var selectedNode = request.GraphContext.Nodes.FirstOrDefault(node =>
+            string.Equals(ReadString(node, "id"), request.SelectedNodeId, StringComparison.Ordinal));
+
+        if (selectedNode.ValueKind != JsonValueKind.Object)
+            return null;
+
+        return new
+        {
+            id = ReadString(selectedNode, "id"),
+            type = ReadString(selectedNode, "type"),
+            name = ReadNestedString(selectedNode, "data", "name"),
+            label = ReadNestedString(selectedNode, "data", "label"),
+            inputs = ReadNestedElement(selectedNode, "data", "inputs"),
+            outputs = ReadNestedElement(selectedNode, "data", "outputs"),
+        };
+    }
 
     private static string SerializeFrame(object payload) => $"data: {JsonSerializer.Serialize(payload)}\n\n";
 }

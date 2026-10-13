@@ -5,12 +5,14 @@ import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
 
 import { FLOW_ASSISTANT_COPY } from "../constants";
 import { useFlowAssistant } from "../hooks/useFlowAssistant";
+import { useFlowAssistantReferenceData } from "../hooks/useFlowAssistantReferenceData.hook";
 import { useFlowAssistantStore } from "../stores/flow-assistant-store";
 import { FlowAssistantMessageList } from "./FlowAssistantMessageList";
 import { GraphProposalCard } from "./GraphProposalCard";
 
 export const FlowAssistantPanel = () => {
   const { sendMessage, cancel } = useFlowAssistant();
+  useFlowAssistantReferenceData();
   const isStreaming = useFlowAssistantStore((state) => state.isStreaming);
   const pendingProposal = useFlowAssistantStore((state) => state.pendingProposal);
   const [input, setInput] = useState("");

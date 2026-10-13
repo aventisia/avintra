@@ -1,5 +1,5 @@
 import { CustomNodeType } from "@/types/custom-node-type";
-import { NodeInputType } from "@/types/node-data-type";
+import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
 type GraphProposalNodeSpec = {
   id: string;
@@ -11,6 +11,7 @@ type GraphProposalNodeSpec = {
   icon?: string;
   supportedPlatforms?: string[];
   inputs?: NodeInputType[];
+  outputs?: NodeOutputType[];
   position?: { x: number; y: number };
 };
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { FlowAssistantReferenceDataDto } from "../dtos/flow-assistant-reference-data-dto";
 import { GraphProposalDto } from "../dtos/graph-proposal-dto";
 import { FlowAssistantMessage } from "../types/flow-assistant-message-type";
 
@@ -8,6 +9,7 @@ type State = {
   messages: FlowAssistantMessage[];
   isStreaming: boolean;
   pendingProposal: GraphProposalDto | null;
+  referenceData: FlowAssistantReferenceDataDto | null;
 };
 
 type Actions = {
@@ -17,6 +19,7 @@ type Actions = {
   failLastAssistantMessage: (message: string) => void;
   setIsStreaming: (isStreaming: boolean) => void;
   setPendingProposal: (proposal: GraphProposalDto | null) => void;
+  setReferenceData: (referenceData: FlowAssistantReferenceDataDto) => void;
 };
 
 export const useFlowAssistantStore = create<State & Actions>((set) => ({
@@ -24,6 +27,7 @@ export const useFlowAssistantStore = create<State & Actions>((set) => ({
   messages: [],
   isStreaming: false,
   pendingProposal: null,
+  referenceData: null,
 
   togglePanel: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
 
@@ -66,4 +70,6 @@ export const useFlowAssistantStore = create<State & Actions>((set) => ({
   setIsStreaming: (isStreaming) => set({ isStreaming }),
 
   setPendingProposal: (pendingProposal) => set({ pendingProposal }),
+
+  setReferenceData: (referenceData) => set({ referenceData }),
 }));

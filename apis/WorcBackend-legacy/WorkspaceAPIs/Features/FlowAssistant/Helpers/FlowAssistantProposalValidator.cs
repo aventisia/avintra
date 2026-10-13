@@ -76,6 +76,10 @@ public static class FlowAssistantProposalValidator
                         return $"Update references missing node \"{nodeId}\".";
                     }
 
+                    var configurationError = ValidateNodeConfiguration(node, operationType);
+                    if (configurationError is not null)
+                        return configurationError;
+
                     break;
                 }
                 case "removeNode":
@@ -151,6 +155,126 @@ public static class FlowAssistantProposalValidator
 
     private static bool IsAllowedNode(string type, string name) =>
         FlowAssistantCatalog.AllowedNodes.Any(node => node.Type == type && node.Name == name);
+
+    private static string? ValidateNodeConfiguration(JsonElement node, string operationType)
+    {
+        if (!TryGetString(node, "type", out var nodeType) || !TryGetString(node, "name", out var nodeName))
+            return "A proposed node is missing its type or name.";
+
+        var metadata = FindConfigMetadata(nodeType, nodeName);
+
+        if (node.TryGetProperty("inputs", out var inputs))
+        {
+            if (inputs.ValueKind != JsonValueKind.Array)
+                return $"Node \"{nodeName}\" has malformed inputs.";
+
+            var providedKeys = new HashSet<string>();
+            foreach (var input in inputs.EnumerateArray())
+            {
+                if (input.ValueKind != JsonValueKind.Object)
+                    return $"Node \"{nodeName}\" has a malformed input.";
+
+                if (!TryGetString(input, "key", out var key) || string.IsNullOrWhiteSpace(key))
+                    return $"Node \"{nodeName}\" has an input without a key.";
+
+                var field = metadata?.Fields.FirstOrDefault(
+                    candidate => candidate.Name == key && candidate.Direction == "Input");
+                if (field is null)
+                    return $"Unknown input \"{key}\" for node \"{nodeName}\".";
+
+                if (!input.TryGetProperty("value", out var value))
+                    return $"Input \"{key}\" for node \"{nodeName}\" has no value.";
+
+                var typeError = ValidateCoarseType(nodeName, key, field.Type, value);
+                if (typeError is not null)
+                    return typeError;
+
+                providedKeys.Add(key);
+            }
+
+            if (operationType == "addNode")
+            {
+                var missingRequired = FirstMissingRequiredInput(metadata, providedKeys);
+                if (missingRequired is not null)
+                    return $"Required input \"{missingRequired}\" is missing for node \"{nodeName}\".";
+            }
+        }
+        else if (operationType == "addNode")
+        {
+            var missingRequired = FirstMissingRequiredInput(metadata, new HashSet<string>());
+            if (missingRequired is not null)
+                return $"Required input \"{missingRequired}\" is missing for node \"{nodeName}\".";
+        }
+
+        if (node.TryGetProperty("outputs", out var outputs))
+        {
+            if (outputs.ValueKind != JsonValueKind.Array)
+                return $"Node \"{nodeName}\" has malformed outputs.";
+
+            foreach (var output in outputs.EnumerateArray())
+            {
+                if (output.ValueKind != JsonValueKind.Object)
+                    return $"Node \"{nodeName}\" has a malformed output.";
+
+                if (!TryGetString(output, "key", out var key) || string.IsNullOrWhiteSpace(key))
+                    return $"Node \"{nodeName}\" has an output without a key.";
+
+                var field = metadata?.Fields.FirstOrDefault(
+                    candidate => candidate.Name == key && candidate.Direction == "Output");
+                if (field is null)
+                    return $"Unknown output \"{key}\" for node \"{nodeName}\".";
+
+                if (!output.TryGetProperty("value", out var value) || value.ValueKind != JsonValueKind.Object)
+                    return $"Output \"{key}\" for node \"{nodeName}\" has no value object.";
+
+                if (!value.TryGetProperty("enabled", out var enabled) ||
+                    (enabled.ValueKind != JsonValueKind.True && enabled.ValueKind != JsonValueKind.False))
+                {
+                    return $"Output \"{key}\" for node \"{nodeName}\" is missing its enabled flag.";
+                }
+
+                if (!value.TryGetProperty("value", out _))
+                    return $"Output \"{key}\" for node \"{nodeName}\" is missing its value.";
+            }
+        }
+
+        return null;
+    }
+
+    private static string? FirstMissingRequiredInput(
+        FlowAssistantNodeConfig? metadata,
+        HashSet<string> providedKeys)
+    {
+        if (metadata is null)
+            return null;
+
+        var missing = metadata.Fields.FirstOrDefault(
+            field => field.Direction == "Input" && field.Required && !providedKeys.Contains(field.Name));
+        return missing?.Name;
+    }
+
+    private static string? ValidateCoarseType(string nodeName, string key, string fieldType, JsonElement value)
+    {
+        if (value.ValueKind == JsonValueKind.Null)
+            return null;
+
+        return fieldType switch
+        {
+            "number" or "slider" => value.ValueKind == JsonValueKind.Number
+                ? null
+                : $"Input \"{key}\" for node \"{nodeName}\" must be a number.",
+            "switch" or "checkbox" =>
+                value.ValueKind == JsonValueKind.True || value.ValueKind == JsonValueKind.False
+                    ? null
+                    : $"Input \"{key}\" for node \"{nodeName}\" must be a boolean.",
+            _ => value.ValueKind == JsonValueKind.String
+                ? null
+                : $"Input \"{key}\" for node \"{nodeName}\" must be text.",
+        };
+    }
+
+    private static FlowAssistantNodeConfig? FindConfigMetadata(string type, string name) =>
+        FlowAssistantConfigCatalog.Nodes.FirstOrDefault(node => node.Type == type && node.Name == name);
 
     private static bool TryGetString(JsonElement element, string propertyName, out string value)
     {
