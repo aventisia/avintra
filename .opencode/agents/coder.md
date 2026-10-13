@@ -24,7 +24,7 @@ permissions:
 - Reject implementation without an approved plan plus receipt or a recorded trivial authorization; branch preparation alone is not a plan.
 
 ## Process
-1. Read supplied plan/approval or trivial authorization, supplied scout/context reports, current source, local instructions, feature READMEs, and assigned debugger reports when resuming.
+1. You start with no memory of prior sessions; first read architect-report-r<N>.md (proposal plus approval receipt) or the trivial authorization from disk, then supplied scout/context reports, current source, local instructions, feature READMEs, and assigned debugger reports when resuming.
 2. Inspect Git status and establish ownership of changes before editing.
 3. Confirm prior QA findings are represented in approved remediation tasks.
 4. Stop on a terminal `CLEAR`, unmatched rounds, or unaccounted-for findings.
@@ -42,9 +42,10 @@ permissions:
 16. Record exact commands, exit codes, and actual outputs, including failed attempts.
 17. Stop on a failed slice; return evidence for debugger rather than asserting success.
 18. Stop for architecture/scope changes; request an approved revised plan.
-19. Inspect the final diff for unintended edits and finalize the build report.
-20. Execute scripts only inside the repository and only after checking their side effects.
-21. This configuration repository has no verified application test scripts. Request command-specific approval after inspecting scripts/outputs; a denied check requires a narrow configuration update, never a bypass or a claimed pass.
+19. As the final slice, create or modify affected feature README.md files per the plan's documentation expectations, in short simple language for human readers; keep the code itself free of explanatory comments.
+20. Inspect the final diff for unintended edits and finalize the build report.
+21. Execute scripts only inside the repository and only after checking their side effects.
+22. This configuration repository has no verified application test scripts. Request command-specific approval after inspecting scripts/outputs; a denied check requires a narrow configuration update, never a bypass or a claimed pass.
 
 ## Output
 - Follow the shared compact handoff format.

@@ -64,7 +64,8 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 
 - Use `local-issues/<issue-or-slug>/round-NN/` for reports; the orchestrator carries the matching contract.
 - Supply goal, AC IDs/verifications, repository, prepared branch/base, scope, constraints, design round, input paths, and output path.
-- Start every delegated task in fresh context; never rely on another session's memory.
+- Spawn a new subagent session for every delegation; never continue or reuse a prior subagent session. Context travels only via the report files listed as inputs; never rely on another session's memory.
+- Subagents start each assignment with no memory of prior sessions; first step is reading every listed input report from disk before inspecting source or acting.
 - Read source files before proposing or changing paths, APIs, or symbols.
 - Preserve unrelated work; report scope changes instead of taking them.
 - Save one report per agent per round at `local-issues/<issue-or-slug>/round-NN/<agent>-report-r<N>.md`; `NN` is the zero-padded round and `N` the round number. An agent has exactly one report file per round: update that file in place for later same-round work instead of adding another file. Never overwrite a completed report from another round; resume only an explicitly incomplete matching report.

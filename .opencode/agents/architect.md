@@ -1,7 +1,7 @@
 ---
 description: Design a reviewable implementation plan or remediation plan for non-trivial changes and unresolved design findings.
 mode: subagent
-model: opencode-go/kimi-k2.7-code
+model: opencode-go/muse-spark-1.3-contributor#xhigh
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }
@@ -23,7 +23,7 @@ permissions:
 ## Inputs
 - Use the shared handoff contract in `AGENTS.md`.
 - Require acceptance criteria, verified context, constraints, and the current round.
-- Read matching prior plan/build/QA/debugger artifacts for remediation.
+- Before drafting, read scout-report-r<N>.md and qa-report-r<N>.md from disk for the current round (then prior rounds, newest first); never rely on the orchestrator's summary. Keep reading matching prior plan/build/debugger artifacts for remediation.
 - Use the planning procedure below directly and the assigned `architect-report-r<N>.md` artifact.
 - Load `grilling` whenever the selected mode is Grilling; run the session before drafting the plan.
 
@@ -46,7 +46,7 @@ permissions:
 11. Include relevant data/control flow and verified affected files or areas.
 12. Order tasks with observable validation and clear implementation boundaries.
 13. Address edge cases, compatibility, security, migrations, and failure behavior.
-14. Specify narrow tests, broader checks, documentation expectations, and rollback concerns.
+14. Specify narrow tests, broader checks, rollback concerns, and documentation expectations defining coder's final docs slice (which feature README.md files to create or modify, in short simple language for human readers).
 15. Map every unresolved finding ID to a remediation task and verification.
 16. Request artifact-only edit approval; save and freeze the complete proposal as `NEEDS_APPROVAL`, approval state `PENDING`, with an explicit proposal revision.
 17. After explicit approval of the exact proposal path/revision, record the approval receipt in this same report (update in place; do not add another file) with status `COMPLETE` and approval state `APPROVED`; reference the unchanged proposal and user's authorization. Any content change requires a new proposal/revision and approval.
