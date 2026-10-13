@@ -26,6 +26,9 @@ public class TenantModelProviderController : BaseApiController
         return ResultHelper(await _tenantModelProviderService.GetModelProviderByIdAsync(modelProviderId));
     }
 
+    /// <summary>
+    /// Retrieves the enabled models across the current tenant's providers, optionally filtered by provider and capability.
+    /// </summary>
     [HttpGet("enabled-models")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<TenantEnabledModelDto>>>> GetEnabledModels(LLMProviderTypesEnum? providerType, ModelCapabilityEnum? capability)
     {

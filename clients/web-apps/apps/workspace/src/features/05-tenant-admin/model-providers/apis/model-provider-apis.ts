@@ -1,4 +1,5 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
@@ -7,7 +8,6 @@ import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 import { TenantEnabledModelDto } from "../dtos/enabled-model.dto";
 import { LlmModelsResponseDto, LlmProvidersResponseDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
-import { ModelCapabilityEnum } from "../enums/model-capability-enum";
 import { ModelProviderEnum } from "../enums/model-provider-enum";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;

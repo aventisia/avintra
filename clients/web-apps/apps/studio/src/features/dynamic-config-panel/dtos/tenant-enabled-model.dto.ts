@@ -1,4 +1,4 @@
-import { ModelCapabilityEnum } from "../enums/model-capability-enum";
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 
 /** A single enabled model for a tenant, including its provider and capability. */
 export interface TenantEnabledModelDto {
