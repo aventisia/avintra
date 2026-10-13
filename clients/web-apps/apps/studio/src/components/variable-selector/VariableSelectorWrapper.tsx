@@ -50,7 +50,7 @@ const VariableSelectorWrapper = ({
         className={cn(className, "max-h-96 shadow-sm")}
         {...props}
       >
-        <Tabs defaultValue="variables" className="w-full">
+        <Tabs defaultValue="variables" className="flex h-full w-full flex-col">
           <TabsList className="w-full">
             <TabsTrigger value="variables" className="w-full">
               Variables
@@ -59,10 +59,16 @@ const VariableSelectorWrapper = ({
               Key Store
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="variables">
+          <TabsContent
+            value="variables"
+            className="flex flex-1 flex-col overflow-hidden min-h-0 data-[state=inactive]:hidden"
+          >
             <VariableSelectorContent />
           </TabsContent>
-          <TabsContent value="keystore">
+          <TabsContent
+            value="keystore"
+            className="flex flex-1 flex-col overflow-hidden min-h-0 data-[state=inactive]:hidden"
+          >
             <ConfigSelectorContent />
           </TabsContent>
         </Tabs>
