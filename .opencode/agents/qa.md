@@ -1,7 +1,7 @@
 ---
 description: Independently reproduce failures, verify every acceptance criterion, and audit implementation against its approved plan.
 mode: subagent
-model: opencode-go/qwen3.7-plus#high
+model: opencode-go/qwen3.7-plus
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }

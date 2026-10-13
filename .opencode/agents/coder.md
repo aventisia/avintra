@@ -1,7 +1,7 @@
 ---
 description: Implement approved scope in verifiable slices and record test-first evidence without unrelated changes.
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#high
+model: opencode-go/deepseek-v4.1-flash
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }

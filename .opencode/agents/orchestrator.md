@@ -1,7 +1,7 @@
 ---
 description: Coordinate an issue, problem, or idea through investigation, implementation, and independent verification.
 mode: primary
-model: opencode-go/deepseek-v4.1-flash#high
+model: opencode-go/deepseek-v4.1-flash
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }
