@@ -70,10 +70,10 @@ function writeJson(filePath: string, data: unknown): void {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n");
 }
 
-/** Generate only new vault forms; reviewed legacy forms remain authoritative. */
+/** Generate only new vault credential forms; reviewed legacy forms remain authoritative. */
 function writeMissingVaultCredentialConfigs(configs: ReturnType<typeof buildVaultCredentialConfigs>): void {
-  const vaultCredentialConfigDir = process.env.CORSAIR_VAULT_CONFIG_DIR
-    ? path.resolve(process.env.CORSAIR_VAULT_CONFIG_DIR)
+  const vaultCredentialConfigDir = process.env.CORSAIR_VAULT_CREDENTIAL_CONFIG_DIR
+    ? path.resolve(process.env.CORSAIR_VAULT_CREDENTIAL_CONFIG_DIR)
     : path.resolve(moduleDir, "../../../../clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json");
 
   for (const config of configs) {
@@ -198,7 +198,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // resolving dotted sidecar actions from Studio node names.
   writeJson(actionMapFile, invocations);
 
-  // Write the credential mapping consumed by vault and backend integrations.
+  // Write the credential mapping consumed by vault credential and backend integrations.
   const integrationCatalog = buildIntegrationCatalog(pluginMetas);
   writeJson(integrationCatalogFile, integrationCatalog);
   const vaultCredentialTypeToPluginId = Object.fromEntries(

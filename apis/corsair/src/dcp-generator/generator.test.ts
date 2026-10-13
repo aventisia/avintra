@@ -116,7 +116,7 @@ async function main() {
       "App Integrations has no Corsair action categories",
     );
 
-    // 5. Microsoft plugins use distinct labels while sharing the M365 vault.
+    // 5. Microsoft plugins use distinct labels while sharing the M365 vault credential.
     const microsoftLabels = new Map(
       appIntegrations.actionCategories
         .filter((category: any) => ["outlook", "teams", "onedrive", "sharepoint"].some(
@@ -129,7 +129,7 @@ async function main() {
     assert(microsoftLabels.get("Onedrive") === "OneDrive", "OneDrive category has no canonical name");
     assert(microsoftLabels.get("Sharepoint") === "SharePoint", "SharePoint category has no canonical name");
 
-    // 5b. Google plugins use distinct labels while sharing the Google vault.
+    // 5b. Google plugins use distinct labels while sharing the Google vault credential.
     const googleLabels = new Map(
       appIntegrations.actionCategories
         .filter((category: any) => ["gmail", "googlecalendar", "googlesheets", "googledocs", "googledrive", "googlemeet", "googlebigquery", "googlecloudvision", "googlemaps", "googleaddressvalidation", "youtube"].some(
@@ -179,8 +179,8 @@ async function main() {
     assert(m365Scopes.has("Chat.ReadWrite"), "M365 scopes are missing Teams permissions");
     assert(m365Scopes.has("Sites.FullControl.All"), "M365 scopes are missing SharePoint permissions");
 
-    // 6. Every credential-select field name must use the canonical catalog vault type
-    //    (VaultCredentialTypesEnum-compatible), never the display providerName.
+    // 6. Every credential-select field name must use the canonical catalog vault credential
+    //    type (VaultCredentialTypesEnum-compatible), never the display providerName.
     const vaultCredentialTypeByPlugin = new Map(
       catalog.map((entry: any) => [entry.pluginId, entry.vaultCredentialType]),
     );
@@ -192,7 +192,7 @@ async function main() {
       const expected = `__CredentialName__${vaultCredentialTypeByPlugin.get(pluginId)}`;
       assert(
         credField.name === expected,
-        `config ${file} credential field '${credField.name}' does not match canonical vault type '${expected}'`,
+        `config ${file} credential field '${credField.name}' does not match canonical vault credential type '${expected}'`,
       );
     }
 

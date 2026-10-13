@@ -14,8 +14,8 @@ export const getSpaceHeaders = (): Record<string, string> => {
 /**
  * Builds the environment-scoping headers from the currently selected
  * Dev/Prod environment. The backend uses `X-Env-Type` to scope config
- * entities (Skill, Queues, Tools, Key Store, Vault, Knowledge Base,
- * Triggers, Vault Credential) to the active environment.
+ * entities (Skill, Queues, Tools, Key Store, Knowledge Base, Triggers,
+ * Vault Credential) to the active environment.
  */
 export const getEnvHeaders = (): Record<string, string> => {
   const env = useEnvironmentStore.getState().env;
