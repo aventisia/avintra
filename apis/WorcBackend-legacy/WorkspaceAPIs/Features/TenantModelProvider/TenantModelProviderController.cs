@@ -12,14 +12,18 @@ public class TenantModelProviderController : BaseApiController
         _tenantModelProviderService = tenantModelProviderService;
     }
 
-    // Fetch all model provider configurations for the current tenant.
+    /// <summary>
+    /// Retrieves all model provider configurations for the current tenant.
+    /// </summary>
     [HttpGet("list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<TenantModelProviderDto>>>> GetAllModelProviders()
     {
         return ResultHelper(await _tenantModelProviderService.GetAllModelProvidersAsync());
     }
 
-    // Fetch a model provider configuration by its identifier.
+    /// <summary>
+    /// Retrieves a model provider configuration by its identifier.
+    /// </summary>
     [HttpGet("{modelProviderId}")]
     public async Task<ActionResult<ServiceResponse<TenantModelProviderDto>>> GetModelProvider(Guid modelProviderId)
     {
@@ -35,14 +39,18 @@ public class TenantModelProviderController : BaseApiController
         return ResultHelper(await _tenantModelProviderService.GetEnabledModelsAsync(providerType, capability));
     }
 
-    // Create or update a model provider configuration for the current tenant.
+    /// <summary>
+    /// Creates or updates a model provider configuration for the current tenant.
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TenantModelProviderDto>>> UpsertModelProvider([FromBody] TenantModelProviderDto modelProviderDto)
     {
         return ResultHelper(await _tenantModelProviderService.UpsertModelProviderAsync(modelProviderDto));
     }
 
-    // Delete a model provider configuration by its identifier.
+    /// <summary>
+    /// Deletes a model provider configuration by its identifier.
+    /// </summary>
     [HttpDelete("{modelProviderId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteModelProvider(Guid modelProviderId)
     {

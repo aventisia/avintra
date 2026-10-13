@@ -1,0 +1,39 @@
+meta {
+  name: Upsert model provider with duplicate model capabilities
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "providerType": "OpenAI",
+    "enabledModelIds": ["gpt-4o-mini"],
+    "enabledModels": [
+      { "modelId": "gpt-4o-mini", "capability": null },
+      { "modelId": "gpt-4o-mini", "capability": "Text" }
+    ],
+    "isDisabled": false
+  }
+}
+
+tests {
+  test("duplicate modelId collapses to the entry carrying a capability", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(Array.isArray(res.body.data.enabledModels)).to.equal(true);
+    expect(res.body.data.enabledModels.length).to.equal(1);
+    expect(res.body.data.enabledModels[0].modelId).to.equal("gpt-4o-mini");
+    expect(res.body.data.enabledModels[0].capability).to.equal("Text");
+  });
+}

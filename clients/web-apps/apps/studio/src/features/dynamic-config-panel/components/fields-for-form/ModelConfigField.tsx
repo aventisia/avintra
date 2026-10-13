@@ -13,8 +13,8 @@ import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/Sear
 import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
-import { sttModelProviders } from "../../constants/stt-model-proivder";
-import { ttsModelProviders } from "../../constants/tts-model-proivder";
+import { sttModelProviders } from "../../constants/stt-model-provider";
+import { ttsModelProviders } from "../../constants/tts-model-provider";
 import { useFetchTenantEnabledModels } from "../../hooks/useFetchTenantEnabledModels.hook";
 import { LLMProviderType } from "../../types/llm-provider.type";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
@@ -69,7 +69,6 @@ const ModelConfigField = ({
         ? ModelCapabilityEnum.Embedding
         : ModelCapabilityEnum.Text;
 
-  // 1. Memoize Field Names to prevent effect loops
   const fieldNames = useMemo(
     () =>
       ({
@@ -87,7 +86,6 @@ const ModelConfigField = ({
     [name],
   );
 
-  // 2. Controllers
   const { field: isByokField } = useController({
     name: fieldNames.is_byok_enabled,
     control,
@@ -146,9 +144,9 @@ const ModelConfigField = ({
     [name],
   );
 
-  // Reasoning effort has no explicit "unset" state, so fall back to the default
-  // "medium" for ChatAgent nodes that stored a null/empty value or pre-date the
-  // field. Scoped to the conversation model so other model configs are untouched.
+  // IMPORTANT NOTE: Reasoning effort has no explicit "unset" state, so ChatAgent nodes that stored a
+  // null/empty value or pre-date the field fall back to the default "medium". Scoped to the
+  // conversation model so other model configs are untouched.
   const reasoningEffortValue = watch(fieldNames.reasoning_effort);
   useEffect(() => {
     if (name !== "__ModelConfig__Conversation") return;
@@ -157,15 +155,11 @@ const ModelConfigField = ({
     }
   }, [name, reasoningEffortValue, setValue, fieldNames]);
 
-  // Whether the currently selected provider has at least one model enabled for
-  // this tenant. When BYOK is ON, the provider / credentials dropdowns must not
-  // render for providers that have no enabled models.
   const currentProviderHasEnabledModels = useMemo(() => {
     if (!is_byok_enabled) return true;
     return (enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0;
   }, [is_byok_enabled, enabledModelIdsByProvider, providerValue]);
 
-  // 3. Filtered Data
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(nodeKey);
 
@@ -192,8 +186,6 @@ const ModelConfigField = ({
       );
     }
 
-    // When BYOK is enabled, only show providers that are enabled for this tenant
-    // (per the Tenant Admin "Model Providers" section).
     const providers = is_byok_enabled
       ? modelProviders.filter((p) => (enabledModelIdsByProvider[p.value]?.length ?? 0) > 0)
       : modelProviders.filter((p) => p.isEnabled !== false);
@@ -207,12 +199,10 @@ const ModelConfigField = ({
     }));
   }, [isStt, isTts, isEmbedding, is_byok_enabled, enabledModelIdsByProvider, nodeKey]);
 
-  // 4. Initial Load Logic
   useEffect(() => {
     setIsInitialized(true);
-  }, []); // Only on mount
+  }, []);
 
-  // 5. Handle Field Resets (BYOK Toggle or Provider Change)
   useEffect(() => {
     if (!isInitialized) return;
 
@@ -242,7 +232,6 @@ const ModelConfigField = ({
     fieldNames,
   ]);
 
-  // 7. Render Helpers
   const availableModels = useMemo(() => {
     if (is_byok_enabled) {
       const enabledIds = enabledModelIdsByProvider[providerValue] ?? [];
@@ -272,8 +261,6 @@ const ModelConfigField = ({
   const providerIcon = getProviderBrandIcon(providerValue);
   const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
 
-  // Models inherit the selected provider's brand icon so it shows in both the
-  // trigger and the option list of the Model select.
   const modelSelectOptions = useMemo(
     () => availableModels.map((model) => ({ ...model, icon: providerIcon })),
     [availableModels, providerIcon],

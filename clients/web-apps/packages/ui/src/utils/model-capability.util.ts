@@ -18,7 +18,9 @@ const splitCapabilityWords = (capability: string) =>
  */
 export const toModelCapability = (capability?: string | null): ModelCapabilityEnum | null => {
   if (!capability) return null;
-  const enumValue = capability.split("_").map(capitalizeWord).join("");
+  const enumValue = splitCapabilityWords(capability)
+    .map((word) => capitalizeWord(word.toLowerCase()))
+    .join("");
   const knownCapabilities = Object.values(ModelCapabilityEnum) as string[];
   return knownCapabilities.includes(enumValue) ? (enumValue as ModelCapabilityEnum) : null;
 };
