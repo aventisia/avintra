@@ -1,7 +1,7 @@
 ---
 description: Reproduce a concrete failing check, isolate its root cause, and make a minimal authorized regression fix.
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#high
+model: opencode-go/deepseek-v4.1-flash
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }
