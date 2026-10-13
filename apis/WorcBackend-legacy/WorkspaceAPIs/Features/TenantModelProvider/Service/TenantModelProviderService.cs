@@ -132,7 +132,10 @@ public class TenantModelProviderService : ITenantModelProviderService
 
             if (capability.HasValue)
             {
-                enabledModels = enabledModels.Where(m => m.Capability == capability.Value).ToList();
+                enabledModels = enabledModels
+                    .Where(m => m.Capability == capability.Value
+                        || (capability.Value == ModelCapabilityEnum.Text && m.Capability == null))
+                    .ToList();
             }
 
             serviceResponse.Data = enabledModels
@@ -140,6 +143,7 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .Select(g => g.First())
                 .OrderBy(m => m.ProviderType)
                 .ThenBy(m => m.ModelId)
+                .DistinctBy(d=> d.ModelId)
                 .ToList();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Enabled models retrieved successfully.";
@@ -169,8 +173,6 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            // Normalize the capability-aware enabled models and mirror their identifiers
-            // into the legacy list so legacy readers keep working.
             if (modelProviderDto.EnabledModels != null)
             {
                 modelProviderDto.EnabledModels = modelProviderDto.EnabledModels
@@ -355,15 +357,6 @@ public class TenantModelProviderService : ITenantModelProviderService
 
     private static IEnumerable<TenantEnabledModelDto> GetProviderEnabledModels(TenantModelProvider provider)
     {
-        var legacyModels = (provider.EnabledModelIds ?? new List<string>())
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Select(id => new TenantEnabledModelDto
-            {
-                ProviderType = provider.ProviderType,
-                ModelId = id.Trim(),
-                Capability = null
-            });
-
         var capabilityModels = (provider.EnabledModels ?? new List<EnabledModel>())
             .Where(m => !string.IsNullOrWhiteSpace(m.ModelId))
             .Select(m => new TenantEnabledModelDto
@@ -373,6 +366,6 @@ public class TenantModelProviderService : ITenantModelProviderService
                 Capability = EnabledModelHelpers.ParseCapability(m.Capability)
             });
 
-        return legacyModels.Concat(capabilityModels);
+        return capabilityModels;
     }
 }
