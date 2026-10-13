@@ -1,3 +1,4 @@
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
@@ -14,8 +15,7 @@ import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
 import { sttModelProviders } from "../../constants/stt-model-proivder";
 import { ttsModelProviders } from "../../constants/tts-model-proivder";
-import { ModelCapabilityEnum } from "../../enums/model-capability-enum";
-import { useFetchTenantEnabledModels } from "../../hooks/useFetchTenantEnabledModels";
+import { useFetchTenantEnabledModels } from "../../hooks/useFetchTenantEnabledModels.hook";
 import { LLMProviderType } from "../../types/llm-provider.type";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
@@ -43,10 +43,7 @@ const PROVIDER_MAP: Record<string, string> = {
   mistral: "Mistral",
 };
 
-// Studio provider values whose models are sourced from the tenant config's
-// "enabledModelIds" (per the Tenant Admin "Model Providers" section) rather than
-// fetched dynamically via a credential (e.g. Ollama On-prem).
-const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
+const CREDENTIAL_LESS_MODEL_PROVIDERS = new Set(["ollama"]);
 
 const ModelConfigField = ({
   name,
@@ -378,7 +375,7 @@ const ModelConfigField = ({
           !isInitialized ||
           (isSpeechSpecialty && !hasEnabledSpeechModels) ||
           (is_byok_enabled &&
-            !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) &&
+            !CREDENTIAL_LESS_MODEL_PROVIDERS.has(providerValue) &&
             !credentialsValue)
         }
       />

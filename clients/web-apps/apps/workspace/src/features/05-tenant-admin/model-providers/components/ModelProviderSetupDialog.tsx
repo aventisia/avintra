@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { toast } from "@avplatform/ui/sonner";
+import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -34,7 +35,6 @@ import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
-import { formatCapabilityLabel, toModelCapability } from "../utils/model-capability.util";
 
 type Step = "credential" | "models";
 

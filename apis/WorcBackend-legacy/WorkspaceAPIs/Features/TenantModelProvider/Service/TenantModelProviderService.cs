@@ -143,7 +143,6 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .Select(g => g.First())
                 .OrderBy(m => m.ProviderType)
                 .ThenBy(m => m.ModelId)
-                .DistinctBy(d=> d.ModelId)
                 .ToList();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Enabled models retrieved successfully.";
@@ -180,6 +179,16 @@ public class TenantModelProviderService : ITenantModelProviderService
                     .Select(m => new EnabledModelDto { ModelId = m.ModelId.Trim(), Capability = m.Capability })
                     .GroupBy(m => m.ModelId, StringComparer.OrdinalIgnoreCase)
                     .Select(g => g.Last())
+                    .ToList();
+
+                modelProviderDto.EnabledModelIds = modelProviderDto.EnabledModels
+                    .Select(m => m.ModelId)
+                    .ToList();
+            }
+            else
+            {
+                modelProviderDto.EnabledModels = modelProviderDto.EnabledModelIds
+                    .Select(id => new EnabledModelDto { ModelId = id.Trim(), Capability = null })
                     .ToList();
 
                 modelProviderDto.EnabledModelIds = modelProviderDto.EnabledModels
