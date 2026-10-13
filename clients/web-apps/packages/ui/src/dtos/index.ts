@@ -8,6 +8,7 @@ export * from "./request/email-dto";
 export * from "./request/pwd-update-dto";
 export * from "./request/terminate-session-dto";
 export * from "./response/created-verification-code-dto";
+export * from "./response/branding-dto";
 export * from "./response/record-inserted-dto";
 export * from "./response/tenant-info-dto";
 export * from "./response/true-false-result-dto";

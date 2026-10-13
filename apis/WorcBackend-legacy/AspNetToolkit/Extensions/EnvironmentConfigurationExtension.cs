@@ -2,6 +2,23 @@ namespace AspNetToolkit.Extensions;
 
 public static class EnvironmentConfigurationExtension
 {
+    // Maximum length accepted for branding text values (app/company name).
+    private const int BrandingNameMaxLength = 100;
+
+    // Accepted CSS color formats for branding. Each channel must be a number so a malformed value
+    // (e.g. "rgb(,,,)") cannot be served and silently reset the client theme.
+    private static readonly Regex BrandingHexColorRegex = new(
+        @"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+        RegexOptions.Compiled);
+
+    private static readonly Regex BrandingRgbColorRegex = new(
+        @"^rgba?\(\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*(?:[,/]\s*[0-9.]+%?\s*)?\)$",
+        RegexOptions.Compiled);
+
+    private static readonly Regex BrandingHslColorRegex = new(
+        @"^hsla?\(\s*[0-9.]+(?:deg|grad|rad|turn)?\s*[,\s]\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*(?:[,/]\s*[0-9.]+%?\s*)?\)$",
+        RegexOptions.Compiled);
+
     /// <summary>
     /// Loads .env.local into process environment before Kestrel binds ports.
     /// </summary>
@@ -84,6 +101,18 @@ public static class EnvironmentConfigurationExtension
         var OPENROUTER_API_KEY = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY") ?? string.Empty;
 
         var CUSTOM_API_KEY = Environment.GetEnvironmentVariable("CUSTOM_API_KEY") ?? string.Empty;
+
+        // Deployment branding (self-hosted white-label). All values are optional; any value left
+        // unset falls back to the built-in Avintra/Aventisia defaults on the client. Invalid
+        // colors/URLs/oversized text are dropped with a warning so a bad value cannot break the UI.
+        var BRANDING_APP_NAME = NormalizeOptional("BRANDING_APP_NAME", Environment.GetEnvironmentVariable("BRANDING_APP_NAME"), BrandingNameMaxLength);
+        var BRANDING_COMPANY_NAME = NormalizeOptional("BRANDING_COMPANY_NAME", Environment.GetEnvironmentVariable("BRANDING_COMPANY_NAME"), BrandingNameMaxLength);
+        var BRANDING_LOGO_URL = SanitizeBrandingUrl("BRANDING_LOGO_URL", Environment.GetEnvironmentVariable("BRANDING_LOGO_URL"), APP_BASE_URL);
+        var BRANDING_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_FULL_LOGO_URL = SanitizeBrandingUrl("BRANDING_FULL_LOGO_URL", Environment.GetEnvironmentVariable("BRANDING_FULL_LOGO_URL"), APP_BASE_URL);
+        var BRANDING_FAVICON_URL = SanitizeBrandingUrl("BRANDING_FAVICON_URL", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL"), APP_BASE_URL);
+        var BRANDING_PRIMARY_COLOR = SanitizeBrandingColor("BRANDING_PRIMARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_PRIMARY_COLOR"));
+        var BRANDING_SECONDARY_COLOR = SanitizeBrandingColor("BRANDING_SECONDARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_SECONDARY_COLOR"));
 
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
@@ -232,6 +261,15 @@ public static class EnvironmentConfigurationExtension
 
                     { "EnvironmentConfig:CUSTOM_API_KEY", CUSTOM_API_KEY },
 
+                    { "EnvironmentConfig:BrandingAppName", BRANDING_APP_NAME },
+                    { "EnvironmentConfig:BrandingCompanyName", BRANDING_COMPANY_NAME },
+                    { "EnvironmentConfig:BrandingLogoUrl", BRANDING_LOGO_URL },
+                    { "EnvironmentConfig:BrandingLogoUrlDark", BRANDING_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingFullLogoUrl", BRANDING_FULL_LOGO_URL },
+                    { "EnvironmentConfig:BrandingFaviconUrl", BRANDING_FAVICON_URL },
+                    { "EnvironmentConfig:BrandingPrimaryColor", BRANDING_PRIMARY_COLOR },
+                    { "EnvironmentConfig:BrandingSecondaryColor", BRANDING_SECONDARY_COLOR },
+
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
@@ -256,6 +294,126 @@ public static class EnvironmentConfigurationExtension
                 }
             )
             .Build();
+    }
+
+    /// <summary>
+    /// Normalizes an optional string value: trims it, treats blank as null, and drops values
+    /// longer than <paramref name="maxLength"/> with a warning.
+    /// </summary>
+    private static string? NormalizeOptional(string key, string? value, int maxLength = int.MaxValue)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var normalizedValue = value.Trim();
+        if (normalizedValue.Length > maxLength)
+        {
+            Console.Error.WriteLine(
+                $"{key} exceeds {maxLength} characters; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        return normalizedValue;
+    }
+
+    /// <summary>
+    /// Validates an optional branding URL. The URL must be absolute HTTPS and hosted on the
+    /// deployment's own domain (the <c>APP_BASE_URL</c> host), a subdomain of it, or its parent
+    /// domain; anything else is dropped with a warning so the client falls back to defaults.
+    /// </summary>
+    private static string? SanitizeBrandingUrl(string key, string? value, string appBaseUrl)
+    {
+        var normalizedValue = NormalizeOptional(key, value);
+        if (normalizedValue == null)
+        {
+            return null;
+        }
+
+        // Branding assets must be served over HTTPS.
+        if (!Uri.TryCreate(normalizedValue, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
+        {
+            Console.Error.WriteLine(
+                $"{key} must be an absolute https URL; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        // ...and from the deployment's domain (subdomains allowed).
+        if (!IsDeploymentHost(uri.Host, appBaseUrl))
+        {
+            Console.Error.WriteLine(
+                $"{key} must be hosted on {appBaseUrl}, a subdomain of it, or its parent domain; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        return normalizedValue;
+    }
+
+    /// <summary>
+    /// True when the candidate host is the deployment host, a subdomain of it, or its parent
+    /// domain. Anchoring to the configured <c>APP_BASE_URL</c> host avoids guessing registrable
+    /// domains, which is unreliable for multi-part public suffixes (e.g. <c>co.uk</c>).
+    /// </summary>
+    private static bool IsDeploymentHost(string candidateHost, string appBaseUrl)
+    {
+        var baseHost = GetHostFromValue(appBaseUrl).TrimEnd('.');
+        var normalizedCandidate = candidateHost.ToLowerInvariant().TrimEnd('.');
+        if (string.IsNullOrWhiteSpace(baseHost) || string.IsNullOrWhiteSpace(normalizedCandidate))
+        {
+            return false;
+        }
+
+        return string.Equals(normalizedCandidate, baseHost, StringComparison.OrdinalIgnoreCase)
+            || normalizedCandidate.EndsWith("." + baseHost, StringComparison.OrdinalIgnoreCase)
+            || (normalizedCandidate.Contains('.')
+                && baseHost.EndsWith("." + normalizedCandidate, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Extracts the bare host from a deployment base URL value, which may be a bare host,
+    /// a host:port, or a full URL.
+    /// </summary>
+    private static string GetHostFromValue(string value)
+    {
+        var candidate = value.Trim();
+
+        // Accept full URLs as well as bare hosts.
+        if (Uri.TryCreate(candidate, UriKind.Absolute, out var uri) && !string.IsNullOrWhiteSpace(uri.Host))
+        {
+            return uri.Host;
+        }
+
+        var hostPart = candidate.Split('/')[0];
+        return hostPart.Split(':')[0].ToLowerInvariant();
+    }
+
+    /// <summary>
+    /// Validates an optional branding CSS color (hex, rgb/rgba or hsl/hsla). An invalid value is
+    /// dropped with a warning so the client falls back to defaults.
+    /// </summary>
+    private static string? SanitizeBrandingColor(string key, string? value)
+    {
+        var normalizedValue = NormalizeOptional(key, value);
+        if (normalizedValue == null)
+        {
+            return null;
+        }
+
+        if (BrandingHexColorRegex.IsMatch(normalizedValue) ||
+            BrandingRgbColorRegex.IsMatch(normalizedValue) ||
+            BrandingHslColorRegex.IsMatch(normalizedValue))
+        {
+            return normalizedValue;
+        }
+
+        Console.Error.WriteLine(
+            $"{key} is not a valid hex, rgb() or hsl() color; ignoring the value and using the default branding."
+        );
+        return null;
     }
 
     /// <summary>
