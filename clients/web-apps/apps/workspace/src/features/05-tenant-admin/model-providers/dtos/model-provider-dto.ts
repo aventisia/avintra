@@ -1,4 +1,5 @@
-import { ModelProviderEnum } from "../enums/model-provider-enum";
+import { ModelProviderEnum } from "@avplatform/ui/enums";
+
 import { EnabledModelDto } from "./enabled-model.dto";
 
 /**

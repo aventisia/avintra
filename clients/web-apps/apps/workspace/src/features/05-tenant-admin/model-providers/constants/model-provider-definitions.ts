@@ -1,7 +1,7 @@
+import { ModelProviderEnum } from "@avplatform/ui/enums";
+
 import { VaultCredentialAppsEnum } from "@/features/02-configure/vault-credentials/enums/vault-credential-apps.enum";
 import { vaultCredentialAppIconMapper } from "@/features/02-configure/vault-credentials/vault-credential-config/constants/vault-credential-app-icon-mapper.constant";
-
-import { ModelProviderEnum } from "../enums/model-provider-enum";
 
 export interface ModelProviderDefinition {
   value: ModelProviderEnum;
