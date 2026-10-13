@@ -450,7 +450,7 @@ public class FlowAssistantService : IFlowAssistantService
                 if (field.Direction != "Input" || providedKeys.Contains(field.Name))
                     continue;
 
-                if (field.Required || (providedKeys.Count == 0 && string.IsNullOrEmpty(field.DefaultValueJson)))
+                if (field.Required)
                     missingFields.Add($"{field.Label} ({nodeName})");
             }
         }

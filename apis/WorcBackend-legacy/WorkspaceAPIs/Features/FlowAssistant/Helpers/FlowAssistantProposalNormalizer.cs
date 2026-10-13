@@ -38,8 +38,12 @@ public static class FlowAssistantProposalNormalizer
 
             var nodeType = ReadString(nodeObject, "type");
             var nodeName = ReadString(nodeObject, "name");
-            if (string.IsNullOrWhiteSpace(nodeType) || string.IsNullOrWhiteSpace(nodeName))
+            if (string.IsNullOrWhiteSpace(nodeName))
                 continue;
+
+            nodeType = ResolveNodeType(nodeType, nodeName);
+            if (!string.IsNullOrWhiteSpace(nodeType))
+                nodeObject["type"] = nodeType;
 
             var metadata = FlowAssistantConfigCatalog.Nodes.FirstOrDefault(
                 candidate => string.Equals(candidate.Type, nodeType, StringComparison.OrdinalIgnoreCase) &&
@@ -84,6 +88,8 @@ public static class FlowAssistantProposalNormalizer
             {
                 UnwrapInputValue(entryObject);
                 CoerceInputValue(entryObject, field.Type);
+                if (entryObject["value"] is null)
+                    continue;
             }
             canonical.Add(entryObject.DeepClone());
         }
@@ -98,12 +104,11 @@ public static class FlowAssistantProposalNormalizer
 
         var isValueEnvelope = valueObject.Count is > 0 and <= 2 &&
                               valueObject.All(pair => pair.Key is "value" or "enabled") &&
-                              valueObject["value"] is not null &&
                               (valueObject["enabled"] is null || valueObject["enabled"] is JsonValue);
         if (!isValueEnvelope)
             return;
 
-        entryObject["value"] = valueObject["value"]!.DeepClone();
+        entryObject["value"] = valueObject["value"]?.DeepClone();
     }
 
     private static void CoerceInputValue(JsonObject entryObject, string fieldType)
@@ -126,6 +131,14 @@ public static class FlowAssistantProposalNormalizer
                 entryObject["value"] = JsonValue.Create(numberValue);
             }
         }
+    }
+
+    private static string? ResolveNodeType(string? nodeType, string nodeName)
+    {
+        var allowed = FlowAssistantCatalog.AllowedNodes.FirstOrDefault(
+            node => string.Equals(node.Name, nodeName, StringComparison.OrdinalIgnoreCase));
+
+        return allowed.Name is null ? nodeType : allowed.Type;
     }
 
     private static string? ReadString(JsonObject jsonObject, string propertyName) =>
