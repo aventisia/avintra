@@ -1,3 +1,4 @@
+import { useBranding } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 
 interface AppLogoProps {
@@ -20,13 +21,20 @@ const AppLogo = ({
   lightLogo = true,
   className = "h-6 text-xl",
 }: AppLogoProps) => {
+  const branding = useBranding();
+
   // Logo file
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
 
+  // A configured deployment branding logo overrides the built-in asset. The full wordmark uses its
+  // own asset when configured and otherwise reuses the compact logo.
+  const brandingLogoUrl = showFullLogo
+    ? (branding.fullLogoUrl ?? branding.logoUrl)
+    : branding.logoUrl;
+
   // Logo path
-  const logoSrc = showFullLogo
-    ? import.meta.env.BASE_URL + "logo.svg"
-    : import.meta.env.BASE_URL + logoFile;
+  const logoSrc =
+    brandingLogoUrl ?? import.meta.env.BASE_URL + (showFullLogo ? "logo.svg" : logoFile);
 
   // Return logo with app name
   return (
