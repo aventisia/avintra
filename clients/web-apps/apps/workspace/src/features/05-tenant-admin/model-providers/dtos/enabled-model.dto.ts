@@ -1,4 +1,5 @@
-import { ModelCapabilityEnum } from "../enums/model-capability-enum";
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
+
 import { ModelProviderEnum } from "../enums/model-provider-enum";
 
 /** A model enabled for a provider together with its optional capability. */

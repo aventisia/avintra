@@ -1,9 +1,9 @@
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { getEnabledModels } from "../apis/tenant-model-provider-apis";
-import { ModelCapabilityEnum } from "../enums/model-capability-enum";
 
 export const TENANT_ENABLED_MODELS_QUERY_KEY = ["tenant-enabled-models"] as const;
 

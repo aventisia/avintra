@@ -1,10 +1,10 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { axiosInstance } from "@avplatform/ui/lib";
 
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import { TenantEnabledModelDto } from "../dtos/tenant-enabled-model.dto";
-import { ModelCapabilityEnum } from "../enums/model-capability-enum";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;
 

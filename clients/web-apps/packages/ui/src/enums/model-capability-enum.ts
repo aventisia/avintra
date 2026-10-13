@@ -1,5 +1,8 @@
 /**
- * Capabilities a model can be enabled for, mirroring the backend ModelCapabilityEnum.
+ * Capabilities a model can be enabled for.
+ *
+ * IMPORTANT NOTE: Any changes to this file should be manually synced with the back-end
+ * `ModelCapabilityEnum` and the LLM pipeline provider capabilities.
  */
 export enum ModelCapabilityEnum {
   Text = "Text",
