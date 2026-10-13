@@ -1,6 +1,6 @@
 # Aventisia WORC Platform — Agent Guide
 
-OpenCode is configured with `default_agent: orchestrator` (`opencode.jsonc`). Subagent definitions live in `.opencode/agents/`. The shared handoff contract at the bottom of this file is referenced by those agents.
+Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only primary agent. The shared handoff contract at the bottom of this file is referenced by those agents.
 
 ## Quick repo facts
 
