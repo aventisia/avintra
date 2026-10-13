@@ -1,7 +1,7 @@
 ---
 description: Retrieve a Gitea issue and map verified code paths, current behavior, contracts, and investigation boundaries.
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash
+model: opencode-go/muse-spark-1.3-contributor#xhigh
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }
