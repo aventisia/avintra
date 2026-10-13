@@ -1,9 +1,9 @@
-import { ModelCapabilityEnum } from "@avplatform/ui/enums";
+import { ModelCapabilityEnum, ModelProviderEnum } from "@avplatform/ui/enums";
 
 /** A single enabled model for a tenant, including its provider and capability. */
 export interface TenantEnabledModelDto {
   /** The type of the external model provider. */
-  providerType: string;
+  providerType: ModelProviderEnum;
 
   /** The identifier of the enabled model. */
   modelId: string;
