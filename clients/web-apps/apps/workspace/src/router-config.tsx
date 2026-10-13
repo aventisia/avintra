@@ -12,7 +12,7 @@ import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
 import { KeystorePage } from "./pages/02-configure/KeystorePage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
-import { VaultPage } from "./pages/02-configure/VaultPage";
+import { VaultCredentialPage } from "./pages/02-configure/VaultCredentialPage";
 import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
 import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
 import { QueueWorkItemDetailPage } from "./pages/02-configure/queues/QueueWorkItemDetailPage";
@@ -132,7 +132,7 @@ const routerConfig: RouteObject[] = [
           },
           {
             path: "vault",
-            element: <VaultPage />,
+            element: <VaultCredentialPage />,
           },
           {
             path: "knowledge-base",

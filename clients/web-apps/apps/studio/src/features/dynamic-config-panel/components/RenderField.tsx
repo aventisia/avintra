@@ -12,7 +12,6 @@ import {
   DCPFieldSchemaType,
 } from "..";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
-import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
@@ -22,6 +21,7 @@ import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
+import { VaultCredentialSelectField } from "./fields-for-form/VaultCredentialSelectField";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
@@ -72,7 +72,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "config-panel-output":
       return <ConfigPanelOuputField {...baseProps} />;
     case "credentials-select":
-      return <CredentialsSelectField {...baseProps} />;
+      return <VaultCredentialSelectField {...baseProps} />;
     case "config-panel-model-output":
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":

@@ -11,14 +11,14 @@ public class AzureConnectorsService : IAzureConnectorsService
 {
     private readonly ILogger<AzureConnectorsService> _logger;
     private readonly IM365ConnectorsService _m365ConnectorsService;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     public AzureConnectorsService(
         ILogger<AzureConnectorsService> logger,
-        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultService cloudConnectorsVaultService)
+        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService)
     {
         _logger = logger;
         _m365ConnectorsService = m365ConnectorsService;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
     }
 
     public async Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto)
@@ -77,7 +77,7 @@ public class AzureConnectorsService : IAzureConnectorsService
 
     private async Task<string?> GetBlobConnectionStringAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential == null)
         {
             _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);

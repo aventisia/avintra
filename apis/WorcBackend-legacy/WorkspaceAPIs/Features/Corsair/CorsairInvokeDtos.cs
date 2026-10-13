@@ -2,7 +2,7 @@ namespace WorkspaceAPIs.Features.Corsair;
 
 /// <summary>
 /// Request to invoke a Corsair plugin operation from a workflow node.
-/// The credential is resolved by name through the Vault (AppSecret) service,
+/// The credential is resolved by name through the Vault (VaultCredential) service,
 /// which enforces tenant/space/environment and resource-share authorization.
 /// </summary>
 public class CorsairInvokeReqDto

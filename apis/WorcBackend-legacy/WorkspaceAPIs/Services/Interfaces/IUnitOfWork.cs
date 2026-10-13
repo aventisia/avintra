@@ -30,7 +30,7 @@ public interface IUnitOfWork
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowVersionRepo TriggerFlowVersionRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
-    IAppSecretRepo AppSecretRepo { get; }
+    IVaultCredentialRepo VaultCredentialRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IPromptTemplateRepo PromptTemplateRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }

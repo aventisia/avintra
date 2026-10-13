@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an encrypted key-value pair (e.g., credentials, API tokens) associated with a specific tenant.
 /// </summary>
+[Table("ws_EncryptedKeyValues")]
 public class EncryptedKeyValue
 {
     /// <summary>
@@ -22,13 +23,13 @@ public class EncryptedKeyValue
     public required string Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier of the related AppSecret entity.
+    /// Gets or sets the unique identifier of the related VaultCredential entity.
     /// </summary>
-    public required Guid AppSecretId { get; set; }
+    public required Guid VaultCredentialId { get; set; }
 
     /// <summary>
-    /// Gets or sets the navigation property linking to the associated AppSecret entity.
+    /// Gets or sets the navigation property linking to the associated VaultCredential entity.
     /// </summary>
-    [ForeignKey("AppSecretId")]
-    public virtual AppSecret? AppSecret { get; set; }
+    [ForeignKey("VaultCredentialId")]
+    public virtual VaultCredential? VaultCredential { get; set; }
 }

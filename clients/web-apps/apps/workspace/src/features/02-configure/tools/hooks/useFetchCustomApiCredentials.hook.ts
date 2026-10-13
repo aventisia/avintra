@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
-import { CredSelectDto } from "@/features/02-configure/queues/queues-table/dtos/cred-select-dto.ts.ts";
+import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
+import { VaultCredentialSelectDto } from "@/features/02-configure/queues/queues-table/dtos/vault-credential-select.dto";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
@@ -12,7 +12,7 @@ import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 /**
  * Fetches credentials that can be assigned to a tool.
  *
- * Uses the shared app-secret select-options endpoint filtered to
+ * Uses the shared vault credential select-options endpoint filtered to
  * CustomApiTool. This keeps the hook isolated in the tools feature.
  */
 export const useFetchCustomApiCredentials = () => {
@@ -27,11 +27,11 @@ export const useFetchCustomApiCredentials = () => {
 
   const { data, isFetching, isLoading, isError } = useQuery({
     queryKey: [...DATA_QUERY_KEY, "credentials", "custom-api-tool", currentSpace?.id, env],
-    queryFn: () => getCredSelectOptions("CustomApiTool"),
+    queryFn: () => getVaultCredentialSelectOptions("CustomApiTool"),
     staleTime: 60 * 1000,
   });
 
-  const credentials = useMemo(() => (data?.data ?? []) as CredSelectDto[], [data]);
+  const credentials = useMemo(() => (data?.data ?? []) as VaultCredentialSelectDto[], [data]);
 
   return { data: credentials, isFetching, isLoading, isError };
 };

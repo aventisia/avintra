@@ -26,7 +26,7 @@ Bind `:tenant_id` and the Dev resource names before running each block. All
 clones inherit the Dev source `SpaceId`; uniqueness is
 `(TenantId, SpaceId, EnvType, Name)`.
 
-### 2.1 Credentials (AppSecrets + EncryptedKeyValues)
+### 2.1 Credentials (VaultCredentials + EncryptedKeyValues)
 
 ```sql
 -- A Prod twin must exist for every referenced Dev credential, and must never
@@ -38,8 +38,8 @@ SELECT d."Name",
        p."Id"   AS prod_id,
        p."EnvType" AS prod_env,
        p."SpaceId" AS prod_space
-FROM "AppSecrets" d
-LEFT JOIN "AppSecrets" p
+FROM "ws_VaultCredentials" d
+LEFT JOIN "ws_VaultCredentials" p
        ON p."TenantId" = d."TenantId"
       AND p."Name" = d."Name"
       AND p."EnvType" = 'Prod'
@@ -55,11 +55,11 @@ WHERE d."TenantId" = :tenant_id
 SELECT d."Name",
        count(dkv."Id") AS dev_kv,
        count(pkv."Id") AS prod_kv
-FROM "AppSecrets" d
-LEFT JOIN "EncryptedKeyValues" dkv ON dkv."AppSecretId" = d."Id"
-JOIN "AppSecrets" p
+FROM "ws_VaultCredentials" d
+LEFT JOIN "ws_EncryptedKeyValues" dkv ON dkv."VaultCredentialId" = d."Id"
+JOIN "ws_VaultCredentials" p
      ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
-LEFT JOIN "EncryptedKeyValues" pkv ON pkv."AppSecretId" = p."Id"
+LEFT JOIN "ws_EncryptedKeyValues" pkv ON pkv."VaultCredentialId" = p."Id"
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
   AND d."Name" IN (:credential_names)
@@ -214,14 +214,14 @@ WHERE "Name" IN (:platform_skill_names)
 ### 2.8 Corsair credential mirror (CorsairDb)
 
 Platform tools invoke through the Corsair sidecar, which keys connections by the
-App Secret **Id** (`corsair_accounts.tenant_id`). Runtime resolves the credential
+vault credential **Id** (`corsair_accounts.tenant_id`). Runtime resolves the credential
 **name** in the active env to that Id, so every Prod credential clone must be
 mirrored or tool calls fail with "credential is not mirrored to Corsair".
 
 Run against **CorsairDb** (not WorkspaceDb), binding the Prod clone Ids from §2.1:
 
 ```sql
--- One account per (Prod App Secret Id, integration) the credential maps to.
+-- One account per (Prod vault credential Id, integration) the credential maps to.
 SELECT a.tenant_id, i.name AS integration, a.updated_at
 FROM corsair_accounts a
 JOIN corsair_integrations i ON i.id = a.integration_id
@@ -229,7 +229,7 @@ WHERE a.tenant_id IN (:prod_credential_ids)
 ORDER BY a.tenant_id, i.name;
 
 -- Expect: a row for the plugin the credential type maps to (e.g. `openai` for an
--- OpenAI credential), keyed by the *Prod* App Secret Id — never the Dev Id.
+-- OpenAI credential), keyed by the *Prod* vault credential Id — never the Dev Id.
 -- Re-publishing must upsert, not duplicate.
 ```
 
