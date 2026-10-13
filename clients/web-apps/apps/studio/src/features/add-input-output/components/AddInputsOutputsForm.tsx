@@ -12,6 +12,7 @@ import { useInputsOutputsForm } from "../hooks/useInputsOutputsForm";
 import { useUpdateInputOutput } from "../hooks/useUpdateInputOutput";
 import { useInputOutputsStore } from "../stores/inputs-outputs-store";
 import { formDataToDCPJson } from "../utils/formdataToJson";
+import { applyFlowInputsToVariables } from "../utils/sync-flow-inputs-to-variables.util";
 import InputFields from "./InputFields";
 import OutputFields from "./OutputFields";
 
@@ -68,6 +69,10 @@ const AddInputsOutputsForm = () => {
     const refinedData = formDataToDCPJson(formData);
 
     setInputOutputObject(refinedData);
+
+    const { flowVariablesObject, syncFlowVariablesAndRebaseline } = useReactFlowExtStore.getState();
+
+    syncFlowVariablesAndRebaseline(applyFlowInputsToVariables(flowVariablesObject, refinedData));
 
     updateInputOutput({
       id: currentFlow.id,
