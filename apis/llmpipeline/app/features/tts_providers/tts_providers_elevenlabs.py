@@ -7,7 +7,7 @@ from fastapi import HTTPException
 
 from app.core.config import settings
 from app.core.logger import logger, log_exception
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 
 from app.features.auth.authenticated_user import User
@@ -170,9 +170,9 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
 
         # BYOK flow (use user-provided API key)
         if req.is_byok_enabled and req.credential_name:
-            vault = VaultManager()
+            vault_credential = VaultCredentialManager()
 
-            credential = vault.get_vault_secret_by_name(
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 credential=req.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
@@ -181,7 +181,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             if not credential:
                 raise HTTPException(400, "Invalid credential name")
 
-            # Override API config from vault (support both wrapped and flat data shapes)
+            # Override API config from the vault credential (support both wrapped and flat data shapes)
             credential_data = credential.get("data") or credential
             self.api_url = credential_data.get("Host") or credential_data.get("Url")
             self.api_key = credential_data.get("ApiKey")

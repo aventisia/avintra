@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from app.features.llm_providers.llm_providers_schemas import (
@@ -382,8 +382,8 @@ class OpenRouterProvider(BaseLLMProvider):
     # Helper: Handle BYOK credentials or credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, user: User):
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault = VaultManager()
-            credential = vault.get_vault_secret_by_name(
+            vault_credential = VaultCredentialManager()
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 llm_request.credential_name,
                 user.access_token,
                 env_type=user.env_type,
@@ -596,8 +596,8 @@ class OpenRouterProvider(BaseLLMProvider):
 
         # Handle BYOK or credit validation
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
-            vault = VaultManager()
-            credential = vault.get_vault_secret_by_name(
+            vault_credential = VaultCredentialManager()
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 embedding_request.credential_name,
                 user.access_token,
                 env_type=user.env_type,

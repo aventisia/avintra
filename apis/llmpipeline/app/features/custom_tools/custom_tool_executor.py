@@ -9,9 +9,9 @@ import httpcore
 import httpx
 
 from app.core.config import settings
-from app.features.custom_tools.credential_client import (
+from app.features.custom_tools.vault_credential_client import (
     apply_credential_auth,
-    fetch_decrypted_credential,
+    fetch_decrypted_vault_credential,
 )
 from app.features.custom_tools.schemas import ToolOperation
 from app.features.custom_tools.url_guard import UnsafeUrlError, resolve_public_addresses
@@ -145,7 +145,7 @@ async def execute_operation(
 
         if authentication_type and authentication_type.lower() != "none":
             if credential_name and workspace_api:
-                credential = await fetch_decrypted_credential(
+                credential = await fetch_decrypted_vault_credential(
                     workspace_api, credential_name, access_token, env_type=env_type
                 )
                 apply_credential_auth(

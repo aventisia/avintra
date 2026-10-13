@@ -58,7 +58,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
-        modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -108,7 +108,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Queue>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KeyStore>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
-        modelBuilder.Entity<AppSecret>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<VaultCredential>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<QueueTransaction>().HasIndex(e => new { e.SourceWorkItemId, e.RetryCount }).IsUnique();
         
@@ -137,9 +137,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         modelBuilder.Entity<Trigger>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Queue>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
-        modelBuilder.Entity<AppSecret>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
+        modelBuilder.Entity<VaultCredential>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
-        modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
+        modelBuilder.Entity<VaultCredential>().Property(e => e.Type).HasConversion(new EnumToStringConverter<VaultCredentialTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityEnum>());
         modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
@@ -198,7 +198,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowVersions).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
-        modelBuilder.Entity<EncryptedKeyValue>().HasOne(one => one.AppSecret).WithMany(many => many.EncryptedKeyValues).HasForeignKey(fKey => fKey.AppSecretId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<EncryptedKeyValue>().HasOne(one => one.VaultCredential).WithMany(many => many.EncryptedKeyValues).HasForeignKey(fKey => fKey.VaultCredentialId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueFlowVersion>().HasOne(one => one.Queue).WithMany(many => many.QueueFlowVersions).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueTransactionEvent>().HasOne(one => one.QueueTransaction).WithMany(many => many.QueueTransactionEvents).HasForeignKey(fKey => fKey.QueueTransactionId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueUser>().HasOne(one => one.Queue).WithMany(many => many.QueueUsers).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
@@ -383,7 +383,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
     public DbSet<Trigger> Triggers { get; set; }
     public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
-    public DbSet<AppSecret> AppSecrets { get; set; }
+    public DbSet<VaultCredential> VaultCredentials { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
     public DbSet<PromptTemplate> PromptTemplates { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }

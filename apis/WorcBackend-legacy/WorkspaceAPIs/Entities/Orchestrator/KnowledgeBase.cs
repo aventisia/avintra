@@ -57,13 +57,13 @@ public class KnowledgeBase : BaseEntity, IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the credential ID used for the embedding model provider.
-    /// This references an AppSecret credential that contains API keys or authentication info.
+    /// This references an VaultCredential credential that contains API keys or authentication info.
     /// </summary>
     public Guid? EmbeddingCredentialId { get; set; }
 
     /// <summary>
     /// Gets or sets the credential ID used for the vector store.
-    /// This references an AppSecret credential that contains vector store connection info or API keys.
+    /// This references an VaultCredential credential that contains vector store connection info or API keys.
     /// </summary>
     public Guid? StoreCredentialId { get; set; }
 

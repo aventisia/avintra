@@ -6,8 +6,8 @@ from urllib.parse import urljoin
 import httpx
 
 from app.core.logger import logger
-from app.core.vault_manager import VaultManager
-from app.features.custom_tools.credential_client import apply_credential_auth
+from app.core.vault_credential_manager import VaultCredentialManager
+from app.features.custom_tools.vault_credential_client import apply_credential_auth
 from app.features.custom_tools.custom_tool_executor import (
     ResponseTooLargeError,
     build_request_parts,
@@ -40,7 +40,7 @@ async def execute_tool_test(
     parts = build_request_parts(resolved_operation, parameters or {})
 
     if credential_name and access_token:
-        # IMPORTANT NOTE: tenant/space-scoped vault lookup is only available through the synchronous VaultManager, so it runs in a worker thread to keep the event loop free.
+        # IMPORTANT NOTE: tenant/space-scoped vault lookup is only available through the synchronous VaultCredentialManager, so it runs in a worker thread to keep the event loop free.
         credential = await asyncio.to_thread(
             _fetch_scoped_credential,
             credential_name,
@@ -106,7 +106,7 @@ def _fetch_scoped_credential(
     tenant_id: str | None,
     space_id: str | None,
 ) -> dict:
-    return VaultManager().get_vault_secret_by_name(
+    return VaultCredentialManager().get_vault_credential_secret_by_name(
         credential_name,
         access_token,
         env_type,

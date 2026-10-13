@@ -33,7 +33,7 @@ import httpx
 import pytest
 
 from app.features.custom_tools import url_guard
-from app.features.custom_tools.credential_client import (
+from app.features.custom_tools.vault_credential_client import (
     UnsupportedCredentialTypeError,
     apply_credential_auth,
 )
@@ -345,7 +345,7 @@ def test_execute_operation_envelopes_credential_failure(monkeypatch):
     async def failing_credential(*args, **kwargs):
         raise ValueError("Credential endpoint returned empty data")
 
-    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_credential", failing_credential)
+    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_vault_credential", failing_credential)
     operation = ToolOperation(operation_id="op", method="GET", path="/things")
 
     result = asyncio.run(
@@ -370,7 +370,7 @@ def test_execute_operation_envelopes_unknown_credential_type(monkeypatch):
     async def unsupported_credential(*args, **kwargs):
         return {"data": {"Type": "OAuth2", "Parameters": {}}}
 
-    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_credential", unsupported_credential)
+    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_vault_credential", unsupported_credential)
     operation = ToolOperation(operation_id="op", method="GET", path="/things")
 
     result = asyncio.run(

@@ -6,7 +6,7 @@ import { SearchableSelectField } from "@/components/searchable-select/Searchable
 import { LLModelType } from "@/types";
 
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
-import { CredentialsSelectField } from "./CredentialsSelectField";
+import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
 interface EmbeddingConfigFieldProps {
   /** The name of the form field. */
@@ -124,7 +124,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
       />
 
       {isByokEnabled && (
-        <CredentialsSelectField
+        <VaultCredentialSelectField
           isRequired
           name={fieldNames.credentialName}
           size="base"

@@ -93,8 +93,8 @@ export type PluginOAuthConfig = {
 export type PluginMetadata = {
   id: string;
   providerName: string;
-  /** Canonical in-house credential type (AppSecretTypesEnum-compatible) used for credential field names. */
-  vaultType: string;
+  /** Canonical in-house credential type (VaultCredentialTypesEnum-compatible) used for credential field names. */
+  vaultCredentialType: string;
   description: string;
   img: string | null;
   authType: string;
@@ -118,8 +118,8 @@ export type GenerateDcpOptions = {
    * deploy dir on the server), per-plugin configs, OpenAPI specs, and the
    * dedicated Corsair action-selector mapping file are written here. When
    * unset, they fall back to <c>outputDir</c> (local dev). The small sibling
-   * artifacts (action map, integration catalog, vault-type map) always go to
-   * <c>outputDir</c>.
+   * artifacts (action map, integration catalog, vault credential type map) always
+   * go to <c>outputDir</c>.
    */
   configRoot?: string;
   /** Corsair plugin objects (from src/corsair.ts). */

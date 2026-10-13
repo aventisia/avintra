@@ -843,7 +843,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         if (string.IsNullOrWhiteSpace(credentialName))
             return existingCredentialId;
 
-        var credential = await _unitOfWork.AppSecretRepo
+        var credential = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
 

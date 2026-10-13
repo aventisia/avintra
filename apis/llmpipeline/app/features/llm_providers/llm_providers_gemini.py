@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from app.core.config import settings
 from app.core.logger import log_exception, logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.core.byok_usage_manager import ByokUsageManager
 from app.features.litellm.core.credit_utils import agent_has_fixed_credits
@@ -374,10 +374,10 @@ class GeminiProvider(BaseLLMProvider):
     def _handle_byok_and_credits(self, llm_request: LLMRequest, user: User):
         # Use customer-provided credentials when BYOK is enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault = VaultManager()
+            vault_credential = VaultCredentialManager()
 
-            # Retrieve API credentials from secure vault (scoped by tenant/space)
-            credential = vault.get_vault_secret_by_name(
+            # Retrieve API credentials from the secure vault credential (scoped by tenant/space)
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 llm_request.credential_name,
                 user.access_token,
                 env_type=user.env_type,
@@ -746,8 +746,8 @@ class GeminiProvider(BaseLLMProvider):
 
         # Handle BYOK or credits
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
-            vault = VaultManager()
-            credential = vault.get_vault_secret_by_name(
+            vault_credential = VaultCredentialManager()
+            credential = vault_credential.get_vault_credential_secret_by_name(
                 embedding_request.credential_name,
                 user.access_token,
                 env_type=user.env_type,

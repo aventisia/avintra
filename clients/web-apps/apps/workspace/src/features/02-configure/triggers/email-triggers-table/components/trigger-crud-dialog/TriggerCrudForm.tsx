@@ -22,8 +22,8 @@ import {
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
+import { getVaultCredentialSelectOptions } from "../../apis/vault-credential-select.apis.ts";
 import {
   expiryDateTimeProps,
   folderProps,
@@ -86,7 +86,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     setLoading(true);
 
     // Fetch credentials list. Note: Every credential-field should have name ending with 'Credential'
-    getCredSelectOptions(provider)
+    getVaultCredentialSelectOptions(provider)
       .then((data) => {
         setSelectOptions(data?.data as ISelectOption[]);
         setLoading(false);

@@ -37,7 +37,7 @@ public class UnitOfWork : IUnitOfWork
     public ITriggerRepo TriggerRepo => new TriggerRepo(_workspaceDbContext);
     public ITriggerFlowVersionRepo TriggerFlowVersionRepo => new TriggerFlowVersionRepo(_workspaceDbContext);
     public IFlowUserRepo FlowUserRepo => new FlowUserRepo(_workspaceDbContext);
-    public IAppSecretRepo AppSecretRepo => new AppSecretRepo(_workspaceDbContext);
+    public IVaultCredentialRepo VaultCredentialRepo => new VaultCredentialRepo(_workspaceDbContext);
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
     public IPromptTemplateRepo PromptTemplateRepo => new PromptTemplateRepo(_workspaceDbContext);
     public IOnPremModelRepo OnPremModelRepo => new OnPremModelRepo(_workspaceDbContext);

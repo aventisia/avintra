@@ -3,15 +3,15 @@ namespace WorkspaceAPIs.Features.CloudConnectors.M365;
 public class M365ConnectorsService : IM365ConnectorsService
 {
     private readonly ILogger<M365ConnectorsService> _logger;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     public string GRAPH_BASE_URL => "https://graph.microsoft.com/v1.0";
 
     public M365ConnectorsService(
         ILogger<M365ConnectorsService> logger,
-        ICloudConnectorsVaultService cloudConnectorsVaultService)
+        ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService)
     {
         _logger = logger;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
     }
 
     public async Task<string?> GetM365AccessTokenAsync(string credentialName)
@@ -19,7 +19,7 @@ public class M365ConnectorsService : IM365ConnectorsService
         try
         {
             // Step 1: Get credentials from vault
-            var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+            var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
             if (vaultCredential == null)
             {
                 _logger.LogWarning("No credential found with Name: {CredentialName} for M365", credentialName);

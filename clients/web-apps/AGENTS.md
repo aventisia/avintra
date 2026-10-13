@@ -1,25 +1,20 @@
----
-name: react-aspnet-integration
-description: "Expert agent for React + TypeScript frontend development, ASP.NET API integration, and DTO synchronization in the clients/web-apps monorepo. Use when creating or updating .apis.ts methods, React hooks/forms, DTO interfaces, and ServiceResponse<T>-based CRUD flows."
----
-
-You are an expert React + TypeScript and ASP.NET integration specialist focused on keeping frontend API clients, DTO contracts, and backend controllers synchronized inside `clients/web-apps`.
+# Frontend engineering conventions
 
 ## Scope
 
-- Use this file for code under `clients/web-apps` and its workspace packages.
-- The `studio` app (`apps/studio`) uses its own conventions inherited from the legacy codebase. Apply these rules incrementally when touching studio files. (Note: the shared UI package is `@avplatform/ui`; `@aventisia/ui` is not a real dependency.)
-- The `desktop-app` (`apps/desktop-app`) is the Tauri desktop shell ported from `clients/desktop-app`. It keeps its Rust `src-tauri/` shell and uses `@avplatform/ui` + `@avplatform/tauri-utils`. Its `invoke()` calls (`launch_runner_app`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser. The runner is provisioned (downloaded/updated) when the desktop app opens; flow execution only launches it.
+- This file scopes conventions to descendants of `frontend/`; it does not automatically govern `clients/web-apps`. That monorepo and its apps/packages are absent here; verify deployment paths before relocating instructions or applying package-specific rules.
+- Deployment convention: `studio` (`apps/studio`) inherits legacy conventions; adopt these incrementally. The intended shared UI package is `@avplatform/ui`, not `@aventisia/ui`; verify installed dependencies before importing.
+- Deployment convention: `desktop-app` (`apps/desktop-app`), ported from `clients/desktop-app`, keeps `src-tauri/` and uses `@avplatform/ui` + `@avplatform/tauri-utils`. Verify these paths/contracts when present. Preserve Tauri guards around `invoke()` (`launch_runner_app`, `get_user_metadata`) for browser use; provision the runner when opening the desktop app, and only launch it during flow execution.
 
-## Role
+## Application boundaries
 
-- Generate and review React frontend code that integrates with ASP.NET APIs.
+- Apply these conventions only within the assigned role and scope; read-only reviewers report defects and do not generate repository edits.
 - Keep method naming, method order, request/response contracts, and DTO structure aligned with backend source.
 - Prefer small, targeted changes that preserve project architecture, existing conventions, and behavior.
 
 ## Hard Constraints
 
-- Maintain identical method names and vertical sequencing in `.apis.ts` files to match ASP.NET Controller methods.
+- Preserve the exact action order and semantic contract from ASP.NET Controller methods in `.apis.ts` files. Convert C# PascalCase names to TypeScript lower camelCase and apply the CRUD mapping below; do not require cross-language spelling to be identical.
 - Use standard CRUD naming patterns in API files:
   - `get[Entities]`
   - `get[Entity]`
@@ -27,9 +22,10 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
   - `update[Entity]`
   - `delete[Entity]`
   - `deleteMultiple[Entities]`
-- For non-CRUD controller actions, copy the backend method name and order exactly; do not invent a CRUD alias.
+- Map backend CRUD actions as follows: `Get[Entities]` → `get[Entities]`, `Get[Entity]` → `get[Entity]`, `Insert[Entity]` → `create[Entity]`, `Update[Entity]` → `update[Entity]`, `Delete[Entity]` → `delete[Entity]`, and `DeleteMultiple[Entities]` → `deleteMultiple[Entities]`.
+- For non-CRUD controller actions, convert the backend method name to lower camelCase without changing its meaning or order; do not invent a CRUD alias.
 - Convert backend XML docs (`/// <summary>`) into TypeScript JSDoc (`/** ... */`) for every exported API method, keeping each summary to one short sentence.
-- Assume backend responses use `ServiceResponse<T>` wrappers and never treat payloads as raw data.
+- For APIs verified to use `ServiceResponse<T>`, preserve the wrapper instead of treating the payload as raw data; verify each backend contract first.
 
 ## API Integration Rules (`.apis.ts`)
 
@@ -43,24 +39,24 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 
 ## DTOs and Type Mapping
 
-- Ensure DTO interfaces exactly match the PascalCase definitions of their C# backend equivalents.
+- Ensure DTO interfaces preserve the fields, requiredness, property order, and type meaning of their C# backend equivalents. TypeScript property names use the camelCase mapping below.
 - Ensure enum names and their members match backend definitions.
 - Create TypeScript interfaces in `dtos` folders that mirror backend C# DTOs.
-- Keep property vertical sequence identical to backend DTO source order.
+- Keep property order identical to the backend DTO source order.
 - Convert C# to TypeScript types strictly:
   - `Guid` -> `string`
   - `int`, `float`, `decimal`, `double` -> `number`
   - `DateTime` -> `string` (ISO 8601)
   - `bool` -> `boolean`
-- Convert C# `PascalCase` DTO properties to `camelCase` for TypeScript interfaces.
+- Convert C# `PascalCase` DTO properties to `camelCase` for TypeScript interfaces while preserving the corresponding backend contract.
 - Use parameter naming pattern: `camelCase` variable + `PascalCase` type (example: `createMachineDto: CreateMachineDto`).
 - Use `interface` only for `.dto.ts` files.
 - For all other TypeScript data shapes, use `type` aliases instead of `interface`.
 
 ## File Naming Conventions
 
-- Every non-component file must use a suffix-based filename convention.
-- Components are the only exception and should keep existing component naming patterns.
+- Every non-component feature source module must use a suffix-based filename convention.
+- Components, feature barrel files named `index.ts`, and framework/tool-required configuration or declaration files are exceptions and should keep their required names.
 - Required suffixes:
   - Store files: `.store.ts`
   - Hook files: `.hook.ts`
@@ -134,7 +130,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 
 ## Review Checklist
 
-1. Verify `.apis.ts` method names and order match backend controllers.
+1. Verify `.apis.ts` method order and CRUD/non-CRUD name mapping match backend controllers.
 2. Verify CRUD naming patterns are consistent.
 3. Verify every exported API method has short JSDoc derived from backend summaries where available, and internal functions are undocumented.
 4. Verify `ServiceResponse<T>` envelope handling is correct and typed.
@@ -142,11 +138,13 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 6. Verify validation parity with backend constraints.
 7. Verify API logic is separated from UI, ideally via hooks.
 8. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
-9. Verify non-component files follow required suffix naming conventions.
+9. Verify non-component feature source modules follow suffix naming conventions, honoring the explicit `index.ts` and tool-required-file exceptions.
 10. Verify `interface` is used only in `.dto.ts` files and `type` is used elsewhere.
 11. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
 
-## Output Format
+## Artifact contents
+
+- The root shared handoff controls agent returns; these formats describe report contents or explicitly requested standalone code output, not additional role authority.
 
 - For code review:
   - Findings first, ordered by severity, each with file and line references.
