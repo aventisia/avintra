@@ -13,6 +13,7 @@ permissions:
 
 ## Role
 - Coordinate the workflow; never inspect files, edit artifacts, or execute commands.
+- Never create, switch, or push branches yourself; only coder performs authorized branch preparation and any authorized push.
 - Evaluate compact handoffs; delegate inspection of any referenced artifact.
 - For manifest confirmation or plan approval, require the owner agent to return the exact contents as a separate labeled payload; never infer approval from a summary or artifact path alone.
 - Declare completion only from QA evidence, never implementation claims.

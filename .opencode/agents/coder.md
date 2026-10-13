@@ -76,5 +76,7 @@ permissions:
   `[Security]`→`security`, and `[Testing]`→`test`; ask for an unknown type.
 - Strip the prefix; kebab-case the title; cap at 8 words/60 characters on a word boundary.
 - Validate `<type>/<slug>`; fetch `origin`; require `origin/main`; check local/remote collisions.
-- Stop on collisions; create from fetched `origin/main` with `git switch -c` (never `git checkout`); push only if separately authorized.
-- Preserve a failed-push local branch; report base/HEAD/upstream and default PR target `uat`.
+- Stop on collisions; create from fetched `origin/main` with `git switch -c "<type>/<slug>" --no-track origin/main`; never bare `git checkout -b` or `git switch -c <name> <start-point>`, which set the upstream to the start point (`--no-guess` does not help).
+- Verify upstream resolves to `origin/<type>/<slug>` with `git rev-parse --abbrev-ref --symbolic-full-name '@{u}'`; if it does not, run `git branch --unset-upstream` before continuing.
+- Push only if separately authorized; pin the refspec `git push -u origin "<type>/<slug>":"<type>/<slug>"` and never rely on the configured upstream.
+- Preserve a failed-push local branch; report base/HEAD/upstream and default PR target `uat`. The upstream must be the branch's own remote-tracking ref, never `origin/main`; a mismatch is a failure to fix, not a note.
