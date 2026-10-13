@@ -27,7 +27,7 @@ When the review target is a Gitea pull request, fetch it with the `tea` CLI inst
   - For a bare number or `#123`, use the current checkout as `$REPO` (for example, `.`).
   - For a full URL, parse its `owner/repo` and use that slug as `$REPO`; do not discard the repository from the URL.
   - If the URL requires a non-default Gitea login (for example, because it uses a different host), set `$LOGIN` to that configured login. If no login is configured, stop and ask for access or a local checkout.
-- Pass `--repo "$REPO"` to every repository-scoped `tea pr` and `tea api` command. For a non-default login, also pass `--login "$LOGIN"`.
+- Pass `--repo "$REPO"` to every repository-scoped `tea pulls` and `tea api` command. For a non-default login, also pass `--login "$LOGIN"`.
 - If more than one PR is referenced, ask which one to review.
 - If the reference is ambiguous with an issue number, confirm whether it is a PR before fetching.
 
@@ -39,7 +39,7 @@ When the review target is a Gitea pull request, fetch it with the `tea` CLI inst
 ### 3. Fetch the PR overview
 
 ```bash
-tea pr --repo "$REPO" \
+tea pulls --repo "$REPO" \
   --fields index,title,state,author,base,head,body,mergeable,ci "$PR_ID"
 ```
 
@@ -80,8 +80,9 @@ tea api --repo "$REPO" "/repos/{owner}/{repo}/pulls/$PR_ID.diff"
 
 - Review the unified diff as the primary artifact. Use `patch` instead of `diff` only when commit-level context is needed.
 - Add `--login "$LOGIN"` when using a non-default login.
-- For a large PR, save the diff to a temporary file with `tea api --output` and inspect it in manageable chunks.
-- If local checkout is necessary to inspect PR-head files, use a disposable worktree or clone. Never run `tea pr checkout` in the user's active worktree; compare the PR head against the fetched base there, then remove only the temporary worktree created for the review.
+- For a large PR, inspect the diff in manageable read-only chunks. If a temporary output file is required, request orchestrator approval and an isolated path first.
+- If a local checkout is necessary to inspect PR-head files, request an orchestrator-provided isolated worktree or clone. Do not create, remove, or switch worktrees yourself, and never run `tea pulls checkout` in the user's active worktree.
+- When standalone, request an explicitly prepared context from the user instead of assuming an orchestrator. Match its actual commit to the fetched PR-head SHA before full-file review or execution; never test the local checkout as evidence for a different PR head. Record diff-only/full-context/execution gaps honestly. In the agent loop, coder owns authorized preparation/cleanup and QA remains source read-only.
 
 ### 6. Review against project conventions
 
@@ -141,7 +142,7 @@ tea api --repo "$REPO" "/repos/{owner}/{repo}/pulls/$PR_ID.diff"
 
 ## Output Format
 
-Return the review in this structure:
+For standalone reviews, return the review in this structure. When delegated, place it in the assigned report and return the shared compact status summary, with a full findings payload only when requested for routing:
 
 ### 1. Critical Issues & Bugs
 

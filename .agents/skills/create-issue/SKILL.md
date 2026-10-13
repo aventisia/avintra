@@ -9,6 +9,8 @@ description: "Create a Gitea issue to track an investigation outcome, agreed pla
 
 Persist a decided plan or investigation outcome as a Gitea issue before implementation begins.
 
+This is a standalone, user-invoked lifecycle operation outside the coding loop. Require suitable permissions and explicit mutation authorization; planning or QA completion does not authorize publication.
+
 ## When to Use
 
 - The user and agent have finished investigating or planning and reached a shared understanding.
@@ -19,10 +21,10 @@ Persist a decided plan or investigation outcome as a Gitea issue before implemen
 
 Before collecting any content, confirm the environment is ready:
 
-1. **Check `tea` is installed and authenticated.** Run `tea --version` and, if needed, `tea login list` to confirm an active login. If `tea` is missing or unauthenticated, stop early and tell the user, rather than discovering this after composing the issue body.
+1. **Check `tea` is installed and authenticated.** Run `tea --version` and `tea whoami` for the default login. For a non-default host/login, use `tea login list` and verify the selected login with the read-only request `tea api --login "$LOGIN" /user`. If `tea` is missing or unauthenticated, stop early rather than composing the issue body.
 2. **Determine the target repository.**
-   - If the user named a repo (e.g. `owner/repo`), use it explicitly with `--repo`.
-   - If the command is run from inside a git working directory that has a Gitea remote, `tea` will infer the repo automatically — confirm this is the intended repo if there's any ambiguity (e.g. multiple remotes).
+   - If the user named a repo (e.g. `owner/repo`), use it explicitly with `--repo`. If they supplied a repository URL, preserve its host and use its configured login.
+   - If the command is run from inside a git working directory that has a Gitea remote, confirm that remote is the intended repository; use `--repo .` for that checkout.
    - If neither applies, ask the user which repository the issue belongs to before proceeding.
 
 ## What the Issue Should Contain
@@ -137,26 +139,18 @@ Only use labels from this repository label catalog. Preserve the exact spelling 
 
 7. **Create the issue.**
 
-   Write the body to a temp file first — this avoids shell quoting issues with multi-line Markdown, embedded quotes, or labels containing special characters like `Reviewed/Won't Fix`.
+    Create the issue using the resolved repository and a safely quoted `--description "$BODY"` argument. Add `--login "$LOGIN"` only for a non-default login, and `--assignees` only when assignees were provided:
 
    ```bash
-   cat > /tmp/issue-body.md << 'EOF'
-   $BODY
-   EOF
+    tea issues create \
+      --repo "$REPO" \
+      --title "$TITLE" \
+      --description "$BODY" \
+      --labels "$LABELS" \
+      --assignees "$ASSIGNEES"
    ```
 
-   Then create the issue, including `--repo` whenever the target repo isn't the current directory's default, and `--assignees` only when assignees were provided:
-
-   ```bash
-   tea issue create \
-     --repo "$REPO" \
-     --title "$TITLE" \
-     --description "$(cat /tmp/issue-body.md)" \
-     --labels "$LABELS" \
-     --assignees "$ASSIGNEES"
-   ```
-
-   Omit `--repo` if relying on the current directory's inferred repo, and omit `--assignees` if none were given.
+    Pass `--repo "$REPO"` for the confirmed target and `--login "$LOGIN"` only for a non-default login. Omit `--assignees` if none were given.
 
 8. **Report the result.**
    - Share the issue number and URL returned by `tea`.
