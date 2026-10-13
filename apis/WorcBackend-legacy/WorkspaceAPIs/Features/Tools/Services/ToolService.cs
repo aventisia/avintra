@@ -269,7 +269,7 @@ public class ToolService : IToolService
             );
     }
 
-    // Resolves the credential (vault) type a tool is invoked with.
+    // Resolves the vault credential type a tool is invoked with.
     private string? ResolveCredentialType(Tool tool)
     {
         // Custom tools always use the CustomApiTool credential type.
@@ -278,7 +278,8 @@ public class ToolService : IToolService
             return VaultCredentialTypesEnum.CustomApiTool.ToString();
         }
 
-        // Platform Corsair tools map their plugin id to a vault type via the integration catalog.
+        // Platform Corsair tools map their plugin id to a vault credential type via the
+        // integration catalog.
         var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
         return string.IsNullOrWhiteSpace(pluginId)
             ? null

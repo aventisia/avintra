@@ -59,7 +59,7 @@ export function getVaultCredentialType(pluginId: string): string {
   return LEGACY_VAULT_CREDENTIAL_ALIASES[pluginId] ?? titleCase(pluginId);
 }
 
-/** Build the generated source of truth used by vault and backend consumers. */
+/** Build the generated source of truth used by vault credential and backend consumers. */
 export function buildIntegrationCatalog(
   pluginMetas: readonly PluginMetadata[],
 ): CorsairIntegrationCatalogEntry[] {
@@ -95,7 +95,7 @@ export function buildIntegrationCatalog(
   return entries.sort((left, right) => left.pluginId.localeCompare(right.pluginId));
 }
 
-/** Build one generic vault form for each generated credential type. */
+/** Build one generic vault credential form for each generated credential type. */
 export function buildVaultCredentialConfigs(
   entries: readonly CorsairIntegrationCatalogEntry[],
 ): VaultCredentialConfig[] {
