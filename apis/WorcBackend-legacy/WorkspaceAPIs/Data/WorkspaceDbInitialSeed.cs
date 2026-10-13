@@ -35,6 +35,8 @@ public static class WorkspaceDbInitialSeed
             // Apply pending database migrations
             await ApplyMigrationsAsync(_workspaceDbContext);
 
+            await SeedEnabledModelsAsync(_workspaceDbContext, _logger);
+
             // Resolve the default admin user that owns platform resources.
             var platformAdmin = await ResolvePlatformAdminUserAsync(
                 _workspaceDbContext,
@@ -77,6 +79,41 @@ public static class WorkspaceDbInitialSeed
             Console.WriteLine($"Error: An error occurred while applying database migrations: {ex.Message}");
             throw;
         }
+    }
+
+    /// <summary>
+    /// Seeds capability-aware enabled models from the legacy enabled model identifiers for providers that have none yet.
+    /// </summary>
+    private static async Task SeedEnabledModelsAsync(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    {
+        var providers = await workspaceDbContext.TenantModelProviders
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        var providersToTransform = providers
+            .Where(p => p.EnabledModels.Count == 0 && p.EnabledModelIds.Count > 0)
+            .ToList();
+
+        foreach (var provider in providersToTransform)
+        {
+            provider.EnabledModels = provider.EnabledModelIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => new EnabledModel { ModelId = id.Trim(), Capability = null })
+                .GroupBy(m => m.ModelId, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
+        }
+
+        if (providersToTransform.Count == 0)
+        {
+            return;
+        }
+
+        await workspaceDbContext.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Seeded enabled models for {ProviderCount} tenant model providers.",
+            providersToTransform.Count);
     }
 
     /// <summary>
