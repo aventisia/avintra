@@ -101,6 +101,7 @@ export const useFlowAssistant = () => {
         graphContext: { nodes, edges },
         selectedNodeId: nodes.find((node) => node.selected)?.id,
         referenceData: useFlowAssistantStore.getState().referenceData ?? undefined,
+        modelId: useFlowAssistantStore.getState().selectedModelId,
       };
 
       try {

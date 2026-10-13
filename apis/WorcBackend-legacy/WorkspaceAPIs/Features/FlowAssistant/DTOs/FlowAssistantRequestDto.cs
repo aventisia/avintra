@@ -20,4 +20,9 @@ public class FlowAssistantRequestDto
     public string? SelectedNodeId { get; set; }
 
     public FlowAssistantReferenceDataDto? ReferenceData { get; set; }
+
+    /// <summary>
+    /// Selected model identifier; defaults to the curated default when omitted or invalid.
+    /// </summary>
+    public string? ModelId { get; set; }
 }

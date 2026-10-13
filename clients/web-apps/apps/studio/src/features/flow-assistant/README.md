@@ -18,6 +18,11 @@ fill node configuration from the graph, curated catalog metadata, and tenant ref
 - **Output variables stay in sync.** After apply, `applyOutputsToFlowVariables` merges each node's
   enabled outputs into `flowVariablesObject` (before auto-layout, so the single history snapshot
   captures it), matching manual config-panel behavior. Removed nodes are not pruned.
+- **Curated model selection.** The panel header offers two curated models — Gemini 3.1 Flash Lite
+  (default) and GPT-4o-mini. The choice travels as an opaque `modelId`, is persisted in `localStorage`,
+  and is validated server-side against `FlowAssistantConstants.SupportedModels` (absent or unknown falls
+  back to the default). OpenAI requests omit the shared `oneOf` proposal schema, which structured outputs
+  reject, and rely on JSON mode plus server validation instead.
 - **Clarification turns.** The JSON schema forces either a `question` (with `question`) or a `proposal`
   (with non-empty `operations`). The server still converts an empty or missing `operations` array into a
   `question` SSE frame instead of a red error, and asks the user for an added node's required or no-default

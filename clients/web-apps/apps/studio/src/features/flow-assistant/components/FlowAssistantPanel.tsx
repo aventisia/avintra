@@ -1,9 +1,16 @@
 import { Textarea } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@avplatform/ui/select";
 import { SendIcon } from "lucide-react";
 import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
 
-import { FLOW_ASSISTANT_COPY } from "../constants";
+import { FLOW_ASSISTANT_COPY, FLOW_ASSISTANT_MODEL_OPTIONS } from "../constants";
 import { useFlowAssistant } from "../hooks/useFlowAssistant";
 import { useFlowAssistantReferenceData } from "../hooks/useFlowAssistantReferenceData.hook";
 import { useFlowAssistantStore } from "../stores/flow-assistant-store";
@@ -15,7 +22,13 @@ export const FlowAssistantPanel = () => {
   useFlowAssistantReferenceData();
   const isStreaming = useFlowAssistantStore((state) => state.isStreaming);
   const pendingProposal = useFlowAssistantStore((state) => state.pendingProposal);
+  const selectedModelId = useFlowAssistantStore((state) => state.selectedModelId);
+  const setSelectedModelId = useFlowAssistantStore((state) => state.setSelectedModelId);
   const [input, setInput] = useState("");
+
+  const selectedModel = FLOW_ASSISTANT_MODEL_OPTIONS.find(
+    (option) => option.id === selectedModelId,
+  );
 
   useEffect(() => () => cancel(), [cancel]);
 
@@ -40,9 +53,25 @@ export const FlowAssistantPanel = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex h-full min-h-0 flex-col bg-white">
-      <header className="border-b px-3 py-2.5">
-        <h2 className="text-sm font-semibold text-foreground">{FLOW_ASSISTANT_COPY.panelTitle}</h2>
-        <p className="text-3xs text-muted-foreground">{FLOW_ASSISTANT_COPY.panelDescription}</p>
+      <header className="flex items-start justify-between gap-2 border-b px-3 py-2.5">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">
+            {FLOW_ASSISTANT_COPY.panelTitle}
+          </h2>
+          <p className="text-3xs text-muted-foreground">{FLOW_ASSISTANT_COPY.panelDescription}</p>
+        </div>
+        <Select value={selectedModelId} onValueChange={setSelectedModelId} disabled={isStreaming}>
+          <SelectTrigger size="xs" className="w-40 shrink-0" aria-label="Assistant model">
+            <SelectValue>{selectedModel?.label}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {FLOW_ASSISTANT_MODEL_OPTIONS.map((option) => (
+              <SelectItem key={option.id} value={option.id} size="xs">
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </header>
 
       <FlowAssistantMessageList />

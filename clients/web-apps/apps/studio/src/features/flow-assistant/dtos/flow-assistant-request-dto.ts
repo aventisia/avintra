@@ -11,4 +11,5 @@ export interface FlowAssistantRequestDto {
   graphContext: { nodes: Node[]; edges: Edge[] };
   selectedNodeId?: string;
   referenceData?: FlowAssistantReferenceDataDto;
+  modelId: string;
 }

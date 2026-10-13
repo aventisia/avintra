@@ -70,6 +70,8 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
+        proposal = FlowAssistantProposalNormalizer.Normalize(proposal.Value);
+
         if (TryGetQuestion(proposal.Value, out var question))
         {
             yield return SerializeFrame(new { type = "question", output = question });
@@ -257,6 +259,8 @@ public class FlowAssistantService : IFlowAssistantService
 
     private static object BuildLlmPayload(FlowAssistantRequestDto request, WorkspaceAPIs.Entities.FlowVersion flowVersion)
     {
+        var model = ResolveModel(request.ModelId);
+
         var messages = new List<object>
         {
             new { role = "system", content = BuildSystemMessage(request) },
@@ -278,11 +282,11 @@ public class FlowAssistantService : IFlowAssistantService
 
         return new
         {
-            provider = FlowAssistantConstants.Provider,
-            model = FlowAssistantConstants.Model,
+            provider = model.Provider,
+            model = model.Model,
             input = messages,
             is_json_output = true,
-            json_schema = FlowAssistantConstants.ProposalJsonSchema,
+            json_schema = ResolveJsonSchema(model),
             max_output_tokens = FlowAssistantConstants.MaxOutputTokens,
             temperature = FlowAssistantConstants.Temperature,
             top_p = FlowAssistantConstants.TopP,
@@ -294,6 +298,20 @@ public class FlowAssistantService : IFlowAssistantService
             action = "FlowAssistantGenerate",
             agent_name = flowVersion.Flow?.Name,
         };
+    }
+
+    private static FlowAssistantConstants.FlowAssistantModelOption ResolveModel(string? modelId) =>
+        FlowAssistantConstants.SupportedModels.FirstOrDefault(
+            option => string.Equals(option.Id, modelId, StringComparison.OrdinalIgnoreCase))
+        ?? FlowAssistantConstants.SupportedModels.First(
+            option => option.Id == FlowAssistantConstants.DefaultModelId);
+
+    private static string ResolveJsonSchema(FlowAssistantConstants.FlowAssistantModelOption model)
+    {
+        // IMPORTANT NOTE: OpenAI structured outputs require an object at the schema root, so OpenAI uses a flattened proposal schema instead of the question/proposal union used by other providers.
+        return string.Equals(model.Provider, "openai", StringComparison.OrdinalIgnoreCase)
+            ? FlowAssistantConstants.OpenAiProposalJsonSchema
+            : FlowAssistantConstants.ProposalJsonSchema;
     }
 
     private static string BuildSystemMessage(FlowAssistantRequestDto request)
@@ -353,6 +371,7 @@ public class FlowAssistantService : IFlowAssistantService
     {
         question = string.Empty;
         if (proposal.ValueKind != JsonValueKind.Object ||
+            (TryGetKind(proposal, out var proposalKind) && proposalKind == "proposal") ||
             !proposal.TryGetProperty("question", out var element) ||
             element.ValueKind != JsonValueKind.String)
         {

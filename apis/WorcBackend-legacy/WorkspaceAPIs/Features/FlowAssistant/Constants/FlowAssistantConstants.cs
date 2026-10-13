@@ -9,9 +9,18 @@ namespace WorkspaceAPIs.Features.FlowAssistant.Constants;
 /// </summary>
 public static class FlowAssistantConstants
 {
-    public const string Provider = "gemini";
+    public const string DefaultModelId = "gemini-3.1-flash-lite";
 
-    public const string Model = "gemini-3.1-flash-lite";
+    /// <summary>
+    /// A curated chat model the flow assistant may call.
+    /// </summary>
+    public sealed record FlowAssistantModelOption(string Id, string Provider, string Model, string Label);
+
+    public static readonly IReadOnlyList<FlowAssistantModelOption> SupportedModels = new FlowAssistantModelOption[]
+    {
+        new("gemini-3.1-flash-lite", "gemini", "gemini-3.1-flash-lite", "Gemini 3.1 Flash Lite"),
+        new("gpt-4o-mini", "openai", "gpt-4o-mini", "GPT-4o-mini"),
+    };
 
     public const int MaxGraphNodes = 300;
 
@@ -32,6 +41,11 @@ public static class FlowAssistantConstants
     /// JSON schema constraining the model output to a graph proposal or a clarification question.
     /// </summary>
     public static string ProposalJsonSchema { get; } = BuildProposalJsonSchema();
+
+    /// <summary>
+    /// OpenAI-compatible proposal schema whose root is an object, as OpenAI structured outputs require.
+    /// </summary>
+    public static string OpenAiProposalJsonSchema { get; } = BuildOpenAiProposalJsonSchema();
 
     private static string BuildSystemPrompt()
     {
@@ -112,7 +126,71 @@ Rules:
 
     private static string BuildProposalJsonSchema()
     {
-        var operationSchema = new
+        var schema = new
+        {
+            oneOf = new object[]
+            {
+                new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        kind = new { type = "string", @enum = new[] { "question" } },
+                        question = new { type = "string", minLength = 1 },
+                    },
+                    required = new[] { "kind", "question" },
+                },
+                new
+                {
+                    type = "object",
+                    properties = new
+                    {
+                        kind = new { type = "string", @enum = new[] { "proposal" } },
+                        id = new { type = "string" },
+                        summary = new { type = "string", maxLength = 400 },
+                        mode = new { type = "string", @enum = new[] { "create", "edit" } },
+                        operations = new
+                        {
+                            type = "array",
+                            minItems = 1,
+                            items = BuildOperationSchema(),
+                        },
+                    },
+                    required = new[] { "kind", "id", "summary", "mode", "operations" },
+                },
+            },
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+
+    private static string BuildOpenAiProposalJsonSchema()
+    {
+        var schema = new
+        {
+            type = "object",
+            properties = new
+            {
+                kind = new { type = "string", @enum = new[] { "question", "proposal" } },
+                question = new { type = "string" },
+                id = new { type = "string" },
+                summary = new { type = "string", maxLength = 400 },
+                mode = new { type = "string", @enum = new[] { "create", "edit" } },
+                operations = new
+                {
+                    type = "array",
+                    minItems = 1,
+                    items = BuildOperationSchema(),
+                },
+            },
+            required = new[] { "kind" },
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+
+    private static object BuildOperationSchema() =>
+        new
         {
             type = "object",
             properties = new
@@ -198,42 +276,4 @@ Rules:
             },
             required = new[] { "type" },
         };
-
-        var schema = new
-        {
-            oneOf = new object[]
-            {
-                new
-                {
-                    type = "object",
-                    properties = new
-                    {
-                        kind = new { type = "string", @enum = new[] { "question" } },
-                        question = new { type = "string", minLength = 1 },
-                    },
-                    required = new[] { "kind", "question" },
-                },
-                new
-                {
-                    type = "object",
-                    properties = new
-                    {
-                        kind = new { type = "string", @enum = new[] { "proposal" } },
-                        id = new { type = "string" },
-                        summary = new { type = "string", maxLength = 400 },
-                        mode = new { type = "string", @enum = new[] { "create", "edit" } },
-                        operations = new
-                        {
-                            type = "array",
-                            minItems = 1,
-                            items = operationSchema,
-                        },
-                    },
-                    required = new[] { "kind", "id", "summary", "mode", "operations" },
-                },
-            },
-        };
-
-        return JsonSerializer.Serialize(schema);
-    }
 }
