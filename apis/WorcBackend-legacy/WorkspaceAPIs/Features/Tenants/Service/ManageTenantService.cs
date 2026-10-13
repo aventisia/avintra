@@ -57,10 +57,10 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.KeyStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(KeyStore), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete EncryptedKeyValue - DeleteBehavior.Cascade set with AppSecret
+            // Delete EncryptedKeyValue - DeleteBehavior.Cascade set with VaultCredential
 
-            // Delete AppSecret
-            if (!await DeleteEntitiesAsync(_unitOfWork.AppSecretRepo, a => a.TenantId == tenantIdToBeDeleted, nameof(AppSecret), tenantIdToBeDeleted))
+            // Delete VaultCredential
+            if (!await DeleteEntitiesAsync(_unitOfWork.VaultCredentialRepo, a => a.TenantId == tenantIdToBeDeleted, nameof(VaultCredential), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete Job

@@ -15,7 +15,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.js";
 
-import { getVaultType } from "./integration-catalog.js";
+import { getVaultCredentialType } from "./integration-catalog.js";
 import { getNodeFieldMapping } from "./node-field-mappings/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -728,7 +728,7 @@ export function toPluginMetadata(
   return {
     id,
     providerName,
-    vaultType: getVaultType(id),
+    vaultCredentialType: getVaultCredentialType(id),
     description,
     img: iconMap[id] ?? "/function.png",
     authType,

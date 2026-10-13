@@ -15,7 +15,7 @@ from app.features.llm_providers.llm_providers_utils import extract_json_from_llm
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.features.litellm.core.credit_utils import agent_has_fixed_credits
 from app.utils.file_converter_utils import file_to_base64
@@ -32,11 +32,11 @@ class OpenAIProvider(BaseLLMProvider):
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault_manager = VaultManager()
+            vault_credential_manager = VaultCredentialManager()
 
-            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(
+            # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
+            logger.debug(f"Fetching credentials from vault credential for credential name: {llm_request.credential_name}")
+            credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
@@ -45,7 +45,7 @@ class OpenAIProvider(BaseLLMProvider):
             )
 
             if credential:
-                # Update the API URL and key from the vault credentials
+                # Update the API URL and key from the vault credential
                 self.api_url = credential.get('data', {}).get('Url') or credential.get('Url')
                 self.api_key = credential.get("data", {}).get("ApiKey") or credential.get("ApiKey")
                 logger.debug("BYOK credentials successfully applied.")
@@ -171,11 +171,11 @@ class OpenAIProvider(BaseLLMProvider):
 
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault_manager = VaultManager()
+            vault_credential_manager = VaultCredentialManager()
 
-            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(
+            # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
+            logger.debug(f"Fetching credentials from vault credential for credential name: {llm_request.credential_name}")
+            credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
@@ -184,7 +184,7 @@ class OpenAIProvider(BaseLLMProvider):
             )
 
             if credential:
-                # Update the API URL and key from the vault credentials
+                # Update the API URL and key from the vault credential
                 credential_data = credential.get("data") or credential
                 self.api_url = credential_data.get("Url") or credential_data.get("Host")
                 self.api_key = credential_data.get("ApiKey")
@@ -662,10 +662,10 @@ class OpenAIProvider(BaseLLMProvider):
 
         # Handle BYOK (Bring Your Own Key)
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
-            vault_manager = VaultManager()
+            vault_credential_manager = VaultCredentialManager()
 
-            logger.debug(f"Fetching credentials from vault for credential name: {embedding_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(
+            logger.debug(f"Fetching credentials from vault credential for credential name: {embedding_request.credential_name}")
+            credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=embedding_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,

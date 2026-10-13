@@ -21,7 +21,7 @@ import { getDialogHeadingDescription as getEmailTriggerDialogHeadingDescription 
 import { getDialogHeadingDescription as getMessageTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/message-triggers-table/constants";
 import { getDialogHeadingDescription as getTimeTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/time-triggers-table/constants";
 import { getDialogHeadingDescription as getWebhookTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/webhook-triggers-table/constants";
-import { getDialogHeadingDescription as getVaultDialogHeadingDescription } from "@/features/02-configure/vault-table/constants";
+import { getDialogHeadingDescription as getVaultCredentialDialogHeadingDescription } from "@/features/02-configure/vault-credentials/constants";
 import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from "@/features/03-orchestrator/api-keys/constants";
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
@@ -80,9 +80,9 @@ const ToolCrudDialogContent = lazy(() =>
     default: m.ToolCrudDialogContent,
   })),
 );
-const VaultCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/vault-table/components/vault-crud-dialog/VaultCrudDialogContent").then(
-    (m) => ({ default: m.VaultCrudDialogContent }),
+const VaultCredentialCrudDialogContent = lazy(() =>
+  import("@/features/02-configure/vault-credentials/components/vault-credential-crud-dialog/VaultCredentialCrudDialogContent").then(
+    (m) => ({ default: m.VaultCredentialCrudDialogContent }),
   ),
 );
 const EmailTriggerCrudDialogContent = lazy(() =>
@@ -219,8 +219,8 @@ const crudDialogRegistry: CrudDialogRegistry = {
   },
   vault: {
     maxWidth: "!max-w-[36rem]",
-    getHeader: getVaultDialogHeadingDescription,
-    Content: VaultCrudDialogContent,
+    getHeader: getVaultCredentialDialogHeadingDescription,
+    Content: VaultCredentialCrudDialogContent,
   },
   emailTrigger: {
     maxWidth: "!max-w-[40rem]",
