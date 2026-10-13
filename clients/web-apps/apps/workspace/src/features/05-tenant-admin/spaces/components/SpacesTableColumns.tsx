@@ -28,82 +28,96 @@ const formatExecutionTime = (totalSeconds: unknown): string => {
 };
 
 /**
- * Array of table columns for the spaces table.
+ * Builds the table columns for the spaces table.
  * Each column object contains an accessorKey, header component, and cell component.
+ *
+ * @param showActions - Whether to include the row actions column. Community deployments hide
+ * row actions because they operate on a single, read-only Central space.
+ * @returns An array of column definitions for the spaces table.
  */
-export const spacesTableColumns: ColumnDef<SpacesTableDto>[] = [
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "totalUsers",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("totalUsers")}</div>
-    ),
-  },
-  {
-    accessorKey: "totalPublishedAgents",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("totalPublishedAgents")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("totalPublishedAgents")}</div>
-    ),
-  },
-  {
-    accessorKey: "totalExecutionTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("totalExecutionTime")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {formatExecutionTime(row.getValue("totalExecutionTime"))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "totalMachinesAttached",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("totalMachinesAttached")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("totalMachinesAttached")}</div>
-    ),
-  },
-  {
-    accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
-    ),
-  },
-  createDTActionsColumn<SpacesTableDto>({
-    renderCell: (row) => <SpaceRowActions rowId={row.id || "rowId"} row={row} />,
-  }),
-];
+export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTableDto>[] => {
+  const columns: ColumnDef<SpacesTableDto>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
+      ),
+      cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "totalUsers",
+      header: ({ column }) => (
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
+      ),
+      cell: ({ row }) => (
+        <div className="w-auto truncate font-medium">{row.getValue("totalUsers")}</div>
+      ),
+    },
+    {
+      accessorKey: "totalPublishedAgents",
+      header: ({ column }) => (
+        <DTColumnHeader
+          tableKey={TABLE_KEY}
+          column={column}
+          title={getColumnName("totalPublishedAgents")}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="w-auto truncate font-medium">{row.getValue("totalPublishedAgents")}</div>
+      ),
+    },
+    {
+      accessorKey: "totalExecutionTime",
+      header: ({ column }) => (
+        <DTColumnHeader
+          tableKey={TABLE_KEY}
+          column={column}
+          title={getColumnName("totalExecutionTime")}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="w-auto truncate font-medium">
+          {formatExecutionTime(row.getValue("totalExecutionTime"))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalMachinesAttached",
+      header: ({ column }) => (
+        <DTColumnHeader
+          tableKey={TABLE_KEY}
+          column={column}
+          title={getColumnName("totalMachinesAttached")}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="w-auto truncate font-medium">{row.getValue("totalMachinesAttached")}</div>
+      ),
+    },
+    {
+      accessorKey: "createdOn",
+      header: ({ column }) => (
+        <DTColumnHeader
+          tableKey={TABLE_KEY}
+          className="w-[7rem]"
+          column={column}
+          title={getColumnName("createdOn")}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      ),
+    },
+  ];
+
+  // Community deployments expose a single read-only Central space, so row actions are omitted.
+  if (showActions) {
+    columns.push(
+      createDTActionsColumn<SpacesTableDto>({
+        renderCell: (row) => <SpaceRowActions rowId={row.id || "rowId"} row={row} />,
+      }),
+    );
+  }
+
+  return columns;
+};

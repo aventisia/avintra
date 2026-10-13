@@ -89,4 +89,24 @@ public class EnvironmentConfig
 
     // Custom API Key Config
     public string CustomApiKey { get; set; } = string.Empty;
+
+    // Deployment branding (self-hosted white-label). All values are optional; any value left
+    // unset falls back to the built-in Avintra/Aventisia defaults on the client.
+    public string? BrandingAppName { get; set; }
+    public string? BrandingCompanyName { get; set; }
+    public string? BrandingLogoUrl { get; set; }
+    public string? BrandingLogoUrlDark { get; set; }
+    public string? BrandingFullLogoUrl { get; set; }
+    public string? BrandingFaviconUrl { get; set; }
+    public string? BrandingPrimaryColor { get; set; }
+    public string? BrandingSecondaryColor { get; set; }
+
+    /// <summary>
+    /// True when no on-prem tenant credentials are configured. A community deployment is
+    /// a single-tenant, self-hosted edition that does not synchronize with GlobalAdmin.
+    /// This is the single source of truth for the community detection rule: either the
+    /// tenant id or the instance key being blank marks the deployment as community.
+    /// </summary>
+    public bool IsCommunityDeployment =>
+        string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
 }

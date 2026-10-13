@@ -1,6 +1,8 @@
+import { UpgradeFeatureButton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Node } from "@xyflow/react";
 import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -30,6 +32,13 @@ const GenerateButton = ({
     })),
   );
 
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+  const isCommunityDeployment = userSession?.deploymentType === "Community";
+
   // Mutation hook to generate the template instruction
   const { mutate, data, isPending, isSuccess } = useGenerateInstructionMutation();
 
@@ -38,7 +47,19 @@ const GenerateButton = ({
     if (data?.data) {
       setVal("instruction", data.data);
     }
-  }, [data?.data]);
+  }, [data?.data, setVal]);
+
+  if (isCommunityDeployment) {
+    return (
+      <UpgradeFeatureButton
+        label="Generate"
+        icon={<SparklesIcon className="h-4 w-4" />}
+        pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
+        size="sm"
+        className="flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+      />
+    );
+  }
 
   return (
     <Button
