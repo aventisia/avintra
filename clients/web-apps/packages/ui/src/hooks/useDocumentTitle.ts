@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 
-import { useBaseLayoutStore } from "@/ui/stores";
+import { useBranding } from "./useBranding";
 
 /**
  * Custom hook to set the document title.
@@ -16,25 +15,18 @@ import { useBaseLayoutStore } from "@/ui/stores";
  * @remarks
  * The document title is set to the provided title followed by the application name and company name, if available.
  * The format is: `title - APP_NAME | COMPANY_NAME` or `title - COMPANY_NAME`.
+ * The names come from the branding store, which already resolves the build-time Vite defaults
+ * (see `resolveBranding`).
  */
 const useDocumentTitle = (title: string) => {
   const [docTitle, setDocTitle] = useState(title);
 
-  // Get the state appName and companyName from the store
-  const { viteEnvVars } = useBaseLayoutStore(
-    useShallow((state) => ({
-      viteEnvVars: state.viteEnvVars,
-    })),
-  );
+  // Deployment branding; falls back to the build-time Vite defaults when not configured.
+  const { appName, companyName } = useBranding();
 
   useEffect(() => {
-    document.title =
-      docTitle +
-      " - " +
-      (viteEnvVars.APP_NAME
-        ? viteEnvVars.APP_NAME + " | " + viteEnvVars.COMPANY_NAME
-        : viteEnvVars.COMPANY_NAME);
-  }, [viteEnvVars, docTitle]);
+    document.title = docTitle + " - " + (appName ? appName + " | " + companyName : companyName);
+  }, [appName, companyName, docTitle]);
 
   return [docTitle, setDocTitle];
 };

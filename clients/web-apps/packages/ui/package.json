@@ -19,6 +19,7 @@
     "./badge": "./src/components/badge/index.ts",
     "./banner": "./src/components/banner/index.ts",
     "./breadcrumb": "./src/components/breadcrumb/index.ts",
+    "./branding": "./src/components/branding/index.ts",
     "./buttons": "./src/components/buttons/index.ts",
     "./cards": "./src/components/cards/index.ts",
     "./collapsible": "./src/components/collapsible/index.tsx",

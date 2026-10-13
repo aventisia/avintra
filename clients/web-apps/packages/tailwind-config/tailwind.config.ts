@@ -59,30 +59,33 @@ const config = {
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
-          50: "hsl(240, 83%, 95%)",
-          100: "hsl(243, 77%, 88%)",
-          200: "hsl(240, 78%, 81%)",
-          300: "hsl(239, 79%, 73%)",
-          400: "hsl(241, 78%, 66%)",
-          500: "hsl(243, 75%, 59%)", // Primary color
-          600: "hsl(245, 67%, 55%)",
-          700: "hsl(246, 61%, 50%)",
-          800: "hsl(248, 69%, 45%)",
-          900: "hsl(255, 100%, 35%)",
+          // Numeric shades derive from the brand `--primary` at runtime (see applyBrandingToDocument
+          // in @avplatform/ui branding); the fallbacks match the built-in indigo ramp for unbranded deployments.
+          50: "var(--primary-50, hsl(240, 83%, 95%))",
+          100: "var(--primary-100, hsl(243, 77%, 88%))",
+          200: "var(--primary-200, hsl(240, 78%, 81%))",
+          300: "var(--primary-300, hsl(239, 79%, 73%))",
+          400: "var(--primary-400, hsl(241, 78%, 66%))",
+          500: "var(--primary-500, hsl(243, 75%, 59%))", // Primary color
+          600: "var(--primary-600, hsl(245, 67%, 55%))",
+          700: "var(--primary-700, hsl(246, 61%, 50%))",
+          800: "var(--primary-800, hsl(248, 69%, 45%))",
+          900: "var(--primary-900, hsl(255, 100%, 35%))",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
-          50: "hsl(227, 22%, 92%)",
-          100: "hsl(232, 24%, 80%)",
-          200: "hsl(233, 22%, 67%)",
-          300: "hsl(233, 21%, 55%)",
-          400: "hsl(235, 24%, 46%)",
-          500: "hsl(236, 35%, 38%)",
-          600: "hsl(237, 35%, 35%)",
-          700: "hsl(238, 38%, 31%)",
-          800: "hsl(240, 40%, 27%)",
-          900: "hsl(244, 47%, 20%)", // Secondary color
+          // Numeric shades derive from the brand `--secondary` at runtime (see applyBrandingToDocument in @avplatform/ui branding).
+          50: "var(--secondary-50, hsl(227, 22%, 92%))",
+          100: "var(--secondary-100, hsl(232, 24%, 80%))",
+          200: "var(--secondary-200, hsl(233, 22%, 67%))",
+          300: "var(--secondary-300, hsl(233, 21%, 55%))",
+          400: "var(--secondary-400, hsl(235, 24%, 46%))",
+          500: "var(--secondary-500, hsl(236, 35%, 38%))",
+          600: "var(--secondary-600, hsl(237, 35%, 35%))",
+          700: "var(--secondary-700, hsl(238, 38%, 31%))",
+          800: "var(--secondary-800, hsl(240, 40%, 27%))",
+          900: "var(--secondary-900, hsl(244, 47%, 20%))", // Secondary color
         },
         destructive: {
           DEFAULT: "var(--destructive)",
