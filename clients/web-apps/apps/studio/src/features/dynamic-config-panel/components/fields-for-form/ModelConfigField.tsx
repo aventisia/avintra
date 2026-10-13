@@ -1,5 +1,4 @@
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
@@ -12,13 +11,12 @@ import {
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
 
-import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
 import { sttModelProviders } from "../../constants/stt-model-proivder";
 import { ttsModelProviders } from "../../constants/tts-model-proivder";
-import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
 import { ModelCapabilityEnum } from "../../enums/model-capability-enum";
-import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
+import { useFetchTenantEnabledModels } from "../../hooks/useFetchTenantEnabledModels";
+import { LLMProviderType } from "../../types/llm-provider.type";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
@@ -50,26 +48,15 @@ const PROVIDER_MAP: Record<string, string> = {
 // fetched dynamically via a credential (e.g. Ollama On-prem).
 const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
 
-const getEnabledModelIdsByCapability = (
-  config: TenantModelProviderDto | undefined,
-  capability: ModelCapabilityEnum,
-): string[] => {
-  const enabledModels = config?.enabledModels ?? [];
-  if (enabledModels.length === 0) return config?.enabledModelIds ?? [];
-  return enabledModels.filter((m) => m.capability === capability).map((m) => m.modelId);
-};
-
 const ModelConfigField = ({
   name,
   showJsonOutput = true,
   specialty,
   hideByok = false,
 }: ModelConfigFieldProps) => {
-  const [byokModels, setByokModels] = useState<Model[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const { control, setValue, getValues, watch } = useFormContext();
+  const { control, setValue, watch } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
 
   const isStt = specialty === "stt" || nodeKey === "SpeechToText";
@@ -77,25 +64,13 @@ const ModelConfigField = ({
   const isEmbedding = nodeKey === "Embedding";
   const isSpeechSpecialty = specialty === "stt" || specialty === "tts";
 
-  // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
-  const { data: tenantProvidersData } = useFetchTenantModelProviders();
-
-  // Configs that are enabled (not disabled) for this tenant.
-  const enabledTenantConfigs = useMemo(
-    () => (tenantProvidersData?.data ?? []).filter((c) => !c.isDisabled),
-    [tenantProvidersData],
-  );
-
-  // Map a studio provider value (e.g. "googlegemini") to the enabled tenant config
-  // for that provider (backend type e.g. "Gemini"). Only includes enabled providers.
-  const enabledConfigByProvider = useMemo(() => {
-    const map: Record<string, TenantModelProviderDto> = {};
-    for (const [studioValue, backendType] of Object.entries(PROVIDER_MAP)) {
-      const config = enabledTenantConfigs.find((c) => c.providerType === backendType);
-      if (config) map[studioValue] = config;
-    }
-    return map;
-  }, [enabledTenantConfigs]);
+  const configCapability = isStt
+    ? ModelCapabilityEnum.Stt
+    : isTts
+      ? ModelCapabilityEnum.Tts
+      : isEmbedding
+        ? ModelCapabilityEnum.Embedding
+        : ModelCapabilityEnum.Text;
 
   // 1. Memoize Field Names to prevent effect loops
   const fieldNames = useMemo(
@@ -145,10 +120,28 @@ const ModelConfigField = ({
   const providerValue = providerField.value;
   const credentialsValue = credentialsField.value;
 
+  const { data: enabledModelsData, isLoading } = useFetchTenantEnabledModels(
+    configCapability,
+    is_byok_enabled,
+  );
+
+  const enabledModelIdsByProvider = useMemo(() => {
+    const idsByBackendType: Record<string, string[]> = {};
+    for (const model of enabledModelsData?.data ?? []) {
+      (idsByBackendType[model.providerType] ??= []).push(model.modelId);
+    }
+
+    const idsByStudioProvider: Record<string, string[]> = {};
+    for (const [studioValue, backendType] of Object.entries(PROVIDER_MAP)) {
+      const ids = idsByBackendType[backendType];
+      if (ids?.length) idsByStudioProvider[studioValue] = ids;
+    }
+    return idsByStudioProvider;
+  }, [enabledModelsData]);
+
   const prevValues = useRef({
     is_byok_enabled,
     providerValue,
-    credentialsValue,
   });
 
   const enableModelSetup = useMemo(
@@ -172,33 +165,40 @@ const ModelConfigField = ({
   // render for providers that have no enabled models.
   const currentProviderHasEnabledModels = useMemo(() => {
     if (!is_byok_enabled) return true;
-    const config = enabledConfigByProvider[providerValue];
-    return Boolean(config && (config.enabledModelIds?.length ?? 0) > 0);
-  }, [is_byok_enabled, enabledConfigByProvider, providerValue]);
+    return (enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0;
+  }, [is_byok_enabled, enabledModelIdsByProvider, providerValue]);
 
   // 3. Filtered Data
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(nodeKey);
 
-    if (isStt) return sttModelProviders;
-    if (isTts) return ttsModelProviders;
+    if (isStt || isTts) {
+      if (!is_byok_enabled) return isStt ? sttModelProviders : ttsModelProviders;
+
+      const mergedProviders = new Map<string, LLMProviderType>();
+      for (const provider of [
+        ...(isStt ? sttModelProviders : ttsModelProviders),
+        ...Object.keys(enabledModelIdsByProvider).map((value): LLMProviderType => ({
+          value,
+          label: PROVIDER_MAP[value] ?? value,
+          models: [],
+        })),
+      ]) {
+        if (!mergedProviders.has(provider.value)) mergedProviders.set(provider.value, provider);
+      }
+      return [...mergedProviders.values()];
+    }
     if (isEmbedding) {
+      if (!is_byok_enabled) return embeddingModelProviders;
       return embeddingModelProviders.filter(
-        (p) =>
-          getEnabledModelIdsByCapability(
-            enabledConfigByProvider[p.value],
-            ModelCapabilityEnum.Embedding,
-          ).length > 0,
+        (p) => (enabledModelIdsByProvider[p.value]?.length ?? 0) > 0,
       );
     }
 
     // When BYOK is enabled, only show providers that are enabled for this tenant
     // (per the Tenant Admin "Model Providers" section).
     const providers = is_byok_enabled
-      ? modelProviders.filter((p) => {
-          const config = enabledConfigByProvider[p.value];
-          return Boolean(config) && (config?.enabledModelIds?.length ?? 0) > 0;
-        })
+      ? modelProviders.filter((p) => (enabledModelIdsByProvider[p.value]?.length ?? 0) > 0)
       : modelProviders.filter((p) => p.isEnabled !== false);
 
     return providers.map((p) => ({
@@ -208,47 +208,11 @@ const ModelConfigField = ({
         return specialtyMatch && m.available;
       }),
     }));
-  }, [isStt, isTts, isEmbedding, is_byok_enabled, enabledConfigByProvider, nodeKey]);
+  }, [isStt, isTts, isEmbedding, is_byok_enabled, enabledModelIdsByProvider, nodeKey]);
 
   // 4. Initial Load Logic
   useEffect(() => {
-    const init = async () => {
-      if (is_byok_enabled && credentialsValue && providerValue) {
-        try {
-          if (isStt) {
-            setByokModels(sttModelProviders[0].models as Model[]);
-            setIsInitialized(true);
-
-            return;
-          }
-          if (isTts) {
-            setByokModels(ttsModelProviders[0].models as Model[]);
-            setIsInitialized(true);
-
-            return;
-          }
-          if (isEmbedding) {
-            setByokModels(embeddingModelProviders[0].models as Model[]);
-            setIsInitialized(true);
-
-            return;
-          }
-          setIsLoading(true);
-
-          const provider = PROVIDER_MAP[providerValue];
-          if (provider) {
-            const res = await getProviderModels(provider, credentialsValue);
-            setByokModels((res?.data as Model[]) || []);
-          }
-        } catch {
-          toast.error("Failed to load initial models");
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      setIsInitialized(true);
-    };
-    init();
+    setIsInitialized(true);
   }, []); // Only on mount
 
   // 5. Handle Field Resets (BYOK Toggle or Provider Change)
@@ -264,154 +228,43 @@ const ModelConfigField = ({
 
       setValue(fieldNames.credential_name, "", { shouldDirty: true });
       setValue(fieldNames.model, "", { shouldDirty: true });
-      setByokModels([]);
-
-      // When BYOK is turned ON, the provider dropdown only lists providers that
-      // have enabled models for this tenant. If the previously selected provider
-      // is not among them, clear it so a stale provider (e.g. OpenAI) does not
-      // remain visible and leak its API-key credential dropdown.
-      if (is_byok_enabled) {
-        const config = enabledConfigByProvider[providerValue];
-        const hasModels = Boolean(config && (config.enabledModelIds?.length ?? 0) > 0);
-        if (!hasModels) {
-          setValue(fieldNames.provider, "", { shouldDirty: true });
-        }
-      }
     }
-  }, [
-    is_byok_enabled,
-    providerValue,
-    isInitialized,
-    setValue,
-    fieldNames,
-    enabledConfigByProvider,
-  ]);
+  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames]);
 
-  // 6. Fetch BYOK Models on Credential Change
   useEffect(() => {
-    if (!isInitialized || !is_byok_enabled) return;
-    if (prevValues.current.credentialsValue === credentialsValue) return;
-
-    prevValues.current.credentialsValue = credentialsValue;
-    if (isStt) {
-      setByokModels(sttModelProviders[0].models as Model[]);
-
-      return;
-    }
-    if (isTts) {
-      setByokModels(ttsModelProviders[0].models as Model[]);
-
-      return;
-    }
-    if (isEmbedding) {
-      setByokModels(embeddingModelProviders[0].models as Model[]);
-      return;
-    }
-
-    const fetchModels = async () => {
-      if (!credentialsValue || !providerValue) {
-        setByokModels([]);
-        return;
-      }
-
-      // Snapshot before blanking so a failed fetch can restore the selection.
-      // Blanking first means a flush during the async gap below never persists
-      // a new credential alongside a stale model.
-      const previousModel = getValues(fieldNames.model) as string | undefined;
-      setValue(fieldNames.model, "", { shouldDirty: true });
-
-      try {
-        setIsLoading(true);
-        const provider = PROVIDER_MAP[providerValue];
-        if (provider) {
-          const res = await getProviderModels(provider, credentialsValue);
-          const models = (res?.data as Model[]) || [];
-          setByokModels(models);
-          // Keep the previous selection when the new credential still offers it.
-          if (previousModel && models.some((m) => m.value === previousModel)) {
-            setValue(fieldNames.model, previousModel, { shouldDirty: true });
-          }
-        }
-      } catch {
-        toast.error("Error fetching provider models");
-        setByokModels([]);
-        // IMPORTANT NOTE: restore the snapshot so a failed fetch never leaves a
-        // blank model that the next flush would persist over a valid selection.
-        if (previousModel) {
-          setValue(fieldNames.model, previousModel, { shouldDirty: true });
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const timer = setTimeout(fetchModels, 150);
-    return () => clearTimeout(timer);
+    if (!isInitialized || !is_byok_enabled || isLoading) return;
+    if ((enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0) return;
+    setValue(fieldNames.provider, "", { shouldDirty: true });
   }, [
-    credentialsValue,
-    providerValue,
-    is_byok_enabled,
     isInitialized,
+    is_byok_enabled,
+    isLoading,
+    enabledModelIdsByProvider,
+    providerValue,
     setValue,
-    getValues,
     fieldNames,
   ]);
 
   // 7. Render Helpers
   const availableModels = useMemo(() => {
-    const enabledConfig = enabledConfigByProvider[providerValue];
-
-    // STT / TTS / tenant-config-based providers (e.g. Ollama On-prem) do not fetch
-    // models dynamically via a credential, so the model dropdown must show the models
-    // that were ENABLED for that provider in the tenant config.
-    if (
-      isSpeechSpecialty ||
-      (is_byok_enabled && (isStt || isTts || TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue)))
-    ) {
-      const capability = isStt ? ModelCapabilityEnum.Stt : isTts ? ModelCapabilityEnum.Tts : null;
-      const enabledIds = capability
-        ? getEnabledModelIdsByCapability(enabledConfig, capability)
-        : (enabledConfig?.enabledModelIds ?? []);
+    if (is_byok_enabled) {
+      const enabledIds = enabledModelIdsByProvider[providerValue] ?? [];
       return uniqueAndNormalizeArray(
         enabledIds.map((id) => ({ value: id, label: id, available: true }) as Model),
       );
     }
 
-    const models = is_byok_enabled
-      ? (() => {
-          const enabledIds = new Set(
-            isEmbedding
-              ? getEnabledModelIdsByCapability(enabledConfig, ModelCapabilityEnum.Embedding)
-              : (enabledConfig?.enabledModelIds ?? []),
-          );
-          // Only show models that were enabled for this provider in the tenant config.
-          return byokModels.filter((m) => enabledIds.has(m.value));
-        })()
-      : filteredProviders
-          .find((p) => p.value === providerValue)
-          ?.models?.filter((m) => m.available) || [];
-    return uniqueAndNormalizeArray(models);
-  }, [
-    is_byok_enabled,
-    isSpeechSpecialty,
-    isStt,
-    isTts,
-    isEmbedding,
-    byokModels,
-    filteredProviders,
-    providerValue,
-    enabledConfigByProvider,
-  ]);
+    return uniqueAndNormalizeArray(
+      filteredProviders
+        .find((p) => p.value === providerValue)
+        ?.models?.filter((m) => m.available) || [],
+    );
+  }, [is_byok_enabled, filteredProviders, providerValue, enabledModelIdsByProvider]);
 
   const hasEnabledSpeechModels = useMemo(() => {
-    if (!isSpeechSpecialty) return true;
-    const capability = isStt ? ModelCapabilityEnum.Stt : ModelCapabilityEnum.Tts;
-    const enabledIds = getEnabledModelIdsByCapability(
-      enabledConfigByProvider[providerValue],
-      capability,
-    );
-    return enabledIds.length > 0;
-  }, [isSpeechSpecialty, isStt, enabledConfigByProvider, providerValue]);
+    if (!isSpeechSpecialty || !is_byok_enabled) return true;
+    return (enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0;
+  }, [isSpeechSpecialty, is_byok_enabled, enabledModelIdsByProvider, providerValue]);
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
