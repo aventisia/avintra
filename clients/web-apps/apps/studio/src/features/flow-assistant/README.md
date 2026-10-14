@@ -28,6 +28,9 @@ fill node configuration from the graph, curated catalog metadata, and tenant ref
   converts every missing required input across the proposed nodes into a structured `questions`
   SSE frame (`[{ key, label, nodeName, options }]`, options from select metadata), rendered by
   `QuestionsCard` with option buttons plus free-text inputs; answers return as one user message.
+- **Plan with every proposal.** Validated proposals carry server-derived `plan` steps (one plain
+  sentence per operation, grounded in the proposal's own labels and values) and `setupSteps`
+  (unset optional fields worth configuring after apply), both rendered on `GraphProposalCard`.
   The JSON schema forces either a `question` (with `question`) or a `proposal` (with non-empty
   `operations`). The server still converts an empty or missing `operations` array into a
   `question` SSE frame instead of a red error. Rejected proposals log the raw model JSON truncated

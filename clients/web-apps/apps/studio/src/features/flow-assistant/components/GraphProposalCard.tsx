@@ -43,6 +43,27 @@ export const GraphProposalCard = ({ proposal }: GraphProposalCardProps) => {
 
       <p className="mt-1.5 text-xs text-muted-foreground">{proposal.summary}</p>
 
+      {proposal.plan && proposal.plan.length > 0 && (
+        <ol className="mt-2 list-decimal space-y-0.5 pl-4 text-3xs text-foreground">
+          {proposal.plan.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+      )}
+
+      {proposal.setupSteps && proposal.setupSteps.length > 0 && (
+        <div className="mt-2 rounded border border-dashed px-2 py-1.5">
+          <p className="text-3xs font-medium text-foreground">
+            After applying, optionally configure
+          </p>
+          <ul className="mt-0.5 list-disc space-y-0.5 pl-4 text-3xs text-muted-foreground">
+            {proposal.setupSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="mt-2 flex flex-wrap gap-1">
         {addedNodes.map((node) => (
           <span

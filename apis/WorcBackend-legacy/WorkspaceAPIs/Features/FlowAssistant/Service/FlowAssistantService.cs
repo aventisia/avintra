@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json.Nodes;
 using WorkspaceAPIs.Features.FlowAssistant.Constants;
 using WorkspaceAPIs.Features.FlowAssistant.DTOs;
 using WorkspaceAPIs.Features.FlowAssistant.Generated;
@@ -145,7 +146,7 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
-        yield return SerializeFrame(new { type = "graph_proposal", output = proposal.Value });
+        yield return SerializeFrame(new { type = "graph_proposal", output = AttachPlan(proposal.Value) });
         yield return SerializeFrame(new { type = "done" });
     }
 
@@ -659,6 +660,174 @@ public class FlowAssistantService : IFlowAssistantService
         }
 
         return slots;
+    }
+
+    private static JsonNode AttachPlan(JsonElement proposal)
+    {
+        var node = JsonNode.Parse(proposal.GetRawText()) ?? new JsonObject();
+
+        var plan = new JsonArray();
+        foreach (var step in BuildPlanSteps(proposal))
+            plan.Add(step);
+
+        var setupSteps = new JsonArray();
+        foreach (var step in BuildSetupSteps(proposal))
+            setupSteps.Add(step);
+
+        node["plan"] = plan;
+        node["setupSteps"] = setupSteps;
+
+        return node;
+    }
+
+    private static IReadOnlyList<string> BuildPlanSteps(JsonElement proposal)
+    {
+        var steps = new List<string>();
+
+        if (proposal.ValueKind != JsonValueKind.Object ||
+            !proposal.TryGetProperty("operations", out var operations) ||
+            operations.ValueKind != JsonValueKind.Array)
+        {
+            return steps;
+        }
+
+        foreach (var operation in operations.EnumerateArray())
+        {
+            if (operation.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var step = DescribeOperation(operation);
+            if (!string.IsNullOrWhiteSpace(step))
+                steps.Add(step);
+        }
+
+        return steps;
+    }
+
+    private static string? DescribeOperation(JsonElement operation)
+    {
+        var operationType = ReadString(operation, "type");
+
+        if ((operationType == "addNode" || operationType == "updateNode") &&
+            operation.TryGetProperty("node", out var node) &&
+            node.ValueKind == JsonValueKind.Object)
+        {
+            var label = ReadString(node, "label")
+                ?? ReadNestedString(node, "data", "label")
+                ?? ReadString(node, "name")
+                ?? operationType;
+            var highlights = SummarizeInputs(node);
+            var action = operationType == "addNode" ? "Add" : "Update";
+
+            return highlights.Count == 0
+                ? $"{action} {label}."
+                : $"{action} {label} ({string.Join(", ", highlights)}).";
+        }
+
+        if (operationType == "removeNode")
+            return $"Remove {ReadString(operation, "id") ?? "a node"}.";
+
+        if (operationType == "addEdge" &&
+            operation.TryGetProperty("edge", out var edge) &&
+            edge.ValueKind == JsonValueKind.Object)
+        {
+            return $"Connect {ReadString(edge, "source") ?? "?"} to {ReadString(edge, "target") ?? "?"}.";
+        }
+
+        if (operationType == "removeEdge")
+            return $"Remove connection {ReadString(operation, "id") ?? ""}.".Trim();
+
+        return null;
+    }
+
+    private static List<string> SummarizeInputs(JsonElement node)
+    {
+        var highlights = new List<string>();
+
+        if (!node.TryGetProperty("inputs", out var inputs) || inputs.ValueKind != JsonValueKind.Array)
+            return highlights;
+
+        foreach (var input in inputs.EnumerateArray())
+        {
+            if (highlights.Count >= 2)
+                break;
+
+            if (input.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var key = ReadString(input, "key");
+            if (string.IsNullOrWhiteSpace(key) || !input.TryGetProperty("value", out var value))
+                continue;
+
+            var display = value.ValueKind == JsonValueKind.String
+                ? value.GetString()
+                : value.ValueKind is JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False
+                    ? value.GetRawText()
+                    : null;
+
+            if (!string.IsNullOrWhiteSpace(display))
+                highlights.Add($"{key} {TruncateValue(display)}");
+        }
+
+        return highlights;
+    }
+
+    private static string TruncateValue(string value) =>
+        value.Length > 60 ? value[..60] + "…" : value;
+
+    private static IReadOnlyList<string> BuildSetupSteps(JsonElement proposal)
+    {
+        var steps = new List<string>();
+
+        if (proposal.ValueKind != JsonValueKind.Object ||
+            !proposal.TryGetProperty("operations", out var operations) ||
+            operations.ValueKind != JsonValueKind.Array)
+        {
+            return steps;
+        }
+
+        foreach (var operation in operations.EnumerateArray())
+        {
+            if (steps.Count >= 8)
+                break;
+
+            if (operation.ValueKind != JsonValueKind.Object || ReadString(operation, "type") != "addNode")
+                continue;
+
+            if (!operation.TryGetProperty("node", out var node) || node.ValueKind != JsonValueKind.Object)
+                continue;
+
+            var nodeType = ReadString(node, "type");
+            var nodeName = ReadString(node, "name");
+            if (string.IsNullOrWhiteSpace(nodeType) || string.IsNullOrWhiteSpace(nodeName))
+                continue;
+
+            var metadata = FlowAssistantConfigCatalog.Nodes.FirstOrDefault(
+                candidate => candidate.Type == nodeType && candidate.Name == nodeName);
+            if (metadata is null)
+                continue;
+
+            var providedKeys = ReadInputKeys(node);
+            var label = ReadString(node, "label") ?? nodeName;
+
+            foreach (var field in metadata.Fields)
+            {
+                if (steps.Count >= 8)
+                    break;
+
+                if (field.Direction != "Input" ||
+                    field.Required ||
+                    providedKeys.Contains(field.Name) ||
+                    !string.IsNullOrWhiteSpace(field.DefaultValueJson))
+                {
+                    continue;
+                }
+
+                steps.Add($"Optionally set {field.Label} on {label}.");
+            }
+        }
+
+        return steps;
     }
 
     private static HashSet<string> ReadInputKeys(JsonElement node)

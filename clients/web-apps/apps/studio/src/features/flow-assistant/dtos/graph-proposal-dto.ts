@@ -6,4 +6,6 @@ export interface GraphProposalDto {
   summary: string;
   mode: "create" | "edit";
   operations: GraphProposalOperation[];
+  plan?: string[];
+  setupSteps?: string[];
 }
