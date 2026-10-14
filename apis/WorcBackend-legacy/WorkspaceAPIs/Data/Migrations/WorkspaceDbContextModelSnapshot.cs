@@ -1705,7 +1705,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("QueueId");
+                    b.HasIndex("QueueId", "FlowVersionId")
+                        .IsUnique();
 
                     b.ToTable("QueueFlowVersion");
                 });

@@ -9,3 +9,32 @@ get {
   body: none
   auth: none
 }
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const flowVersionId = bru.getEnvVar("FLOW_VERSION_ID");
+  const queueId = bru.getEnvVar("QUEUE_ID");
+  const expectedAssigned = bru.getEnvVar("EXPECT_AGENT_ASSIGNED");
+  const entry = data.find((agent) => agent.id === flowVersionId);
+
+  test("queue agents request returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("assigned agent is listed against the queue", function() {
+    expect(entry, "agent " + flowVersionId + " is missing from queue " + queueId + " agent list").to.be.an("object");
+    expect(entry.queueId).to.equal(queueId);
+  });
+
+  test("agent isAssigned reflects the requested assign or unassign", function() {
+    expect(entry, "agent " + flowVersionId + " is missing from queue " + queueId + " agent list").to.be.an("object");
+    if (expectedAssigned === "true") {
+      expect(entry.isAssigned).to.equal(true);
+    } else if (expectedAssigned === "false") {
+      expect(entry.isAssigned).to.equal(false);
+    } else {
+      expect(entry.isAssigned).to.be.a("boolean");
+    }
+  });
+}
