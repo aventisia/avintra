@@ -104,7 +104,7 @@ cd apis/llmpipeline
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+ENV=local python dev.py
 ```
 
 > See the individual `README.md` files inside each top-level directory for detailed setup, build, and run instructions.

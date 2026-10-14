@@ -41,11 +41,11 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Local dev run (root_path `/api`, port 4003)
-ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload
+# Local dev run (root_path `/api`, port from `UVICORN_PORT` in `.env.local`, default 4003)
+ENV=local ./venv/bin/python dev.py
 ```
 
-`ENV=local` loads `.env` and `.env.local` via pydantic-settings.
+`ENV=local` loads `.env` and `.env.local` via pydantic-settings; `dev.py` loads the same files before starting Uvicorn, so `UVICORN_PORT` there sets the listen port.
 
 ### Web apps (`clients/web-apps`)
 
