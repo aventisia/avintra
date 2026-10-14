@@ -63,7 +63,25 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
-        var (proposal, pipelineError) = await RequestProposalAsync(request, flowVersion, cancellationToken);
+        var candidates = ResolveCandidateNodeNames(request);
+
+        var (discovery, discoveryError) = await RequestDiscoveryAsync(request, flowVersion, candidates, cancellationToken);
+        if (discovery is null)
+        {
+            yield return SerializeFrame(new { type = "error", message = discoveryError });
+            yield break;
+        }
+
+        if (TryGetQuestion(discovery.Value, out var discoveryQuestion))
+        {
+            yield return SerializeFrame(new { type = "question", output = discoveryQuestion });
+            yield return SerializeFrame(new { type = "done" });
+            yield break;
+        }
+
+        var selected = ResolveSelectedNodeNames(discovery.Value, request);
+
+        var (proposal, pipelineError) = await RequestBuilderProposalAsync(request, flowVersion, selected, cancellationToken);
         if (proposal is null)
         {
             yield return SerializeFrame(new { type = "error", message = pipelineError });
@@ -168,12 +186,60 @@ public class FlowAssistantService : IFlowAssistantService
         return null;
     }
 
-    private async Task<(JsonElement? Proposal, string? Error)> RequestProposalAsync(
+    private async Task<(JsonElement? Discovery, string? Error)> RequestDiscoveryAsync(
         FlowAssistantRequestDto request,
         WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        IReadOnlyCollection<string> candidates,
         CancellationToken cancellationToken)
     {
-        var payload = BuildLlmPayload(request, flowVersion);
+        var model = ResolveModel(request.ModelId);
+        var systemMessage = $"{FlowAssistantConstants.BuildDiscoveryPrompt(candidates)}\n\nCurrent flow graph:\n{BuildGraphSummary(request)}";
+        var schema = string.Equals(model.Provider, "openai", StringComparison.OrdinalIgnoreCase)
+            ? FlowAssistantConstants.OpenAiDiscoveryJsonSchema
+            : FlowAssistantConstants.DiscoveryJsonSchema;
+
+        var discovery = await CallLlmAsync(request, flowVersion, model, systemMessage, schema, cancellationToken);
+
+        if (discovery.Result is null)
+            return (null, discovery.Error);
+
+        if (TryGetQuestion(discovery.Result.Value, out _))
+            return (discovery.Result, null);
+
+        if (!TryGetDiscoveryNodes(discovery.Result.Value, out _))
+        {
+            _logger.LogWarning(
+                "[FlowAssistant] Discovery returned no selectable nodes. FlowVersionId={FlowVersionId}",
+                request.FlowVersionId);
+            return (null, "The assistant could not identify the actions for this request.");
+        }
+
+        return (discovery.Result, null);
+    }
+
+    private async Task<(JsonElement? Proposal, string? Error)> RequestBuilderProposalAsync(
+        FlowAssistantRequestDto request,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        IReadOnlyCollection<string> selected,
+        CancellationToken cancellationToken)
+    {
+        var model = ResolveModel(request.ModelId);
+        var systemMessage = $"{FlowAssistantConstants.BuildBuilderPrompt(selected)}\n\nCurrent flow graph:\n{BuildGraphSummary(request)}{BuildReferenceSection(request.ReferenceData)}";
+        var schema = ResolveJsonSchema(model);
+
+        var result = await CallLlmAsync(request, flowVersion, model, systemMessage, schema, cancellationToken);
+        return (result.Result, result.Error);
+    }
+
+    private async Task<(JsonElement? Result, string? Error)> CallLlmAsync(
+        FlowAssistantRequestDto request,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        FlowAssistantConstants.FlowAssistantModelOption model,
+        string systemMessage,
+        string jsonSchema,
+        CancellationToken cancellationToken)
+    {
+        var payload = BuildLlmPayload(request, flowVersion, model, systemMessage, jsonSchema);
         var endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/v2/llm/generate";
         var jsonContent = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
@@ -257,13 +323,16 @@ public class FlowAssistantService : IFlowAssistantService
         }
     }
 
-    private static object BuildLlmPayload(FlowAssistantRequestDto request, WorkspaceAPIs.Entities.FlowVersion flowVersion)
+    private static object BuildLlmPayload(
+        FlowAssistantRequestDto request,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        FlowAssistantConstants.FlowAssistantModelOption model,
+        string systemMessage,
+        string jsonSchema)
     {
-        var model = ResolveModel(request.ModelId);
-
         var messages = new List<object>
         {
-            new { role = "system", content = BuildSystemMessage(request) },
+            new { role = "system", content = systemMessage },
         };
 
         if (request.ThreadMessages is { Count: > 0 })
@@ -286,7 +355,7 @@ public class FlowAssistantService : IFlowAssistantService
             model = model.Model,
             input = messages,
             is_json_output = true,
-            json_schema = ResolveJsonSchema(model),
+            json_schema = jsonSchema,
             max_output_tokens = FlowAssistantConstants.MaxOutputTokens,
             temperature = FlowAssistantConstants.Temperature,
             top_p = FlowAssistantConstants.TopP,
@@ -314,10 +383,10 @@ public class FlowAssistantService : IFlowAssistantService
             : FlowAssistantConstants.ProposalJsonSchema;
     }
 
-    private static string BuildSystemMessage(FlowAssistantRequestDto request)
+    private static string BuildGraphSummary(FlowAssistantRequestDto request)
     {
         var graph = request.GraphContext;
-        var summary = JsonSerializer.Serialize(new
+        return JsonSerializer.Serialize(new
         {
             nodes = graph.Nodes.Select(node => new
             {
@@ -334,11 +403,58 @@ public class FlowAssistantService : IFlowAssistantService
             selectedNodeId = string.IsNullOrWhiteSpace(request.SelectedNodeId) ? null : request.SelectedNodeId,
             selectedNode = BuildSelectedNodeContext(request),
         });
-
-        return $"{FlowAssistantConstants.BuildSystemPrompt(ResolveRelevantNodeNames(request))}\n\nCurrent flow graph:\n{summary}{BuildReferenceSection(request.ReferenceData)}";
     }
 
-    private static IReadOnlyCollection<string> ResolveRelevantNodeNames(FlowAssistantRequestDto request)
+    private static IReadOnlyCollection<string> ResolveCandidateNodeNames(FlowAssistantRequestDto request)
+    {
+        var (queryParts, alwaysInclude) = CollectQueryParts(request);
+
+        foreach (var baseline in FlowAssistantConstants.BaselineNodeNames)
+            alwaysInclude.Add(baseline);
+
+        return FlowAssistantCatalogPruner.SelectRelevantNodeNames(
+            string.Join(' ', queryParts),
+            alwaysInclude,
+            FlowAssistantConstants.MaxDiscoveryCandidates);
+    }
+
+    private static IReadOnlyCollection<string> ResolveSelectedNodeNames(JsonElement discovery, FlowAssistantRequestDto request)
+    {
+        var selected = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        if (TryGetDiscoveryNodes(discovery, out var discovered))
+        {
+            foreach (var name in discovered)
+            {
+                if (selected.Count >= FlowAssistantConstants.MaxSelectedNodes)
+                    break;
+
+                if (!string.IsNullOrWhiteSpace(name) && seen.Add(name))
+                    selected.Add(name);
+            }
+        }
+
+        foreach (var node in request.GraphContext.Nodes)
+        {
+            var nodeName = ReadNestedString(node, "data", "name");
+            if (!string.IsNullOrWhiteSpace(nodeName) && seen.Add(nodeName))
+                selected.Add(nodeName);
+        }
+
+        foreach (var baseline in FlowAssistantConstants.BaselineNodeNames)
+        {
+            if (selected.Count >= FlowAssistantConstants.MaxSelectedNodes + request.GraphContext.Nodes.Count)
+                break;
+
+            if (seen.Add(baseline))
+                selected.Add(baseline);
+        }
+
+        return selected;
+    }
+
+    private static (List<string> QueryParts, List<string> AlwaysInclude) CollectQueryParts(FlowAssistantRequestDto request)
     {
         var queryParts = new List<string>();
         var alwaysInclude = new List<string>();
@@ -365,10 +481,41 @@ public class FlowAssistantService : IFlowAssistantService
             }
         }
 
-        return FlowAssistantCatalogPruner.SelectRelevantNodeNames(
-            string.Join(' ', queryParts),
-            alwaysInclude,
-            FlowAssistantConstants.MaxRelevantNodes);
+        return (queryParts, alwaysInclude);
+    }
+
+    private static bool TryGetDiscoveryNodes(JsonElement discovery, out IReadOnlyList<string> nodeNames)
+    {
+        nodeNames = Array.Empty<string>();
+
+        if (discovery.ValueKind != JsonValueKind.Object ||
+            !discovery.TryGetProperty("nodeNames", out var names) ||
+            names.ValueKind != JsonValueKind.Array ||
+            names.GetArrayLength() == 0)
+        {
+            return false;
+        }
+
+        var allowed = new HashSet<string>(
+            FlowAssistantCatalog.AllowedNodesForPrompt.Select(node => node.Name),
+            StringComparer.Ordinal);
+        var selected = new List<string>();
+
+        foreach (var entry in names.EnumerateArray())
+        {
+            if (entry.ValueKind != JsonValueKind.String)
+                continue;
+
+            var name = entry.GetString();
+            if (!string.IsNullOrWhiteSpace(name) && allowed.Contains(name))
+                selected.Add(name);
+        }
+
+        if (selected.Count == 0)
+            return false;
+
+        nodeNames = selected;
+        return true;
     }
 
     private static string BuildReferenceSection(FlowAssistantReferenceDataDto? referenceData)
