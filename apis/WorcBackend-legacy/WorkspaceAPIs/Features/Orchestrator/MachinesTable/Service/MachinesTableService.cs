@@ -6,17 +6,20 @@ public class MachinesTableService : IMachinesTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
 
     public MachinesTableService(
         ILogger<MachinesTableService> logger,
         IUnitOfWork unitOfWork,
         IClientStatusStore clientStatusStore,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves list of machines.
@@ -242,9 +245,15 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // Check if the machine has active or pending jobs
-            if (await HasActiveJobsAsync(machine.Id))
-                return serviceResponse.Update("Machine cannot be deleted because it has active or pending jobs.", 409);
+            var linkedJobs = await GetLinkedJobsAsync(machine.Id);
+
+            if (linkedJobs.Count > 0)
+            {
+                if (!IsSuperAdmin())
+                    return serviceResponse.Update("This machine can't be deleted while it has linked jobs.", 409);
+
+                _unitOfWork.JobRepo.Delete(linkedJobs);
+            }
 
             // Remove the machine from the live client status store if connected
             var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
@@ -289,16 +298,17 @@ public class MachinesTableService : IMachinesTableService
             if (machines.Count != machineIds.Count())
                 return serviceResponse.Update("Some machines not found", 404);
 
-            // Check if any machine has active or pending jobs
-            var machineIdsWithActiveJobs = new List<Guid>();
+            var linkedJobs = new List<Job>();
             foreach (var machine in machines)
-            {
-                if (await HasActiveJobsAsync(machine.Id))
-                    machineIdsWithActiveJobs.Add(machine.Id);
-            }
+                linkedJobs.AddRange(await GetLinkedJobsAsync(machine.Id));
 
-            if (machineIdsWithActiveJobs.Count > 0)
-                return serviceResponse.Update($"{machineIdsWithActiveJobs.Count} machine(s) cannot be deleted because they have active or pending jobs.", 409);
+            if (linkedJobs.Count > 0)
+            {
+                if (!IsSuperAdmin())
+                    return serviceResponse.Update("This machine can't be deleted while it has linked jobs.", 409);
+
+                _unitOfWork.JobRepo.Delete(linkedJobs);
+            }
 
             // Remove the machines from the live client status store if connected
             var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
@@ -326,21 +336,13 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    /// <summary>
-    /// Determines whether the specified machine has active or pending jobs.
-    /// </summary>
-    private async Task<bool> HasActiveJobsAsync(Guid machineId)
-    {
-        var terminalStatuses = new[]
-        {
-            JobStatusEnum.Completed,
-            JobStatusEnum.Failed,
-            JobStatusEnum.Canceled,
-            JobStatusEnum.Aborted
-        };
+    private bool IsSuperAdmin() => _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString());
 
+    private async Task<List<Job>> GetLinkedJobsAsync(Guid machineId)
+    {
         return await _unitOfWork.JobRepo
-            .GetByConditionAsync(w => w.MachineId == machineId && !terminalStatuses.Contains(w.Status))
-            .AnyAsync();
+            .GetByConditionAsync(w => w.MachineId == machineId && w.TenantId == _currentTenantService.CurrentTenantId)
+            .IgnoreQueryFilters()
+            .ToListAsync();
     }
 }
