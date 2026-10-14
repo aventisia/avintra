@@ -7,8 +7,8 @@
         <Nullable>enable</Nullable>
         <AssemblyName>RunnerApp</AssemblyName>
         <RootNamespace>RunnerApp</RootNamespace>
-        <Version>0.2.34</Version>
-        <InformationalVersion>0.2.34</InformationalVersion>
+        <Version>0.2.35</Version>
+        <InformationalVersion>0.2.35</InformationalVersion>
 
         <!--
       Linux shell: portable framework-dependent executable for now.

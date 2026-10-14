@@ -54,6 +54,32 @@
       ]
     },
     {
+      "direction": "Input",
+      "type": "select",
+      "name": "Base64Variant",
+      "label": "Base64 Variant",
+      "description": "The Base64 alphabet to emit: Standard, URL-safe, or Auto (behaves as Standard). URL-safe uses '-' and '_' with no '=' padding.",
+      "defaultValue": "Standard",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Standard",
+          "value": "Standard",
+          "description": "Standard Base64 alphabet (A-Z, a-z, 0-9, \u0027\u002B\u0027 and \u0027/\u0027) with \u0027=\u0027 padding."
+        },
+        {
+          "label": "URL-safe",
+          "value": "UrlSafe",
+          "description": "URL-safe Base64 alphabet (\u0027-\u0027 and \u0027_\u0027 in place of \u0027\u002B\u0027 and \u0027/\u0027), without \u0027=\u0027 padding."
+        },
+        {
+          "label": "Auto",
+          "value": "Auto",
+          "description": "Decode-only: accepts both alphabets; on encode behaves as Standard."
+        }
+      ]
+    },
+    {
       "direction": "Output",
       "type": "config-panel-output",
       "name": "Base64String",
