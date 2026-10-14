@@ -198,7 +198,6 @@ public static class AppServicesExtension
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
-        services.AddHostedService<BackfillTimeTriggerCronHostedService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultCredentialService, CloudConnectorsVaultCredentialService>();
