@@ -4,6 +4,7 @@ import { FLOW_ASSISTANT_DEFAULT_MODEL_ID, FLOW_ASSISTANT_MODEL_OPTIONS } from ".
 import { FlowAssistantReferenceDataDto } from "../dtos/flow-assistant-reference-data-dto";
 import { GraphProposalDto } from "../dtos/graph-proposal-dto";
 import { FlowAssistantMessage } from "../types/flow-assistant-message-type";
+import { FlowAssistantQuestionSlot } from "../types/flow-assistant-question-type";
 
 const FLOW_ASSISTANT_MODEL_STORAGE_KEY = "flow-assistant-selected-model-id";
 
@@ -21,6 +22,7 @@ type State = {
   messages: FlowAssistantMessage[];
   isStreaming: boolean;
   pendingProposal: GraphProposalDto | null;
+  pendingQuestions: FlowAssistantQuestionSlot[] | null;
   referenceData: FlowAssistantReferenceDataDto | null;
   selectedModelId: string;
 };
@@ -32,6 +34,7 @@ type Actions = {
   failLastAssistantMessage: (message: string) => void;
   setIsStreaming: (isStreaming: boolean) => void;
   setPendingProposal: (proposal: GraphProposalDto | null) => void;
+  setPendingQuestions: (questions: FlowAssistantQuestionSlot[] | null) => void;
   setReferenceData: (referenceData: FlowAssistantReferenceDataDto) => void;
   setSelectedModelId: (modelId: string) => void;
 };
@@ -41,6 +44,7 @@ export const useFlowAssistantStore = create<State & Actions>((set) => ({
   messages: [],
   isStreaming: false,
   pendingProposal: null,
+  pendingQuestions: null,
   referenceData: null,
   selectedModelId: getInitialModelId(),
 
@@ -85,6 +89,8 @@ export const useFlowAssistantStore = create<State & Actions>((set) => ({
   setIsStreaming: (isStreaming) => set({ isStreaming }),
 
   setPendingProposal: (pendingProposal) => set({ pendingProposal }),
+
+  setPendingQuestions: (pendingQuestions) => set({ pendingQuestions }),
 
   setReferenceData: (referenceData) => set({ referenceData }),
 

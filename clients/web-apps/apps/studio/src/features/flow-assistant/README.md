@@ -23,11 +23,15 @@ fill node configuration from the graph, curated catalog metadata, and tenant ref
   and is validated server-side against `FlowAssistantConstants.SupportedModels` (absent or unknown falls
   back to the default). OpenAI requests omit the shared `oneOf` proposal schema, which structured outputs
   reject, and rely on JSON mode plus server validation instead.
-- **Clarification turns.** The JSON schema forces either a `question` (with `question`) or a `proposal`
-  (with non-empty `operations`). The server still converts an empty or missing `operations` array into a
-  `question` SSE frame instead of a red error, and asks the user for an added node's required or no-default
-  input values before emitting a proposal. Rejected proposals log the raw model JSON truncated to 2000
-  characters for observability.
+- **Clarification turns.** Discovery returns either a node selection or a `question`; the
+  builder always returns a `proposal`, leaving unknown environment values unset. The server
+  converts every missing required input across the proposed nodes into a structured `questions`
+  SSE frame (`[{ key, label, nodeName, options }]`, options from select metadata), rendered by
+  `QuestionsCard` with option buttons plus free-text inputs; answers return as one user message.
+  The JSON schema forces either a `question` (with `question`) or a `proposal` (with non-empty
+  `operations`). The server still converts an empty or missing `operations` array into a
+  `question` SSE frame instead of a red error. Rejected proposals log the raw model JSON truncated
+  to 2000 characters for observability.
 
 ## Reference data sources
 

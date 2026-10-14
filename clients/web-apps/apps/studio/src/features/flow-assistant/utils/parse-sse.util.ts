@@ -1,4 +1,5 @@
 import { FlowAssistantFrame } from "../types/flow-assistant-frame-type";
+import { FlowAssistantQuestionSlot } from "../types/flow-assistant-question-type";
 
 const collectDataPayloads = (frame: string): string[] => {
   const payloads: string[] = [];
@@ -39,6 +40,23 @@ export async function* parseSsePayloads(body: ReadableStream<Uint8Array>): Async
   }
 }
 
+const isQuestionSlot = (value: unknown): value is FlowAssistantQuestionSlot => {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Partial<FlowAssistantQuestionSlot>;
+  if (typeof candidate.key !== "string" || typeof candidate.label !== "string") return false;
+  if (
+    candidate.nodeName !== undefined &&
+    candidate.nodeName !== null &&
+    typeof candidate.nodeName !== "string"
+  )
+    return false;
+  return (
+    candidate.options === undefined ||
+    (Array.isArray(candidate.options) &&
+      candidate.options.every((option) => typeof option === "string"))
+  );
+};
+
 /** Parses one SSE data payload into a normalized flow-assistant frame. */
 export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | null => {
   let parsed: unknown;
@@ -64,6 +82,10 @@ export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | n
         type: "question",
         output: typeof candidate.output === "string" ? candidate.output : "",
       };
+    case "questions":
+      return Array.isArray(candidate.output) && candidate.output.every(isQuestionSlot)
+        ? { type: "questions", output: candidate.output }
+        : null;
     case "done":
       return {
         type: "done",

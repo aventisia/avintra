@@ -74,7 +74,20 @@ public class FlowAssistantService : IFlowAssistantService
 
         if (TryGetQuestion(discovery.Value, out var discoveryQuestion))
         {
-            yield return SerializeFrame(new { type = "question", output = discoveryQuestion });
+            yield return SerializeFrame(new
+            {
+                type = "questions",
+                output = new[]
+                {
+                    new
+                    {
+                        key = "answer",
+                        label = discoveryQuestion,
+                        nodeName = (string?)null,
+                        options = Array.Empty<string>(),
+                    },
+                },
+            });
             yield return SerializeFrame(new { type = "done" });
             yield break;
         }
@@ -109,10 +122,10 @@ public class FlowAssistantService : IFlowAssistantService
             yield break;
         }
 
-        var configurationQuestion = BuildConfigurationQuestion(proposal.Value);
-        if (configurationQuestion is not null)
+        var configurationSlots = BuildConfigurationSlots(proposal.Value);
+        if (configurationSlots.Count > 0)
         {
-            yield return SerializeFrame(new { type = "question", output = configurationQuestion });
+            yield return SerializeFrame(new { type = "questions", output = configurationSlots });
             yield return SerializeFrame(new { type = "done" });
             yield break;
         }
@@ -594,16 +607,18 @@ public class FlowAssistantService : IFlowAssistantService
         return operations.GetArrayLength() == 0;
     }
 
-    private static string? BuildConfigurationQuestion(JsonElement proposal)
+    private static IReadOnlyList<object> BuildConfigurationSlots(JsonElement proposal)
     {
+        var slots = new List<object>();
+
         if (proposal.ValueKind != JsonValueKind.Object ||
             !proposal.TryGetProperty("operations", out var operations) ||
             operations.ValueKind != JsonValueKind.Array)
         {
-            return null;
+            return slots;
         }
 
-        var missingFields = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
 
         foreach (var operation in operations.EnumerateArray())
         {
@@ -630,15 +645,20 @@ public class FlowAssistantService : IFlowAssistantService
                 if (field.Direction != "Input" || providedKeys.Contains(field.Name))
                     continue;
 
-                if (field.Required)
-                    missingFields.Add($"{field.Label} ({nodeName})");
+                if (!field.Required || !seen.Add($"{nodeName}.{field.Name}"))
+                    continue;
+
+                slots.Add(new
+                {
+                    key = field.Name,
+                    label = field.Label,
+                    nodeName,
+                    options = field.SelectOptions,
+                });
             }
         }
 
-        if (missingFields.Count == 0)
-            return null;
-
-        return $"I need a few values before I can build this flow: {string.Join(", ", missingFields.Distinct())}. What should they be?";
+        return slots;
     }
 
     private static HashSet<string> ReadInputKeys(JsonElement node)

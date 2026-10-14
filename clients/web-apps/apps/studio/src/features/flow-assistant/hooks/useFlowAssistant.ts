@@ -45,10 +45,28 @@ export const useFlowAssistant = () => {
         store.appendToLastAssistantMessage(frame.output);
         break;
       case "graph_proposal":
-        if (isGraphProposal(frame.output)) store.setPendingProposal(frame.output);
+        if (isGraphProposal(frame.output)) {
+          store.setPendingProposal(frame.output);
+          store.setPendingQuestions(null);
+        }
         break;
       case "question":
         store.appendToLastAssistantMessage(frame.output);
+        break;
+      case "questions":
+        if (frame.output.length === 0) break;
+        store.setPendingQuestions(frame.output);
+        store.setPendingProposal(null);
+        if (frame.output.length === 1 && !frame.output[0].nodeName) {
+          store.appendToLastAssistantMessage(frame.output[0].label);
+        } else {
+          const needed = frame.output
+            .map((slot) => (slot.nodeName ? `${slot.label} (${slot.nodeName})` : slot.label))
+            .join(", ");
+          store.appendToLastAssistantMessage(
+            `I need a few values before I can build this flow: ${needed}. Fill them below.`,
+          );
+        }
         break;
       case "error":
         store.failLastAssistantMessage(frame.message);
@@ -84,6 +102,7 @@ export const useFlowAssistant = () => {
         createdAt: now + 1,
       });
       store.setPendingProposal(null);
+      store.setPendingQuestions(null);
       store.setIsStreaming(true);
 
       const { currentFlow } = useCurrentFlowStore.getState();

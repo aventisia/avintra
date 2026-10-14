@@ -16,12 +16,14 @@ import { useFlowAssistantReferenceData } from "../hooks/useFlowAssistantReferenc
 import { useFlowAssistantStore } from "../stores/flow-assistant-store";
 import { FlowAssistantMessageList } from "./FlowAssistantMessageList";
 import { GraphProposalCard } from "./GraphProposalCard";
+import { QuestionsCard } from "./QuestionsCard";
 
 export const FlowAssistantPanel = () => {
   const { sendMessage, cancel } = useFlowAssistant();
   useFlowAssistantReferenceData();
   const isStreaming = useFlowAssistantStore((state) => state.isStreaming);
   const pendingProposal = useFlowAssistantStore((state) => state.pendingProposal);
+  const pendingQuestions = useFlowAssistantStore((state) => state.pendingQuestions);
   const selectedModelId = useFlowAssistantStore((state) => state.selectedModelId);
   const setSelectedModelId = useFlowAssistantStore((state) => state.setSelectedModelId);
   const [input, setInput] = useState("");
@@ -79,6 +81,12 @@ export const FlowAssistantPanel = () => {
       {pendingProposal && (
         <div className="px-3 pb-2">
           <GraphProposalCard proposal={pendingProposal} />
+        </div>
+      )}
+
+      {pendingQuestions && pendingQuestions.length > 0 && (
+        <div className="px-3 pb-2">
+          <QuestionsCard slots={pendingQuestions} />
         </div>
       )}
 
