@@ -44,8 +44,6 @@ const PROVIDER_MAP: Record<string, string> = {
   mistral: "Mistral",
 };
 
-const CREDENTIAL_LESS_MODEL_PROVIDERS = new Set(["ollama"]);
-
 const ModelConfigField = ({
   name,
   showJsonOutput = true,
@@ -99,10 +97,6 @@ const ModelConfigField = ({
     name: fieldNames.model,
     control,
   });
-  const { field: credentialsField } = useController({
-    name: fieldNames.credential_name,
-    control,
-  });
   const { field: temperatureField } = useController({
     name: fieldNames.temperature,
     control,
@@ -114,7 +108,6 @@ const ModelConfigField = ({
 
   const is_byok_enabled = Boolean(isByokField.value);
   const providerValue = providerField.value;
-  const credentialsValue = credentialsField.value;
 
   const {
     data: enabledModelsData,
@@ -370,15 +363,6 @@ const ModelConfigField = ({
         </p>
       )}
 
-      {is_byok_enabled && currentProviderHasEnabledModels && (
-        <VaultCredentialSelectField
-          name={fieldNames.credential_name}
-          size="sm"
-          label={`${currentProviderLabel ?? ""} Credentials`}
-          modelProvider={providerValue}
-        />
-      )}
-
       <SearchableSelectField
         size="sm"
         name={fieldNames.model}
@@ -387,13 +371,19 @@ const ModelConfigField = ({
         primaryText="Models"
         isLoading={isLoading}
         disabled={
-          !isInitialized ||
-          (isSpeechSpecialty && !hasEnabledSpeechModels) ||
-          (is_byok_enabled &&
-            !CREDENTIAL_LESS_MODEL_PROVIDERS.has(providerValue) &&
-            !credentialsValue)
+          !isInitialized || !providerValue || (isSpeechSpecialty && !hasEnabledSpeechModels)
         }
       />
+
+      {is_byok_enabled && currentProviderHasEnabledModels && (
+        <VaultCredentialSelectField
+          name={fieldNames.credential_name}
+          size="sm"
+          label={`${currentProviderLabel ?? ""} Credentials`}
+          modelProvider={providerValue}
+          disabled={!modelField.value}
+        />
+      )}
 
       {isSpeechSpecialty &&
         is_byok_enabled &&
