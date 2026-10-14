@@ -1,26 +1,28 @@
 import { LogoImage, LogoLink } from "@avplatform/layout";
-import { useBranding } from "@avplatform/ui/hooks";
+import { useBrandLogo } from "@avplatform/ui/hooks";
+import { cn } from "@avplatform/ui/lib";
 
 interface AppLogoProps {
-  logoSrc?: string;
+  showFullLogo?: boolean;
+  className?: string;
+  label?: string;
 }
 
-const AppLogo = (
-  { logoSrc }: AppLogoProps, // Optional prop for custom logo source
-) => {
-  const branding = useBranding();
+const AppLogo = ({ showFullLogo = false, className, label }: AppLogoProps) => {
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "short");
 
-  // A configured deployment branding logo overrides the provided/default asset. Light/dark
-  // variants are not differentiated yet, so the same branded logo is used for both.
   const logoSrcWithBaseUrl =
-    branding.logoUrl ??
-    (logoSrc
-      ? `${import.meta.env.BASE_URL}${logoSrc.toLowerCase()}`
-      : `${import.meta.env.BASE_URL}app_logo_light.svg`);
+    brandingLogoUrl ??
+    `${import.meta.env.BASE_URL}${showFullLogo ? "logo.svg" : "app_logo_light.svg"}`;
 
   return (
-    <LogoLink className="shrink-0">
-      <LogoImage className="h-[1.3rem] shrink-0" src={logoSrcWithBaseUrl} />
+    <LogoLink className="shrink-0 gap-1.5">
+      <LogoImage className={cn("h-[1.3rem] shrink-0", className)} src={logoSrcWithBaseUrl} />
+      {label ? (
+        <span className="translate-y-px font-sans text-[clamp(0.8125rem,0.55vw_+_0.45rem,1rem)] leading-none font-semibold tracking-normal whitespace-nowrap text-primary-foreground [word-spacing:0.05em]">
+          {label}
+        </span>
+      ) : null}
     </LogoLink>
   );
 };

@@ -6,29 +6,50 @@ import type { BrandingDto } from "@/ui/dtos/response/branding-dto";
 export type ResolvedBranding = {
   appName?: string;
   companyName?: string;
-  logoUrl?: string;
-  fullLogoUrl?: string;
-  faviconUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
+  companyLogoUrlLight?: string;
+  companyLogoUrlDark?: string;
+  productLogoUrlLight?: string;
+  productLogoUrlDark?: string;
+  shortLogoUrlLight?: string;
+  shortLogoUrlDark?: string;
+  faviconUrlLight?: string;
+  faviconUrlDark?: string;
+  background?: string;
+  foreground?: string;
+  primary?: string;
+  primaryForeground?: string;
+  secondary?: string;
+  secondaryForeground?: string;
+  accent?: string;
+  accentForeground?: string;
 };
 
 /**
  * Resolves the effective branding: the API value wins, the build-time Vite defaults fill
  * the name fields, and unset logo/color fields stay undefined.
  *
- * IMPORTANT NOTE: light/dark logo variants are not differentiated yet. A single logo is resolved
- * (`logoUrl`, falling back to `logoUrlDark`) and `fullLogoUrl` is only used where the full
- * wordmark is shown; when it is unset the compact logo is reused.
+ * IMPORTANT NOTE: dark logo/favicon variants are resolved as fallbacks because no dark theme
+ * exists yet; each asset prefers its light value and falls back to the dark one.
  */
 export const resolveBranding = (branding: BrandingDto | null | undefined): ResolvedBranding => ({
   appName: branding?.appName || import.meta.env.VITE_APP_NAME || undefined,
   companyName: branding?.companyName || import.meta.env.VITE_COMPANY_NAME || undefined,
-  logoUrl: branding?.logoUrl || branding?.logoUrlDark || undefined,
-  fullLogoUrl: branding?.fullLogoUrl || undefined,
-  faviconUrl: branding?.faviconUrl || undefined,
-  primaryColor: branding?.primaryColor || undefined,
-  secondaryColor: branding?.secondaryColor || undefined,
+  companyLogoUrlLight: branding?.companyLogoUrlLight || undefined,
+  companyLogoUrlDark: branding?.companyLogoUrlDark || undefined,
+  productLogoUrlLight: branding?.productLogoUrlLight || undefined,
+  productLogoUrlDark: branding?.productLogoUrlDark || undefined,
+  shortLogoUrlLight: branding?.shortLogoUrlLight || undefined,
+  shortLogoUrlDark: branding?.shortLogoUrlDark || undefined,
+  faviconUrlLight: branding?.faviconUrlLight || undefined,
+  faviconUrlDark: branding?.faviconUrlDark || undefined,
+  background: branding?.backgroundColor || undefined,
+  foreground: branding?.foregroundColor || undefined,
+  primary: branding?.primaryColor || undefined,
+  primaryForeground: branding?.primaryForegroundColor || undefined,
+  secondary: branding?.secondaryColor || undefined,
+  secondaryForeground: branding?.secondaryForegroundColor || undefined,
+  accent: branding?.accentColor || undefined,
+  accentForeground: branding?.accentForegroundColor || undefined,
 });
 
 interface BrandingStore {

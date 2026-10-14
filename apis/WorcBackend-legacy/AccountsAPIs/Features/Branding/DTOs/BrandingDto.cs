@@ -21,35 +21,82 @@ public class BrandingDto
     public string? CompanyName { get; set; }
 
     /// <summary>
-    /// Gets or sets the light-theme logo as an absolute HTTPS URL on the deployment's domain.
+    /// Gets or sets the light company logo (full wordmark) as an absolute HTTPS URL on the deployment's domain.
     /// </summary>
-    public string? LogoUrl { get; set; }
+    public string? CompanyLogoUrlLight { get; set; }
 
     /// <summary>
-    /// Gets or sets the dark-theme logo (same domain rules as <see cref="LogoUrl"/>). Reserved for
-    /// a future dark theme and currently only used as a fallback when <see cref="LogoUrl"/> is unset.
+    /// Gets or sets the dark company logo (same domain rules as <see cref="CompanyLogoUrlLight"/>).
     /// </summary>
-    public string? LogoUrlDark { get; set; }
+    public string? CompanyLogoUrlDark { get; set; }
 
     /// <summary>
-    /// Gets or sets the full wordmark logo (same domain rules as <see cref="LogoUrl"/>), used where
-    /// the full logo with the app name is shown.
+    /// Gets or sets the light product logo as an absolute HTTPS URL on the deployment's domain.
     /// </summary>
-    public string? FullLogoUrl { get; set; }
+    public string? ProductLogoUrlLight { get; set; }
 
     /// <summary>
-    /// Gets or sets the favicon as an absolute HTTPS URL on the deployment's domain.
+    /// Gets or sets the dark product logo (same domain rules as <see cref="ProductLogoUrlLight"/>).
     /// </summary>
-    public string? FaviconUrl { get; set; }
+    public string? ProductLogoUrlDark { get; set; }
 
     /// <summary>
-    /// Gets or sets the primary brand color as a valid CSS color value (hex, rgb()/rgba() or
-    /// hsl()/hsla()).
+    /// Gets or sets the light short logo as an absolute HTTPS URL on the deployment's domain.
+    /// </summary>
+    public string? ShortLogoUrlLight { get; set; }
+
+    /// <summary>
+    /// Gets or sets the dark short logo (same domain rules as <see cref="ShortLogoUrlLight"/>).
+    /// </summary>
+    public string? ShortLogoUrlDark { get; set; }
+
+    /// <summary>
+    /// Gets or sets the light favicon as an absolute HTTPS URL on the deployment's domain.
+    /// </summary>
+    public string? FaviconUrlLight { get; set; }
+
+    /// <summary>
+    /// Gets or sets the dark favicon (same domain rules as <see cref="FaviconUrlLight"/>).
+    /// </summary>
+    public string? FaviconUrlDark { get; set; }
+
+    /// <summary>
+    /// Gets or sets the background brand color as a valid CSS color value (hex, rgb()/rgba() or hsl()/hsla()).
+    /// </summary>
+    public string? BackgroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the foreground brand color (same formats as <see cref="BackgroundColor"/>).
+    /// </summary>
+    public string? ForegroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the primary brand color (same formats as <see cref="BackgroundColor"/>).
     /// </summary>
     public string? PrimaryColor { get; set; }
 
     /// <summary>
-    /// Gets or sets the secondary brand color (same formats as <see cref="PrimaryColor"/>).
+    /// Gets or sets the primary foreground brand color (same formats as <see cref="BackgroundColor"/>).
+    /// </summary>
+    public string? PrimaryForegroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the secondary brand color (same formats as <see cref="BackgroundColor"/>).
     /// </summary>
     public string? SecondaryColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the secondary foreground brand color (same formats as <see cref="BackgroundColor"/>).
+    /// </summary>
+    public string? SecondaryForegroundColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accent brand color (same formats as <see cref="BackgroundColor"/>).
+    /// </summary>
+    public string? AccentColor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accent foreground brand color (same formats as <see cref="BackgroundColor"/>).
+    /// </summary>
+    public string? AccentForegroundColor { get; set; }
 }

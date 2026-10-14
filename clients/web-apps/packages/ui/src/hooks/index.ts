@@ -3,6 +3,7 @@ export * from "./useCheckAvailability";
 export * from "./useDataTable";
 export * from "./useDocumentTitle";
 export * from "./useBranding";
+export * from "./useBrandLogo";
 export * from "./useForwardQueryParams";
 export * from "./useListOptimisticMutation";
 export * from "./useOptimisticMutation";
