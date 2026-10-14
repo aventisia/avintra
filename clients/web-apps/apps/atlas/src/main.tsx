@@ -1,5 +1,4 @@
 import { AlertDialogWrapper } from "@avplatform/ui/alert-dialog";
-import { bootstrapBranding } from "@avplatform/ui/branding";
 import { SonnerToaster } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import "@avplatform/ui/styles/sonner.css";
@@ -17,25 +16,16 @@ useBaseLayoutStore.getState().setViteEnvVars({
   COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
 });
 
-const renderApp = () => {
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-      <TooltipProvider>
-        {/* Alert dialog wrapper */}
-        <AlertDialogWrapper>
-          <App />
-        </AlertDialogWrapper>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <TooltipProvider>
+      {/* Alert dialog wrapper */}
+      <AlertDialogWrapper>
+        <App />
+      </AlertDialogWrapper>
 
-        {/* To show toaster notifications */}
-        <SonnerToaster />
-      </TooltipProvider>
-    </React.StrictMode>,
-  );
-};
-
-// Apply deployment branding before the first render so the app never flashes the default
-// theme values. The wait is bounded by BRANDING_BOOT_TIMEOUT; a slower response falls back to
-// the built-in defaults and re-themes once it arrives.
-void bootstrapBranding()
-  .catch(() => undefined)
-  .finally(renderApp);
+      {/* To show toaster notifications */}
+      <SonnerToaster />
+    </TooltipProvider>
+  </React.StrictMode>,
+);

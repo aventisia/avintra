@@ -18,7 +18,7 @@ script:post-response {
 
     // Every branding field is optional and serialized as null when unset, so assert the
     // contract shape is present rather than specific values.
-    ["appName", "companyName", "logoUrl", "logoUrlDark", "fullLogoUrl", "faviconUrl", "primaryColor", "secondaryColor"].forEach((field) => {
+    ["appName", "companyName", "companyLogoUrlLight", "companyLogoUrlDark", "productLogoUrlLight", "productLogoUrlDark", "shortLogoUrlLight", "shortLogoUrlDark", "faviconUrlLight", "faviconUrlDark", "backgroundColor", "foregroundColor", "primaryColor", "primaryForegroundColor", "secondaryColor", "secondaryForegroundColor", "accentColor", "accentForegroundColor"].forEach((field) => {
       expect(data).to.have.property(field);
     });
   });

@@ -9,23 +9,53 @@ interface BrandingDto {
   /** Custom company name. */
   companyName: string | null;
 
-  /** Compact logo URL. */
-  logoUrl: string | null;
+  /** Light company logo (full wordmark) URL. */
+  companyLogoUrlLight: string | null;
 
-  /** Dark-theme logo URL. Reserved for a future dark theme; used as the logo fallback. */
-  logoUrlDark: string | null;
+  /** Dark company logo URL. Reserved for a future dark theme; used as the light variant's fallback. */
+  companyLogoUrlDark: string | null;
 
-  /** Full wordmark logo URL, shown where the full logo with the app name is used. */
-  fullLogoUrl: string | null;
+  /** Light product logo URL. */
+  productLogoUrlLight: string | null;
 
-  /** Favicon URL. */
-  faviconUrl: string | null;
+  /** Dark product logo URL; used as the light variant's fallback. */
+  productLogoUrlDark: string | null;
+
+  /** Light short logo URL. */
+  shortLogoUrlLight: string | null;
+
+  /** Dark short logo URL; used as the light variant's fallback. */
+  shortLogoUrlDark: string | null;
+
+  /** Light favicon URL. */
+  faviconUrlLight: string | null;
+
+  /** Dark favicon URL; used as the light variant's fallback. */
+  faviconUrlDark: string | null;
+
+  /** Background brand color as a CSS color value. */
+  backgroundColor: string | null;
+
+  /** Foreground brand color as a CSS color value. */
+  foregroundColor: string | null;
 
   /** Primary brand color as a CSS color value. */
   primaryColor: string | null;
 
+  /** Primary foreground brand color as a CSS color value. */
+  primaryForegroundColor: string | null;
+
   /** Secondary brand color as a CSS color value. */
   secondaryColor: string | null;
+
+  /** Secondary foreground brand color as a CSS color value. */
+  secondaryForegroundColor: string | null;
+
+  /** Accent brand color as a CSS color value. */
+  accentColor: string | null;
+
+  /** Accent foreground brand color as a CSS color value. */
+  accentForegroundColor: string | null;
 }
 
 export { type BrandingDto };

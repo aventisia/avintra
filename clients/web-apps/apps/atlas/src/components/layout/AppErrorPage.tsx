@@ -1,8 +1,7 @@
-import { ErrorPage } from "@avplatform/layout";
+import { AppLogo, ErrorPage } from "@avplatform/layout";
 import { useEffect } from "react";
 import { useRouteError } from "react-router-dom";
 
-import { AppLogo } from "./AppLogo";
 import { AppMinimalFooter } from "./AppMinimalFooter";
 
 export const AppErrorPage = () => {
@@ -19,7 +18,5 @@ export const AppErrorPage = () => {
     }
   }, [error?.message]);
 
-  return (
-    <ErrorPage appLogo={<AppLogo logoSrc="/logo.svg" />} minimalFooter={<AppMinimalFooter />} />
-  );
+  return <ErrorPage appLogo={<AppLogo showFullLogo />} minimalFooter={<AppMinimalFooter />} />;
 };
