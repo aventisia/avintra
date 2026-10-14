@@ -83,9 +83,10 @@ export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | n
         output: typeof candidate.output === "string" ? candidate.output : "",
       };
     case "questions":
-      return Array.isArray(candidate.output) && candidate.output.every(isQuestionSlot)
-        ? { type: "questions", output: candidate.output }
-        : null;
+      if (Array.isArray(candidate.output) && candidate.output.every(isQuestionSlot))
+        return { type: "questions", output: candidate.output };
+      console.warn("Dropping malformed flow-assistant questions frame.");
+      return null;
     case "done":
       return {
         type: "done",
@@ -100,6 +101,7 @@ export const parseFlowAssistantFrame = (payload: string): FlowAssistantFrame | n
             : "The assistant request failed.",
       };
     default:
+      console.warn("Dropping unknown flow-assistant frame.", payload.slice(0, 120));
       return null;
   }
 };

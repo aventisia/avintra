@@ -42,19 +42,26 @@ export const useFlowAssistant = () => {
     const store = useFlowAssistantStore.getState();
     switch (frame.type) {
       case "delta":
+        if (!frame.output) return false;
         store.appendToLastAssistantMessage(frame.output);
-        break;
+        return true;
       case "graph_proposal":
         if (isGraphProposal(frame.output)) {
           store.setPendingProposal(frame.output);
           store.setPendingQuestions(null);
         }
-        break;
+        return true;
       case "question":
+        if (!frame.output) return false;
         store.appendToLastAssistantMessage(frame.output);
-        break;
+        return true;
       case "questions":
-        if (frame.output.length === 0) break;
+        if (frame.output.length === 0) {
+          store.appendToLastAssistantMessage(
+            "I need a few details before I can build this flow. What should they be?",
+          );
+          return true;
+        }
         store.setPendingQuestions(frame.output);
         store.setPendingProposal(null);
         if (frame.output.length === 1 && !frame.output[0].nodeName) {
@@ -67,12 +74,12 @@ export const useFlowAssistant = () => {
             `I need a few values before I can build this flow: ${needed}. Fill them below.`,
           );
         }
-        break;
+        return true;
       case "error":
         store.failLastAssistantMessage(frame.message);
-        break;
+        return true;
       case "done":
-        break;
+        return false;
     }
   }, []);
 
@@ -128,9 +135,17 @@ export const useFlowAssistant = () => {
           ? streamFlowAssistantStub(request, controller.signal)
           : streamFlowAssistant(request, controller.signal);
 
+        let sawContent = false;
         for await (const frame of stream) {
           if (controller.signal.aborted) return;
-          handleFrame(frame);
+          sawContent = handleFrame(frame) || sawContent;
+        }
+        if (!sawContent && !controller.signal.aborted) {
+          useFlowAssistantStore
+            .getState()
+            .failLastAssistantMessage(
+              "The assistant returned an empty response. Please try again.",
+            );
         }
       } catch (error) {
         if (controller.signal.aborted || isAbortError(error)) return;
