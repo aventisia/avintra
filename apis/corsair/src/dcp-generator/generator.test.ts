@@ -227,7 +227,8 @@ async function main() {
         (rawField?.description ?? "").includes("Content-Disposition: attachment") &&
         (rawField?.description ?? "").includes("Cc: {{cc}}") &&
         (rawField?.description ?? "").includes("Bcc: {{bcc}}") &&
-        (rawField?.description ?? "").includes("remove trailing '=' padding"),
+        (rawField?.description ?? "").includes("Base64 Variant") &&
+        (rawField?.description ?? "").includes("URL-safe"),
       "Gmail raw description is missing the message example or encoding rules",
     );
 

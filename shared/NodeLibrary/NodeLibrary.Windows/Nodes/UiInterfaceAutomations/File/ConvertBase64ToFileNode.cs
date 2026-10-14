@@ -1,4 +1,6 @@
 ﻿using NodeLibrary.FileNodes.Enums;
+using NodeLibrary.TextNodes.Enums;
+using NodeLibrary.TextNodes.Helpers;
 
 namespace NodeLibrary.FileNodes;
 
@@ -15,6 +17,9 @@ public class ConvertBase64ToFileNode : BaseNode
     [DisplayName("If File Exists"), Description("Specifies the behavior when a file already exists in the destination folder.")]
     public required InArgument<IfExistsActionEnum> IfExistsAction { get; set; } = new InArgument<IfExistsActionEnum>(IfExistsActionEnum.DoNothing);
 
+    [DisplayName("Base64 Variant"), Description("The Base64 alphabet to accept: Standard, URL-safe, or Auto (both). Defaults to Auto so URL-safe file payloads decode.")]
+    public InArgument<Base64VariantEnum> Base64Variant { get; set; } = new InArgument<Base64VariantEnum>(Base64VariantEnum.Auto);
+
 
 
     protected override void Execute(INodeContext context)
@@ -30,7 +35,7 @@ public class ConvertBase64ToFileNode : BaseNode
             if (string.IsNullOrWhiteSpace(base64))
                 throw new ArgumentException("Base64 encoded text cannot be null or empty.");
 
-            var fileBytes = Convert.FromBase64String(base64);
+            var fileBytes = Base64Helper.Decode(base64, Base64Variant.Get(context));
             var dir = Path.GetDirectoryName(filePath);
 
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
