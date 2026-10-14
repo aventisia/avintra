@@ -20,6 +20,7 @@ public class JobsTableService : IJobsTableService
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICreditGateService _creditGateService;
     private readonly IHubContext<OrchestratorHub> _orchestratorHubContext;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly WorkspaceDbContext _workspaceDbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private const int MaxRemarkLength = 2000;
@@ -38,6 +39,7 @@ public class JobsTableService : IJobsTableService
         IClientStatusStore clientStatusStore,
         ICreditGateService creditGateService,
         IHubContext<OrchestratorHub> orchestratorHubContext,
+        IUserManagementGuardService userManagementGuardService,
         WorkspaceDbContext workspaceDbContext)
     {
         // Set the user ID from the HTTP context
@@ -61,6 +63,7 @@ public class JobsTableService : IJobsTableService
         _clientStatusStore = clientStatusStore;
         _creditGateService = creditGateService;
         _orchestratorHubContext = orchestratorHubContext;
+        _userManagementGuardService = userManagementGuardService;
         _workspaceDbContext = workspaceDbContext;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -77,6 +80,8 @@ public class JobsTableService : IJobsTableService
 
         return user?.FindFirstValue("uname") ?? string.Empty;
     }
+
+    private bool IsSuperAdmin() => _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString());
 
     /// <summary>
     /// Trims a remark to the maximum allowed length, adding an ellipsis when truncated.
@@ -595,8 +600,7 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-            // CANNOT DELETE THE JOB: Job is not in 'Created' status
-            if (job.Status != JobStatusEnum.Created)
+            if (job.Status != JobStatusEnum.Created && !(IsSuperAdmin() && job.Status.IsTerminal()))
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
             // Delete the record
@@ -633,8 +637,7 @@ public class JobsTableService : IJobsTableService
             if (jobs.Count == 0)
                 return serviceResponse.Update("Jobs not found.", 404);
 
-            // CANNOT DELETE THE JOB: Job is not in 'Created' status
-            if (jobs.Any(j => j.Status != JobStatusEnum.Created))
+            if (jobs.Any(j => j.Status != JobStatusEnum.Created && !(IsSuperAdmin() && j.Status.IsTerminal())))
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
             // Delete the records
