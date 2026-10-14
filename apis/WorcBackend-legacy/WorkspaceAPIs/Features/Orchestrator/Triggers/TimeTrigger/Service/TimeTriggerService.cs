@@ -371,7 +371,6 @@ public class TimeTriggerService(
             model.CronExpression = CronScheduleUtil.BuildCronExpression(
                 model.Frequency,
                 model.Interval,
-                newTimeTrigger.Timezone,
                 model.AtTime,
                 model.Weekdays,
                 model.MonthDays,
@@ -386,16 +385,7 @@ public class TimeTriggerService(
                 newTimeTrigger.Timezone
             );
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false
-            };
-
-            // Ensure enums serialize as strings
-            jsonOptions.Converters.Add(new JsonStringEnumConverter());
-
-            newTimeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            newTimeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, TimeTriggerMetadataHelpers.JsonOptions));
 
             // Set the TriggerType explicitly
             newTimeTrigger.TriggerType = TriggerTypesEnum.Time;
@@ -567,19 +557,9 @@ public class TimeTriggerService(
             // Normalize input (trim all string properties)
             timeTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(timeTriggerDto);
 
-            // JSON serializer configuration
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            };
-
-            jsonOptions.Converters.Add(new JsonStringEnumConverter());
-
-            // Deserialize existing metadata into model
             var model = System.Text.Json.JsonSerializer.Deserialize<TimeTriggerModel>(
                 timeTrigger.Metadata.RootElement.GetRawText(),
-                jsonOptions);
+                TimeTriggerMetadataHelpers.JsonOptions);
 
             // Check if the effective date has already passed
             if (model.EffectiveDate != timeTriggerDto.EffectiveDate && DateTimeOffset.UtcNow > timeTriggerDto.EffectiveDate)
@@ -671,7 +651,6 @@ public class TimeTriggerService(
                 model.CronExpression = CronScheduleUtil.BuildCronExpression(
                     model.Frequency,
                     model.Interval,
-                    timeTriggerDto.Timezone,
                     model.AtTime,
                     model.Weekdays,
                     model.MonthDays
@@ -703,7 +682,7 @@ public class TimeTriggerService(
                 timeTrigger.IsDisabled = timeTriggerDto.IsDisabled.Value;
 
             // Update metadata with latest subscription data
-            timeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, jsonOptions));
+            timeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, TimeTriggerMetadataHelpers.JsonOptions));
 
             // Set audit fields to track who last modified the trigger
             timeTrigger.LastModifiedByUserId = _userId;
