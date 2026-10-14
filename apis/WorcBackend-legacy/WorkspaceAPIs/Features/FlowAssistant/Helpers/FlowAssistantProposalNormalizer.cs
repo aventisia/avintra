@@ -3,6 +3,7 @@ using System.Globalization;
 using WorkspaceAPIs.Features.FlowAssistant.Generated;
 
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using JsonException = System.Text.Json.JsonException;
 
 namespace WorkspaceAPIs.Features.FlowAssistant.Helpers;
 
@@ -19,6 +20,18 @@ public static class FlowAssistantProposalNormalizer
         if (proposal.ValueKind != JsonValueKind.Object)
             return proposal;
 
+        try
+        {
+            return RewriteKeys(proposal);
+        }
+        catch (Exception ex) when (ex is JsonException or ArgumentException or InvalidOperationException)
+        {
+            return proposal;
+        }
+    }
+
+    private static JsonElement RewriteKeys(JsonElement proposal)
+    {
         if (JsonNode.Parse(proposal.GetRawText()) is not JsonObject proposalObject)
             return proposal;
 
