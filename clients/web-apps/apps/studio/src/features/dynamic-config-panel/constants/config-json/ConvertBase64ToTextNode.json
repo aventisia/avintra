@@ -58,7 +58,7 @@
       "type": "select",
       "name": "Base64Variant",
       "label": "Base64 Variant",
-      "description": "The Base64 alphabet to accept: Standard, URL-safe, or Auto (both). Gmail/Corsair payloads use URL-safe.",
+      "description": "The Base64 alphabet to accept: Standard, URL-safe, or Auto (accepts both).",
       "defaultValue": "Auto",
       "required": false,
       "selectOptions": [

@@ -13,7 +13,7 @@ public class ConvertBase64ToTextNode : BaseNode
     [DisplayName("Encoding"), Description("The character encoding used to decode the Base64 bytes into text.")]
     public InArgument<TextEncodingEnum> TextEncoding { get; set; } = new InArgument<TextEncodingEnum>(TextEncodingEnum.Utf8);
 
-    [DisplayName("Base64 Variant"), Description("The Base64 alphabet to accept: Standard, URL-safe, or Auto (both). Gmail/Corsair payloads use URL-safe.")]
+    [DisplayName("Base64 Variant"), Description("The Base64 alphabet to accept: Standard, URL-safe, or Auto (accepts both).")]
     public InArgument<Base64VariantEnum> Base64Variant { get; set; } = new InArgument<Base64VariantEnum>(Base64VariantEnum.Auto);
 
     [DisplayName("Plain Text"), Description("Returns the converted plain text.")]
