@@ -58,6 +58,14 @@ public static class FlowAssistantProposalNormalizer
             if (!string.IsNullOrWhiteSpace(nodeType))
                 nodeObject["type"] = nodeType;
 
+            nodeName = ResolveNodeName(nodeName);
+            if (!string.IsNullOrWhiteSpace(nodeName))
+                nodeObject["name"] = nodeName;
+
+            nodeType = ResolveNodeType(nodeType, nodeName);
+            if (!string.IsNullOrWhiteSpace(nodeType))
+                nodeObject["type"] = nodeType;
+
             var metadata = FlowAssistantConfigCatalog.Nodes.FirstOrDefault(
                 candidate => string.Equals(candidate.Type, nodeType, StringComparison.OrdinalIgnoreCase) &&
                              string.Equals(candidate.Name, nodeName, StringComparison.OrdinalIgnoreCase));
@@ -152,6 +160,20 @@ public static class FlowAssistantProposalNormalizer
             node => string.Equals(node.Name, nodeName, StringComparison.OrdinalIgnoreCase));
 
         return allowed.Name is null ? nodeType : allowed.Type;
+    }
+
+    private static string ResolveNodeName(string nodeName)
+    {
+        if (FlowAssistantCatalog.AllowedNodes.Any(
+            node => string.Equals(node.Name, nodeName, StringComparison.Ordinal)))
+        {
+            return nodeName;
+        }
+
+        var labeled = FlowAssistantCatalog.AllowedNodesForPrompt.FirstOrDefault(
+            node => string.Equals(node.Label, nodeName, StringComparison.OrdinalIgnoreCase));
+
+        return labeled.Name ?? nodeName;
     }
 
     private static string? ReadString(JsonObject jsonObject, string propertyName) =>
