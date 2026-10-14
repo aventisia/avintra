@@ -1,4 +1,3 @@
-// For more info on How to seed data, watch YT video: https://www.youtube.com/watch?v=0B7QjRSvcGI
 using AspNetToolkit.Config;
 using AspNetToolkit.Data;
 using WorkspaceAPIs.Entities;
@@ -9,33 +8,28 @@ namespace WorkspaceAPIs.Data;
 
 public static class WorkspaceDbInitialSeed
 {
-    // Central space is represented by a null SpaceId.
+    // IMPORTANT NOTE: The central space is represented by a null SpaceId.
     private static readonly Guid? PlatformSpaceId = null;
 
     public async static Task<WebApplication> SeedInitialData(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
         {
-            // Get workspaceDbContext
             using var _workspaceDbContext = scope.ServiceProvider.GetRequiredService<WorkspaceDbContext>();
 
-            // Get configuration
             var _configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            // Get environment config for default admin email lookup
             var _environmentConfig = scope.ServiceProvider.GetRequiredService<EnvironmentConfig>();
 
-            // Get tenant db context to resolve the default admin account user
             using var _tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
 
-            // Get logger factory for seed-time logging
             var _loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var _logger = _loggerFactory.CreateLogger(nameof(WorkspaceDbInitialSeed));
 
-            // Apply pending database migrations
             await ApplyMigrationsAsync(_workspaceDbContext);
 
-            // Resolve the default admin user that owns platform resources.
+            await SeedEnabledModelsAsync(_workspaceDbContext, _logger);
+
             var platformAdmin = await ResolvePlatformAdminUserAsync(
                 _workspaceDbContext,
                 _tenantDbContext,
@@ -51,18 +45,15 @@ public static class WorkspaceDbInitialSeed
                 return app;
             }
 
-            // Seed default platform skills from the llmpipeline skills folder.
             await SeedDefaultSkillsAsync(_workspaceDbContext, _configuration, platformAdmin.Value, _logger);
 
-            // NOTE: Camel tool seeding is now handled by the CamelStartupHostedService
+            // IMPORTANT NOTE: Camel tool seeding is now handled by the CamelStartupHostedService
             // (independent of the DB seed process). It seeds ALL connectors from the
             // harness catalog, superseding the old github/m365-only OpenAPI seeding.
 
             return app;
         }
     }
-
-    // Apply pending database migrations
 
     private async static Task ApplyMigrationsAsync(WorkspaceDbContext workspaceDbContext)
     {
@@ -79,11 +70,38 @@ public static class WorkspaceDbInitialSeed
         }
     }
 
-    /// <summary>
-    /// Looks up the default admin account user by <see cref="EnvironmentConfig.OnPremAdminEmail"/>
-    /// from the tenant (AccountsDb) context, then ensures a matching WorkspaceUser row exists.
-    /// Returns the workspace user id and the admin's tenant id, or null when no admin can be resolved.
-    /// </summary>
+    private static async Task SeedEnabledModelsAsync(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    {
+        var providers = await workspaceDbContext.TenantModelProviders
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        var providersToTransform = providers
+            .Where(p => p.EnabledModels.Count == 0 && p.EnabledModelIds.Count > 0)
+            .ToList();
+
+        foreach (var provider in providersToTransform)
+        {
+            provider.EnabledModels = provider.EnabledModelIds
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => new EnabledModel { ModelId = id.Trim(), Capability = null })
+                .GroupBy(m => m.ModelId, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
+        }
+
+        if (providersToTransform.Count == 0)
+        {
+            return;
+        }
+
+        await workspaceDbContext.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Seeded enabled models for {ProviderCount} tenant model providers.",
+            providersToTransform.Count);
+    }
+
     private static async Task<(Guid UserId, Guid TenantId)?> ResolvePlatformAdminUserAsync(
         WorkspaceDbContext workspaceDbContext,
         TenantDbContext tenantDbContext,
@@ -100,7 +118,7 @@ public static class WorkspaceDbInitialSeed
                 return null;
             }
 
-            // ReadOnlyAccountUsers user name/email is seeded with OnPremAdminEmail value.
+            // IMPORTANT NOTE: ReadOnlyAccountUsers.UserName/Email is seeded with the OnPremAdminEmail value.
             var accountUser = await tenantDbContext.ReadOnlyAccountUsers
                 .FirstOrDefaultAsync(u =>
                     (u.Email != null && u.Email.ToLower() == adminEmail.ToLower())
@@ -163,10 +181,6 @@ public static class WorkspaceDbInitialSeed
         }
     }
 
-    /// <summary>
-    /// Seeds default platform skills discovered from the llmpipeline skills folder.
-    /// Each skill is matched by a deterministic id and is created or updated on every startup.
-    /// </summary>
     private static async Task SeedDefaultSkillsAsync(
         WorkspaceDbContext workspaceDbContext,
         IConfiguration configuration,
@@ -208,9 +222,6 @@ public static class WorkspaceDbInitialSeed
         }
     }
 
-    /// <summary>
-    /// Creates or updates a single platform skill from its directory.
-    /// </summary>
     private static async Task SeedDefaultSkillAsync(
         WorkspaceDbContext workspaceDbContext,
         string skillDirectory,
@@ -330,10 +341,6 @@ public static class WorkspaceDbInitialSeed
         }
     }
 
-    /// <summary>
-    /// Generates a deterministic GUID from a skill name so the same skill always maps
-    /// to the same primary key across environments and re-seeds.
-    /// </summary>
     private static Guid DeterministicGuid(string input)
     {
         using var md5 = System.Security.Cryptography.MD5.Create();

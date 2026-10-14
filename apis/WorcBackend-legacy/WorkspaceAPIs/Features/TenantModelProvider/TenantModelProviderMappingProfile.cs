@@ -1,15 +1,14 @@
+using WorkspaceAPIs.Features.TenantModelProvider.Helpers;
+
 namespace WorkspaceAPIs.MappingProfiles;
 
 /// <summary>
-/// This class defines the mapping configurations for mapping between TenantModelProviderDto
-/// and TenantModelProvider entities using Mapster.
+/// Defines the Mapster mappings between tenant model provider DTOs and entities.
 /// </summary>
 public class TenantModelProviderMappingProfile : IRegister
 {
-    // Registers the mappings between DTOs and entities for TenantModelProvider.
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping for inserting or updating a TenantModelProvider entity (from DTO to entity)
         config.NewConfig<TenantModelProviderDto, TenantModelProvider>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.TenantId)
@@ -17,9 +16,14 @@ public class TenantModelProviderMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        // Mapping for getting a TenantModelProvider record (from entity to DTO)
         config.NewConfig<TenantModelProvider, TenantModelProviderDto>()
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}" : null)
             .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}" : null);
+
+        config.NewConfig<EnabledModel, EnabledModelDto>()
+            .Map(dest => dest.Capability, src => EnabledModelHelpers.ParseCapability(src.Capability));
+
+        config.NewConfig<EnabledModelDto, EnabledModel>()
+            .Map(dest => dest.Capability, src => src.Capability != null ? src.Capability.Value.ToString() : null);
     }
 }
