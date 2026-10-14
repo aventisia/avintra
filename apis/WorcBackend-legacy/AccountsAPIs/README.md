@@ -56,25 +56,37 @@ deployments keep the built-in Avintra/Aventisia branding (the endpoint returns d
 All keys are optional; an unset key falls back to the built-in default on the client. Invalid
 values and oversized text (over 100 characters) are ignored at startup with a warning.
 
-| Variable                  | Description                                                                        |
-| ------------------------- | ---------------------------------------------------------------------------------- |
-| `BRANDING_APP_NAME`       | Product/app name used in the UI and document title (max 100 chars).               |
-| `BRANDING_COMPANY_NAME`   | Company name (max 100 chars).                                                      |
-| `BRANDING_LOGO_URL`       | Compact logo — absolute HTTPS URL on the deployment's domain.                      |
-| `BRANDING_LOGO_URL_DARK`  | Dark-theme logo (same rules). Reserved for a future dark theme; used as the logo fallback. |
-| `BRANDING_FULL_LOGO_URL`  | Full wordmark logo shown where the full logo with the app name is used (same rules). |
-| `BRANDING_FAVICON_URL`    | Favicon (same rules).                                                              |
-| `BRANDING_PRIMARY_COLOR`  | Primary brand color — hex, `rgb()`/`rgba()` or `hsl()`/`hsla()`.                   |
-| `BRANDING_SECONDARY_COLOR`| Secondary brand color — buttons, banner, tooltip (same formats).                   |
+| Variable                              | Description                                                                        |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| `BRANDING_APP_NAME`                   | Product/app name used in the UI and document title (max 100 chars).               |
+| `BRANDING_COMPANY_NAME`               | Company name (max 100 chars).                                                      |
+| `BRANDING_COMPANY_LOGO_URL_LIGHT`     | Light full company wordmark used by the accounts app and the redirect, error, loading and not-found screens (absolute HTTPS URL on the deployment's domain). |
+| `BRANDING_COMPANY_LOGO_URL_DARK`      | Dark company wordmark (same rules). Reserved for a future dark theme; used as the light variant's fallback. |
+| `BRANDING_PRODUCT_LOGO_URL_LIGHT`     | Light product logo used by the workspace header (same rules).                      |
+| `BRANDING_PRODUCT_LOGO_URL_DARK`      | Dark product logo (same rules). Used as the light variant's fallback.              |
+| `BRANDING_SHORT_LOGO_URL_LIGHT`       | Light short logo used by the studio header (same rules).                           |
+| `BRANDING_SHORT_LOGO_URL_DARK`        | Dark short logo (same rules). Used as the light variant's fallback.                |
+| `BRANDING_FAVICON_URL_LIGHT`          | Light favicon (same rules).                                                        |
+| `BRANDING_FAVICON_URL_DARK`           | Dark favicon (same rules). Used as the light variant's fallback.                   |
+| `BRANDING_BACKGROUND_COLOR`           | `--background` brand color — hex, `rgb()`/`rgba()` or `hsl()`/`hsla()`.            |
+| `BRANDING_FOREGROUND_COLOR`           | `--foreground` brand color (same formats).                                         |
+| `BRANDING_PRIMARY_COLOR`              | `--primary` brand color (same formats).                                            |
+| `BRANDING_PRIMARY_FOREGROUND_COLOR`   | `--primary-foreground` brand color; derived for contrast when unset (same formats).|
+| `BRANDING_SECONDARY_COLOR`            | `--secondary` brand color — buttons, banner, tooltip (same formats).               |
+| `BRANDING_SECONDARY_FOREGROUND_COLOR` | `--secondary-foreground` brand color; derived for contrast when unset (same formats).|
+| `BRANDING_ACCENT_COLOR`               | `--accent` brand color; derived from the primary color when unset (same formats).  |
+| `BRANDING_ACCENT_FOREGROUND_COLOR`    | `--accent-foreground` brand color (same formats).                                  |
 
 Asset URLs must be absolute **HTTPS** and hosted on the deployment's own domain (the
-`APP_BASE_URL` host), a subdomain of it, or its parent domain; absolute-URL `http`, relative
-paths and any other domain are rejected. Colors must use one of the listed formats, with every
-channel a number.
+`APP_BASE_URL` host), a subdomain of it, or a host under its parent domain — so with
+`APP_BASE_URL=uat-avintra.aventisia.com` the sibling hosts `local-avintra.aventisia.com` and
+`avintra.aventisia.com` are accepted too. Absolute-URL `http`, relative paths and any other
+domain are rejected. Colors must use one of the listed formats, with every channel a number.
 
-`--accent` (hover surface) and the focus `--ring` are derived from the primary color, and readable
-`*-foreground` tokens are derived for contrast. The resolved values are served unauthenticated at
-`GET /accounts/api/branding` for the web apps to consume at boot.
+`--accent` falls back to a tint of the primary color when unset and the focus `--ring` is always
+derived from the primary color; readable `*-foreground` tokens are derived for contrast when unset.
+The resolved values are served unauthenticated at `GET /accounts/api/branding` for the web apps to
+consume at boot.
 
 ### 3. WSL2/PostgreSQL connectivity notes
 

@@ -28,29 +28,65 @@ const applyColorRamp = (root: HTMLElement, token: string, color: string) => {
   });
 };
 
-/** Applies the brand color, its shade ramp, the accent/ring tints and readable foregrounds. */
+/** Applies the brand colors, their shade ramps, the ring tint and readable foregrounds. */
 const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
-  const { primaryColor, secondaryColor } = branding;
+  const {
+    background,
+    foreground,
+    primary,
+    primaryForeground,
+    secondary,
+    secondaryForeground,
+    accent,
+    accentForeground,
+  } = branding;
 
-  if (primaryColor) {
-    root.style.setProperty("--primary", primaryColor);
-    root.style.setProperty("--primary-foreground", pickReadableForeground(primaryColor));
-    root.style.setProperty("--accent", `color-mix(in srgb, ${primaryColor} 8%, white)`);
-    root.style.setProperty("--ring", `color-mix(in srgb, ${primaryColor} 20%, transparent)`);
-    applyColorRamp(root, "primary", primaryColor);
+  if (background) {
+    root.style.setProperty("--background", background);
+  }
+
+  if (foreground) {
+    root.style.setProperty("--foreground", foreground);
+  }
+
+  if (primary) {
+    root.style.setProperty("--primary", primary);
+    root.style.setProperty(
+      "--primary-foreground",
+      primaryForeground ?? pickReadableForeground(primary),
+    );
+    root.style.setProperty("--ring", `color-mix(in srgb, ${primary} 20%, transparent)`);
+    applyColorRamp(root, "primary", primary);
+  } else if (primaryForeground) {
+    root.style.setProperty("--primary-foreground", primaryForeground);
+  }
+
+  if (accent) {
+    root.style.setProperty("--accent", accent);
+  } else if (primary) {
+    root.style.setProperty("--accent", `color-mix(in srgb, ${primary} 8%, white)`);
+  }
+
+  if (accentForeground) {
+    root.style.setProperty("--accent-foreground", accentForeground);
   }
 
   // Secondary brand surface (secondary buttons, banner, tooltip, sidebar marker) + shade ramp.
-  if (secondaryColor) {
-    root.style.setProperty("--secondary", secondaryColor);
-    root.style.setProperty("--secondary-foreground", pickReadableForeground(secondaryColor));
-    applyColorRamp(root, "secondary", secondaryColor);
+  if (secondary) {
+    root.style.setProperty("--secondary", secondary);
+    root.style.setProperty(
+      "--secondary-foreground",
+      secondaryForeground ?? pickReadableForeground(secondary),
+    );
+    applyColorRamp(root, "secondary", secondary);
+  } else if (secondaryForeground) {
+    root.style.setProperty("--secondary-foreground", secondaryForeground);
   }
 };
 
 /** Points every favicon link at the branded icon. */
 const applyBrandFavicon = (branding: ResolvedBranding) => {
-  const { faviconUrl } = branding;
+  const faviconUrl = branding.faviconUrlLight ?? branding.faviconUrlDark;
   if (!faviconUrl) {
     return;
   }
@@ -83,7 +119,8 @@ const applyBrandTitle = (branding: ResolvedBranding) => {
  * @param {ResolvedBranding} branding - The resolved deployment branding.
  *
  * @remarks
- * - `--accent` (hover surface) and `--ring` are tints of the primary color.
+ * - `--accent` falls back to a tint of the primary color when unset; `--ring` is always derived
+ *   from the primary color.
  * - A page-level `useDocumentTitle` overrides the base title set here.
  */
 const applyBrandingToDocument = (branding: ResolvedBranding): void => {

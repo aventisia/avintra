@@ -1,15 +1,12 @@
-import { LogoImage, LogoLink, RedirectPage } from "@avplatform/layout";
+import { RedirectPage } from "@avplatform/layout";
 
+import { AppLogo } from "./AppLogo";
 import { AppMinimalFooter } from "./AppMinimalFooter";
 
 export const AppRedirectPage = () => {
   return (
     <RedirectPage
-      appLogo={
-        <LogoLink>
-          <LogoImage className="h-7" src="logo.svg" />
-        </LogoLink>
-      }
+      appLogo={<AppLogo className="h-7" showFullLogo />}
       minimalFooter={<AppMinimalFooter />}
     />
   );
