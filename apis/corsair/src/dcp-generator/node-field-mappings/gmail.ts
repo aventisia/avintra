@@ -62,7 +62,7 @@ How to fill this in: write the email as normal text (see the example below), the
 Rules for the email text you encode:
 
 - Keep every line separated by CRLF (\`\\r\\n\`).
-- Use URL-safe Base64: replace '+' with '-', '/' with '_', and remove trailing '=' padding. ("Convert Text to Base64" outputs standard Base64, so make these swaps when they appear.)
+- Use URL-safe Base64: in the "Convert Text to Base64" node, set "Base64 Variant" to URL-safe; it emits '-'/'_' with no '=' padding.
 - At least one of To, Cc or Bcc is required.
 - 'From' is optional; omit it to use the connected Gmail account.
 - Plain text only: use 'Content-Type: text/plain' and omit the multipart wrapper.
