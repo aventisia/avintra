@@ -1,4 +1,5 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { ModelCapabilityEnum, ModelProviderEnum } from "@avplatform/ui/enums";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
@@ -6,6 +7,7 @@ import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { LlmModelsResponseDto, LlmProvidersResponseDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
+import { TenantEnabledModelDto } from "../dtos/tenant-enabled-model.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;
 const llmPipelineBaseURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/v2/llm`;
@@ -16,6 +18,24 @@ const llmPipelineBaseURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}
 export const getModelProviders = () => {
   return axiosInstance
     .get<IHttpResponse<TenantModelProviderDto[]>>(`${baseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the enabled models across the current tenant's providers, optionally filtered by provider and capability.
+ */
+export const getEnabledModels = (
+  providerType?: ModelProviderEnum,
+  capability?: ModelCapabilityEnum,
+) => {
+  const params = new URLSearchParams();
+  if (providerType) params.set("providerType", providerType);
+  if (capability) params.set("capability", capability);
+  const query = params.toString();
+  return axiosInstance
+    .get<IHttpResponse<TenantEnabledModelDto[]>>(
+      `${baseAPIURL}/enabled-models${query ? `?${query}` : ""}`,
+    )
     .then((res) => res.data);
 };
 
@@ -68,11 +88,7 @@ export const getLlmProvidersV2 = (capability?: string) => {
  * When a `credentialId` is supplied it is forwarded to the pipeline as
  * `credentialId`, which is echoed back on each model for ollama providers.
  */
-export const getLlmModelsV2 = (
-  provider: string,
-  capability?: string,
-  credentialName?: string,
-) => {
+export const getLlmModelsV2 = (provider: string, capability?: string, credentialName?: string) => {
   const params = new URLSearchParams({ provider });
   if (capability) params.set("capability", capability);
   if (credentialName) params.set("credential_name", credentialName);

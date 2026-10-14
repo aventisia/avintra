@@ -1,0 +1,29 @@
+meta {
+  name: Upsert model provider with legacy payload
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "providerType": "OpenAI",
+    "enabledModelIds": ["gpt-4o-mini", "gpt-4o"],
+    "isDisabled": false
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+}
