@@ -217,17 +217,15 @@ public class ClientStatusStore : IClientStatusStore
 
         try
         {
-            var machine = await _workspaceDbContext.Machines
+            // IMPORTANT NOTE: ExecuteUpdateAsync avoids loading the Machine into the DbContext
+            // change tracker, which can conflict with other code paths that attach Machine instances.
+            await _workspaceDbContext.Machines
                 .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(m =>
+                .Where(m =>
                     m.Id == clientDataStore.ClientId &&
-                    m.TenantId == clientDataStore.TenantId);
-
-            if (machine == null)
-                return;
-
-            machine.LastCheckedIn = DateTimeOffset.UtcNow.UtcDateTime;
-            await _workspaceDbContext.SaveChangesAsync();
+                    m.TenantId == clientDataStore.TenantId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(m => m.LastCheckedIn, DateTimeOffset.UtcNow.UtcDateTime));
         }
         catch (Exception ex)
         {
