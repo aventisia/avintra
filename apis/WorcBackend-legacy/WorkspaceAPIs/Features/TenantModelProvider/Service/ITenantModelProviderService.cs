@@ -16,6 +16,11 @@ public interface ITenantModelProviderService
     Task<ServiceResponse<TenantModelProviderDto>> GetModelProviderByIdAsync(Guid modelProviderId);
 
     /// <summary>
+    /// Retrieves the enabled models across the current tenant's providers, optionally filtered by provider and capability.
+    /// </summary>
+    Task<ServiceResponse<IEnumerable<TenantEnabledModelDto>>> GetEnabledModelsAsync(LLMProviderTypesEnum? providerType, ModelCapabilityEnum? capability);
+
+    /// <summary>
     /// Creates or updates a model provider configuration for the current tenant.
     /// </summary>
     Task<ServiceResponse<TenantModelProviderDto>> UpsertModelProviderAsync(TenantModelProviderDto modelProviderDto);

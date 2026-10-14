@@ -1,0 +1,25 @@
+meta {
+  name: Get enabled models by embedding capability
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider/enabled-models?capability=Embedding
+  body: none
+  auth: none
+}
+
+params:query {
+  capability: Embedding
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isArray
+}

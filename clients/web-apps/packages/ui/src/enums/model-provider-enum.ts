@@ -1,3 +1,9 @@
+/**
+ * Model provider types accepted by the Workspace APIs and the LLM pipeline.
+ *
+ * IMPORTANT NOTE: Any changes to this file should be manually synced with the back-end
+ * `LLMProviderTypesEnum` and the LLM pipeline provider registry.
+ */
 export enum ModelProviderEnum {
   OpenAI = "OpenAI",
   Anthropic = "Anthropic",
