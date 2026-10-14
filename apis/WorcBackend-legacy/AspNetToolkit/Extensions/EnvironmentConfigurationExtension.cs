@@ -100,12 +100,22 @@ public static class EnvironmentConfigurationExtension
         // colors/URLs/oversized text are dropped with a warning so a bad value cannot break the UI.
         var BRANDING_APP_NAME = NormalizeOptional("BRANDING_APP_NAME", Environment.GetEnvironmentVariable("BRANDING_APP_NAME"), BrandingNameMaxLength);
         var BRANDING_COMPANY_NAME = NormalizeOptional("BRANDING_COMPANY_NAME", Environment.GetEnvironmentVariable("BRANDING_COMPANY_NAME"), BrandingNameMaxLength);
-        var BRANDING_LOGO_URL = SanitizeBrandingUrl("BRANDING_LOGO_URL", Environment.GetEnvironmentVariable("BRANDING_LOGO_URL"), APP_BASE_URL);
-        var BRANDING_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_LOGO_URL_DARK"), APP_BASE_URL);
-        var BRANDING_FULL_LOGO_URL = SanitizeBrandingUrl("BRANDING_FULL_LOGO_URL", Environment.GetEnvironmentVariable("BRANDING_FULL_LOGO_URL"), APP_BASE_URL);
-        var BRANDING_FAVICON_URL = SanitizeBrandingUrl("BRANDING_FAVICON_URL", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL"), APP_BASE_URL);
+        var BRANDING_COMPANY_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_COMPANY_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_COMPANY_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_COMPANY_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_COMPANY_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_COMPANY_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_PRODUCT_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_PRODUCT_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_PRODUCT_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_PRODUCT_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_PRODUCT_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_PRODUCT_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_SHORT_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_SHORT_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_SHORT_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_SHORT_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_SHORT_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_SHORT_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_FAVICON_URL_LIGHT = SanitizeBrandingUrl("BRANDING_FAVICON_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_FAVICON_URL_DARK = SanitizeBrandingUrl("BRANDING_FAVICON_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL_DARK"), APP_BASE_URL);
+        var BRANDING_BACKGROUND_COLOR = SanitizeBrandingColor("BRANDING_BACKGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_BACKGROUND_COLOR"));
+        var BRANDING_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_FOREGROUND_COLOR"));
         var BRANDING_PRIMARY_COLOR = SanitizeBrandingColor("BRANDING_PRIMARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_PRIMARY_COLOR"));
+        var BRANDING_PRIMARY_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_PRIMARY_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_PRIMARY_FOREGROUND_COLOR"));
         var BRANDING_SECONDARY_COLOR = SanitizeBrandingColor("BRANDING_SECONDARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_SECONDARY_COLOR"));
+        var BRANDING_SECONDARY_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_SECONDARY_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_SECONDARY_FOREGROUND_COLOR"));
+        var BRANDING_ACCENT_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_COLOR"));
+        var BRANDING_ACCENT_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_FOREGROUND_COLOR"));
 
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
@@ -256,12 +266,22 @@ public static class EnvironmentConfigurationExtension
 
                     { "EnvironmentConfig:BrandingAppName", BRANDING_APP_NAME },
                     { "EnvironmentConfig:BrandingCompanyName", BRANDING_COMPANY_NAME },
-                    { "EnvironmentConfig:BrandingLogoUrl", BRANDING_LOGO_URL },
-                    { "EnvironmentConfig:BrandingLogoUrlDark", BRANDING_LOGO_URL_DARK },
-                    { "EnvironmentConfig:BrandingFullLogoUrl", BRANDING_FULL_LOGO_URL },
-                    { "EnvironmentConfig:BrandingFaviconUrl", BRANDING_FAVICON_URL },
+                    { "EnvironmentConfig:BrandingCompanyLogoUrlLight", BRANDING_COMPANY_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingCompanyLogoUrlDark", BRANDING_COMPANY_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingProductLogoUrlLight", BRANDING_PRODUCT_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingProductLogoUrlDark", BRANDING_PRODUCT_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingShortLogoUrlLight", BRANDING_SHORT_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingShortLogoUrlDark", BRANDING_SHORT_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingFaviconUrlLight", BRANDING_FAVICON_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingFaviconUrlDark", BRANDING_FAVICON_URL_DARK },
+                    { "EnvironmentConfig:BrandingBackgroundColor", BRANDING_BACKGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingForegroundColor", BRANDING_FOREGROUND_COLOR },
                     { "EnvironmentConfig:BrandingPrimaryColor", BRANDING_PRIMARY_COLOR },
+                    { "EnvironmentConfig:BrandingPrimaryForegroundColor", BRANDING_PRIMARY_FOREGROUND_COLOR },
                     { "EnvironmentConfig:BrandingSecondaryColor", BRANDING_SECONDARY_COLOR },
+                    { "EnvironmentConfig:BrandingSecondaryForegroundColor", BRANDING_SECONDARY_FOREGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingAccentColor", BRANDING_ACCENT_COLOR },
+                    { "EnvironmentConfig:BrandingAccentForegroundColor", BRANDING_ACCENT_FOREGROUND_COLOR },
 
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
@@ -314,8 +334,9 @@ public static class EnvironmentConfigurationExtension
 
     /// <summary>
     /// Validates an optional branding URL. The URL must be absolute HTTPS and hosted on the
-    /// deployment's own domain (the <c>APP_BASE_URL</c> host), a subdomain of it, or its parent
-    /// domain; anything else is dropped with a warning so the client falls back to defaults.
+    /// deployment's own domain (the <c>APP_BASE_URL</c> host), a subdomain of it, or a host under
+    /// its parent domain; anything else is dropped with a warning so the client falls back to
+    /// defaults.
     /// </summary>
     private static string? SanitizeBrandingUrl(string key, string? value, string appBaseUrl)
     {
@@ -334,11 +355,11 @@ public static class EnvironmentConfigurationExtension
             return null;
         }
 
-        // ...and from the deployment's domain (subdomains allowed).
+        // ...and from the deployment's domain (subdomains and sibling hosts allowed).
         if (!IsDeploymentHost(uri.Host, appBaseUrl))
         {
             Console.Error.WriteLine(
-                $"{key} must be hosted on {appBaseUrl}, a subdomain of it, or its parent domain; ignoring the value and using the default branding."
+                $"{key} must be hosted on {appBaseUrl}, a subdomain of it, or a host under its parent domain; ignoring the value and using the default branding."
             );
             return null;
         }
@@ -347,10 +368,15 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// True when the candidate host is the deployment host, a subdomain of it, or its parent
-    /// domain. Anchoring to the configured <c>APP_BASE_URL</c> host avoids guessing registrable
-    /// domains, which is unreliable for multi-part public suffixes (e.g. <c>co.uk</c>).
+    /// True when the candidate host is the deployment host, a subdomain of it, or a host under
+    /// the deployment host's parent domain (sibling environments such as
+    /// <c>local-avintra.aventisia.com</c> and <c>uat-avintra.aventisia.com</c>).
     /// </summary>
+    /// <remarks>
+    /// The parent-domain rule is skipped when it would leave a single label. It widens the accepted
+    /// set to the whole shared parent domain, so a deployment host under a multi-part public suffix
+    /// such as <c>co.uk</c> trusts every sibling host under it.
+    /// </remarks>
     private static bool IsDeploymentHost(string candidateHost, string appBaseUrl)
     {
         var baseHost = GetHostFromValue(appBaseUrl).TrimEnd('.');
@@ -360,10 +386,33 @@ public static class EnvironmentConfigurationExtension
             return false;
         }
 
-        return string.Equals(normalizedCandidate, baseHost, StringComparison.OrdinalIgnoreCase)
+        if (string.Equals(normalizedCandidate, baseHost, StringComparison.OrdinalIgnoreCase)
             || normalizedCandidate.EndsWith("." + baseHost, StringComparison.OrdinalIgnoreCase)
             || (normalizedCandidate.Contains('.')
-                && baseHost.EndsWith("." + normalizedCandidate, StringComparison.OrdinalIgnoreCase));
+                && baseHost.EndsWith("." + normalizedCandidate, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        var parentHost = GetParentHost(baseHost);
+        return parentHost != null
+            && (string.Equals(normalizedCandidate, parentHost, StringComparison.OrdinalIgnoreCase)
+                || normalizedCandidate.EndsWith("." + parentHost, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// The deployment host without its leading label, or null when that leaves a single label.
+    /// </summary>
+    private static string? GetParentHost(string baseHost)
+    {
+        var separatorIndex = baseHost.IndexOf('.');
+        if (separatorIndex < 0)
+        {
+            return null;
+        }
+
+        var parentHost = baseHost[(separatorIndex + 1)..];
+        return parentHost.Contains('.') ? parentHost : null;
     }
 
     /// <summary>

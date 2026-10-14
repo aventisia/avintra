@@ -1,8 +1,6 @@
-import { Header, HeaderContainer } from "@avplatform/layout";
+import { AppLogo, Header, HeaderContainer } from "@avplatform/layout";
 
 import { UserAccountModal } from "@/components/user-account/UserAccountModal";
-
-import { AppLogo } from "./AppLogo";
 
 const AppHeader: React.FC = () => {
   return (

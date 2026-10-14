@@ -94,12 +94,22 @@ public class EnvironmentConfig
     // unset falls back to the built-in Avintra/Aventisia defaults on the client.
     public string? BrandingAppName { get; set; }
     public string? BrandingCompanyName { get; set; }
-    public string? BrandingLogoUrl { get; set; }
-    public string? BrandingLogoUrlDark { get; set; }
-    public string? BrandingFullLogoUrl { get; set; }
-    public string? BrandingFaviconUrl { get; set; }
+    public string? BrandingCompanyLogoUrlLight { get; set; }
+    public string? BrandingCompanyLogoUrlDark { get; set; }
+    public string? BrandingProductLogoUrlLight { get; set; }
+    public string? BrandingProductLogoUrlDark { get; set; }
+    public string? BrandingShortLogoUrlLight { get; set; }
+    public string? BrandingShortLogoUrlDark { get; set; }
+    public string? BrandingFaviconUrlLight { get; set; }
+    public string? BrandingFaviconUrlDark { get; set; }
+    public string? BrandingBackgroundColor { get; set; }
+    public string? BrandingForegroundColor { get; set; }
     public string? BrandingPrimaryColor { get; set; }
+    public string? BrandingPrimaryForegroundColor { get; set; }
     public string? BrandingSecondaryColor { get; set; }
+    public string? BrandingSecondaryForegroundColor { get; set; }
+    public string? BrandingAccentColor { get; set; }
+    public string? BrandingAccentForegroundColor { get; set; }
 
     /// <summary>
     /// True when no on-prem tenant credentials are configured. A community deployment is

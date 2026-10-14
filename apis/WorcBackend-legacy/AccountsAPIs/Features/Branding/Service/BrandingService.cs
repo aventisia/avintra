@@ -28,12 +28,22 @@ public class BrandingService : IBrandingService
         {
             AppName = _environmentConfig.BrandingAppName,
             CompanyName = _environmentConfig.BrandingCompanyName,
-            LogoUrl = _environmentConfig.BrandingLogoUrl,
-            LogoUrlDark = _environmentConfig.BrandingLogoUrlDark,
-            FullLogoUrl = _environmentConfig.BrandingFullLogoUrl,
-            FaviconUrl = _environmentConfig.BrandingFaviconUrl,
+            CompanyLogoUrlLight = _environmentConfig.BrandingCompanyLogoUrlLight,
+            CompanyLogoUrlDark = _environmentConfig.BrandingCompanyLogoUrlDark,
+            ProductLogoUrlLight = _environmentConfig.BrandingProductLogoUrlLight,
+            ProductLogoUrlDark = _environmentConfig.BrandingProductLogoUrlDark,
+            ShortLogoUrlLight = _environmentConfig.BrandingShortLogoUrlLight,
+            ShortLogoUrlDark = _environmentConfig.BrandingShortLogoUrlDark,
+            FaviconUrlLight = _environmentConfig.BrandingFaviconUrlLight,
+            FaviconUrlDark = _environmentConfig.BrandingFaviconUrlDark,
+            BackgroundColor = _environmentConfig.BrandingBackgroundColor,
+            ForegroundColor = _environmentConfig.BrandingForegroundColor,
             PrimaryColor = _environmentConfig.BrandingPrimaryColor,
+            PrimaryForegroundColor = _environmentConfig.BrandingPrimaryForegroundColor,
             SecondaryColor = _environmentConfig.BrandingSecondaryColor,
+            SecondaryForegroundColor = _environmentConfig.BrandingSecondaryForegroundColor,
+            AccentColor = _environmentConfig.BrandingAccentColor,
+            AccentForegroundColor = _environmentConfig.BrandingAccentForegroundColor,
         };
 
         return Task.FromResult(serviceResponse.Update(null, 200, brandingDto));

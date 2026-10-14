@@ -1,27 +1,24 @@
 import { LogoImage, LogoLink } from "@avplatform/layout";
-import { useBranding } from "@avplatform/ui/hooks";
+import { useBrandLogo } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 
 interface AppLogoProps {
   logoSrc?: string;
+  showFullLogo?: boolean;
   className?: string;
 }
 
-const AppLogo = (
-  { logoSrc, className }: AppLogoProps, // Optional prop for custom logo source
-) => {
-  const branding = useBranding();
+const AppLogo = ({ logoSrc, showFullLogo = false, className }: AppLogoProps) => {
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product");
 
-  // A configured deployment branding logo overrides the provided/default asset. Light/dark
-  // variants are not differentiated yet, so the same branded logo is used for both.
   const logoSrcWithBaseUrl =
-    branding.logoUrl ??
+    brandingLogoUrl ??
     (logoSrc
       ? `${import.meta.env.BASE_URL}${logoSrc.toLowerCase()}`
-      : `${import.meta.env.BASE_URL}app_logo_light.svg`);
+      : `${import.meta.env.BASE_URL}${showFullLogo ? "logo.svg" : "app_logo_light.svg"}`);
 
   return (
-    <LogoLink>
+    <LogoLink className="gap-1.5">
       <LogoImage className={cn(className)} src={logoSrcWithBaseUrl} />
     </LogoLink>
   );

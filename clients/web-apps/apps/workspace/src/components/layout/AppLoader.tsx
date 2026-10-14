@@ -1,10 +1,10 @@
-import { LogoImage, LogoLink } from "@avplatform/layout";
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppLoaderStore } from "@/stores/app-loader-store";
 
+import { AppLogo } from "./AppLogo";
 import { AppMinimalFooter } from "./AppMinimalFooter";
 
 interface AppLoaderProps {
@@ -21,9 +21,7 @@ const AppLoader = ({ className }: AppLoaderProps) => {
       )}
     >
       <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        <LogoLink>
-          <LogoImage src="logo.svg" />
-        </LogoLink>
+        <AppLogo showFullLogo />
       </div>
       <div className="text-md -mt-4 flex items-center gap-3">
         <LoadingSpinner className="h-10 w-10 text-primary" />
