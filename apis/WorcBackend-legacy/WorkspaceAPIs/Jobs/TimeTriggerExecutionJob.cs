@@ -113,19 +113,9 @@ public class TimeTriggerExecutionJob : IJob
 
                 foreach (var trigger in triggersToExecute)
                 {
-                    // JSON serializer configuration
-                    var jsonOptions = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                    };
-
-                    jsonOptions.Converters.Add(new JsonStringEnumConverter());
-
-                    // Deserialize existing metadata into model
                     var triggerModel = System.Text.Json.JsonSerializer.Deserialize<TimeTriggerModel>(
                         trigger.Metadata.RootElement.GetRawText(),
-                        jsonOptions);
+                        TimeTriggerMetadataHelpers.JsonOptions);
 
                     foreach (var timeTriggerflowVersion in trigger.TriggerFlowVersions)
                     {
@@ -158,7 +148,7 @@ public class TimeTriggerExecutionJob : IJob
                         trigger.Timezone);
 
                     // Update metadata with latest subscription data
-                    trigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(triggerModel, jsonOptions));
+                    trigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(triggerModel, TimeTriggerMetadataHelpers.JsonOptions));
 
                     // Update the trigger record in the database
                     _workspaceInternalDbContext.Triggers.Update(trigger);

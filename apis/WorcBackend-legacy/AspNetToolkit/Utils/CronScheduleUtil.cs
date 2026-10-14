@@ -4,37 +4,24 @@ namespace AspNetToolkit.Utils;
 
 public static class CronScheduleUtil
 {
-    // Builds a Quartz-compatible CRON expression string based on the trigger parameters.
+    private const int MaxOccurrenceSearchAttempts = 750;
+
+    /// <summary>
+    /// Builds a Quartz-compatible CRON expression for the supplied frequency; the time of day
+    /// defaults to midnight when not provided.
+    /// </summary>
     public static string BuildCronExpression(
-    TriggerFrequencyTypesEnum frequencyType,
-    int interval,
-    string timezone,
-    TimeOnly? localTimeOfDay = null,
-    IReadOnlyCollection<int>? weekdays = null,
-    IReadOnlyCollection<int>? monthDays = null,
-    bool isLastWorkingDay = false)
+        TriggerFrequencyTypesEnum frequencyType,
+        int interval,
+        TimeOnly? timeOfDay = null,
+        IReadOnlyCollection<int>? weekdays = null,
+        IReadOnlyCollection<int>? monthDays = null,
+        bool isLastWorkingDay = false)
     {
-        // Convert local time → UTC
-        // var tz = TimeZoneInfo.FindSystemTimeZoneById(timezone);
-        // var localTime = localTimeOfDay ?? new TimeOnly(0, 0);
-        // var localDateTime = DateTime.SpecifyKind(DateTime.Today.Add(localTime.ToTimeSpan()), DateTimeKind.Unspecified);
-        // var localOffset = new DateTimeOffset(localDateTime, tz.GetUtcOffset(localDateTime));
-        // var utcTime = localOffset.ToUniversalTime();
+        var scheduledTime = timeOfDay ?? new TimeOnly(0, 0);
+        int hour = scheduledTime.Hour;
+        int minute = scheduledTime.Minute;
 
-        // Check if the provided time is already UTC (assumed from your note)
-        // localTimeOfDay is already in UTC, no need to convert
-        DateTime? utcDateTime = null;
-
-        // If localTimeOfDay is not null, it is in UTC and we don't need to convert
-        if (localTimeOfDay.HasValue)
-            utcDateTime = DateTime.SpecifyKind(DateTime.Today.Add(localTimeOfDay.Value.ToTimeSpan()), DateTimeKind.Utc);
-        else
-            utcDateTime = DateTime.UtcNow;
-
-        int utcHour = utcDateTime.Value.Hour;
-        int utcMinute = utcDateTime.Value.Minute;
-
-        // Convert weekdays (1=MON ... 7=SUN) → CRON format
         string weekdayPart = "*";
         if (weekdays != null && weekdays.Count > 0)
         {
@@ -51,53 +38,46 @@ public static class CronScheduleUtil
             }));
         }
 
-        // Build CRON based on frequency type
         return frequencyType switch
         {
-            // Every N minutes
             TriggerFrequencyTypesEnum.MinuteByMinute =>
-                $"0 0/{interval} * * * ? *", // e.g. every 5 minutes → 0 0/5 * * * ? *
+                $"0 0/{interval} * * * ? *",
 
-            // Every N hours at specific minute
             TriggerFrequencyTypesEnum.Hourly =>
-                $"0 {utcMinute} 0/{interval} * * ? *", // e.g. every 2 hours at 15 → 0 15 0/2 * * ? *
+                $"0 {minute} 0/{interval} * * ? *",
 
-            // Every N days at specific time (UTC)
             TriggerFrequencyTypesEnum.Daily =>
-                $"0 {utcMinute} {utcHour} 1/{interval} * ? *", // e.g. every day 14:30 UTC → 0 30 14 1/1 * ? *
+                $"0 {minute} {hour} 1/{interval} * ? *",
 
-            // Every week on given weekdays at specific time
             TriggerFrequencyTypesEnum.Weekly =>
-                $"0 {utcMinute} {utcHour} ? * {weekdayPart} *", // e.g. MON,WED,FRI at 10:00 UTC → 0 0 10 ? * MON,WED,FRI *
+                $"0 {minute} {hour} ? * {weekdayPart} *",
 
-            // Every N months, on specific day or last working day
             TriggerFrequencyTypesEnum.MonthlyDayOfMonth =>
                 isLastWorkingDay
-                    ? $"0 {utcMinute} {utcHour} LW 1/{interval} ? *" // e.g. last working day every month 18:00 UTC
-                    : $"0 {utcMinute} {utcHour} {string.Join(",", monthDays ?? new List<int> { 1 })} 1/{interval} ? *",
-            // e.g. day 1, 15 every 2 months at 9:00 UTC
+                    ? $"0 {minute} {hour} LW 1/{interval} ? *"
+                    : $"0 {minute} {hour} {string.Join(",", monthDays ?? new List<int> { 1 })} 1/{interval} ? *",
 
-            // Every N months on specific weekday (like first Monday)
             TriggerFrequencyTypesEnum.MonthlyDayOfWeek =>
-                $"0 {utcMinute} {utcHour} ? 1/{interval} {weekdayPart} *", // e.g. 1st Monday every 2 months → 0 0 9 ? 1/2 MON *
+                $"0 {minute} {hour} ? 1/{interval} {weekdayPart} *",
 
             _ => throw new ArgumentOutOfRangeException(nameof(frequencyType))
         };
     }
 
-    // Computes the next valid trigger time in UTC based on the provided cron expression, excluding specific hours, weekdays, or dates if necessary
+    /// <summary>
+    /// Computes the next trigger time in UTC for the supplied CRON expression, honouring the
+    /// timezone used for the schedule and the optional hour, weekday, and date exclusions.
+    /// </summary>
     public static DateTimeOffset ComputeNextTriggerUtc(
-    string cronExpression,
-    DateTimeOffset effectiveDate,
-    IReadOnlyCollection<int>? excludedHours = null,
-    IReadOnlyCollection<int>? excludedWeekdays = null,
-    IReadOnlyCollection<DateOnly>? excludedDates = null,
-    string timezone = "UTC")
+        string cronExpression,
+        DateTimeOffset effectiveDate,
+        IReadOnlyCollection<int>? excludedHours = null,
+        IReadOnlyCollection<int>? excludedWeekdays = null,
+        IReadOnlyCollection<DateOnly>? excludedDates = null,
+        string timezone = "UTC")
     {
-        // Ensure effectiveDate is not in the past
         effectiveDate = effectiveDate > DateTimeOffset.UtcNow ? effectiveDate : DateTimeOffset.UtcNow;
 
-        // Resolve the trigger timezone once; fall back to UTC for unknown/invalid ids
         TimeZoneInfo tz;
         try
         {
@@ -112,50 +92,34 @@ public static class CronScheduleUtil
             tz = TimeZoneInfo.Utc;
         }
 
-        // Create a CronExpression object based on the provided cron expression
-        var expr = new CronExpression(cronExpression);
-
-        // Get the next valid time after the current UTC time
+        var expr = new CronExpression(cronExpression) { TimeZone = tz };
         DateTimeOffset? next = expr.GetNextValidTimeAfter(effectiveDate);
 
-        // Loop up to 750 times to find the next valid time that does not match excluded criteria
-        for (int i = 0; i < 750 && next != null; i++)
+        for (int i = 0; i < MaxOccurrenceSearchAttempts && next != null; i++)
         {
-            // Convert the candidate instant to the trigger timezone so exception
-            // hours/weekdays/dates are evaluated against the user's local wall clock.
             var localNext = TimeZoneInfo.ConvertTime(next.Value, tz);
-
-            // Convert the DateTime to DateOnly (removes time component)
             var nextDateOnly = DateOnly.FromDateTime(localNext.DateTime);
-
-            // Get the day of the week (1 = Monday, 7 = Sunday)
             int weekday = (int)localNext.DayOfWeek;
-
-            // Normalize Sunday to 7 to match convention (1 = Monday, 7 = Sunday)
             if (weekday == 0) weekday = 7;
 
-            // Get the hour of the day (0-23)
             int hour = localNext.Hour;
 
-            // Check if the computed time should be excluded (either hour, weekday, or date)
             if (!((excludedHours?.Contains(hour) ?? false) ||
                 (excludedWeekdays?.Contains(weekday) ?? false) ||
                 (excludedDates?.Contains(nextDateOnly) ?? false)))
             {
-                // If the time is valid (not excluded), return it
-                return next.Value;
+                return next.Value.ToUniversalTime();
             }
 
-            // If the time is excluded, move to the next occurrence (add one hour)
             next = expr.GetNextValidTimeAfter(next.Value.AddHours(1));
         }
 
-        // If no valid next occurrence was found after 500 checks, throw an exception
         return next?.ToUniversalTime() ?? throw new InvalidOperationException("Could not find a valid next occurrence.");
     }
 
-
-    // Builds a description of a time trigger schedule.
+    /// <summary>
+    /// Builds a human-readable description of a time-trigger schedule.
+    /// </summary>
     public static string BuildDescription(
         TriggerFrequencyTypesEnum frequencyType,
         int interval,
@@ -164,10 +128,8 @@ public static class CronScheduleUtil
         IReadOnlyCollection<int>? weekdays = null,
         IReadOnlyCollection<int>? monthDays = null)
     {
-        // Helper method to handle pluralization (e.g., "minute" vs "minutes").
         string plural(int count) => count > 1 ? "s" : string.Empty;
 
-        // Helper method to format weekdays into a readable string (e.g., "Monday, Wednesday").
         string formatWeekdays(IReadOnlyCollection<int>? days)
         {
             if (days == null || days.Count == 0) return "unspecified days";
@@ -185,10 +147,8 @@ public static class CronScheduleUtil
             }));
         }
 
-        // Format the provided timeOfDay or default to "00:00" if not provided.
         string time = timeOfDay?.ToString("HH:mm") ?? "00:00";
 
-        // Switch statement to return a description based on the frequency type.
         return frequencyType switch
         {
             TriggerFrequencyTypesEnum.MinuteByMinute =>
