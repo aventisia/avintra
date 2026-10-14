@@ -14,6 +14,7 @@ type TableActionsProps = {
   type: string;
   flowName?: string | null;
   flowVersionNumber?: number;
+  supportedPlatform?: string;
 };
 export const TableActions = ({
   rowId,
@@ -21,6 +22,7 @@ export const TableActions = ({
   type,
   flowName,
   flowVersionNumber,
+  supportedPlatform,
 }: TableActionsProps) => {
   return (
     <DataTableRowActions>
@@ -32,6 +34,7 @@ export const TableActions = ({
           isDisabled={isDisabled}
           flowName={flowName}
           flowVersionNumber={flowVersionNumber}
+          supportedPlatform={supportedPlatform}
         />
       )}{" "}
       <AgentConfigRowAction rowId={rowId} isDisabled={isDisabled} />

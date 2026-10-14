@@ -8,8 +8,13 @@ import { useEffect, useMemo, useRef } from "react";
 import { useWatch } from "react-hook-form";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+import { FlowVersionSelectOption } from "@/features/search-by-query/types/flow-version-select-option.type";
 
 import { insertJob } from "../../apis/jobs-table-apis";
+import {
+  CLOUD_UNSUPPORTED_DESCRIPTION,
+  isCloudExecutionBlocked,
+} from "../../constants/cloud-execution.constant";
 import { JobCreateFormData } from "../../constants/job-create-zod-schema";
 import {
   executeOnCloudProps,
@@ -59,6 +64,18 @@ export const JobCreateForm = ({
     control: form.control,
     name: "flowVersionId",
   });
+
+  const selectedAgentPlatform = useMemo(() => {
+    if (!selectedFlowVersionId || typeof selectedFlowVersionId !== "object") return undefined;
+    return (selectedFlowVersionId as FlowVersionSelectOption).supportedPlatform;
+  }, [selectedFlowVersionId]);
+
+  const isCloudSupported = !isCloudExecutionBlocked(selectedAgentPlatform);
+
+  useEffect(() => {
+    if (isCloudSupported || !executeOnCloud) return;
+    form.setValue("executeOnCloud", false, { shouldValidate: true });
+  }, [isCloudSupported, executeOnCloud, form]);
 
   const selectedExecutionLocation = useWatch({
     control: form.control,
@@ -142,7 +159,13 @@ export const JobCreateForm = ({
           <AsyncSingleSelectField {...flowVersionIdProps} filters={flowVersionIdFilters} />
         </div>
 
-        <SwitchField {...executeOnCloudProps} />
+        <SwitchField
+          {...executeOnCloudProps}
+          disabled={!isCloudSupported}
+          description={
+            isCloudSupported ? executeOnCloudProps.description : CLOUD_UNSUPPORTED_DESCRIPTION
+          }
+        />
 
         {!executeOnCloud && (
           <div ref={executionLocationWrapperRef}>

@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
+import { FlowVersionSelectOption } from "@/features/search-by-query/types/flow-version-select-option.type";
+
 import {
   DEFAULT_JOB_INPUT_DATA,
   type JobCreateFormData,
@@ -13,6 +15,10 @@ import {
   jobCreateZodSchema,
   parseJsonEditorValue,
 } from "..";
+import {
+  CLOUD_EXECUTION_LOCATION,
+  isCloudExecutionBlocked,
+} from "../constants/cloud-execution.constant";
 
 interface UseDefineJobCreateFormOptions {
   defaultMachineOption?: ISelectOption;
@@ -28,18 +34,21 @@ export const useDefineJobCreateForm = ({
 }: UseDefineJobCreateFormOptions = {}) => {
   const { setIsDirty } = useCrudDialogDirty();
 
-  const defaultValues: JobCreateFormData = useMemo(
-    () => ({
+  const defaultValues: JobCreateFormData = useMemo(() => {
+    const defaultPlatform = (defaultFlowVersionOption as FlowVersionSelectOption | undefined)
+      ?.supportedPlatform;
+    const isCloudAllowed = !defaultMachineOption && !isCloudExecutionBlocked(defaultPlatform);
+
+    return {
       flowVersionId: defaultFlowVersionOption ?? "",
       triggerType: TriggerTypesEnum.Manual,
       priority: JobPriorityEnum.Normal,
-      executeOnCloud: !defaultMachineOption,
+      executeOnCloud: isCloudAllowed,
       executionLocation: defaultMachineOption ?? "",
       jobInputData: DEFAULT_JOB_INPUT_DATA,
       existingJobId: "",
-    }),
-    [defaultMachineOption, defaultFlowVersionOption],
-  );
+    };
+  }, [defaultMachineOption, defaultFlowVersionOption]);
 
   const form = useForm<JobCreateFormData>({
     resolver: zodResolver(jobCreateZodSchema),
@@ -63,9 +72,9 @@ export const useDefineJobCreateForm = ({
     triggerType: formData.triggerType,
     priority: formData.priority,
     executionLocation: formData.executeOnCloud
-      ? "Cloud"
+      ? CLOUD_EXECUTION_LOCATION
       : typeof formData.executionLocation === "object" && formData.executionLocation
-        ? formData.executionLocation.value
+        ? formData.executionLocation.label
         : formData.executionLocation,
     jobInputData:
       formData.jobInputData === DEFAULT_JOB_INPUT_DATA

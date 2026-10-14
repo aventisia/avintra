@@ -12,6 +12,7 @@ import { enumToArray } from "@avplatform/ui/utils";
 import { JsonEditorFieldProps } from "@/components/json-editor/JsonEditorField";
 import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-version.api";
 import { searchMachines } from "@/features/search-by-query/apis/search-machine.api";
+import { FlowVersionSelectOption } from "@/features/search-by-query/types/flow-version-select-option.type";
 import {
   FlowVersionSearchQueryFilters,
   MachineSearchQueryFilters,
@@ -35,7 +36,7 @@ export const idProps: InputFieldProps = {
 };
 
 export const flowVersionIdProps: AsyncSingleSelectFieldProps<
-  ISelectOption,
+  FlowVersionSelectOption,
   FlowVersionSearchQueryFilters
 > = {
   name: "flowVersionId",

@@ -75,6 +75,12 @@ export interface AgentsAssistDto {
    * Gets or sets the list of machine ids the agent is assigned to.
    */
   assignedMachineIds?: string[];
+
+  /**
+   * Gets or sets the comma-separated platforms the agent supports (for example "cloud" or
+   * "windows").
+   */
+  supportedPlatform?: string;
 }
 
 /**
