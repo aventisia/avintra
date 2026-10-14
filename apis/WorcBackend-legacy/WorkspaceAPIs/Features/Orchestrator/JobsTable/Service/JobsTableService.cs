@@ -81,8 +81,6 @@ public class JobsTableService : IJobsTableService
         return user?.FindFirstValue("uname") ?? string.Empty;
     }
 
-    private bool IsSuperAdmin() => _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString());
-
     /// <summary>
     /// Trims a remark to the maximum allowed length, adding an ellipsis when truncated.
     /// </summary>
@@ -1588,4 +1586,6 @@ public class JobsTableService : IJobsTableService
     //     // Return the final response to the caller.
     //     return serviceResponse;
     // }
+
+    private bool IsSuperAdmin() => _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString());
 }
