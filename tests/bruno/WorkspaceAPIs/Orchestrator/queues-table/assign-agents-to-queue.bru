@@ -16,10 +16,12 @@ body:json {
   ]
 }
 script:post-response {
-  if(res.getStatus() == 200){
-      bru.setGlobalEnvVar(
-          "MACHINE_FLOW_ID",
-          res.getBody().data.id
-      );
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.data === true) {
+    bru.setEnvVar("EXPECT_AGENT_ASSIGNED", "true");
   }
+  test("assign agents returns 200 with data true", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
 }

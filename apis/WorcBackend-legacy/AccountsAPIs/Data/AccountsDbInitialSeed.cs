@@ -243,8 +243,8 @@ public static class AccountsDbInitialSeed
             }
 
             logger.LogInformation("Super user {Email} created successfully.", superUser.Email);
-            Console.WriteLine("Email: {superUser.Email}", superUser.Email);
-            Console.WriteLine("Password: {password}", password);
+            Console.WriteLine($"Email: {superUser.Email}");
+            Console.WriteLine($"Password: {password}");
             return superUser;
         }
         catch (Exception ex)

@@ -1,0 +1,35 @@
+meta {
+  name: Unassign all agents from queue
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{QUEUE_ID}}/assign-agents
+  body: json
+  auth: none
+}
+
+body:json {
+  []
+}
+
+script:post-response {
+  const body = res.getBody();
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (res.getStatus() === 200 && body?.data === true && message.includes("removed")) {
+    bru.setEnvVar("EXPECT_AGENT_ASSIGNED", "false");
+  }
+  test("unassign agents returns 200 with a removal message", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+    expect(message).to.contain("removed");
+  });
+}
+
+docs {
+  > Empties the target queue's agent assignments through the bulk endpoint so the
+  > removal branch of AssignAgentsAsync is exercised. The bulk POST-`[]` path runs
+  > the fixed FlowVersionId filter, unlike the untouched single-link DELETE route.
+  > Use a DEDICATED fixture queue: this request clears every assignment on it.
+}

@@ -974,7 +974,7 @@ public class QueueTableService : IQueueTableService
 
             // Identify agents that are already assigned to the queue.
             var existing = queue?.QueueFlowVersions?.ToList() ?? new List<QueueFlowVersion>();
-            var existingIds = existing.Select(mf => mf.QueueId).ToList();
+            var existingIds = existing.Select(mf => mf.FlowVersionId).ToList();
 
             // Identify new queue IDs that are not yet assigned to the queue.
             var newIds = agentIds.Except(existingIds).ToList();
@@ -992,15 +992,16 @@ public class QueueTableService : IQueueTableService
             // Create new QueueFlowVersion entries for agents not already assigned.
             var toAdd = newIds.Select(id => new QueueFlowVersion()
             {
-                QueueId = id,
-                FlowVersionId = queueId,
+                QueueId = queueId,
+                FlowVersionId = id,
+                TenantId = _tenantId,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
             }).ToList();
 
             // Remove existing QueuFlowVersion entries for agents that are no longer assigned.
             var toRemove = existing
-                .Where(mf => removedIds.Contains(mf.QueueId))
+                .Where(mf => removedIds.Contains(mf.FlowVersionId))
                 .ToList();
 
             // Begin the transaction to insert and remove data.
