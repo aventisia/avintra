@@ -65,28 +65,28 @@
     {
       "label": "llmpipeline_apis",
       "type": "shell",
-      "command": "./venv/bin/uvicorn",
-      "args": ["app.main:app", "--port", "4003", "--reload"],
+      "command": "./venv/bin/python",
+      "args": ["dev.py"],
       "options": {
         "cwd": "${workspaceFolder}/apis/llmpipeline",
         "env": { "ENV": "local" }
       },
       "windows": {
-        "command": "./venv/Scripts/uvicorn.exe",
+        "command": "./venv/Scripts/python.exe",
         "options": {
           "cwd": "${workspaceFolder}/apis/llmpipeline",
           "env": { "ENV": "local" }
         }
       },
       "linux": {
-        "command": "./venv/bin/uvicorn",
+        "command": "./venv/bin/python",
         "options": {
           "cwd": "${workspaceFolder}/apis/llmpipeline",
           "env": { "ENV": "local" }
         }
       },
       "osx": {
-        "command": "./venv/bin/uvicorn",
+        "command": "./venv/bin/python",
         "options": {
           "cwd": "${workspaceFolder}/apis/llmpipeline",
           "env": { "ENV": "local" }

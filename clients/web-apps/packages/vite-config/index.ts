@@ -1,10 +1,25 @@
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { fileURLToPath } from "url";
-import { defineConfig } from "vite";
+import { type ServerOptions, defineConfig } from "vite";
 import eslint from "vite-plugin-eslint2";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Resolves dev server options from `VITE_PORT`, validating the value and falling back to the app default port.
+ */
+export const resolveDevServerOptions = (
+  env: Record<string, string>,
+  defaultPort: number,
+): ServerOptions => {
+  const rawPort = process.env.VITE_PORT ?? env.VITE_PORT;
+  if (rawPort === undefined || rawPort === "") return { port: defaultPort, strictPort: true };
+  const port = Number(rawPort);
+  if (!Number.isInteger(port) || port < 1 || port > 65535)
+    throw new Error(`Invalid VITE_PORT "${rawPort}": expected an integer between 1 and 65535.`);
+  return { port, strictPort: true };
+};
 
 // https://vite.dev/config/
 export default defineConfig({

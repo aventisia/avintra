@@ -19,10 +19,10 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
   - Ports: accounts 3001, workspace 3002, studio 3006, atlas from app config, desktop-app 2999.
   - Ready-to-commit: `npm run pregit` (format + eslint --fix + `tsc -b`)
   - `turbo.json` makes `lint` depend on `^build`, so lint may require a prior build.
-- LLM Pipeline (Python/FastAPI):
+- LLM Pipeline (Python/FastAPI) — dev port via `UVICORN_PORT` in `apis/llmpipeline/.env.local` (default 4003):
   ```sh
   cd apis/llmpipeline
-  ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload
+  ENV=local ./venv/bin/python dev.py
   ```
 - Apache Camel (Java 21):
   ```sh

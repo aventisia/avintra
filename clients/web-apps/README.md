@@ -44,6 +44,32 @@ Each app can define per-environment defaults via committed `.env.<environment>` 
 To override values locally without committing, create `.env.<environment>.local` files in the app directory.
 These local overrides are ignored by git automatically through the parent repository's `.gitignore`.
 
+### Development server ports
+
+Every app starts on a fixed port and fails fast when that port is taken, instead of silently switching to the next free one:
+
+| App         | Port |
+| ----------- | ---- |
+| accounts    | 3001 |
+| workspace   | 3002 |
+| studio      | 3006 |
+| atlas       | 3007 |
+| desktop-app | 2999 |
+
+Set `VITE_PORT` (shell environment or the app's `.env.development.local`) to run several worktrees side by side:
+
+```sh
+VITE_PORT=3101
+```
+
+The accounts dev server proxies `/accounts/api` to AccountsAPIs. Point it at a worktree backend listening on another port with `VITE_ACCOUNTS_API_TARGET`, matching `ASPNETCORE_URLS` in the backend's `.env.local` (see `apis/WorcBackend-legacy/AccountsAPIs/README.md`):
+
+```sh
+VITE_ACCOUNTS_API_TARGET=http://localhost:5001
+```
+
+`desktop-app` starts through `tauri dev`, whose `devUrl` in `src-tauri/tauri.conf.json` is pinned to `localhost:2999`; overriding `VITE_PORT` there requires updating both.
+
 ## Adding a new app
 
 1. Create a new directory under `apps/<app-name>`.

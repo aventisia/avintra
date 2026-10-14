@@ -73,8 +73,16 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
 ## Running the API Server
 
 ```sh
-uvicorn app.main:app --reload
+ENV=local ./venv/bin/python dev.py
 ```
+
+`dev.py` loads `.env` and `.env.local`, then starts Uvicorn with auto-reload on `UVICORN_PORT` (default `4003`). Override the port in `.env.local`:
+
+```sh
+UVICORN_PORT=14003
+```
+
+For other Uvicorn options, run `uvicorn app.main:app` directly and pass flags as needed.
 
 ## API Usage
 
