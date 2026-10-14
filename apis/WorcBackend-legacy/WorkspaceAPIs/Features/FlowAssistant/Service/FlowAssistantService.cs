@@ -700,10 +700,13 @@ public class FlowAssistantService : IFlowAssistantService
 
             foreach (var field in metadata.Fields)
             {
-                if (field.Direction != "Input" || providedKeys.Contains(field.Name))
+                if (field.Direction != "Input" || !field.Required)
                     continue;
 
-                if (!field.Required || !seen.Add($"{nodeName}.{field.Name}"))
+                if (providedKeys.Contains(field.Name) && HasUsableRequiredValue(node, field))
+                    continue;
+
+                if (!seen.Add($"{nodeName}.{field.Name}"))
                     continue;
 
                 slots.Add(new
@@ -719,22 +722,29 @@ public class FlowAssistantService : IFlowAssistantService
         return slots;
     }
 
-    private static JsonNode AttachPlan(JsonElement proposal)
+    private static JsonElement AttachPlan(JsonElement proposal)
     {
-        var node = JsonNode.Parse(proposal.GetRawText()) ?? new JsonObject();
+        try
+        {
+            var node = JsonNode.Parse(proposal.GetRawText()) ?? new JsonObject();
 
-        var plan = new JsonArray();
-        foreach (var step in BuildPlanSteps(proposal))
-            plan.Add(step);
+            var plan = new JsonArray();
+            foreach (var step in BuildPlanSteps(proposal))
+                plan.Add(step);
 
-        var setupSteps = new JsonArray();
-        foreach (var step in BuildSetupSteps(proposal))
-            setupSteps.Add(step);
+            var setupSteps = new JsonArray();
+            foreach (var step in BuildSetupSteps(proposal))
+                setupSteps.Add(step);
 
-        node["plan"] = plan;
-        node["setupSteps"] = setupSteps;
+            node["plan"] = plan;
+            node["setupSteps"] = setupSteps;
 
-        return node;
+            return JsonSerializer.SerializeToElement(node);
+        }
+        catch (Exception ex) when (ex is JsonException or ArgumentException or InvalidOperationException)
+        {
+            return proposal;
+        }
     }
 
     private static IReadOnlyList<string> BuildPlanSteps(JsonElement proposal)
@@ -885,6 +895,30 @@ public class FlowAssistantService : IFlowAssistantService
         }
 
         return steps;
+    }
+
+    private static bool HasUsableRequiredValue(JsonElement node, FlowAssistantConfigField field)
+    {
+        if (!node.TryGetProperty("inputs", out var inputs) || inputs.ValueKind != JsonValueKind.Array)
+            return false;
+
+        foreach (var input in inputs.EnumerateArray())
+        {
+            if (input.ValueKind != JsonValueKind.Object || ReadString(input, "key") != field.Name)
+                continue;
+
+            if (!input.TryGetProperty("value", out var value))
+                return false;
+
+            return field.Type switch
+            {
+                "number" or "slider" => value.ValueKind == JsonValueKind.Number,
+                "switch" or "checkbox" => value.ValueKind is JsonValueKind.True or JsonValueKind.False,
+                _ => value.ValueKind == JsonValueKind.String,
+            };
+        }
+
+        return false;
     }
 
     private static HashSet<string> ReadInputKeys(JsonElement node)
