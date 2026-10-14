@@ -49,14 +49,12 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Jenkins targets: `uat` → `avuat.aventisia.com`, `main` → `avweb1.aventisia.com`. Web app build modes: `uat`→`staging`, `main`→`production`. Manual `REPOS_TO_BUILD` param; `web_apps` covers accounts/workspace/studio/atlas (**desktop-app excluded**).
 - `.env.local` is gitignored; example defaults are in `deploy/.env`.
 - Feature PRs target `uat`, not `main`.
-- Port cleanup prompt: `.github/prompts/kill-project-ports.prompt.md`.
 
 ## Where conventions live
 
 - Backend: `apis/WorcBackend-legacy/AGENTS.md`
 - Frontend: `clients/web-apps/AGENTS.md`
 - Full setup, Docker commands, custom HTTP headers: `README.md`
-- Detailed dev commands and architecture: `CLAUDE.md`
 - VS Code tasks: `.vscode/tasks.json`
 - CI pipeline: `Jenkinsfile`
 
