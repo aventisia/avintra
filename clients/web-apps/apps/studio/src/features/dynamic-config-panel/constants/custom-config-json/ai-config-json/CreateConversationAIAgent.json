@@ -43,7 +43,7 @@
       "name": "__ModelConfig__SpeechToText",
       "defaultValue": {
         "is_byok_enabled": true,
-        "provider": "elevenlabs",
+        "provider": "",
         "credential_name": "",
         "model": "",
         "temperature": 1,
@@ -62,7 +62,7 @@
       "name": "__ModelConfig__TextToSpeech",
       "defaultValue": {
         "is_byok_enabled": true,
-        "provider": "elevenlabs",
+        "provider": "",
         "credential_name": "",
         "model": "",
         "temperature": 1,

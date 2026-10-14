@@ -17,6 +17,7 @@ import { sttModelProviders } from "../../constants/stt-model-provider";
 import { ttsModelProviders } from "../../constants/tts-model-provider";
 import { useFetchTenantEnabledModels } from "../../hooks/useFetchTenantEnabledModels.hook";
 import { LLMProviderType } from "../../types/llm-provider.type";
+import { createHasEnabledModels } from "../../utils/hasEnabledModels.util";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
@@ -115,10 +116,11 @@ const ModelConfigField = ({
   const providerValue = providerField.value;
   const credentialsValue = credentialsField.value;
 
-  const { data: enabledModelsData, isLoading } = useFetchTenantEnabledModels(
-    configCapability,
-    is_byok_enabled,
-  );
+  const {
+    data: enabledModelsData,
+    isLoading,
+    isError,
+  } = useFetchTenantEnabledModels(configCapability, is_byok_enabled);
 
   const enabledModelIdsByProvider = useMemo(() => {
     const idsByBackendType: Record<string, string[]> = {};
@@ -133,6 +135,11 @@ const ModelConfigField = ({
     }
     return idsByStudioProvider;
   }, [enabledModelsData]);
+
+  const isProviderEnabled = useMemo(
+    () => createHasEnabledModels(enabledModelIdsByProvider),
+    [enabledModelIdsByProvider],
+  );
 
   const prevValues = useRef({
     is_byok_enabled,
@@ -157,37 +164,33 @@ const ModelConfigField = ({
 
   const currentProviderHasEnabledModels = useMemo(() => {
     if (!is_byok_enabled) return true;
-    return (enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0;
-  }, [is_byok_enabled, enabledModelIdsByProvider, providerValue]);
+    return isProviderEnabled(providerValue);
+  }, [is_byok_enabled, isProviderEnabled, providerValue]);
 
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(nodeKey);
 
     if (isStt || isTts) {
-      if (!is_byok_enabled) return isStt ? sttModelProviders : ttsModelProviders;
+      const speechProviders = isStt ? sttModelProviders : ttsModelProviders;
+      if (!is_byok_enabled) return speechProviders;
 
-      const mergedProviders = new Map<string, LLMProviderType>();
-      for (const provider of [
-        ...(isStt ? sttModelProviders : ttsModelProviders),
-        ...Object.keys(enabledModelIdsByProvider).map((value): LLMProviderType => ({
-          value,
-          label: PROVIDER_MAP[value] ?? value,
-          models: [],
-        })),
-      ]) {
-        if (!mergedProviders.has(provider.value)) mergedProviders.set(provider.value, provider);
-      }
-      return [...mergedProviders.values()];
+      const speechProvidersByValue = new Map(speechProviders.map((p) => [p.value, p]));
+      return Object.keys(enabledModelIdsByProvider).map(
+        (value): LLMProviderType =>
+          speechProvidersByValue.get(value) ?? {
+            value,
+            label: PROVIDER_MAP[value] ?? value,
+            models: [],
+          },
+      );
     }
     if (isEmbedding) {
       if (!is_byok_enabled) return embeddingModelProviders;
-      return embeddingModelProviders.filter(
-        (p) => (enabledModelIdsByProvider[p.value]?.length ?? 0) > 0,
-      );
+      return embeddingModelProviders.filter((p) => isProviderEnabled(p.value));
     }
 
     const providers = is_byok_enabled
-      ? modelProviders.filter((p) => (enabledModelIdsByProvider[p.value]?.length ?? 0) > 0)
+      ? modelProviders.filter((p) => isProviderEnabled(p.value))
       : modelProviders.filter((p) => p.isEnabled !== false);
 
     return providers.map((p) => ({
@@ -197,7 +200,15 @@ const ModelConfigField = ({
         return specialtyMatch && m.available;
       }),
     }));
-  }, [isStt, isTts, isEmbedding, is_byok_enabled, enabledModelIdsByProvider, nodeKey]);
+  }, [
+    isStt,
+    isTts,
+    isEmbedding,
+    is_byok_enabled,
+    enabledModelIdsByProvider,
+    isProviderEnabled,
+    nodeKey,
+  ]);
 
   useEffect(() => {
     setIsInitialized(true);
@@ -219,14 +230,15 @@ const ModelConfigField = ({
   }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames]);
 
   useEffect(() => {
-    if (!isInitialized || !is_byok_enabled || isLoading) return;
-    if ((enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0) return;
+    if (!isInitialized || !is_byok_enabled || isLoading || isError) return;
+    if (isProviderEnabled(providerValue)) return;
     setValue(fieldNames.provider, "", { shouldDirty: true });
   }, [
     isInitialized,
     is_byok_enabled,
     isLoading,
-    enabledModelIdsByProvider,
+    isError,
+    isProviderEnabled,
     providerValue,
     setValue,
     fieldNames,
@@ -249,8 +261,13 @@ const ModelConfigField = ({
 
   const hasEnabledSpeechModels = useMemo(() => {
     if (!isSpeechSpecialty || !is_byok_enabled) return true;
-    return (enabledModelIdsByProvider[providerValue]?.length ?? 0) > 0;
-  }, [isSpeechSpecialty, is_byok_enabled, enabledModelIdsByProvider, providerValue]);
+    return isProviderEnabled(providerValue);
+  }, [isSpeechSpecialty, is_byok_enabled, isProviderEnabled, providerValue]);
+
+  const hasEnabledModelsForSpecialty = useMemo(
+    () => Object.keys(enabledModelIdsByProvider).length > 0,
+    [enabledModelIdsByProvider],
+  );
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
@@ -338,9 +355,20 @@ const ModelConfigField = ({
             name={fieldNames.provider}
             selectOptions={filteredProviders}
             label="Model Provider"
+            disabled={is_byok_enabled && isLoading}
           />
         </div>
       </div>
+
+      {is_byok_enabled && isLoading && (
+        <p className="text-xs text-muted-foreground">Loading model providers...</p>
+      )}
+
+      {is_byok_enabled && isError && (
+        <p className="text-xs text-destructive">
+          Could not load model providers. Please try again.
+        </p>
+      )}
 
       {is_byok_enabled && currentProviderHasEnabledModels && (
         <VaultCredentialSelectField
@@ -367,12 +395,17 @@ const ModelConfigField = ({
         }
       />
 
-      {isSpeechSpecialty && isInitialized && !hasEnabledSpeechModels && (
-        <p className="text-xs text-muted-foreground">
-          No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
-          Enable one under Tenant Admin &gt; Model Providers.
-        </p>
-      )}
+      {isSpeechSpecialty &&
+        is_byok_enabled &&
+        isInitialized &&
+        !isLoading &&
+        !isError &&
+        !hasEnabledModelsForSpecialty && (
+          <p className="text-xs text-muted-foreground">
+            No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
+            Enable one under Tenant Admin &gt; Model Providers.
+          </p>
+        )}
 
       {enableModelSetup && <div className="space-y-3.5">{modelAdvancedSettings}</div>}
 
