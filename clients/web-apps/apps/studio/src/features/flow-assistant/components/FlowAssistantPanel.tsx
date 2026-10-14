@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { SendIcon } from "lucide-react";
-import { FormEvent, KeyboardEvent, useEffect, useState } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 
 import { FLOW_ASSISTANT_COPY, FLOW_ASSISTANT_MODEL_OPTIONS } from "../constants";
 import { useFlowAssistant } from "../hooks/useFlowAssistant";
@@ -19,7 +19,7 @@ import { GraphProposalCard } from "./GraphProposalCard";
 import { QuestionsCard } from "./QuestionsCard";
 
 export const FlowAssistantPanel = () => {
-  const { sendMessage, cancel } = useFlowAssistant();
+  const { sendMessage } = useFlowAssistant();
   useFlowAssistantReferenceData();
   const isStreaming = useFlowAssistantStore((state) => state.isStreaming);
   const pendingProposal = useFlowAssistantStore((state) => state.pendingProposal);
@@ -31,8 +31,6 @@ export const FlowAssistantPanel = () => {
   const selectedModel = FLOW_ASSISTANT_MODEL_OPTIONS.find(
     (option) => option.id === selectedModelId,
   );
-
-  useEffect(() => () => cancel(), [cancel]);
 
   const submit = () => {
     const value = input.trim();

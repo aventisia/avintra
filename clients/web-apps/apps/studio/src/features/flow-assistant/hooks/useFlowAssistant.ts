@@ -1,5 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -26,17 +26,15 @@ const isGraphProposal = (value: unknown): value is GraphProposalDto => {
 const isAbortError = (error: unknown): boolean =>
   error instanceof DOMException && error.name === "AbortError";
 
+let sharedAbortController: AbortController | null = null;
+
 /** Orchestrates flow-assistant send, stream, and cancel. */
 export const useFlowAssistant = () => {
-  const abortRef = useRef<AbortController | null>(null);
-
   const cancel = useCallback(() => {
-    abortRef.current?.abort();
-    abortRef.current = null;
+    sharedAbortController?.abort();
+    sharedAbortController = null;
     useFlowAssistantStore.getState().setIsStreaming(false);
   }, []);
-
-  useEffect(() => () => cancel(), [cancel]);
 
   const handleFrame = useCallback((frame: FlowAssistantFrame) => {
     const store = useFlowAssistantStore.getState();
@@ -92,7 +90,7 @@ export const useFlowAssistant = () => {
 
       cancel();
       const controller = new AbortController();
-      abortRef.current = controller;
+      sharedAbortController = controller;
 
       const now = Date.now();
       const store = useFlowAssistantStore.getState();
@@ -155,8 +153,8 @@ export const useFlowAssistant = () => {
             "The assistant could not complete the request. Please try again.",
           );
       } finally {
-        if (abortRef.current === controller) {
-          abortRef.current = null;
+        if (sharedAbortController === controller) {
+          sharedAbortController = null;
         }
         useFlowAssistantStore.getState().setIsStreaming(false);
       }

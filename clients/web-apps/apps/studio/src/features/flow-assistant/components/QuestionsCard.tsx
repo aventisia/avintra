@@ -28,7 +28,6 @@ export const QuestionsCard = ({ slots }: QuestionsCardProps) => {
     const answer = slots
       .map((slot) => formatAnswer(slot, (values[slot.key] ?? "").trim()))
       .join("\n");
-    useFlowAssistantStore.getState().setPendingQuestions(null);
     void sendMessage(answer);
   };
 
