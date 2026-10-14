@@ -134,8 +134,26 @@ public class FlowAssistantService : IFlowAssistantService
         var validationError = FlowAssistantProposalValidator.Validate(proposal.Value, request.GraphContext);
         if (validationError is not null)
         {
+            proposal = await RetryBuilderProposalAsync(request, flowVersion, selected, validationError, cancellationToken);
+
+            if (proposal is not null)
+            {
+                var repairedSlots = BuildConfigurationSlots(proposal.Value);
+                if (repairedSlots.Count > 0)
+                {
+                    yield return SerializeFrame(new { type = "questions", output = repairedSlots });
+                    yield return SerializeFrame(new { type = "done" });
+                    yield break;
+                }
+
+                validationError = FlowAssistantProposalValidator.Validate(proposal.Value, request.GraphContext);
+            }
+        }
+
+        if (proposal is null || validationError is not null)
+        {
             // IMPORTANT NOTE: the raw model output is only recoverable via this log.
-            var rawJson = proposal.Value.GetRawText();
+            var rawJson = proposal?.GetRawText() ?? string.Empty;
             var truncatedJson = rawJson.Length > 2000 ? rawJson[..2000] : rawJson;
             _logger.LogWarning(
                 "[FlowAssistant] Proposal rejected by validation. FlowVersionId={FlowVersionId}, Reason={Reason}, ModelOutput={ModelOutput}",
@@ -245,6 +263,28 @@ public class FlowAssistantService : IFlowAssistantService
         return (result.Result, result.Error);
     }
 
+    private async Task<JsonElement?> RetryBuilderProposalAsync(
+        FlowAssistantRequestDto request,
+        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        IReadOnlyCollection<string> selected,
+        string validationError,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogWarning(
+            "[FlowAssistant] Retrying proposal after validation failure. FlowVersionId={FlowVersionId}, Reason={Reason}",
+            request.FlowVersionId,
+            validationError);
+
+        var model = ResolveModel(request.ModelId);
+        var systemMessage = $"{FlowAssistantConstants.BuildBuilderPrompt(selected)}\n\nThe previous proposal was rejected: {validationError} Fix it using only the selected nodes.\n\nCurrent flow graph:\n{BuildGraphSummary(request)}{BuildReferenceSection(request.ReferenceData)}";
+        var result = await CallLlmAsync(request, flowVersion, model, systemMessage, ResolveJsonSchema(model), cancellationToken);
+
+        if (result.Result is null)
+            return null;
+
+        return FlowAssistantProposalNormalizer.Normalize(result.Result.Value);
+    }
+
     private async Task<(JsonElement? Result, string? Error)> CallLlmAsync(
         FlowAssistantRequestDto request,
         WorkspaceAPIs.Entities.FlowVersion flowVersion,
@@ -349,19 +389,7 @@ public class FlowAssistantService : IFlowAssistantService
             new { role = "system", content = systemMessage },
         };
 
-        if (request.ThreadMessages is { Count: > 0 })
-        {
-            foreach (var message in request.ThreadMessages)
-            {
-                if (string.IsNullOrWhiteSpace(message.Role) || string.IsNullOrWhiteSpace(message.Content))
-                    continue;
-
-                messages.Add(new { role = message.Role, content = message.Content });
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.UserInput))
-            messages.Add(new { role = "user", content = request.UserInput });
+        messages.AddRange(BuildThreadMessages(request));
 
         return new
         {
@@ -397,26 +425,55 @@ public class FlowAssistantService : IFlowAssistantService
             : FlowAssistantConstants.ProposalJsonSchema;
     }
 
+    private const int MaxThreadMessages = 6;
+
+    private const int MaxGraphSummaryNodes = 150;
+
+    private const int MaxGraphSummaryEdges = 200;
+
     private static string BuildGraphSummary(FlowAssistantRequestDto request)
     {
         var graph = request.GraphContext;
         return JsonSerializer.Serialize(new
         {
-            nodes = graph.Nodes.Select(node => new
+            nodeCount = graph.Nodes.Count,
+            edgeCount = graph.Edges.Count,
+            nodes = graph.Nodes.Take(MaxGraphSummaryNodes).Select(node => new
             {
                 id = ReadString(node, "id"),
                 type = ReadString(node, "type"),
                 name = ReadNestedString(node, "data", "name"),
             }),
-            edges = graph.Edges.Select(edge => new
+            edges = graph.Edges.Take(MaxGraphSummaryEdges).Select(edge => new
             {
                 id = ReadString(edge, "id"),
                 source = ReadString(edge, "source"),
                 target = ReadString(edge, "target"),
             }),
+            truncated = graph.Nodes.Count > MaxGraphSummaryNodes || graph.Edges.Count > MaxGraphSummaryEdges,
             selectedNodeId = string.IsNullOrWhiteSpace(request.SelectedNodeId) ? null : request.SelectedNodeId,
             selectedNode = BuildSelectedNodeContext(request),
         });
+    }
+
+    private static IReadOnlyList<object> BuildThreadMessages(FlowAssistantRequestDto request)
+    {
+        var messages = new List<object>();
+
+        if (request.ThreadMessages is { Count: > 0 })
+        {
+            var recent = request.ThreadMessages
+                .Where(message => !string.IsNullOrWhiteSpace(message.Role) && !string.IsNullOrWhiteSpace(message.Content))
+                .TakeLast(MaxThreadMessages);
+
+            foreach (var message in recent)
+                messages.Add(new { role = message.Role, content = message.Content });
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.UserInput))
+            messages.Add(new { role = "user", content = request.UserInput });
+
+        return messages;
     }
 
     private static IReadOnlyCollection<string> ResolveCandidateNodeNames(FlowAssistantRequestDto request)
