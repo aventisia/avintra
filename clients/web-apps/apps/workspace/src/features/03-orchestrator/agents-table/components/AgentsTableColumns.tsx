@@ -169,6 +169,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         type={row.type}
         flowName={row.name}
         flowVersionNumber={row.versionNumber}
+        supportedPlatform={row.supportedPlatform}
       />
     ),
   }),

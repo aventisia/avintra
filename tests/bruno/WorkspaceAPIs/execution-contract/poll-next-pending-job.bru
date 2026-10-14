@@ -1,0 +1,26 @@
+meta {
+  name: Poll next pending job (bound only)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/execution/machine/{{MACHINE_ID}}/next-pending-job
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{MACHINE_JWT}}
+}
+
+assert {
+  res.status: 200
+}
+
+docs {
+  > Executor-only poll endpoint. Requires `register-machine` to have run so `MACHINE_ID` and
+  > `MACHINE_JWT` are populated.
+  > A 200 response only ever contains a job already bound to the requesting machine (its
+  > `executionLocation` is that machine's name). A 200 with null data means no bound job is pending.
+}

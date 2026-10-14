@@ -11,7 +11,7 @@ public interface ISearchByQueryService
     /// <param name="includePublishedOnly">Whether to include only published flow versions.</param>
     /// <param name="machineId">Optional machine identifier to filter flow versions linked to it.</param>
     /// <returns>A list of select options representing flow versions that match the search criteria.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOption>>> SearchFlowVersionAsync(string searchKey, FlowTypesEnum type, bool includePublishedOnly, Guid? machineId);
+    Task<ServiceResponse<IEnumerable<FlowVersionSelectOption>>> SearchFlowVersionAsync(string searchKey, FlowTypesEnum type, bool includePublishedOnly, Guid? machineId);
 
     /// <summary>
     /// Searches machines by unique machine name with an optional flow version filter.

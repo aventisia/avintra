@@ -11,6 +11,9 @@ export interface MachineFlowVersionDto extends ISelectOption {
 
   /** The version number of the flow version. */
   versionNumber: number;
+
+  /** Comma-separated platforms the agent supports (for example "cloud" or "windows"). */
+  supportedPlatform?: string;
 }
 
 /**
