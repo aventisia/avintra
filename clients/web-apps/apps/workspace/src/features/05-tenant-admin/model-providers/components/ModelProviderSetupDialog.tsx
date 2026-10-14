@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { toast } from "@avplatform/ui/sonner";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
@@ -35,6 +36,7 @@ import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
+import { getSupportedModalities } from "../utils/supported-modalities.util";
 
 type Step = "credential" | "models";
 
@@ -318,6 +320,12 @@ export const ModelProviderSetupDialog = () => {
                     <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
                       {filteredModels.map((model) => {
                         const capabilityLabel = formatCapabilityLabel(model.capability);
+                        const supportedModalities = getSupportedModalities(model);
+
+                        const capabilityBadge = capabilityLabel ? (
+                          <Badge className="bg-slate-200 text-slate-600">{capabilityLabel}</Badge>
+                        ) : null;
+
                         return (
                           <div
                             key={model.id}
@@ -325,11 +333,15 @@ export const ModelProviderSetupDialog = () => {
                           >
                             <div className="flex min-w-0 items-center gap-2">
                               <span className="truncate text-sm">{model.id}</span>
-                              {capabilityLabel ? (
-                                <Badge className="bg-slate-200 text-slate-600">
-                                  {capabilityLabel}
-                                </Badge>
-                              ) : null}
+                              {supportedModalities && capabilityBadge ? (
+                                <Tooltip
+                                  content={`Supported modalities: ${supportedModalities.join(", ")}`}
+                                >
+                                  <div className="inline-flex">{capabilityBadge}</div>
+                                </Tooltip>
+                              ) : (
+                                capabilityBadge
+                              )}
                             </div>
                             <Switch
                               checked={enabledModelIds.includes(model.id)}
