@@ -160,7 +160,6 @@ namespace WorkspaceAPIs.Jobs
                 cronExpression = CronScheduleUtil.BuildCronExpression(
                     triggerFrequency,
                     interval,
-                    "UTC",
                     localTimeOfDay,
                     weekdays,
                     monthDays);
@@ -172,7 +171,6 @@ namespace WorkspaceAPIs.Jobs
                 cronExpression = CronScheduleUtil.BuildCronExpression(
                     TriggerFrequencyTypesEnum.Daily,
                     1,
-                    "UTC",
                     localTimeOfDay);
             }
 
