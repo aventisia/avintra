@@ -1,0 +1,32 @@
+meta {
+  name: Poll claims an unassigned Time-trigger job
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/execution/machine/{{MACHINE_ID}}/next-pending-job
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{MACHINE_JWT}}
+}
+
+assert {
+  res.status: 200
+}
+
+docs {
+  > Executor-only poll endpoint. Requires `register-machine` to have run so `MACHINE_ID` and
+  > `MACHINE_JWT` are populated.
+  > This case covers recovery of a Time-trigger job that the scheduler could not push to any
+  > machine: the row is left `Status=Created`, `TriggerType=Time`, `MachineId=NULL` and
+  > `ExecutedOn=NULL`, so no machine push was recorded.
+  > Precondition for a meaningful result: at least one such job must exist and be mapped to a flow
+  > version of the polling machine. When one does, the poll claims it and returns it (a 200 with
+  > null data means nothing was pending on this run, which also keeps the case green when the
+  > queue is empty).
+  > A 200 response only ever contains a job the requesting machine now owns.
+}

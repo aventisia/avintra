@@ -164,47 +164,78 @@ public class OrchestratorHub : Hub
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
             if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled && canPullPendingJob)
             {
+                // Skip the claim while this machine already holds a live pending job, so a reconnect does not
+                // stack a second dispatch on a machine that has not started the first one yet.
+                var machineHasLivePendingJob = await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(existingClientDataStore);
+
                 // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
                 var flowVersionIds = await _workspaceInternalDbContext.MachineFlowVersions
                     .Where(w => w.MachineId == clientId && w.TenantId == tenantId)
                     .Select(s => s.FlowVersionId)
                     .ToListAsync();
 
-                var job = await _workspaceInternalDbContext.Jobs
-                    .Where(w =>
-                        w.TenantId == tenantId &&
-                        w.Status == JobStatusEnum.Created &&
-                        flowVersionIds.Contains(w.FlowVersionId) &&
-                        (w.MachineId == clientId || (w.MachineId == null && w.ExecutedOn == "Web Server"))
-                    )
-                    .OrderBy(o => o.CreatedOn)
-                    .FirstOrDefaultAsync();
+                Job? job = null;
+                if (!machineHasLivePendingJob)
+                {
+                    job = await _workspaceInternalDbContext.Jobs
+                        .Where(w =>
+                            w.TenantId == tenantId &&
+                            w.Status == JobStatusEnum.Created &&
+                            flowVersionIds.Contains(w.FlowVersionId) &&
+                            (w.MachineId == clientId
+                                || ((w.MachineId == null || w.MachineId == Guid.Empty)
+                                    && ((w.ExecutedOn != null && w.ExecutedOn.ToLower() == "web server") || w.TriggerType == TriggerTypesEnum.Time)))
+                        )
+                        .OrderBy(o => o.CreatedOn)
+                        .FirstOrDefaultAsync();
+                }
 
-                // If a job is found, assign it to the machine and update the status
+                // If a job is found, claim it for this machine and update the status
                 if (job != null)
                 {
-                    // Assign job to this machine
-                    job.MachineId = clientId;
-                    job.ExecutedOn = clientName ?? clientId.ToString();
-                    _workspaceInternalDbContext.Jobs.Update(job);
-                    await _workspaceInternalDbContext.SaveChangesAsync();
+                    var machineName = clientName ?? clientId.ToString();
 
-                    // Keep the machine Online/Idle and record the job as a pending marker. The machine
-                    // flips to Running only when the runner actually starts the job via StartJob.
-                    clientDataStore.AgentId = job.FlowVersionId;
-                    clientDataStore.JobId = job.Id;
-                    await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+                    // IMPORTANT NOTE: claim the job in one conditional statement before dispatching. Exactly one
+                    // reconnecting machine observes one affected row; the losers must not send a command.
+                    var claimed = await ClaimPendingJobForMachineAsync(job.Id, clientId, machineName);
 
-                    var executionRequest = new ExecutionCommandDto()
+                    if (claimed == 1)
                     {
-                        JobId = job.Id,
-                        Command = ExecutionCommandTypesEnum.Initiate,
-                        AgentId = job.FlowVersionId,
-                        MachineName = clientName ?? clientDataStore.ClientId.ToString(),
-                        TenantId = tenantId
-                    };
+                        var claimedJob = await _workspaceInternalDbContext.Jobs
+                            .AsNoTracking()
+                            .FirstAsync(w => w.Id == job.Id);
 
-                    await Clients.Caller.SendAsync("trigger_agent", executionRequest);
+                        // Keep the machine Online/Idle and record the job as a pending marker. The machine
+                        // flips to Running only when the runner actually starts the job via StartJob.
+                        clientDataStore.AgentId = claimedJob.FlowVersionId;
+                        clientDataStore.JobId = claimedJob.Id;
+                        await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+
+                        var executionRequest = new ExecutionCommandDto()
+                        {
+                            JobId = claimedJob.Id,
+                            Command = ExecutionCommandTypesEnum.Initiate,
+                            AgentId = claimedJob.FlowVersionId,
+                            MachineName = machineName,
+                            TenantId = tenantId
+                        };
+
+                        try
+                        {
+                            await Clients.Caller.SendAsync("trigger_agent", executionRequest);
+                        }
+                        catch (Exception sendEx)
+                        {
+                            // IMPORTANT NOTE: an undelivered command must not leave the job bound with a live
+                            // marker, otherwise no other dispatch can ever recover it.
+                            _logger.LogError(sendEx, "Failed to dispatch pending job {JobId} to machine {ClientId}.", claimedJob.Id, clientId);
+
+                            var unassigned = await UnassignJobHeldByMachineAsync(claimedJob.Id, clientId);
+
+                            if (unassigned == 1 && PendingJobClaimHelpers.ReleaseIfHeldBy(clientDataStore, claimedJob.Id))
+                                await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
+                        }
+                    }
                 }
                 else
                 {
@@ -443,7 +474,7 @@ public class OrchestratorHub : Hub
             }
             else
             {
-                await ClearMachineReservationAsync(clientDataStore);
+                await ClearMachineReservationAsync(clientDataStore, job.Id);
                 _logger.LogWarning("Machine {MachineName} is not connected. Cannot trigger agent {AgentId}.", machineName, agentId);
                 await Clients.Caller.SendAsync("error", "Machine connection lost.");
             }
@@ -456,11 +487,29 @@ public class OrchestratorHub : Hub
         }
     }
 
-    private async Task ClearMachineReservationAsync(ClientDataStore machine)
+    private async Task ClearMachineReservationAsync(ClientDataStore machine, Guid jobId)
     {
-        MachineReservationHelpers.Release(machine);
-        await _clientStatusStore.UpdateClientStatusAsync(machine);
+        if (PendingJobClaimHelpers.ReleaseIfHeldBy(machine, jobId))
+            await _clientStatusStore.UpdateClientStatusAsync(machine);
     }
+
+    private Task<int> ClaimPendingJobForMachineAsync(Guid jobId, Guid machineId, string machineName)
+        => _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, machineId)
+                .SetProperty(w => w.ExecutedOn, machineName));
+
+    private Task<int> UnassignJobHeldByMachineAsync(Guid jobId, Guid machineId)
+        => _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && w.MachineId == machineId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, (Guid?)null)
+                .SetProperty(w => w.ExecutedOn, (string?)null));
 
     // Reports execution progress for a job and relays it to the user who initiated the job.
     public async Task ReportProgress(Guid jobId, string message)
