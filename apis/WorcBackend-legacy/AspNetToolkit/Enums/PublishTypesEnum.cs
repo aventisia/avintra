@@ -25,5 +25,10 @@ public enum PublishTypesEnum
     /// <summary>
     /// A reusable template based on a block.
     /// </summary>
-    BlockTemplate
+    BlockTemplate,
+
+    /// <summary>
+    /// A voice agent that can be published.
+    /// </summary>
+    VoiceAgent
 }

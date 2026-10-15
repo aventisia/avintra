@@ -19,5 +19,10 @@ public enum FlowTypesEnum
     /// <summary>
     /// Represents a block flow type.
     /// </summary>
-    Block
+    Block,
+
+    /// <summary>
+    /// Represents a voice agent flow type.
+    /// </summary>
+    VoiceAgent
 }

@@ -54,6 +54,8 @@ const mapAgentType = (flowType: FlowTypesEnum): string => {
       return "Automation";
     case FlowTypesEnum.ChatAgent:
       return "Chat";
+    case FlowTypesEnum.VoiceAgent:
+      return "Voice";
     default:
       return flowType;
   }

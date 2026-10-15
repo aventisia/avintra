@@ -22,7 +22,14 @@ const TemplateLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState("All templates");
 
   // List of available template categories for filtering
-  const categories = ["All templates", "Automation Agent", "Chat Agent", "Block", "Prompt"];
+  const categories = [
+    "All templates",
+    "Automation Agent",
+    "Chat Agent",
+    "Voice Agent",
+    "Block",
+    "Prompt",
+  ];
 
   if (templateID) return <TemplateDetail />;
   else

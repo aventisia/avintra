@@ -17,6 +17,7 @@ import { computeAgentRiskTier } from "../utils/tiering-engine";
 const agentTypeLabel = (type?: string): string => {
   if (type === "ChatAgent") return "Chat Agent";
   if (type === "Agent") return "Automation Agent";
+  if (type === "VoiceAgent") return "Voice Agent";
   return type ?? "";
 };
 

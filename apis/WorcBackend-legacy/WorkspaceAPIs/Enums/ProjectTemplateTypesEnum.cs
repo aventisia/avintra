@@ -20,5 +20,10 @@ public enum ProjectTemplateTypesEnum
     /// <summary>
     /// A template type used for prompts or keyword-based templates.
     /// </summary>
-    Prompt
+    Prompt,
+
+    /// <summary>
+    /// A voice-agent project template.
+    /// </summary>
+    VoiceAgent
 }

@@ -251,7 +251,7 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
-    // Publishes a flow version based on the specified type (Agent, Block, Template).
+    // Publishes a flow version based on the specified type (Agent, Block, VoiceAgent, Template).
     public async Task<ServiceResponse<bool>> PublishFlowVersionAsync(PublishFlowVersionDto publishFlowVersionDto)
     {
         var serviceResponse = new ServiceResponse<bool>
@@ -370,6 +370,7 @@ public class FlowBuilderService : IFlowBuilderService
                 case PublishTypesEnum.Agent:
                 case PublishTypesEnum.ChatAgent:
                 case PublishTypesEnum.Block:
+                case PublishTypesEnum.VoiceAgent:
                     // Determine the publish type for logging and message purposes
                     var publishType = publishFlowVersionDto.Type.ToString();
 
@@ -404,7 +405,11 @@ public class FlowBuilderService : IFlowBuilderService
 
                     // Notify the Orchestrator Manager(s) of the tenant that an agent is ready for use
                     if (!wasAlreadyPublished &&
-                        (publishFlowVersionDto.Type == PublishTypesEnum.Agent || publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent))
+                        (
+                            publishFlowVersionDto.Type == PublishTypesEnum.Agent ||
+                            publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent ||
+                            publishFlowVersionDto.Type == PublishTypesEnum.VoiceAgent)
+                        )
                     {
                         await _notificationEventService.NotifyAgentPublishedAsync(
                             flowVersion.Flow.TenantId,

@@ -14,6 +14,7 @@ import { TableActions } from "./table-actions/TableActions";
 const flowTypeLabelOverrides: Record<string, string> = {
   Agent: "Automation Agent",
   ChatAgent: "Chat Agent",
+  VoiceAgent: "Voice Agent",
 };
 
 /**
@@ -80,7 +81,9 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent
+        {row.original.type == FlowTypesEnum.Agent ||
+        row.original.type == FlowTypesEnum.ChatAgent ||
+        row.original.type == FlowTypesEnum.VoiceAgent
           ? row.getValue("machineCount")
           : "NA"}
       </div>

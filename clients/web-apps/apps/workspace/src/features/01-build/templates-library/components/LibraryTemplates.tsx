@@ -2,6 +2,7 @@ import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { useFetchProjectTemplates } from "../hooks/useFetchProjectTemplates";
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
@@ -27,8 +28,12 @@ const LibraryTemplates = ({
 
     const checkCategory = (templateType: string) => {
       if (selectedCategory === "All templates") return true;
-      if (selectedCategory === "Automation Agent") return ["Agent"].includes(templateType);
-      if (selectedCategory === "Chat Agent") return ["ChatAgent"].includes(templateType);
+      if (selectedCategory === "Automation Agent")
+        return templateType === ProjectTemplateTypesEnum.Agent;
+      if (selectedCategory === "Chat Agent")
+        return templateType === ProjectTemplateTypesEnum.ChatAgent;
+      if (selectedCategory === "Voice Agent")
+        return templateType === ProjectTemplateTypesEnum.VoiceAgent;
       return templateType.includes(selectedCategory);
     };
 

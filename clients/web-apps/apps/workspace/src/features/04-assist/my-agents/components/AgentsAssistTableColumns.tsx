@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
+import { getAgentTypeLabel } from "../utils/agent-type-label.util";
 
 /**
  * Array of table columns for the table.
@@ -24,6 +25,8 @@ export const agentsAssistTableColumns: ColumnDef<AgentsAssistDto>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{getAgentTypeLabel(row.original.type)}</div>
+    ),
   },
 ];

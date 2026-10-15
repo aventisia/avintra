@@ -1,5 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { Blocks, type LucideIcon, MessagesSquare, Workflow } from "lucide-react";
+import { Blocks, type LucideIcon, MessagesSquare, Mic, Workflow } from "lucide-react";
 
 export type FlowTypeOption = {
   value: FlowTypesEnum;
@@ -23,6 +23,13 @@ export const FLOW_TYPE_OPTIONS: FlowTypeOption[] = [
     label: "Chat Agent",
     description: "Holds dynamic, context-aware conversations",
     icon: MessagesSquare,
+  },
+  {
+    value: FlowTypesEnum.VoiceAgent,
+    label: "Voice Agent",
+    description:
+      "A voice-driven agent flow designed for spoken conversations, handling real-time voice interactions instead of text or scheduled tasks",
+    icon: Mic,
   },
   {
     value: FlowTypesEnum.Block,

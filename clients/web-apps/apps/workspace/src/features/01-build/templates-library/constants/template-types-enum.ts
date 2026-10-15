@@ -7,6 +7,7 @@
 export enum ProjectTemplateTypesEnum {
   Agent = "Agent",
   ChatAgent = "ChatAgent",
+  VoiceAgent = "VoiceAgent",
   Block = "Block",
   Prompt = "Prompt",
 }

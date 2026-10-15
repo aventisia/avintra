@@ -6,6 +6,8 @@ export function transformTemplateType(templateType: string | undefined): string 
       return "Automation Agent";
     case ProjectTemplateTypesEnum.ChatAgent:
       return "Chat Agent";
+    case ProjectTemplateTypesEnum.VoiceAgent:
+      return "Voice Agent";
     default:
       return templateType;
   }

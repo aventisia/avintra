@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ArchivedFlowsTableDto } from "../dtos/archived-flows-table-dto";
+import { ArchiveTypeEnum } from "../enums/archive-type.enum";
 import { ArchivedFlowRowActions } from "./ArchivedFlowRowActions";
 
 /**
@@ -57,7 +58,11 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
     ),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
+    cell: ({ row }) => {
+      const typeValue = String(row.getValue("type"));
+      const typeLabel = ArchiveTypeEnum[typeValue as keyof typeof ArchiveTypeEnum] ?? typeValue;
+      return <div className="w-auto truncate font-medium">{typeLabel}</div>;
+    },
   },
   {
     accessorKey: "lastModifiedBy",
