@@ -8,6 +8,9 @@ public interface IUnitOfWork
     IFlowRepo FlowRepo { get; }
     IFolderRepo FolderRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
+    IUiBuilderProjectRepo UiBuilderProjectRepo { get; }
+    IUiBuilderVersionRepo UiBuilderVersionRepo { get; }
+    IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IAgentRiskRegistryRepo AgentRiskRegistryRepo { get; }
     IMachineRepo MachineRepo { get; }

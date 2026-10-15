@@ -50,6 +50,13 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         permissions: ["TD"],
         type: ["Commercial", "Enterprise", "Community"],
       },
+      {
+        Icon: LayoutTemplate,
+        name: "UI Builder",
+        route: "/ui-builder",
+        permissions: ["TD"],
+        type: ["Commercial", "Enterprise"],
+      },
     ],
   },
   {

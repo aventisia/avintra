@@ -1,0 +1,28 @@
+meta {
+  name: Insert UI builder version
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/versions
+  body: json
+  auth: none
+}
+
+body:json {
+  "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
+  "promptText": "Create a landing page for a coffee shop",
+  "generatedHtml": "<!doctype html><html><body><h1>Coffee</h1></body></html>",
+  "provider": "openai",
+  "model": "gpt-4o-mini"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_VERSION_NUMBER",
+          res.getBody().data.versionNumber
+      );
+  }
+}

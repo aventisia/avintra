@@ -54,6 +54,7 @@ public static class AppServicesExtension
         config.Apply(new AutoNotificationMappingProfile());
         config.Apply(new FlowsTableMappingProfile());
         config.Apply(new FoldersTableMappingProfile());
+        config.Apply(new UiBuilderMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
@@ -121,6 +122,7 @@ public static class AppServicesExtension
         services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFoldersTableService, FoldersTableService>();
+        services.AddScoped<IUiBuilderService, UiBuilderService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
