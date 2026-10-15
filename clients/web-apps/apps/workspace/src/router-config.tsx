@@ -12,6 +12,7 @@ import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
 import { ConfigStorePage } from "./pages/02-configure/ConfigStorePage";
+import { UiBuilderPage } from "./pages/01-build/UiBuilderPage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultCredentialPage } from "./pages/02-configure/VaultCredentialPage";
 import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
@@ -80,6 +81,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
+      },
+      {
+        path: "/ui-builder",
+        element: <UiBuilderPage />,
       },
       {
         path: "/account",

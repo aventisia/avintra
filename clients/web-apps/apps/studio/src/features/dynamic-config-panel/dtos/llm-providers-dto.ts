@@ -4,7 +4,7 @@ import { UsageSourceTypesEnum } from "@/features/credits-management/constants/us
 /**
  * Represents a literal provider type for LLM providers.
  */
-export type ProviderLiteral = "openai" | "ollama" | "deepinfra";
+export type ProviderLiteral = "openai" | "ollama" | "deepinfra" | "googlegemini";
 
 /**
  * Represents the message structure for LLM chat models.

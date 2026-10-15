@@ -216,6 +216,7 @@ def get_credit_service_type(provider: str, model: str, kind: str) -> str | None:
     `kind` is one of "input" / "output" / "cache" for chat models, or "service"
     for embedding models. Returns None when no backend enum is defined.
     """
+    provider = normalize_provider(provider)
     model_map = (PROVIDER_MODEL_MAP.get(provider) or {}).get(model)
     if not model_map:
         return None

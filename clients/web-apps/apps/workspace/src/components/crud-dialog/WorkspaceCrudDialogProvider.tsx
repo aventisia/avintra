@@ -10,6 +10,8 @@ import { Suspense, lazy, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { ROLE_OM } from "@/constants/roles";
+import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "@/features/01-build/flows-table/constants";
+import { getDialogHeadingDescription as getUiBuilderDialogHeadingDescription } from "@/features/01-build/ui-builder-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getConfigStoreDialogHeadingDescription } from "@/features/02-configure/config-store-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
@@ -56,6 +58,11 @@ const FlowFormDialog = lazy(() =>
 const FolderCrudDialog = lazy(() =>
   import("@/features/01-build/flows-table/components/folder-dialogs/FolderCrudDialog").then(
     (m) => ({ default: m.FolderCrudDialog }),
+  ),
+);
+const UiBuilderCrudDialogContent = lazy(() =>
+  import("@/features/01-build/ui-builder-table/components/ui-builder-crud-dialog/UiBuilderCrudDialogContent").then(
+    (m) => ({ default: m.UiBuilderCrudDialogContent }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -190,6 +197,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
   },
   folder: {
     Dialog: FolderCrudDialog,
+  },
+  uiBuilder: {
+    maxWidth: "!max-w-[32rem]",
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
   },
   queue: {
     maxWidth: "!max-w-[36rem]",
