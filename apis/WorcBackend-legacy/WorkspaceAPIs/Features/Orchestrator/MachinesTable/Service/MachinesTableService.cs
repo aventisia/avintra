@@ -245,6 +245,11 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
+            // IMPORTANT NOTE: The offline guard must run before the linked-jobs guard so the
+            // offline message takes precedence when a machine is both non-offline and has jobs.
+            if (!await IsMachineOfflineAsync(machine.Id))
+                return serviceResponse.Update("This machine can only be deleted when it is offline.", 400);
+
             var linkedJobs = await GetLinkedJobsAsync(machine.Id);
 
             if (linkedJobs.Count > 0)
@@ -298,6 +303,18 @@ public class MachinesTableService : IMachinesTableService
             if (machines.Count != machineIds.Count())
                 return serviceResponse.Update("Some machines not found", 404);
 
+            // IMPORTANT NOTE: The offline guard must run before the linked-jobs guard so the
+            // offline message takes precedence when any machine is both non-offline and has jobs.
+            var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+            if (machines.Any(machine =>
+            {
+                var clientStatusDto = machineStatusesList.FirstOrDefault(w => w.ClientId == machine.Id);
+                return clientStatusDto != null && clientStatusDto.Status != MachineStatusEnum.Offline;
+            }))
+            {
+                return serviceResponse.Update("This machine can only be deleted when it is offline.", 400);
+            }
+
             var linkedJobs = new List<Job>();
             foreach (var machine in machines)
                 linkedJobs.AddRange(await GetLinkedJobsAsync(machine.Id));
@@ -311,7 +328,6 @@ public class MachinesTableService : IMachinesTableService
             }
 
             // Remove the machines from the live client status store if connected
-            var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
             foreach (var machine in machines)
             {
                 var clientStatusDto = machineStatusesList.FirstOrDefault(w => w.ClientId == machine.Id);
@@ -337,6 +353,12 @@ public class MachinesTableService : IMachinesTableService
     }
 
     private bool IsSuperAdmin() => _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString());
+
+    private async Task<bool> IsMachineOfflineAsync(Guid machineId)
+    {
+        var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machineId);
+        return clientStatusDto == null || clientStatusDto.Status == MachineStatusEnum.Offline;
+    }
 
     private async Task<List<Job>> GetLinkedJobsAsync(Guid machineId)
     {
