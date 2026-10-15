@@ -25,6 +25,7 @@ type CrudEntityKey =
   | "machine"
   | "job"
   | "flow"
+  | "uiBuilder"
   | "queue"
   | "keystore"
   | "knowledgeBase"

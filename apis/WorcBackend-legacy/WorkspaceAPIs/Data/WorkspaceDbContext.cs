@@ -56,6 +56,8 @@ public class WorkspaceDbContext : DbContext
         // HasQueryFilter twice on the same entity REPLACES the previous filter rather than ANDing it.
         modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderProject>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -90,6 +92,7 @@ public class WorkspaceDbContext : DbContext
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<UiBuilderProject>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
@@ -217,6 +220,12 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasOne(one => one.Flow).WithMany(many => many.FlowVersions).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowLog>().HasOne(one => one.Flow).WithMany(many => many.FlowLog).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowUser>().HasOne(one => one.Flow).WithMany(many => many.FlowUsers).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderVersions).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TemplateResource>().HasOne(one => one.ProjectTemplate).WithMany(many => many.TemplateResources).HasForeignKey(fKey => fKey.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SupportTicketRemark>().HasOne(one => one.SupportTicket).WithMany(many => many.SupportTicketRemarks).HasForeignKey(fKey => fKey.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.Ticket).WithMany(many => many.Comments).HasForeignKey(fKey => fKey.TicketId).OnDelete(DeleteBehavior.Cascade);
@@ -380,6 +389,8 @@ public class WorkspaceDbContext : DbContext
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
+    public DbSet<UiBuilderProject> UiBuilderProjects { get; set; }
+    public DbSet<UiBuilderVersion> UiBuilderVersions { get; set; }
     public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }

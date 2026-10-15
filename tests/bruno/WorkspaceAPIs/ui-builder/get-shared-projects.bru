@@ -1,0 +1,11 @@
+meta {
+  name: Get shared UI builder projects
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/list/shared
+  body: none
+  auth: none
+}

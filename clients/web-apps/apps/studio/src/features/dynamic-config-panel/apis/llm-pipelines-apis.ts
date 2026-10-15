@@ -11,7 +11,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}`;
 
 const generateLLMResponse = (obj: LLMRequestDto) => {
   return axiosInstance
-    .post<IHttpResponse<LLMResponseDto>>(`${baseAPIURL}/llm/generate`, obj, {
+    .post<LLMResponseDto>(`${baseAPIURL}/llm/generate`, obj, {
       headers: getStudioConfigHeaders(),
     })
     .then((res) => res.data);

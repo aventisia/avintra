@@ -2854,6 +2854,131 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_TriggerFlowVersions");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("UiBuilderProjects");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("GeneratedHtml")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PromptText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UiBuilderProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("UiBuilderProjectId");
+
+                    b.ToTable("UiBuilderVersions");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3950,6 +4075,52 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Trigger");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderVersion", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.UiBuilderProject", "UiBuilderProject")
+                        .WithMany("UiBuilderVersions")
+                        .HasForeignKey("UiBuilderProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("UiBuilderProject");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -4073,6 +4244,11 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.Trigger", b =>
                 {
                     b.Navigation("TriggerFlowVersions");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
+                {
+                    b.Navigation("UiBuilderVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>

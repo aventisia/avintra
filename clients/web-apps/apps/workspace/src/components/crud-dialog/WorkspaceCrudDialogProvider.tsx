@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 import { ROLE_OM } from "@/constants/roles";
 import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "@/features/01-build/flows-table/constants";
+import { getDialogHeadingDescription as getUiBuilderDialogHeadingDescription } from "@/features/01-build/ui-builder-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getKeystoreDialogHeadingDescription } from "@/features/02-configure/keystore-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
@@ -53,6 +54,11 @@ const JobCrudDialogContent = lazy(() =>
 const FlowCrudDialogContent = lazy(() =>
   import("@/features/01-build/flows-table/components/flow-crud-dialog/FlowCrudDialogContent").then(
     (m) => ({ default: m.FlowCrudDialogContent }),
+  ),
+);
+const UiBuilderCrudDialogContent = lazy(() =>
+  import("@/features/01-build/ui-builder-table/components/ui-builder-crud-dialog/UiBuilderCrudDialogContent").then(
+    (m) => ({ default: m.UiBuilderCrudDialogContent }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -191,6 +197,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[32rem]",
     getHeader: getFlowDialogHeadingDescription,
     Content: FlowCrudDialogContent,
+  },
+  uiBuilder: {
+    maxWidth: "!max-w-[32rem]",
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
   },
   queue: {
     maxWidth: "!max-w-[36rem]",
