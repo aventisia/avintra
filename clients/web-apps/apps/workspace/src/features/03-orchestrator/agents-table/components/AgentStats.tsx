@@ -28,7 +28,10 @@ export const AgentStats = ({ data }: StatsProps) => {
     setStats({
       totalMachineCount: totalData.sum((x) => x.machineCount ?? 0),
       agents: totalData.count(
-        (x) => x.type === FlowTypesEnum.Agent || x.type === FlowTypesEnum.ChatAgent,
+        (x) =>
+          x.type === FlowTypesEnum.Agent ||
+          x.type === FlowTypesEnum.ChatAgent ||
+          x.type === FlowTypesEnum.VoiceAgent,
       ),
       active: totalData.count((x) => x.isActive),
       inactive: totalData.count((x) => !x.isActive),
