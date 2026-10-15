@@ -1,5 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { ChatsIcon, CubeIcon, FlowArrowIcon, type Icon } from "@phosphor-icons/react";
+import { ChatsIcon, CubeIcon, FlowArrowIcon, MicrophoneIcon, type Icon } from "@phosphor-icons/react";
 
 export type FlowTypeOption = {
   value: FlowTypesEnum;
@@ -23,6 +23,13 @@ export const FLOW_TYPE_OPTIONS: FlowTypeOption[] = [
     label: "Chat agent",
     description: "Holds dynamic, context-aware conversations",
     icon: ChatsIcon,
+  },
+  {
+    value: FlowTypesEnum.VoiceAgent,
+    label: "Voice Agent",
+    description:
+      "A voice-driven agent flow designed for spoken conversations, handling real-time voice interactions instead of text or scheduled tasks",
+    icon: MicrophoneIcon,
   },
   {
     value: FlowTypesEnum.Block,

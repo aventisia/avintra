@@ -748,6 +748,7 @@ namespace WorkspaceAPIs.Services
                     case ProjectTemplateTypesEnum.Block:
                     case ProjectTemplateTypesEnum.Agent:
                     case ProjectTemplateTypesEnum.ChatAgent:
+                    case ProjectTemplateTypesEnum.VoiceAgent:
                         {
                             // Fetch the flow version using RefId
                             var flowVersion = await _unitOfWork.FlowVersionRepo
@@ -999,8 +1000,8 @@ namespace WorkspaceAPIs.Services
                 // Trim string properties in DTO to clean up any extra whitespace
                 trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
 
-                // Handle only Agent, Block, or ChatAgent template types (for flow creation)
-                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block || projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent)
+                // Handle only Agent, Block, ChatAgent, or VoiceAgent template types (for flow creation)
+                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block || projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent || projectTemplate.Type == ProjectTemplateTypesEnum.VoiceAgent)
                 {
                     // Map project template to new Flow entity
                     var flowEntity = new Flow

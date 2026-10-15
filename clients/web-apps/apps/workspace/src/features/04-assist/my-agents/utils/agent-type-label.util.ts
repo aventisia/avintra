@@ -1,6 +1,6 @@
 /**
  * Maps the backend agent (flow) type to a friendly display label.
- * Agent -> "Automation agent", ChatAgent -> "Chat agent".
+ * Agent -> "Automation agent", ChatAgent -> "Chat agent", VoiceAgent -> "Voice Agent".
  */
 export const getAgentTypeLabel = (agentType: string | undefined): string | undefined => {
   switch (agentType) {
@@ -8,6 +8,8 @@ export const getAgentTypeLabel = (agentType: string | undefined): string | undef
       return "Automation agent";
     case "ChatAgent":
       return "Chat agent";
+    case "VoiceAgent":
+      return "Voice Agent";
     default:
       return agentType;
   }
