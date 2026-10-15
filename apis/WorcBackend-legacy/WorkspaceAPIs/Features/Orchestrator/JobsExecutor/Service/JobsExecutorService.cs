@@ -60,10 +60,8 @@ public class JobsExecutorService : IJobsExecutorService
 
             if (!await _creditGateService.HasSufficientCreditsAsync(jobDetails.TenantId))
             {
-                _creditGateService.CancelForInsufficientCredits(jobDetails);
-                _unitOfWork.JobRepo.Update(jobDetails);
-                if (!await _unitOfWork.SaveAsync())
-                    _logger.LogWarning("Failed to persist insufficient-credit cancellation for job {JobId}.", jobDetails.Id);
+                if (await CancelJobForInsufficientCreditsAsync(jobDetails.Id) == 0)
+                    _logger.LogWarning("Job {JobId} was not canceled for insufficient credits; it is no longer in the Created state.", jobDetails.Id);
 
                 _logger.LogWarning("Blocking job dispatch for tenant {TenantId}: insufficient credits.", jobDetails.TenantId);
                 return;
@@ -149,14 +147,8 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            // Update job status in the repository
-            _unitOfWork.JobRepo.Update(jobDetails);
-
-            // Save changes asynchronously
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save changes for Job ID: {JobId}.", jobDetails.Id);
-            }
+            if (await PersistManualAssignmentAsync(jobDetails.Id, assignedMachineId, jobDetails.ExecutedOn) == 0)
+                _logger.LogWarning("Job {JobId} assignment could not be persisted; another dispatcher already claimed it.", jobDetails.Id);
         }
         catch (Exception ex)
         {
@@ -500,6 +492,39 @@ public class JobsExecutorService : IJobsExecutorService
                 .SetProperty(w => w.MachineId, (Guid?)null)
                 .SetProperty(w => w.ExecutedOn, (string?)null)
                 .SetProperty(w => w.RetryCount, w => w.RetryCount + 1));
+
+    private Task<int> CancelJobForInsufficientCreditsAsync(Guid jobId)
+    {
+        var endTime = DateTimeOffset.UtcNow;
+
+        return _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.Status, JobStatusEnum.Canceled)
+                .SetProperty(w => w.EndTime, endTime)
+                .SetProperty(w => w.Remark, CreditGateService.InsufficientCreditsRemark));
+    }
+
+    private Task<int> PersistManualAssignmentAsync(Guid jobId, Guid? machineId, string? executedOn)
+    {
+        if (PendingJobClaimHelpers.IsUnassignedMachineId(machineId))
+        {
+            return _workspaceInternalDbContext.Jobs
+                .Where(w => w.Id == jobId
+                    && w.Status == JobStatusEnum.Created)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(w => w.ExecutedOn, executedOn));
+        }
+
+        return _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, machineId)
+                .SetProperty(w => w.ExecutedOn, executedOn));
+    }
 
     // Sends a command to the connected machine to terminate a stuck job.
     public async Task KillStuckJobAsync(Job? job)
