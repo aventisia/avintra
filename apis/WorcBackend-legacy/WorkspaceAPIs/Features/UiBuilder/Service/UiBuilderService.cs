@@ -365,6 +365,24 @@ public class UiBuilderService : IUiBuilderService
 
             uiBuilderVersionDto = uiBuilderVersionDto.TrimDtoStringProps();
 
+            var contentFormat = UiBuilderContentFormatHelpers.NormalizeContentFormat(uiBuilderVersionDto.ContentFormat);
+            if (contentFormat == null)
+            {
+                serviceResponse.Update("Unsupported content format", 400);
+                return serviceResponse;
+            }
+
+            if (contentFormat == UiBuilderContentFormatHelpers.Framework && string.IsNullOrWhiteSpace(uiBuilderVersionDto.SourceArtifact))
+            {
+                serviceResponse.Update("Framework versions require a source artifact", 400);
+                return serviceResponse;
+            }
+
+            uiBuilderVersionDto.ContentFormat = contentFormat;
+            uiBuilderVersionDto.SourceArtifact = contentFormat == UiBuilderContentFormatHelpers.Framework
+                ? uiBuilderVersionDto.SourceArtifact
+                : null;
+
             UiBuilderVersion? newVersion = null;
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
@@ -453,6 +471,8 @@ public class UiBuilderService : IUiBuilderService
                     VersionNumber = maxVersionNumber + 1,
                     PromptText = $"Restored from version {versionNumber}",
                     GeneratedHtml = sourceVersion.GeneratedHtml,
+                    ContentFormat = sourceVersion.ContentFormat,
+                    SourceArtifact = sourceVersion.SourceArtifact,
                     Provider = sourceVersion.Provider,
                     Model = sourceVersion.Model,
                     CreatedByUserId = _userId,

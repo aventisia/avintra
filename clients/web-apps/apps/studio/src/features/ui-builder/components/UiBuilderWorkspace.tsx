@@ -8,6 +8,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import { createUiBuilderVersion } from "../apis/ui-builder.apis";
+import {
+  UI_BUILDER_FRAMEWORK_SELECTION_NOTE,
+  UI_BUILDER_FRAMEWORK_SKILL_NAMES,
+  UI_BUILDER_FRAMEWORK_SYSTEM_PROMPT,
+  type UiBuilderContentFormat,
+  buildUiBuilderFixPrompt,
+  buildUiBuilderFrameworkUserContent,
+} from "../constants/ui-builder-framework.constant";
 import { DEFAULT_UI_BUILDER_MODEL } from "../constants/ui-builder-models.constant";
 import {
   buildUiBuilderSelectionBlock,
@@ -30,6 +38,8 @@ import {
   mergeUiBuilderHistory,
   saveUiBuilderChatHistory,
 } from "../utils/ui-builder-chat-persistence.util";
+import { buildUiBuilderFrameworkDocument } from "../utils/ui-builder-framework-build.util";
+import { validateUiBuilderFramework } from "../utils/ui-builder-framework-validate.util";
 import {
   UI_BUILDER_CHAT_PANEL_ID,
   UI_BUILDER_PREVIEW_PANEL_ID,
@@ -46,11 +56,20 @@ type UiBuilderWorkspaceProps = {
   projectId: string;
 };
 
+type UiBuilderPendingDraft = {
+  html: string;
+  source: string | null;
+  format: UiBuilderContentFormat;
+};
+
 const workspaceHref = `${import.meta.env.VITE_WORKSPACE_PATH}ui-builder`;
 
 const DEFAULT_CHAT_PANEL_SIZE = 320;
 const MIN_CHAT_PANEL_SIZE = 320;
 const MIN_PREVIEW_PANEL_SIZE = 256;
+
+const normalizeUiBuilderFormat = (value?: string): UiBuilderContentFormat =>
+  value === "framework" ? "framework" : "html";
 
 const UiBuilderGoneState = () => (
   <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center">
@@ -96,7 +115,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   const queryClient = useQueryClient();
   const { projectQuery, versionsQuery } = useUiBuilderProject(projectId);
   const { models, hasAnyEnabled, initialModel } = useUiBuilderModels();
-  const { generate } = useUiBuilderGeneration();
+  const { generate, generateSource } = useUiBuilderGeneration();
 
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "anonymous");
   const [initialSplit] = useState(() => getUiBuilderSplit(userEmail, projectId));
@@ -112,12 +131,14 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   );
   const headVersion = versions[0];
   const headVersionNumber = headVersion?.versionNumber;
+  const headFormat = normalizeUiBuilderFormat(headVersion?.contentFormat);
 
   const [selectedModel, setSelectedModel] = useState(DEFAULT_UI_BUILDER_MODEL);
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<UiBuilderChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [pendingHtml, setPendingHtml] = useState<string | null>(null);
+  const [pendingDraft, setPendingDraft] = useState<UiBuilderPendingDraft | null>(null);
+  const [formatOverride, setFormatOverride] = useState<UiBuilderContentFormat | null>(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selection, setSelection] = useState<UiBuilderSelection | null>(null);
   const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
@@ -133,6 +154,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
 
   useEffect(() => {
     setSelection(null);
+    setFormatOverride(null);
   }, [headVersionNumber]);
 
   useEffect(() => {
@@ -218,7 +240,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
         });
       }
       pendingPayloadRef.current = null;
-      setPendingHtml(null);
+      setPendingDraft(null);
       invalidateVersions();
     },
     onError: (error) => {
@@ -250,10 +272,145 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
 
   const activeModel = models.find((model) => model.model === selectedModel);
 
+  const runFrameworkGeneration = async (
+    assistantId: string,
+    trimmedPrompt: string,
+    activeModelOption: NonNullable<typeof activeModel>,
+    selectionBlock: string,
+    controller: AbortController,
+  ) => {
+    const requestBase = {
+      projectId,
+      projectName: project?.name ?? "UI Builder",
+      model: activeModelOption,
+      skillNames: [...UI_BUILDER_FRAMEWORK_SKILL_NAMES],
+      signal: controller.signal,
+    };
+
+    let streamedCharacters = 0;
+    const source = await generateSource({
+      ...requestBase,
+      systemPrompt: UI_BUILDER_FRAMEWORK_SYSTEM_PROMPT,
+      userContent: buildUiBuilderFrameworkUserContent(
+        headVersion?.sourceArtifact ?? "",
+        trimmedPrompt,
+        selectionBlock ? `${selectionBlock}\n\n${UI_BUILDER_FRAMEWORK_SELECTION_NOTE}` : "",
+      ),
+      onDelta: (delta) => {
+        streamedCharacters += delta.length;
+        patchMessage(assistantId, {
+          text: `Drafting the interface… ${streamedCharacters.toLocaleString()} characters`,
+        });
+      },
+    });
+
+    let finalSource = source;
+    let violations = validateUiBuilderFramework(source);
+
+    if (violations.length > 0) {
+      patchMessage(assistantId, {
+        text: `Checking quality… ${violations.length} issue(s) found.`,
+      });
+
+      const fixId = crypto.randomUUID();
+      activeAssistantIdRef.current = fixId;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: fixId,
+          role: "assistant",
+          text: `Fixing ${violations.length} issues…`,
+          status: "streaming",
+        },
+      ]);
+
+      let fixCharacters = 0;
+      finalSource = await generateSource({
+        ...requestBase,
+        systemPrompt: UI_BUILDER_FRAMEWORK_SYSTEM_PROMPT,
+        userContent: buildUiBuilderFixPrompt(trimmedPrompt, source, violations),
+        onDelta: (delta) => {
+          fixCharacters += delta.length;
+          patchMessage(fixId, {
+            text: `Fixing ${violations.length} issues… ${fixCharacters.toLocaleString()} characters`,
+          });
+        },
+      });
+
+      violations = validateUiBuilderFramework(finalSource);
+      if (violations.length > 0) {
+        const codes = [...new Set(violations.map((violation) => violation.code))].join(", ");
+        patchMessage(fixId, {
+          text: `Quality check failed (${violations.length} issues): ${codes}. Nothing was saved — adjust the prompt and send again.`,
+          status: "error",
+        });
+        setPendingDraft(null);
+        pendingPayloadRef.current = null;
+        return;
+      }
+
+      patchMessage(fixId, { text: "Quality check passed. Saving version…" });
+    } else {
+      patchMessage(assistantId, { text: "Quality check passed. Saving version…" });
+    }
+
+    const builtHtml = buildUiBuilderFrameworkDocument(finalSource);
+    const payload: CreateUiBuilderVersionPayload = {
+      promptText: trimmedPrompt,
+      generatedHtml: builtHtml,
+      contentFormat: "framework",
+      sourceArtifact: finalSource,
+      provider: activeModelOption.provider,
+      model: activeModelOption.model,
+    };
+
+    setPendingDraft({ html: builtHtml, source: finalSource, format: "framework" });
+    pendingPayloadRef.current = payload;
+    saveVersionMutation.mutate(payload);
+  };
+
+  const runHtmlGeneration = async (
+    assistantId: string,
+    trimmedPrompt: string,
+    activeModelOption: NonNullable<typeof activeModel>,
+    llmPrompt: string,
+    controller: AbortController,
+  ) => {
+    let streamedCharacters = 0;
+    const html = await generate({
+      projectId,
+      projectName: project?.name ?? "UI Builder",
+      model: activeModelOption,
+      prompt: llmPrompt,
+      currentHtml: headVersion?.generatedHtml ?? "",
+      signal: controller.signal,
+      onDelta: (delta) => {
+        streamedCharacters += delta.length;
+        patchMessage(assistantId, {
+          text: `Generating the interface… ${streamedCharacters.toLocaleString()} characters`,
+        });
+      },
+    });
+
+    const payload: CreateUiBuilderVersionPayload = {
+      promptText: trimmedPrompt,
+      generatedHtml: html,
+      contentFormat: "html",
+      provider: activeModelOption.provider,
+      model: activeModelOption.model,
+    };
+
+    setPendingDraft({ html, source: null, format: "html" });
+    pendingPayloadRef.current = payload;
+    patchMessage(assistantId, { text: "Generation complete. Saving version…" });
+    saveVersionMutation.mutate(payload);
+  };
+
   const handleSend = async () => {
     const trimmedPrompt = prompt.trim();
     if (!activeModel?.enabled || !hasAnyEnabled || !trimmedPrompt || isGenerating) return;
 
+    const effectiveFormat: UiBuilderContentFormat = formatOverride ?? headFormat;
     const selectionBlock = selection ? buildUiBuilderSelectionBlock(selection) : "";
     const llmPrompt = selectionBlock ? `${trimmedPrompt}\n\n${selectionBlock}` : trimmedPrompt;
 
@@ -265,7 +422,8 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
       {
         id: assistantId,
         role: "assistant",
-        text: "Generating the interface…",
+        text:
+          effectiveFormat === "framework" ? "Drafting the interface…" : "Generating the interface…",
         status: "streaming",
       },
     ]);
@@ -275,40 +433,25 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
 
     const controller = new AbortController();
     abortRef.current = controller;
-    let streamedCharacters = 0;
 
     try {
-      const html = await generate({
-        projectId,
-        projectName: project?.name ?? "UI Builder",
-        model: activeModel,
-        prompt: llmPrompt,
-        currentHtml: headVersion?.generatedHtml ?? "",
-        signal: controller.signal,
-        onDelta: (delta) => {
-          streamedCharacters += delta.length;
-          patchMessage(assistantId, {
-            text: `Generating the interface… ${streamedCharacters.toLocaleString()} characters`,
-          });
-        },
-      });
-
-      const payload: CreateUiBuilderVersionPayload = {
-        promptText: trimmedPrompt,
-        generatedHtml: html,
-        provider: activeModel.provider,
-        model: activeModel.model,
-      };
-
-      setPendingHtml(html);
-      pendingPayloadRef.current = payload;
-      patchMessage(assistantId, { text: "Generation complete. Saving version…" });
-      saveVersionMutation.mutate(payload);
-    } catch (error) {
-      if (controller.signal.aborted) {
-        patchMessage(assistantId, { text: "Generation stopped.", status: "error" });
+      if (effectiveFormat === "framework") {
+        await runFrameworkGeneration(
+          assistantId,
+          trimmedPrompt,
+          activeModel,
+          selectionBlock,
+          controller,
+        );
       } else {
-        patchMessage(assistantId, {
+        await runHtmlGeneration(assistantId, trimmedPrompt, activeModel, llmPrompt, controller);
+      }
+    } catch (error) {
+      const failedId = activeAssistantIdRef.current ?? assistantId;
+      if (controller.signal.aborted) {
+        patchMessage(failedId, { text: "Generation stopped.", status: "error" });
+      } else {
+        patchMessage(failedId, {
           text: error instanceof Error ? error.message : String(error),
           status: "error",
         });
@@ -320,6 +463,13 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   };
 
   const handleStop = () => abortRef.current?.abort();
+
+  const handleFormatChange = (nextFormat: UiBuilderContentFormat) => {
+    setFormatOverride(nextFormat === headFormat ? null : nextFormat);
+    setSelection(null);
+    setPendingDraft(null);
+    pendingPayloadRef.current = null;
+  };
 
   const handleClearHistory = () => {
     const watermark = headVersion?.versionNumber ?? 0;
@@ -359,6 +509,8 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     editTextMutation.mutate({
       promptText: buildUiBuilderTextEditPrompt(selection.selector, selection.textContent, newText),
       generatedHtml: mutatedHtml,
+      contentFormat: headVersion.contentFormat,
+      sourceArtifact: headVersion.sourceArtifact,
       provider: headVersion.provider,
       model: headVersion.model,
     });
@@ -376,12 +528,16 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     return <UiBuilderGoneState />;
   }
 
-  const previewHtml = pendingHtml ?? headVersion?.generatedHtml ?? "";
-  const saveFailed = saveVersionMutation.isError && pendingHtml !== null;
+  const previewHtml = pendingDraft?.html ?? headVersion?.generatedHtml ?? "";
+  const previewSource = pendingDraft?.source ?? headVersion?.sourceArtifact ?? null;
+  const previewFormat = pendingDraft?.format ?? headFormat;
+  const saveFailed = saveVersionMutation.isError && pendingDraft !== null;
   const isBridgeActive = selectMode || isEditTextOpen;
   const renderHtml =
     isBridgeActive && previewHtml ? injectUiBuilderBridge(previewHtml) : previewHtml;
   const isToolbarDisabled = !previewHtml.trim() || isGenerating;
+  const editTextDisabledReason =
+    headFormat === "framework" ? "Manual text edit is not available on React versions." : undefined;
 
   return (
     <div className="flex h-full w-full flex-col border-b border-slate-200">
@@ -444,6 +600,9 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
               onSelectModeChange={handleSelectModeChange}
               hasSelection={selection !== null}
               onEditText={handleEditText}
+              editTextDisabledReason={editTextDisabledReason}
+              format={formatOverride ?? headFormat}
+              onFormatChange={handleFormatChange}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
               disabled={isToolbarDisabled}
@@ -465,7 +624,11 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
             )}
             <div className="min-h-0 flex-1">
               {viewMode === "code" ? (
-                <UiBuilderCodeView html={previewHtml} />
+                <UiBuilderCodeView
+                  html={previewHtml}
+                  source={previewSource}
+                  format={previewFormat}
+                />
               ) : (
                 <UiBuilderPreview
                   html={renderHtml}

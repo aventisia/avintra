@@ -19,9 +19,42 @@ type GenerateUiBuilderArgs = {
   signal?: AbortSignal;
 };
 
+type GenerateUiBuilderSourceArgs = {
+  projectId: string;
+  projectName: string;
+  model: UiBuilderModelOption;
+  systemPrompt: string;
+  userContent: string;
+  skillNames?: string[];
+  onDelta?: (delta: string) => void;
+  signal?: AbortSignal;
+};
+
+const buildUiBuilderRequest = (
+  args: Pick<
+    GenerateUiBuilderSourceArgs,
+    "projectId" | "projectName" | "model" | "systemPrompt" | "userContent" | "skillNames"
+  >,
+): LLMRequestDto => ({
+  provider: args.model.provider,
+  model: args.model.model,
+  input: [
+    { role: "system", content: args.systemPrompt },
+    { role: "user", content: args.userContent },
+  ],
+  is_json_output: false,
+  is_byok_enabled: false,
+  stream: true,
+  ref_type: UsageSourceTypesEnum[UsageSourceTypesEnum.UiBuilder],
+  ref_id: args.projectId,
+  ref_name: args.projectName,
+  action: ActionTypesEnum[ActionTypesEnum.UiBuilderGeneration],
+  skill_names: args.skillNames,
+});
+
 /**
- * Generates a single standalone HTML document for the builder using the tenant's
- * platform credits, streaming output deltas as the model produces them.
+ * Generates interface documents for the builder using the tenant's platform credits,
+ * streaming output deltas as the model produces them.
  */
 export const useUiBuilderGeneration = () => {
   const generate = async ({
@@ -33,24 +66,38 @@ export const useUiBuilderGeneration = () => {
     onDelta,
     signal,
   }: GenerateUiBuilderArgs) => {
-    const request: LLMRequestDto = {
-      provider: model.provider,
-      model: model.model,
-      input: [
-        { role: "system", content: UI_BUILDER_SYSTEM_PROMPT },
-        { role: "user", content: buildUiBuilderUserContent(currentHtml, prompt) },
-      ],
-      is_json_output: false,
-      is_byok_enabled: false,
-      stream: true,
-      ref_type: UsageSourceTypesEnum[UsageSourceTypesEnum.UiBuilder],
-      ref_id: projectId,
-      ref_name: projectName,
-      action: ActionTypesEnum[ActionTypesEnum.UiBuilderGeneration],
-    };
+    const request = buildUiBuilderRequest({
+      projectId,
+      projectName,
+      model,
+      systemPrompt: UI_BUILDER_SYSTEM_PROMPT,
+      userContent: buildUiBuilderUserContent(currentHtml, prompt),
+    });
 
     return streamUiBuilderGeneration(request, { onDelta, signal });
   };
 
-  return { generate };
+  const generateSource = async ({
+    projectId,
+    projectName,
+    model,
+    systemPrompt,
+    userContent,
+    skillNames,
+    onDelta,
+    signal,
+  }: GenerateUiBuilderSourceArgs) => {
+    const request = buildUiBuilderRequest({
+      projectId,
+      projectName,
+      model,
+      systemPrompt,
+      userContent,
+      skillNames,
+    });
+
+    return streamUiBuilderGeneration(request, { onDelta, signal });
+  };
+
+  return { generate, generateSource };
 };
