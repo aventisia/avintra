@@ -149,9 +149,9 @@ write_env_file "apis/WorcBackend-legacy/AccountsAPIs/.env.local" <<'EOF'
 
 ASPNETCORE_URLS=http://localhost:4000
 
-ACCOUNTS_API_BASE_URL=https://local-avintra.aventisia.com/accounts/
-WORKSPACE_API_BASE_URL=https://local-avintra.aventisia.com/worc/
-LLMPIPELINE_API_BASE_URL=https://local-avintra.aventisia.com/llmpipeline/
+ACCOUNTS_API_BASE_URL=https://localhost:4000
+WORKSPACE_API_BASE_URL=https://localhost:4001
+LLMPIPELINE_API_BASE_URL=http://localhost:4003
 CAMEL_API_BASE_URL=http://localhost:4005
 CORSAIR_API_BASE_URL=http://localhost:4006
 EOF
