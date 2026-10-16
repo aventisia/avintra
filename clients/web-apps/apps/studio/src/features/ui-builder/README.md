@@ -54,6 +54,30 @@ interface; Code shows the same document as read-only HTML with a copy button. Th
 only for the current visit — a reload returns to Preview — and it does not touch the split
 layout, the chat, or any other saved setting.
 
+## React output (framework versions)
+
+The toolbar has an **HTML / React** switch. New projects start on HTML (the single-document
+path above). Choosing **React** generates a React component instead, and the builder turns it
+into the page you see.
+
+- **One action, several steps.** A React turn drafts the component, checks it, and — only when
+  the check finds problems — runs one repair step, then saves the result. Each step shows as
+  its own line in the chat (`Drafting…`, `Checking quality…`, `Fixing…`). All steps bill
+  together as normal UI Builder usage.
+- **Nothing broken is saved.** The check runs before a version is written. A React turn that
+  still fails the check saves no version and says why. Stopping part-way stops the whole turn.
+- **Static page.** The component is rendered once into plain HTML. It does not run effects and
+  its event handlers are dropped, so only a component's initial state shows. React versions
+  look complete but are not interactive.
+- **Edit Text is unavailable on React versions.** Manual text editing rewrites the rendered
+  HTML, which the next rebuild would discard, so the button is disabled here.
+- **Source / Built.** In Code, a React version switches between **Source** (the generated
+  component) and **Built** (the page that is saved and rendered). Source is the default.
+- **Restore stays within a format.** A version can be restored only when its format matches the
+  current head; otherwise Restore is disabled with the reason.
+- The switch follows the current version: after a new version is saved the toolbar shows that
+  version's format, and changing the switch clears any unsaved draft.
+
 ## Rules that are easy to get wrong
 
 - **Preview sandbox.** The generated HTML is rendered only through an iframe with
@@ -65,6 +89,9 @@ layout, the chat, or any other saved setting.
     is saved, sent to the model, or shown in Code, so saved versions never contain it. The page
     accepts such a report only when it comes from the preview iframe and has the expected shape;
     anything else is ignored. The sandbox stays `allow-scripts`-only.
+  - **React versions use the same sandbox.** A React version's built page is rendered in the same
+    `allow-scripts`-only iframe as an HTML version. Its styles are precompiled and inlined, so it
+    makes no external requests, and the saved page never contains the selection bridge.
 - **Two models only.** GPT-4o mini (`openai`) and Gemini 3.1 Flash Lite (`googlegemini`).
   A model is selectable only when the tenant has it enabled for the `Text` capability;
   otherwise it is shown disabled with a reason, and generation is blocked when neither is

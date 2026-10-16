@@ -1,0 +1,35 @@
+meta {
+  name: Insert framework UI builder version
+  type: http
+  seq: 25
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/versions
+  body: json
+  auth: none
+}
+
+body:json {
+  "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
+  "promptText": "Create a landing page for a coffee shop",
+  "generatedHtml": "<!doctype html><html><body><main><h1>Coffee</h1></main></body></html>",
+  "contentFormat": "framework",
+  "sourceArtifact": "export default function UiBuilderPage() { return <main><h1>Coffee</h1></main>; }",
+  "provider": "openai",
+  "model": "gpt-4o-mini"
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("content format is echoed", function() {
+    expect(res.body.data.contentFormat).to.equal("framework");
+  });
+
+  test("source artifact is stored", function() {
+    expect(res.body.data.sourceArtifact).to.equal("export default function UiBuilderPage() { return <main><h1>Coffee</h1></main>; }");
+  });
+}

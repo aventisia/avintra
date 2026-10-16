@@ -3,15 +3,15 @@ import {
   UI_BUILDER_SELECTION_MESSAGE_TYPE,
 } from "../constants/ui-builder-selection.constant";
 
-const BRIDGE_MARKER_ATTRIBUTE = "data-ui-builder-bridge";
+export const UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE = "data-ui-builder-bridge";
 
 const BRIDGE_SCRIPT_PATTERN = new RegExp(
-  `<script\\b[^>]*\\b${BRIDGE_MARKER_ATTRIBUTE}\\b[^>]*>[\\s\\S]*?<\\/script>`,
+  `<script\\b[^>]*\\b${UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE}\\b[^>]*>[\\s\\S]*?<\\/script>`,
   "gi",
 );
 
 const BRIDGE_STYLE_PATTERN = new RegExp(
-  `<style\\b[^>]*\\b${BRIDGE_MARKER_ATTRIBUTE}\\b[^>]*>[\\s\\S]*?<\\/style>`,
+  `<style\\b[^>]*\\b${UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE}\\b[^>]*>[\\s\\S]*?<\\/style>`,
   "gi",
 );
 
@@ -22,7 +22,7 @@ const UI_BUILDER_BRIDGE_SCRIPT = `(function () {
   var SELECTOR_LIMIT = 500;
 
   var style = document.createElement("style");
-  style.setAttribute("${BRIDGE_MARKER_ATTRIBUTE}", "1");
+  style.setAttribute("${UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE}", "1");
   style.textContent = "." + OUTLINE_CLASS + "{outline:2px solid #2563eb !important;outline-offset:1px !important;cursor:crosshair !important;}";
   (document.head || document.documentElement).appendChild(style);
 
@@ -101,9 +101,9 @@ const UI_BUILDER_BRIDGE_SCRIPT = `(function () {
  * The result is meant for `srcDoc` rendering only; never persist or send it to a version.
  */
 export const injectUiBuilderBridge = (html: string): string => {
-  if (!html.trim() || html.includes(BRIDGE_MARKER_ATTRIBUTE)) return html;
+  if (!html.trim() || html.includes(UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE)) return html;
 
-  const bridge = `<script ${BRIDGE_MARKER_ATTRIBUTE}="1">${UI_BUILDER_BRIDGE_SCRIPT}</script>`;
+  const bridge = `<script ${UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE}="1">${UI_BUILDER_BRIDGE_SCRIPT}</script>`;
   const bodyCloseIndex = html.toLowerCase().lastIndexOf("</body>");
   if (bodyCloseIndex === -1) return `${html}${bridge}`;
 
