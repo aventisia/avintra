@@ -125,6 +125,7 @@ public static class AppServicesExtension
         services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IUiBuilderService, UiBuilderService>();
+        services.AddScoped<IUiBuilderProjectUserService, UiBuilderProjectUserService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();

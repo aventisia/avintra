@@ -110,4 +110,51 @@ public class UiBuilderController : BaseApiController
     {
         return ResultHelper(await _uiBuilderService.RestoreUiBuilderVersionAsync(id, versionNumber));
     }
+
+    /// <summary>
+    /// Pins the current head version of a custom UI builder project as its published version.
+    /// </summary>
+    [HttpPost("{id}/publish")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectDto>>> PublishUiBuilderProject(Guid id)
+    {
+        return ResultHelper(await _uiBuilderService.PublishUiBuilderProjectAsync(id));
+    }
+
+    /// <summary>
+    /// Retrieves all published custom UI builder projects.
+    /// </summary>
+    [HttpGet("published")]
+    [Authorize(Roles = "OM")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderProjectDto>>>> GetPublishedUiBuilderProjects()
+    {
+        return ResultHelper(await _uiBuilderService.GetPublishedUiBuilderProjectsAsync());
+    }
+
+    /// <summary>
+    /// Retrieves all published custom UI builder projects assigned to the user.
+    /// </summary>
+    [HttpGet("my")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderProjectDto>>>> GetMyUiBuilderProjects()
+    {
+        return ResultHelper(await _uiBuilderService.GetMyUiBuilderProjectsAsync());
+    }
+
+    /// <summary>
+    /// Retrieves a published custom UI builder project and its pinned published version for an assigned user.
+    /// </summary>
+    [HttpGet("published/{id}/view")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectViewDto>>> GetPublishedUiBuilderView(Guid id)
+    {
+        return ResultHelper(await _uiBuilderService.GetPublishedUiBuilderViewAsync(id));
+    }
+
+    /// <summary>
+    /// Retrieves a published custom UI builder project and its pinned published version for the orchestrator preview.
+    /// </summary>
+    [HttpGet("published/{id}/om-view")]
+    [Authorize(Roles = "OM")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectViewDto>>> GetOmUiBuilderView(Guid id)
+    {
+        return ResultHelper(await _uiBuilderService.GetOmUiBuilderViewAsync(id));
+    }
 }

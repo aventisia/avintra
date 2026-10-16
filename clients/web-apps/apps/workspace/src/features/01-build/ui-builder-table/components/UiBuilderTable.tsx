@@ -18,6 +18,8 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUiBuilderProjects } from "../hooks/useFetchUiBuilderProjects";
 import { UiBuilderBulkActions } from "./UiBuilderBulkActions";
 import { uiBuilderTableColumns } from "./UiBuilderTableColumns";
+import UiBuilderAssignUsersDialog from "./assign-users/UiBuilderAssignUsersDialog";
+import UiBuilderDisableDialog from "./ui-builder-row-actions/UiBuilderDisableDialog";
 
 /**
  * Renders a table of custom UI builder projects.
@@ -78,6 +80,8 @@ export const UiBuilderTable = () => {
       ) : (
         <DataTableSkeleton />
       )}
+      <UiBuilderDisableDialog />
+      <UiBuilderAssignUsersDialog />
     </>
   );
 };

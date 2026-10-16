@@ -1,0 +1,27 @@
+meta {
+  name: Get published UIs
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/published
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response data is an array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+
+  test("rows expose the pinned published version", function() {
+    res.body.data.forEach(function(row) {
+      expect(row.publishedVersionNumber).to.be.a("number");
+    });
+  });
+}

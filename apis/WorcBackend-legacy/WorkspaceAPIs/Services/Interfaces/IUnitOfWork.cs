@@ -12,6 +12,7 @@ public interface IUnitOfWork
     IFlowVersionRepo FlowVersionRepo { get; }
     IUiBuilderProjectRepo UiBuilderProjectRepo { get; }
     IUiBuilderVersionRepo UiBuilderVersionRepo { get; }
+    IUiBuilderProjectUserRepo UiBuilderProjectUserRepo { get; }
     IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IAgentRiskRegistryRepo AgentRiskRegistryRepo { get; }

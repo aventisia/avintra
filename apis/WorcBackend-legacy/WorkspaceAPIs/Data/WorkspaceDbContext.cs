@@ -86,6 +86,7 @@ public class WorkspaceDbContext : DbContext
             modelBuilder.Entity<FlowUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<FlowVersionUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<QueueUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            modelBuilder.Entity<UiBuilderProjectUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<ResourceShare>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         }
 
@@ -93,6 +94,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<UiBuilderProject>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<UiBuilderProjectUser>().HasIndex(index => new { index.UiBuilderProjectId, index.UserId }).IsUnique();
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
@@ -222,6 +224,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowUser>().HasOne(one => one.Flow).WithMany(many => many.FlowUsers).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderVersions).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderProjectUsers).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderProjectUser>().HasOne(one => one.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -391,6 +395,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<FlowVersion> FlowVersions { get; set; }
     public DbSet<UiBuilderProject> UiBuilderProjects { get; set; }
     public DbSet<UiBuilderVersion> UiBuilderVersions { get; set; }
+    public DbSet<UiBuilderProjectUser> UiBuilderProjectUsers { get; set; }
     public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }

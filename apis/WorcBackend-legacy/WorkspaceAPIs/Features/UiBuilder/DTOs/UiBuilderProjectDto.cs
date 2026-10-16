@@ -31,10 +31,32 @@ public class UiBuilderProjectDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the project has been published.
+    /// </summary>
+    public bool IsPublished { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the published project is visible to all users within the tenant.
+    /// </summary>
+    public bool IsPublishedTenantWide { get; set; }
+
+    /// <summary>
+    /// Gets or sets the pinned published version number, or null when the project is not published.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public int? PublishedVersionNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of generated versions stored for the project.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public int VersionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of the newest generated version for the project, or 0 when none exist.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public int HeadVersionNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the permission level granted to the user.

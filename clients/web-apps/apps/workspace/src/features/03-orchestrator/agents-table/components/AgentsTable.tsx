@@ -10,15 +10,21 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
+
 import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
+import { useFetchPublishedUis } from "../hooks/useFetchPublishedUis.hook";
+import { mapPublishedUisToAgentRows } from "../utils/map-published-ui-to-agent-row.util";
 import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
 import AssignUsersDialog from "./assign-users/AssignUsersDialog";
+import UiBuilderAssignUsersDialog from "./published-ui/UiBuilderAssignUsersDialog";
+import UiBuilderDisableDialog from "./published-ui/UiBuilderDisableDialog";
+import UiBuilderPreviewDialog from "./published-ui/UiBuilderPreviewDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 import DisableAgentDialog from "./table-actions/DisableAgentDialog";
 
@@ -37,14 +43,12 @@ export const AgentsTable = () => {
   // Fetch agents data
   const { data } = useFetchAgents();
 
+  const { data: uis } = useFetchPublishedUis();
+
+  const rows = [...(data?.data ?? []), ...mapPublishedUisToAgentRows(uis?.data ?? [])];
+
   // Create a React table for agents data
-  const table = useDataTable(
-    agentsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  const table = useDataTable(agentsTableColumns, rows, columnVisibility, sortState, true);
 
   // Return the rendered DataTable component.
   return (
@@ -85,6 +89,9 @@ export const AgentsTable = () => {
       <AssignUsersDialog />
       <DisableAgentDialog />
       <AgentConfigDialog />
+      <UiBuilderAssignUsersDialog />
+      <UiBuilderDisableDialog />
+      <UiBuilderPreviewDialog />
     </>
   );
 };

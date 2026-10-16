@@ -16,7 +16,11 @@ import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTri
 import { FlowVersions } from "@/features/flow-versions/components";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
-import { UiBuilderVersions, useIsUiBuilderRoute } from "@/features/ui-builder";
+import {
+  UiBuilderPublishButton,
+  UiBuilderVersions,
+  useIsUiBuilderRoute,
+} from "@/features/ui-builder";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -104,7 +108,10 @@ const AppHeader: React.FC = () => {
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex min-w-0 items-center justify-end">
             {isUiBuilder ? (
-              <StudioPreferences className="mt-0 mlg:mt-4" />
+              <div className="flex min-w-0 items-center gap-2">
+                <StudioPreferences className="mt-0 mlg:mt-4" />
+                <UiBuilderPublishButton />
+              </div>
             ) : (
               <>
                 {/* <div>
