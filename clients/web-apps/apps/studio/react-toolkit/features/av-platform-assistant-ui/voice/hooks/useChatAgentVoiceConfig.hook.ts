@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { CHAT_AGENT_NODE_NAME } from "@/features/react-flow/utils/chat-agent-graph.util";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
@@ -20,17 +21,19 @@ export type ChatAgentVoiceConfig = {
   isTextToSpeechConfigured: boolean;
 };
 
-/** Reads the Chat AI node's voice configuration from the current flow graph. */
+/** Reads the single-node agent's voice configuration from the current flow graph. */
 export const useChatAgentVoiceConfig = (): ChatAgentVoiceConfig => {
   const nodes = useReactFlowExtStore((state) => state.nodes);
 
   return useMemo(() => {
-    const chatNode = nodes.find(
-      (node) =>
-        node.type === "aiNode" &&
-        (node.data as NodeDataType | undefined)?.name === CHAT_AGENT_NODE_NAME,
-    );
-    const nodeData = chatNode?.data as NodeDataType | undefined;
+    const agentNode = nodes.find((node) => {
+      const name = (node.data as NodeDataType | undefined)?.name;
+
+      return (
+        node.type === "aiNode" && (name === CHAT_AGENT_NODE_NAME || name === VOICE_AGENT_NODE_NAME)
+      );
+    });
+    const nodeData = agentNode?.data as NodeDataType | undefined;
     const inputs: NodeInputType[] = nodeData?.inputs ?? [];
     const findValue = (key: string): unknown => inputs.find((input) => input.key === key)?.value;
 

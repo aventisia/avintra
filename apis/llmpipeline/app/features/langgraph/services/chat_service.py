@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
@@ -10,7 +10,7 @@ from uuid import uuid4
 import time
 from collections import OrderedDict
 
-from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
+from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, ToolMessage
 from langgraph.types import Command
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -399,6 +399,11 @@ class ChatService:
         langgraph_response = self._create_initial_response(request)
         conversation_id = request.conversation_id or str(uuid4())
         request.conversation_id = conversation_id
+
+        if resume_decisions is None and self._unresolvable_manager_target(request):
+            for chunk in self._voice_manager_fallback_frames(request, conversation_id):
+                yield chunk
+            return
 
         if resume_decisions is not None:
             # Resume a paused turn: approved calls execute, denied calls return
@@ -1014,7 +1019,7 @@ class ChatService:
         request_messages = self.conversation_service.build_request_messages(request)
 
         if request.is_temp_chat or db_session is None:
-            return request_messages, request_messages, set()
+            return self._with_voice_context(request, request_messages), request_messages, set()
 
         persisted = await self.conversation_service.load_history(
             db_session=db_session,
@@ -1028,16 +1033,52 @@ class ChatService:
         try:
             state = await graph.aget_state(config)
             if state.values.get("messages"):
-                return request_messages, request_messages, persisted_ids
+                return self._with_voice_context(request, request_messages), request_messages, persisted_ids
         except Exception:
             logger.exception(
                 "Failed to read graph state for conversation_id=%s. "
                 "Falling back to request messages only.",
                 config["configurable"]["thread_id"],
             )
-            return request_messages, request_messages, persisted_ids
+            return self._with_voice_context(request, request_messages), request_messages, persisted_ids
 
-        return persisted + request_messages, request_messages, persisted_ids
+        return (
+            self._with_voice_context(request, persisted + request_messages),
+            request_messages,
+            persisted_ids,
+        )
+
+    def _with_voice_context(
+        self,
+        request: LLMRequest,
+        messages: list[BaseMessage],
+    ) -> list[BaseMessage]:
+        """Prepend the VoiceAgent persona and introduction context to the model input.
+
+        IMPORTANT NOTE: ``introduction_text`` is context for the model only. The
+        caller's client owns playing the configured introduction exactly once, so
+        it is never emitted as an assistant turn here.
+        """
+
+        if not request.is_voice_agent:
+            return messages
+
+        sections: list[str] = []
+        voice_system_prompt = (request.voice_system_prompt or "").strip()
+        if voice_system_prompt:
+            sections.append(voice_system_prompt)
+
+        introduction_text = (request.introduction_text or "").strip()
+        if introduction_text:
+            sections.append(
+                "The agent already opened the conversation with:\n"
+                f"{introduction_text}"
+            )
+
+        if not sections:
+            return messages
+
+        return [SystemMessage(content="\n\n".join(sections)), *messages]
 
     def _latest_ai_message(
         self,
@@ -1053,6 +1094,60 @@ class ChatService:
                 if isinstance(message, AIMessage)
             ),
             fallback,
+        )
+
+    @staticmethod
+    def _unresolvable_manager_target(request: LLMRequest) -> bool:
+        """Return True when a VoiceAgent delegation target cannot be resolved.
+
+        The delegation engine is out of scope for this feature; an absent or
+        malformed target is the only case this runtime can detect, and it must
+        fail closed with a plain-text fallback instead of stranding the turn.
+        """
+
+        if not request.is_voice_agent or not isinstance(request.manager_agent, dict):
+            return False
+
+        target = request.manager_agent.get("target")
+
+        return not (isinstance(target, str) and target.strip())
+
+    @staticmethod
+    def _voice_manager_fallback_frames(
+        request: LLMRequest,
+        conversation_id: str,
+    ) -> Iterator[LLMChunkResponse]:
+        """Yield the error frame plus plain-text fallback for an unreachable manager.
+
+        The conversation keeps working: no graph run or approval pause is started,
+        the caller can post again, and the client always receives a terminal frame.
+        """
+
+        fallback_text = (
+            "I could not reach the configured manager agent, so I will keep helping "
+            "you here. Please try again, or continue without the handover."
+        )
+
+        yield LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output="The configured manager agent could not be reached.",
+            type="error",
+            conversation_id=conversation_id,
+        )
+        yield LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output=fallback_text,
+            type="delta",
+            conversation_id=conversation_id,
+        )
+        yield LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output="",
+            type="done",
+            conversation_id=conversation_id,
         )
 
     def _graph(

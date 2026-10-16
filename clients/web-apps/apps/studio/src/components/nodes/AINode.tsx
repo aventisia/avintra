@@ -14,6 +14,7 @@ import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLock
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { CHAT_AGENT_NODE_NAME } from "@/features/react-flow/utils/chat-agent-graph.util";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useNodeHover } from "@/hooks/useNodeHover";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType } from "@/types/model-config-type";
@@ -66,11 +67,12 @@ export const AINode = memo(
 
     const isExecutionLog = useIsExecutionLogsRoute();
 
-    // ChatAgent flows have a fixed single node — the Chat AI node needs no
-    // output handle since no downstream node can ever be connected.
+    // ChatAgent and VoiceAgent flows have a fixed single node — the AI node needs
+    // no output handle since no downstream node can ever be connected.
     const flowType = useReactFlowExtStore((state) => state.flowType);
-    const isChatAgentNode =
-      flowType === FlowTypesEnum.ChatAgent && data.name === CHAT_AGENT_NODE_NAME;
+    const isSingleNodeAgentAiNode =
+      (flowType === FlowTypesEnum.ChatAgent || flowType === FlowTypesEnum.VoiceAgent) &&
+      (data.name === CHAT_AGENT_NODE_NAME || data.name === VOICE_AGENT_NODE_NAME);
 
     //Get llm for the selected model
     const llm = data.name.includes("AIAgent")
@@ -163,7 +165,7 @@ export const AINode = memo(
 
         {/* Main Flow Handles */}
         <InputHandle position={targetPosition} id="main-in" />
-        {!isChatAgentNode && <OutputHandle position={sourcePosition} id="main-out" />}
+        {!isSingleNodeAgentAiNode && <OutputHandle position={sourcePosition} id="main-out" />}
 
         <ModelInputHandle isConnectable={!!llm?.length} />
 

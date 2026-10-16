@@ -1,9 +1,11 @@
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { OnNodesDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
+import {
+  isSingleNodeAgentFlow,
+  notifySingleNodeAgentActionNotAllowed,
+} from "@/features/react-flow/utils/single-node-agent-flow.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
@@ -39,8 +41,8 @@ export const useOnNodeDelete = () => {
 
   const onNodesDelete: OnNodesDelete = useCallback(
     (deletedNodes) => {
-      if (flowType === FlowTypesEnum.ChatAgent) {
-        notifyChatAgentActionNotAllowed();
+      if (isSingleNodeAgentFlow(flowType)) {
+        notifySingleNodeAgentActionNotAllowed(flowType);
         return;
       }
 

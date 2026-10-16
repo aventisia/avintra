@@ -1,4 +1,3 @@
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { useAlertDialogStore } from "@avplatform/ui/stores";
 import { memo, useEffect, useRef } from "react";
@@ -12,6 +11,7 @@ import CallBlockConfigForm from "@/features/call-block/CallBlockConfigForm";
 import { CANVAS_NODE_DETAIL_PANEL_ID } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import FileViewer from "@/features/file-viewer/components/FileViewer";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
+import { isSingleNodeAgentFlow } from "@/features/react-flow/utils/single-node-agent-flow.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 
@@ -52,10 +52,10 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
   const closePanel = usePanelStore((s) => s.closePanel);
   const isPanelOpen = usePanelStore((s) => s.panels[DCP_PANEL_ID]?.isOpen ?? false);
 
-  // ChatAgent flows share the canvas pane with the always-visible test chat, so
-  // the config fills the canvas. Other flows keep their historic drawer widths.
+  // ChatAgent and VoiceAgent flows share the canvas pane with the always-visible
+  // test chat, so the config fills the canvas. Other flows keep their historic drawer widths.
   const flowType = useReactFlowExtStore((s) => s.flowType);
-  const isChatAgent = flowType === FlowTypesEnum.ChatAgent;
+  const isSingleNodeAgent = isSingleNodeAgentFlow(flowType);
 
   // Forward sync: dcp-store is the source of truth, panel-store is its mirror.
   // DCP wins the right dock: opening it displaces the run-results detail
@@ -164,7 +164,7 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
         id={DCP_PANEL_ID}
         side="right"
         contained
-        fill={isChatAgent}
+        fill={isSingleNodeAgent}
         width={panelWidth}
         // Off: Escape is handled above with the dirty-form guard
         closeOnEscape={false}

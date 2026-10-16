@@ -18,6 +18,12 @@ export interface AssistChatDto {
 
   defaultActions?: string[];
 
+  /** Who speaks first in a VoiceAgent conversation: "human" or "ai". */
+  firstSpeaker?: string;
+
+  /** VoiceAgent introduction played once per conversation. */
+  voiceIntroduction?: string;
+
   /** List of conversations (ordered by most recent first) */
   conversations: ConversationSummaryDto[];
 
