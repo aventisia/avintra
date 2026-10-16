@@ -21,6 +21,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@codemirror/lang-html": "^6.4.11",
     "@dagrejs/dagre": "^1.1.3",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",

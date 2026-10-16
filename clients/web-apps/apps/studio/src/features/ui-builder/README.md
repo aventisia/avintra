@@ -31,11 +31,40 @@ project row (`/studio/ui-builder?id=<projectId>`).
   the last 200 messages are kept; **Clear history** empties the chat here, while the saved
   versions stay listed in the header.
 
+## Preview toolbar
+
+The right preview pane has a toolbar at its top.
+
+- **Select.** Turn on Select, then click an element in the rendered interface. A chip showing
+  that element's CSS selector appears above the chat box, and the next prompt you send is
+  treated as a change to that element: its selector and HTML (capped at 2000 characters) are
+  attached to the request, and the result is saved as a new version like any other. Without a
+  selection, a prompt changes the whole page. The chip clears when you send, leave Select mode,
+  or a newer version becomes current.
+- **Edit Text.** With an element selected, Edit Text opens a small dialog pre-filled with that
+  element's current text. Saving rewrites only that text and stores the result as a new version.
+  The edit happens in the browser: it sends nothing to the model and spends no credits, and the
+  transcript shows a marker such as `Manual text edit (<selector>): "<old>" → "<new>"`. Empty
+  text is rejected, and a selector that no longer matches shows an error without saving anything.
+
+## Preview / Code
+
+The same toolbar has a **Preview / Code** switch. Preview (the default) shows the rendered
+interface; Code shows the same document as read-only HTML with a copy button. The switch lasts
+only for the current visit — a reload returns to Preview — and it does not touch the split
+layout, the chat, or any other saved setting.
+
 ## Rules that are easy to get wrong
 
 - **Preview sandbox.** The generated HTML is rendered only through an iframe with
   `sandbox="allow-scripts"`. Never add `allow-same-origin`, `allow-top-navigation`, or any
   other sandbox token, and never render generated HTML with `dangerouslySetInnerHTML`.
+  - **Element-selection bridge.** Select mode works by injecting a small script into the HTML
+    string just before it is displayed, so a click inside the sandboxed document can report the
+    chosen element back. The script is added only at render time and is stripped before anything
+    is saved, sent to the model, or shown in Code, so saved versions never contain it. The page
+    accepts such a report only when it comes from the preview iframe and has the expected shape;
+    anything else is ignored. The sandbox stays `allow-scripts`-only.
 - **Two models only.** GPT-4o mini (`openai`) and Gemini 3.1 Flash Lite (`googlegemini`).
   A model is selectable only when the tenant has it enabled for the `Text` capability;
   otherwise it is shown disabled with a reason, and generation is blocked when neither is
