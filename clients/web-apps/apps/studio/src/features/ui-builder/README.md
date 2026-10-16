@@ -46,3 +46,10 @@ project row (`/studio/ui-builder?id=<projectId>`).
   admin can still disable it.
 - **Platform credits.** Requests force `is_byok_enabled = false`, force `stream = true`,
   and do not send a `conversation_id`.
+- **Publishing.** Publishing happens from the studio builder top bar, next to the preferences
+  control. Only the project owner sees the button, and the project needs at least one version.
+  The button publishes the current version and then shows a disabled **Published**; when a newer
+  version exists the button re-enables, and publishing again updates what assignees see.
+  **Disable** hides the project instead. Assignees see the published version read-only in
+  Assist → User Interfaces. Everything above — versions, restore, split, chat history, sandbox,
+  models, credits — is unchanged by publishing.

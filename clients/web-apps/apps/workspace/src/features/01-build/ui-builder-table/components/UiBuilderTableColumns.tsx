@@ -101,8 +101,6 @@ export const uiBuilderTableColumns = (): ColumnDef<UiBuilderTableDto>[] => [
     ),
   },
   createDTActionsColumn<UiBuilderTableDto>({
-    renderCell: (row) => (
-      <UiBuilderRowActions rowId={row.id || "rowId"} accessLevel={row.accessLevel} />
-    ),
+    renderCell: (row) => <UiBuilderRowActions project={row} />,
   }),
 ];

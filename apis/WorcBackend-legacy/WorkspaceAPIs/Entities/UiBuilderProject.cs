@@ -34,7 +34,28 @@ public class UiBuilderProject : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the project has been published.
+    /// Publishing pins a version and is repeatable via re-publish; Disable hides instead of un-publishing.
+    /// </summary>
+    public bool IsPublished { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the published project is visible to all users within the tenant.
+    /// </summary>
+    public bool IsPublishedTenantWide { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the pinned published version number, or null when never published.
+    /// </summary>
+    public int? PublishedVersionNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of generated versions to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<UiBuilderVersion>? UiBuilderVersions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of users assigned to the published project.
+    /// </summary>
+    public virtual ICollection<UiBuilderProjectUser>? UiBuilderProjectUsers { get; set; }
 }

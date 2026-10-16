@@ -212,6 +212,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/assist/chats",
         type: ["Commercial", "Enterprise", "Community"],
       },
+      {
+        permissions: ["TU"],
+        Icon: LayoutTemplate,
+        name: "User Interfaces",
+        route: "/assist/user-interfaces",
+        type: ["Commercial", "Enterprise"],
+      },
     ],
   },
   {

@@ -480,6 +480,259 @@ public class UiBuilderService : IUiBuilderService
         return serviceResponse;
     }
 
+    public async Task<ServiceResponse<UiBuilderProjectDto>> PublishUiBuilderProjectAsync(Guid id)
+    {
+        var serviceResponse = ServiceResponse<UiBuilderProjectDto>.Create("Failed to publish project. Please try again", 400);
+
+        try
+        {
+            var project = await GetWritableProjectAsync(id);
+            if (project == null)
+            {
+                serviceResponse.Update("Project does not exist", 404);
+                return serviceResponse;
+            }
+
+            if (project.CreatedByUserId != _userId)
+            {
+                _logger.LogWarning("Unauthorized project publish. User {UserId}, Project {ProjectId}", _userId, project.Id);
+                serviceResponse.Update("You do not have access to publish this project.", 403);
+                return serviceResponse;
+            }
+
+            var versionCount = await _unitOfWork.UiBuilderVersionRepo
+                .GetByConditionAsync(w => w.UiBuilderProjectId == id)
+                .IgnoreQueryFilters()
+                .CountAsync();
+
+            if (versionCount == 0)
+            {
+                serviceResponse.Update("Publish requires at least one version", 400);
+                return serviceResponse;
+            }
+
+            var isAlreadyPinned = false;
+
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await _unitOfWork.AcquireAdvisoryLockAsync($"ui-builder-version:{project.Id}");
+
+                var headVersionNumber = await _unitOfWork.UiBuilderVersionRepo
+                    .GetByConditionAsync(w => w.UiBuilderProjectId == project.Id)
+                    .IgnoreQueryFilters()
+                    .Select(w => (int?)w.VersionNumber)
+                    .MaxAsync() ?? 0;
+
+                isAlreadyPinned = project.IsPublished && project.PublishedVersionNumber == headVersionNumber;
+                if (isAlreadyPinned)
+                {
+                    return;
+                }
+
+                project.IsPublished = true;
+                project.PublishedVersionNumber = headVersionNumber;
+                project.LastModifiedByUserId = _userId;
+                project.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                _unitOfWork.UiBuilderProjectRepo.Update(project);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    throw new InvalidOperationException("Failed to save project.");
+                }
+            });
+
+            if (isAlreadyPinned)
+            {
+                serviceResponse.Update("Project already published", 200, project.Adapt<UiBuilderProjectDto>());
+                return serviceResponse;
+            }
+
+            serviceResponse.Update("Project published successfully", 200, project.Adapt<UiBuilderProjectDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetPublishedUiBuilderProjectsAsync()
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<UiBuilderProjectDto>>.Create("Failed to retrieve published projects. Please try again", 400);
+
+        try
+        {
+            var projects = await _unitOfWork.UiBuilderProjectRepo
+                .GetByConditionAsync(w => w.IsPublished && !w.IsDisabled && w.PublishedVersionNumber != null)
+                .AsNoTracking()
+                .Include(i => i.UiBuilderVersions)
+                .Include(i => i.CreatedByUser)
+                .OrderByDescending(w => w.CreatedOn)
+                .ToListAsync();
+
+            var projectDtoList = projects.Adapt<List<UiBuilderProjectDto>>();
+
+            projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
+
+            serviceResponse.Update("Published projects retrieved successfully", 200, projectDtoList);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetMyUiBuilderProjectsAsync()
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<UiBuilderProjectDto>>.Create("Failed to retrieve assigned projects. Please try again", 400);
+
+        try
+        {
+            var projects = await _unitOfWork.UiBuilderProjectRepo
+                .GetByConditionAsync(w =>
+                    w.IsPublished &&
+                    !w.IsDisabled &&
+                    w.PublishedVersionNumber != null &&
+                    (w.IsPublishedTenantWide ||
+                        (w.UiBuilderProjectUsers != null && w.UiBuilderProjectUsers.Any(user => user.UserId == _userId))))
+                .AsNoTracking()
+                .Include(i => i.UiBuilderVersions)
+                .Include(i => i.CreatedByUser)
+                .OrderByDescending(w => w.CreatedOn)
+                .ToListAsync();
+
+            var projectDtoList = projects.Adapt<List<UiBuilderProjectDto>>();
+
+            projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
+
+            serviceResponse.Update("Assigned projects retrieved successfully", 200, projectDtoList);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<UiBuilderProjectViewDto>> GetPublishedUiBuilderViewAsync(Guid id)
+    {
+        var serviceResponse = ServiceResponse<UiBuilderProjectViewDto>.Create("Failed to retrieve interface. Please try again", 400);
+
+        try
+        {
+            var project = await GetVisiblePublishedProjectAsync(id, true);
+            if (project == null)
+            {
+                serviceResponse.Update("Interface does not exist", 404);
+                return serviceResponse;
+            }
+
+            var pinnedVersion = await GetPublishedVersionAsync(project);
+            if (pinnedVersion == null)
+            {
+                serviceResponse.Update("No version available", 404);
+                return serviceResponse;
+            }
+
+            serviceResponse.Update("Interface retrieved successfully", 200, BuildPublishedView(project, pinnedVersion));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<UiBuilderProjectViewDto>> GetOmUiBuilderViewAsync(Guid id)
+    {
+        var serviceResponse = ServiceResponse<UiBuilderProjectViewDto>.Create("Failed to retrieve interface. Please try again", 400);
+
+        try
+        {
+            var project = await GetVisiblePublishedProjectAsync(id, false);
+            if (project == null)
+            {
+                serviceResponse.Update("Interface does not exist", 404);
+                return serviceResponse;
+            }
+
+            var pinnedVersion = await GetPublishedVersionAsync(project);
+            if (pinnedVersion == null)
+            {
+                serviceResponse.Update("No version available", 404);
+                return serviceResponse;
+            }
+
+            serviceResponse.Update("Interface retrieved successfully", 200, BuildPublishedView(project, pinnedVersion));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    private async Task<UiBuilderProject?> GetVisiblePublishedProjectAsync(Guid id, bool enforceAssignment)
+    {
+        var project = await _unitOfWork.UiBuilderProjectRepo
+            .GetByConditionAsync(w => w.Id == id)
+            .Include(i => i.UiBuilderVersions)
+            .Include(i => i.CreatedByUser)
+            .SingleOrDefaultAsync();
+
+        if (project == null || !project.IsPublished || project.PublishedVersionNumber == null || project.IsDisabled)
+        {
+            return null;
+        }
+
+        if (enforceAssignment && !project.IsPublishedTenantWide)
+        {
+            var isAssigned = await _unitOfWork.UiBuilderProjectRepo
+                .GetByConditionAsync(w => w.Id == id && w.UiBuilderProjectUsers != null && w.UiBuilderProjectUsers.Any(user => user.UserId == _userId))
+                .AnyAsync();
+
+            if (!isAssigned)
+            {
+                return null;
+            }
+        }
+
+        return project;
+    }
+
+    private async Task<UiBuilderVersion?> GetPublishedVersionAsync(UiBuilderProject project)
+    {
+        if (project.PublishedVersionNumber == null)
+        {
+            return null;
+        }
+
+        return await _unitOfWork.UiBuilderVersionRepo
+            .GetByConditionAsync(w => w.UiBuilderProjectId == project.Id && w.VersionNumber == project.PublishedVersionNumber)
+            .SingleOrDefaultAsync();
+    }
+
+    private static UiBuilderProjectViewDto BuildPublishedView(UiBuilderProject project, UiBuilderVersion headVersion)
+    {
+        return new UiBuilderProjectViewDto
+        {
+            Project = project.Adapt<UiBuilderProjectDto>(),
+            HeadVersion = headVersion.Adapt<UiBuilderVersionDto>()
+        };
+    }
+
     private async Task<UiBuilderProject?> GetWritableProjectAsync(Guid id)
     {
         var project = await _unitOfWork.UiBuilderProjectRepo

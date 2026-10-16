@@ -48,16 +48,24 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
-    cell: ({ row }) => (
-      <FlowVersionNavLink
-        to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
-        flowName={row.original.name ?? "NAME_NOT_FOUND"}
-        flowVersionNumber={`v${row.original.versionNumber}`}
-      />
-    ),
+    cell: ({ row }) =>
+      row.original.type === "UI" ? (
+        <div className="inline-flex w-auto items-center gap-1 font-medium">
+          <span className="truncate max-w-72">{row.original.name ?? "NAME_NOT_FOUND"}</span>
+          <span className="bg-slate-100 border text-2xs rounded-xl h-[1.1rem] px-1.5 text-muted-foreground">
+            v{row.original.versionNumber}
+          </span>
+        </div>
+      ) : (
+        <FlowVersionNavLink
+          to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
+          flowName={row.original.name ?? "NAME_NOT_FOUND"}
+          flowVersionNumber={`v${row.original.versionNumber}`}
+        />
+      ),
   },
   {
     accessorKey: "type",
@@ -96,6 +104,16 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       />
     ),
     cell: ({ row }) => {
+      if (row.original.type === "UI") {
+        return (
+          <div className="w-auto truncate font-medium">
+            <Badge className="" variant={"outline"}>
+              NA
+            </Badge>
+          </div>
+        );
+      }
+
       const supportedPlatform = row.original?.supportedPlatform;
       let platform = "Cloud & Windows";
       if (supportedPlatform == "windows") {

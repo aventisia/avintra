@@ -23,9 +23,29 @@ export interface UiBuilderProjectDto {
   isTenantWideAccess: boolean;
 
   /**
+   * Indicates whether the project has been published.
+   */
+  isPublished: boolean;
+
+  /**
    * Gets the number of generated versions stored for the project.
    */
   versionCount?: number;
+
+  /**
+   * Gets the number of the newest generated version for the project.
+   */
+  headVersionNumber?: number;
+
+  /**
+   * Gets the pinned published version number, or null when the project is not published.
+   */
+  publishedVersionNumber?: number;
+
+  /**
+   * Gets or sets the permission level granted to the user.
+   */
+  accessLevel: string;
 
   /**
    * Gets or sets the username of the user who created the project record.

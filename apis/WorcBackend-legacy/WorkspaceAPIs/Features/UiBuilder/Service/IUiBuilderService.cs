@@ -76,4 +76,37 @@ public interface IUiBuilderService
     /// <param name="versionNumber">The version number to restore.</param>
     /// <returns>The task result contains the service response with the newly created version details.</returns>
     Task<ServiceResponse<UiBuilderVersionDto>> RestoreUiBuilderVersionAsync(Guid id, int versionNumber);
+
+    /// <summary>
+    /// Pins the current head version of a custom UI builder project as its published version.
+    /// </summary>
+    /// <param name="id">The ID of the project to publish.</param>
+    /// <returns>The task result contains the service response with the published project details.</returns>
+    Task<ServiceResponse<UiBuilderProjectDto>> PublishUiBuilderProjectAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves all published custom UI builder projects.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of published project details.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetPublishedUiBuilderProjectsAsync();
+
+    /// <summary>
+    /// Retrieves all published custom UI builder projects assigned to the current user.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of assigned project details.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetMyUiBuilderProjectsAsync();
+
+    /// <summary>
+    /// Retrieves a published custom UI builder project and its pinned published version for an assigned user.
+    /// </summary>
+    /// <param name="id">The ID of the project to retrieve.</param>
+    /// <returns>The task result contains the service response with the published project and pinned version.</returns>
+    Task<ServiceResponse<UiBuilderProjectViewDto>> GetPublishedUiBuilderViewAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves a published custom UI builder project and its pinned published version for the orchestrator preview.
+    /// </summary>
+    /// <param name="id">The ID of the project to retrieve.</param>
+    /// <returns>The task result contains the service response with the published project and pinned version.</returns>
+    Task<ServiceResponse<UiBuilderProjectViewDto>> GetOmUiBuilderViewAsync(Guid id);
 }
