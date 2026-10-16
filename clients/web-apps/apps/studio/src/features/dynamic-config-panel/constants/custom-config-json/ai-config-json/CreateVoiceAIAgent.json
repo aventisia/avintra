@@ -1,0 +1,293 @@
+{
+  "name": "CreateVoiceAIAgent",
+  "label": "Voice AI",
+  "description": "Voice AI.",
+  "version": "1.0.0",
+  "auther": "@aventisia",
+  "supportedPlatforms": ["cloud", "desktop"],
+  "errorHandling": "none",
+  "testScreenType": "none",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "__FirstSpeaker__Voice",
+      "label": "Who speaks first",
+      "description": "Choose whether the visitor or the Voice AI starts the conversation.",
+      "defaultValue": "human",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "AI",
+          "value": "ai",
+          "description": "The Voice AI opens the conversation with the introduction below."
+        },
+        {
+          "label": "Human",
+          "value": "human",
+          "description": "The Voice AI waits for the visitor's first message."
+        }
+      ],
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "textarea",
+      "name": "__Introduction__Voice",
+      "label": "Introduction",
+      "description": "Message the Voice AI sends when the AI speaks first. Required when the AI speaks first.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "__FirstSpeaker__Voice",
+            "equals": "ai"
+          }
+        ]
+      },
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__Goal__Voice",
+      "label": "Goal",
+      "description": "What the Voice AI should achieve in the conversation.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__Role__Voice",
+      "label": "Role",
+      "description": "Who the Voice AI is and how it should present itself.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "textarea",
+      "name": "__Instructions__Voice",
+      "label": "Instructions",
+      "description": "Rules and guidance the Voice AI must follow.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__ManagerAgent__Voice",
+      "label": "Manager Agent",
+      "description": "Optional manager agent name or id used when this agent hands work over.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Conversation"
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "__EngineMode__Voice",
+      "label": "Engine Mode",
+      "description": "Choose how the agent handles speech. Realtime uses one realtime model for both listening and speaking; Pipeline chains separate speech-to-text, language model, and text-to-speech steps. The selection is stored with the flow and honored by a later runtime change.",
+      "defaultValue": "pipeline",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Realtime",
+          "value": "realtime",
+          "description": "A single realtime model handles listening and speaking."
+        },
+        {
+          "label": "Pipeline",
+          "value": "pipeline",
+          "description": "Separate speech-to-text, language model, and text-to-speech steps."
+        }
+      ],
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__RealtimeVoice",
+      "label": "Realtime Model",
+      "description": "Model used when Engine Mode is Realtime. The selection is stored with the flow and honored by a later runtime change.",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null,
+        "reasoning_effort": "medium"
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "__EngineMode__Voice",
+            "equals": "realtime"
+          }
+        ]
+      },
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__Voice",
+      "label": "LLM",
+      "description": "Model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null,
+        "reasoning_effort": "medium"
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "__EngineMode__Voice",
+            "equals": "pipeline"
+          }
+        ]
+      },
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__SpeechToText",
+      "description": "Speech-to-text model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "specialty": "stt",
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "__EngineMode__Voice",
+            "equals": "pipeline"
+          }
+        ]
+      },
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "model-config-select",
+      "name": "__ModelConfig__TextToSpeech",
+      "description": "Text-to-speech model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "defaultValue": {
+        "is_byok_enabled": true,
+        "provider": "",
+        "credential_name": "",
+        "model": "",
+        "temperature": 1,
+        "top_p": 1,
+        "max_output_tokens": null
+      },
+      "required": false,
+      "showJsonOutput": false,
+      "hideByok": true,
+      "specialty": "tts",
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "__EngineMode__Voice",
+            "equals": "pipeline"
+          }
+        ]
+      },
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__TextToSpeech",
+      "description": "Voice, language, and speed used for speech in both Realtime and Pipeline modes.",
+      "defaultValue": {
+        "language": "en",
+        "voice": "",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__CallRecording__Voice",
+      "label": "Call Recording",
+      "description": "Records each voice session. The setting is stored with the flow and honored by a later runtime change.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Voice Sessions"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__PreemptiveGeneration__Voice",
+      "label": "Preemptive Generation",
+      "description": "Starts preparing a reply before the caller finishes speaking. The setting is stored with the flow and honored by a later runtime change.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Voice Sessions"
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "__NoiseCancellation__Voice",
+      "label": "Noise Cancellation",
+      "description": "Reduces background noise in the caller audio. The setting is stored with the flow and honored by a later runtime change.",
+      "defaultValue": "none",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "None — Default",
+          "value": "none",
+          "description": "No extra noise reduction."
+        },
+        {
+          "label": "Auto",
+          "value": "auto",
+          "description": "Let the platform choose the noise reduction."
+        },
+        {
+          "label": "Standard",
+          "value": "standard",
+          "description": "General background noise reduction."
+        },
+        {
+          "label": "Telephony",
+          "value": "telephony",
+          "description": "Tuned for phone call audio."
+        }
+      ],
+      "category": "Voice Sessions"
+    }
+  ]
+}

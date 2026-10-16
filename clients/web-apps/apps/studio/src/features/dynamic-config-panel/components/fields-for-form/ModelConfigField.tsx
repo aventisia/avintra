@@ -58,15 +58,18 @@ const ModelConfigField = ({
   const isStt = specialty === "stt" || nodeKey === "SpeechToText";
   const isTts = specialty === "tts" || nodeKey === "TextToSpeech";
   const isEmbedding = nodeKey === "Embedding";
+  const isRealtime = name === "__ModelConfig__RealtimeVoice";
   const isSpeechSpecialty = specialty === "stt" || specialty === "tts";
 
-  const configCapability = isStt
-    ? ModelCapabilityEnum.Stt
-    : isTts
-      ? ModelCapabilityEnum.Tts
-      : isEmbedding
-        ? ModelCapabilityEnum.Embedding
-        : ModelCapabilityEnum.Text;
+  const configCapability = isRealtime
+    ? ModelCapabilityEnum.Realtime
+    : isStt
+      ? ModelCapabilityEnum.Stt
+      : isTts
+        ? ModelCapabilityEnum.Tts
+        : isEmbedding
+          ? ModelCapabilityEnum.Embedding
+          : ModelCapabilityEnum.Text;
 
   const fieldNames = useMemo(
     () =>
@@ -161,7 +164,9 @@ const ModelConfigField = ({
   }, [is_byok_enabled, isProviderEnabled, providerValue]);
 
   const filteredProviders = useMemo(() => {
-    const requiredSpecialties = getSpecialtyFromNode(nodeKey);
+    const requiredSpecialties = isRealtime
+      ? (["realtime"] as const)
+      : getSpecialtyFromNode(nodeKey);
 
     if (isStt || isTts) {
       const speechProviders = isStt ? sttModelProviders : ttsModelProviders;
@@ -181,22 +186,38 @@ const ModelConfigField = ({
       if (!is_byok_enabled) return embeddingModelProviders;
       return embeddingModelProviders.filter((p) => isProviderEnabled(p.value));
     }
+    if (isRealtime && is_byok_enabled) {
+      const realtimeProvidersByValue = new Map(modelProviders.map((p) => [p.value, p]));
+      return Object.keys(enabledModelIdsByProvider).map(
+        (value): LLMProviderType =>
+          realtimeProvidersByValue.get(value) ?? {
+            value,
+            label: PROVIDER_MAP[value] ?? value,
+            models: [],
+          },
+      );
+    }
 
     const providers = is_byok_enabled
       ? modelProviders.filter((p) => isProviderEnabled(p.value))
       : modelProviders.filter((p) => p.isEnabled !== false);
 
-    return providers.map((p) => ({
+    const providersWithModels = providers.map((p) => ({
       ...p,
       models: p.models.filter((m) => {
         const specialtyMatch = requiredSpecialties.every((req) => m.specialty.includes(req));
         return specialtyMatch && m.available;
       }),
     }));
+
+    return isRealtime && !is_byok_enabled
+      ? providersWithModels.filter((p) => p.models.length > 0)
+      : providersWithModels;
   }, [
     isStt,
     isTts,
     isEmbedding,
+    isRealtime,
     is_byok_enabled,
     enabledModelIdsByProvider,
     isProviderEnabled,
@@ -323,9 +344,21 @@ const ModelConfigField = ({
     </>
   );
 
-  const groupName = isStt ? "Speech to Text" : isTts ? "Text to Speech" : undefined;
-  const showInlineVoiceConfig = isTts;
-  const voiceConfigName = name.replace("__ModelConfig__", "__VoiceConfig__");
+  const isVoiceLlm = name === "__ModelConfig__Voice";
+  const isVoiceRealtime = name === "__ModelConfig__RealtimeVoice";
+  const groupName = isStt
+    ? "Speech to Text"
+    : isTts
+      ? "Text to Speech"
+      : isVoiceLlm
+        ? "LLM"
+        : isVoiceRealtime
+          ? "Realtime Model"
+          : undefined;
+  const showInlineVoiceConfig = isTts || isRealtime;
+  const voiceConfigName = isRealtime
+    ? "__VoiceConfig__TextToSpeech"
+    : name.replace("__ModelConfig__", "__VoiceConfig__");
 
   const content = (
     <div className="w-full space-y-3.5">
@@ -394,6 +427,18 @@ const ModelConfigField = ({
           <p className="text-xs text-muted-foreground">
             No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
             Enable one under Tenant Admin &gt; Model Providers.
+          </p>
+        )}
+
+      {isRealtime &&
+        is_byok_enabled &&
+        isInitialized &&
+        !isLoading &&
+        !isError &&
+        !hasEnabledModelsForSpecialty && (
+          <p className="text-xs text-muted-foreground">
+            No realtime models are enabled for this tenant. Enable one under Tenant Admin &gt; Model
+            Providers.
           </p>
         )}
 

@@ -211,8 +211,8 @@ const RuntimeWrapper = ({
     // This allows `initialMessages` to render without the DB adapter wiping them out.
     if (readOnly && !conversationIdRef.current) return undefined;
 
-    return createHistoryAdapter(getConversationId);
-  }, [getConversationId, mode, readOnly]);
+    return createHistoryAdapter(getConversationId, initialMessages);
+  }, [getConversationId, mode, readOnly, initialMessages]);
   /**
    * Dynamic Suggestion Engine.
    */

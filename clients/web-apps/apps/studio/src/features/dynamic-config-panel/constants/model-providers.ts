@@ -32,7 +32,8 @@ export type Provider = {
 // Mark available for the models that are provided on the platform
 //open ai , deep infra, gemini
 
-const openAIVoices = [
+/** Curated OpenAI text-to-speech voice options. */
+export const openAIVoices = [
   { label: "Alloy", value: "alloy" },
   { label: "Echo", value: "echo" },
   { label: "Fable", value: "fable" },
@@ -420,7 +421,8 @@ export const openAiModelList: Model[] = [
 ];
 
 // Official Google Gemini Live / TTS Voices (2025)
-const googleVoices = [
+/** Curated Google Gemini text-to-speech voice options. */
+export const googleVoices = [
   { label: "Journey", value: "journey" },
   { label: "Horizon", value: "horizon" },
   { label: "Lyra", value: "lyra" },

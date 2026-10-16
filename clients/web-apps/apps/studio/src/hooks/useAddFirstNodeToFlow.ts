@@ -1,9 +1,11 @@
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
+import {
+  isSingleNodeAgentFlow,
+  notifySingleNodeAgentActionNotAllowed,
+} from "@/features/react-flow/utils/single-node-agent-flow.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
@@ -26,8 +28,8 @@ export const useAddFirstNodeToFlow = () => {
   // Handler to add first node to flow
   const addFirstNodeToFlow = useCallback(
     (nodeData: NodeDataType, plusNodeId: string) => {
-      if (flowType === FlowTypesEnum.ChatAgent) {
-        notifyChatAgentActionNotAllowed();
+      if (isSingleNodeAgentFlow(flowType)) {
+        notifySingleNodeAgentActionNotAllowed(flowType);
         return;
       }
 

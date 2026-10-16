@@ -44,12 +44,12 @@ public class AssistChatService : IAssistChatService
                 ResourceAccessTypeEnum.View);
 
             // Fetch flow versions based on the following criteria:
-            // - Flow type must be ChatAgent
+            // - Flow type must be ChatAgent or VoiceAgent
             // - Only published and non-archived flow versions are included
             // - Flow version must be owned by or shared with the current user
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished &&
                     !w.IsArchived &&
                     (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id))
@@ -64,6 +64,16 @@ public class AssistChatService : IAssistChatService
                     VersionNumber = s.VersionNumber,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    FirstSpeaker = VoiceAgentGraphHelpers.GetFirstSpeaker(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    VoiceIntroduction = VoiceAgentGraphHelpers.GetIntroduction(
                         s.FlowVersionHistories
                             .OrderByDescending(h => h.CreatedOn)
                             .Select(h => h.ReactFlowObject)
@@ -161,7 +171,7 @@ public class AssistChatService : IAssistChatService
                 ResourceAccessTypeEnum.View);
 
             // Fetch flow versions based on the following criteria:
-            // - Flow must be of type ChatAgent
+            // - Flow must be of type ChatAgent or VoiceAgent
             // - Flow version must be published and not archived
             // - Flow version must be owned by or shared with the current user
             // - Must contain at least one non-archived conversation
@@ -169,7 +179,7 @@ public class AssistChatService : IAssistChatService
             // - Includes only non-archived conversations with their latest message details
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished &&
                     !w.IsArchived &&
                     (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id)) &&
@@ -186,6 +196,16 @@ public class AssistChatService : IAssistChatService
                     VersionNumber = s.VersionNumber,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    FirstSpeaker = VoiceAgentGraphHelpers.GetFirstSpeaker(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    VoiceIntroduction = VoiceAgentGraphHelpers.GetIntroduction(
                         s.FlowVersionHistories
                             .OrderByDescending(h => h.CreatedOn)
                             .Select(h => h.ReactFlowObject)

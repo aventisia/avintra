@@ -44,10 +44,12 @@ import { useDefaultActions } from "../hooks/useDefaultActions";
 import { useFetchConfigKeys } from "../hooks/useFetchConfigKeys";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
+import { useVoiceIntroduction } from "../hooks/useVoiceIntroduction.hook";
 import "../styles/override-edge-style.css";
 import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
+import { isSingleNodeAgentFlow } from "../utils/single-node-agent-flow.util";
 import { saveViewport } from "../utils/viewport-persistence";
 import { AutoFollowExecutingNode } from "./AutoFollowExecutingNode";
 import { BackgroundExt } from "./BackgroundExt";
@@ -100,16 +102,21 @@ export const ReactFlowExt = () => {
     queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
   }, [queryClient]);
 
-  // Model label for the always-visible ChatAgent test panel, read from the
-  // Chat AI node's model config so the tester knows what is being exercised.
+  // Model label for the always-visible single-node agent test panel, read from the
+  // AI node's model config so the tester knows what is being exercised.
   const chatModelLabel = useMemo(() => {
-    if (flowType !== FlowTypesEnum.ChatAgent) return undefined;
-    const chatNode = nodes.find((node) => node.type === "aiNode");
+    if (flowType !== FlowTypesEnum.ChatAgent && flowType !== FlowTypesEnum.VoiceAgent)
+      return undefined;
+    const aiNode = nodes.find((node) => node.type === "aiNode");
     const inputs = (
-      chatNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
+      aiNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
     )?.inputs;
-    const modelConfig = inputs?.find((input) => input.key === "__ModelConfig__Conversation")
-      ?.value as { model?: unknown } | undefined;
+    const modelKey =
+      flowType === FlowTypesEnum.VoiceAgent
+        ? "__ModelConfig__Voice"
+        : "__ModelConfig__Conversation";
+    const modelConfig = inputs?.find((input) => input.key === modelKey)?.value as
+      { model?: unknown } | undefined;
     return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
   }, [flowType, nodes]);
 
@@ -210,6 +217,8 @@ export const ReactFlowExt = () => {
 
   const recommendActions = useDefaultActions();
 
+  const voiceIntroMessages = useVoiceIntroduction();
+
   const calculateMenuPosition = (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
     const pane = reactFlowWrapper.current?.getBoundingClientRect();
     if (!pane) return null;
@@ -235,8 +244,8 @@ export const ReactFlowExt = () => {
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -253,8 +262,8 @@ export const ReactFlowExt = () => {
   // Define onEdgeContextMenu handler
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -270,8 +279,8 @@ export const ReactFlowExt = () => {
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -385,7 +394,7 @@ export const ReactFlowExt = () => {
 
         <ReactFlowDialogWrapper />
       </ResizablePanel>
-      {flowType === FlowTypesEnum.ChatAgent && (
+      {isSingleNodeAgentFlow(flowType) && (
         <>
           <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
           <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
@@ -406,6 +415,7 @@ export const ReactFlowExt = () => {
                   ? `Live test · ${chatModelLabel} · history is not saved`
                   : "Live test · history is not saved"
               }
+              initialMessages={voiceIntroMessages}
               onRequestComplete={handleChatRequestComplete}
               defaultActions={
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []

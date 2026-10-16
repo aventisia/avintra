@@ -5,7 +5,10 @@ import { Edge, Node, useReactFlow } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
+import {
+  isSingleNodeAgentFlow,
+  notifySingleNodeAgentActionNotAllowed,
+} from "@/features/react-flow/utils/single-node-agent-flow.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -159,7 +162,7 @@ export const useFlowOperations = () => {
             flowVariablesObject: currentVariables,
             flowType: currentFlowType,
           } = useReactFlowExtStore.getState();
-          if (currentFlowType === FlowTypesEnum.ChatAgent) return;
+          if (isSingleNodeAgentFlow(currentFlowType)) return;
           const oldNodeIds = new Set(clipboardNodes.map((n) => n.id));
 
           if (!currentNodes.some((n) => oldNodeIds.has(n.id))) return;
@@ -392,8 +395,8 @@ export const useFlowOperations = () => {
   );
 
   const copyNodes = useCallback(() => {
-    if (flowType === FlowTypesEnum.ChatAgent) {
-      notifyChatAgentActionNotAllowed();
+    if (isSingleNodeAgentFlow(flowType)) {
+      notifySingleNodeAgentActionNotAllowed(flowType);
       return;
     }
 
@@ -418,8 +421,8 @@ export const useFlowOperations = () => {
   }, [getTargetIds, cancelCut, extractSubgraphs, setClipboard, resetContextMenu, flowType]);
 
   const cutNodes = useCallback(() => {
-    if (flowType === FlowTypesEnum.ChatAgent) {
-      notifyChatAgentActionNotAllowed();
+    if (isSingleNodeAgentFlow(flowType)) {
+      notifySingleNodeAgentActionNotAllowed(flowType);
       return;
     }
 
@@ -469,8 +472,8 @@ export const useFlowOperations = () => {
       targetNodeId: string,
       position: "before" | "after" | "branch" | "branch-above" | "branch-below",
     ) => {
-      if (flowType === FlowTypesEnum.ChatAgent) {
-        notifyChatAgentActionNotAllowed();
+      if (isSingleNodeAgentFlow(flowType)) {
+        notifySingleNodeAgentActionNotAllowed(flowType);
         return;
       }
 
@@ -864,8 +867,9 @@ export const useFlowOperations = () => {
 
   const deleteNode = useCallback(
     (nodeId: string) => {
-      if (useReactFlowExtStore.getState().flowType === FlowTypesEnum.ChatAgent) {
-        notifyChatAgentActionNotAllowed();
+      const flowType = useReactFlowExtStore.getState().flowType;
+      if (isSingleNodeAgentFlow(flowType)) {
+        notifySingleNodeAgentActionNotAllowed(flowType);
         return;
       }
 

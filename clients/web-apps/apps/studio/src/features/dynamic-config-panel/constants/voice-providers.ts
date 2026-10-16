@@ -1,3 +1,5 @@
+import { googleVoices, openAIVoices } from "./model-providers";
+
 export interface VoiceOption {
   label: string;
   value: string;
@@ -140,6 +142,16 @@ export const voiceProviderData: Record<string, VoiceProviderData> = {
         value: "zrHiDhphv9ZnVPUqCQEp",
       },
     ],
+  },
+
+  openai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices.map((voice) => ({ ...voice, languageId: "en" })),
+  },
+
+  googlegemini: {
+    languages: [{ label: "English", value: "en" }],
+    voices: googleVoices.map((voice) => ({ ...voice, languageId: "en" })),
   },
 
   // Future providers can be added easily here following the same structure

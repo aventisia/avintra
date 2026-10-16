@@ -12,7 +12,12 @@ import { useShallow } from "zustand/react/shallow";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import {
+  DCPFieldSchemaType,
+  getNodeConfig,
+  useDCPNavigationGuard,
+  useDynamicConfigPanelStore,
+} from "@/features/dynamic-config-panel";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
@@ -38,23 +43,21 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
       const provider = data.name.includes("AIAgent")
         ? getProvider(data?.inputs)
         : (data?.selectedModel?.provider as unknown as string);
-      if (provider) {
-        //  node by id and update its label
-        updateNodeData(id, {
-          label: provider,
-        });
-      }
+      updateNodeData(id, {
+        label: provider ?? "",
+      });
     }
   }, [connectedNodeData]);
 
   function getProvider(config: NodeInputType[] | undefined): string {
-    const modelConfigItem = config?.find((item) => item.key.includes("__ModelConfig__"));
+    const providers = (config ?? [])
+      .filter((item) => item.key.includes("__ModelConfig__"))
+      .map((item) => (item.value as ModelConfigType)?.provider)
+      .filter(Boolean);
+    if (providers.length > 0) return providers[0] as string;
 
-    if (!modelConfigItem) return "";
-
-    const value = modelConfigItem.value as ModelConfigType;
-
-    return value?.provider;
+    const first = config?.find((item) => item.key.includes("__ModelConfig__"));
+    return first ? (((first.value as ModelConfigType)?.provider ?? "") as string) : "";
   }
 
   const providerLabelMapper: Record<string, string> = {
@@ -75,6 +78,17 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
   // Guarded: switching nodes flushes pending edits first, aborts on validation errors
   const guardNavigation = useDCPNavigationGuard();
 
+  const openModelConfigTab = (nodeData: NodeDataType) => {
+    setTimeout(() => {
+      void getNodeConfig(nodeData.name).then((config) => {
+        const modelField = config?.fields?.find((field: DCPFieldSchemaType) =>
+          field.name.includes("__ModelConfig__"),
+        );
+        if (modelField?.category) setSelectedTab(modelField.category);
+      });
+    }, 100);
+  };
+
   return (
     <>
       <div className="relative">
@@ -87,11 +101,10 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
           )}
           onDoubleClick={() => {
             if (!connectedNodeId || !connectedNodeData?.data) return;
+            const nodeData = connectedNodeData.data as NodeDataType;
             void guardNavigation(() => {
-              openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
-              setTimeout(() => {
-                setSelectedTab("Model");
-              }, 100);
+              openNodeConfig(connectedNodeId, nodeData);
+              openModelConfigTab(nodeData);
             });
           }}
         >

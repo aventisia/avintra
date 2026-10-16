@@ -41,6 +41,11 @@ class LLMRequest(BaseModel):
     reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
+    is_voice_agent: Optional[bool] = False   # Whether the request originates from a voice agent
+    first_speaker: Optional[str] = None   # Voice agent turn order: "human" or "ai"
+    introduction_text: Optional[str] = None   # Voice agent introduction already delivered to the caller (context only)
+    voice_system_prompt: Optional[str] = None   # Voice agent persona (goal/role/instructions) composed by the workspace API
+    manager_agent: Optional[dict] = None   # Voice agent delegation contract: {"target": str, "context": dict}
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.
     ref_type: str = "" # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str = "" # Identifier to link back to Agent/Workflow
