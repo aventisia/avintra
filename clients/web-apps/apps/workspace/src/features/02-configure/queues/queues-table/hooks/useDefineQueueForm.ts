@@ -121,9 +121,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
       isUniqueReferencesEnforced: false,
       isStoredEncrypted: false,
-      // shouldRetryFailedItems: false,
-      // shouldRetryAbandonedItems: false,
-      // maximumRetryAttempts: 3,
+      shouldRetryFailedItems: false,
+      shouldRetryAbandonedItems: false,
+      maximumRetryAttempts: 3,
       inputSchema: "[]",
       statuses: defaultStatuses,
       routeToQueues: [],
@@ -138,6 +138,23 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       lastModifiedOn: new Date(),
     },
   });
+
+  useEffect(() => {
+    const subscription = form.watch((values, { name }) => {
+      const isRetryToggleEnabled =
+        (name === "shouldRetryFailedItems" && values.shouldRetryFailedItems === true) ||
+        (name === "shouldRetryAbandonedItems" && values.shouldRetryAbandonedItems === true);
+      const currentMaxRetryAttempts = values.maximumRetryAttempts;
+      const isMaxRetryAttemptsUnset =
+        !currentMaxRetryAttempts || Number(currentMaxRetryAttempts) === 0;
+
+      if (isRetryToggleEnabled && isMaxRetryAttemptsUnset) {
+        form.setValue("maximumRetryAttempts", 5, { shouldDirty: true });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   // Destructor form values and methods
   const {
@@ -190,9 +207,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       credentialName: queueData?.credentialName || "",
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
-      // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
-      // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
-      // maximumRetryAttempts: queueData?.maximumRetryAttempts,
+      shouldRetryFailedItems: queueData?.shouldRetryFailedItems ?? false,
+      shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems ?? false,
+      maximumRetryAttempts: queueData?.maximumRetryAttempts ?? 0,
       inputSchema:
         JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema, null, 2),
       statuses: JSON.stringify(queueData?.statuses, null, 2) ?? defaultStatuses,
