@@ -92,9 +92,7 @@ const VoiceConfigField = ({
     }
   }, [providerValue, languageValue, setValue, fieldNames]);
 
-  // If no provider data is found (e.g. Inferencing node), render nothing or a disabled state.
-  // Returning null completely hides this component if the provider doesn't support voices.
-  if (providerVoiceData.languages.length === 0 && providerVoiceData.voices.length === 0) {
+  if (!providerValue) {
     return null;
   }
 

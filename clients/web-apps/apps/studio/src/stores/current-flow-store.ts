@@ -51,6 +51,8 @@ type State = {
 
   /** Flag to indicate if flow type is ChatAgent */
   isChatAgent: boolean;
+  /** Flag to indicate if flow type is VoiceAgent */
+  isVoiceAgent: boolean;
 
   /** Flag to indicate if flow is loading */
   isFlowLoading: boolean;
@@ -116,6 +118,8 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
 
   isChatAgent: false,
 
+  isVoiceAgent: false,
+
   isFlowLoading: false,
   isVersionTransitioning: false,
   versionTransitionId: null,
@@ -128,6 +132,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     set({
       currentFlow: flowDetails,
       isChatAgent: flowDetails.type === FlowTypesEnum.ChatAgent,
+      isVoiceAgent: flowDetails.type === FlowTypesEnum.VoiceAgent,
     }),
 
   setIsFlowLoading: (isLoading) => set({ isFlowLoading: isLoading }),

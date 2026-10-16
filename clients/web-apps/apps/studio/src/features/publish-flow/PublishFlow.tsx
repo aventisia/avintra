@@ -16,6 +16,10 @@ import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/u
 import { LoadFlowDto } from "../react-flow/dtos/load-flow-dto";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
 import { validateChatAgentGraph } from "../react-flow/utils/chat-agent-graph.util";
+import {
+  validateVoiceAgentConversation,
+  validateVoiceAgentGraph,
+} from "../react-flow/utils/voice-agent-graph.util";
 
 const PublishFlow = () => {
   const { search } = useLocation();
@@ -65,6 +69,23 @@ const PublishFlow = () => {
 
       if (chatAgentError) {
         toast.warning(chatAgentError);
+        return;
+      }
+    }
+    if (flowData?.type == FlowTypesEnum.VoiceAgent) {
+      // Parse flow JSON safely
+      const flow = deepParse(flowData.reactFlowObject) as unknown as {
+        nodes: Node[];
+        edges: Edge[];
+        viewport: Viewport;
+      };
+
+      const voiceAgentError =
+        validateVoiceAgentGraph(flow.nodes, flow.edges) ??
+        validateVoiceAgentConversation(flow.nodes);
+
+      if (voiceAgentError) {
+        toast.warning(voiceAgentError);
         return;
       }
     }

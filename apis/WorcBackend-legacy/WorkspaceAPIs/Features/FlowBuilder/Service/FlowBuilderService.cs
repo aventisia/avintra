@@ -330,14 +330,27 @@ public class FlowBuilderService : IFlowBuilderService
             // repair pass that re-collects references and re-creates any missing Production clones.
             var wasAlreadyPublished = flowVersion.IsPublished == true;
 
-            // Validate: ChatAgent versions must satisfy the single-node shape so invalid
-            // client payloads (e.g. trigger/end/plus nodes, missing Chat AI node) cannot be published
+            // Validate: ChatAgent and VoiceAgent versions must satisfy the single-node shape so invalid
+            // client payloads (e.g. trigger/end/plus nodes, missing AI node) cannot be published
             if (flowVersion.Flow.Type == FlowTypesEnum.ChatAgent)
             {
                 var parsedChatFlow = ChatAgentGraphHelpers.TryParseFlow(flowVersion.ReactFlowObject);
 
                 if (ChatAgentGraphHelpers.ValidateChatAgentGraph(parsedChatFlow) is string chatValidationError)
                     return serviceResponse.Update(chatValidationError, 400);
+            }
+
+            // VoiceAgent versions must satisfy the single-node shape and carry an
+            // introduction whenever the AI speaks first.
+            if (flowVersion.Flow.Type == FlowTypesEnum.VoiceAgent)
+            {
+                var parsedVoiceFlow = VoiceAgentGraphHelpers.TryParseFlow(flowVersion.ReactFlowObject);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentGraph(parsedVoiceFlow) is string voiceValidationError)
+                    return serviceResponse.Update(voiceValidationError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentConversation(parsedVoiceFlow) is string voiceConversationError)
+                    return serviceResponse.Update(voiceConversationError, 400);
             }
 
             // TODO: Bug When there is a call block or call agent node exists then parsed flow is empty

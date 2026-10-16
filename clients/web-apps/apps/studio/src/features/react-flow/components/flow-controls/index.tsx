@@ -1,11 +1,11 @@
 import { Separator } from "@avplatform/ui";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { Panel } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
+import { isSingleNodeAgentFlow } from "../../utils/single-node-agent-flow.util";
 import { FCBContainer } from "./FCBContainer";
 import { FCBRedo } from "./FCBRedo";
 import { FCBUndo } from "./FCBUndo";
@@ -21,7 +21,7 @@ export const FlowControls = () => {
 
   return (
     <>
-      {undoRedo && flowType !== FlowTypesEnum.ChatAgent && (
+      {undoRedo && !isSingleNodeAgentFlow(flowType) && (
         <Panel position="top-left" onContextMenu={(e) => e.preventDefault()}>
           <FCBContainer>
             {/* Undo */}
