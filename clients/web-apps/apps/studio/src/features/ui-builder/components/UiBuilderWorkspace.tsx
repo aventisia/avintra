@@ -3,12 +3,16 @@ import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import { createUiBuilderVersion } from "../apis/ui-builder.apis";
 import { DEFAULT_UI_BUILDER_MODEL } from "../constants/ui-builder-models.constant";
+import {
+  buildUiBuilderSelectionBlock,
+  buildUiBuilderTextEditPrompt,
+} from "../constants/ui-builder-selection.constant";
 import { CreateUiBuilderVersionPayload } from "../dtos/ui-builder-dto";
 import { useUiBuilderGeneration } from "../hooks/useUiBuilderGeneration.hook";
 import { useUiBuilderModels } from "../hooks/useUiBuilderModels.hook";
@@ -16,6 +20,8 @@ import {
   UI_BUILDER_VERSIONS_QUERY_KEY,
   useUiBuilderProject,
 } from "../hooks/useUiBuilderProject.hook";
+import { type UiBuilderSelection } from "../types/ui-builder-selection.type";
+import { applyUiBuilderTextEdit, injectUiBuilderBridge } from "../utils/ui-builder-bridge.util";
 import {
   clearUiBuilderChatHistory,
   deriveUiBuilderHistory,
@@ -31,11 +37,14 @@ import {
   saveUiBuilderSplit,
 } from "../utils/ui-builder-split-persistence.util";
 import { type UiBuilderChatMessage, UiBuilderChatPanel } from "./UiBuilderChatPanel";
+import { UiBuilderCodeView } from "./UiBuilderCodeView";
+import { UiBuilderEditTextDialog } from "./UiBuilderEditTextDialog";
 import { UiBuilderPreview } from "./UiBuilderPreview";
+import { UiBuilderPreviewToolbar } from "./UiBuilderPreviewToolbar";
 
-interface UiBuilderWorkspaceProps {
+type UiBuilderWorkspaceProps = {
   projectId: string;
-}
+};
 
 const workspaceHref = `${import.meta.env.VITE_WORKSPACE_PATH}ui-builder`;
 
@@ -102,12 +111,17 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     [versionsQuery.data],
   );
   const headVersion = versions[0];
+  const headVersionNumber = headVersion?.versionNumber;
 
   const [selectedModel, setSelectedModel] = useState(DEFAULT_UI_BUILDER_MODEL);
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<UiBuilderChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [pendingHtml, setPendingHtml] = useState<string | null>(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selection, setSelection] = useState<UiBuilderSelection | null>(null);
+  const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
+  const [isEditTextOpen, setIsEditTextOpen] = useState(false);
   const pendingPayloadRef = useRef<CreateUiBuilderVersionPayload | null>(null);
   const activeAssistantIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -116,6 +130,10 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   const [isHistoryHydrated, setIsHistoryHydrated] = useState(false);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  useEffect(() => {
+    setSelection(null);
+  }, [headVersionNumber]);
 
   useEffect(() => {
     const isEnabled = models.some((model) => model.model === selectedModel && model.enabled);
@@ -215,11 +233,29 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     },
   });
 
+  const editTextMutation = useMutation({
+    mutationFn: (payload: CreateUiBuilderVersionPayload) =>
+      createUiBuilderVersion(projectId, payload),
+    onSuccess: (created) => {
+      const versionNumber = created.data?.versionNumber;
+      toast.success(`Text edit saved as v${versionNumber ?? ""}.`);
+      invalidateVersions();
+      setIsEditTextOpen(false);
+      setSelection(null);
+    },
+    onError: (error) => {
+      toast.error(`The text edit could not be saved. ${String(error)}`);
+    },
+  });
+
   const activeModel = models.find((model) => model.model === selectedModel);
 
   const handleSend = async () => {
     const trimmedPrompt = prompt.trim();
     if (!activeModel?.enabled || !hasAnyEnabled || !trimmedPrompt || isGenerating) return;
+
+    const selectionBlock = selection ? buildUiBuilderSelectionBlock(selection) : "";
+    const llmPrompt = selectionBlock ? `${trimmedPrompt}\n\n${selectionBlock}` : trimmedPrompt;
 
     const assistantId = crypto.randomUUID();
     activeAssistantIdRef.current = assistantId;
@@ -234,6 +270,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
       },
     ]);
     setPrompt("");
+    setSelection(null);
     setIsGenerating(true);
 
     const controller = new AbortController();
@@ -245,7 +282,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
         projectId,
         projectName: project?.name ?? "UI Builder",
         model: activeModel,
-        prompt: trimmedPrompt,
+        prompt: llmPrompt,
         currentHtml: headVersion?.generatedHtml ?? "",
         signal: controller.signal,
         onDelta: (delta) => {
@@ -292,6 +329,41 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     setMessages([]);
   };
 
+  const handleSelection = useCallback(
+    (nextSelection: UiBuilderSelection) => setSelection(nextSelection),
+    [],
+  );
+
+  const handleSelectModeChange = (nextSelectMode: boolean) => {
+    setSelectMode(nextSelectMode);
+    if (!nextSelectMode) setSelection(null);
+  };
+
+  const handleEditText = () => {
+    if (selection) setIsEditTextOpen(true);
+  };
+
+  const handleConfirmEditText = (newText: string) => {
+    if (!selection || !headVersion) return;
+
+    let mutatedHtml: string;
+    try {
+      mutatedHtml = applyUiBuilderTextEdit(headVersion.generatedHtml, selection.selector, newText);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "The selected element could not be found.",
+      );
+      return;
+    }
+
+    editTextMutation.mutate({
+      promptText: buildUiBuilderTextEditPrompt(selection.selector, selection.textContent, newText),
+      generatedHtml: mutatedHtml,
+      provider: headVersion.provider,
+      model: headVersion.model,
+    });
+  };
+
   if (projectQuery.isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
@@ -306,6 +378,10 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
 
   const previewHtml = pendingHtml ?? headVersion?.generatedHtml ?? "";
   const saveFailed = saveVersionMutation.isError && pendingHtml !== null;
+  const isBridgeActive = selectMode || isEditTextOpen;
+  const renderHtml =
+    isBridgeActive && previewHtml ? injectUiBuilderBridge(previewHtml) : previewHtml;
+  const isToolbarDisabled = !previewHtml.trim() || isGenerating;
 
   return (
     <div className="flex h-full w-full flex-col border-b border-slate-200">
@@ -349,6 +425,8 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
             onStop={handleStop}
             onClearHistory={handleClearHistory}
             isGenerating={isGenerating}
+            selection={selection}
+            onClearSelection={() => setSelection(null)}
           />
         </ResizablePanel>
 
@@ -361,6 +439,15 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
           className="overflow-hidden"
         >
           <div className="relative flex h-full min-h-0 flex-col border-r border-slate-200">
+            <UiBuilderPreviewToolbar
+              selectMode={selectMode}
+              onSelectModeChange={handleSelectModeChange}
+              hasSelection={selection !== null}
+              onEditText={handleEditText}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              disabled={isToolbarDisabled}
+            />
             {saveFailed && (
               <div className="flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-3 py-2 text-2xs text-amber-700">
                 <span>The generated page was not saved as a version.</span>
@@ -377,11 +464,29 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
               </div>
             )}
             <div className="min-h-0 flex-1">
-              <UiBuilderPreview html={previewHtml} title={project.name} />
+              {viewMode === "code" ? (
+                <UiBuilderCodeView html={previewHtml} />
+              ) : (
+                <UiBuilderPreview
+                  html={renderHtml}
+                  title={project.name}
+                  bridgeEnabled={isBridgeActive}
+                  onSelection={handleSelection}
+                />
+              )}
             </div>
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+
+      <UiBuilderEditTextDialog
+        open={isEditTextOpen}
+        selector={selection?.selector ?? ""}
+        initialText={selection?.textContent ?? ""}
+        isSaving={editTextMutation.isPending}
+        onOpenChange={setIsEditTextOpen}
+        onConfirm={handleConfirmEditText}
+      />
     </div>
   );
 };

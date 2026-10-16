@@ -1,5 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
+import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import {
@@ -7,6 +8,7 @@ import {
   UI_BUILDER_NO_MODEL_MESSAGE,
 } from "../constants/ui-builder-models.constant";
 import { type UiBuilderModelState } from "../hooks/useUiBuilderModels.hook";
+import { type UiBuilderSelection } from "../types/ui-builder-selection.type";
 
 /** A single turn rendered in the builder's chat transcript. */
 export type UiBuilderChatMessage = {
@@ -16,7 +18,7 @@ export type UiBuilderChatMessage = {
   status?: "streaming" | "error";
 };
 
-interface UiBuilderChatPanelProps {
+type UiBuilderChatPanelProps = {
   models: UiBuilderModelState[];
   selectedModel: string;
   onModelChange: (model: string) => void;
@@ -27,7 +29,9 @@ interface UiBuilderChatPanelProps {
   onStop: () => void;
   onClearHistory: () => void;
   isGenerating: boolean;
-}
+  selection?: UiBuilderSelection | null;
+  onClearSelection?: () => void;
+};
 
 export const UiBuilderChatPanel = ({
   models,
@@ -40,6 +44,8 @@ export const UiBuilderChatPanel = ({
   onStop,
   onClearHistory,
   isGenerating,
+  selection,
+  onClearSelection,
 }: UiBuilderChatPanelProps) => {
   const hasAnyEnabled = models.some((model) => model.enabled);
   const selectedEnabled = models.some((model) => model.model === selectedModel && model.enabled);
@@ -107,7 +113,24 @@ export const UiBuilderChatPanel = ({
       </div>
 
       <div className="flex flex-col gap-2 border-t border-slate-200 p-4">
-        <div className="flex justify-end">
+        <div
+          className={cn("flex items-center gap-2", selection ? "justify-between" : "justify-end")}
+        >
+          {selection && (
+            <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-1 text-2xs text-muted-foreground">
+              <span className="min-w-0 truncate">
+                Selected: <span className="font-medium text-foreground">{selection.selector}</span>
+              </span>
+              <button
+                type="button"
+                aria-label="Clear selection"
+                onClick={onClearSelection}
+                className="shrink-0 rounded-full p-0.5 hover:bg-slate-100"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
           <Button
             size="xs"
             variant="ghost"
