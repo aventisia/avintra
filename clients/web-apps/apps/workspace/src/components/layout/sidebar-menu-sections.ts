@@ -226,6 +226,13 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         hub: "orchestrator",
         type: ["Commercial", "Enterprise", "Community"],
       },
+      {
+        permissions: ["TU"],
+        Icon: LayoutTemplate,
+        name: "User Interfaces",
+        route: "/assist/user-interfaces",
+        type: ["Commercial", "Enterprise"],
+      },
     ],
   },
   {

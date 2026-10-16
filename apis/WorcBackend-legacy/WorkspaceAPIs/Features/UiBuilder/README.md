@@ -23,5 +23,16 @@ Lets a user turn a plain-language prompt into a custom web page and keep every a
 
 ## Boundaries (v1)
 
-No sharing, no archive, no publish flow, and no server-side HTML sanitizer. The generated
-page is only ever rendered inside a sandboxed iframe.
+- There is no archive and no server-side HTML sanitizer. The generated page is only ever rendered
+  inside a sandboxed iframe.
+- **Publishing pins the current version.** The owner can publish a project once it has at least
+  one version; publishing again pins the newer version. **Disable** hides a published project
+  instead of un-publishing it.
+- **Assigned users see the pinned version.** A published project is shared with individual users,
+  or with all tenant members, and those users see the pinned version read-only in Assist under
+  **User Interfaces**. Saving a new version changes nothing for them until the owner publishes
+  again.
+- **Disable hides and blocks.** Disabling removes the project from Published and blocks assigned
+  access, while keeping the assignments; enabling restores both without re-assigning.
+- **Assigned-view access is separate from tenant-wide builder sharing**, and viewing a published
+  interface is free.

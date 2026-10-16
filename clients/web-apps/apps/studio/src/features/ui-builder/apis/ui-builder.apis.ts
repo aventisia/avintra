@@ -160,9 +160,21 @@ const restoreUiBuilderVersion = (id: string, versionNumber: number) => {
     .then((res) => res.data);
 };
 
+/**
+ * Pins the current head version as the published version.
+ */
+const publishUiBuilderProject = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<UiBuilderProjectDto>>(`${baseAPIURL}/${id}/publish`, null, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
 export {
   getUiBuilderProject,
   getUiBuilderVersions,
   createUiBuilderVersion,
   restoreUiBuilderVersion,
+  publishUiBuilderProject,
 };

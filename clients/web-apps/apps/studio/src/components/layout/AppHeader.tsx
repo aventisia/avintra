@@ -18,7 +18,11 @@ import { FLOW_TYPE_LABELS } from "@/features/flow-versions/constants";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
-import { UiBuilderVersions, useIsUiBuilderRoute } from "@/features/ui-builder";
+import {
+  UiBuilderPublishButton,
+  UiBuilderVersions,
+  useIsUiBuilderRoute,
+} from "@/features/ui-builder";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";

@@ -4,6 +4,7 @@ import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
 import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
+import { UiBuilderRowActions } from "../published-ui/UiBuilderRowActions";
 import { AgentConfigRowAction } from "./AgentConfigRowAction";
 import { AgentDisableAction } from "./AgentDisableAction";
 import { AssignMachineRowAction } from "./AssignMachineRowAction";
@@ -28,6 +29,14 @@ export const TableActions = ({
   supportedPlatform,
   isTenantWideAccess,
 }: TableActionsProps) => {
+  if (type === "UI") {
+    return (
+      <DataTableRowActions>
+        <UiBuilderRowActions rowId={rowId} isDisabled={isDisabled} projectName={flowName} />
+      </DataTableRowActions>
+    );
+  }
+
   return (
     <TableCNRowActionsMenu ariaLabel="Open agent actions">
       {type == "ChatAgent" ? (

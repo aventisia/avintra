@@ -27,9 +27,29 @@ export interface UiBuilderTableDto {
   isTenantWideAccess: boolean;
 
   /**
+   * Indicates whether the project has been published.
+   */
+  isPublished: boolean;
+
+  /**
+   * Indicates whether the published project is visible to all users within the tenant.
+   */
+  isPublishedTenantWide: boolean;
+
+  /**
    * Gets the number of generated versions stored for the project.
    */
   versionCount?: number;
+
+  /**
+   * Gets the number of the newest generated version for the project.
+   */
+  headVersionNumber?: number;
+
+  /**
+   * Gets the pinned published version number assignees see.
+   */
+  publishedVersionNumber?: number;
 
   /**
    * Access level of the project.

@@ -1,0 +1,27 @@
+meta {
+  name: Bulk assign all users to UI builder project
+  type: http
+  seq: 24
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/uibuilder-project-user/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
+      "userId": "{{USER_ID}}",
+      "isAssignedToAllUsers": true
+    }
+  ]
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

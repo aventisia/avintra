@@ -7,6 +7,10 @@ import { columnVisibilityState } from "./column-visibility-state";
 export const TABLE_KEY = "agents-table";
 
 export const DATA_QUERY_KEY = ["agents"];
+export const CHAT_AGENT_USER_KEY = "chat-agent-user";
+export const UI_BUILDER_QUERY_KEY = ["ui-builder"];
+export const MY_INTERFACES_QUERY_KEY = ["my-interfaces"];
+export const PUBLISHED_UI_USER_KEY = "published-ui-user";
 
 /** Page sizes offered by the table, unchanged from the legacy table. */
 export const AGENTS_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
