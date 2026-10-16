@@ -88,6 +88,16 @@ export interface UiBuilderVersionDto {
   generatedHtml: string;
 
   /**
+   * Gets or sets the output format marker for this version ("html" or "framework").
+   */
+  contentFormat: string;
+
+  /**
+   * Gets or sets the JSX source artifact for framework versions, or null for html versions.
+   */
+  sourceArtifact?: string | null;
+
+  /**
    * Gets or sets the wire provider used for generation.
    */
   provider: string;
@@ -111,5 +121,5 @@ export interface UiBuilderVersionDto {
 /** Payload used to persist a newly generated version. */
 export type CreateUiBuilderVersionPayload = Pick<
   UiBuilderVersionDto,
-  "promptText" | "generatedHtml" | "provider" | "model"
+  "promptText" | "generatedHtml" | "contentFormat" | "sourceArtifact" | "provider" | "model"
 >;

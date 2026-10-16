@@ -1,6 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
 import { MousePointer2, PencilLine } from "lucide-react";
 
+import { type UiBuilderContentFormat } from "../constants/ui-builder-framework.constant";
+
 type UiBuilderViewMode = "preview" | "code";
 
 type UiBuilderPreviewToolbarProps = {
@@ -8,17 +10,23 @@ type UiBuilderPreviewToolbarProps = {
   onSelectModeChange: (selectMode: boolean) => void;
   hasSelection: boolean;
   onEditText: () => void;
+  editTextDisabledReason?: string;
+  format: UiBuilderContentFormat;
+  onFormatChange: (format: UiBuilderContentFormat) => void;
   viewMode: UiBuilderViewMode;
   onViewModeChange: (viewMode: UiBuilderViewMode) => void;
   disabled: boolean;
 };
 
-/** Preview-pane toolbar: element select, manual text edit, and preview/code toggle. */
+/** Preview-pane toolbar: element select, manual text edit, output format, and preview/code toggle. */
 export const UiBuilderPreviewToolbar = ({
   selectMode,
   onSelectModeChange,
   hasSelection,
   onEditText,
+  editTextDisabledReason,
+  format,
+  onFormatChange,
   viewMode,
   onViewModeChange,
   disabled,
@@ -39,13 +47,37 @@ export const UiBuilderPreviewToolbar = ({
       <Button
         size="xs"
         variant="ghost"
-        disabled={disabled || !hasSelection}
+        disabled={disabled || !hasSelection || Boolean(editTextDisabledReason)}
+        title={editTextDisabledReason}
         onClick={onEditText}
         className="gap-1.5"
       >
         <PencilLine className="h-3.5 w-3.5" />
         Edit Text
       </Button>
+
+      <div className="ml-1 flex items-center rounded-md border border-slate-200 bg-white p-0.5">
+        <Button
+          size="xs"
+          variant={format === "html" ? "secondary" : "ghost"}
+          aria-pressed={format === "html"}
+          disabled={disabled}
+          onClick={() => onFormatChange("html")}
+          className="h-6 rounded-sm px-2"
+        >
+          HTML
+        </Button>
+        <Button
+          size="xs"
+          variant={format === "framework" ? "secondary" : "ghost"}
+          aria-pressed={format === "framework"}
+          disabled={disabled}
+          onClick={() => onFormatChange("framework")}
+          className="h-6 rounded-sm px-2"
+        >
+          React
+        </Button>
+      </div>
     </div>
 
     <div className="flex items-center rounded-md border border-slate-200 bg-white p-0.5">

@@ -15,6 +15,10 @@ import { useRestoreUiBuilderVersion } from "../hooks/useRestoreUiBuilderVersion.
 import { useUiBuilderProject } from "../hooks/useUiBuilderProject.hook";
 import { useUiBuilderVersionsStore } from "../stores/ui-builder-versions.store";
 
+const CROSS_FORMAT_RESTORE_REASON = "Restoring a version of a different format is not supported.";
+
+const formatLabel = (value?: string) => (value === "framework" ? "React" : "HTML");
+
 /** Header version control for the custom UI builder: head pill plus restore list. */
 export const UiBuilderVersions = () => {
   const { projectId, isPopoverOpen, togglePopoverOpen } = useUiBuilderVersionsStore(
@@ -66,6 +70,8 @@ export const UiBuilderVersions = () => {
           ) : (
             versions.map((version) => {
               const isHead = version.versionNumber === headVersion?.versionNumber;
+              const isCrossFormat =
+                Boolean(headVersion) && version.contentFormat !== headVersion?.contentFormat;
 
               return (
                 <div
@@ -75,13 +81,15 @@ export const UiBuilderVersions = () => {
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-2xs font-semibold text-slate-700">
                       v{version.versionNumber}
+                      {` · ${formatLabel(version.contentFormat)}`}
                       {isHead ? " · current" : ""}
                     </span>
                     <Button
                       size="xs"
                       variant="outline"
+                      title={isCrossFormat ? CROSS_FORMAT_RESTORE_REASON : undefined}
                       onClick={() => restoreMutation.mutate(version.versionNumber)}
-                      disabled={restoreMutation.isPending || isHead}
+                      disabled={restoreMutation.isPending || isHead || isCrossFormat}
                     >
                       Restore
                     </Button>

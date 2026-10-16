@@ -52,6 +52,12 @@ export interface MyInterfaceVersionDto {
   /** Gets or sets the full standalone HTML document generated for this version. */
   generatedHtml: string;
 
+  /** Gets or sets the output format marker for this version ("html" or "framework"). */
+  contentFormat: string;
+
+  /** Gets or sets the JSX source artifact for framework versions, or null for html versions. */
+  sourceArtifact?: string | null;
+
   /** Gets or sets the wire provider used for generation. */
   provider: string;
 

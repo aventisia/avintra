@@ -43,6 +43,17 @@ public class UiBuilderVersion : BaseEntity, IMustHaveTenant
     public required string GeneratedHtml { get; set; }
 
     /// <summary>
+    /// Gets or sets the output format marker for this version ("html" or "framework"). Max-20 characters.
+    /// </summary>
+    [MaxLength(20)]
+    public required string ContentFormat { get; set; }
+
+    /// <summary>
+    /// Gets or sets the JSX source artifact for framework versions, or null for html versions.
+    /// </summary>
+    public string? SourceArtifact { get; set; }
+
+    /// <summary>
     /// Gets or sets the wire provider used for generation. Max-50 characters.
     /// </summary>
     [MaxLength(50)]
