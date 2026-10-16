@@ -1,6 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { useThemeStore } from "@avplatform/ui/stores";
 // Language Modules
+import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { sql } from "@codemirror/lang-sql";
@@ -15,16 +16,16 @@ import React, { useMemo } from "react";
 
 // Note: Keep in sync with SUPPORTED_LANGUAGES in CodeEditorField.tsx
 export type SupportedLanguage =
-  "javascript" | "python" | "csharp" | "vb" | "powershell" | "cmd" | "sql";
+  "javascript" | "python" | "csharp" | "vb" | "powershell" | "cmd" | "sql" | "html";
 
-interface CodeEditorProps {
+type CodeEditorProps = {
   value?: string;
   onChange?: (value: string) => void;
   language?: SupportedLanguage;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
-}
+};
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   value = "",
@@ -52,6 +53,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         return [StreamLanguage.define(powerShell)];
       case "cmd":
         return [StreamLanguage.define(shell)];
+      case "html":
+        return [html()];
 
       default:
         return [javascript()];
