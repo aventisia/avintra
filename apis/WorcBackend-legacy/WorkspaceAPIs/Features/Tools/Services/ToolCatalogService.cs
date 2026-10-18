@@ -252,12 +252,12 @@ public class ToolCatalogService : IToolCatalogService
     {
         if (tool.Type == ComponentTypeEnum.Custom)
         {
-            return AppSecretTypesEnum.CustomApiTool.ToString();
+            return VaultCredentialTypesEnum.CustomApiTool.ToString();
         }
 
         var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
         return string.IsNullOrWhiteSpace(pluginId)
             ? null
-            : _corsairConfigRepository.GetVaultTypeForPluginId(pluginId);
+            : _corsairConfigRepository.GetVaultCredentialTypeForPluginId(pluginId);
     }
 }
