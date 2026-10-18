@@ -12,7 +12,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
     private readonly ILogger<CustomToolConnectorService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
 
@@ -20,14 +20,14 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         ILogger<CustomToolConnectorService> logger,
         IUnitOfWork unitOfWork,
         IHttpClientFactory httpClientFactory,
-        ICloudConnectorsVaultService cloudConnectorsVaultService,
+        ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService,
         ICurrentTenantService currentTenantService,
         IResourceShareService resourceShareService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _httpClientFactory = httpClientFactory;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
     }
@@ -122,7 +122,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                     : request.CredentialName;
 
                 var auth = await CustomToolCredentialHelpers.ResolveAuthenticationAsync(
-                    _cloudConnectorsVaultService, credentialName);
+                    _cloudConnectorsVaultCredentialService, credentialName);
                 if (!auth.IsSuccess)
                 {
                     return serviceResponse.Update(auth.ErrorMessage, 400);
