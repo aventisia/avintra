@@ -1,0 +1,78 @@
+meta {
+  name: Submitted BYO and verification fields are ignored
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/preferences
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{TENANT_ID}}",
+    "isSSOEnabled": false,
+    "isPwdEnabled": true,
+    "isPwdNeverExpiresEnabled": true,
+    "daysBeforePwdExpires": 730,
+    "isIdleSessionTimeoutEnabled": true,
+    "idleSessionTimeoutMinutes": 10,
+    "isTwoFAEnabled": false,
+    "domainVerifyAttestation": true,
+    "ssoConfigJson": "{\"v\":1,\"provider\":\"microsoft_entra\",\"externalTenantId\":\"11111111-2222-3333-4444-555555555555\",\"emailDomain\":\"contoso.com\",\"byoClientId\":\"bruno-byo-client\",\"byoClientSecret\":\"bruno-byo-secret-271\",\"byoClientSecretProtected\":\"bruno-protected-blob\",\"domainVerified\":true,\"domainVerifiedOn\":\"1999-01-01T00:00:00.0000000Z\",\"domainVerifiedBy\":\"attacker\"}"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("keeps only the four stored single sign-on members", function() {
+    const config = JSON.parse(res.getBody().data.ssoConfigJson);
+
+    expect(Object.keys(config).sort()).to.deep.equal(["emailDomain", "externalTenantId", "provider", "v"]);
+    expect(config.v).to.equal(1);
+    expect(config.provider).to.equal("microsoft_entra");
+    expect(config.externalTenantId).to.be.a("string").and.not.equal("");
+    expect(config.emailDomain).to.be.a("string").and.not.equal("");
+  });
+
+  test("never stores or echoes the submitted BYO fields", function() {
+    const body = JSON.stringify(res.getBody());
+
+    expect(body).to.not.contain("byoClient");
+    expect(body).to.not.contain("bruno-byo-secret-271");
+  });
+
+  test("never stores or echoes the removed verification fields", function() {
+    const body = JSON.stringify(res.getBody());
+
+    expect(body).to.not.contain("domainVerif");
+    expect(body).to.not.contain("1999-01-01");
+    expect(body).to.not.contain("attacker");
+  });
+
+  test("returns the same stored document on a plain GET", async function() {
+    const preferences = await bru.runRequest("AccountsAPIs/tenant-account/get-tenant-preferences.bru");
+
+    expect(preferences.status).to.equal(200);
+    expect(preferences.data.data.ssoConfigJson).to.equal(res.getBody().data.ssoConfigJson);
+  });
+}
+
+docs {
+  > Preconditions: a tenant admin session (see `ta-login.bru`), `TENANT_ID` pointing at an Organization
+  > tenant whose single sign-on document already exists (created by a Connect) and SSO switched off. The
+  > submitted document claims BYO credentials and a verified domain while the request also sends the removed
+  > attestation flag; the server must ignore every submitted configuration value and echo the stored
+  > four-member document unchanged.
+  >
+  > Reading a failure: 401 means no tenant admin session, 400 means the tenant fixture is wrong (not an
+  > Organization, no domain), and a document assertion failing means a removed field reached the stored
+  > document or the response. All are environment gaps or regressions; the assertions stay unconditional.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD`, `TENANT_ID`.
+}

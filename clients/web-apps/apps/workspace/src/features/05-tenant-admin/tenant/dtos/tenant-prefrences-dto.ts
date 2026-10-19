@@ -49,24 +49,9 @@ export interface TenantPreferencesDto {  /**
   isTwoFAEnabled: boolean;
 
   /**
-   * Gets or sets the versioned single sign-on configuration document. The tenant client secret is never included.
+   * Gets or sets the versioned single sign-on configuration document.
    */
   ssoConfigJson?: string;
-
-  /**
-   * Gets or sets a flag indicating whether a tenant client secret is stored.
-   */
-  ssoSecretPresent?: boolean;
-
-  /**
-   * Gets or sets a flag indicating whether the email domain ownership attestation exists.
-   */
-  domainVerified?: boolean;
-
-  /**
-   * Gets or sets the write-only attestation that the tenant owns its email domain.
-   */
-  domainVerifyAttestation?: boolean;
 
   /**
    * Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.

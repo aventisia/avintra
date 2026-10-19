@@ -56,12 +56,8 @@ export const useDefinePreferencesForm = () => {
     },
   });
 
-  // Submit the form values together with the stored single sign-on configuration
   const mutate = (formData: z.infer<typeof preferencesSchema>) => {
-    updatePreferences({
-      ...formData,
-      ssoConfigJson: formData.ssoConfigJson ?? data?.data?.ssoConfigJson,
-    });
+    updatePreferences(formData);
   };
 
   // Form state helpers

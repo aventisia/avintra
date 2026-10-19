@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -23,7 +22,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
     private readonly IMemoryCache _memoryCache;
-    private readonly IDataProtector _ssoSecretProtector;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
@@ -31,8 +29,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         EnvironmentConfig environmentConfig,
         UserManager<AccountUser> userManager,
         IEmailService emailService,
-        IMemoryCache memoryCache,
-        IDataProtectionProvider dataProtectionProvider)
+        IMemoryCache memoryCache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -40,17 +37,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         _userManager = userManager;
         _emailService = emailService;
         _memoryCache = memoryCache;
-        _ssoSecretProtector = dataProtectionProvider.CreateProtector(SsoConfigHelpers.SecretProtectionPurpose);
     }
 
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
     public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
     {
-        return GenerateLoginUrlAsync(type, null, Guid.Empty, null);
+        return GenerateLoginUrlAsync(type, null, Guid.Empty);
     }
 
     // Generates an authentication URL carrying the email hint and the OAuth state binding for a specific tenant.
-    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId, string? clientId)
+    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId)
     {
         // Initialize default service response with failure state
         var serviceResponse = new ServiceResponse<string>
@@ -64,7 +60,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             switch (type)
             {
                 case ExternalAuthProviderEnum.Azure:
-                    var resolvedClientId = ResolveClientId(clientId);
+                    var resolvedClientId = _environmentConfig.AzureEntraIdClientId;
                     if (string.IsNullOrWhiteSpace(resolvedClientId))
                     {
                         serviceResponse.Message = "Azure SSO client id is not configured.";
@@ -105,7 +101,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     }
 
     // Generates an administrator consent URL that binds the granted tenant id to the supplied tenant.
-    public ServiceResponse<string> GenerateAdminConsentUrlAsync(string? email, Guid tenantId, string? clientId)
+    public ServiceResponse<string> GenerateAdminConsentUrlAsync(string? email, Guid tenantId)
     {
         var serviceResponse = new ServiceResponse<string>
         {
@@ -115,7 +111,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         try
         {
-            var resolvedClientId = ResolveClientId(clientId);
+            var resolvedClientId = _environmentConfig.AzureEntraIdClientId;
             if (string.IsNullOrWhiteSpace(resolvedClientId))
             {
                 serviceResponse.Message = "Azure SSO client id is not configured.";
@@ -192,14 +188,8 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         var ssoTenant = await ResolveSsoTenantAsync(authState);
         var ssoConfig = SsoConfigHelpers.Parse(ssoTenant?.SSOConfigJson);
-        var clientId = ssoConfig?.ByoClientId;
-        var clientSecret = SsoConfigHelpers.UnprotectSecret(_ssoSecretProtector, ssoConfig?.ByoClientSecretProtected);
-
-        if (string.IsNullOrWhiteSpace(clientId))
-        {
-            clientId = _environmentConfig.AzureEntraIdClientId;
-            clientSecret = _environmentConfig.AzureEntraIdClientSecret;
-        }
+        var clientId = _environmentConfig.AzureEntraIdClientId;
+        var clientSecret = _environmentConfig.AzureEntraIdClientSecret;
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
         {
@@ -312,11 +302,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 t.Domain.ToLower() == emailDomain)
             .AsNoTracking()
             .FirstOrDefaultAsync();
-    }
-
-    private string? ResolveClientId(string? clientId)
-    {
-        return string.IsNullOrWhiteSpace(clientId) ? _environmentConfig.AzureEntraIdClientId : clientId;
     }
 
     private string BuildEntraAuthorizeUrl(string clientId, string? email, Guid tenantId, bool adminConsent)
