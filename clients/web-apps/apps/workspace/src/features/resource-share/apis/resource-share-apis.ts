@@ -7,8 +7,8 @@ import {
   CreateResourceShareDto,
   ResourceShareDto,
   TenantAccessResourceShareDto,
-} from "../dtos/resource-share-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
+} from "../dtos/resource-share.dto";
+import { WorkspaceUserDto } from "../dtos/workspace-user.dto";
 
 const resourceShareApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-share`;
 const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;

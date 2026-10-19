@@ -15,7 +15,7 @@ import { ISelectOption } from "@avplatform/ui/types";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
+import { WorkspaceUserDto } from "../dtos/workspace-user.dto";
 
 // Added ActionSelectProps for the right-side field
 export interface ActionSelectProps {
@@ -178,7 +178,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
 
         {/* Dropdown Results */}
         {isOpen && (
-          <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow-md">
+          <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-popover shadow-md">
             <div className="p-2">
               {isLoading && (
                 <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -187,7 +187,9 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                 </div>
               )}
               {isError && (
-                <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+                <div className="p-4 text-center text-sm text-destructive">
+                  Error loading results
+                </div>
               )}
               {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
                 <div className="p-4 text-center text-sm text-muted-foreground">
