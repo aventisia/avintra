@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 /**
  * Custom hook to fetch users using react query.
@@ -19,7 +20,7 @@ export const useSearchUsersList = (query: string) => {
   return useQuery({
     queryKey: ["users-list", query, currentSpace?.id],
     queryFn: () =>
-      searchUsers(query, true, true).then((res) => ({
+      searchUsers(query, true, true, getSpaceHeaders()).then((res) => ({
         ...res,
         data: (res.data ?? []).map(toUserSelectItem),
       })),
