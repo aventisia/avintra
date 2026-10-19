@@ -58,6 +58,11 @@ public class ToolDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the tool is restricted to its assigned flows.
+    /// </summary>
+    public bool IsResourceAccessRestricted { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the tool is active.
     /// </summary>
     public bool IsActive { get; set; }

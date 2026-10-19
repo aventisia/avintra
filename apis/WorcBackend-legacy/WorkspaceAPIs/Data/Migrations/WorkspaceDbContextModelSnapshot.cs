@@ -1830,6 +1830,49 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_QueueUsers");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceFlowAccess", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FlowId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowId");
+
+                    b.HasIndex("TenantId", "ResourceType", "ResourceId", "FlowId")
+                        .IsUnique();
+
+                    b.ToTable("ws_ResourceFlowAccess");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2682,6 +2725,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsResourceAccessRestricted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsTenantWideAccess")
@@ -3608,6 +3654,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Queue");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceFlowAccess", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
+                        .WithMany()
+                        .HasForeignKey("FlowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Flow");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>

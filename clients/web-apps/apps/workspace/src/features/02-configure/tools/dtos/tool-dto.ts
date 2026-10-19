@@ -70,6 +70,12 @@ export interface ToolDto {
   isVerified: boolean;
 
   /**
+   * Indicates whether the tool is restricted to the flows assigned to it. A restricted tool
+   * with no assigned flows is usable by no flow.
+   */
+  isResourceAccessRestricted: boolean;
+
+  /**
    * Optional flag indicating whether the tool record is disabled.
    */
   isDisabled?: boolean;

@@ -1,4 +1,3 @@
-using System.Text.Json;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using WorkspaceAPIs.Features.Corsair;
 using WorkspaceAPIs.Features.Tools.Helpers;
@@ -11,6 +10,7 @@ public class ToolService : IToolService
     private readonly ILogger<ToolService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
@@ -26,6 +26,7 @@ public class ToolService : IToolService
         ILogger<ToolService> logger,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
@@ -38,6 +39,7 @@ public class ToolService : IToolService
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
@@ -712,8 +714,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to delete this tool.", 403);
             }
 
-            // Remove related resource shares and delete the tool.
             await _resourceShareService.DeleteResourceSharesAsync(toolToDelete.Id, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolToDelete.Id);
             _unitOfWork.ToolRepo.Delete(toolToDelete);
 
             if (!await _unitOfWork.SaveAsync())
@@ -795,8 +797,8 @@ public class ToolService : IToolService
                     false);
             }
 
-            // Remove related resource shares and delete the tools.
             await _resourceShareService.DeleteResourceSharesAsync(toolIds, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolIds);
             _unitOfWork.ToolRepo.Delete(toolsToDelete);
 
             if (!await _unitOfWork.SaveAsync())

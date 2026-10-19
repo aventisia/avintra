@@ -9,6 +9,9 @@ public class SearchByQueryService : ISearchByQueryService
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
 
+    private const int RecentFlowLimit = 10;
+    private const int SearchFlowLimit = 20;
+
     public SearchByQueryService(
         ILogger<SearchByQueryService> logger,
         IUnitOfWork unitOfWork,
@@ -35,7 +38,7 @@ public class SearchByQueryService : ISearchByQueryService
         Guid? machineId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = ServiceResponse<IEnumerable<FlowVersionSelectOption>>.Create("Failed to search agents", 500);
+        var serviceResponse = ServiceResponse<IEnumerable<FlowVersionSelectOption>>.Create("Failed to search flow versions", 500);
 
         try
         {
@@ -73,8 +76,9 @@ public class SearchByQueryService : ISearchByQueryService
             }
 
             // Retrieve matching flow versions accessible to the current user
+            var escapedSearchKey = SearchByQueryHelpers.EscapeLikePattern(trimmedSearchKey);
             var flowVersions = await flowVersionsQuery
-                                .Where(w => EF.Functions.ILike(w.Flow.Name, $"%{trimmedSearchKey}%"))
+                                .Where(w => EF.Functions.ILike(w.Flow.Name, $"%{escapedSearchKey}%", "\\"))
                                 .ProjectToType<FlowVersionSelectOption>()
                                 .AsNoTracking()
                                 .ToListAsync();
@@ -85,6 +89,57 @@ public class SearchByQueryService : ISearchByQueryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while searching flow versions.");
+            return serviceResponse;
+        }
+    }
+
+    public async Task<ServiceResponse<IEnumerable<FlowSearchOptionDto>>> SearchFlowAsync(string? searchKey, IEnumerable<FlowTypesEnum>? types = null)
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<FlowSearchOptionDto>>.Create("Failed to search flows", 500);
+
+        try
+        {
+            var trimmedSearchKey = searchKey?.Trim() ?? string.Empty;
+            var flowTypes = types?.Where(t => t != FlowTypesEnum.Block).Distinct().ToArray() ?? Array.Empty<FlowTypesEnum>();
+            var escapedSearchKey = SearchByQueryHelpers.EscapeLikePattern(trimmedSearchKey);
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            var flowsQuery = _unitOfWork.FlowRepo
+                                .GetByConditionAsync(w =>
+                                    w.TenantId == tenantId &&
+                                    (w.CreatedByUserId == _userId || (w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId))))
+                                .IgnoreQueryFilters()
+                                .Where(w => w.FlowVersions != null && w.FlowVersions.Any(v => !v.IsArchived));
+
+            flowsQuery = flowTypes.Length > 0
+                ? flowsQuery.Where(w => flowTypes.Contains(w.Type))
+                : flowsQuery.Where(w => w.Type != FlowTypesEnum.Block);
+
+            if (string.IsNullOrWhiteSpace(trimmedSearchKey))
+            {
+                var recentFlows = await flowsQuery
+                                    .OrderByDescending(o => o.CreatedOn)
+                                    .Take(RecentFlowLimit)
+                                    .ProjectToType<FlowSearchOptionDto>()
+                                    .AsNoTracking()
+                                    .ToListAsync();
+
+                return serviceResponse.Update(null, 200, recentFlows);
+            }
+
+            var flows = await flowsQuery
+                            .Where(w => EF.Functions.ILike(w.Name, $"%{escapedSearchKey}%", "\\"))
+                            .OrderBy(o => o.Name)
+                            .Take(SearchFlowLimit)
+                            .ProjectToType<FlowSearchOptionDto>()
+                            .AsNoTracking()
+                            .ToListAsync();
+
+            return serviceResponse.Update(null, 200, flows);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while searching flows.");
             return serviceResponse;
         }
     }

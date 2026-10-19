@@ -89,6 +89,7 @@ public static class AppServicesExtension
         config.Apply(new SkillMappingProfile());
         config.Apply(new JobExecutionLogMappingProfile());
         config.Apply(new ResourceShareMappingProfile());
+        config.Apply(new ResourceFlowAccessMappingProfile());
         config.Apply(new ApiKeyMappingProfile());
         config.Apply(new ToolMappingProfile());
         config.Apply(new TicketMappingProfile());
@@ -189,6 +190,7 @@ public static class AppServicesExtension
         services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
         services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();
+        services.AddScoped<IResourceFlowAccessService, ResourceFlowAccessService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
