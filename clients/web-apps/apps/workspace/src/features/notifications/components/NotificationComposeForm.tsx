@@ -1,3 +1,4 @@
+import { searchUsers, toUserSelectItem } from "@avplatform/ui/apis/search-users-apis";
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
 import { DateTimePickerField } from "@avplatform/ui/components/form/fields/DateTimePickerField";
@@ -19,7 +20,6 @@ import { useEffect, useRef } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { searchWorkspaceUsers } from "../apis/notification-apis";
 import { AppUserBaseDto } from "../dtos/app-user-base.dto";
 import { CreateNotificationDto } from "../dtos/create-notification.dto";
 import { NotificationDto } from "../dtos/notification.dto";
@@ -271,7 +271,9 @@ export const NotificationComposeForm = ({
         <AsyncMultiSelectField<AppUserBaseDto>
           name="recipients"
           label="Recipients"
-          fetcher={(query) => searchWorkspaceUsers(query, false).then((res) => res.data ?? [])}
+          fetcher={(query) =>
+            searchUsers(query, false, false).then((res) => (res.data ?? []).map(toUserSelectItem))
+          }
           getItemId={(item) => item.id}
           getItemLabel={(item) =>
             `${item.firstName} ${item.lastName}${item.userName ? ` (${item.userName})` : ""}`
