@@ -3,7 +3,7 @@ import { UsageSourceTypesEnum } from "@/features/credits-management/constants/us
 import { LLMRequestDto } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
 
 import { streamUiBuilderGeneration } from "../apis/ui-builder.apis";
-import { type UiBuilderModelOption } from "../constants/ui-builder-models.constant";
+import { type UiBuilderGenerationModel } from "../constants/ui-builder-models.constant";
 import {
   UI_BUILDER_SYSTEM_PROMPT,
   buildUiBuilderUserContent,
@@ -12,7 +12,7 @@ import {
 type GenerateUiBuilderArgs = {
   projectId: string;
   projectName: string;
-  model: UiBuilderModelOption;
+  model: UiBuilderGenerationModel;
   prompt: string;
   currentHtml: string;
   onDelta?: (delta: string) => void;
@@ -22,7 +22,7 @@ type GenerateUiBuilderArgs = {
 type GenerateUiBuilderSourceArgs = {
   projectId: string;
   projectName: string;
-  model: UiBuilderModelOption;
+  model: UiBuilderGenerationModel;
   systemPrompt: string;
   userContent: string;
   skillNames?: string[];

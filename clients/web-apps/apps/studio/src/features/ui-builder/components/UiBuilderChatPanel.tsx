@@ -1,13 +1,21 @@
+import { Alert } from "@avplatform/ui/alert";
 import { Button } from "@avplatform/ui/buttons";
+import { type ModelProviderEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import {
-  UI_BUILDER_MODEL_DISABLED_REASON,
+  UI_BUILDER_MODELS_LOADING_MESSAGE,
+  UI_BUILDER_MODELS_LOAD_FAILED_MESSAGE,
   UI_BUILDER_NO_MODEL_MESSAGE,
+  UI_BUILDER_NO_SUPPORTED_MODEL_MESSAGE,
+  UI_BUILDER_UNSUPPORTED_MODEL_REASON,
 } from "../constants/ui-builder-models.constant";
-import { type UiBuilderModelState } from "../hooks/useUiBuilderModels.hook";
+import {
+  type UiBuilderModelState,
+  type UiBuilderProviderState,
+} from "../hooks/useUiBuilderModels.hook";
 import { type UiBuilderSelection } from "../types/ui-builder-selection.type";
 
 /** A single turn rendered in the builder's chat transcript. */
@@ -19,9 +27,15 @@ export type UiBuilderChatMessage = {
 };
 
 type UiBuilderChatPanelProps = {
+  providers: UiBuilderProviderState[];
+  selectedProviderType: ModelProviderEnum | "";
+  onProviderChange: (providerType: ModelProviderEnum) => void;
   models: UiBuilderModelState[];
-  selectedModel: string;
-  onModelChange: (model: string) => void;
+  selectedModelKey: string;
+  onModelChange: (modelKey: string) => void;
+  isLoading: boolean;
+  isError: boolean;
+  isSuccess: boolean;
   messages: UiBuilderChatMessage[];
   prompt: string;
   onPromptChange: (prompt: string) => void;
@@ -34,9 +48,15 @@ type UiBuilderChatPanelProps = {
 };
 
 export const UiBuilderChatPanel = ({
+  providers,
+  selectedProviderType,
+  onProviderChange,
   models,
-  selectedModel,
+  selectedModelKey,
   onModelChange,
+  isLoading,
+  isError,
+  isSuccess,
   messages,
   prompt,
   onPromptChange,
@@ -47,9 +67,13 @@ export const UiBuilderChatPanel = ({
   selection,
   onClearSelection,
 }: UiBuilderChatPanelProps) => {
-  const hasAnyEnabled = models.some((model) => model.enabled);
-  const selectedEnabled = models.some((model) => model.model === selectedModel && model.enabled);
-  const canSend = hasAnyEnabled && selectedEnabled && prompt.trim().length > 0 && !isGenerating;
+  const activeModel = models.find((model) => model.key === selectedModelKey) ?? null;
+  const providerModels = models.filter((model) => model.providerType === selectedProviderType);
+  const hasRoutableModel = models.some((model) => model.wireProvider !== null);
+  const isResolving = isLoading || (!isSuccess && !isError);
+  const showNoModels = isSuccess && models.length === 0;
+  const showUnsupportedModels = isSuccess && models.length > 0 && !hasRoutableModel;
+  const canSend = Boolean(activeModel?.wireProvider) && prompt.trim().length > 0 && !isGenerating;
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
@@ -61,27 +85,85 @@ export const UiBuilderChatPanel = ({
     <div className="flex h-full flex-col border-l border-r border-slate-200 bg-slate-50">
       <div className="flex flex-col gap-3 border-b border-slate-200 p-4">
         <div>
-          <label className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Model
+          <label
+            htmlFor="ui-builder-provider"
+            className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground"
+          >
+            Model Provider
           </label>
           <select
-            value={selectedModel}
-            onChange={(event) => onModelChange(event.target.value)}
-            className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm"
+            id="ui-builder-provider"
+            value={selectedProviderType}
+            onChange={(event) => onProviderChange(event.target.value as ModelProviderEnum)}
+            className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm disabled:cursor-not-allowed disabled:bg-slate-100"
+            disabled={isResolving || providers.length === 0}
           >
-            {models.map((model) => (
-              <option key={model.model} value={model.model} disabled={!model.enabled}>
-                {model.label}
-                {model.enabled ? "" : ` — ${UI_BUILDER_MODEL_DISABLED_REASON}`}
+            {providers.length === 0 && (
+              <option value="">
+                {isResolving ? UI_BUILDER_MODELS_LOADING_MESSAGE : "No provider available"}
+              </option>
+            )}
+            {providers.map((provider) => (
+              <option
+                key={provider.providerType}
+                value={provider.providerType}
+                disabled={!provider.isRoutable}
+              >
+                {provider.label}
+                {provider.isRoutable ? "" : ` — ${UI_BUILDER_UNSUPPORTED_MODEL_REASON}`}
               </option>
             ))}
           </select>
         </div>
 
-        {!hasAnyEnabled && (
-          <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-2xs text-amber-700">
-            {UI_BUILDER_NO_MODEL_MESSAGE}
-          </p>
+        <div>
+          <label
+            htmlFor="ui-builder-model"
+            className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground"
+          >
+            Model
+          </label>
+          <select
+            id="ui-builder-model"
+            value={selectedModelKey}
+            onChange={(event) => onModelChange(event.target.value)}
+            className="mt-1 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm disabled:cursor-not-allowed disabled:bg-slate-100"
+            disabled={isResolving || providerModels.length === 0}
+          >
+            {providerModels.length === 0 && (
+              <option value="">
+                {isResolving ? UI_BUILDER_MODELS_LOADING_MESSAGE : "No model available"}
+              </option>
+            )}
+            {providerModels.map((model) => (
+              <option key={model.key} value={model.key} disabled={model.wireProvider === null}>
+                {model.modelId}
+                {model.wireProvider === null ? ` — ${UI_BUILDER_UNSUPPORTED_MODEL_REASON}` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {isError && (
+          <Alert
+            variant="warning"
+            title="Models unavailable"
+            description={UI_BUILDER_MODELS_LOAD_FAILED_MESSAGE}
+          />
+        )}
+        {showNoModels && (
+          <Alert
+            variant="warning"
+            title="No models enabled"
+            description={UI_BUILDER_NO_MODEL_MESSAGE}
+          />
+        )}
+        {showUnsupportedModels && (
+          <Alert
+            variant="warning"
+            title="No supported models"
+            description={UI_BUILDER_NO_SUPPORTED_MODEL_MESSAGE}
+          />
         )}
       </div>
 
@@ -152,7 +234,7 @@ export const UiBuilderChatPanel = ({
           }}
           placeholder="Describe the page you want to build..."
           className="h-20 resize-none rounded-md border border-slate-200 bg-white p-2 text-sm"
-          disabled={!hasAnyEnabled}
+          disabled={!hasRoutableModel}
         />
         {isGenerating ? (
           <Button size="sm" variant="outline" className="w-full" onClick={onStop}>
