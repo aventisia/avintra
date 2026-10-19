@@ -301,7 +301,32 @@ public static class InitialNodesAndEdgesUtil
             },
             new { Key = "__CallRecording__Voice", Value = (object?)false },
             new { Key = "__PreemptiveGeneration__Voice", Value = (object?)false },
-            new { Key = "__NoiseCancellation__Voice", Value = (object?)"none" }
+            new { Key = "__NoiseCancellation__Voice", Value = (object?)"none" },
+            new
+            {
+                Key = "__KbConfig__Voice",
+                Value = (object?)new
+                {
+                    knowledgeBase = Array.Empty<object>(),
+                    sourceThreshold = 0.1,
+                    numberOfChunks = 5
+                }
+            },
+            new
+            {
+                Key = "__SkillsConfig__Voice",
+                Value = (object?)new { skills = Array.Empty<object>() }
+            },
+            new
+            {
+                Key = "__MemoryConfig__Voice",
+                Value = (object?)new
+                {
+                    memoryProvider = "Memory Provider 1",
+                    maxDataStored = 20
+                }
+            },
+            new { Key = "__ToolsConfig__Voice", Value = (object?)Array.Empty<object>() }
         };
 
         var initialNodesList = new object[]

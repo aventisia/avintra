@@ -101,6 +101,23 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
     { key: "__CallRecording__Voice", value: false },
     { key: "__PreemptiveGeneration__Voice", value: false },
     { key: "__NoiseCancellation__Voice", value: "none" },
+    {
+      key: "__KbConfig__Voice",
+      value: {
+        knowledgeBase: [],
+        sourceThreshold: 0.1,
+        numberOfChunks: 5,
+      },
+    },
+    { key: "__SkillsConfig__Voice", value: { skills: [] } },
+    {
+      key: "__MemoryConfig__Voice",
+      value: {
+        memoryProvider: "Memory Provider 1",
+        maxDataStored: 20,
+      },
+    },
+    { key: "__ToolsConfig__Voice", value: [] },
   ],
   outputs: [
     {
