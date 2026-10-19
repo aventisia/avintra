@@ -30,40 +30,4 @@ public class TenantSsoConfigDto
     /// </summary>
     [JsonPropertyName("emailDomain")]
     public string EmailDomain { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the tenant-supplied (BYO) client id. Optional; the global app is used when absent.
-    /// </summary>
-    [JsonPropertyName("byoClientId")]
-    public string? ByoClientId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the tenant-supplied (BYO) client secret. Accepted on write only; never persisted or returned.
-    /// </summary>
-    [JsonPropertyName("byoClientSecret")]
-    public string? ByoClientSecret { get; set; }
-
-    /// <summary>
-    /// Gets or sets the DataProtection-protected tenant client secret. Never returned by any GET response.
-    /// </summary>
-    [JsonPropertyName("byoClientSecretProtected")]
-    public string? ByoClientSecretProtected { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the tenant admin attested ownership of the email domain.
-    /// </summary>
-    [JsonPropertyName("domainVerified")]
-    public bool DomainVerified { get; set; }
-
-    /// <summary>
-    /// Gets or sets the ISO-8601 timestamp of the domain ownership attestation.
-    /// </summary>
-    [JsonPropertyName("domainVerifiedOn")]
-    public string? DomainVerifiedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the user id of the tenant admin who attested domain ownership.
-    /// </summary>
-    [JsonPropertyName("domainVerifiedBy")]
-    public string? DomainVerifiedBy { get; set; }
 }

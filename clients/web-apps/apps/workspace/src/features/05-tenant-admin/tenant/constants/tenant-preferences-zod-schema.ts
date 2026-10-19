@@ -18,9 +18,6 @@ const preferencesSchema = z.object({
   idleSessionTimeoutMinutes: z.number(),
   isTwoFAEnabled: z.boolean(),
   ssoConfigJson: z.string().optional(),
-  ssoSecretPresent: z.boolean().optional(),
-  domainVerified: z.boolean().optional(),
-  domainVerifyAttestation: z.boolean().optional(),
   ssoDisableWarning: ssoDisableWarningSchema.optional(),
 });
 

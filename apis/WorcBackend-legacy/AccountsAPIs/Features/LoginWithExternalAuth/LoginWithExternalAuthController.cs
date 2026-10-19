@@ -18,7 +18,7 @@ public class LoginWithExternalAuthController : BaseApiController
     [HttpGet("entra/login-url")]
     public ActionResult<ServiceResponse<string>> GenerateLoginUrl(ExternalAuthProviderEnum type, string? email)
     {
-        return ResultHelper(_loginWithExternalAuthService.GenerateLoginUrlAsync(type, email, Guid.Empty, null));
+        return ResultHelper(_loginWithExternalAuthService.GenerateLoginUrlAsync(type, email, Guid.Empty));
     }
 
     // Validates an external token and creates the user if not already existing.

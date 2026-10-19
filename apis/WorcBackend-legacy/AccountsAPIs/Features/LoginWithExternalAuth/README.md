@@ -27,13 +27,15 @@ unimplemented on purpose.
 - **Home realm discovery needs no user.** Discovery works on the email domain alone, so it also works before a
   user is provisioned. Consumer mail domains never match a tenant.
 - **Where the data lives.** `Tenants.SSOConfigJson` holds a versioned JSON document (version 1,
-  provider `microsoft_entra`). `Tenants.Domain` is the matching key. No new table or column is involved, so no
-  migration is needed. Documents with an unknown version or another provider are ignored, which means such a
-  tenant simply counts as "SSO off".
-- **Tenant secrets never leave the server.** A tenant can supply its own app registration (client id and
-  secret). The secret is stored protected with ASP.NET DataProtection and is never returned by any GET. The
-  tenant admin preferences endpoint answers with a redacted document plus `ssoSecretPresent`, and the Super
-  Admin tenant reads omit `SSOConfigJson` completely. Raw SSO JSON is editable nowhere in the UI.
+  provider `microsoft_entra`) with four members: `v`, `provider`, `externalTenantId` and `emailDomain`.
+  `Tenants.Domain` is the matching key. No new table or column is involved, so no migration is needed.
+  Documents with an unknown version or another provider are ignored, which means such a tenant simply
+  counts as "SSO off".
+- **Credentials are platform-level.** Sign-in, consent and token exchange always use the deployment app
+  configured through `AZURE_ENTRA_ID_CLIENT_ID` / `AZURE_ENTRA_ID_CLIENT_SECRET`. No tenant supplies or
+  stores client credentials, there is no secret field in the stored document, and no response returns
+  credential material. Super Admin tenant reads omit `SSOConfigJson` completely; raw SSO JSON is editable
+  nowhere in the UI.
 - **Disabling SSO only warns.** Turning SSO off never blocks. When users without a password are affected, the
   response carries a warning that names the affected admins and explains how they set a password, an
   `SSO_DISABLED_WARN_ONLY` audit entry is written, and the login screen tells those users to set a password
@@ -42,19 +44,18 @@ unimplemented on purpose.
 - **Break glass.** Password login keeps working for users who have a password, whether SSO is on or off, and
   the login screen offers a password escape next to the provider redirect. There is no enable-time password
   requirement.
-- **Domain ownership is attested, not proven.** A tenant admin ticks a confirmation box, which is stored as
-  `domainVerified` with a timestamp and the attesting user. Automated DNS verification is not implemented yet.
+- **Connect binds the identity provider.** The domain comes only from the tenant record (`Tenant.Domain`).
+  Completing the admin-consent grant binds the granted Entra `tid` to the tenant's stored `externalTenantId`
+  and refreshes the stored `emailDomain` from the tenant record. There is no verification flag and no DNS
+  check yet. Enabling SSO requires that connection: without a bound `externalTenantId` the server answers
+  `Connect the identity provider before enabling single sign-on.`
 - **Only tenant admins may connect or toggle.** `PUT tenant-account/preferences` and the consent endpoints are
   gated by the `TA` role on the server.
 - **Connect uses the admin-consent endpoint.** The tenant admin Connect button opens
-  `…/organizations/v2.0/adminconsent` with `client_id`, `redirect_uri`, `state` and `scope`; the ordinary login
-  URL is unchanged.
+  `…/organizations/v2.0/adminconsent` with `client_id`, `redirect_uri`, `state` and `scope`; the client id is
+  the platform `AZURE_ENTRA_ID_CLIENT_ID` and the ordinary login URL is unchanged.
 
 ## Operator notes
 
-- **Data protection keys are deployment state.** Point `DATA_PROTECTION_KEYS_DIR` at a durable path that
-  survives redeploys, mount it for every deployment and back it up. Without it the keys sit under the binary
-  directory and are lost on the next redeploy.
-- Losing the keys orphans already staged tenant secrets: enabling SSO then fails with "A client secret is
-  required for tenant-supplied credentials.", and the tenant admin saves the secret again.
-- Rotating a tenant secret is done by saving the new secret in the tenant admin preferences.
+- No tenant credential is stored, so there is no key material or tenant secret to persist, rotate or back up.
+  The DataProtection key directory used only for tenant secrets was removed together with the BYO path.

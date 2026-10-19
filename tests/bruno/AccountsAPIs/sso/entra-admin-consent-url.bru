@@ -50,8 +50,8 @@ tests {
 }
 
 docs {
-  > Preconditions: a tenant admin session (see `ta-login.bru` in this folder) and `AZURE_ENTRA_ID_CLIENT_ID`
-  > configured for the tenant or globally; without a client id the endpoint fails safe with a 400
+  > Preconditions: a tenant admin session (see `ta-login.bru` in this folder) and the platform app configured
+  > through `AZURE_ENTRA_ID_CLIENT_ID`; without a client id the endpoint fails safe with a 400
   > "Azure SSO client id is not configured." message.
   >
   > Reading a failure: 401 means no tenant admin session. Running this file on its own, without `ta-login.bru`

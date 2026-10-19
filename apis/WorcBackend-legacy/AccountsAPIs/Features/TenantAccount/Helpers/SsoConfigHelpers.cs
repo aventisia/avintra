@@ -1,12 +1,11 @@
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AccountsAPIs.Helpers;
 
 /// <summary>
-/// Parsing, validation, redaction and at-rest protection helpers for the versioned tenant SSO configuration.
+/// Parsing, validation and redaction helpers for the versioned tenant SSO configuration.
 /// </summary>
 public static class SsoConfigHelpers
 {
@@ -19,11 +18,6 @@ public static class SsoConfigHelpers
     /// Supported schema version of the stored single sign-on document.
     /// </summary>
     public const int SchemaVersion = 1;
-
-    /// <summary>
-    /// DataProtection purpose used to protect tenant-supplied client secrets at rest.
-    /// </summary>
-    public const string SecretProtectionPurpose = "TenantSso/v1";
 
     /// <summary>
     /// Message shown to a passwordless user whose tenant's single sign-on was disabled.
@@ -84,21 +78,18 @@ public static class SsoConfigHelpers
     }
 
     /// <summary>
-    /// Serializes the configuration for persistence, always dropping the transient plaintext secret.
+    /// Serializes the configuration for persistence.
     /// </summary>
     public static string ToPersistedJson(TenantSsoConfigDto config)
     {
-        config.ByoClientSecret = null;
         return JsonSerializer.Serialize(config, SerializerOptions);
     }
 
     /// <summary>
-    /// Serializes the configuration for a response, dropping both the plaintext and the protected secret.
+    /// Serializes the configuration for a response.
     /// </summary>
     public static string ToRedactedJson(TenantSsoConfigDto config)
     {
-        config.ByoClientSecret = null;
-        config.ByoClientSecretProtected = null;
         return JsonSerializer.Serialize(config, SerializerOptions);
     }
 
@@ -126,13 +117,7 @@ public static class SsoConfigHelpers
             V = config.V,
             Provider = config.Provider,
             ExternalTenantId = config.ExternalTenantId,
-            EmailDomain = config.EmailDomain,
-            ByoClientId = config.ByoClientId,
-            ByoClientSecret = config.ByoClientSecret,
-            ByoClientSecretProtected = config.ByoClientSecretProtected,
-            DomainVerified = config.DomainVerified,
-            DomainVerifiedOn = config.DomainVerifiedOn,
-            DomainVerifiedBy = config.DomainVerifiedBy
+            EmailDomain = config.EmailDomain
         };
     }
 
@@ -155,32 +140,5 @@ public static class SsoConfigHelpers
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
-    }
-
-    /// <summary>
-    /// Protects a plaintext tenant client secret with ASP.NET DataProtection.
-    /// </summary>
-    public static string? ProtectSecret(IDataProtector protector, string? plaintextSecret)
-    {
-        if (string.IsNullOrWhiteSpace(plaintextSecret)) return null;
-
-        return protector.Protect(plaintextSecret);
-    }
-
-    /// <summary>
-    /// Unprotects a stored tenant client secret. Returns null when the payload is absent or undecryptable.
-    /// </summary>
-    public static string? UnprotectSecret(IDataProtector protector, string? protectedSecret)
-    {
-        if (string.IsNullOrWhiteSpace(protectedSecret)) return null;
-
-        try
-        {
-            return protector.Unprotect(protectedSecret);
-        }
-        catch (CryptographicException)
-        {
-            return null;
-        }
     }
 }
