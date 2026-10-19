@@ -21,6 +21,14 @@ type State = {
   /** Selected action category */
   actionCategory: string;
 
+  /**
+   * Total custom-tool nodes (draggable actions across all active custom
+   * tools, i.e. summed OpenAPI operations) fetched from the usable-tool
+   * catalog at flow load. Drives the Custom Tools L1 count badge; null while
+   * the catalog request is in flight.
+   */
+  customToolNodesCount: number | null;
+
   /** Current step/Level of category */
 
   /** Serch query */
@@ -32,6 +40,7 @@ type Actions = {
   setOrigin: (origin: ActionSelectorOriginType, originId: string) => void;
   setPrimaryCategoryLabel: (primaryCategoryLabel: string | null) => void;
   setActionCategory: (actionCategory: string) => void;
+  setCustomToolNodesCount: (count: number | null) => void;
   setQuery: (query: string) => void;
   setShowDialog: (showDialog: boolean) => void;
 };
@@ -43,6 +52,7 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
   originId: "",
   primaryCategoryLabel: null,
   actionCategory: "",
+  customToolNodesCount: null,
   query: "",
 
   setShowDialog: (showDialog) => set({ showDialog }),
@@ -67,6 +77,8 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
     set(() => ({
       actionCategory,
     })),
+
+  setCustomToolNodesCount: (count) => set(() => ({ customToolNodesCount: count })),
 
   setQuery: (query) => set(() => ({ query })),
 }));

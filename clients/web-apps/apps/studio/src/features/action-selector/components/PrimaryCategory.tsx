@@ -4,6 +4,8 @@ import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
 
+import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
+import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
@@ -25,6 +27,9 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
   }, [data.actionCategories]);
 
   const isDisabled = data.disabled;
+
+  const isCustomToolsL1 = data.label === CUSTOM_TOOLS_L1_LABEL;
+  const customToolNodesCount = useNodeSelectorStore((state) => state.customToolNodesCount);
 
   return (
     <>
@@ -91,7 +96,13 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
               : "bg-muted font-normal text-muted-foreground"
           }
         >
-          {isDisabled ? "Coming soon" : `${totalActions} nodes`}
+          {isCustomToolsL1
+            ? customToolNodesCount === null
+              ? "…"
+              : `${customToolNodesCount} nodes`
+            : isDisabled
+              ? "Coming soon"
+              : `${totalActions} nodes`}
         </Badge>
       </div>
     </>

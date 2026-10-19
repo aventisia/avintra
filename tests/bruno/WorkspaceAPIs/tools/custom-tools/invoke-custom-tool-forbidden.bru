@@ -1,0 +1,39 @@
+meta {
+  name: Invoke custom tool rejects unauthorized tool
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/custom-tool/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Bruno Custom Tool Forbidden Test",
+    "provider": "customtool",
+    "action": "{{FORBIDDEN_CUSTOM_TOOL_ACTION}}",
+    "credentialName": null,
+    "payload": {}
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+
+  test("rejects a tool the caller cannot access with a plain-text 403", function() {
+    expect(status).to.equal(403);
+    expect(typeof res.getBody()).to.equal("string");
+    expect(res.getBody()).to.include("do not have permission");
+  });
+}
+
+tests {
+  // Prereq: FORBIDDEN_CUSTOM_TOOL_ACTION env var = "{toolName}.{operationId}" of an
+  // active, verified custom tool owned by another user in the same tenant and space
+  // that is neither tenant-wide nor shared with the invoking user. Legacy
+  // "{toolId}.{operationId}" references are still accepted.
+}

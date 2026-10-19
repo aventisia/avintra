@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
-import { getPlatformTools, getTools } from "../apis/tools.apis";
+import { getPersonalTools, getPlatformTools, getSharedTools } from "../apis/tools.apis";
 import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 import { useTableTab } from "./useTableTab.hook";
 
@@ -17,7 +17,6 @@ import { useTableTab } from "./useTableTab.hook";
  * lists into one table; the platform default tab shows platform tools.
  */
 export const useFetchTools = () => {
-  // Get the currently selected space so the query refetches when the space changes
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({
       currentSpace: state.currentSpace,
@@ -31,13 +30,13 @@ export const useFetchTools = () => {
 
   const personalQuery = useQuery({
     queryKey: [...DATA_QUERY_KEY, space, env],
-    queryFn: () => getTools({ isPersonal: true }),
+    queryFn: getPersonalTools,
     enabled: !isPlatformTab,
   });
 
   const sharedQuery = useQuery({
     queryKey: [...DATA_QUERY_KEY, "SHARED", space, env],
-    queryFn: () => getTools({ isPersonal: false }),
+    queryFn: getSharedTools,
     enabled: !isPlatformTab,
   });
 
@@ -56,13 +55,9 @@ export const useFetchTools = () => {
     if (isError) toast.error(error?.toString() ?? "Failed to fetch tools");
   }, [error, isError]);
 
-  // Merge the active lists into a single table payload. Return undefined until at
-  // least one list has resolved so callers can show a loading skeleton.
-  //
-  // Memoized on the underlying query data so the returned object/array keeps a
-  // stable identity between renders. Passing a fresh array on every render makes
-  // TanStack Table's `autoResetPageIndex` fire a state update each render, which
-  // causes an infinite render loop (page freeze) while a dialog is open.
+  // IMPORTANT NOTE: memoized on the underlying query data so the returned payload keeps a
+  // stable identity between renders; a fresh array each render makes TanStack Table's
+  // `autoResetPageIndex` fire every render, causing an infinite render loop while a dialog is open.
   const data = useMemo(() => {
     if (isPlatformTab) return platformQuery.data;
 

@@ -24,7 +24,7 @@ body:json {
 }
 
 script:post-response {
-  if (res.getStatus() === 200) {
+  if (res.getStatus() === 200 || res.getStatus() === 201) {
     bru.setGlobalEnvVar("TOOL_ID", res.getBody().data.id);
   }
 }
