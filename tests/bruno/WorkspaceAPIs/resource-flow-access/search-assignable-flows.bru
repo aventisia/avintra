@@ -1,0 +1,47 @@
+meta {
+  name: Search assignable flows
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/search/flow?query=&types=Agent&types=ChatAgent
+  body: none
+  auth: bearer
+}
+
+params:query {
+  query:
+  types: Agent
+  types: ChatAgent
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+
+  test("flow search returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("flow search rows carry the flow search contract", function() {
+    data.forEach((option) => {
+      expect(option.value).to.be.a("string");
+      expect(option.label).to.be.a("string");
+      expect(["Agent", "ChatAgent"]).to.include(option.type);
+      expect(option.versionCount).to.be.a("number");
+      expect(option.versionCount, "fully archived flows must be excluded").to.be.above(0);
+      expect(option).to.have.property("lastModifiedOn");
+    });
+  });
+}
+
+docs {
+  > Searches the agents that can be assigned to a resource. An empty query returns
+  > the 10 most recently created agents. Flows whose every version is archived are
+  > excluded, so every row has at least one non-archived version.
+}

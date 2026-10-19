@@ -41,6 +41,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TriggerFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ResourceFlowAccess>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TenantModelProvider>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -112,6 +113,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<QueueTransaction>().HasIndex(e => new { e.SourceWorkItemId, e.RetryCount }).IsUnique();
         modelBuilder.Entity<QueueFlowVersion>().HasIndex(e => new { e.QueueId, e.FlowVersionId }).IsUnique();
+        modelBuilder.Entity<ResourceFlowAccess>().HasIndex(e => new { e.TenantId, e.ResourceType, e.ResourceId, e.FlowId }).IsUnique();
         
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
@@ -176,6 +178,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
+        modelBuilder.Entity<ResourceFlowAccess>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Tool>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
@@ -237,6 +240,8 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Tool and WorkspaceUser
         modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceFlowAccess>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -405,6 +410,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
     public DbSet<ApiKey> ApiKeys { get; set; }
     public DbSet<ResourceShare> ResourceShares { get; set; }
+    public DbSet<ResourceFlowAccess> ResourceFlowAccesses { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
     public DbSet<Tool> Tools { get; set; }
