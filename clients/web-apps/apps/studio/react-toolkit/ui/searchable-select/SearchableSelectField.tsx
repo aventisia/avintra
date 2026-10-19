@@ -15,9 +15,8 @@ import {
   SearchableSelect,
 } from "@/react-toolkit/ui/searchable-select/SearchableSelect";
 
-interface SearchableSelectFieldProps extends BaseFieldProps {
+type SearchableSelectFieldProps = BaseFieldProps & {
   name: FieldPath<FieldValues>;
-  // Update this prop to accept the extended option type
   selectOptions: ISearchableSelectOption[];
   placeholder?: string;
   searchPlaceholder?: string;
@@ -27,7 +26,7 @@ interface SearchableSelectFieldProps extends BaseFieldProps {
   isLoading?: boolean;
   /** Rendered in place of the icon for select options whose `icon` is not set. */
   fallbackIcon?: React.ReactNode;
-}
+};
 
 const SearchableSelectField = ({
   name,

@@ -7,7 +7,7 @@ type WizardStep = "ingest" | "authenticate" | "playground";
 
 type OperationParameters = Record<string, unknown>;
 
-interface ToolWizardState {
+type ToolWizardState = {
   currentStep: WizardStep;
   crudAction?: DialogCrudAction;
   draftTool?: ToolDto;
@@ -22,13 +22,15 @@ interface ToolWizardState {
   setDraftTool: (tool?: ToolDto) => void;
   setDraftSaved: (saved: boolean) => void;
   setPendingVerification: (operationId: string, parameters: OperationParameters) => void;
+  removePendingVerification: (operationId: string) => void;
+  clearPendingVerifications: () => void;
   setNameAvailability: (state: {
     isAvailable: boolean;
     isCheckPending: boolean;
     message: string | null;
   }) => void;
   reset: () => void;
-}
+};
 
 const initialState = {
   currentStep: "ingest" as WizardStep,
@@ -52,6 +54,13 @@ export const useToolWizardStore = create<ToolWizardState>((set) => ({
     set((state) => ({
       pendingVerifications: { ...state.pendingVerifications, [operationId]: parameters },
     })),
+  removePendingVerification: (operationId) =>
+    set((state) => ({
+      pendingVerifications: Object.fromEntries(
+        Object.entries(state.pendingVerifications).filter(([id]) => id !== operationId),
+      ),
+    })),
+  clearPendingVerifications: () => set({ pendingVerifications: {} }),
   setNameAvailability: ({ isAvailable, isCheckPending, message }) =>
     set({
       isNameAvailable: isAvailable,

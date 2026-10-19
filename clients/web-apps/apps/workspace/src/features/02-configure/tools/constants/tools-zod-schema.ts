@@ -66,6 +66,7 @@ export const manualToolOperationSchema = z.object({
   parameters: z.array(manualToolOperationParameterSchema).optional(),
   jsonPayload: z
     .string()
+    .max(10000, { message: maxLenError("JSON payload", 10000) })
     .optional()
     .refine(
       (value) => {

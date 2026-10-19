@@ -14,7 +14,7 @@ from app.features.custom_tools.vault_credential_client import (
     fetch_decrypted_vault_credential,
 )
 from app.features.custom_tools.schemas import ToolOperation
-from app.features.custom_tools.url_guard import UnsafeUrlError, resolve_public_addresses
+from app.features.custom_tools.url_guard import UnsafeUrlError, resolve_public_addresses_async
 
 _PATH_PLACEHOLDER_PATTERN = re.compile(r"\{([^/{}]+)\}")
 MAX_RESPONSE_BYTES = 5 * 1024 * 1024
@@ -34,7 +34,7 @@ class _PinnedNetworkBackend(httpcore.AnyIOBackend):
         local_address: str | None = None,
         socket_options: Any = None,
     ) -> httpcore.AsyncNetworkStream:
-        addresses = resolve_public_addresses(host)
+        addresses = await resolve_public_addresses_async(host)
         last_error: Exception | None = None
         for address in addresses:
             try:
@@ -163,11 +163,13 @@ async def execute_operation(
                 json_body=parts.body,
             )
     except ResponseTooLargeError:
-        return _failure_envelope(
+        return failure_envelope(
             "The upstream API response exceeded the 5 MB limit.", start, status_code=502
         )
-    except (httpx.HTTPError, ValueError) as error:
-        return _failure_envelope(str(error), start)
+    except ValueError as error:
+        return failure_envelope(str(error), start, status_code=400)
+    except httpx.HTTPError as error:
+        return failure_envelope(str(error), start, status_code=502)
 
     return {
         "success": 200 <= status_code < 300,
@@ -182,6 +184,9 @@ def resolve_path_template(path_template: str, parameters: dict[str, Any]) -> str
     result = path_template
     for key, value in parameters.items():
         result = result.replace(f"{{{key}}}", quote(str(value), safe=""))
+    missing = _PATH_PLACEHOLDER_PATTERN.search(result)
+    if missing:
+        raise ValueError(f"Missing path parameter '{missing.group(1)}'.")
     return result
 
 
@@ -206,7 +211,7 @@ def _decode_body(content: bytes) -> Any:
         return content.decode("utf-8", errors="replace")
 
 
-def _failure_envelope(
+def failure_envelope(
     message: str, start: float, status_code: int | None = None
 ) -> dict[str, Any]:
     return {

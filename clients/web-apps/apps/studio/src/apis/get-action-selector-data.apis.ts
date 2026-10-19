@@ -1,7 +1,7 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
-import { applyCustomToolsL1 } from "../features/action-selector/utils/custom-tools.util";
+import { applyCustomToolsL1 } from "../features/action-selector/utils/custom-tool-actions.util";
 
 const modules = import.meta.glob("../features/action-selector/constants/*.json");
 

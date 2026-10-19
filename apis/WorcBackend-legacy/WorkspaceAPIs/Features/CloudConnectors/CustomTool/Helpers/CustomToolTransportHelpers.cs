@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
 /// <summary>
@@ -23,7 +21,8 @@ public static class CustomToolTransportHelpers
         string requestUrl,
         Dictionary<string, string> headers,
         string? content,
-        string contentType)
+        string contentType,
+        CancellationToken cancellationToken = default)
     {
         // IMPORTANT NOTE: the "CustomTool" client disables auto-redirects; a 3xx must not bypass the base-URL host guardrail.
         var httpClient = httpClientFactory.CreateClient("CustomTool");
@@ -39,29 +38,16 @@ public static class CustomToolTransportHelpers
             request.Content = new StringContent(content, Encoding.UTF8, contentType);
         }
 
-        using var timeoutCancellationTokenSource = new CancellationTokenSource(RequestTimeout);
+        using var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCancellationTokenSource.CancelAfter(RequestTimeout);
 
-        HttpResponseMessage response;
         try
         {
-            response = await httpClient.SendAsync(
+            using var response = await httpClient.SendAsync(
                 request,
                 HttpCompletionOption.ResponseHeadersRead,
                 timeoutCancellationTokenSource.Token);
-        }
-        catch (OperationCanceledException) when (timeoutCancellationTokenSource.IsCancellationRequested)
-        {
-            return (GatewayTimeoutStatusCode, string.Empty, "The upstream API request timed out after 30 seconds.");
-        }
-        catch (HttpRequestException ex)
-        {
-            var safeUrl = request.RequestUri?.GetLeftPart(UriPartial.Path);
-            logger.LogWarning(ex, "The upstream API request failed for {Url}.", safeUrl);
-            return (BadGatewayStatusCode, string.Empty, "The upstream API request failed.");
-        }
 
-        using (response)
-        {
             await using var responseStream = await response.Content.ReadAsStreamAsync(timeoutCancellationTokenSource.Token);
             var buffer = new System.IO.MemoryStream();
             var readBuffer = new byte[8192];
@@ -78,6 +64,22 @@ public static class CustomToolTransportHelpers
 
             var body = Encoding.UTF8.GetString(buffer.ToArray());
             return ((int)response.StatusCode, body, null);
+        }
+        catch (OperationCanceledException)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (timeoutCancellationTokenSource.IsCancellationRequested)
+            {
+                return (GatewayTimeoutStatusCode, string.Empty, "The upstream API request timed out after 30 seconds.");
+            }
+
+            throw;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or System.IO.IOException)
+        {
+            var safeUrl = request.RequestUri?.GetLeftPart(UriPartial.Path);
+            logger.LogWarning(ex, "The upstream API request failed for {Url}.", safeUrl);
+            return (BadGatewayStatusCode, string.Empty, "The upstream API request failed.");
         }
     }
 }

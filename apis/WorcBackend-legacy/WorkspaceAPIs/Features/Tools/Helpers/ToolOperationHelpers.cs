@@ -1,7 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using WorkspaceAPIs.DTOs;
-
 namespace WorkspaceAPIs.Features.Tools.Helpers;
 
 /// <summary>
@@ -24,73 +20,71 @@ public static class ToolOperationHelpers
     /// <summary>
     /// Extracts the flat list of operations from a tool's parsed OpenAPI schema.
     /// </summary>
+    /// <remarks>
+    /// <paramref name="persistedIsVerified"/> only backfills legacy schemas in which no operation carries an
+    /// <c>isVerified</c> flag.
+    /// </remarks>
     public static List<UsableToolOperationDto> ExtractOperations(
         JsonDocument? parsedSchema,
         bool persistedIsVerified = false)
     {
-        var operations = new List<UsableToolOperationDto>();
         if (parsedSchema is null)
         {
-            return operations;
+            return new List<UsableToolOperationDto>();
         }
 
         try
         {
-            var root = parsedSchema.RootElement;
+            var operationElements = EnumerateOperationElements(parsedSchema.RootElement).ToList();
+            var backfillIsVerified = persistedIsVerified &&
+                                     !operationElements.Any(entry => entry.Element.TryGetProperty("isVerified", out _));
 
-            if (root.TryGetProperty("operations", out var operationsElement) &&
-                operationsElement.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var operationElement in operationsElement.EnumerateArray())
-                {
-                    var operation = ReadOperation(operationElement, method: null, path: null, persistedIsVerified);
-                    if (operation is not null)
-                    {
-                        operations.Add(operation);
-                    }
-                }
-
-                return operations;
-            }
-
-            if (!root.TryGetProperty("paths", out var pathsElement) ||
-                pathsElement.ValueKind != JsonValueKind.Object)
-            {
-                return operations;
-            }
-
-            foreach (var pathProperty in pathsElement.EnumerateObject())
-            {
-                if (pathProperty.Value.ValueKind != JsonValueKind.Object)
-                {
-                    continue;
-                }
-
-                foreach (var methodProperty in pathProperty.Value.EnumerateObject())
-                {
-                    if (!HttpMethods.Contains(methodProperty.Name))
-                    {
-                        continue;
-                    }
-
-                    var operation = ReadOperation(
-                        methodProperty.Value,
-                        methodProperty.Name.ToUpperInvariant(),
-                        pathProperty.Name,
-                        persistedIsVerified);
-
-                    if (operation is not null)
-                    {
-                        operations.Add(operation);
-                    }
-                }
-            }
+            return operationElements
+                .Select(entry => ReadOperation(entry.Element, entry.Method, entry.Path, backfillIsVerified))
+                .OfType<UsableToolOperationDto>()
+                .ToList();
         }
         catch (System.Text.Json.JsonException)
         {
+            return new List<UsableToolOperationDto>();
+        }
+    }
+
+    private static IEnumerable<(JsonElement Element, string? Method, string? Path)> EnumerateOperationElements(
+        JsonElement root)
+    {
+        if (root.TryGetProperty("operations", out var operationsElement) &&
+            operationsElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var operationElement in operationsElement.EnumerateArray())
+            {
+                yield return (operationElement, null, null);
+            }
+
+            yield break;
         }
 
-        return operations;
+        if (!root.TryGetProperty("paths", out var pathsElement) ||
+            pathsElement.ValueKind != JsonValueKind.Object)
+        {
+            yield break;
+        }
+
+        foreach (var pathProperty in pathsElement.EnumerateObject())
+        {
+            if (pathProperty.Value.ValueKind != JsonValueKind.Object)
+            {
+                continue;
+            }
+
+            foreach (var methodProperty in pathProperty.Value.EnumerateObject())
+            {
+                if (HttpMethods.Contains(methodProperty.Name))
+                {
+                    yield return (methodProperty.Value, methodProperty.Name.ToUpperInvariant(), pathProperty.Name);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -203,10 +197,15 @@ public static class ToolOperationHelpers
     /// <summary>
     /// Returns a copy of the parsed schema with the given operation's <c>isVerified</c> flag set.
     /// </summary>
+    /// <remarks>
+    /// On a legacy schema without per-operation flags, every other operation is first stamped with
+    /// <paramref name="persistedIsVerified"/>, so it keeps the verification it previously inherited from the tool.
+    /// </remarks>
     public static JsonDocument? SetOperationVerification(
         JsonDocument? parsedSchema,
         string operationId,
-        bool isVerified)
+        bool isVerified,
+        bool persistedIsVerified = false)
     {
         if (parsedSchema is null || string.IsNullOrWhiteSpace(operationId))
         {
@@ -220,50 +219,72 @@ public static class ToolOperationHelpers
                 return parsedSchema;
             }
 
-            var updated = false;
+            var operationNodes = EnumerateOperationNodes(root).ToList();
+            var targets = operationNodes
+                .Where(entry => MatchesOperationId(entry.Operation, operationId, entry.Method, entry.Path))
+                .ToList();
 
-            if (root["operations"] is JsonArray operationsArray)
+            if (targets.Count == 0)
             {
-                foreach (var operationNode in operationsArray)
-                {
-                    if (operationNode is JsonObject operationObject &&
-                        MatchesOperationId(operationObject, operationId, method: null, path: null))
-                    {
-                        operationObject["isVerified"] = isVerified;
-                        updated = true;
-                    }
-                }
+                return parsedSchema;
             }
-            else if (root["paths"] is JsonObject paths)
-            {
-                foreach (var pathProperty in paths)
-                {
-                    if (pathProperty.Value is not JsonObject methods)
-                    {
-                        continue;
-                    }
 
-                    foreach (var methodProperty in methods)
-                    {
-                        if (methodProperty.Value is JsonObject operationObject &&
-                            MatchesOperationId(
-                                operationObject,
-                                operationId,
-                                methodProperty.Key.ToUpperInvariant(),
-                                pathProperty.Key))
-                        {
-                            operationObject["isVerified"] = isVerified;
-                            updated = true;
-                        }
-                    }
+            if (!operationNodes.Any(entry => entry.Operation.ContainsKey("isVerified")))
+            {
+                foreach (var entry in operationNodes)
+                {
+                    entry.Operation["isVerified"] = persistedIsVerified;
                 }
             }
 
-            return updated ? JsonDocument.Parse(root.ToJsonString()) : parsedSchema;
+            foreach (var entry in targets)
+            {
+                entry.Operation["isVerified"] = isVerified;
+            }
+
+            return JsonDocument.Parse(root.ToJsonString());
         }
         catch (System.Text.Json.JsonException)
         {
             return parsedSchema;
+        }
+    }
+
+    private static IEnumerable<(JsonObject Operation, string? Method, string? Path)> EnumerateOperationNodes(
+        JsonObject root)
+    {
+        if (root["operations"] is JsonArray operationsArray)
+        {
+            foreach (var operationNode in operationsArray)
+            {
+                if (operationNode is JsonObject operationObject)
+                {
+                    yield return (operationObject, null, null);
+                }
+            }
+
+            yield break;
+        }
+
+        if (root["paths"] is not JsonObject paths)
+        {
+            yield break;
+        }
+
+        foreach (var pathProperty in paths)
+        {
+            if (pathProperty.Value is not JsonObject methods)
+            {
+                continue;
+            }
+
+            foreach (var methodProperty in methods)
+            {
+                if (HttpMethods.Contains(methodProperty.Key) && methodProperty.Value is JsonObject operationObject)
+                {
+                    yield return (operationObject, methodProperty.Key.ToUpperInvariant(), pathProperty.Key);
+                }
+            }
         }
     }
 
@@ -292,28 +313,49 @@ public static class ToolOperationHelpers
     }
 
     /// <summary>
-    /// Copies the verified operation ids of a tool's stored schema onto a freshly flattened schema.
+    /// Copies verification from a tool's stored schema onto a freshly flattened schema, for operations whose
+    /// id, method, path and parameter set are unchanged.
     /// </summary>
     public static JsonDocument? CopyOperationVerification(
         JsonDocument? persistedSchema,
-        JsonDocument? flattenedSchema)
+        JsonDocument? flattenedSchema,
+        bool persistedIsVerified = false)
     {
         if (persistedSchema is null || flattenedSchema is null)
         {
             return flattenedSchema;
         }
 
-        var verifiedOperationIds = ExtractOperations(persistedSchema)
-            .Where(operation => operation.IsVerified && !string.IsNullOrWhiteSpace(operation.OperationId))
+        var verifiedSignatures = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var operation in ExtractOperations(persistedSchema, persistedIsVerified)
+                     .Where(operation => operation.IsVerified && !string.IsNullOrWhiteSpace(operation.OperationId)))
+        {
+            verifiedSignatures.TryAdd(operation.OperationId, GetOperationSignature(operation));
+        }
+
+        var unchangedOperationIds = ExtractOperations(flattenedSchema)
+            .Where(operation => verifiedSignatures.TryGetValue(operation.OperationId, out var signature) &&
+                                signature == GetOperationSignature(operation))
             .Select(operation => operation.OperationId);
 
         var result = flattenedSchema;
-        foreach (var operationId in verifiedOperationIds)
+        foreach (var operationId in unchangedOperationIds)
         {
             result = SetOperationVerification(result, operationId, isVerified: true);
         }
 
         return result;
+    }
+
+    private static string GetOperationSignature(UsableToolOperationDto operation)
+    {
+        var parameters = (operation.Parameters ?? new List<UsableToolOperationParameterDto>())
+            .Select(parameter => $"{parameter.In?.ToLowerInvariant()}:{parameter.Name}")
+            .Order(StringComparer.Ordinal);
+
+        return string.Join(
+            "|",
+            new[] { operation.Method?.ToUpperInvariant(), operation.Path }.Concat(parameters));
     }
 
     private static bool MatchesOperationId(

@@ -1,4 +1,3 @@
-using WorkspaceAPIs.Features.CloudConnectors;
 using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
@@ -32,14 +31,14 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         _resourceShareService = resourceShareService;
     }
 
-    public async Task<ServiceResponse<CloudConnectorResDto>> InvokeAsync(
+    public async Task<ServiceResponse<CustomToolInvokeResDto>> InvokeAsync(
         CloudConnectorReqDto request,
         CancellationToken cancellationToken = default)
     {
-        var serviceResponse = ServiceResponse<CloudConnectorResDto>.Create(
+        var serviceResponse = ServiceResponse<CustomToolInvokeResDto>.Create(
             "Failed to invoke the custom tool.",
             500,
-            new CloudConnectorResDto
+            new CustomToolInvokeResDto
             {
                 Provider = request.Provider,
                 Action = request.Action,
@@ -70,6 +69,20 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                     403);
             }
 
+            if (!CustomToolUrlHelpers.TryCreateBaseUri(tool.BaseUrl, out var baseUri))
+            {
+                return serviceResponse.Update(
+                    $"Custom tool '{tool.Name}' has an invalid base URL. Only http/https are supported.",
+                    400);
+            }
+
+            if (!await CustomToolUrlHelpers.IsPublicHostAsync(baseUri, cancellationToken))
+            {
+                return serviceResponse.Update(
+                    $"Custom tool '{tool.Name}' has a base URL that resolves to a non-public address.",
+                    400);
+            }
+
             var operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified);
             var operation = operations.FirstOrDefault(o =>
                 string.Equals(o.OperationId, operationId, StringComparison.OrdinalIgnoreCase));
@@ -95,20 +108,6 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                     400);
             }
 
-            if (!CustomToolUrlHelpers.TryCreateBaseUri(tool.BaseUrl, out var baseUri))
-            {
-                return serviceResponse.Update(
-                    $"Custom tool '{tool.Name}' has an invalid base URL. Only http/https are supported.",
-                    404);
-            }
-
-            if (!await CustomToolUrlHelpers.IsPublicHostAsync(baseUri, cancellationToken))
-            {
-                return serviceResponse.Update(
-                    $"Custom tool '{tool.Name}' has a base URL that resolves to a non-public address.",
-                    400);
-            }
-
             var sections = CustomToolPayloadSections.From(request.Payload);
 
             var credentialHeaders = new Dictionary<string, string>();
@@ -119,7 +118,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             {
                 var credentialName = string.IsNullOrWhiteSpace(request.CredentialName)
                     ? tool.CredentialName!
-                    : request.CredentialName;
+                    : request.CredentialName!;
 
                 var auth = await CustomToolCredentialHelpers.ResolveAuthenticationAsync(
                     _cloudConnectorsVaultCredentialService, credentialName);
@@ -145,28 +144,34 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             var (content, contentType) = CustomToolRequestHelpers.BuildRequestContent(operation, sections, remainingPayload);
 
             var (statusCode, responseText, responseError) = await CustomToolTransportHelpers.SendAsync(
-                _httpClientFactory, _logger, operation.Method, requestUrl, requestHeaders, content, contentType);
+                _httpClientFactory, _logger, operation.Method, requestUrl, requestHeaders, content, contentType, cancellationToken);
             if (responseError is not null)
             {
                 return serviceResponse.Update(responseError, statusCode >= 400 ? statusCode : 502);
             }
 
-            var isUpstreamSuccess = statusCode >= 200 && statusCode < 300;
-            var responseData = new CloudConnectorResDto
-            {
-                Response = CustomToolRequestHelpers.ParseResponseBody(responseText),
-                Provider = request.Provider,
-                Action = request.Action,
-            };
+            _logger.LogInformation(
+                "Custom tool '{ToolName}' operation '{OperationId}' invoked with upstream status {StatusCode}.",
+                tool.Name, operationId, statusCode);
+
+            var isUpstreamSuccess = statusCode is >= 200 and < 300;
             serviceResponse = serviceResponse.Update(
                 isUpstreamSuccess
                     ? "Custom tool invoked successfully."
                     : $"Upstream API responded with status code {statusCode}.",
-                isUpstreamSuccess ? 200 : 502,
-                responseData);
-            _logger.LogInformation(
-                "Custom tool '{ToolName}' operation '{OperationId}' invoked with upstream status {StatusCode}.",
-                tool.Name, operationId, statusCode);
+                200,
+                new CustomToolInvokeResDto
+                {
+                    Response = CustomToolRequestHelpers.ParseResponseBody(responseText),
+                    Provider = request.Provider,
+                    Action = request.Action,
+                    Success = isUpstreamSuccess,
+                    UpstreamStatusCode = statusCode,
+                });
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

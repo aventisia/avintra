@@ -73,7 +73,8 @@ builder.Services.AddHttpClient("Corsair", client =>
 });
 builder.Services.AddHttpClient("CustomTool", client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
+    // IMPORTANT NOTE: CustomToolTransportHelpers owns the 30-second upstream budget; a client timeout would race it and surface as a 500 instead of a 504.
+    client.Timeout = Timeout.InfiniteTimeSpan;
 }).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
 builder.Services.AddHttpClient("LLMPipeline", client =>
 {
@@ -82,7 +83,8 @@ builder.Services.AddHttpClient("LLMPipeline", client =>
     {
         client.BaseAddress = new Uri($"https://{appBaseUrl}/llmpipeline/");
     }
-    client.Timeout = TimeSpan.FromSeconds(30);
+    // IMPORTANT NOTE: a tool test spends up to 5 s on DNS, 60 s on the vault fetch and 30 s upstream in LLMPipeline, so this must stay above that budget.
+    client.Timeout = TimeSpan.FromSeconds(120);
 });
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/

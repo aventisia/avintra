@@ -35,15 +35,18 @@ const toErrorMessage = (error: unknown): string =>
       ? error.message
       : "The test call failed.";
 
-const isVerifiedResult = (result?: OperationTestResult): boolean =>
-  result?.status === "tested" && result.response.status_code === 200;
+const isVerifiedResult = (result?: OperationTestResult): boolean => {
+  if (result?.status !== "tested") return false;
+  const statusCode = result.response.status_code ?? 0;
+  return statusCode >= 200 && statusCode < 300;
+};
 
-interface StepPlaygroundProps {
+type StepPlaygroundProps = {
   crudAction: "create" | "read" | "update";
-}
+};
 
 /**
- * Playground step. Only a server-recorded HTTP 200 test marks an operation
+ * Playground step. Only a server-recorded HTTP 2xx test marks an operation
  * verified; the wizard never trusts a client-side flag when saving.
  */
 export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
@@ -112,8 +115,14 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
             openApiSpec: draftTool?.openApiSpec,
             credentialName: draftTool?.credentialName,
           });
-          useToolWizardStore.getState().setPendingVerification(operationId, parameters);
-          return { status: "tested", response };
+          const result: OperationTestResult = { status: "tested", response };
+          const wizardStore = useToolWizardStore.getState();
+          if (isVerifiedResult(result)) {
+            wizardStore.setPendingVerification(operationId, parameters);
+          } else {
+            wizardStore.removePendingVerification(operationId);
+          }
+          return result;
         } catch (error) {
           return { status: "failed", message: toErrorMessage(error) };
         }
@@ -241,9 +250,10 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
       </div>
 
       {isCreate && (
-        <p className="text-xs text-muted-foreground">
-          This tool does not exist yet: successful tests are saved as verification when you create
-          it.
+        <p className="text-xs text-orange-700">
+          This tool does not exist yet: each successful test is sent to the API again when you
+          create the tool, to record its verification. Avoid testing operations that create, change
+          or delete data here, or test them after the tool is created.
         </p>
       )}
 
@@ -255,7 +265,7 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
         <div className="space-y-1.5">
           {operations.map((operation) => {
             const result = results[operation.operationId];
-            const verified = isVerifiedResult(result);
+            const verified = result ? isVerifiedResult(result) : operation.isVerified === true;
             const isSelected = selectedIds.includes(operation.operationId);
             const label = operation.summary || operation.operationId;
             return (

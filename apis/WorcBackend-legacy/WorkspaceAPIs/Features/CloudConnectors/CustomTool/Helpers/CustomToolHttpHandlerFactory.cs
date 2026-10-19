@@ -3,8 +3,14 @@ using System.Net.Sockets;
 
 namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
+/// <summary>
+/// Creates HTTP handlers that pin custom-tool connections to public addresses.
+/// </summary>
 public static class CustomToolHttpHandlerFactory
 {
+    /// <summary>
+    /// Creates a handler that disables redirects and re-validates DNS at connect time.
+    /// </summary>
     public static SocketsHttpHandler Create()
     {
         return new SocketsHttpHandler

@@ -7,7 +7,6 @@ import { getCorsairPluginIcon } from "../../vault-credentials/vault-credential-c
  * the shared Wrench glyph used by the studio canvas node.
  */
 export const toolIconMapper: Record<string, string> = {
-  // --- AI / LLM providers ---
   openai: "/brand-img/openai.svg",
   deepseek: "/brand-img/deepseek.svg",
   gemini: "/brand-img/gemini.svg",
@@ -28,7 +27,6 @@ export const toolIconMapper: Record<string, string> = {
   textrazor: "/brand-img/textrazor.png",
   tisane: "/brand-img/tisane.png",
   witai: "/brand-img/witai.png",
-  // --- Google / Microsoft ---
   gmail: "/brand-img/gmail.svg",
   googlecalendar: "/brand-img/googlecalendar.svg",
   googlesheets: "/brand-img/googlesheets.svg",
@@ -43,7 +41,6 @@ export const toolIconMapper: Record<string, string> = {
   teams: "/brand-img/teams.svg",
   onedrive: "/brand-img/onedrive.svg",
   sharepoint: "/brand-img/sharepoint.png",
-  // --- Project management / productivity ---
   linear: "/brand-img/linear.svg",
   jira: "/brand-img/jira.svg",
   asana: "/brand-img/asana.svg",
@@ -53,11 +50,9 @@ export const toolIconMapper: Record<string, string> = {
   airtable: "/brand-img/airtable.svg",
   confluence: "/brand-img/confluence.svg",
   basecamp: "/brand-img/basecamp.svg",
-  // --- Dev / code hosting ---
   github: "/brand-img/github.svg",
   gitlab: "/brand-img/gitlab.svg",
   bitbucket: "/brand-img/bitbucket.svg",
-  // --- CRM / sales / marketing ---
   salesforce: "/brand-img/salesforce.svg",
   intercom: "/brand-img/intercom.svg",
   zendesk: "/brand-img/zendesk.svg",
@@ -65,16 +60,13 @@ export const toolIconMapper: Record<string, string> = {
   mailtrap: "/brand-img/mailtrap.svg",
   zohomail: "/brand-img/zohomail.svg",
   hubspot: "/brand-img/hubspot.svg",
-  // --- Payments ---
   razorpay: "/brand-img/razorpay.svg",
   stripe: "/brand-img/stripe.svg",
-  // --- Communication ---
   telegram: "/brand-img/telegram.svg",
   discord: "/brand-img/discord.svg",
   whatsapp: "/brand-img/whatsapp.svg",
   slack: "/brand-img/slack.svg",
   twilio: "/brand-img/twilio.svg",
-  // --- Social ---
   spotify: "/brand-img/spotify.svg",
   youtube: "/brand-img/youtube.svg",
   twitter: "/brand-img/twitter.svg",
@@ -84,10 +76,8 @@ export const toolIconMapper: Record<string, string> = {
   reddit: "/brand-img/reddit.svg",
   strava: "/brand-img/strava.svg",
   kaggle: "/brand-img/kaggle.svg",
-  // --- File storage ---
   dropbox: "/brand-img/dropbox.svg",
   box: "/brand-img/box.svg",
-  // --- Web / scraping ---
   webflow: "/brand-img/webflow.svg",
   figma: "/brand-img/figma.svg",
   canva: "/brand-img/canva.svg",
@@ -98,7 +88,6 @@ export const toolIconMapper: Record<string, string> = {
   zoom: "/brand-img/zoom.svg",
   firecrawl: "/brand-img/firecrawl.svg",
   exa: "/brand-img/exa.svg",
-  // --- Data / infra ---
   algolia: "/brand-img/algolia.svg",
   pinecone: "/brand-img/pinecone.svg",
   neon: "/brand-img/neon.svg",
@@ -114,7 +103,6 @@ export const toolIconMapper: Record<string, string> = {
   digitalocean: "/brand-img/digitalocean.svg",
   dockerhub: "/brand-img/dockerhub.svg",
   cloudinary: "/brand-img/cloudinary.svg",
-  // --- Ops / monitoring ---
   pagerduty: "/brand-img/pagerduty.svg",
   bugsnag: "/brand-img/bugsnag.svg",
   betterstack: "/brand-img/betterstack.svg",
@@ -122,7 +110,6 @@ export const toolIconMapper: Record<string, string> = {
   toggl: "/brand-img/toggl.svg",
   amplitude: "/brand-img/amplitude.svg",
   circleci: "/brand-img/circleci.svg",
-  // --- Misc / niche ---
   workday: "/brand-img/workday.svg",
   vapi: "/brand-img/vapi.svg",
   sourcegraph: "/brand-img/sourcegraph.svg",
@@ -153,7 +140,6 @@ export const toolIconMapper: Record<string, string> = {
   resend: "/brand-img/resend.svg",
   notion: "/brand-img/notion.svg",
   nextdns: "/brand-img/nextdns.svg",
-  // --- Icons fetched from official pages / other open libraries ---
   ably: "/brand-img/ably.svg",
   addresszen: "/brand-img/addresszen.svg",
   alttextai: "/brand-img/alttextai.svg",
@@ -173,9 +159,6 @@ export const toolIconMapper: Record<string, string> = {
   tally: "/brand-img/tally.svg",
   twitterapiio: "/brand-img/twitterapiio.svg",
   xquik: "/brand-img/xquik.svg",
-
-  // Fallback
-  default: "/brand-img/default-provider.svg",
 };
 
 /**

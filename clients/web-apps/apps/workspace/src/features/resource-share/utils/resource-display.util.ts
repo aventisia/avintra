@@ -1,4 +1,4 @@
-import { getToolIcon } from "@/features/02-configure/tools/constants/tool-icon-mapper";
+import { getToolIcon } from "@/features/02-configure/tools/constants/tool-icon-mapper.constant";
 import { getToolDisplayName } from "@/features/02-configure/tools/utils/tool-name-formatter";
 
 import { ResourceTypeEnum } from "../enums/resource-type-enum";

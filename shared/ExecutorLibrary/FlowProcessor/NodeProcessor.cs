@@ -11,6 +11,8 @@ namespace ExecutorLibrary.FlowProcessor;
 
 public class NodeProcessor : INodeProcessor
 {
+    private const string CustomToolPrefix = "CustomTool";
+
     private static readonly BindingFlags PropertyFlags =
         BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase;
 
@@ -381,28 +383,10 @@ public class NodeProcessor : INodeProcessor
             new() { Key = "Action", Value = action },
         };
 
-        var payloadDict = new Dictionary<string, object?>();
-
-        foreach (var input in inputs)
-        {
-            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
-            if (IsSystemInput(input.Key)) continue;
-
-            if (input.Key.Contains("__CredentialName__"))
-            {
-                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
-                continue;
-            }
-
-            // Resolve any template variables before embedding into the payload JSON
-            var resolvedValue = context.ResolveTemplateObject(input.Value);
-            payloadDict[input.Key] = resolvedValue;
-        }
-
         newInputs.Add(new ReactFlowNodeInput
         {
             Key = "Payload",
-            Value = JsonSerializer.Serialize(payloadDict)
+            Value = BuildConnectorPayload(inputs, context, newInputs)
         });
 
         return ("ProcessCorsairRequestNode", newInputs);
@@ -447,12 +431,28 @@ public class NodeProcessor : INodeProcessor
             new() { Key = "Action", Value = action },
         };
 
+        newInputs.Add(new ReactFlowNodeInput
+        {
+            Key = "Payload",
+            Value = BuildConnectorPayload(inputs, context, newInputs)
+        });
+
+        return ("ProcessConnectorRequestNode", newInputs);
+    }
+
+    private static string BuildConnectorPayload(
+        List<ReactFlowNodeInput> inputs,
+        FlowExecutionContext context,
+        List<ReactFlowNodeInput> newInputs,
+        Dictionary<string, string>? sectionKeys = null)
+    {
         var payloadDict = new Dictionary<string, object?>();
 
         foreach (var input in inputs)
         {
             if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
             if (IsSystemInput(input.Key)) continue;
+            if (input.Key.StartsWith("__OnError__", StringComparison.OrdinalIgnoreCase)) continue;
 
             if (input.Key.Contains("__CredentialName__"))
             {
@@ -460,24 +460,24 @@ public class NodeProcessor : INodeProcessor
                 continue;
             }
 
-            // Resolve any template variables before embedding into the payload JSON
             var resolvedValue = context.ResolveTemplateObject(input.Value);
+
+            if (sectionKeys is not null && sectionKeys.TryGetValue(input.Key, out var payloadKey))
+            {
+                AddResolvedSection(payloadDict, payloadKey, resolvedValue);
+                continue;
+            }
+
             payloadDict[input.Key] = resolvedValue;
         }
 
-        newInputs.Add(new ReactFlowNodeInput
-        {
-            Key = "Payload",
-            Value = JsonSerializer.Serialize(payloadDict)
-        });
-
-        return ("ProcessConnectorRequestNode", newInputs);
+        return JsonSerializer.Serialize(payloadDict);
     }
 
     private static bool IsCustomToolNodeName(string rawName) =>
-        rawName.StartsWith("CustomTool", StringComparison.OrdinalIgnoreCase) &&
-        rawName.Length > "CustomTool".Length &&
-        rawName["CustomTool".Length] is '/' or '_';
+        rawName.StartsWith(CustomToolPrefix, StringComparison.OrdinalIgnoreCase) &&
+        rawName.Length > CustomToolPrefix.Length &&
+        rawName[CustomToolPrefix.Length] is '/' or '_';
 
     /// <summary>
     /// Routes a custom-tool node to ProcessCustomToolRequestNode with (Action, CredentialName, Payload) inputs.
@@ -487,47 +487,17 @@ public class NodeProcessor : INodeProcessor
         List<ReactFlowNodeInput> inputs,
         FlowExecutionContext context)
     {
-        var action = rawName["CustomTool".Length..].TrimStart('/', '_');
+        var action = rawName[CustomToolPrefix.Length..].TrimStart('/', '_');
 
         var newInputs = new List<ReactFlowNodeInput>
         {
             new() { Key = "Action", Value = action },
         };
 
-        var payloadDict = new Dictionary<string, object?>();
-
-        foreach (var input in inputs)
-        {
-            if (IsSystemInput(input.Key)) continue;
-
-            if (input.Key.StartsWith("__OnError__", StringComparison.OrdinalIgnoreCase)) continue;
-
-            if (input.Key.Contains("__CredentialName__"))
-            {
-                if (!string.IsNullOrEmpty(input.Value?.ToString()))
-                {
-                    newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
-                }
-                continue;
-            }
-
-            var resolvedValue = context.ResolveTemplateObject(input.Value);
-
-            if (CustomToolSectionKeys.TryGetValue(input.Key, out var payloadKey))
-            {
-                AddResolvedSection(payloadDict, payloadKey, resolvedValue);
-                continue;
-            }
-
-            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
-
-            payloadDict[input.Key] = resolvedValue;
-        }
-
         newInputs.Add(new ReactFlowNodeInput
         {
             Key = "Payload",
-            Value = JsonSerializer.Serialize(payloadDict)
+            Value = BuildConnectorPayload(inputs, context, newInputs, CustomToolSectionKeys)
         });
 
         return ("ProcessCustomToolRequestNode", newInputs);

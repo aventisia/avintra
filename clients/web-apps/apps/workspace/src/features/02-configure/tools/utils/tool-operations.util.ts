@@ -94,7 +94,7 @@ export const normalizeParsedSchemaOperations = (parsedSchema?: object): ToolOper
 /**
  * Normalizes a tool's parsed OpenAPI schema into a flat operations array. Every
  * operation defaults to unverified; only an explicit per-operation `isVerified`
- * flag (set by a successful HTTP 200 test) marks it verified.
+ * flag (set by a successful HTTP 2xx test) marks it verified.
  */
 export const normalizeToolOperations = (tool?: ToolDto): ToolOperation[] =>
   normalizeParsedSchemaOperations(tool?.parsedSchema);

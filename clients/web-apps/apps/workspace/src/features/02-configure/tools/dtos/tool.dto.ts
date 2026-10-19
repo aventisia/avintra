@@ -2,10 +2,10 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 
 import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
-import { ManualToolOperation } from "./manual-tool-operation-dto";
+import { ManualToolOperation } from "./manual-tool-operation.dto";
 
 /**
- * Represents a data transfer object (DTO) for a tool entry.
+ * Represents a data transfer object (DTO) for a tool entry. Id is omitted when creating a tool.
  */
 export interface ToolDto {
   id?: string;
@@ -37,7 +37,7 @@ export interface ToolDto {
   parsedSchema?: object;
 
   /**
-   * Manually authored operations, synthesized into an OpenAPI spec by the backend when no spec is provided.
+   * Manually authored operations, synthesized into the persisted OpenAPI spec by the backend.
    */
   manualOperations?: ManualToolOperation[];
 
@@ -47,14 +47,14 @@ export interface ToolDto {
 
   isTenantWideAccess: boolean;
 
+  isResourceAccessRestricted: boolean;
+
   isActive: boolean;
 
   /**
    * Indicates whether the tool has passed playground verification.
    */
   isVerified: boolean;
-
-  isResourceAccessRestricted: boolean;
 
   accessLevel: ResourceAccessTypeEnum;
 

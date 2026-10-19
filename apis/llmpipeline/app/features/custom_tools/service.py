@@ -10,6 +10,7 @@ from app.core.logger import logger
 from app.features.custom_tools.vault_credential_client import apply_credential_auth
 from app.features.custom_tools.custom_tool_executor import (
     ResponseTooLargeError,
+    failure_envelope,
     build_request_parts,
     create_client,
     send_capped_request,
@@ -31,24 +32,30 @@ async def execute_tool_test(
 ) -> dict:
     resolved_operation = _resolve_operation(open_api_spec, operation_id)
     if resolved_operation is None:
-        return _failure(
+        return failure_envelope(
             f"Operation '{operation_id}' was not found in the tool's OpenAPI specification.",
             0.0,
             status_code=400,
         )
 
-    parts = build_request_parts(resolved_operation, parameters or {})
+    start = time.perf_counter()
+    try:
+        parts = build_request_parts(resolved_operation, parameters or {})
 
-    if credential_name and access_token:
-        vault_credential_manager = VaultCredentialManager()
-        credential = vault_credential_manager.get_vault_credential_secret_by_name(
-            credential_name,
-            access_token,
-            env_type,
-            tenant_id,
-            space_id,
-        )
-        apply_credential_auth(parts.headers, parts.query_params, credential)
+        if credential_name and access_token:
+            vault_credential_manager = VaultCredentialManager()
+            # IMPORTANT NOTE: the vault manager blocks on requests.get, so it runs in a worker thread to keep the event loop responsive.
+            credential = await asyncio.to_thread(
+                vault_credential_manager.get_vault_credential_secret_by_name,
+                credential_name,
+                access_token,
+                env_type,
+                tenant_id,
+                space_id,
+            )
+            apply_credential_auth(parts.headers, parts.query_params, credential)
+    except ValueError as error:
+        return failure_envelope(str(error), start, status_code=400)
 
     full_url = urljoin(base_url.rstrip("/") + "/", parts.path.lstrip("/"))
 
@@ -64,14 +71,14 @@ async def execute_tool_test(
                 json_body=parts.body,
             )
     except ResponseTooLargeError:
-        return _failure(
+        return failure_envelope(
             "The upstream API response exceeded the 5 MB limit.", start, status_code=502
         )
     except httpx.TimeoutException:
-        return _failure("Request timed out after 30 seconds", start)
+        return failure_envelope("Request timed out after 30 seconds", start, status_code=504)
     except Exception as error:
         logger.error("Custom tool test request failed: %s", error)
-        return _failure("The upstream API request failed.", start)
+        return failure_envelope("The upstream API request failed.", start)
 
     return {
         "success": 200 <= status_code < 300,
@@ -96,28 +103,3 @@ def _resolve_operation(open_api_spec: str | None, operation_id: str) -> ToolOper
             return operation
 
     return None
-
-
-def _fetch_scoped_credential(
-    credential_name: str,
-    access_token: str,
-    env_type: str,
-    tenant_id: str | None,
-    space_id: str | None,
-) -> dict:
-    return VaultManager().get_vault_secret_by_name(
-        credential_name,
-        access_token,
-        env_type,
-        tenant_id,
-        space_id,
-    )
-
-
-def _failure(message: str, start: float, status_code: int | None = None) -> dict:
-    return {
-        "success": False,
-        "status_code": status_code,
-        "body": message,
-        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
-    }

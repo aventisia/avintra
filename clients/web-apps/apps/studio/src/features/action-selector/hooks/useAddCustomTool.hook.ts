@@ -1,3 +1,5 @@
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
+
 const buildCreateToolUrl = (): string => {
   const workspacePath = import.meta.env.VITE_WORKSPACE_PATH ?? "/workspace/";
   const createToolPath = `${workspacePath}configure/tools?e=tool&ca=create&rid=${crypto.randomUUID()}`;
@@ -9,26 +11,36 @@ const isTauriRuntime = (): boolean => {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 };
 
+const tryOpenInNewWindow = (url: string): boolean => {
+  try {
+    return Boolean(window.open(url, "_blank"));
+  } catch {
+    return false;
+  }
+};
+
 /**
- * Hook for the Custom Tools "+" action: opens the workspace Create Tool page.
+ * Hook for the Custom Tools "+" action: opens the workspace Create Tool page,
+ * confirming first when it has to replace the current Studio window.
  */
 export const useAddCustomTool = () => {
+  const { showCustomAlertDialog } = useShowAlertHandler();
+
   const addCustomTool = () => {
     const createToolUrl = buildCreateToolUrl();
 
-    if (isTauriRuntime()) {
-      window.location.href = createToolUrl;
-      return;
-    }
+    if (!isTauriRuntime() && tryOpenInNewWindow(createToolUrl)) return;
 
-    let opened = false;
-    try {
-      opened = Boolean(window.open(createToolUrl, "_blank"));
-    } catch {
-      opened = false;
-    }
-
-    if (!opened) window.location.href = createToolUrl;
+    showCustomAlertDialog({
+      title: "Leave this flow?",
+      description:
+        "Creating a custom tool opens the Workspace in this window. Any unsaved changes on the canvas will be lost.",
+      confirmBtnText: "Leave flow",
+      isDestructive: false,
+      confirmActionFn: () => {
+        window.location.href = createToolUrl;
+      },
+    });
   };
 
   return { addCustomTool };

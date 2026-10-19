@@ -1,3 +1,4 @@
+import { isBodyCapableMethod } from "@avplatform/ui/utils";
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
@@ -12,8 +13,6 @@ import { FieldLabel } from "../FieldLabel";
 
 const METHOD_OPTIONS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
-const BODY_CAPABLE_METHODS = new Set(["POST", "PUT", "PATCH"]);
-
 const createEmptyOperation = (): ManualToolOperation => ({
   name: "",
   method: "GET",
@@ -23,14 +22,14 @@ const createEmptyOperation = (): ManualToolOperation => ({
 const inputClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
-interface MethodFormProps {
+type MethodFormProps = {
   initialOperation?: ManualToolOperation;
   /** Names already used by other methods; names are unique case-insensitively. */
   existingNames?: string[];
   onSubmit: (operation: ManualToolOperation) => void;
   onCancel: () => void;
   submitLabel: string;
-}
+};
 
 /**
  * Inline form panel for authoring a single tool method: name, description, method
@@ -268,7 +267,7 @@ export const MethodForm = ({
             <FieldLabel label="JSON payload" />
             <span className="text-xs text-muted-foreground">optional</span>
           </div>
-          {BODY_CAPABLE_METHODS.has(operation.method) ? (
+          {isBodyCapableMethod(operation.method) ? (
             <JsonEditor
               value={operation.jsonPayload ?? ""}
               onChange={(value) => updateOperation({ jsonPayload: value })}
@@ -277,7 +276,7 @@ export const MethodForm = ({
             />
           ) : (
             <p className="text-xs text-muted-foreground">
-              JSON payload applies to POST, PUT and PATCH methods.
+              JSON payload applies to POST, PUT, PATCH and DELETE methods.
             </p>
           )}
         </div>

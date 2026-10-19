@@ -2,16 +2,16 @@ import { cn } from "@avplatform/ui/lib";
 import { Wrench } from "lucide-react";
 import { useState } from "react";
 
-import { getToolIcon } from "../constants/tool-icon-mapper";
+import { getToolIcon } from "../constants/tool-icon-mapper.constant";
 import { isValidIconUrl } from "../utils/tool-icon.util";
 
-interface ToolIconProps {
+type ToolIconProps = {
   /** Tool name, used to resolve a mapped brand asset. */
   name?: string;
   /** User-supplied icon URL; takes precedence over any mapped brand asset. */
   iconUrl?: string;
   className?: string;
-}
+};
 
 /**
  * Renders a tool's icon with layered fallbacks: user-supplied icon URL, mapped brand asset, then the shared Wrench glyph.

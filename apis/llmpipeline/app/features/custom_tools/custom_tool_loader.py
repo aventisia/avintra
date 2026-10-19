@@ -71,19 +71,25 @@ async def load_custom_tools(
         operations_data = tool.parsed_schema
         if isinstance(operations_data, dict) and "paths" in operations_data:
             operations = parse_openapi_spec(operations_data)
-        elif isinstance(operations_data, list):
-            operations = [_coerce_operation(op) for op in operations_data if isinstance(op, dict)]
-        elif isinstance(operations_data, dict) and isinstance(operations_data.get("operations"), list):
-            operations = [
-                _coerce_operation(op)
-                for op in operations_data["operations"]
-                if isinstance(op, dict)
+            raw_operations = [
+                operation
+                for methods in (operations_data.get("paths") or {}).values()
+                if isinstance(methods, dict)
+                for operation in methods.values()
+                if isinstance(operation, dict)
             ]
+        elif isinstance(operations_data, list):
+            raw_operations = [op for op in operations_data if isinstance(op, dict)]
+            operations = [_coerce_operation(op) for op in raw_operations]
+        elif isinstance(operations_data, dict) and isinstance(operations_data.get("operations"), list):
+            raw_operations = [op for op in operations_data["operations"] if isinstance(op, dict)]
+            operations = [_coerce_operation(op) for op in raw_operations]
         else:
             continue
 
+        backfill_is_verified = tool.is_verified and not _has_operation_verification_flags(raw_operations)
         for operation in operations:
-            if not operation.is_verified and not tool.is_verified:
+            if not operation.is_verified and not backfill_is_verified:
                 continue
 
             langchain_tools.append(
@@ -97,6 +103,13 @@ async def load_custom_tools(
             )
 
     return langchain_tools
+
+
+def _has_operation_verification_flags(raw_operations: list[dict]) -> bool:
+    return any(
+        "isVerified" in operation or "is_verified" in operation
+        for operation in raw_operations
+    )
 
 
 def _coerce_operation(operation: dict) -> ToolOperation:

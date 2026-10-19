@@ -145,7 +145,7 @@ public static class CustomToolRequestHelpers
         Dictionary<string, object> remainingPayload)
     {
         var method = operation.Method!.ToUpperInvariant();
-        var supportsBody = method is "POST" or "PUT" or "PATCH";
+        var supportsBody = method is "POST" or "PUT" or "PATCH" or "DELETE";
         if (!supportsBody)
         {
             return (null, "application/json");

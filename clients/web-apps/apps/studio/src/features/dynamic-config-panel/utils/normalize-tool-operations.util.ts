@@ -1,4 +1,4 @@
-import { UsableToolOperation } from "../dtos/tool-dto";
+import { UsableToolOperation } from "../dtos/tool.dto";
 
 export type ToolOperation = {
   operationId: string;
