@@ -20,6 +20,8 @@ import { useEffect, useRef } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { getSpaceHeaders } from "@/utils/space-headers";
+
 import { AppUserBaseDto } from "../dtos/app-user-base.dto";
 import { CreateNotificationDto } from "../dtos/create-notification.dto";
 import { NotificationDto } from "../dtos/notification.dto";
@@ -272,7 +274,9 @@ export const NotificationComposeForm = ({
           name="recipients"
           label="Recipients"
           fetcher={(query) =>
-            searchUsers(query, false, false).then((res) => (res.data ?? []).map(toUserSelectItem))
+            searchUsers(query, false, false, getSpaceHeaders()).then((res) =>
+              (res.data ?? []).map(toUserSelectItem),
+            )
           }
           getItemId={(item) => item.id}
           getItemLabel={(item) =>
