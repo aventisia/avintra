@@ -45,7 +45,9 @@ docs {
   > mention any removed verification field.
   >
   > Reading a failure: 401 means no tenant admin session, 200 means the tenant fixture is already connected
-  > (the gate then moved on to the platform-credential check), and 400 with a different message means the
+  > (the gate then moved on to the platform-credential check, which fails safe with a 400 "SSO credentials are
+  > not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables." message
+  > when the new keys are absent), and 400 with a different message means the
   > tenant is not an Organization or has no email domain. All are fixture gaps; the assertions stay
   > unconditional.
   >

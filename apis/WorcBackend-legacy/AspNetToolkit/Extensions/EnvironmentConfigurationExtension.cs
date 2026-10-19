@@ -79,6 +79,9 @@ public static class EnvironmentConfigurationExtension
             AZURE_ENTRA_ID_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_CLIENT_SECRET") ?? string.Empty;
         }
 
+        var MICROSOFT_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_CLIENT_ID") ?? string.Empty;
+        var MICROSOFT_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_CLIENT_SECRET") ?? string.Empty;
+
         // SMTP environment variables
         var SMTP_HOST = Environment.GetEnvironmentVariable("SMTP_HOST") ?? string.Empty;
         var SMTP_PORT = Environment.GetEnvironmentVariable("SMTP_PORT") ?? "0";
@@ -237,6 +240,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:AzureTenantId", AZURE_TENANT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientId", AZURE_ENTRA_ID_CLIENT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientSecret", AZURE_ENTRA_ID_CLIENT_SECRET },
+                    { "EnvironmentConfig:MicrosoftClientId", MICROSOFT_CLIENT_ID },
+                    { "EnvironmentConfig:MicrosoftClientSecret", MICROSOFT_CLIENT_SECRET },
 
                     { "EnvironmentConfig:JwtSecretKey", JWT_SECRET_KEY },
                     { "EnvironmentConfig:JwtValidityInMinutes", JWT_VALIDITY_IN_MINUTES },

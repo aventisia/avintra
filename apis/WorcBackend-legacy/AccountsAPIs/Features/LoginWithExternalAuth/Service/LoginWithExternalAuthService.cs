@@ -60,11 +60,11 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             switch (type)
             {
                 case ExternalAuthProviderEnum.Azure:
-                    var resolvedClientId = _environmentConfig.AzureEntraIdClientId;
+                    var resolvedClientId = _environmentConfig.MicrosoftClientId;
                     if (string.IsNullOrWhiteSpace(resolvedClientId))
                     {
-                        serviceResponse.Message = "Azure SSO client id is not configured.";
-                        _logger.LogWarning("Azure login URL generation blocked because no client id is configured.");
+                        serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
+                        _logger.LogWarning("Microsoft login URL generation blocked because no client id is configured.");
                         return serviceResponse;
                     }
 
@@ -111,10 +111,10 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         try
         {
-            var resolvedClientId = _environmentConfig.AzureEntraIdClientId;
+            var resolvedClientId = _environmentConfig.MicrosoftClientId;
             if (string.IsNullOrWhiteSpace(resolvedClientId))
             {
-                serviceResponse.Message = "Azure SSO client id is not configured.";
+                serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
                 _logger.LogWarning("Admin consent URL generation blocked because no client id is configured.");
                 return serviceResponse;
             }
@@ -188,12 +188,12 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         var ssoTenant = await ResolveSsoTenantAsync(authState);
         var ssoConfig = SsoConfigHelpers.Parse(ssoTenant?.SSOConfigJson);
-        var clientId = _environmentConfig.AzureEntraIdClientId;
-        var clientSecret = _environmentConfig.AzureEntraIdClientSecret;
+        var clientId = _environmentConfig.MicrosoftClientId;
+        var clientSecret = _environmentConfig.MicrosoftClientSecret;
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
         {
-            serviceResponse.Message = "Azure SSO credentials are not configured.";
+            serviceResponse.Message = "Microsoft SSO credentials are not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables.";
             serviceResponse.StatusCode = 400;
             return serviceResponse;
         }
