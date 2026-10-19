@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+const ssoDisableWarningSchema = z.object({
+  warnOnly: z.boolean(),
+  affectedAdmins: z.array(z.string()),
+  affectedUserCount: z.number(),
+  recoveryHint: z.string().nullable(),
+});
+
 const preferencesSchema = z.object({
   id: z.string(),
   tenantName: z.string(),
@@ -10,6 +17,11 @@ const preferencesSchema = z.object({
   isIdleSessionTimeoutEnabled: z.boolean(),
   idleSessionTimeoutMinutes: z.number(),
   isTwoFAEnabled: z.boolean(),
+  ssoConfigJson: z.string().optional(),
+  ssoSecretPresent: z.boolean().optional(),
+  domainVerified: z.boolean().optional(),
+  domainVerifyAttestation: z.boolean().optional(),
+  ssoDisableWarning: ssoDisableWarningSchema.optional(),
 });
 
 export { preferencesSchema };

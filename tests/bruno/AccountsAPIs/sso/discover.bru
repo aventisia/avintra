@@ -1,0 +1,42 @@
+meta {
+  name: Discover tenant for SSO
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/discover
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{MY_EMAIL}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200 && res.getBody().data) {
+    bru.setGlobalEnvVar("SSO_LOGIN_URL", res.getBody().data.ssoLoginUrl ?? "");
+    bru.setGlobalEnvVar("SSO_TENANT_ID", res.getBody().data.tenantId ?? "");
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns the home realm discovery fields", function() {
+    expect(res.getBody().data).to.have.property("ssoLoginUrl");
+    expect(res.getBody().data).to.have.property("provider");
+    expect(res.getBody().data).to.have.property("tenantId");
+  });
+}
+
+docs {
+  > Domain-only home realm discovery. The user does NOT need to exist. When the email domain matches an
+  > Organization tenant with SSO enabled and a stored v1 configuration, `ssoLoginUrl` carries the Entra
+  > authorize URL with `login_hint`, `state` and `nonce`; otherwise `ssoLoginUrl` is null with a neutral message.
+}

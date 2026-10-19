@@ -10,6 +10,7 @@ export * from "./request/terminate-session-dto";
 export * from "./response/created-verification-code-dto";
 export * from "./response/branding-dto";
 export * from "./response/record-inserted-dto";
+export * from "./response/sso-discover-dto";
 export * from "./response/tenant-info-dto";
 export * from "./response/true-false-result-dto";
 export * from "./response/user-avatar-base-dto";

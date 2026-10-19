@@ -96,7 +96,8 @@ export const isSSOEnabledProps: SwitchFieldProps = {
 export const ssoConfigJsonProps: TextareaFieldProps = {
   name: "ssoConfigJson",
   label: "Single Sign-On (SSO) Configuration",
-  description: "The JSON configuration for the Single Sign-On (SSO) provider",
+  description:
+    "Read-only. The Single Sign-On configuration is managed by the Tenant Admin and is hidden from the Super Admin view.",
   className: "min-h-[12.5rem]",
 };
 

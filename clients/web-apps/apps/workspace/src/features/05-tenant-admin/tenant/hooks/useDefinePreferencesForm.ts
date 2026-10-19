@@ -1,10 +1,11 @@
 import { toast } from "@avplatform/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { SsoDisableWarningDto } from "../dtos/sso-disable-warning-dto";
 import { updateTenantPreferences } from "../apis/tenant-info-apis";
 import { preferencesSchema } from "../constants/tenant-preferences-zod-schema";
 import { useFetchTenantPreferences } from "./useFetchTenantPreferences";
@@ -14,6 +15,9 @@ export const useDefinePreferencesForm = () => {
 
   // Fetch existing preferences
   const { data, isLoading } = useFetchTenantPreferences();
+
+  // Warning returned by the last disable attempt
+  const [ssoDisableWarning, setSsoDisableWarning] = useState<SsoDisableWarningDto | undefined>(undefined);
 
   // Initialize form with validation and default values
   const form = useForm<z.infer<typeof preferencesSchema>>({
@@ -35,20 +39,30 @@ export const useDefinePreferencesForm = () => {
   useEffect(() => {
     if (data?.data) {
       form.reset(data.data);
+      setSsoDisableWarning(data.data.ssoDisableWarning);
     }
   }, [data?.data]);
 
   // Handle form submission
-  const { mutate, isPending } = useMutation({
+  const { mutate: updatePreferences, isPending } = useMutation({
     mutationFn: updateTenantPreferences,
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["TENANT_PREFERENCES"] });
+      setSsoDisableWarning(response?.data?.ssoDisableWarning);
       toast.success("Preferences updated successfully.");
     },
     onError: (error) => {
       toast.error(error.toString());
     },
   });
+
+  // Submit the form values together with the stored single sign-on configuration
+  const mutate = (formData: z.infer<typeof preferencesSchema>) => {
+    updatePreferences({
+      ...formData,
+      ssoConfigJson: formData.ssoConfigJson ?? data?.data?.ssoConfigJson,
+    });
+  };
 
   // Form state helpers
   const {
@@ -58,6 +72,7 @@ export const useDefinePreferencesForm = () => {
   // Watch specific fields for conditional UI logic
   const isIdleSessionTimeoutEnabled = form.watch("isIdleSessionTimeoutEnabled");
   const isPwdNeverExpiresEnabled = form.watch("isPwdNeverExpiresEnabled");
+  const isSSOEnabled = form.watch("isSSOEnabled");
 
   // Expose form and related state
   return {
@@ -69,5 +84,7 @@ export const useDefinePreferencesForm = () => {
     mutate,
     isIdleSessionTimeoutEnabled,
     isPwdNeverExpiresEnabled,
+    isSSOEnabled,
+    ssoDisableWarning,
   };
 };

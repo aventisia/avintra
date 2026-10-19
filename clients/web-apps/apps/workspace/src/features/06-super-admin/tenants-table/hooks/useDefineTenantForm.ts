@@ -124,7 +124,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,
-      ssoConfigJson: tenantData?.ssoConfigJson ?? undefined,
+      ssoConfigJson: undefined,
       // Group
       isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
       daysBeforePwdExpires: tenantData?.daysBeforePwdExpires?.toString() ?? "730",
@@ -170,8 +170,11 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
+    const refinedFormData = { ...formData };
+    delete refinedFormData.ssoConfigJson;
+
     return {
-      ...formData,
+      ...refinedFormData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
