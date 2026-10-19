@@ -7,6 +7,7 @@ import { SliderField } from "@/components/Slider/SliderField";
 import {
   Model,
   getSpecialtyFromNode,
+  isExecutableRealtimeProvider,
   modelProviders,
 } from "@/features/dynamic-config-panel/constants/model-providers";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
@@ -42,6 +43,11 @@ const PROVIDER_MAP: Record<string, string> = {
   ollamacloud: "OllamaCloud",
   groq: "Groq",
   mistral: "Mistral",
+  azure: "Azure",
+  vertex_ai: "VertexAi",
+  xai: "Xai",
+  bedrock: "Bedrock",
+  amazon_nova: "AmazonNova",
 };
 
 const ModelConfigField = ({
@@ -442,6 +448,16 @@ const ModelConfigField = ({
           </p>
         )}
 
+      {isRealtime &&
+        is_byok_enabled &&
+        isInitialized &&
+        !!providerValue &&
+        !isExecutableRealtimeProvider(providerValue) && (
+          <p className="text-xs text-destructive">
+            {`${currentProviderLabel ?? providerValue} is not supported for realtime voice. Select a supported realtime provider before publishing.`}
+          </p>
+        )}
+
       {enableModelSetup && <div className="space-y-3.5">{modelAdvancedSettings}</div>}
 
       {currentModel?.voices?.length ? (
@@ -454,7 +470,13 @@ const ModelConfigField = ({
       ) : null}
 
       {showInlineVoiceConfig && (
-        <VoiceConfigField name={voiceConfigName} providerPath={fieldNames.provider} />
+        <VoiceConfigField
+          name={voiceConfigName}
+          providerPath={fieldNames.provider}
+          modelPath={fieldNames.model}
+          credentialPath={fieldNames.credential_name}
+          isByokPath={fieldNames.is_byok_enabled}
+        />
       )}
     </div>
   );

@@ -10,4 +10,13 @@
     <ItemGroup>
         <ProjectReference Include="..\ExecutorLibrary\ExecutorLibrary.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\apis\WorcBackend-legacy\WorkspaceAPIs\Helpers\VoiceAgentGraphHelpers.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System.Text.Json" />
+        <Using Include="System.Text.Json.Nodes" />
+    </ItemGroup>
 </Project>
