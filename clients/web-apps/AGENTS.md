@@ -2,158 +2,112 @@
 
 ## Scope
 
-- This file scopes conventions to descendants of `frontend/`; it does not automatically govern `clients/web-apps`. That monorepo and its apps/packages are absent here; verify deployment paths before relocating instructions or applying package-specific rules.
-- Deployment convention: `studio` (`apps/studio`) inherits legacy conventions; adopt these incrementally. The intended shared UI package is `@avplatform/ui`, not `@aventisia/ui`; verify installed dependencies before importing.
-- Deployment convention: `desktop-app` (`apps/desktop-app`), ported from `clients/desktop-app`, keeps `src-tauri/` and uses `@avplatform/ui` + `@avplatform/tauri-utils`. Verify these paths/contracts when present. Preserve Tauri guards around `invoke()` (`launch_runner_app`, `get_user_metadata`) for browser use; provision the runner when opening the desktop app, and only launch it during flow execution.
+- Governs every app and package in `clients/web-apps` (`apps/*`, `packages/*`). Role scope and permissions come from the root `AGENTS.md`; these are code conventions only.
+- `studio` still carries legacy patterns; adopt these conventions there incrementally.
+- `desktop-app` runs both inside the Tauri shell (`src-tauri/`) and in a plain browser. Guard every Tauri `invoke()` call with a `__TAURI_INTERNALS__` check (as in `src/TauriAppFooter.tsx` and `src/lib/setupStore.ts`) so browser use never crashes. Provision the runner (`check_runner_app`, `download_runner_app`) when the desktop app opens; launch it only during flow execution.
+- Shared UI comes from `@avplatform/*` workspace packages; confirm an export exists in the package before importing it.
 
-## Application boundaries
+## Incremental adoption
 
-- Apply these conventions only within the assigned role and scope; read-only reviewers report defects and do not generate repository edits.
-- Keep method naming, method order, request/response contracts, and DTO structure aligned with backend source.
-- Prefer small, targeted changes that preserve project architecture, existing conventions, and behavior.
+- Most existing code predates these rules (legacy `-apis.ts` and `-dto.ts` filenames, `interface` outside DTOs). Apply the rules to files you create or touch, keep the rest of the change scope consistent, and leave untouched files alone.
+- New files follow these rules even when neighbouring files use the legacy form.
 
-## Hard Constraints
+## Feature layout
 
-- Preserve the exact action order and semantic contract from ASP.NET Controller methods in `.apis.ts` files. Convert C# PascalCase names to TypeScript lower camelCase and apply the CRUD mapping below; do not require cross-language spelling to be identical.
-- Use standard CRUD naming patterns in API files:
-  - `get[Entities]`
-  - `get[Entity]`
-  - `create[Entity]`
-  - `update[Entity]`
-  - `delete[Entity]`
-  - `deleteMultiple[Entities]`
-- Map backend CRUD actions as follows: `Get[Entities]` → `get[Entities]`, `Get[Entity]` → `get[Entity]`, `Insert[Entity]` → `create[Entity]`, `Update[Entity]` → `update[Entity]`, `Delete[Entity]` → `delete[Entity]`, and `DeleteMultiple[Entities]` → `deleteMultiple[Entities]`.
-- For non-CRUD controller actions, convert the backend method name to lower camelCase without changing its meaning or order; do not invent a CRUD alias.
-- Convert backend XML docs (`/// <summary>`) into TypeScript JSDoc (`/** ... */`) for every exported API method, keeping each summary to one short sentence.
-- For APIs verified to use `ServiceResponse<T>`, preserve the wrapper instead of treating the payload as raw data; verify each backend contract first.
+- Features live in `src/features/<feature>/` with `apis/`, `dtos/`, `hooks/`, `stores/`, `constants/`, `types/`, `enums/`, `utils/`, and `components/` subfolders as needed.
+- Keep feature utilities in the feature's `utils/` folder; move one to a shared/package `utils/` only when multiple features reuse it.
+- Before modifying a feature, read its `README.md` when one exists; it records domain boundaries and exceptions.
+- Import from outside a feature through its `index.ts`. Inside the feature, import relatively when that avoids circular references. Keep `index.ts` to explicit named exports.
 
-## API Integration Rules (`.apis.ts`)
+## File naming
 
-- Keep frontend API methods in the same order as backend controller actions.
-- Parse and return response envelopes consistently as:
-  - `success` boolean status flag
-  - `message` text
-  - typed `data` payload
-- Centralize envelope handling where possible so components consume stable typed results.
-- If current project patterns conflict, follow existing repository conventions and document the mismatch.
+Every non-component feature module uses a dot suffix. Components, `index.ts` barrels, and framework/tool-required config or declaration files keep their required names.
 
-## DTOs and Type Mapping
+| Kind      | Suffix         | Example                            |
+| --------- | -------------- | ---------------------------------- |
+| Store     | `.store.ts`    | `jobs-table.store.ts`              |
+| Hook      | `.hook.ts`     | `useFetchJobs.hook.ts`             |
+| DTO       | `.dto.ts`      | `create-job.dto.ts`                |
+| Constant  | `.constant.ts` | `common-display-names.constant.ts` |
+| API       | `.apis.ts`     | `jobs-table.apis.ts`               |
+| Enum      | `.enum.ts`     | `job-status.enum.ts`               |
+| Utility   | `.util.ts`     | `date-range-selector.util.ts`      |
+| Type      | `.type.ts`     | `machine-filter.type.ts`           |
+| Component | none           | `JobsTable.tsx`                    |
 
-- Ensure DTO interfaces preserve the fields, requiredness, property order, and type meaning of their C# backend equivalents. TypeScript property names use the camelCase mapping below.
-- Ensure enum names and their members match backend definitions.
-- Create TypeScript interfaces in `dtos` folders that mirror backend C# DTOs.
-- Keep property order identical to the backend DTO source order.
-- Convert C# to TypeScript types strictly:
-  - `Guid` -> `string`
-  - `int`, `float`, `decimal`, `double` -> `number`
-  - `DateTime` -> `string` (ISO 8601)
-  - `bool` -> `boolean`
-- Convert C# `PascalCase` DTO properties to `camelCase` for TypeScript interfaces while preserving the corresponding backend contract.
-- Use parameter naming pattern: `camelCase` variable + `PascalCase` type (example: `createMachineDto: CreateMachineDto`).
-- Use `interface` only for `.dto.ts` files.
-- For all other TypeScript data shapes, use `type` aliases instead of `interface`.
+## API files (`.apis.ts`)
 
-## File Naming Conventions
+- Mirror the backend controller: same actions, same order, same request/response contracts. Convert C# PascalCase names to lower camelCase.
+- Map CRUD actions as follows; convert every other action name to lower camelCase without renaming its meaning or inventing a CRUD alias.
 
-- Every non-component feature source module must use a suffix-based filename convention.
-- Components, feature barrel files named `index.ts`, and framework/tool-required configuration or declaration files are exceptions and should keep their required names.
-- Required suffixes:
-  - Store files: `.store.ts`
-  - Hook files: `.hook.ts`
-  - DTO files: `.dto.ts`
-  - Constant files: `.constant.ts`
-  - API files: `.apis.ts`
-  - Enum files: `.enum.ts`
-  - Utility files: `.util.ts`
-  - Type files: `.type.ts`
+  | Backend action             | Frontend method            |
+  | -------------------------- | -------------------------- |
+  | `Get[Entities]`            | `get[Entities]`            |
+  | `Get[Entity]`              | `get[Entity]`              |
+  | `Insert[Entity]`           | `create[Entity]`           |
+  | `Update[Entity]`           | `update[Entity]`           |
+  | `Delete[Entity]`           | `delete[Entity]`           |
+  | `DeleteMultiple[Entities]` | `deleteMultiple[Entities]` |
 
-## Example Filenames
+- Type responses as `IHttpResponse<T>` from `@avplatform/ui/dtos`. It mirrors the backend `ServiceResponse<T>`: `{ data, statusCode, message }`. Success is signalled by HTTP status (axios rejects non-2xx), so read `data` and `message` from resolved responses and handle failures in the rejection path.
+- Make requests through `axiosInstance` from `@avplatform/ui/lib`, which handles auth refresh.
+- Give every exported API method a one-sentence JSDoc derived from the backend `/// <summary>`.
 
-- Store: `jobs-table.store.ts`
-- Hook: `useFetchJobs.hook.ts`
-- DTO: `create-job.dto.ts`
-- Constant: `common-display-names.constant.ts`
-- API: `jobs-table.apis.ts`
-- Enum: `job-status.enum.ts`
-- Utility: `date-range-selector.util.ts`
-- Type: `machine-filter.type.ts`
-- Component (no enforced suffix): `JobsTable.tsx`
+## DTOs and type mapping
 
-## Incremental Adoption Policy
+- Create DTOs as `interface`s in `dtos/` folders, one backend C# DTO per interface. Use `type` aliases for every other data shape.
+- Preserve the backend DTO's fields, property order, requiredness, and type meaning; convert PascalCase properties to camelCase.
+- Match enum names and members to the backend definitions.
+- Convert C# types as:
+  - `Guid`, `string` → `string`
+  - `int`, `long`, `float`, `double`, `decimal` → `number`
+  - `DateTime` → `string` (ISO 8601)
+  - `bool` → `boolean`
+  - `List<T>`, `IEnumerable<T>`, `T[]` → `T[]`
+- Name parameters as camelCase variable + PascalCase type: `createMachineDto: CreateMachineDto`.
 
-- Do not mass-rename or rewrite the entire codebase in one go.
-- Apply naming and `interface`/`type` rules incrementally whenever reviewing, fixing, or refactoring touched files.
-- For mixed legacy areas, prioritize consistency within the current change scope and avoid unrelated churn.
+## Validation
 
-## Documentation and Comments
+- Translate backend validation attributes (`[StringLength]`, `[RequiredGuid]`, `required`) into form validation. Use Zod in apps that depend on it; elsewhere, use reusable validation helpers.
 
-- Enforce the root `AGENTS.md` "Documentation and Code Style Boundaries" rules in all frontend code.
-- Document only exported/public APIs and complex type definitions with short JSDoc; never document internal functions or variables.
-- Do not add inline comments that restate code; use precise names and small components instead.
-- The only permitted inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
-- Before modifying a feature, read that feature's local `README.md` when it exists; it records domain boundaries and exceptions.
+## Components and hooks
 
-## Feature Index Import Policy
+- Keep API fetching and mutations in custom hooks; components only render.
+- Break complex logic into small, precisely named blocks.
 
-- Use the feature `index.ts` for imports coming from outside the feature.
-- Inside the same feature, allow direct relative imports when needed to avoid circular references.
-- Keep `index.ts` explicit with named exports only, and avoid wildcard re-exports if the feature is complex.
+## Comments and documentation
 
-## Validation Mapping
+Follow the root `AGENTS.md` "Documentation and code style boundaries": short JSDoc only on exported/public APIs and complex public types, self-documenting names everywhere else. The only inline comment allowed is an `IMPORTANT NOTE:` for an external constraint, race condition, or required hack.
 
-- Translate backend validation attributes into frontend form validation.
-- Prefer Zod as the default validation stack.
-- If no validation framework is present, implement clear inline React validation with reusable helpers.
+## Forms and display
 
-## Component and Hook Structure
+- Give form inputs short, realistic placeholders (email → `example@company.com`).
+- Reuse one form for create and edit.
+- When an entity has `Id` and `IsDisabled`, hide them on create and show them on edit.
+- For an optional `IpAddress`, default to `0.0.0.0` and label the field `(optional)`.
+- In display views, show `-` for empty dates and the sentinel date `01 Jan 0001`.
+- In display views, show `-` for IP `0.0.0.0`; mask any other IP with `maskIP` from `@avplatform/ui`.
 
-- Separate UI rendering from API fetching/mutation logic.
-- Prefer custom hooks for data access and mutations.
-- Break complex logic into small isolated blocks.
-- Make non-trivial logic scannable through precise naming and decomposition, not inline comments.
+## Review checklist
 
-## Feature Utilities
+Apply every item to each touched file:
 
-- If a utility function is required for a feature, keep it inside that feature's `utils/` folder.
-- Name the file to match its purpose and use the `.util.ts` suffix (for example, `decode-prefilled-option.util.ts`).
-- Only place utilities in shared/package-level `utils/` folders when they are genuinely reused across multiple features.
-
-## Form and Display Rules
-
-- Keep feature utility functions in that feature's `utils` folder whenever possible.
-- Add short, realistic placeholders for form inputs (for example, email -> `example@company.com`).
-- Reuse one form for create and edit flows when possible.
-- If an entity has `Id` and `IsDisabled`, hide them on create and show them on edit.
-- For optional `IpAddress`: default to `0.0.0.0`, and label the field with `(optional)`.
-- In display views, show `-` for optional/empty dates and for sentinel date `01 Jan 0001`.
-- In display views, show `-` for IP `0.0.0.0`; otherwise mask via `maskIP` from `@avplatform/ui`.
-
-## Review Checklist
-
-1. Verify `.apis.ts` method order and CRUD/non-CRUD name mapping match backend controllers.
-2. Verify CRUD naming patterns are consistent.
-3. Verify every exported API method has short JSDoc derived from backend summaries where available, and internal functions are undocumented.
-4. Verify `ServiceResponse<T>` envelope handling is correct and typed.
-5. Verify DTO interface property order, casing, and type mappings.
-6. Verify validation parity with backend constraints.
-7. Verify API logic is separated from UI, ideally via hooks.
-8. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
-9. Verify non-component feature source modules follow suffix naming conventions, honoring the explicit `index.ts` and tool-required-file exceptions.
-10. Verify `interface` is used only in `.dto.ts` files and `type` is used elsewhere.
-11. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
+1. `.apis.ts` method order and names match the backend controller per the CRUD mapping.
+2. Exported API methods have one-sentence JSDoc; internal functions are undocumented.
+3. Responses are typed `IHttpResponse<T>` and handled per the API files section.
+4. DTO property order, casing, requiredness, and types match the backend.
+5. Form validation matches backend constraints.
+6. API logic lives in hooks, separate from UI.
+7. Non-trivial logic is decomposed and self-documenting; the only inline comments are `IMPORTANT NOTE:`s.
+8. New or touched non-component modules use the dot suffixes.
+9. `interface` appears only in `.dto.ts` files; `type` everywhere else.
 
 ## Artifact contents
 
-- The root shared handoff controls agent returns; these formats describe report contents or explicitly requested standalone code output, not additional role authority.
+The root handoff contract controls agent returns; these formats apply inside reports or explicitly requested standalone output.
 
-- For code review:
-  - Findings first, ordered by severity, each with file and line references.
-  - Then open questions or assumptions.
-  - Then a concise change summary.
-- For code generation:
-  - Produce complete, compilable snippets for all affected files.
-  - Keep backend/ frontend naming and ordering synchronized.
-  - Include documentation only on exported/public boundaries; never add implementation comments.
+- Code review: findings first, ordered by severity, each with file and line; then open questions or assumptions; then a concise change summary.
+- Code generation: complete, compilable code for every affected file, with backend/frontend naming and ordering kept in sync.
 
 <!-- BEGIN:turborepo-agent-rules -->
 
