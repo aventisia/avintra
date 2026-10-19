@@ -34,6 +34,7 @@ public class SearchByQueryService : ISearchByQueryService
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
                     !w.IsDefault &&
+                    !w.IsDisabled &&
                     (includeCurrentUser || w.Id != _userId))
                 .OrderBy(o => o.FirstName)
                 .ThenBy(o => o.LastName);
@@ -43,11 +44,12 @@ public class SearchByQueryService : ISearchByQueryService
             if (onlyCurrentSpace && currentSpaceId != Guid.Empty)
             {
                 var spaceUserIds = await _unitOfWork.SpaceUserRepo
-                    .GetByConditionAsync(su =>
-                        su.TenantId == _tenantId &&
-                        su.SpaceId == currentSpaceId &&
-                        su.IsActive)
-                    .Select(su => su.UserId)
+                    .GetByConditionAsync(w =>
+                        w.TenantId == _tenantId &&
+                        w.SpaceId == currentSpaceId &&
+                        w.IsActive &&
+                        !w.IsDisabled)
+                    .Select(s => s.UserId)
                     .Distinct()
                     .ToListAsync();
 
@@ -62,7 +64,7 @@ public class SearchByQueryService : ISearchByQueryService
                     .AsNoTracking()
                     .ToListAsync();
 
-                return serviceResponse.Update(null, 200, topUsers);
+                return serviceResponse.Update("Users retrieved successfully.", 200, topUsers);
             }
 
             var users = await accountUsersQuery
@@ -74,7 +76,7 @@ public class SearchByQueryService : ISearchByQueryService
                 .AsNoTracking()
                 .ToListAsync();
 
-            return serviceResponse.Update(null, 200, users);
+            return serviceResponse.Update("Users retrieved successfully.", 200, users);
         }
         catch (Exception ex)
         {
