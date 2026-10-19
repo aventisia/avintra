@@ -1,0 +1,53 @@
+meta {
+  name: Enabling SSO requires a completed Connect
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/preferences
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{TENANT_ID}}",
+    "isSSOEnabled": true,
+    "isPwdEnabled": true,
+    "isPwdNeverExpiresEnabled": true,
+    "daysBeforePwdExpires": 730,
+    "isIdleSessionTimeoutEnabled": true,
+    "idleSessionTimeoutMinutes": 10,
+    "isTwoFAEnabled": false
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("requires the identity provider connection", function() {
+    expect(res.getBody()).to.contain("Connect the identity provider before enabling single sign-on.");
+  });
+
+  test("mentions no removed verification field", function() {
+    expect(String(res.getBody())).to.not.contain("domainVerif");
+    expect(String(res.getBody())).to.not.contain("attestation");
+  });
+}
+
+docs {
+  > Preconditions: a tenant admin session (see `ta-login.bru`), `TENANT_ID` pointing at an Organization
+  > tenant that has an email domain set but has never completed a Connect (no stored `externalTenantId`).
+  > Enabling without a bound identity provider must fail with the Connect message; the response must not
+  > mention any removed verification field.
+  >
+  > Reading a failure: 401 means no tenant admin session, 200 means the tenant fixture is already connected
+  > (the gate then moved on to the platform-credential check), and 400 with a different message means the
+  > tenant is not an Organization or has no email domain. All are fixture gaps; the assertions stay
+  > unconditional.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD`, `TENANT_ID`.
+}

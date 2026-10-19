@@ -36,6 +36,20 @@ public interface ITenantAccountService
     Task<ServiceResponse<TenantPreferenceDto>> UpdateTenantPreferencesAsync(TenantPreferenceDto preferencesDto);
 
     /// <summary>
+    /// Generates the administrator consent URL for connecting the tenant's identity provider.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the consent URL.</returns>
+    Task<ServiceResponse<string>> GetSsoAdminConsentUrlAsync();
+
+    /// <summary>
+    /// Binds the tenant granted by the identity provider to the tenant's single sign-on configuration.
+    /// </summary>
+    /// <param name="grantedTenantId">The external tenant identifier returned by the identity provider.</param>
+    /// <param name="state">The single-use OAuth state returned by the identity provider.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the updated tenant preferences.</returns>
+    Task<ServiceResponse<TenantPreferenceDto>> CompleteSsoAdminConsentAsync(string grantedTenantId, string? state);
+
+    /// <summary>
     /// Retrieves the tenant's automatic notification settings, applying per-type defaults
     /// for any missing keys (FR-2, FR-6).
     /// </summary>

@@ -27,6 +27,7 @@ const PreferencesForm = () => {
     isPending,
     mutate,
     isLoading,
+    ssoDisableWarning,
   } = useDefinePreferencesForm();
 
   // Define submit handler
@@ -44,10 +45,21 @@ const PreferencesForm = () => {
       disabled={isSubmitting || isPending || isLoading}
       checkDirtyForm={false}
     >
+      {ssoDisableWarning && (
+        <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="font-medium">Single sign-on is disabled</p>
+          <p>
+            {ssoDisableWarning.affectedUserCount} user(s) have no password and cannot sign in until they set one.
+            {ssoDisableWarning.affectedAdmins.length > 0 &&
+              ` Affected admins: ${ssoDisableWarning.affectedAdmins.join(", ")}.`}
+          </p>
+          {ssoDisableWarning.recoveryHint && <p className="mt-1">{ssoDisableWarning.recoveryHint}</p>}
+        </div>
+      )}
       <SwitchField {...isTwoFAEnabledProps} />
+      <SwitchField {...isSSOEnabledProps} />
       <div className="hidden">
         <SwitchField {...isPwdEnabledProps} />
-        <SwitchField {...isSSOEnabledProps} />
       </div>
       <SwitchField {...isPwdNeverExpiresEnabledProps} />
       {!isPwdNeverExpiresEnabled && <InputField {...daysBeforePwdExpiresProps} />}
