@@ -1,5 +1,3 @@
-using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
-using WorkspaceAPIs.Features.Corsair;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
@@ -12,11 +10,7 @@ public class ToolService : IToolService
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
-    private readonly CorsairConfigRepository _corsairConfigRepository;
-    private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
-    private readonly CorsairIntegrationCatalogRepository _corsairIntegrationCatalogRepository;
     private readonly Guid _currentUserId;
-    private readonly string _accessToken;
 
     public ToolService(
         IUnitOfWork unitOfWork,
@@ -25,10 +19,7 @@ public class ToolService : IToolService
         IResourceShareService resourceShareService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
-        IUserManagementGuardService userManagementGuardService,
-        CorsairConfigRepository corsairConfigRepository,
-        CamelConnectorCatalogRepository camelConnectorCatalogRepository,
-        CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository)
+        IUserManagementGuardService userManagementGuardService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -36,11 +27,7 @@ public class ToolService : IToolService
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
-        _corsairConfigRepository = corsairConfigRepository;
-        _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
-        _corsairIntegrationCatalogRepository = corsairIntegrationCatalogRepository;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
 
     public async Task<ServiceResponse<IEnumerable<ToolDto>>> GetToolsAsync(bool isPersonal)
@@ -105,242 +92,6 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Retrieves the platform, personal, shared and tenant-wide tools the current user can use,
-    // within the current environment and space.
-    public async Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync()
-    {
-        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolDto>>
-        {
-            Message = "Failed to fetch usable tools."
-        };
-
-        try
-        {
-            // Resolve shared resource access for the current user.
-            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
-
-            // Fetch usable tools across every scope. Global tenant/space filters are bypassed so
-            // tenant-agnostic platform tools (TenantId = Guid.Empty) are visible to every tenant.
-            // Only slim columns are projected so the large OpenApiSpec/ParsedSchema payloads are
-            // not loaded for the whole catalogue.
-            // Resolve brand icons for platform tools from the Camel and Corsair
-            // catalogs. Custom tools and unknown integrations fall back to null.
-            var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
-            ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
-
-            var usableTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
-                .OrderBy(o => o.Name)
-                .IgnoreQueryFilters()
-                .Select(w => new UsableToolDto
-                {
-                    Id = w.Id,
-                    Name = w.Name,
-                    Description = w.Description,
-                    IconUrl = w.IconUrl,
-                    Type = w.Type,
-                    AuthenticationType = w.AuthenticationType,
-                    CredentialName = w.CredentialName,
-                    IsActive = w.IsActive,
-                    IsVerified = w.IsVerified,
-                    IsDisabled = w.IsDisabled,
-                })
-                .ToListAsync();
-
-            // Icons are resolved in memory because the catalog lookup is not translatable.
-            foreach (var tool in usableTools)
-            {
-                tool.Icon = ToolIconHelpers.ResolveIcon(tool.Name, iconLookup);
-            }
-
-            return serviceResponse.Update(
-                "Usable tools retrieved successfully.",
-                200,
-                usableTools);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch usable tools.");
-        }
-
-        return serviceResponse;
-    }
-
-    // Retrieves the operations exposed by a usable tool, together with the credential
-    // type required to invoke it.
-    public async Task<ServiceResponse<UsableToolOperationsDto>> GetUsableToolOperationsAsync(Guid toolId)
-    {
-        var serviceResponse = new ServiceResponse<UsableToolOperationsDto>
-        {
-            Message = "Failed to fetch usable tool operations."
-        };
-
-        try
-        {
-            // Resolve shared resource access for the current user.
-            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
-
-            // Load the single tool using the same usability scope, including its parsed schema.
-            var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(w => w.Id == toolId);
-
-            if (tool is null)
-            {
-                return serviceResponse.Update("Tool not found.", 404);
-            }
-
-            return serviceResponse.Update(
-                "Usable tool operations retrieved successfully.",
-                200,
-                new UsableToolOperationsDto
-                {
-                    CredentialType = ResolveCredentialType(tool),
-                    Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified),
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch operations for tool {ToolId}.", toolId);
-        }
-
-        return serviceResponse;
-    }
-
-    // Retrieves the usable tools together with their enriched operations in a single
-    // payload, for the action-selector catalog. Unverified custom tools are included
-    // and flagged via IsVerified.
-    public async Task<ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>> GetUsableToolCatalogAsync()
-    {
-        var serviceResponse = new ServiceResponse<IEnumerable<UsableToolCatalogItemDto>>
-        {
-            Message = "Failed to fetch usable tool catalog."
-        };
-
-        try
-        {
-            // Resolve shared resource access for the current user.
-            var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
-
-            var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
-            ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
-
-            // Fetch shared and tenant-wide tools not owned by the current user.
-            var usableTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w =>
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    (w.IsTenantWideAccess || resourceAccessMap.Keys.Contains(w.Id)))
-                .OrderByDescending(o => o.CreatedOn)
-                .Select(w => new UsableToolCatalogItemDto
-                {
-                    Id = w.Id,
-                    Name = w.Name,
-                    Description = w.Description,
-                    IconUrl = w.IconUrl,
-                    Type = w.Type,
-                    AuthenticationType = w.AuthenticationType,
-                    CredentialName = w.CredentialName,
-                    IsActive = w.IsActive,
-                    IsVerified = w.IsVerified,
-                    IsDisabled = w.IsDisabled,
-                    Operations = w.ParsedSchema == null
-                        ? new List<UsableToolOperationDto>()
-                        : ToolOperationHelpers.ExtractOperations(w.ParsedSchema, w.IsVerified)
-                })
-                .ToListAsync();
-
-            // Icons are resolved in memory because the catalog lookup is not translatable.
-            foreach (var tool in usableTools)
-            {
-                tool.Icon = ToolIconHelpers.ResolveIcon(tool.Name, iconLookup);
-            }
-
-            // Materialize the list so operations can be attached per tool.
-            var catalog = usableTools.ToList();
-
-            return serviceResponse.Update(
-                "Usable tool catalog retrieved successfully.",
-                200,
-                catalog);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch usable tool catalog.");
-        }
-
-        return serviceResponse;
-    }
-
-    // Resolves the shared resource access map used to scope usable tools.
-    private Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetUsableToolsResourceAccessAsync() =>
-        _resourceShareService.GetAccessibleResourcesWithAccessAsync(
-            _currentUserId,
-            ResourceTypeEnum.Tool,
-            new[]
-            {
-                ResourceAccessTypeEnum.Owner,
-                ResourceAccessTypeEnum.View,
-                ResourceAccessTypeEnum.Edit,
-            });
-
-    // Builds the predicate that selects every tool the current user can use across scopes.
-    private Expression<Func<Tool, bool>> BuildUsableToolsPredicate(
-        Dictionary<Guid, ResourceAccessTypeEnum> resourceAccessMap)
-    {
-        var currentTenantId = _currentTenantService.CurrentTenantId;
-        var currentEnvType = _currentTenantService.CurrentEnvType;
-
-        // Central space is represented by a null SpaceId.
-        Guid? targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
-            ? null
-            : _currentTenantService.CurrentSpaceId;
-
-        // Verification is tracked per operation, so the tool-level aggregate must
-        // not hide tools that still expose verified operations. Unverified
-        // operations stay visible (flagged via the operation's IsVerified) and the
-        // invoke endpoint rejects them at runtime.
-        return w =>
-            w.IsActive &&
-            !w.IsDisabled &&
-            (
-                // Platform's default tools are tenant-agnostic and available in every environment.
-                (w.Type == ComponentTypeEnum.Platform &&
-                 w.TenantId == Guid.Empty &&
-                 w.SpaceId == null &&
-                 w.IsTenantWideAccess &&
-                 (w.CreatedByUserId == null || w.CreatedByUserId == Guid.Empty))
-                ||
-                // Custom tools scoped to the current tenant, environment and space.
-                (w.Type == ComponentTypeEnum.Custom &&
-                 w.TenantId == currentTenantId &&
-                 w.EnvType == currentEnvType &&
-                 w.SpaceId == targetSpaceId &&
-                 (w.IsTenantWideAccess ||
-                  (w.CreatedByUserId == _currentUserId && !w.IsTenantWideAccess) ||
-                  resourceAccessMap.Keys.Contains(w.Id)))
-            );
-    }
-
-    // Resolves the credential (vault) type a tool is invoked with.
-    private string? ResolveCredentialType(Tool tool)
-    {
-        // Custom tools always use the CustomApiTool credential type.
-        if (tool.Type == ComponentTypeEnum.Custom)
-        {
-            return VaultCredentialTypesEnum.CustomApiTool.ToString();
-        }
-
-        // Platform Corsair tools map their plugin id to a vault type via the integration catalog.
-        var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
-        return string.IsNullOrWhiteSpace(pluginId)
-            ? null
-            : _corsairConfigRepository.GetPluginIdForVaultCredentialType(pluginId);
-    }
-
-    // Checks whether a tool name is available for use.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsToolNameAvailableAsync(CheckAvailabilityDto availabilityDto)
     {
         var serviceResponse = ServiceResponse<TrueFalseResultDto>.Create("Failed to check tool name availability.", 500);
@@ -458,7 +209,8 @@ public class ToolService : IToolService
             var toolCandidates = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     EF.Functions.ILike(w.Name, namePattern) &&
-                    w.EnvType == _currentTenantService.CurrentEnvType)
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    (w.TenantId == _currentTenantService.CurrentTenantId || w.TenantId == Guid.Empty))
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .IgnoreQueryFilters()
@@ -532,6 +284,11 @@ public class ToolService : IToolService
                 toolDto.IconUrl = null;
             }
 
+            if (string.IsNullOrWhiteSpace(toolDto.Name))
+            {
+                return serviceResponse.Update("Tool name cannot be empty.", 400);
+            }
+
             var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolDto.Name.ToLowerInvariant());
 
             var toolWithSameName = await _unitOfWork.ToolRepo
@@ -562,7 +319,19 @@ public class ToolService : IToolService
             toolToCreate.LastModifiedOn = DateTimeOffset.UtcNow;
             toolToCreate.ParsedSchema = null;
 
-            if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
+            if (toolDto.ManualOperations is { Count: > 0 })
+            {
+                var (synthesizedSpec, parsedSchema, synthesisError) =
+                    SynthesizeManualSchema(toolDto.ManualOperations, toolToCreate.Name);
+                if (synthesisError is not null)
+                {
+                    return serviceResponse.Update(synthesisError, 400);
+                }
+
+                toolToCreate.OpenApiSpec = synthesizedSpec;
+                toolToCreate.ParsedSchema = parsedSchema;
+            }
+            else if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
             {
                 var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
                 if (parsedSchema is null)
@@ -570,27 +339,6 @@ public class ToolService : IToolService
                     return serviceResponse.Update("The OpenAPI specification could not be parsed.", 400);
                 }
 
-                toolToCreate.ParsedSchema = parsedSchema;
-            }
-            else if (toolDto.ManualOperations is { Count: > 0 })
-            {
-                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
-                    toolDto.ManualOperations,
-                    toolDto.Name);
-                if (synthesizedSpec is null)
-                {
-                    return serviceResponse.Update(
-                        "At least one valid operation (method and endpoint) is required.",
-                        400);
-                }
-
-                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
-                if (parsedSchema is null)
-                {
-                    return serviceResponse.Update("The synthesized OpenAPI specification could not be parsed.", 400);
-                }
-
-                toolToCreate.OpenApiSpec = synthesizedSpec;
                 toolToCreate.ParsedSchema = parsedSchema;
             }
 
@@ -684,6 +432,11 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to update this tool.", 403);
             }
 
+            if (string.IsNullOrWhiteSpace(toolDto.Name))
+            {
+                return serviceResponse.Update("Tool name cannot be empty.", 400);
+            }
+
             var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolDto.Name.ToLowerInvariant());
 
             var otherToolWithSameName = await _unitOfWork.ToolRepo
@@ -718,8 +471,28 @@ public class ToolService : IToolService
                 toolToUpdate.IsDisabled = toolDto.IsDisabled.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) &&
-                toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
+            var isManualTool = string.IsNullOrWhiteSpace(toolToUpdate.OpenApiSpec) ||
+                               ManualOpenApiSynthesizer.IsSynthesizedSpec(toolToUpdate.OpenApiSpec);
+
+            if (isManualTool && toolDto.ManualOperations is { Count: > 0 })
+            {
+                var (synthesizedSpec, parsedSchema, synthesisError) =
+                    SynthesizeManualSchema(toolDto.ManualOperations, toolToUpdate.Name);
+                if (synthesisError is not null)
+                {
+                    return serviceResponse.Update(synthesisError, 400);
+                }
+
+                toolToUpdate.OpenApiSpec = synthesizedSpec;
+                toolToUpdate.ParsedSchema =
+                    ToolOperationHelpers.CopyOperationVerification(
+                        toolToUpdate.ParsedSchema,
+                        parsedSchema,
+                        toolToUpdate.IsVerified);
+            }
+            else if (!isManualTool &&
+                     !string.IsNullOrWhiteSpace(toolDto.OpenApiSpec) &&
+                     toolToUpdate.OpenApiSpec != toolDto.OpenApiSpec)
             {
                 var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(toolDto.OpenApiSpec);
                 if (parsedSchema is null)
@@ -729,30 +502,10 @@ public class ToolService : IToolService
 
                 toolToUpdate.OpenApiSpec = toolDto.OpenApiSpec;
                 toolToUpdate.ParsedSchema =
-                    ToolOperationHelpers.CopyOperationVerification(toolToUpdate.ParsedSchema, parsedSchema);
-            }
-            else if (toolDto.ManualOperations is { Count: > 0 } &&
-                     string.IsNullOrWhiteSpace(toolToUpdate.OpenApiSpec))
-            {
-                var synthesizedSpec = ManualOpenApiSynthesizer.Synthesize(
-                    toolDto.ManualOperations,
-                    toolDto.Name);
-                if (synthesizedSpec is null)
-                {
-                    return serviceResponse.Update(
-                        "At least one valid operation (method and endpoint) is required.",
-                        400);
-                }
-
-                var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
-                if (parsedSchema is null)
-                {
-                    return serviceResponse.Update("The synthesized OpenAPI specification could not be parsed.", 400);
-                }
-
-                toolToUpdate.OpenApiSpec = synthesizedSpec;
-                toolToUpdate.ParsedSchema =
-                    ToolOperationHelpers.CopyOperationVerification(toolToUpdate.ParsedSchema, parsedSchema);
+                    ToolOperationHelpers.CopyOperationVerification(
+                        toolToUpdate.ParsedSchema,
+                        parsedSchema,
+                        toolToUpdate.IsVerified);
             }
 
             toolToUpdate.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(
@@ -783,6 +536,27 @@ public class ToolService : IToolService
         }
 
         return serviceResponse;
+    }
+
+    private static (string? Spec, JsonDocument? ParsedSchema, string? Error) SynthesizeManualSchema(
+        List<ManualToolOperationDto> manualOperations,
+        string toolName)
+    {
+        var (synthesizedSpec, synthesisError) = ManualOpenApiSynthesizer.Synthesize(manualOperations, toolName);
+        if (synthesisError is not null)
+        {
+            return (null, null, synthesisError);
+        }
+
+        if (synthesizedSpec is null)
+        {
+            return (null, null, "At least one valid operation (method and endpoint) is required.");
+        }
+
+        var parsedSchema = OpenApiSpecHelpers.FlattenOpenApiSpec(synthesizedSpec);
+        return parsedSchema is null
+            ? (null, null, "The synthesized OpenAPI specification could not be parsed.")
+            : (synthesizedSpec, parsedSchema, null);
     }
 
     public async Task<ServiceResponse<bool>> DeleteToolAsync(Guid toolId)
@@ -848,7 +622,7 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds)
+    public async Task<ServiceResponse<int>> DeleteMultipleToolsAsync(IEnumerable<Guid> toolIds)
     {
         var serviceResponse = ServiceResponse<int>.Create("Failed to delete tools.", 500, 0);
 
@@ -903,8 +677,9 @@ public class ToolService : IToolService
                     0);
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(toolIds, ResourceTypeEnum.Tool);
-            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolIds);
+            var deletedToolIds = toolsToDelete.Select(tool => tool.Id).ToList();
+            await _resourceShareService.DeleteResourceSharesAsync(deletedToolIds, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, deletedToolIds);
             _unitOfWork.ToolRepo.Delete(toolsToDelete);
 
             if (!await _unitOfWork.SaveAsync())

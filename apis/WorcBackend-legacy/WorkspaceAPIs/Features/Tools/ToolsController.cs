@@ -125,9 +125,9 @@ public class ToolsController : BaseApiController
     /// Deletes multiple tools.
     /// </summary>
     [HttpPost("delete-multiple")]
-    public async Task<ActionResult<ServiceResponse<int>>> DeleteMultipleTools([FromBody] List<Guid> toolIds)
+    public async Task<ActionResult<ServiceResponse<int>>> DeleteMultipleTools([FromBody] IEnumerable<Guid> toolIds)
     {
-        return ResultHelper(await _toolService.DeleteToolsAsync(toolIds));
+        return ResultHelper(await _toolService.DeleteMultipleToolsAsync(toolIds));
     }
 
     /// <summary>
@@ -136,8 +136,7 @@ public class ToolsController : BaseApiController
     [HttpPost("{toolId}/test")]
     public async Task<ActionResult<ServiceResponse<TestToolResponseDto>>> TestTool(Guid toolId, [FromBody] TestToolDto testToolDto)
     {
-        var accessToken = Request.Cookies[CookieNamesEnum.AccessToken.ToString()]
-            ?? Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(HttpContext) ?? string.Empty;
         return ResultHelper(await _toolVerificationService.TestToolAsync(toolId, testToolDto, accessToken));
     }
 

@@ -3,7 +3,7 @@ import { axiosInstance } from "@avplatform/ui/lib";
 
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
-import { UsableToolCatalogItemDto, UsableToolDto, UsableToolOperationsDto } from "../dtos/tool-dto";
+import { UsableToolCatalogItemDto, UsableToolDto, UsableToolOperationsDto } from "../dtos/tool.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tools`;
 

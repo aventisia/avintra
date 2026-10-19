@@ -21,15 +21,15 @@ import { StepAuthenticate } from "./StepAuthenticate";
 import { StepIngestSpec } from "./StepIngestSpec";
 import { StepPlayground } from "./StepPlayground";
 
-interface ToolWizardProps {
+type ToolWizardProps = {
   crudAction: DialogCrudAction;
   rowId: string;
-}
+};
 
-interface PendingVerificationResult {
+type PendingVerificationResult = {
   hasFailure: boolean;
   skippedOperationIds: string[];
-}
+};
 
 const persistPendingVerifications = async (
   toolId: string,

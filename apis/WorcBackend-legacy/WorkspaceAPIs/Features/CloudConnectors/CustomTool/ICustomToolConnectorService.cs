@@ -5,7 +5,7 @@ public interface ICustomToolConnectorService
     /// <summary>
     /// Invokes a custom tool operation server-side.
     /// </summary>
-    Task<ServiceResponse<CloudConnectorResDto>> InvokeAsync(
+    Task<ServiceResponse<CustomToolInvokeResDto>> InvokeAsync(
         CloudConnectorReqDto request,
         CancellationToken cancellationToken = default);
 }

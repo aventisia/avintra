@@ -65,11 +65,13 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
 
             foreach (var kvp in decryptedData)
             {
-                if (dataNode["Parameters"] is System.Text.Json.Nodes.JsonObject parameters && parameters.ContainsKey(kvp.Key))
+                var parameters = dataNode["Parameters"] as System.Text.Json.Nodes.JsonObject;
+
+                if (parameters is not null && (parameters.ContainsKey(kvp.Key) || !dataNode.ContainsKey(kvp.Key)))
                 {
                     parameters[kvp.Key] = kvp.Value;
                 }
-                else if (dataNode.ContainsKey(kvp.Key))
+                else
                 {
                     dataNode[kvp.Key] = kvp.Value;
                 }

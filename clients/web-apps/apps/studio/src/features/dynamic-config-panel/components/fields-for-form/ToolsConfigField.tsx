@@ -8,6 +8,7 @@ import { Grip, PencilIcon, Trash2, TriangleAlert, Wrench } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
+import { CustomToolIcon } from "@/features/action-selector/components/CustomToolIcon";
 import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
@@ -20,26 +21,8 @@ import { normalizeToolOperations } from "../../utils/normalize-tool-operations.u
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
-interface ToolsConfigFieldProps {
+type ToolsConfigFieldProps = {
   name: string;
-}
-
-const ToolBrandIcon = ({ icon }: { icon?: string }) => {
-  const [hasError, setHasError] = useState(false);
-  const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
-
-  if (!icon || hasError) {
-    return <Wrench className="h-3.5 w-3.5 text-muted-foreground" />;
-  }
-
-  return (
-    <img
-      src={basePath + icon}
-      alt=""
-      className="h-6 w-6 rounded object-contain"
-      onError={() => setHasError(true)}
-    />
-  );
 };
 
 export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
@@ -354,7 +337,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted">
-                    <ToolBrandIcon icon={toolConfigInfo?.icon} />
+                    <CustomToolIcon icon={toolConfigInfo?.icon} iconUrl={toolConfigInfo?.iconUrl} />
                   </div>
                   <div className="flex min-w-0 flex-col">
                     <div className="flex items-center gap-2">

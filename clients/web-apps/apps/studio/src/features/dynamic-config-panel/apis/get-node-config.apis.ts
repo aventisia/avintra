@@ -1,15 +1,15 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { buildCustomToolNodeConfig } from "@/features/action-selector/utils/custom-tool-node-config.util";
 import {
   CUSTOM_TOOL_NODE_PREFIX,
-  buildCustomToolNodeConfig,
-  parseCustomToolNodeReference,
-} from "@/features/action-selector/utils/custom-tools.util";
+  getCustomToolNodeReferenceCandidates,
+} from "@/features/action-selector/utils/custom-tool-node-name.util";
 
 import { DCPFieldSchemaType } from "..";
-import { UsableToolCatalogItemDto } from "../dtos/tool-dto";
+import { UsableToolCatalogItemDto } from "../dtos/tool.dto";
 import { NodeConfigSchemaType } from "../types/node-config-schema-type";
-import { getUsableToolCatalog } from "./tools-apis";
+import { getUsableToolCatalog } from "./tools.apis";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
@@ -41,7 +41,7 @@ const getUsableToolCatalogOnce = (): Promise<UsableToolCatalogItemDto[] | null> 
 const isCustomToolNodeName = (nodeUniqueName: string): boolean => {
   if (nodeUniqueName.startsWith(CUSTOM_TOOL_NODE_PREFIX)) return true;
 
-  const separatorIndex = nodeUniqueName.lastIndexOf(".");
+  const separatorIndex = nodeUniqueName.indexOf(".");
   if (separatorIndex <= 0) return false;
   const toolRef = nodeUniqueName.slice(0, separatorIndex);
   const operationId = nodeUniqueName.slice(separatorIndex + 1);
@@ -69,20 +69,21 @@ const getJsonFilepath = (nodeUniqueName: string): string => {
 const buildSchemaAwareCustomToolConfig = async (
   nodeUniqueName: string,
 ): Promise<NodeConfigSchemaType | null> => {
-  const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
   const catalog = await getUsableToolCatalogOnce();
   if (catalog === null) {
     return null;
   }
 
-  const operation = catalog
-    .find((tool) => tool.name === toolName)
-    ?.operations?.find((candidate) => candidate.operationId === operationId);
-  if (!operation) {
-    return null;
+  for (const reference of getCustomToolNodeReferenceCandidates(nodeUniqueName)) {
+    const operation = catalog
+      .find((tool) => tool.name === reference.toolName)
+      ?.operations?.find((candidate) => candidate.operationId === reference.operationId);
+    if (operation) {
+      return buildCustomToolNodeConfig(nodeUniqueName, operation, reference);
+    }
   }
 
-  return buildCustomToolNodeConfig(nodeUniqueName, operation);
+  return null;
 };
 
 /**
@@ -100,6 +101,12 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   if (nodeType == "blockNode") {
     const blockConfig = JSON.parse(sessionStorage.getItem("block-config") || "{}");
     return blockConfig[nodeUniqueName];
+  }
+
+  if (isCustomToolNodeName(nodeUniqueName)) {
+    // IMPORTANT NOTE: custom-tool node configs are rebuilt per open and never cached, so catalog and tenant changes are always reflected.
+    const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
+    return customToolConfig ?? buildCustomToolNodeConfig(nodeUniqueName);
   }
 
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
@@ -121,12 +128,6 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     } finally {
       delete nodeConfigInFlight[nodeUniqueName];
     }
-  }
-
-  if (isCustomToolNodeName(nodeUniqueName)) {
-    // IMPORTANT NOTE: custom-tool node configs are rebuilt per open and never cached, so catalog and tenant changes are always reflected.
-    const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
-    return customToolConfig ?? buildCustomToolNodeConfig(nodeUniqueName);
   }
 
   const namesToTry = [nodeUniqueName];

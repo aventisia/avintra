@@ -1,9 +1,11 @@
+import { isBodyCapableMethod } from "@avplatform/ui/utils";
+
 import { ToolDto } from "../dtos";
 import {
   ManualToolOperation,
   ManualToolOperationHeader,
   ManualToolOperationParameter,
-} from "../dtos/manual-tool-operation-dto";
+} from "../dtos/manual-tool-operation.dto";
 import { getOperationKey, normalizeToolOperations } from "./tool-operations.util";
 
 type SynthesizeOptions = {
@@ -78,9 +80,9 @@ const extractPathParameters = (endpoint: string): string[] => {
 };
 
 /**
- * Synthesizes an OpenAPI 3.0.3 JSON specification from manually authored operations.
+ * Synthesizes a preview OpenAPI 3.0.3 JSON specification from manually authored operations.
  */
-// IMPORTANT NOTE: the output must match apis/WorcBackend-legacy/WorkspaceAPIs/Features/Tools/Helpers/ManualOpenApiSynthesizer.cs because the backend owns the persisted spec and verification is keyed per operationId.
+// IMPORTANT NOTE: this spec only drives the pre-save playground. The backend ignores it for manual tools and persists its own synthesis (ManualOpenApiSynthesizer.cs), so pending verifications whose operationId drifts are reported as skipped on save.
 export const synthesizeOpenApiSpec = (
   operations: ManualToolOperation[],
   options: SynthesizeOptions = {},
@@ -152,7 +154,7 @@ export const synthesizeOpenApiSpec = (
       operationObject.parameters = parameters;
     }
 
-    if (["post", "put", "patch"].includes(method) && operation.jsonPayload?.trim()) {
+    if (isBodyCapableMethod(method) && operation.jsonPayload?.trim()) {
       try {
         operationObject.requestBody = {
           required: false,
@@ -253,6 +255,18 @@ export const toParsedSchema = (
       };
     }),
 });
+
+/**
+ * Strips client-only fields from manual operations before sending them to the backend.
+ */
+export const stripClientOnlyOperationFields = (
+  operations?: ManualToolOperation[],
+): ManualToolOperation[] | undefined =>
+  operations?.map((operation) => {
+    const stripped = { ...operation };
+    delete stripped.operationId;
+    return stripped;
+  });
 
 /**
  * Resolves the editable method list for a tool draft from its manual operations or parsed schema.

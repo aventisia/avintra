@@ -33,6 +33,8 @@ script:post-response {
       expect(body.data).to.have.property("provider", "customtool");
       expect(body.data).to.have.property("action", "{{CUSTOM_TOOL_ACTION}}");
       expect(body.data).to.have.property("response");
+      expect(body.data).to.have.property("success");
+      expect(body.data).to.have.property("upstreamStatusCode");
     } else {
       // Errors are returned as plain text by ResultHelper.
       expect(typeof body).to.equal("string");

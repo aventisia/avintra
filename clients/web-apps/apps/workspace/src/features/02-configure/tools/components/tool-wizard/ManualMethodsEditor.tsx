@@ -21,11 +21,11 @@ const methodBadgeClass = (method: string): string => {
   }
 };
 
-interface ManualMethodsEditorProps {
+type ManualMethodsEditorProps = {
   operations: ManualToolOperation[];
   onChange: (operations: ManualToolOperation[]) => void;
   disabled?: boolean;
-}
+};
 
 /**
  * Editor for manually authored tool methods, listing each method as a compact row.

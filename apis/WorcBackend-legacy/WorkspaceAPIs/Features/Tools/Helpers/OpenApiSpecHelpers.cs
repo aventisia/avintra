@@ -1,6 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-
 namespace WorkspaceAPIs.Features.Tools.Helpers;
 
 /// <summary>
@@ -37,6 +34,7 @@ public static class OpenApiSpecHelpers
                             ["description"] = GetStringValue(operationProperty.Value, "description"),
                             ["method"] = JsonValue.Create(operationProperty.Name.ToUpperInvariant()),
                             ["path"] = JsonValue.Create(pathProperty.Name),
+                            ["isVerified"] = false,
                         };
 
                         operationSummary["parameters"] = ExtractParameters(operationProperty.Value);

@@ -65,6 +65,50 @@ public static class CustomToolNodeRoutingTestHarness
                 "an unparseable section must be omitted rather than forwarded as a string");
         });
 
+        failures += Run("CustomToolNodeAcceptsUnderscoreSeparator", () =>
+        {
+            var (executor, inputs) = PreprocessCloudConnector(
+                "CustomTool_WeatherTool.getWeather",
+                CredentialInput("WeatherCredential"));
+
+            AssertEqual("ProcessCustomToolRequestNode", executor);
+            AssertEqual("WeatherTool.getWeather", InputValue(inputs, "Action"));
+        });
+
+        failures += Run("CustomToolNodeKeepsNestedActionPath", () =>
+        {
+            var (executor, inputs) = PreprocessCloudConnector(
+                "CustomTool/a/b",
+                CredentialInput("WeatherCredential"));
+
+            AssertEqual("ProcessCustomToolRequestNode", executor);
+            AssertEqual("a/b", InputValue(inputs, "Action"));
+        });
+
+        failures += Run("CustomToolNodeFiltersSystemAndErrorInputs", () =>
+        {
+            var (_, inputs) = PreprocessCloudConnector(
+                "CustomTool/WeatherTool.getWeather",
+                CredentialInput("WeatherCredential"),
+                new ReactFlowNodeInput { Key = "FlowMetadata", Value = """{"flow":"x"}""" },
+                new ReactFlowNodeInput { Key = "JobContext", Value = """{"job":"y"}""" },
+                new ReactFlowNodeInput { Key = "__OnError__Retry", Value = "true" },
+                new ReactFlowNodeInput { Key = "Extra", Value = "kept" });
+
+            var payload = InputValue(inputs, "Payload");
+            using var document = JsonDocument.Parse(payload!);
+            AssertTrue(
+                !document.RootElement.TryGetProperty("FlowMetadata", out _),
+                "system input FlowMetadata must not reach the payload");
+            AssertTrue(
+                !document.RootElement.TryGetProperty("JobContext", out _),
+                "system input JobContext must not reach the payload");
+            AssertTrue(
+                !document.RootElement.TryGetProperty("__OnError__Retry", out _),
+                "error-handling input must not reach the payload");
+            AssertEqual("kept", document.RootElement.GetProperty("Extra").GetString());
+        });
+
         return failures;
     }
 

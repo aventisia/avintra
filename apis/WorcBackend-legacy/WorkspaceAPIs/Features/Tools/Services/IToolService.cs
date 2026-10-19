@@ -61,7 +61,7 @@ public interface IToolService
     /// </summary>
     /// <param name="toolIds">The identifiers of the tools to delete.</param>
     /// <returns>The number of tools deleted.</returns>
-    Task<ServiceResponse<int>> DeleteToolsAsync(List<Guid> toolIds);
+    Task<ServiceResponse<int>> DeleteMultipleToolsAsync(IEnumerable<Guid> toolIds);
 
     /// <summary>
     /// Activates or deactivates a tool.

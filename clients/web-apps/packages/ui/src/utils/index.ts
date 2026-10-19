@@ -1,6 +1,7 @@
 // -------------------- Utils --------------------
 export * from "./date-formatter";
 export * from "./enum-to-array";
+export * from "./http-method.util";
 export * from "./error-message-list";
 export * from "./ip-formatter";
 export * from "./mutation-error";

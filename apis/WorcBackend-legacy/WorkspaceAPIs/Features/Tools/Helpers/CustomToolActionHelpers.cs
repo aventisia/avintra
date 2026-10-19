@@ -10,6 +10,7 @@ public readonly record struct CustomToolActionCandidate(string ToolName, Guid To
 /// </summary>
 public static class CustomToolActionHelpers
 {
+    private const string CustomToolPrefix = "CustomTool";
     /// <summary>
     /// Splits a custom-tool reference into candidate <c>(tool, operationId)</c> pairs, ordered longest-tool-name-first.
     /// </summary>
@@ -21,6 +22,7 @@ public static class CustomToolActionHelpers
         }
 
         var value = reference.Trim();
+        // IMPORTANT NOTE: some clients append the OpenAPI ".json" document suffix to the action reference, so it is stripped before matching.
         if (value.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
         {
             value = value[..^".json".Length];
@@ -28,11 +30,11 @@ public static class CustomToolActionHelpers
 
         // IMPORTANT NOTE: the "CustomTool/" node-name prefix is only stripped when followed by a separator,
         // so tool names that merely start with "CustomTool" keep their leading segment.
-        if (value.StartsWith("CustomTool", StringComparison.OrdinalIgnoreCase) &&
-            value.Length > "CustomTool".Length &&
-            (value["CustomTool".Length] is '/' or '_'))
+        if (value.StartsWith(CustomToolPrefix, StringComparison.OrdinalIgnoreCase) &&
+            value.Length > CustomToolPrefix.Length &&
+            (value[CustomToolPrefix.Length] is '/' or '_'))
         {
-            value = value["CustomTool".Length..].TrimStart('/', '_');
+            value = value[CustomToolPrefix.Length..].TrimStart('/', '_');
         }
 
         for (var separatorIndex = value.LastIndexOf('.');

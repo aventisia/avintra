@@ -4,6 +4,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { TestToolDto, TestToolResponseDto, ToolAvailabilityDto, ToolDto } from "../dtos/index";
+import { stripClientOnlyOperationFields } from "../utils/manual-openapi.util";
 
 export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tools`;
 
@@ -46,11 +47,26 @@ export const getToolById = (id: string) => {
 };
 
 /**
+ * Retrieves a tool by its name within the current environment.
+ */
+export const getToolByName = (toolName: string) => {
+  return axiosInstance
+    .get<IHttpResponse<ToolDto>>(`${baseAPIURL}/by-name/${encodeURIComponent(toolName)}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
  * Creates a new tool.
  */
 export const createTool = (newTool: ToolDto) => {
   return axiosInstance
-    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}`, newTool, { headers: getSpaceHeaders() })
+    .post<IHttpResponse<ToolDto>>(
+      `${baseAPIURL}`,
+      { ...newTool, manualOperations: stripClientOnlyOperationFields(newTool.manualOperations) },
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
@@ -59,7 +75,14 @@ export const createTool = (newTool: ToolDto) => {
  */
 export const updateTool = (updatedTool: ToolDto) => {
   return axiosInstance
-    .put<IHttpResponse<ToolDto>>(`${baseAPIURL}`, updatedTool, { headers: getSpaceHeaders() })
+    .put<IHttpResponse<ToolDto>>(
+      `${baseAPIURL}`,
+      {
+        ...updatedTool,
+        manualOperations: stripClientOnlyOperationFields(updatedTool.manualOperations),
+      },
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
@@ -74,9 +97,8 @@ export const deleteTool = (id: string) => {
 
 /**
  * Deletes multiple tools by their identifiers.
- * The backend returns the number of tools actually deleted.
  */
-export const deleteTools = (ids: string[]) => {
+export const deleteMultipleTools = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids, {
       headers: getSpaceHeaders(),
@@ -86,7 +108,6 @@ export const deleteTools = (ids: string[]) => {
 
 /**
  * Tests a tool operation in the playground.
- * The Workspace API forwards the call to the Python LLM pipeline.
  */
 export const testTool = (id: string, dto: TestToolDto) => {
   return axiosInstance
@@ -98,7 +119,7 @@ export const testTool = (id: string, dto: TestToolDto) => {
 
 /**
  * Tests a tool operation by calling the LLM pipeline API directly.
- * Authentication is forwarded via the existing JWT cookie/Authorization header.
+ * IMPORTANT NOTE: this targets the LLM-pipeline test contract, not the Workspace ServiceResponse<T> envelope.
  */
 export const testToolDirectly = (dto: TestToolDto & { baseUrl: string; openApiSpec?: string }) => {
   const llmPipelineBaseUrl = import.meta.env.VITE_LLMPIPELINE_API_PATH;
@@ -148,7 +169,7 @@ export const toolOptimisticMutationFn = ({
     case "delete":
       return deleteTool(payload as string);
     case "delete-multiple":
-      return deleteTools(payload as string[]);
+      return deleteMultipleTools(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }

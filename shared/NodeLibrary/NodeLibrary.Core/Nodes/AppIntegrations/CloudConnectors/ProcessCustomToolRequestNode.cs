@@ -79,14 +79,20 @@ public class ProcessCustomToolRequestNode : BaseNode
             using var responseDoc = JsonDocument.Parse(responseContent);
             var responseRoot = responseDoc.RootElement;
 
+            var isUpstreamSuccess = true;
             if (responseRoot.TryGetProperty("data", out var dataEl))
+            {
                 Result.Set(context, dataEl.Clone());
+                isUpstreamSuccess = !(dataEl.ValueKind == JsonValueKind.Object &&
+                                      dataEl.TryGetProperty("success", out var successEl) &&
+                                      successEl.ValueKind == JsonValueKind.False);
+            }
 
             var statusCode = responseRoot.TryGetProperty("statusCode", out var scEl) ? scEl.GetInt32() : 0;
             var message = responseRoot.TryGetProperty("message", out var msgEl) ? msgEl.GetString() : string.Empty;
 
             StatusMessage.Set(context, $"{statusCode}:{message}");
-            IsSuccess.Set(context, statusCode == 200);
+            IsSuccess.Set(context, statusCode == 200 && isUpstreamSuccess);
         }
         catch (Exception ex)
         {
@@ -143,7 +149,7 @@ public class ProcessCustomToolRequestNode : BaseNode
 
         try
         {
-            var doc = JsonDocument.Parse(payloadString);
+            using var doc = JsonDocument.Parse(payloadString);
             return doc.RootElement.Clone();
         }
         catch

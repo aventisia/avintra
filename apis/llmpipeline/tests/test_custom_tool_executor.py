@@ -1,4 +1,4 @@
-"""Regression tests for the custom-tool Python runtime (PR #317 review).
+"""Regression tests for the custom-tool Python runtime (PR #398).
 
 Covers the runtime defects fixed alongside the review:
 
@@ -19,7 +19,7 @@ Covers the runtime defects fixed alongside the review:
 
 Run from ``apis/llmpipeline``:
 
-    ./.venv/Scripts/python.exe -m pytest tests/test_custom_tool_executor.py -q
+    ENV=local ./venv/bin/python -m pytest tests/test_custom_tool_executor.py -q
 """
 
 import asyncio
@@ -33,7 +33,7 @@ import httpx
 import pytest
 
 from app.features.custom_tools import url_guard
-from app.features.custom_tools.credential_client import (
+from app.features.custom_tools.vault_credential_client import (
     UnsupportedCredentialTypeError,
     apply_credential_auth,
 )
@@ -176,6 +176,22 @@ def test_service_test_returns_failure_envelope_for_unknown_operation():
     assert "missing" in result["body"]
 
 
+def test_service_test_returns_failure_envelope_for_missing_path_parameter():
+    result = asyncio.run(
+        execute_tool_test(
+            base_url="http://api.example.test",
+            operation_id="getThing",
+            open_api_spec=json.dumps(
+                {"paths": {"/things/{id}": {"get": {"operationId": "getThing"}}}}
+            ),
+        )
+    )
+
+    assert result["success"] is False
+    assert result["status_code"] == 400
+    assert "id" in result["body"]
+
+
 def test_apply_credential_auth_api_key_header_uses_backend_keys():
     headers: dict[str, str] = {}
     query: dict = {}
@@ -312,6 +328,33 @@ def test_dns_resolution_timeout_rejected(monkeypatch):
         validate_public_http_url("http://slow.example.test/resource")
 
 
+def test_async_dns_resolution_timeout_rejected(monkeypatch):
+    async def slow(host, port):
+        await asyncio.sleep(0.5)
+        return _addrinfo("93.184.216.34")
+
+    async def resolve():
+        monkeypatch.setattr(asyncio.get_running_loop(), "getaddrinfo", slow)
+        return await url_guard.resolve_public_addresses_async("slow.example.test")
+
+    monkeypatch.setattr(url_guard, "_DNS_TIMEOUT_SECONDS", 0.05)
+
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(resolve())
+
+
+def test_async_dns_mixed_public_and_private_records_rejected(monkeypatch):
+    async def mixed(host, port):
+        return _addrinfo("93.184.216.34", "10.0.0.5")
+
+    async def resolve():
+        monkeypatch.setattr(asyncio.get_running_loop(), "getaddrinfo", mixed)
+        return await url_guard.resolve_public_addresses_async("mixed.example.test")
+
+    with pytest.raises(UnsafeUrlError):
+        asyncio.run(resolve())
+
+
 @pytest.mark.parametrize(
     "url",
     [
@@ -345,7 +388,7 @@ def test_execute_operation_envelopes_credential_failure(monkeypatch):
     async def failing_credential(*args, **kwargs):
         raise ValueError("Credential endpoint returned empty data")
 
-    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_credential", failing_credential)
+    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_vault_credential", failing_credential)
     operation = ToolOperation(operation_id="op", method="GET", path="/things")
 
     result = asyncio.run(
@@ -361,7 +404,7 @@ def test_execute_operation_envelopes_credential_failure(monkeypatch):
     )
 
     assert result["success"] is False
-    assert result["status_code"] is None
+    assert result["status_code"] == 400
     assert "empty data" in result["body"]
     assert "duration_ms" in result
 
@@ -370,7 +413,7 @@ def test_execute_operation_envelopes_unknown_credential_type(monkeypatch):
     async def unsupported_credential(*args, **kwargs):
         return {"data": {"Type": "OAuth2", "Parameters": {}}}
 
-    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_credential", unsupported_credential)
+    monkeypatch.setattr(f"{_EXECUTOR_MODULE}.fetch_decrypted_vault_credential", unsupported_credential)
     operation = ToolOperation(operation_id="op", method="GET", path="/things")
 
     result = asyncio.run(
@@ -545,10 +588,17 @@ def test_loader_allows_verified_operation(monkeypatch):
     assert _load_tools(_custom_tool(False, operations), monkeypatch) == ["getWeather"]
 
 
-def test_loader_tool_level_flag_unlocks_unverified_operation(monkeypatch):
+def test_loader_tool_level_flag_does_not_unlock_flagged_unverified_operation(monkeypatch):
     operations = [
-        {"operationId": "getWeather", "method": "GET", "path": "/weather", "isVerified": False}
+        {"operationId": "getWeather", "method": "GET", "path": "/weather", "isVerified": True},
+        {"operationId": "deleteWeather", "method": "DELETE", "path": "/weather"},
     ]
+
+    assert _load_tools(_custom_tool(True, operations), monkeypatch) == ["getWeather"]
+
+
+def test_loader_tool_level_flag_backfills_legacy_schema_without_flags(monkeypatch):
+    operations = [{"operationId": "getWeather", "method": "GET", "path": "/weather"}]
 
     assert _load_tools(_custom_tool(True, operations), monkeypatch) == ["getWeather"]
 

@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getStudioSpaceId } from "@/utils/space-headers";
 
-import { getUsableToolCatalog, getUsableToolOperations, getUsableTools } from "../apis/tools-apis";
+import { getUsableToolCatalog, getUsableToolOperations, getUsableTools } from "../apis/tools.apis";
 
 export const USABLE_TOOLS_QUERY_KEY = ["usable-tools"] as const;
 export const USABLE_TOOL_OPERATIONS_QUERY_KEY = ["usable-tool-operations"] as const;

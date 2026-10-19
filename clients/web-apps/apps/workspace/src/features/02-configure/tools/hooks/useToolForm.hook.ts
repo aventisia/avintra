@@ -60,7 +60,6 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
 
   const { queryKey } = useTableTab();
 
-  // Load existing tool data when editing or reading.
   useEffect(() => {
     if (crudAction === "create" || !rowId) {
       reset({
@@ -86,7 +85,6 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
     }
 
     const loadTool = async () => {
-      // First try the merged Personal/Shared/Platform lists in the cache.
       const cachedList = getMergedQueryData<ToolDto>(queryClient, queryKey);
       const cachedTool = cachedList?.data?.find((item) => item.id === rowId);
 
@@ -117,7 +115,6 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
         return;
       }
 
-      // Fallback to API for Platform tab or when cache is empty.
       try {
         const response = await getToolById(rowId);
         const tool = response.data;
@@ -147,17 +144,15 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
         });
         setToolName(tool.name ?? "");
 
-        // Keep detail cache up to date.
         queryClient.setQueryData([...DETAIL_DATA_QUERY_KEY, rowId], response);
       } catch {
-        // Silent fail: form stays empty and the user can retry by reopening.
+        // IMPORTANT NOTE: the shared axios interceptor already surfaces the load failure.
       }
     };
 
     loadTool();
   }, [crudAction, rowId, queryClient, queryKey, reset]);
 
-  // Name can only change during create; skip duplicate-name checks on edit/read.
   const checkAvailabilityAPIFn = useMemo(
     () =>
       crudAction === "create"

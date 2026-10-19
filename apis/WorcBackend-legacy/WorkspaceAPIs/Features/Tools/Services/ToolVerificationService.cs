@@ -122,11 +122,12 @@ public class ToolVerificationService : IToolVerificationService
                 DurationMs = stopwatch.Elapsed.TotalMilliseconds,
             };
 
-            var isOperationVerified = parsedResult is not null && parsedResult.StatusCode == 200;
+            var isOperationVerified = parsedResult is not null && parsedResult.StatusCode is >= 200 and < 300;
             tool.ParsedSchema = ToolOperationHelpers.SetOperationVerification(
                 tool.ParsedSchema,
                 testToolDto.OperationId,
-                isOperationVerified);
+                isOperationVerified,
+                tool.IsVerified);
             tool.IsVerified = ToolOperationHelpers.AreAllOperationsVerified(tool.ParsedSchema, tool.IsVerified);
             tool.LastModifiedByUserId = currentUserId;
             tool.LastModifiedOn = DateTimeOffset.UtcNow;
@@ -171,7 +172,8 @@ public class ToolVerificationService : IToolVerificationService
     {
         try
         {
-            return JsonDocument.Parse(responseBody).RootElement.Clone();
+            using var document = JsonDocument.Parse(responseBody);
+            return document.RootElement.Clone();
         }
         catch (System.Text.Json.JsonException)
         {

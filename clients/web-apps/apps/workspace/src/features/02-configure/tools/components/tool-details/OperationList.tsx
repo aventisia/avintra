@@ -1,10 +1,10 @@
 import { ToolDto } from "../../dtos/index";
 import { normalizeToolOperations } from "../../utils/tool-operations.util";
 
-interface OperationListProps {
+type OperationListProps = {
   tool: ToolDto;
   showTitle?: boolean;
-}
+};
 
 /**
  * Renders a read-only list of operations parsed from the tool schema. Operation

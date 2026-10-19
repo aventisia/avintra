@@ -79,14 +79,18 @@ def apply_credential_auth(
         )
 
     if credential_type == "ApiKeyHeader":
-        key_name = _first_value(parameters, "headerName", "keyName", "KeyName") or "X-API-Key"
+        key_name = _first_value(parameters, "headerName")
         api_key = _first_value(parameters, "apiKey", "ApiKey")
+        if not key_name:
+            raise UnsupportedCredentialTypeError("Credential has no header key name.")
         if not api_key:
             raise UnsupportedCredentialTypeError("Credential has no 'apiKey' value.")
         headers[key_name] = api_key
     elif credential_type == "ApiKeyQuery":
-        key_name = _first_value(parameters, "parameterName", "keyName", "KeyName") or "api_key"
+        key_name = _first_value(parameters, "parameterName")
         api_key = _first_value(parameters, "apiKey", "ApiKey")
+        if not key_name:
+            raise UnsupportedCredentialTypeError("Credential has no query key name.")
         if not api_key:
             raise UnsupportedCredentialTypeError("Credential has no 'apiKey' value.")
         query_params[key_name] = api_key
@@ -107,6 +111,9 @@ def apply_credential_auth(
 def _first_value(parameters: dict, *keys: str) -> str | None:
     for key in keys:
         value = parameters.get(key)
-        if value:
-            return str(value)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            return text
     return None

@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { getActionSelectorData } from "@/apis/get-action-selector-data";
+import { getActionSelectorData } from "@/apis/get-action-selector-data.apis";
 import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { canWeRenderNodeOrCategory } from "../utils/action-visibilty";
-import { getActiveCustomTools } from "../utils/custom-tools.util";
+import { getCustomTools } from "../utils/custom-tool-actions.util";
 
 /**
  * Fetches and filters action selector data once the session and flow are ready.
@@ -50,7 +50,7 @@ export function useActionSelectorData() {
   useEffect(() => {
     const catalogTools = catalogResponse?.data;
     const totalNodes = catalogTools
-      ? getActiveCustomTools(catalogTools).reduce((sum, tool) => sum + tool.operations.length, 0)
+      ? getCustomTools(catalogTools).reduce((sum, tool) => sum + tool.operations.length, 0)
       : null;
     setCustomToolNodesCount(totalNodes);
   }, [catalogResponse, setCustomToolNodesCount]);

@@ -1,8 +1,9 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using WorkspaceAPIs.DTOs;
-
 namespace WorkspaceAPIs.Features.Tools.Helpers;
+
+/// <summary>
+/// Outcome of synthesizing an OpenAPI specification: the spec, or the validation error that rejected the operations.
+/// </summary>
+public readonly record struct ManualOpenApiSynthesisResult(string? Spec, string? Error);
 
 /// <summary>
 /// Synthesizes an OpenAPI specification from manually authored tool operations.
@@ -24,6 +25,9 @@ public static class ManualOpenApiSynthesizer
         "header",
     };
 
+    /// <summary>
+    /// Generates a deterministic operation ID from the tool and operation names.
+    /// </summary>
     public static string GenerateOperationId(string? toolName, string operationName)
     {
         var toolPart = SanitizeOperationIdPart(toolName);
@@ -64,15 +68,37 @@ public static class ManualOpenApiSynthesizer
     }
 
     /// <summary>
+    /// Indicates whether a stored specification was synthesized from manual operations.
+    /// </summary>
+    public static bool IsSynthesizedSpec(string? spec)
+    {
+        if (string.IsNullOrWhiteSpace(spec))
+        {
+            return false;
+        }
+
+        try
+        {
+            return JsonNode.Parse(spec) is JsonObject root &&
+                   root["info"] is JsonObject info &&
+                   info["x-manual-tool"]?.GetValueKind() == System.Text.Json.JsonValueKind.True;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Synthesizes a raw OpenAPI 3.0 JSON specification from the tool's manually authored operations.
     /// </summary>
-    public static string? Synthesize(
+    public static ManualOpenApiSynthesisResult Synthesize(
         IReadOnlyCollection<ManualToolOperationDto> manualOperations,
         string? toolName = null)
     {
         if (manualOperations.Count == 0)
         {
-            return null;
+            return new ManualOpenApiSynthesisResult(null, null);
         }
 
         var paths = new JsonObject();
@@ -80,11 +106,16 @@ public static class ManualOpenApiSynthesizer
         foreach (var operation in manualOperations)
         {
             var method = operation.Method?.Trim().ToLowerInvariant();
-            if (string.IsNullOrWhiteSpace(operation.Endpoint) ||
-                string.IsNullOrWhiteSpace(method) ||
-                !SupportedMethods.Contains(method))
+            if (string.IsNullOrWhiteSpace(operation.Endpoint) || string.IsNullOrWhiteSpace(method))
             {
                 continue;
+            }
+
+            if (!SupportedMethods.Contains(method))
+            {
+                return new ManualOpenApiSynthesisResult(
+                    null,
+                    $"Operation '{operation.Name}' uses the unsupported HTTP method '{operation.Method!.Trim()}'. Supported methods: GET, POST, PUT, PATCH, DELETE.");
             }
 
             var endpoint = operation.Endpoint.Trim();
@@ -96,7 +127,9 @@ public static class ManualOpenApiSynthesizer
             var pathItem = paths[endpoint] as JsonObject ?? [];
             if (pathItem.ContainsKey(method))
             {
-                continue;
+                return new ManualOpenApiSynthesisResult(
+                    null,
+                    $"Operation '{operation.Name}' duplicates another operation's {method.ToUpperInvariant()} {endpoint}. Each method and endpoint pair must be unique.");
             }
 
             var pathParameters = ExtractPathParameters(endpoint);
@@ -109,7 +142,7 @@ public static class ManualOpenApiSynthesizer
 
         if (paths.Count == 0)
         {
-            return null;
+            return new ManualOpenApiSynthesisResult(null, null);
         }
 
         var spec = new JsonObject
@@ -124,7 +157,7 @@ public static class ManualOpenApiSynthesizer
             ["paths"] = paths,
         };
 
-        return spec.ToJsonString();
+        return new ManualOpenApiSynthesisResult(spec.ToJsonString(), null);
     }
 
     private static JsonObject BuildOperationObject(
@@ -227,7 +260,7 @@ public static class ManualOpenApiSynthesizer
     }
 
     private static bool SupportsRequestBody(string method) =>
-        method is "post" or "put" or "patch";
+        method is "post" or "put" or "patch" or "delete";
 
     private static JsonObject? BuildRequestBody(string? jsonPayload, bool supportsRequestBody)
     {

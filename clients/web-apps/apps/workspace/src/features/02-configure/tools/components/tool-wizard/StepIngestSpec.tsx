@@ -13,9 +13,9 @@ import { getOperationVerificationMap } from "../../utils/tool-operations.util";
 import { FieldLabel } from "./FieldLabel";
 import { ManualMethodsEditor } from "./ManualMethodsEditor";
 
-interface StepIngestSpecProps {
+type StepIngestSpecProps = {
   crudAction?: "create" | "read" | "update";
-}
+};
 
 export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
   const {
@@ -25,6 +25,8 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     isNameCheckPending,
     nameAvailabilityMessage,
     setNameAvailability,
+    pendingVerifications,
+    clearPendingVerifications,
   } = useToolWizardStore();
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -128,9 +130,14 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
         />
         <input
           value={draftTool?.name ?? ""}
-          onChange={(e) =>
-            rebuildManualArtifacts(draftTool?.manualOperations ?? [], { name: e.target.value })
-          }
+          onChange={(e) => {
+            // IMPORTANT NOTE: operation IDs derive from the tool name, so renaming invalidates
+            // playground tests recorded against the previous IDs and they must be redone.
+            if (Object.keys(pendingVerifications).length > 0) {
+              clearPendingVerifications();
+            }
+            rebuildManualArtifacts(draftTool?.manualOperations ?? [], { name: e.target.value });
+          }}
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
           placeholder="My Custom API Tool"
           disabled={crudAction === "update" || crudAction === "read"}

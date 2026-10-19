@@ -1,5 +1,3 @@
-using WorkspaceAPIs.DTOs;
-
 namespace WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 
 /// <summary>
@@ -21,7 +19,7 @@ public class CustomToolConnectorController : BaseApiController
     /// Invokes the custom tool operation named by the request's action.
     /// </summary>
     [HttpPost("invoke")]
-    public async Task<ActionResult<ServiceResponse<CloudConnectorResDto>>> InvokeCustomTool(
+    public async Task<ActionResult<ServiceResponse<CustomToolInvokeResDto>>> InvokeCustomTool(
         [FromBody] CloudConnectorReqDto request)
     {
         return ResultHelper(await _customToolConnectorService.InvokeAsync(request, HttpContext.RequestAborted));

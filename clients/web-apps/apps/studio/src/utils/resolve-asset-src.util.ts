@@ -5,7 +5,7 @@ const SCHEME_PATTERN = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
  * Indicates whether a value is a safe absolute URL or a relative asset path.
  */
 export const isSafeAssetSrc = (src?: string): boolean => {
-  if (!src) return true;
+  if (!src?.trim()) return false;
   return SAFE_ABSOLUTE_SRC_PATTERN.test(src) || !SCHEME_PATTERN.test(src);
 };
 
@@ -13,7 +13,7 @@ export const isSafeAssetSrc = (src?: string): boolean => {
  * Resolves an icon/image src for the studio's bundled assets, rejecting unsupported URL schemes.
  */
 export const resolveAssetSrc = (src: string | undefined, basePath: string): string | undefined => {
-  if (!src) return src;
+  if (!src?.trim()) return undefined;
   if (SAFE_ABSOLUTE_SRC_PATTERN.test(src)) return src;
   if (SCHEME_PATTERN.test(src)) return undefined;
   return `${basePath}${src}`;
