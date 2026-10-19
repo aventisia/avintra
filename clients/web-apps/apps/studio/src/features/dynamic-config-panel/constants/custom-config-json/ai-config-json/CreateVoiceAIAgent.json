@@ -288,6 +288,48 @@
         }
       ],
       "category": "Voice Sessions"
+    },
+    {
+      "direction": "Input",
+      "type": "knowledge-base-config",
+      "name": "__KbConfig__Voice",
+      "label": "Knowledge Base(s)",
+      "defaultValue": {
+        "knowledgeBase": [],
+        "sourceThreshold": 0.1,
+        "numberOfChunks": 5
+      },
+      "required": false,
+      "category": "Context"
+    },
+    {
+      "direction": "Input",
+      "type": "skills-config",
+      "name": "__SkillsConfig__Voice",
+      "label": "Skill(s)",
+      "defaultValue": {
+        "skills": []
+      },
+      "required": false,
+      "category": "Context"
+    },
+    {
+      "direction": "Input",
+      "type": "memory-config",
+      "name": "__MemoryConfig__Voice",
+      "defaultValue": {
+        "memoryProvider": "Memory Provider 1",
+        "maxDataStored": 20
+      },
+      "required": false,
+      "category": "Context"
+    },
+    {
+      "direction": "Input",
+      "type": "tools-config-select",
+      "name": "__ToolsConfig__Voice",
+      "defaultValue": [],
+      "category": "Tools"
     }
   ]
 }
