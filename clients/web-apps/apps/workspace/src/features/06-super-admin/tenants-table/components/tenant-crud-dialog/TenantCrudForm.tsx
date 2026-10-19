@@ -50,6 +50,9 @@ interface TenantCrudFormProps {
   crudAction: CrudActionType;
 }
 
+const SSO_CONFIG_REDACTED_NOTICE =
+  "Redacted — SSO configuration is managed by the Tenant Admin and hidden from Super Admin view.";
+
 export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
 
@@ -141,7 +144,14 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
       <SwitchField {...isSSOEnabledProps} />
 
       {/* SSO Config JSON */}
-      {isSSOEnabled && <TextareaField {...ssoConfigJsonProps} isRequired={isSSOEnabled} />}
+      {isSSOEnabled && (
+        <TextareaField
+          {...ssoConfigJsonProps}
+          value={SSO_CONFIG_REDACTED_NOTICE}
+          readOnly
+          disabled
+        />
+      )}
 
       {/* Is Password Never Expires Enabled */}
       <SwitchField {...isPwdNeverExpiresEnabledProps} />

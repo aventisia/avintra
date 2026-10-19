@@ -25,8 +25,22 @@ const ADD_TENANT = "Complete organization setup to continue.";
 const NO_ACTIVE_SUBSCRIPTION = "Tenant has no active subscription.";
 
 /**
+ * A constant string representing a message which the user will receive from the backend when single sign-on
+ * was disabled for their tenant but their account has no password.
+ * Any change to the backend error message should be reflected here.
+ */
+const SSO_DISABLED = "SSO disabled - set your password";
+
+/**
  * Local storage key for storing the billing info form data.
  */
 const BILLING_INFO_KEY = "billingInfo";
 
-export { TWO_FA_ENABLED, PWD_EXPIRED, ADD_TENANT, NO_ACTIVE_SUBSCRIPTION, BILLING_INFO_KEY };
+export {
+  TWO_FA_ENABLED,
+  PWD_EXPIRED,
+  ADD_TENANT,
+  NO_ACTIVE_SUBSCRIPTION,
+  SSO_DISABLED,
+  BILLING_INFO_KEY,
+};

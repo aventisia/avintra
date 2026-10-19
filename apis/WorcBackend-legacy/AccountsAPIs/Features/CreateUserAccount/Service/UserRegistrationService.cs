@@ -51,6 +51,14 @@ public class UserRegistrationService : IUserRegistrationService
             {
                 var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
                 var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(createAccountDto.Email);
+
+                if (SsoConfigHelpers.IsConsumerEmailDomain(emailDomain))
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = "Public email domains cannot be used to join an organization tenant. Use your organization email address.";
+                    return serviceResponse;
+                }
+
                 if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
                 {
                     serviceResponse.StatusCode = 400;

@@ -1,8 +1,9 @@
+import type { SsoDisableWarningDto } from "./sso-disable-warning-dto";
+
 /**
  * Represents a data transfer object (DTO) for Tenant Preferences.
  */
-export interface TenantPreferencesDto {
-  /**
+export interface TenantPreferencesDto {  /**
    * Gets or sets the primary key of the tenant preferences record.
    */
   id: string;
@@ -46,4 +47,29 @@ export interface TenantPreferencesDto {
    * Gets or sets a flag indicating whether two-factor authentication (2FA) is enabled.
    */
   isTwoFAEnabled: boolean;
+
+  /**
+   * Gets or sets the versioned single sign-on configuration document. The tenant client secret is never included.
+   */
+  ssoConfigJson?: string;
+
+  /**
+   * Gets or sets a flag indicating whether a tenant client secret is stored.
+   */
+  ssoSecretPresent?: boolean;
+
+  /**
+   * Gets or sets a flag indicating whether the email domain ownership attestation exists.
+   */
+  domainVerified?: boolean;
+
+  /**
+   * Gets or sets the write-only attestation that the tenant owns its email domain.
+   */
+  domainVerifyAttestation?: boolean;
+
+  /**
+   * Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.
+   */
+  ssoDisableWarning?: SsoDisableWarningDto;
 }

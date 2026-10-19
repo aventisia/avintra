@@ -1,0 +1,36 @@
+meta {
+  name: SSO tenant admin login
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{MY_EMAIL}}",
+    "pwd": "{{MY_PWD}}"
+  }
+}
+
+tests {
+  test("authenticates a tenant admin session", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > Precondition for every tenant-admin (TA) check in this folder. `MY_EMAIL` and `MY_PWD` in
+  > `tests/bruno/.env` MUST belong to a TA of the tenant under test; the session travels in the response
+  > cookies and the Bruno CLI keeps them in its cookie jar for the rest of the run.
+  >
+  > Reading a failure here: 401/400 means the credentials are missing or wrong for this environment. The
+  > dependent TA checks below then fail too - that is an environment gap, not a regression, and the asserts
+  > must never be softened into a pass.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD`.
+}
