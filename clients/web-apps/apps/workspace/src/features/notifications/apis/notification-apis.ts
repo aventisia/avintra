@@ -8,7 +8,6 @@ import { CreateNotificationDto } from "../dtos/create-notification.dto";
 import { NotificationDto } from "../dtos/notification.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/notification`;
-const userSearchAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 const userAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/user`;
 
 /** Get the roles available for notification recipient targeting (Tenant Admin scope). */
@@ -69,15 +68,6 @@ const deleteMultipleNotifications = (ids: string[]) => {
     .then((res) => res.data);
 };
 
-/** Search account users within the current tenant. */
-const searchWorkspaceUsers = (searchKey: string, includeCurrentUser = false) => {
-  return axiosInstance
-    .get<IHttpResponse<AppUserBaseDto[]>>(
-      `${userSearchAPIURL}/users/search/${searchKey}?includeCurrentUser=${includeCurrentUser}`,
-    )
-    .then((res) => res.data);
-};
-
 export {
   createNotification,
   getNotifications,
@@ -86,7 +76,6 @@ export {
   updateNotification,
   deleteNotification,
   deleteMultipleNotifications,
-  searchWorkspaceUsers,
   getNotificationRoles,
 };
 
