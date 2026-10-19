@@ -1,14 +1,5 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  // DialogDefaultHeader,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { Tooltip } from "@avplatform/ui/tooltip";
-import { X } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -65,36 +56,14 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
       open={showDialog && !isProd}
       onOpenChange={(open) => setShowDialog(isProd ? false : open)}
     >
-      <DialogContent className="h-[75vh] min-w-[40rem]">
-        <div
-          className={
-            "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide"
-          }
-        >
-          {/* Left side - Dialog Heading and description */}
-          <div className="ml-2 flex flex-col">
-            <DialogTitle className="flex items-center font-semibold  text-foreground">
-              <span className="truncate w-[35rem]">{`Share - ${resourceName ?? "Resource"}`}</span>
-            </DialogTitle>
-          </div>
-          {/* Right side - Dialog action buttons */}
-          <div className="flex items-center">
-            {/* Close Dialog */}
-            <Tooltip content={"Close"} shortcut="Esc">
-              <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-                <X className="h-5 w-5 text-[--icon-color]" />
-                <span className="sr-only">Close</span>
-              </DialogClose>
-            </Tooltip>
-          </div>
-        </div>
-        {/* <DialogDefaultHeader
+      <DialogContent className="flex max-h-[75vh] w-full max-w-xl flex-col gap-0 overflow-hidden p-0">
+        <DialogDefaultHeader
           heading={`Share - ${resourceName ?? "Resource"}`}
-
-        /> */}
-        <ScrollArea className="h-[calc(75vh-4rem)]">
+          description="Choose who can access this resource."
+        />
+        <ScrollArea className="flex-1">
           {!isSpaceResource && (
-            <div className="p-4 pb-0">
+            <div className="px-5 pt-4">
               <CustomCheckbox
                 checked={assignAllDraft}
                 label="Share to all team members"
@@ -104,20 +73,20 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
             </div>
           )}
 
-          <SearchUsers
-            isTenantAccessDraft={assignAllDraft}
-            isTenantAccessSaved={assignAllSaved}
-            isMutating={isMutating}
-            onCommitTenantAccess={handleCommitTenantAccess}
-          />
+          <div className="border-b bg-muted/40 px-5 py-4">
+            <SearchUsers
+              isTenantAccessDraft={assignAllDraft}
+              isTenantAccessSaved={assignAllSaved}
+              isMutating={isMutating}
+              onCommitTenantAccess={handleCommitTenantAccess}
+            />
+          </div>
 
           {!assignAllSaved && (
-            <>
-              <p className="text-md font-semibold px-4 mt-2">Shared User(s)</p>
-              <div className="p-2 px-4 pb-4">
-                <UsersList />
-              </div>
-            </>
+            <div className="px-5 py-4">
+              <h3 className="mb-2 text-sm font-semibold text-foreground">Shared users</h3>
+              <UsersList />
+            </div>
           )}
         </ScrollArea>
       </DialogContent>

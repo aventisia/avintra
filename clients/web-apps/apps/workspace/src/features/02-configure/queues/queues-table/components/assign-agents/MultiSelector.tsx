@@ -4,7 +4,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { BotIcon, ChevronDown, ChevronUp, SearchIcon, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { AgentsTableDto } from "@/features/03-orchestrator/agents-table/dtos/agents-table-dto";
@@ -91,7 +91,8 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
     >
       {/* LEFT SIDE: Custom Search & Select (Maintains inline input behavior) */}
       <div className="relative flex w-full flex-1 items-center min-w-0">
-        <div className="flex min-h-10 w-full items-center justify-between gap-2 px-2 py-1.5 text-sm">
+        <div className="flex min-h-10 w-full items-center gap-2 px-2 py-1.5 text-sm">
+          <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
           <ScrollArea
             onClick={() => {
               if (!disabled) inputRef.current?.focus();
@@ -156,7 +157,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
 
         {/* Dropdown Results */}
         {isOpen && (
-          <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow-md">
+          <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-xl border bg-popover text-popover-foreground shadow-lg">
             <div className="p-2">
               {isLoading && (
                 <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -188,10 +189,14 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                       )}
                       onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
                     >
-                      <div className="flex flex-col">
-                        <p className="truncate text-sm font-medium">
-                          {`${result.name} -v${result.versionNumber}`}
-                        </p>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <BotIcon className="h-4 w-4" />
+                      </span>
+                      <div className="flex min-w-0 flex-1 items-center gap-2">
+                        <p className="min-w-0 flex-1 truncate text-sm font-medium">{result.name}</p>
+                        <Badge variant="secondary" className="shrink-0 rounded-full">
+                          v{result.versionNumber}
+                        </Badge>
                       </div>
                     </div>
                   ))}

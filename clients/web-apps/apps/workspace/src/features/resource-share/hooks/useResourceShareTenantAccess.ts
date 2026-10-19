@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { updateTenantWideAccess } from "../apis/resource-share-apis";
-import { TenantAccessResourceShareDto } from "../dtos/resource-share-dto";
+import { TenantAccessResourceShareDto } from "../dtos/resource-share.dto";
 import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceShareStore } from "../stores/resource-share-store";
 

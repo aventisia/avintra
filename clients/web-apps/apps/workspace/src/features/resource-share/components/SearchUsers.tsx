@@ -73,7 +73,7 @@ export const SearchUsers = ({
     buttonLabel = isTenantAccessSaved ? "Unassign All" : "Assign All";
   }
 
-  let dynamicPlaceholder = "Assign Users...";
+  let dynamicPlaceholder = "Assign users…";
   if (isTenantAccessDraft) {
     dynamicPlaceholder = "Uncheck 'Assign to all' to select manually";
   } else if (isTenantAccessSaved) {
@@ -81,7 +81,7 @@ export const SearchUsers = ({
   }
 
   return (
-    <div className="flex gap-2 p-4 items-start">
+    <div className="flex items-start gap-2">
       <MultiSelector
         searchResults={searchData?.data || []}
         selectedItems={selectedItems}
@@ -104,7 +104,7 @@ export const SearchUsers = ({
         }
       />
 
-      <Button onClick={handleActionClick} disabled={isButtonDisabled} className="min-w-28">
+      <Button onClick={handleActionClick} disabled={isButtonDisabled} className="min-w-28 shrink-0">
         {isActionRunning ? <LoadingSpinner className="mr-2 h-4 w-4" /> : <>{buttonLabel}</>}
       </Button>
     </div>

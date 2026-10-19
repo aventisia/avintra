@@ -1,13 +1,5 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { Tooltip } from "@avplatform/ui/tooltip";
-import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useQueueAgentsStore } from "../../stores/queue-agents-store";
@@ -30,36 +22,18 @@ const AssignAgentsDialog = () => {
         setOpen(open);
       }}
     >
-      <DialogContent className="h-[75vh] min-w-[40rem]">
-        <div
-          className={
-            "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide"
+      <DialogContent className="flex h-[75vh] w-full max-w-xl flex-col gap-0 overflow-hidden p-0">
+        <DialogDefaultHeader
+          heading="Assign agents"
+          description={
+            queueName ? `Choose which agents process items from “${queueName}”.` : undefined
           }
-        >
-          {/* Left side - Dialog Heading and description */}
-          <div className="ml-2 flex flex-col">
-            <DialogTitle className="flex items-center font-semibold  text-foreground">
-              <span className="truncate w-[35rem]">{`Assign Agents - ${queueName ?? "Queue"}`}</span>
-            </DialogTitle>
-          </div>
-          {/* Right side - Dialog action buttons */}
-          <div className="flex items-center">
-            {/* Close Dialog */}
-            <Tooltip content={"Close"} shortcut="Esc">
-              <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-                <X className="h-5 w-5 text-[--icon-color]" />
-                <span className="sr-only">Close</span>
-              </DialogClose>
-            </Tooltip>
-          </div>
-        </div>
-        <ScrollArea className="h-[calc(75vh-4rem)]">
-          <div className="p-4 pb-0">
+        />
+        <ScrollArea className="flex-1">
+          <div className="border-b bg-muted/40 px-5 py-4">
             <SearchAgents />
           </div>
-
-          <p className="text-md font-semibold px-4 mt-2">Assigned Agent(s)</p>
-          <div className="p-2 px-4 pb-4">
+          <div className="px-5 py-4">
             <AgentsList />
           </div>
         </ScrollArea>

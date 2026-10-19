@@ -7,6 +7,7 @@ public class AgentTableService : IAgentTableService
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
 
     public AgentTableService(
@@ -15,7 +16,8 @@ public class AgentTableService : IAgentTableService
         IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,6 +27,7 @@ public class AgentTableService : IAgentTableService
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
@@ -803,6 +806,7 @@ public class AgentTableService : IAgentTableService
 
         await UnlinkFlowVersionRelationshipsAsync(flowVersion);
         await DeleteOrphanedResourcesAsync(flowVersion, resourceReferences, linkedTriggerIds);
+        await _resourceFlowAccessService.DeleteFlowAccessesIfArchivedAsync(flowVersion.FlowId, flowVersion.Id);
     }
 
     // Stages the removal of every active relationship for a flow version being archived.
@@ -1142,6 +1146,7 @@ public class AgentTableService : IAgentTableService
                 continue;
 
             await _resourceShareService.DeleteResourceSharesAsync(tool.Id, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, tool.Id);
             _unitOfWork.ToolRepo.Delete(tool);
         }
     }

@@ -23,6 +23,15 @@ public class SearchByQueryController : BaseApiController
         return ResultHelper(await _searchByQueryService.SearchFlowVersionAsync(query, type, includePublishedOnly, machineId));
     }
 
+    // Searches flows by name.
+    [HttpGet("flow")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowSearchOptionDto>>>> SearchFlow(
+        [FromQuery] string? query,
+        [FromQuery] FlowTypesEnum[]? types = null)
+    {
+        return ResultHelper(await _searchByQueryService.SearchFlowAsync(query, types));
+    }
+
     // Searches machine by unique name with optional flow version filter
     [HttpGet("machine")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> SearchMachine(

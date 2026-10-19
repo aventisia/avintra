@@ -48,7 +48,11 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
       return;
     }
 
-    setNameAvailability({ isAvailable: true, isCheckPending: true, message: "Checking availability..." });
+    setNameAvailability({
+      isAvailable: true,
+      isCheckPending: true,
+      message: "Checking availability...",
+    });
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
@@ -126,6 +130,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
         openApiSpec: spec,
         parsedSchema: { operations },
         isTenantWideAccess: currentDraft?.isTenantWideAccess ?? false,
+        isResourceAccessRestricted: currentDraft?.isResourceAccessRestricted ?? false,
         isActive: currentDraft?.isActive ?? false,
         isVerified: currentDraft?.isVerified ?? false,
         accessLevel: currentDraft?.accessLevel ?? ResourceAccessTypeEnum.Owner,
@@ -165,7 +170,9 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
         <FieldLabel
           label="Unique Name"
           isRequired
-          description={"A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** any characters (letters, numbers, spaces and symbols).\n- **Cannot be changed** after creation."}
+          description={
+            "A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** any characters (letters, numbers, spaces and symbols).\n- **Cannot be changed** after creation."
+          }
         />
         <input
           value={draftTool?.name ?? ""}
@@ -186,10 +193,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <FieldLabel
-          label="Description"
-          description="A short summary of what the tool does."
-        />
+        <FieldLabel label="Description" description="A short summary of what the tool does." />
         <textarea
           value={draftTool?.description ?? ""}
           onChange={(e) => updateDraft({ description: e.target.value })}
