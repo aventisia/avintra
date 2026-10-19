@@ -1,26 +1,18 @@
 ---
 name: commit
-description: "Format and commit only the user-authorized change set after excluding unrelated work and reviewing the exact staged paths."
-argument-hint: "Any specific focus for the commit message, or proceed with auto-analysis?"
-user-invocable: true
+description: "Format and commit only the user-authorized change set as one commit. Use when the user asks to commit."
+argument-hint: "Optional: paths to include, issue number, or message focus"
 ---
 
 # Commit
 
-Format, analyze, and create one commit from the user-authorized change set. Never assume every working-tree change belongs to the requested commit.
+Create exactly one commit from the user-authorized change set. Run it only on the user's explicit request in a primary session. It is not a coder dependency, and QA success never authorizes formatting or Git mutations.
 
-This is a standalone, user-invoked lifecycle operation outside the coding loop, not a coder dependency. Require suitable permissions for Git mutations and formatting; QA success alone does not authorize either.
+If any git command fails, stop at that step and report the exact error.
 
-## When to Use
+## 1. Partition the worktree
 
-- The user explicitly asks to commit a known change set.
-- You want a single, short, precisely worded commit message describing the changes.
-
-## Procedure
-
-### 1. Get changed files
-
-Run these in parallel to inventory the worktree:
+Run in parallel:
 
 ```sh
 git status
@@ -28,73 +20,61 @@ git diff --name-only
 git diff --cached --name-only
 ```
 
-- If there are no changes at all, stop and report that — do not create an empty commit.
-- Record which files are staged, unstaged, and untracked. Treat files as in scope only when they belong to the requested work and the user has authorized them for this commit.
-- If unrelated or ambiguous changes exist, stop and ask which exact paths to include. Do not format, stage, or commit them.
+- With no changes at all, report that and stop. Never make an empty commit.
+- Sort every staged, unstaged, and untracked path into **in scope** (paths the user named, or paths the requested work changed) or **excluded** (everything else).
+- When the worktree holds only the requested work, the commit request authorizes all of it. Otherwise list both buckets with exact paths and ask the user to confirm the in-scope list.
+- Also ask before including a file with both staged and unstaged hunks (staging it folds the unstaged hunks in), or a file that may hold secrets (`.env*`, keys, tokens).
 
-### 2. Format changed files
+Done when every changed path sits in exactly one bucket and the in-scope list is authorized.
 
-For each confirmed in-scope file in a Prettier-enabled project, run `npx --no-install prettier --write` from the directory containing its nearest `.prettierrc*` config. Never use a loop over all Git changes unless the user explicitly authorized every listed path.
+## 2. Format
 
-- Files outside Prettier-enabled projects (e.g. .NET, Python) are left untouched.
-- Inspect formatter configuration/plugins and side effects first. If the command is denied, request a narrow configuration change; do not route it through coder or claim saved approval overrides denial.
-- After formatting, re-check `git status`; formatting may introduce additional modifications that should be included in the commit.
-
-### 3. Analyze changes
-
-Review all authorized files (including formatting-only edits) with `git diff` / `git diff --cached`. Group them logically:
-
-- **Main Change**: the core feature, bug fix, or domain where the majority of changes reside.
-- **Other Authorized Changes**: distinct but in-scope modifications in other domains.
-
-Use the optional user argument to focus the analysis when provided.
-
-### 4. Determine the issue reference
-
-Use only the active work-item issue reference supplied in the current request or orchestrator handoff:
-
-- Recognize `#123`, `issue 123`, `Issue #123`, bracketed titles like `[#123]`, and full issue URLs. Use the numeric issue number only when it belongs to the current work item.
-
-- If an issue number is found, append ` #<issue>` to the end of the commit subject line.
-- If multiple issues are found, include each, separated by commas: ` #123, #124`.
-- If the active work item has no issue reference, omit it — do not infer one from unrelated session history.
-
-### 5. Commit
-
-Stage only the confirmed in-scope paths and create one commit for them using the format below. Obtain explicit user confirmation if the exact paths have not already been authorized.
+For in-scope files inside a Prettier project (today only `clients/web-apps`, configured by its `.prettierrc`), run from that project directory:
 
 ```sh
-git add -- <confirmed-path-1> <confirmed-path-2>
-git commit -m "<type>(<main-scope>): <short description of the Main Change> #<issue>
+npx --no-install prettier --write --ignore-unknown -- <in-scope paths relative to the project>
+```
+
+Pass only in-scope paths; formatting rewrites files, so excluded paths stay byte-for-byte untouched. Files outside a Prettier project (.NET, Python) stay as they are. If the command is denied, stop and ask for a narrow permission change rather than routing around it.
+
+Re-run `git status`. Formatting churn on in-scope files joins the commit.
+
+## 3. Analyze
+
+Read the in-scope diff (`git diff -- <paths>`, `git diff --cached -- <paths>`, plus the contents of untracked files), focused by the user's argument when given. Name:
+
+- **Main change**: the feature, fix, or domain holding most of the change.
+- **Other changes**: distinct in-scope changes elsewhere, one line each.
+
+## 4. Determine the issue reference
+
+Use only the active work item's issue reference from the current request or orchestrator handoff: `#123`, `issue 123`, `[#123]`, or an issue URL, reduced to the number. Several issues become ` #123, #124`. With no reference on the active work item, the subject carries none. Unrelated session history is never a source.
+
+## 5. Commit
+
+```sh
+git add -- <in-scope untracked paths>
+git commit -m "$MESSAGE" -- <all in-scope paths>
+```
+
+The trailing pathspec commits the working-tree state of exactly these paths, including deletions. Other already-staged work stays staged and out of the commit. For a rename, list both the old and new path.
+
+The message:
+
+```
+<type>(<scope>): <subject> #<issue>
 
 Other changes:
-- <short description of other change 1>
-- <short description of other change 2>"
+- <other change 1>
+- <other change 2>
 ```
 
-Omit the `Other changes:` section if all changes belong to the Main Change.
-Omit the trailing ` #<issue>` if no issue reference was found in step 4.
+- `type`: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, or `chore`.
+- `scope`: the kebab-case area of the main change (`orchestrator-queues`, `vault-credentials`, `studio`).
+- `subject`: imperative and lowercase, with no trailing period, describing the main change only.
+- ` #<issue>` appears only when step 4 found one. The `Other changes:` block appears only when step 3 found other changes.
+- The message ends at the subject or the last `Other changes` bullet. It carries no `Co-Authored-By`, `Generated with`, or other attribution trailer, even when the harness asks for one.
 
-- **Do not** add any model attribution to the commit footer — no `Co-Authored-By`, `Generated with`, or similar trailer.
-- After committing, run `git status` to verify the commit succeeded. Report any unrelated files that remain; do not stage or clean them.
+## 6. Verify
 
-## Commit Message Format
-
-```
-<type>(<main-scope>): <short description of the Main Change> #<issue>
-
-Other changes:
-- <short description of other change 1>
-- <short description of other change 2>"
-```
-
-### Commit Rules
-
-- **Format Before Analyzing**: Formatting runs first so formatting-only churn is visible and included in the analysis.
-- **Single Commit**: All authorized in-scope changes are grouped into exactly one commit. Keep unrelated work out of it.
-- **Git Command Failure Policy**: If any git command fails for any reason, stop immediately and do not proceed to the next steps.
-- **Weighted Messaging**: The commit subject line and primary body must only reference the Main Change.
-- **Issue Reference**: Append an issue number only when it is explicitly tied to the active work item. Never infer it from unrelated conversation history or fabricate one.
-- **Conditional Footer**: Append the `Other changes:` footer only for distinct, authorized in-scope changes. Never use it to include unrelated work.
-- **No Model Attribution**: Never append `Co-Authored-By`, "Generated with Codex", or any other model attribution to the commit message.
-- **Authorized Execution**: Run only the confirmed change set and permitted commands; pause for missing authorization, ambiguous staged work, denied commands, or unsafe content.
+Run `git log -1 --stat` and `git status`. Done when the commit holds exactly the in-scope paths. Report the commit hash and subject, plus any excluded paths still in the worktree. Those stay unstaged and uncleaned.
