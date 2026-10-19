@@ -9,12 +9,16 @@ import type { SsoDisableWarningDto } from "../dtos/sso-disable-warning-dto";
 import { updateTenantPreferences } from "../apis/tenant-info-apis";
 import { preferencesSchema } from "../constants/tenant-preferences-zod-schema";
 import { useFetchTenantPreferences } from "./useFetchTenantPreferences";
+import { parseSsoConfig } from "@/features/05-tenant-admin/tenant/utils/sso-config-summary.util";
 
 export const useDefinePreferencesForm = () => {
   const queryClient = useQueryClient();
 
   // Fetch existing preferences
   const { data, isLoading } = useFetchTenantPreferences();
+
+  const ssoConfigSummary = parseSsoConfig(data?.data?.ssoConfigJson);
+  const isSsoConnected = Boolean(ssoConfigSummary.externalTenantId);
 
   // Warning returned by the last disable attempt
   const [ssoDisableWarning, setSsoDisableWarning] = useState<SsoDisableWarningDto | undefined>(undefined);
@@ -81,6 +85,7 @@ export const useDefinePreferencesForm = () => {
     isIdleSessionTimeoutEnabled,
     isPwdNeverExpiresEnabled,
     isSSOEnabled,
+    isSsoConnected,
     ssoDisableWarning,
   };
 };

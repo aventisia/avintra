@@ -3,32 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { getSsoAdminConsentUrl } from "@/features/05-tenant-admin/tenant/apis/tenant-info-apis";
 import { useFetchTenantPreferences } from "@/features/05-tenant-admin/tenant/hooks/useFetchTenantPreferences";
-
-/** Summary of the stored tenant single sign-on configuration document */
-export type SsoConfigSummary = {
-  externalTenantId: string;
-  emailDomain: string;
-};
-
-const emptySsoConfigSummary: SsoConfigSummary = {
-  externalTenantId: "",
-  emailDomain: "",
-};
-
-const parseSsoConfig = (ssoConfigJson?: string): SsoConfigSummary => {
-  if (!ssoConfigJson) return emptySsoConfigSummary;
-
-  try {
-    const parsed = JSON.parse(ssoConfigJson) as Partial<SsoConfigSummary>;
-
-    return {
-      externalTenantId: parsed.externalTenantId ?? "",
-      emailDomain: parsed.emailDomain ?? "",
-    };
-  } catch {
-    return emptySsoConfigSummary;
-  }
-};
+import { parseSsoConfig } from "@/features/05-tenant-admin/tenant/utils/sso-config-summary.util";
 
 export const useSsoConnectionCard = () => {
   const { data, isLoading } = useFetchTenantPreferences();
