@@ -23,6 +23,8 @@ PROVIDER_ALIASES: dict[str, str] = {
     "googleai": "gemini",
     "googlegemini": "gemini",
     "vertex": "vertex_ai",
+    "amazon_nova": "bedrock",
+    "amazon-nova": "bedrock",
 }
 
 # Map LiteLLM's `litellm.model_cost[model]["mode"]` to our capability enum.
