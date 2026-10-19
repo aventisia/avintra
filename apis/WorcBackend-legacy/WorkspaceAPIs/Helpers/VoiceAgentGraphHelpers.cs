@@ -47,6 +47,53 @@ public static class VoiceAgentGraphHelpers
     public const string InstructionsKey = "__Instructions__Voice";
 
     /// <summary>
+    /// Input key holding the engine mode (realtime or pipeline).
+    /// </summary>
+    public const string EngineModeKey = "__EngineMode__Voice";
+
+    /// <summary>
+    /// Input key holding the realtime model configuration.
+    /// </summary>
+    public const string RealtimeVoiceKey = "__ModelConfig__RealtimeVoice";
+
+    /// <summary>
+    /// Input key holding the pipeline language model configuration.
+    /// </summary>
+    public const string PipelineLlmKey = "__ModelConfig__Voice";
+
+    /// <summary>
+    /// Input key holding the pipeline speech-to-text configuration.
+    /// </summary>
+    public const string PipelineSpeechToTextKey = "__ModelConfig__SpeechToText";
+
+    /// <summary>
+    /// Input key holding the pipeline text-to-speech configuration.
+    /// </summary>
+    public const string PipelineTextToSpeechKey = "__ModelConfig__TextToSpeech";
+
+    /// <summary>
+    /// Engine modes accepted when publishing a VoiceAgent.
+    /// </summary>
+    public static readonly HashSet<string> AllowedEngineModes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "realtime",
+        "pipeline"
+    };
+
+    /// <summary>
+    /// Providers with an executable realtime transport in the llmpipeline gateway.
+    /// </summary>
+    public static readonly HashSet<string> AllowedRealtimeProviders = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "openai",
+        "azure",
+        "gemini",
+        "vertex_ai",
+        "xai",
+        "bedrock"
+    };
+
+    /// <summary>
     /// Structural node types from the generic agent shape that are never allowed in a VoiceAgent.
     /// </summary>
     public static readonly HashSet<string> ForbiddenNodeTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -126,6 +173,102 @@ public static class VoiceAgentGraphHelpers
             return null;
 
         return "Voice agent introduction is required when the AI speaks first.";
+    }
+
+    /// <summary>
+    /// Validates the VoiceAgent engine selection: the mode must be supported and the
+    /// provider/model pair must be executable for that mode.
+    /// </summary>
+    /// <param name="parsedFlow">The parsed ReactFlow object.</param>
+    /// <returns>An error message when invalid; otherwise, null.</returns>
+    public static string? ValidateVoiceAgentEngine(ReactFlowDataModel? parsedFlow)
+    {
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+        if (voiceNode is null)
+            return null;
+
+        var engineMode = GetInputString(voiceNode, EngineModeKey);
+        var mode = string.IsNullOrWhiteSpace(engineMode) ? "pipeline" : engineMode.Trim();
+
+        if (!AllowedEngineModes.Contains(mode))
+            return $"Voice agent engine mode '{engineMode}' is not supported. Supported modes: realtime, pipeline.";
+
+        return string.Equals(mode, "realtime", StringComparison.OrdinalIgnoreCase)
+            ? ValidateRealtimeEngine(voiceNode)
+            : ValidatePipelineEngine(voiceNode);
+    }
+
+    private static string? ValidateRealtimeEngine(ReactFlowNodeModel voiceNode)
+    {
+        var provider = GetInputObjectField(voiceNode, RealtimeVoiceKey, "provider");
+        var model = GetInputObjectField(voiceNode, RealtimeVoiceKey, "model");
+
+        if (IsUnsupportedProviderName(provider) || IsUnsupportedProviderName(model))
+            return $"Voice agent provider '{provider ?? model}' is not supported for realtime voice.";
+
+        if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(model))
+            return "Realtime engine mode requires a realtime provider and model.";
+
+        var normalizedProvider = NormalizeRealtimeProvider(provider);
+        if (IsUnsupportedProviderName(normalizedProvider))
+            return $"Voice agent provider '{provider}' is not supported for realtime voice.";
+
+        if (!AllowedRealtimeProviders.Contains(normalizedProvider))
+            return $"Realtime voice provider '{provider}' is not supported. Supported providers: "
+                + string.Join(", ", AllowedRealtimeProviders.OrderBy(name => name, StringComparer.Ordinal)) + ".";
+
+        return null;
+    }
+
+    private static string? ValidatePipelineEngine(ReactFlowNodeModel voiceNode)
+    {
+        var components = new (string Key, string Label)[]
+        {
+            (PipelineSpeechToTextKey, "speech-to-text"),
+            (PipelineLlmKey, "language model"),
+            (PipelineTextToSpeechKey, "text-to-speech")
+        };
+
+        foreach (var component in components)
+        {
+            var provider = GetInputObjectField(voiceNode, component.Key, "provider");
+            var model = GetInputObjectField(voiceNode, component.Key, "model");
+
+            if (IsUnsupportedProviderName(provider) || IsUnsupportedProviderName(model))
+                return $"Voice agent provider '{provider ?? model}' is not supported.";
+
+            if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(model))
+                return $"Pipeline engine mode requires a {component.Label} provider and model.";
+        }
+
+        return null;
+    }
+
+    private static bool IsUnsupportedProviderName(string? value) =>
+        value is not null && value.Contains("ultravox", StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeRealtimeProvider(string? value)
+    {
+        var trimmed = value?.Trim() ?? string.Empty;
+        return trimmed.ToLowerInvariant() switch
+        {
+            "googlegemini" or "google" or "google_gemini" or "googleai" => "gemini",
+            "vertex" => "vertex_ai",
+            "amazon_nova" or "amazon-nova" => "bedrock",
+            _ => trimmed
+        };
+    }
+
+    private static string? GetInputObjectField(ReactFlowNodeModel? node, string key, string property)
+    {
+        var input = node?.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, key, StringComparison.OrdinalIgnoreCase));
+        if (input?.Value is not JsonElement element || element.ValueKind != JsonValueKind.Object)
+            return null;
+
+        return element.TryGetProperty(property, out var property_) && property_.ValueKind == JsonValueKind.String
+            ? property_.GetString()
+            : null;
     }
 
     /// <summary>

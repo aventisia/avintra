@@ -20,6 +20,8 @@ public static class DynamicJsonTestHarness
 
         failures += FlowProcessorMatrixTestHarness.Run();
 
+        failures += VoiceAgent.VoiceAgentEngineValidationHarness.Run();
+
         failures += CustomToolNodeRoutingTestHarness.Run();
 
         failures += ExecutorLibrary.Tests.TimeTriggers.TimeTriggerScheduleCorrectionTestHarness.Run();

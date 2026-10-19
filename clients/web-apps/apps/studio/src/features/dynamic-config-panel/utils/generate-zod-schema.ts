@@ -460,3 +460,68 @@ export function generateZodSchema(
   });
   return z.object(shape);
 }
+
+const VOICE_ENGINE_MODE_FIELD = "__EngineMode__Voice";
+const REALTIME_VOICE_MODEL_FIELD = "__ModelConfig__RealtimeVoice";
+const PIPELINE_LLM_FIELD = "__ModelConfig__Voice";
+const PIPELINE_STT_FIELD = "__ModelConfig__SpeechToText";
+const PIPELINE_TTS_FIELD = "__ModelConfig__TextToSpeech";
+
+const PIPELINE_COMPONENTS: { field: string; label: string }[] = [
+  { field: PIPELINE_STT_FIELD, label: "speech-to-text" },
+  { field: PIPELINE_LLM_FIELD, label: "language model" },
+  { field: PIPELINE_TTS_FIELD, label: "text-to-speech" },
+];
+
+const hasProviderAndModel = (value: unknown): boolean => {
+  if (!value || typeof value !== "object") return false;
+  const { provider, model } = value as { provider?: unknown; model?: unknown };
+  return (
+    typeof provider === "string" &&
+    provider.trim() !== "" &&
+    typeof model === "string" &&
+    model.trim() !== ""
+  );
+};
+
+function validateVoiceAgentEngine(data: Record<string, unknown>, ctx: z.RefinementCtx): void {
+  const mode = data[VOICE_ENGINE_MODE_FIELD];
+
+  if (mode === "realtime") {
+    if (!hasProviderAndModel(data[REALTIME_VOICE_MODEL_FIELD])) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [REALTIME_VOICE_MODEL_FIELD, "provider"],
+        message: "Select a realtime provider and model, or switch Engine Mode to Pipeline.",
+      });
+    }
+    return;
+  }
+
+  if (mode === "pipeline") {
+    PIPELINE_COMPONENTS.forEach(({ field, label }) => {
+      if (!hasProviderAndModel(data[field])) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [field, "provider"],
+          message: `Select a ${label} provider and model, or switch Engine Mode to Realtime.`,
+        });
+      }
+    });
+  }
+}
+
+/**
+ * Wraps a node config schema with VoiceAgent engine-mode validation when the
+ * config declares an Engine Mode field; every other config is returned unchanged.
+ */
+export function withVoiceAgentEngineRefinement(
+  schema: z.ZodObject<Record<string, ZodTypeAny>>,
+  config: DCPFieldSchemaType[],
+): ZodTypeAny {
+  if (!config.some((field) => field.name === VOICE_ENGINE_MODE_FIELD)) return schema;
+
+  return schema.superRefine((data, ctx) =>
+    validateVoiceAgentEngine(data as Record<string, unknown>, ctx),
+  );
+}

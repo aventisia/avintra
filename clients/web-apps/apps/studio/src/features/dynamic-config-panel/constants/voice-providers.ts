@@ -154,6 +154,26 @@ export const voiceProviderData: Record<string, VoiceProviderData> = {
     voices: googleVoices.map((voice) => ({ ...voice, languageId: "en" })),
   },
 
+  azure: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices.map((voice) => ({ ...voice, languageId: "en" })),
+  },
+
+  xai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices.map((voice) => ({ ...voice, languageId: "en" })),
+  },
+
+  vertex_ai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: googleVoices.map((voice) => ({ ...voice, languageId: "en" })),
+  },
+
+  bedrock: {
+    languages: [{ label: "English", value: "en" }],
+    voices: [],
+  },
+
   // Future providers can be added easily here following the same structure
   //   openai: {
   //     languages: [{ label: "English", value: "en" }],

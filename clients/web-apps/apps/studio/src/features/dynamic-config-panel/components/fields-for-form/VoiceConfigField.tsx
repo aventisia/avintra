@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { SlidersHorizontalIcon } from "@phosphor-icons/react";
+import { PlayIcon, SlidersHorizontalIcon, StopIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
@@ -11,17 +11,27 @@ import { SliderField } from "@/components/Slider/SliderField";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
 import { voiceProviderData } from "../../constants/voice-providers";
+import { useVoicePreview } from "../../hooks/useVoicePreview.hook";
 
 export interface VoiceConfigFieldProps {
   /** The base name of the form field */
   name: string;
   /** Form path of the provider this field watches. */
   providerPath?: string;
+  /** Form path of the model this field watches. */
+  modelPath?: string;
+  /** Form path of the BYOK credential name this field watches. */
+  credentialPath?: string;
+  /** Form path of the BYOK toggle this field watches. */
+  isByokPath?: string;
 }
 
 const VoiceConfigField = ({
   name,
   providerPath = "__ModelConfig__TextToSpeech.provider",
+  modelPath,
+  credentialPath,
+  isByokPath,
 }: VoiceConfigFieldProps) => {
   const { control, setValue, watch } = useFormContext();
 
@@ -30,16 +40,24 @@ const VoiceConfigField = ({
     () =>
       ({
         provider: providerPath, // Watch the provider selected in ModelConfigField
+        model: modelPath ?? "__ModelConfig__TextToSpeech.model",
+        credential: credentialPath,
+        isByok: isByokPath,
         language: `${name}.language`,
         voice: `${name}.voice`,
         speed: `${name}.speed`,
         // pitch: `${name}.pitch`,
       }) as const,
-    [name, providerPath],
+    [name, providerPath, modelPath, credentialPath, isByokPath],
   );
 
   // Watch the provider value dynamically
   const providerValue = watch(fieldNames.provider);
+  const modelValue = watch(fieldNames.model);
+  const credentialValue = fieldNames.credential ? watch(fieldNames.credential) : undefined;
+  const isByokValue = fieldNames.isByok ? watch(fieldNames.isByok) : undefined;
+  const voiceValue = watch(fieldNames.voice);
+  const speedValue = watch(fieldNames.speed);
 
   // 2. Controllers for Voice fields
   const { field: languageField } = useController({
@@ -74,6 +92,16 @@ const VoiceConfigField = ({
 
     return allProviderVoices.filter((v) => v.languageId === languageValue || !v.languageId);
   }, [providerVoiceData, languageValue]);
+
+  const voicePreview = useVoicePreview({
+    provider: providerValue,
+    model: modelValue,
+    voice: voiceValue,
+    language: languageValue,
+    speed: speedValue,
+    credentialName: credentialValue,
+    isByokEnabled: isByokValue,
+  });
 
   // 5. Handle Field Resets (Reset state when provider or language changes)
   useEffect(() => {
@@ -145,7 +173,29 @@ const VoiceConfigField = ({
             /> */}
           </PopoverContent>
         </Popover>
+
+        <button
+          type="button"
+          aria-label="Preview voice"
+          disabled={!voicePreview.canPreview && !voicePreview.isPreviewing}
+          onClick={() =>
+            voicePreview.isPreviewing ? voicePreview.stopPreview() : voicePreview.playPreview()
+          }
+          className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}
+        >
+          {voicePreview.isPreviewing ? (
+            <StopIcon className="h-3 w-3" weight="fill" />
+          ) : (
+            <PlayIcon className="h-3 w-3" />
+          )}
+        </button>
       </div>
+
+      {!voicePreview.isSupported ? (
+        <p className="text-xs text-muted-foreground">Preview not supported for this provider.</p>
+      ) : null}
+
+      {voicePreview.error ? <p className="text-xs text-destructive">{voicePreview.error}</p> : null}
     </div>
   );
 };
