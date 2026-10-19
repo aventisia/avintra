@@ -2,7 +2,7 @@ import {
   flexibleNameError,
   flexibleNameRegex,
   maxLenError,
-  // numericRegex,
+  numericRegex,
   reqError,
 } from "@avplatform/ui/utils";
 import { z } from "zod";
@@ -81,63 +81,60 @@ export const queueNameSchema = z
 /**
  * Represents the Zod schema for a queue.
  */
-export const queueZodSchema = z.object({
-  crudAction: z.enum(["create", "read", "update"]).default("create"),
-  id: z.string(),
-  name: queueNameSchema,
-  type: z.string().min(1, { message: reqError("Type") }),
-  description: z.string().optional().nullable(),
+export const queueZodSchema = z
+  .object({
+    crudAction: z.enum(["create", "read", "update"]).default("create"),
+    id: z.string(),
+    name: queueNameSchema,
+    type: z.string().min(1, { message: reqError("Type") }),
+    description: z.string().optional().nullable(),
 
-  isUniqueReferencesEnforced: z.boolean().default(false),
-  isStoredEncrypted: z.boolean().default(false),
-  // shouldRetryFailedItems: z.boolean().default(false),
-  // shouldRetryAbandonedItems: z.boolean().default(false),
-  // maximumRetryAttempts: z
-  //   .union([
-  //     z.number({ required_error: reqError("Retry count") }),
-  //     z
-  //       .string()
-  //       .min(1, { message: reqError("Retry count") })
-  //       .refine(
-  //         (check) => numericRegex.test(check),
-  //         "Enter correct value for Retry count",
-  //       )
-  //       .transform((val) => parseInt(val)),
-  //   ])
-  //   .optional(),
-  inputSchema: jsonInputSchema,
-  statuses: jsonStatusesSchema,
+    isUniqueReferencesEnforced: z.boolean().default(false),
+    isStoredEncrypted: z.boolean().default(false),
+    shouldRetryFailedItems: z.boolean().default(false),
+    shouldRetryAbandonedItems: z.boolean().default(false),
+    maximumRetryAttempts: z.union([
+      z.number({ required_error: reqError("Retry count") }),
+      z
+        .string()
+        .min(1, { message: reqError("Retry count") })
+        .refine((check) => numericRegex.test(check), "Enter correct value for Retry count")
+        .transform((val) => parseInt(val)),
+    ]),
+    inputSchema: jsonInputSchema,
+    statuses: jsonStatusesSchema,
 
-  routeToQueues: z.array(z.string()).nullable().optional(),
-  processingMode: z.string().default("Manual"),
-  credentialName: z.string().optional(),
-  isDisabled: z.boolean().default(false),
-  // Read (view) only fields
-  createdBy: z.string(),
-  createdOn: z.date(),
-  lastModifiedBy: z.string(),
-  lastModifiedOn: z.date(),
-}).superRefine((data, ctx) => {
-  // When the Instance Type is "User", at least one disposition status is required.
-  if (data.type === "User") {
-    let hasStatuses = false;
+    routeToQueues: z.array(z.string()).nullable().optional(),
+    processingMode: z.string().default("Manual"),
+    credentialName: z.string().optional(),
+    isDisabled: z.boolean().default(false),
+    // Read (view) only fields
+    createdBy: z.string(),
+    createdOn: z.date(),
+    lastModifiedBy: z.string(),
+    lastModifiedOn: z.date(),
+  })
+  .superRefine((data, ctx) => {
+    // When the Instance Type is "User", at least one disposition status is required.
+    if (data.type === "User") {
+      let hasStatuses = false;
 
-    try {
-      const parsed = JSON.parse(data.statuses);
-      hasStatuses = Array.isArray(parsed) && parsed.length > 0;
-    } catch {
-      hasStatuses = false;
+      try {
+        const parsed = JSON.parse(data.statuses);
+        hasStatuses = Array.isArray(parsed) && parsed.length > 0;
+      } catch {
+        hasStatuses = false;
+      }
+
+      if (!hasStatuses) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["statuses"],
+          message: "Disposition Status is required when the Instance Type is User.",
+        });
+      }
     }
-
-    if (!hasStatuses) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["statuses"],
-        message: "Disposition Status is required when the Instance Type is User.",
-      });
-    }
-  }
-});
+  });
 
 export const queueUploadFileZodSchema = z.object({
   payloadData: z.string(),
