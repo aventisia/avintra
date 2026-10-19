@@ -5,23 +5,45 @@ import CodeMirror from "@uiw/react-codemirror";
 import React, { useEffect, useRef, useState } from "react";
 
 interface JsonEditorProps {
-  value?: string;
-  onChange?: (value: string) => void;
+  /** JSON text, or a structured value ({}/[]) that is serialized for display. */
+  value?: unknown;
+  onChange?: (value: unknown) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
 }
 
+const isStructuredValue = (value: unknown): boolean => value !== null && typeof value === "object";
+
+const toEditorText = (value: unknown): string => {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "";
+  try {
+    return JSON.stringify(value, null, 2) ?? "";
+  } catch {
+    return "";
+  }
+};
+
+const fromEditorText = (text: string, structured: boolean): unknown => {
+  if (!structured) return text;
+  const trimmed = text.trim();
+  if (!trimmed) return text;
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return text;
+  }
+};
+
 /**
  * JSON code editor with display-only pretty-printing.
  *
- * Keeps its own display value: user typing flows to the form via onChange,
- * while formatting (mount / blur) and external resets (form reset, node
- * switch) only touch the display. Programmatic changes therefore never mark
- * the form dirty.
+ * Accepts JSON text or a structured object/array value and emits edits in the
+ * same shape so the code editor never receives a raw object.
  */
 export const JsonEditor: React.FC<JsonEditorProps> = ({
-  value = "{}",
+  value,
   onChange,
   placeholder = "Enter JSON here...",
   disabled = false,
@@ -30,7 +52,8 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   const isDark = useThemeStore((state) => state.isDark);
   // The editor keeps its own display value so pretty-printing is cosmetic and
   // never marks the form dirty (programmatic CodeMirror changes are not echoed).
-  const [displayValue, setDisplayValue] = useState(value);
+  const structuredRef = useRef(isStructuredValue(value));
+  const [displayValue, setDisplayValue] = useState(() => toEditorText(value));
   const lastValueRef = useRef(value);
   const formattedOnMount = useRef(false);
 
@@ -51,7 +74,9 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   useEffect(() => {
     if (value !== lastValueRef.current) {
       lastValueRef.current = value;
-      setDisplayValue(formatJson(value) ?? value);
+      structuredRef.current = isStructuredValue(value);
+      const text = toEditorText(value);
+      setDisplayValue(formatJson(text) ?? text);
     }
   }, [value]);
 
@@ -60,16 +85,18 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
     if (formattedOnMount.current) return;
     formattedOnMount.current = true;
 
-    const formatted = formatJson(value);
-    if (formatted && formatted !== value) {
+    const text = toEditorText(value);
+    const formatted = formatJson(text);
+    if (formatted && formatted !== text) {
       setDisplayValue(formatted);
     }
   }, [value]);
 
   const handleChange = (next: string) => {
-    lastValueRef.current = next;
+    const emitted = fromEditorText(next, structuredRef.current);
+    lastValueRef.current = emitted;
     setDisplayValue(next);
-    onChange?.(next);
+    onChange?.(emitted);
   };
 
   // Format on blur for display only; the form value is only ever changed by the user

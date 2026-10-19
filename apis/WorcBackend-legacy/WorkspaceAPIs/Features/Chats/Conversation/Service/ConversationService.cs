@@ -5,20 +5,25 @@ public class ConversationService : IConversationService
     private readonly ILogger<ConversationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceUserAccessService _resourceUserAccessService;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
+    private readonly string _accessToken;
 
     public ConversationService(
         ILogger<ConversationService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceUserAccessService resourceUserAccessService)
+        IResourceUserAccessService resourceUserAccessService,
+        EnvironmentConfig environmentConfig)
     {
         // Extract current user id from http context (Fallback to empty guid if not available)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
 
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceUserAccessService = resourceUserAccessService;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves active conversations for a specific flow version.
@@ -361,6 +366,9 @@ public class ConversationService : IConversationService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Conversation archived successfully.";
+
+            // Best-effort transcript webhook delivery; never changes the archive result.
+            await TriggerTranscriptWebhookAsync(conversation);
         }
         catch (Exception ex)
         {
@@ -372,6 +380,59 @@ public class ConversationService : IConversationService
         }
 
         return serviceResponse;
+    }
+
+    // Delivers the archived conversation transcript to the VoiceAgent's configured
+    // transcript webhook. Best-effort: failures are logged and never change the archive result.
+    private async Task TriggerTranscriptWebhookAsync(Conversation conversation)
+    {
+        try
+        {
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(f => f.Id == conversation.FlowVersionId)
+                .Include(f => f.Flow)
+                .FirstOrDefaultAsync();
+
+            if (flowVersion?.Flow?.Type != FlowTypesEnum.VoiceAgent)
+                return;
+
+            if (!VoiceAgentGraphHelpers.IsTranscriptWebhookEnabled(flowVersion.ReactFlowObject))
+                return;
+
+            var webhookUrl = VoiceAgentGraphHelpers.GetTranscriptWebhookUrl(flowVersion.ReactFlowObject);
+            if (string.IsNullOrWhiteSpace(webhookUrl))
+                return;
+
+            var endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/chat/conversations/{conversation.Id}/transcript-webhook";
+            var jsonContent = new StringContent(
+                System.Text.Json.JsonSerializer.Serialize(new { webhook_url = webhookUrl }),
+                Encoding.UTF8,
+                "application/json");
+
+            using var httpClient = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+            });
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+            httpClient.Timeout = TimeSpan.FromSeconds(20);
+
+            using var response = await httpClient.PostAsync(endpoint, jsonContent);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "[ArchiveConversation] Transcript webhook dispatch returned {StatusCode}. ConversationId: {ConversationId}",
+                    response.StatusCode,
+                    conversation.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "[ArchiveConversation] Transcript webhook dispatch failed. ConversationId: {ConversationId}",
+                conversation.Id);
+        }
     }
 
     // Unarchives a conversation.

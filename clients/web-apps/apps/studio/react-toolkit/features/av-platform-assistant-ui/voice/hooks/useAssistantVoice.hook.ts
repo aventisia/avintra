@@ -2,6 +2,7 @@ import { toast } from "@avplatform/ui/sonner";
 import { useCallback, useEffect, useRef } from "react";
 
 import { TTSRequestDto } from "@/features/dynamic-config-panel/dtos/tts-model-dto";
+import { useVoiceSfx } from "@/features/dynamic-config-panel/hooks/useVoiceSfx.hook";
 import { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 
 import { synthesizeTts } from "../apis/voice-apis";
@@ -19,6 +20,8 @@ type UseAssistantVoiceParams = {
   refId: string;
   refName: string;
   agentName?: string | null;
+  pronunciations?: Array<{ term: string; pronunciation: string }>;
+  sfx?: { enabled: boolean; toolCallCueUrl: string; ambienceUrl: string };
 };
 
 const resolveAudioMimeType = (audio: string): string =>
@@ -32,11 +35,14 @@ export const useAssistantVoice = ({
   refId,
   refName,
   agentName,
+  pronunciations,
+  sfx,
 }: UseAssistantVoiceParams) => {
   const speakReplies = useVoicePlaybackStore((state) => state.speakReplies);
   const isPlaying = useVoicePlaybackStore((state) => state.isPlaying);
   const setSpeakReplies = useVoicePlaybackStore((state) => state.setSpeakReplies);
   const stop = useVoicePlaybackStore((state) => state.stop);
+  const sfxPlayer = useVoiceSfx();
 
   const configRef = useRef({
     ttsConfig,
@@ -46,6 +52,8 @@ export const useAssistantVoice = ({
     refName,
     agentName,
     speakReplies,
+    pronunciations,
+    sfx,
   });
   configRef.current = {
     ttsConfig,
@@ -55,6 +63,8 @@ export const useAssistantVoice = ({
     refName,
     agentName,
     speakReplies,
+    pronunciations,
+    sfx,
   };
 
   const chunkerRef = useRef(createStreamingSpeechChunker());
@@ -76,6 +86,8 @@ export const useAssistantVoice = ({
         voice_id: config.voiceConfig?.voice || null,
         language: config.voiceConfig?.language || null,
         speed: config.voiceConfig?.speed,
+        pronunciations:
+          config.pronunciations && config.pronunciations.length > 0 ? config.pronunciations : null,
         stream: false,
         credential_name: config.ttsConfig.credential_name || null,
         is_byok_enabled: config.ttsConfig.is_byok_enabled ?? false,
@@ -176,13 +188,26 @@ export const useAssistantVoice = ({
   );
 
   const onRunFinished = useCallback(() => {
+    sfxPlayer.stopAmbience();
     if (disposedRef.current) return;
     const remaining = chunkerRef.current.flush();
     const config = configRef.current;
     if (config.speakReplies && config.isTextToSpeechConfigured && remaining.length > 0) {
       queueSpeech(LIVE_SPEECH_KEY, remaining, getSignal(LIVE_SPEECH_KEY));
     }
-  }, [queueSpeech, getSignal]);
+  }, [queueSpeech, getSignal, sfxPlayer]);
+
+  const onRunStart = useCallback(() => {
+    const config = configRef.current;
+    if (!config.sfx?.enabled) return;
+    sfxPlayer.startAmbience(config.sfx.ambienceUrl);
+  }, [sfxPlayer]);
+
+  const onToolCallFrame = useCallback(() => {
+    const config = configRef.current;
+    if (!config.sfx?.enabled) return;
+    sfxPlayer.playToolCallCue(config.sfx.toolCallCueUrl);
+  }, [sfxPlayer]);
 
   const abortLiveSynthesis = useCallback(() => {
     abortKey(LIVE_SPEECH_KEY);
@@ -224,6 +249,8 @@ export const useAssistantVoice = ({
     isPlaying,
     setSpeakReplies: handleSetSpeakReplies,
     onTextDelta,
+    onRunStart,
+    onToolCallFrame,
     onRunFinished,
   };
 };

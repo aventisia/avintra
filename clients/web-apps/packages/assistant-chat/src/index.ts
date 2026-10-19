@@ -24,6 +24,9 @@ export type { ContentPart, ContentPartsBuilder, NormalizedChatFrame } from "./li
 export { groupConversationMessages } from "./lib/conversation-messages";
 export type { ConversationMessageLike } from "./lib/conversation-messages";
 
+export { createVoiceSfx } from "./lib/voice-sfx";
+export type { VoiceSfx } from "./lib/voice-sfx";
+
 export { useHasPendingToolCalls, useToolCallCoordinatorStore } from "./stores/tool-call-store";
 export type { ToolCallEntry } from "./stores/tool-call-store";
 

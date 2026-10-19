@@ -11,6 +11,10 @@ from app.dependencies.authorize import authorize
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.langgraph.services.chat_service import chat_service
+from app.features.langgraph.services.transcript_webhook_service import (
+    is_absolute_http_url,
+    send_transcript_webhook,
+)
 from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
 from app.core.logger import logger
 
@@ -30,6 +34,12 @@ class ChatApprovalRequest(BaseModel):
 
     conversation_id: str
     decisions: list[ApprovalDecision] = []
+
+
+class TranscriptWebhookRequest(BaseModel):
+    """Request body for a transcript webhook delivery."""
+
+    webhook_url: str
 
 
 # -----------------------------------------------------------
@@ -266,6 +276,37 @@ async def approve_langgraph_tool_calls_route(
                     await session.commit()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@router.post("/chat/conversations/{conversation_id}/transcript-webhook")
+async def deliver_transcript_webhook_route(
+    conversation_id: str,
+    request: TranscriptWebhookRequest,
+    user: User = Depends(authorize()),
+):
+    """Deliver a stored conversation transcript to a configured webhook URL.
+
+    Delivery is best-effort: a failure is reported through ``delivered`` and
+    never raised, so it cannot interrupt a voice conversation. Only a bad URL
+    is rejected with a 4xx.
+    """
+
+    if not is_absolute_http_url(request.webhook_url):
+        raise HTTPException(
+            status_code=400,
+            detail="Webhook URL must be an absolute http or https URL.",
+        )
+
+    async with get_db_session_context(
+        settings.POSTGRESQL_WORKSPACE_DB_NAME,
+    ) as session:
+        delivered = await send_transcript_webhook(
+            session,
+            conversation_id,
+            request.webhook_url,
+        )
+
+    return {"delivered": delivered}
 
 
 def _serialize_chunk(chunk: Any) -> str:

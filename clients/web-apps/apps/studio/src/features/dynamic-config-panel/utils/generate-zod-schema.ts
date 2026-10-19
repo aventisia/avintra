@@ -209,6 +209,20 @@ function getSuggestionsSchema(field: DCPFieldSchemaType): ZodTypeAny {
     followUpMessagePrompt: followUpMessagePromptSchema,
   });
 }
+function getJsonEditorSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  if (field.name === "__Variables__Voice") {
+    return z.record(z.string()).default({});
+  }
+
+  if (field.name === "__Pronunciation__Voice") {
+    return z
+      .array(z.object({ term: z.string().min(1), pronunciation: z.string().min(1) }))
+      .default([]);
+  }
+
+  return applyFieldOptions(z.string(), field);
+}
+
 function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // 1. Explicitly type variables as ZodTypeAny so they can accept the ZodDefault wrapper later
   let languageSchema: ZodTypeAny = z.string();
@@ -442,6 +456,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getQueueConditionalGroupSchema(field);
     case "tools-config-select":
       return getToolsConfigSchema(field);
+    case "json-editor":
+      return getJsonEditorSchema(field);
     case "string-array":
       return getStringArraySchema(field);
     case "suggestions":
@@ -511,6 +527,54 @@ function validateVoiceAgentEngine(data: Record<string, unknown>, ctx: z.Refineme
   }
 }
 
+const VOICE_TRANSCRIPT_WEBHOOK_ENABLED_FIELD = "__TranscriptWebhookEnabled__Voice";
+const VOICE_TRANSCRIPT_WEBHOOK_URL_FIELD = "__TranscriptWebhookUrl__Voice";
+const VOICE_TRANSCRIPT_WEBHOOK_SECRET_FIELD = "__TranscriptWebhookSecret__Voice";
+const VOICE_TRANSCRIPT_WEBHOOK_SECRET_MIN_LENGTH = 16;
+
+const isAbsoluteHttpsUrl = (value: string): boolean => {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+function validateVoiceTranscriptWebhook(data: Record<string, unknown>, ctx: z.RefinementCtx): void {
+  if (data[VOICE_TRANSCRIPT_WEBHOOK_ENABLED_FIELD] !== true) return;
+
+  const url = data[VOICE_TRANSCRIPT_WEBHOOK_URL_FIELD];
+  const trimmedUrl = typeof url === "string" ? url.trim() : "";
+
+  if (trimmedUrl === "") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [VOICE_TRANSCRIPT_WEBHOOK_URL_FIELD],
+      message: "Endpoint URL is required when the webhook is enabled.",
+    });
+  } else if (!isAbsoluteHttpsUrl(trimmedUrl)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [VOICE_TRANSCRIPT_WEBHOOK_URL_FIELD],
+      message: "Enter a valid HTTPS URL, for example https://example.com/voice-transcript.",
+    });
+  }
+
+  const secret = data[VOICE_TRANSCRIPT_WEBHOOK_SECRET_FIELD];
+
+  if (
+    typeof secret === "string" &&
+    secret.length > 0 &&
+    secret.length < VOICE_TRANSCRIPT_WEBHOOK_SECRET_MIN_LENGTH
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [VOICE_TRANSCRIPT_WEBHOOK_SECRET_FIELD],
+      message: "Signing secret must be at least 16 characters. Leave it empty for no secret.",
+    });
+  }
+}
+
 /**
  * Wraps a node config schema with VoiceAgent engine-mode validation when the
  * config declares an Engine Mode field; every other config is returned unchanged.
@@ -521,7 +585,8 @@ export function withVoiceAgentEngineRefinement(
 ): ZodTypeAny {
   if (!config.some((field) => field.name === VOICE_ENGINE_MODE_FIELD)) return schema;
 
-  return schema.superRefine((data, ctx) =>
-    validateVoiceAgentEngine(data as Record<string, unknown>, ctx),
-  );
+  return schema.superRefine((data, ctx) => {
+    validateVoiceAgentEngine(data as Record<string, unknown>, ctx);
+    validateVoiceTranscriptWebhook(data as Record<string, unknown>, ctx);
+  });
 }
