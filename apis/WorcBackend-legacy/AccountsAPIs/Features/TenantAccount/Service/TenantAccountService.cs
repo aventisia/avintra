@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.DataProtection;
-
 namespace AccountsAPIs.Services;
 
 public class TenantAccountService : ITenantAccountService
@@ -11,7 +9,6 @@ public class TenantAccountService : ITenantAccountService
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _userEmail;
-    private readonly IDataProtector _ssoSecretProtector;
     private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
 
     public TenantAccountService(
@@ -20,7 +17,6 @@ public class TenantAccountService : ITenantAccountService
         IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
-        IDataProtectionProvider dataProtectionProvider,
         ILoginWithExternalAuthService loginWithExternalAuthService)
     {
         _logger = logger;
@@ -34,7 +30,6 @@ public class TenantAccountService : ITenantAccountService
         _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email") ?? string.Empty;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
-        _ssoSecretProtector = dataProtectionProvider.CreateProtector(SsoConfigHelpers.SecretProtectionPurpose);
         _loginWithExternalAuthService = loginWithExternalAuthService;
     }
 
@@ -332,45 +327,17 @@ public class TenantAccountService : ITenantAccountService
             tenant.LastModifiedByUserId = _userId;
             var isDisablingSso = wasSsoEnabled && !tenant.IsSSOEnabled;
 
-            var hasSubmittedSsoConfig = !string.IsNullOrWhiteSpace(preferencesDto.SSOConfigJson);
-            var submittedSsoConfig = SsoConfigHelpers.Parse(preferencesDto.SSOConfigJson);
-
-            // Reject malformed, unknown-version or non-Entra configuration documents
-            if (hasSubmittedSsoConfig && submittedSsoConfig == null)
+            if (tenant.IsSSOEnabled)
             {
-                serviceResponse.StatusCode = 400;
-                serviceResponse.Message = "Unsupported single sign-on configuration.";
-                _logger.LogWarning("SSO update rejected for TenantId {TenantId}: unsupported configuration document.", _tenantId);
-                return serviceResponse;
-            }
+                var enableValidation = await ValidateSsoEnablementAsync(tenant, existingSsoConfig);
 
-            if (submittedSsoConfig != null)
-            {
-                // Persist the submitted configuration document (BYO credentials, attestation) without requiring enablement
-                var configValidation = BuildStoredSsoConfigAsync(tenant, submittedSsoConfig, existingSsoConfig, preferencesDto.DomainVerifyAttestation);
-
-                if (!configValidation.IsValid)
+                if (!enableValidation.IsValid)
                 {
-                    serviceResponse.StatusCode = configValidation.StatusCode;
-                    serviceResponse.Message = configValidation.Message;
-                    _logger.LogWarning("SSO configuration rejected for TenantId {TenantId}: {Reason}", _tenantId, configValidation.Message);
+                    serviceResponse.StatusCode = enableValidation.StatusCode;
+                    serviceResponse.Message = enableValidation.Message;
+                    _logger.LogWarning("SSO enablement blocked for TenantId {TenantId}: {Reason}", _tenantId, enableValidation.Message);
                     return serviceResponse;
                 }
-
-                if (tenant.IsSSOEnabled)
-                {
-                    var enableValidation = await ValidateSsoEnablementAsync(configValidation.Config!);
-
-                    if (!enableValidation.IsValid)
-                    {
-                        serviceResponse.StatusCode = enableValidation.StatusCode;
-                        serviceResponse.Message = enableValidation.Message;
-                        _logger.LogWarning("SSO enablement blocked for TenantId {TenantId}: {Reason}", _tenantId, enableValidation.Message);
-                        return serviceResponse;
-                    }
-                }
-
-                tenant.SSOConfigJson = SsoConfigHelpers.ToPersistedJson(configValidation.Config!);
             }
 
             // Mark entity as updated
@@ -445,8 +412,7 @@ public class TenantAccountService : ITenantAccountService
                 return serviceResponse;
             }
 
-            var ssoConfig = SsoConfigHelpers.Parse(tenant.SSOConfigJson);
-            var consentUrlResult = _loginWithExternalAuthService.GenerateAdminConsentUrlAsync(_userEmail, tenant.Id, ssoConfig?.ByoClientId);
+            var consentUrlResult = _loginWithExternalAuthService.GenerateAdminConsentUrlAsync(_userEmail, tenant.Id);
 
             if (string.IsNullOrWhiteSpace(consentUrlResult.Data))
             {
@@ -514,6 +480,7 @@ public class TenantAccountService : ITenantAccountService
             var config = SsoConfigHelpers.Parse(tenant.SSOConfigJson)
                 ?? SsoConfigHelpers.CreateDefault(grantedTenantId, tenant.Domain);
             config.ExternalTenantId = grantedTenantId.Trim();
+            config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
 
             tenant.SSOConfigJson = SsoConfigHelpers.ToPersistedJson(config);
             tenant.LastModifiedByUserId = _userId;
@@ -687,8 +654,6 @@ public class TenantAccountService : ITenantAccountService
         if (ssoConfig == null) return;
 
         dto.SSOConfigJson = SsoConfigHelpers.ToRedactedJson(ssoConfig);
-        dto.SsoSecretPresent = !string.IsNullOrWhiteSpace(ssoConfig.ByoClientSecretProtected);
-        dto.DomainVerified = ssoConfig.DomainVerified;
     }
 
     private async Task<SsoDisableWarningDto?> BuildSsoDisableWarningAsync()
@@ -758,7 +723,7 @@ public class TenantAccountService : ITenantAccountService
     }
 
     private (bool IsValid, int StatusCode, string Message, TenantSsoConfigDto? Config) BuildStoredSsoConfigAsync(
-        Tenant tenant, TenantSsoConfigDto requestedConfig, TenantSsoConfigDto? existingConfig, bool domainVerifyAttestation)
+        Tenant tenant, TenantSsoConfigDto requestedConfig, TenantSsoConfigDto? existingConfig)
     {
         if (tenant.Type != TenantTypesEnum.Organization)
         {
@@ -783,107 +748,52 @@ public class TenantAccountService : ITenantAccountService
         config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
         config.ExternalTenantId = config.ExternalTenantId?.Trim() ?? string.Empty;
 
-        if (!string.IsNullOrWhiteSpace(config.ByoClientId))
-        {
-            config.ByoClientId = config.ByoClientId.Trim();
-        }
-
-        // Reuse the already protected secret when the client re-submits a redacted configuration
-        if (string.IsNullOrWhiteSpace(config.ByoClientSecret) && string.IsNullOrWhiteSpace(config.ByoClientSecretProtected))
-        {
-            config.ByoClientSecretProtected = existingConfig?.ByoClientSecretProtected;
-        }
-
-        if (!string.IsNullOrWhiteSpace(config.ByoClientSecret))
-        {
-            config.ByoClientSecretProtected = SsoConfigHelpers.ProtectSecret(_ssoSecretProtector, config.ByoClientSecret);
-        }
-
-        config.DomainVerified = false;
-        config.DomainVerifiedOn = null;
-        config.DomainVerifiedBy = null;
-
-        if (domainVerifyAttestation)
-        {
-            config.DomainVerified = true;
-            config.DomainVerifiedOn = DateTimeOffset.UtcNow.ToString("O");
-            config.DomainVerifiedBy = _userId.ToString();
-        }
-        else
-        {
-            config.DomainVerified = existingConfig?.DomainVerified ?? false;
-            config.DomainVerifiedOn = existingConfig?.DomainVerifiedOn;
-            config.DomainVerifiedBy = existingConfig?.DomainVerifiedBy;
-        }
-
         return (true, 200, "Single sign-on configuration validated.", config);
     }
 
-    private async Task<(bool IsValid, int StatusCode, string Message)> ValidateSsoEnablementAsync(TenantSsoConfigDto config)
+    private async Task<(bool IsValid, int StatusCode, string Message)> ValidateSsoEnablementAsync(
+        Tenant tenant, TenantSsoConfigDto? storedConfig)
     {
-        if (string.IsNullOrWhiteSpace(config.ExternalTenantId))
+        if (tenant.Type != TenantTypesEnum.Organization)
+        {
+            return (false, 400, "Single sign-on is available for organization tenants only.");
+        }
+
+        if (string.IsNullOrWhiteSpace(tenant.Domain))
+        {
+            return (false, 400, "Set the tenant's email domain before connecting single sign-on.");
+        }
+
+        if (storedConfig == null || string.IsNullOrWhiteSpace(storedConfig.ExternalTenantId))
         {
             return (false, 400, "Connect the identity provider before enabling single sign-on.");
         }
 
-        if (!config.DomainVerified)
+        if (!string.Equals(storedConfig.EmailDomain, tenant.Domain.Trim(), StringComparison.OrdinalIgnoreCase))
         {
-            return (false, 400, "Confirm that the tenant owns its email domain before enabling single sign-on.");
+            return (false, 400, "The single sign-on email domain must match the tenant's email domain.");
         }
 
-        var credentials = ResolveSsoCredentials(config);
-        if (!credentials.IsValid)
-        {
-            return (false, 400, credentials.Message);
-        }
-
-        config.ByoClientSecretProtected = credentials.ProtectedSecret;
-        config.ByoClientSecret = null;
-
-        var areCredentialsValid = await ValidateEntraClientCredentialsAsync(
-            credentials.Authority, credentials.ClientId, credentials.ClientSecret);
-
-        if (!areCredentialsValid)
-        {
-            return (false, 400, "SSO credentials are invalid or expired. Verify the client ID and secret.");
-        }
-
-        return (true, 200, "Single sign-on configuration validated.");
-    }
-
-    private (bool IsValid, string Message, string Authority, string ClientId, string ClientSecret, string? ProtectedSecret) ResolveSsoCredentials(
-        TenantSsoConfigDto config)
-    {
-        if (!string.IsNullOrWhiteSpace(config.ByoClientId))
-        {
-            var protectedSecret = SsoConfigHelpers.ProtectSecret(_ssoSecretProtector, config.ByoClientSecret)
-                ?? config.ByoClientSecretProtected;
-
-            var plainSecret = SsoConfigHelpers.UnprotectSecret(_ssoSecretProtector, protectedSecret);
-            if (string.IsNullOrWhiteSpace(plainSecret))
-            {
-                return (false, "A client secret is required for tenant-supplied credentials.", string.Empty, string.Empty, string.Empty, null);
-            }
-
-            var authority = string.IsNullOrWhiteSpace(config.ExternalTenantId)
-                ? _environmentConfig.AzureTenantId
-                : config.ExternalTenantId.Trim();
-
-            return (true, string.Empty, authority, config.ByoClientId.Trim(), plainSecret, protectedSecret);
-        }
-
-        var isGlobalConfigured =
+        var isPlatformConfigured =
             _environmentConfig.AzureEntraIdEnabled &&
             !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientId) &&
             !string.IsNullOrWhiteSpace(_environmentConfig.AzureTenantId) &&
             !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientSecret);
 
-        if (!isGlobalConfigured)
+        if (!isPlatformConfigured)
         {
-            return (false, "SSO credentials are not configured. Provide a client ID and secret or enable the global app.", string.Empty, string.Empty, string.Empty, null);
+            return (false, 400, "SSO credentials are not configured.");
         }
 
-        return (true, string.Empty, _environmentConfig.AzureTenantId, _environmentConfig.AzureEntraIdClientId, _environmentConfig.AzureEntraIdClientSecret, null);
+        var areCredentialsValid = await ValidateEntraClientCredentialsAsync(
+            _environmentConfig.AzureTenantId, _environmentConfig.AzureEntraIdClientId, _environmentConfig.AzureEntraIdClientSecret);
+
+        if (!areCredentialsValid)
+        {
+            return (false, 400, "SSO credentials are invalid or expired.");
+        }
+
+        return (true, 200, "Single sign-on configuration validated.");
     }
 
     private async Task<bool> ValidateEntraClientCredentialsAsync(string tenantAuthority, string clientId, string clientSecret)

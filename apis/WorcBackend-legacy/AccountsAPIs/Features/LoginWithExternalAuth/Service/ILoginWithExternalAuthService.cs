@@ -15,18 +15,16 @@ public interface ILoginWithExternalAuthService
     /// <param name="type">The external authentication provider.</param>
     /// <param name="email">The email used as the provider login hint.</param>
     /// <param name="tenantId">The tenant the authorization attempt belongs to.</param>
-    /// <param name="clientId">The client id to use, or null to use the global application.</param>
     /// <returns>The generated login URL or an error message.</returns>
-    ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId, string? clientId);
+    ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId);
 
     /// <summary>
     /// Generates an administrator consent URL that binds the granted tenant id to the supplied tenant.
     /// </summary>
     /// <param name="email">The email used as the provider login hint.</param>
     /// <param name="tenantId">The tenant the consent grant belongs to.</param>
-    /// <param name="clientId">The client id to use, or null to use the global application.</param>
     /// <returns>The generated consent URL or an error message.</returns>
-    ServiceResponse<string> GenerateAdminConsentUrlAsync(string? email, Guid tenantId, string? clientId);
+    ServiceResponse<string> GenerateAdminConsentUrlAsync(string? email, Guid tenantId);
 
     /// <summary>
     /// Consumes the single-use OAuth state created while generating an authorization URL.

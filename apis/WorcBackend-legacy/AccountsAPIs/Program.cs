@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,14 +54,6 @@ builder.Services.AddRazorpayClient(config);
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
-
-// DataProtection keys for tenant SSO client secrets at rest
-var dataProtectionKeysDir = Environment.GetEnvironmentVariable("DATA_PROTECTION_KEYS_DIR")
-    ?? Path.Combine(AppContext.BaseDirectory, "data-protection-keys");
-Directory.CreateDirectory(dataProtectionKeysDir);
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysDir))
-    .SetApplicationName("WorcAccountsAPIs");
 
 builder.Services.AddEmailService();
 builder.Services.AddSharedDependencies(config);
