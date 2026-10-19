@@ -4,23 +4,8 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueUserDto } from "../dtos/queue-users-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const queueUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
-
-/**
- * Retrieves all Workspace users.
- */
-
-const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(
-      `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
-      { headers: getSpaceHeaders() },
-    )
-    .then((res) => res.data);
-};
 
 /**
  * Retrieves all Queue users.
@@ -63,4 +48,4 @@ const deleteQueueUser = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getSearchUser, getQueueUsers, insertQueueUser, updateQueueUser, deleteQueueUser };
+export { getQueueUsers, insertQueueUser, updateQueueUser, deleteQueueUser };

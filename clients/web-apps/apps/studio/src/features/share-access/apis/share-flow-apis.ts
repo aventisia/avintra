@@ -4,21 +4,8 @@ import { axiosInstance } from "@avplatform/ui/lib";
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import { FlowUserDto } from "../dtos/flow-user-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const flowUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/user`;
-
-/**
- * Retrieves all flows users of a flow.
- */
-const getSearchUser = (value?: string) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(`${workspaceUserApiUrl}/search/${value}`, {
-      headers: getStudioSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
 
 /**
  * Retrieves all flows users of a flow.
@@ -64,4 +51,4 @@ const deleteFlowUser = (id: string) => {
     .then((res) => res.data);
 };
 
-export { getSearchUser, getFlowUser, insertFlowUser, deleteFlowUser, updateFlowUser };
+export { getFlowUser, insertFlowUser, deleteFlowUser, updateFlowUser };
