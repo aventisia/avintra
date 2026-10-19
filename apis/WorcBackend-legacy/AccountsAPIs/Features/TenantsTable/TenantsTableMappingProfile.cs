@@ -6,6 +6,7 @@ public class TenantsTableMappingProfile : IRegister
     {
         // Mapping profile to get list of tenant records
         config.NewConfig<Tenant, TenantsTableDto>()
+            .Ignore(dest => dest.SSOConfigJson)
             .Ignore(dest => dest.DbUserId)
             .Ignore(dest => dest.DbPwd)
             .Ignore(dest => dest.DbHost)
@@ -14,6 +15,7 @@ public class TenantsTableMappingProfile : IRegister
 
         // Mapping profile to create or update tenant record
         config.NewConfig<TenantsTableDto, Tenant>()
+            .Ignore(dest => dest.SSOConfigJson)
             .Ignore(dest => dest.ContainerName)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)

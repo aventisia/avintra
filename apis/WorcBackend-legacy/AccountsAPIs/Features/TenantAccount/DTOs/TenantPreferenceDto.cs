@@ -52,6 +52,32 @@ public class TenantPreferenceDto
     /// Gets or sets a value indicating whether an additional verification step is required for all users to log in.
     /// </summary>
     public bool IsTwoFAEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the versioned single sign-on configuration document. Accepted on write; the stored
+    /// tenant client secret is never included in responses.
+    /// </summary>
+    public string? SSOConfigJson { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a tenant client secret is stored for this tenant.
+    /// </summary>
+    public bool SsoSecretPresent { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the email domain ownership attestation exists.
+    /// </summary>
+    public bool DomainVerified { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tenant admin's write-only attestation that the tenant owns its email domain.
+    /// </summary>
+    public bool DomainVerifyAttestation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.
+    /// </summary>
+    public SsoDisableWarningDto? SsoDisableWarning { get; set; }
 }
 
 

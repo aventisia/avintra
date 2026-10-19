@@ -1,0 +1,57 @@
+meta {
+  name: Disable SSO warns without blocking
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/preferences
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{TENANT_ID}}",
+    "tenantName": "Individual Users",
+    "isSSOEnabled": false,
+    "isPwdEnabled": true,
+    "isPwdNeverExpiresEnabled": true,
+    "daysBeforePwdExpires": 730,
+    "isIdleSessionTimeoutEnabled": true,
+    "idleSessionTimeoutMinutes": 10,
+    "isTwoFAEnabled": false
+  }
+}
+
+tests {
+  test("responds with 200 (disable never blocks)", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("reports the warn-only shape", function() {
+    const body = res.getBody();
+    const warning = body && body.data ? body.data.ssoDisableWarning : undefined;
+
+    expect(warning).to.not.equal(undefined);
+    expect(warning.warnOnly).to.equal(true);
+    expect(warning.affectedUserCount).to.be.a("number");
+    expect(warning.affectedAdmins).to.be.an("array");
+    expect(warning.recoveryHint).to.be.a("string");
+    expect(warning.recoveryHint.length).to.be.above(0);
+  });
+}
+
+docs {
+  > Preconditions: a tenant admin session (see `ta-login.bru` in this folder), `TENANT_ID` pointing at a
+  > tenant whose SSO was previously enabled, and at least one passwordless user in that tenant. The warning
+  > object is present only on a true enable->disable transition that touches a passwordless user; disabling
+  > itself is always allowed and never returns a blocking status.
+  >
+  > Reading a failure: 401 means no tenant admin session, 400 means the body could not be bound (usually a
+  > missing `TENANT_ID`), and a failed warning assertion means the tenant fixture above is absent. All three
+  > are environment gaps, not regressions - the assertions stay unconditional and must never be softened
+  > into a conditional pass.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD`, `TENANT_ID`.
+}

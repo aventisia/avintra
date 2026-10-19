@@ -64,6 +64,29 @@ public class LoginWithPwdService : ILoginWithPwdService
                 return serviceResponse;
             }
 
+            // A passwordless user of a tenant whose single sign-on was disabled needs an actionable message
+            if (user.PasswordHash == null)
+            {
+                var passwordlessUserTenant = user.TenantId.HasValue
+                    ? await _unitOfWork.TenantRepo
+                        .GetByConditionAsync(t => t.Id == user.TenantId)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync()
+                    : null;
+
+                var storedSsoConfig = SsoConfigHelpers.Parse(passwordlessUserTenant?.SSOConfigJson);
+
+                if (passwordlessUserTenant != null && !passwordlessUserTenant.IsSSOEnabled && storedSsoConfig != null)
+                {
+                    serviceResponse.StatusCode = 200;
+                    serviceResponse.Message = SsoConfigHelpers.SsoDisabledMessage;
+                    return serviceResponse;
+                }
+
+                serviceResponse.Message = "Invalid credentials";
+                return serviceResponse;
+            }
+
             // Try to Sign In
             var result = await _signInManager.CheckPasswordSignInAsync(user, pwdLoginDto.Pwd, true);
 

@@ -108,10 +108,6 @@ export const tenantZodSchema = z
     lastModifiedBy: z.string(),
     lastModifiedOn: z.date(),
   })
-  .refine((data) => !(data.isSSOEnabled && !data.ssoConfigJson), {
-    path: ["ssoConfigJson"],
-    message: reqError("Field"),
-  })
   .refine((data) => !(!data.isPwdNeverExpiresEnabled && !data.daysBeforePwdExpires), {
     path: ["daysBeforePwdExpires"],
     message: reqError("Field"),

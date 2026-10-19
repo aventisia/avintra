@@ -2,7 +2,7 @@ import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION, SSO_DISABLED } from "@/constants/variables";
 
 import { validateEntraToken } from "./sso-redirect-apis";
 
@@ -12,7 +12,8 @@ export const useValidateEntraTokenMutation = () => {
 
   // Define mutation
   const { mutate: validateEntraTokenMutation } = useMutation({
-    mutationFn: validateEntraToken,
+    mutationFn: ({ code, state }: { code: string; state: string | null }) =>
+      validateEntraToken(code, state),
     onSuccess: ({ data, message }) => {
       // Check if backend message indicates incomplete tenant setup
       if (message.includes(ADD_TENANT)) {
@@ -27,7 +28,12 @@ export const useValidateEntraTokenMutation = () => {
         window.location.assign(import.meta.env.VITE_WORKSPACE_PATH);
       }
     },
-    onError: () => {
+    onError: (error) => {
+      if (error.toString().includes(SSO_DISABLED)) {
+        navigate("/login?ssoDisabled=1");
+        return;
+      }
+
       navigate("/login");
     },
   });

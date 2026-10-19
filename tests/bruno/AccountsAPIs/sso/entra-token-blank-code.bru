@@ -1,0 +1,28 @@
+meta {
+  name: Entra callback rejects blank code
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/entra/token?code=%20
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the missing authorization code", function() {
+    expect(res.getBody()).to.contain("The code field is required.");
+  });
+}
+
+docs {
+  > The code parameter is present but blank (`%20`). Request binding still rejects the required `code`
+  > parameter, so the framework message is returned and the controller never runs. Verified live: `%20` and
+  > `%09` both return the same framework message, which means the service-level branch
+  > "Authorization code is missing." is unreachable over HTTP.
+}

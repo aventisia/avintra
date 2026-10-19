@@ -25,6 +25,17 @@ public class AuthController(IAuthService authService) : BaseApiController
         return ResultHelper(tenantInfoResult);
     }
 
+    // Resolves the single sign-on tenant for an email address (home realm discovery).
+    [HttpPost("discover")]
+    public async Task<ActionResult<ServiceResponse<SsoDiscoverDto>>> DiscoverTenant([FromBody] EmailDto emailDto)
+    {
+        // Fetch the home realm discovery result
+        var discoverResult = await _authService.DiscoverTenantAsync(emailDto);
+
+        // Returns the discovery result
+        return ResultHelper(discoverResult);
+    }
+
     // Creates a verification code for the provided username and request type.
     [HttpPost("create-code")]
     public async Task<ActionResult<ServiceResponse<CreatedVerificationCodeDto>>> CreateVerificationCode([FromBody] CreateVerificationCodeDto createVerificationCodeDto)

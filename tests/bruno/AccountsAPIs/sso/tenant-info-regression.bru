@@ -1,0 +1,35 @@
+meta {
+  name: Tenant info regression
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/tenant-info
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{MY_EMAIL}}"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("keeps the existing tenant-info envelope", function() {
+    expect(res.getBody().data).to.have.property("tenantId");
+    expect(res.getBody().data).to.have.property("name");
+    expect(res.getBody().data).to.have.property("userName");
+    expect(res.getBody().data).to.have.property("ssoConfigJson");
+  });
+}
+
+docs {
+  > Regression guard for the pre-existing live contract: `POST /auth/tenant-info` still requires the user to
+  > exist and still returns the provider login URL in `ssoConfigJson` when the tenant has SSO enabled.
+}

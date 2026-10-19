@@ -1,0 +1,21 @@
+meta {
+  name: Entra callback rejects tampered state
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/entra/token?code=test-code&state=deadbeefdeadbeef
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the SSO state as the reason", function() {
+    expect(res.getBody()).to.contain("Invalid or expired SSO state.");
+  });
+}
