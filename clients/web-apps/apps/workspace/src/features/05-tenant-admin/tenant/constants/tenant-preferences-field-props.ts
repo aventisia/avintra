@@ -21,6 +21,11 @@ const isSSOEnabledProps: SwitchFieldProps = {
   description: "If enabled, users can log in using an external authentication provider",
 };
 
+const ssoConnectRequiredHint =
+  "Connect the identity provider before enabling single sign-on. Use the Connect button in the Microsoft Entra ID card above.";
+
+const ssoAdminOnlyNotice = "Only a tenant administrator can change single sign-on settings.";
+
 // Is Two-Factor Authentication Enabled (2FA)
 const isTwoFAEnabledProps: SwitchFieldProps = {
   name: "isTwoFAEnabled",
@@ -55,6 +60,8 @@ export {
   isPwdNeverExpiresEnabledProps,
   daysBeforePwdExpiresProps,
   isSSOEnabledProps,
+  ssoConnectRequiredHint,
+  ssoAdminOnlyNotice,
   isTwoFAEnabledProps,
   isIdleSessionTimeoutEnabledProps,
   idleSessionTimeoutMinutesProps,
