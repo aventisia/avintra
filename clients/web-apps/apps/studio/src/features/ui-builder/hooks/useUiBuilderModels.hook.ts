@@ -1,89 +1,100 @@
-import { ModelCapabilityEnum, type ModelProviderEnum } from "@avplatform/ui/enums";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { type ProviderLiteral } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
-import { useFetchTenantEnabledModels } from "@/features/dynamic-config-panel/hooks/useFetchTenantEnabledModels.hook";
-
+import { getUiBuilderModels } from "../apis/ui-builder.apis";
 import {
+  getUiBuilderLiteLlmProvider,
   getUiBuilderProviderLabel,
-  getUiBuilderWireProvider,
+  toUiBuilderModelId,
   toUiBuilderModelKey,
 } from "../utils/ui-builder-model-routing.util";
 
-/** A tenant-enabled provider shown in the builder's provider dropdown. */
-export type UiBuilderProviderState = {
-  providerType: ModelProviderEnum;
-  label: string;
-  isRoutable: boolean;
-};
+const UI_BUILDER_MODELS_QUERY_KEY = ["ui-builder-models"] as const;
 
-/** A tenant-enabled model shown in the builder's model dropdown. */
+/** A tenant-enabled model shown in the builder's model picker. */
 export type UiBuilderModelState = {
   key: string;
-  providerType: ModelProviderEnum;
+  providerType: string;
   providerLabel: string;
+  /** LiteLLM provider name sent to the pipeline. */
+  provider: string;
   modelId: string;
-  wireProvider: ProviderLiteral | null;
+  /** Vault credential configured for the provider in Tenant Admin. */
+  credentialName: string;
+  envType: string;
+};
+
+/** A provider group in the builder's model picker. */
+export type UiBuilderProviderGroup = {
+  providerType: string;
+  label: string;
+  models: UiBuilderModelState[];
 };
 
 /**
- * Derives the builder's provider and model options from the tenant's enabled Text models.
+ * Derives the builder's model options from the tenant's enabled Text models whose provider has
+ * a credential in Tenant Admin; models without one (platform credits) are never offered.
  */
 export const useUiBuilderModels = () => {
-  const { data, isLoading, isError, isSuccess } = useFetchTenantEnabledModels(
-    ModelCapabilityEnum.Text,
-  );
+  const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
+  const { data, isLoading, isError, isSuccess } = useQuery({
+    queryKey: [...UI_BUILDER_MODELS_QUERY_KEY, tenantId],
+    queryFn: getUiBuilderModels,
+    enabled: Boolean(tenantId),
+    staleTime: 60_000,
+  });
 
   const models = useMemo<UiBuilderModelState[]>(() => {
     const seen = new Set<string>();
     const options: UiBuilderModelState[] = [];
 
     for (const enabledModel of data?.data ?? []) {
-      const modelId = enabledModel.modelId.trim();
+      const provider = getUiBuilderLiteLlmProvider(enabledModel.providerType);
+      const modelId = toUiBuilderModelId(provider, enabledModel.modelId);
       const key = toUiBuilderModelKey(enabledModel.providerType, modelId);
       if (!modelId || seen.has(key)) continue;
-
       seen.add(key);
+
+      const credentialName = enabledModel.credentialName?.trim();
+      if (!credentialName) continue;
+
       options.push({
         key,
         providerType: enabledModel.providerType,
         providerLabel: getUiBuilderProviderLabel(enabledModel.providerType),
+        provider,
         modelId,
-        wireProvider: getUiBuilderWireProvider(enabledModel.providerType),
+        credentialName,
+        envType: enabledModel.credentialEnvType?.trim().toLowerCase() || "dev",
       });
     }
 
     return options;
   }, [data]);
 
-  const providers = useMemo<UiBuilderProviderState[]>(() => {
-    const seen = new Set<ModelProviderEnum>();
-    const options: UiBuilderProviderState[] = [];
-
+  const groups = useMemo<UiBuilderProviderGroup[]>(() => {
+    const byProvider = new Map<string, UiBuilderProviderGroup>();
     for (const model of models) {
-      if (seen.has(model.providerType)) continue;
-
-      seen.add(model.providerType);
-      options.push({
+      const group = byProvider.get(model.providerType) ?? {
         providerType: model.providerType,
         label: model.providerLabel,
-        isRoutable: model.wireProvider !== null,
-      });
+        models: [],
+      };
+      group.models.push(model);
+      byProvider.set(model.providerType, group);
     }
 
-    return options.sort((left, right) => Number(right.isRoutable) - Number(left.isRoutable));
+    return [...byProvider.values()];
   }, [models]);
 
-  const initialModel = useMemo(() => {
-    const initialProvider = providers.find((provider) => provider.isRoutable) ?? providers[0];
-    return models.find((model) => model.providerType === initialProvider?.providerType) ?? null;
-  }, [models, providers]);
+  const initialModelKey = models[0]?.key ?? "";
 
   return {
-    providers,
     models,
-    hasRoutableModel: models.some((model) => model.wireProvider !== null),
-    initialModelKey: initialModel?.key ?? "",
+    groups,
+    hasUsableModel: models.length > 0,
+    initialModelKey,
     isLoading,
     isError,
     isSuccess,

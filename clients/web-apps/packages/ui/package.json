@@ -57,6 +57,7 @@
     "./tabs": "./src/components/tabs/index.ts",
     "./toggle": "./src/components/toggle/index.ts",
     "./tooltip": "./src/components/tooltip/index.ts",
+    "./ui-builder-host": "./src/components/ui-builder-host/index.ts",
     "./view-record": "./src/components/view-record/index.ts",
     "./constants": "./src/constants/index.ts",
     "./dtos": "./src/dtos/index.ts",

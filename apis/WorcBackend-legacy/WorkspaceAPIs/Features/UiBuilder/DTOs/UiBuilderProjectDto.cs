@@ -47,6 +47,12 @@ public class UiBuilderProjectDto
     public int? PublishedVersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the data sources bound to the project. Managed through the data-connections endpoint;
+    /// ignored on project insert and update.
+    /// </summary>
+    public List<UiBuilderDataConnectionDto> DataConnections { get; set; } = new();
+
+    /// <summary>
     /// Gets or sets the number of generated versions stored for the project.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>

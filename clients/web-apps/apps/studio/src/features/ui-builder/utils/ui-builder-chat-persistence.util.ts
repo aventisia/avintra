@@ -1,5 +1,5 @@
-import type { UiBuilderChatMessage } from "../components/UiBuilderChatPanel";
 import type { UiBuilderVersionDto } from "../dtos/ui-builder-dto";
+import type { UiBuilderChatMessage } from "../types/ui-builder-chat.type";
 
 /** Maximum number of chat messages kept per user and project. */
 export const UI_BUILDER_CHAT_HISTORY_LIMIT = 200;
@@ -50,7 +50,16 @@ const isChatMessage = (value: unknown): value is UiBuilderChatMessage => {
 const normalizePersistedMessages = (messages: UiBuilderChatMessage[]): UiBuilderChatMessage[] =>
   messages.map((message) =>
     message.status === "streaming"
-      ? { ...message, text: "Generation stopped.", status: "error" }
+      ? {
+          ...message,
+          text: "Generation stopped.",
+          status: "error",
+          steps: message.steps?.map((step) =>
+            step.status === "running" || step.status === "pending"
+              ? { ...step, status: "skipped" }
+              : step,
+          ),
+        }
       : message,
   );
 

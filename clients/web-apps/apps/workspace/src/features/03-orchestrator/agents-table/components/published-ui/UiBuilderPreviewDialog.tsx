@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { UiBuilderHostFrame } from "@avplatform/ui/ui-builder-host";
 import { useShallow } from "zustand/react/shallow";
 
 import { usePublishedUiView } from "../../hooks/usePublishedUiView.hook";
@@ -36,13 +37,9 @@ const UiBuilderPreviewDialog = () => {
             <LoadingSpinner className="h-6 w-6 text-primary" />
           </div>
         ) : html ? (
-          // IMPORTANT NOTE: published HTML must only ever run inside a sandbox limited to
-          // `allow-scripts`; adding any origin or navigation token would let the generated
-          // document reach the workspace origin.
-          <iframe
+          <UiBuilderHostFrame
+            html={html}
             title={project?.name ?? "Interface"}
-            srcDoc={html}
-            sandbox="allow-scripts"
             className="h-[calc(80vh-3.5rem)] w-full border-0 bg-white"
           />
         ) : (

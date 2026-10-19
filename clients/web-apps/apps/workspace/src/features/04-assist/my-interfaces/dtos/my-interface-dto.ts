@@ -1,3 +1,5 @@
+import { type UiBuilderDataConnection } from "@avplatform/ui/ui-builder-host";
+
 /**
  * Represents a published custom UI builder project assigned to the current user.
  */
@@ -31,6 +33,9 @@ export interface MyInterfaceDto {
 
   /** Gets or sets the display type label for the interface. */
   type?: string;
+
+  /** Gets the data sources the published interface may read and write. */
+  dataConnections?: UiBuilderDataConnection[];
 }
 
 /**
