@@ -46,6 +46,9 @@ unimplemented on purpose.
   `domainVerified` with a timestamp and the attesting user. Automated DNS verification is not implemented yet.
 - **Only tenant admins may connect or toggle.** `PUT tenant-account/preferences` and the consent endpoints are
   gated by the `TA` role on the server.
+- **Connect uses the admin-consent endpoint.** The tenant admin Connect button opens
+  `…/organizations/v2.0/adminconsent` with `client_id`, `redirect_uri`, `state` and `scope`; the ordinary login
+  URL is unchanged.
 
 ## Operator notes
 

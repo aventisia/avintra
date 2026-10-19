@@ -8,6 +8,7 @@ namespace AccountsAPIs.Services;
 public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 {
     private const string EntraOrganizationsAuthority = "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize";
+    private const string EntraAdminConsentAuthority = "https://login.microsoftonline.com/organizations/v2.0/adminconsent";
     private const string EntraOrganizationsDiscovery = "https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration";
     private const string EntraLoginScope = "openid profile email offline_access";
     private const string MicrosoftConsumerTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
@@ -122,7 +123,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 return serviceResponse;
             }
 
-            serviceResponse.Data = BuildEntraAuthorizeUrl(resolvedClientId, email, tenantId, true);
+            serviceResponse.Data = BuildEntraAdminConsentUrl(resolvedClientId, email, tenantId);
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Administrator consent URL generated successfully";
         }
@@ -352,12 +353,35 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             parameters.Add($"login_hint={Uri.EscapeDataString(email)}");
         }
 
-        if (adminConsent)
-        {
-            parameters.Add("prompt=admin_consent");
-        }
-
         return $"{EntraOrganizationsAuthority}?{string.Join("&", parameters)}";
+    }
+
+    private string BuildEntraAdminConsentUrl(string clientId, string? email, Guid tenantId)
+    {
+        var state = GenerateOpaqueValue();
+
+        _memoryCache.Set(
+            BuildAuthStateCacheKey(state),
+            new SsoAuthStateDto
+            {
+                Nonce = string.Empty,
+                TenantId = tenantId,
+                Email = email,
+                AdminConsent = true
+            },
+            AuthStateTtl);
+
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
+
+        var parameters = new List<string>
+        {
+            $"client_id={Uri.EscapeDataString(clientId)}",
+            $"redirect_uri={Uri.EscapeDataString(redirectUrl)}",
+            $"state={state}",
+            $"scope={Uri.EscapeDataString(EntraLoginScope)}"
+        };
+
+        return $"{EntraAdminConsentAuthority}?{string.Join("&", parameters)}";
     }
 
     private static string BuildAuthStateCacheKey(string state) => $"sso-state:{state}";
