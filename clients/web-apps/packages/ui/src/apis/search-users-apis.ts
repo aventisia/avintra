@@ -21,12 +21,14 @@ type UserSelectItem = {
  * @param query - Search keyword for the user name or username.
  * @param includeCurrentUser - Whether to include the current user in the results.
  * @param onlyCurrentSpace - When true, restrict results to active members of the current space; otherwise search tenant-wide.
+ * @param headers - Optional request headers; callers should pass their app-local space headers here.
  * @returns Service response containing matching users.
  */
 const searchUsers = (
   query: string = "",
   includeCurrentUser: boolean = false,
   onlyCurrentSpace: boolean = false,
+  headers: Record<string, string> = {},
 ) => {
   return axiosInstance
     .get<IHttpResponse<SearchedUser[]>>(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/search/user`, {
@@ -35,6 +37,7 @@ const searchUsers = (
         includeCurrentUser,
         onlyCurrentSpace,
       },
+      headers,
     })
     .then((res) => res.data);
 };
