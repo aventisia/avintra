@@ -31,6 +31,7 @@ tests {
 }
 
 docs {
-  > Requires `AZURE_ENTRA_ID_CLIENT_ID` to be configured (local `.env.local`); without a client id the
-  > endpoint fails safe with a 400 "Azure SSO client id is not configured." message.
+  > Requires `MICROSOFT_CLIENT_ID` to be configured (local `.env.local`); without a client id the
+  > endpoint fails safe with a 400 "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID
+  > environment variable." message.
 }

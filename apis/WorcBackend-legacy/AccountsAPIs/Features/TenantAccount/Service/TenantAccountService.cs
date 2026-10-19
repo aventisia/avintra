@@ -776,17 +776,17 @@ public class TenantAccountService : ITenantAccountService
 
         var isPlatformConfigured =
             _environmentConfig.AzureEntraIdEnabled &&
-            !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientId) &&
+            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftClientId) &&
             !string.IsNullOrWhiteSpace(_environmentConfig.AzureTenantId) &&
-            !string.IsNullOrWhiteSpace(_environmentConfig.AzureEntraIdClientSecret);
+            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftClientSecret);
 
         if (!isPlatformConfigured)
         {
-            return (false, 400, "SSO credentials are not configured.");
+            return (false, 400, "SSO credentials are not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables.");
         }
 
         var areCredentialsValid = await ValidateEntraClientCredentialsAsync(
-            _environmentConfig.AzureTenantId, _environmentConfig.AzureEntraIdClientId, _environmentConfig.AzureEntraIdClientSecret);
+            _environmentConfig.AzureTenantId, _environmentConfig.MicrosoftClientId, _environmentConfig.MicrosoftClientSecret);
 
         if (!areCredentialsValid)
         {
