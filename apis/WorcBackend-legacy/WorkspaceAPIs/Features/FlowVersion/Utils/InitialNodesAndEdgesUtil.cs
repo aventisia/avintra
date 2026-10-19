@@ -326,7 +326,25 @@ public static class InitialNodesAndEdgesUtil
                     maxDataStored = 20
                 }
             },
-            new { Key = "__ToolsConfig__Voice", Value = (object?)Array.Empty<object>() }
+            new { Key = "__ToolsConfig__Voice", Value = (object?)Array.Empty<object>() },
+            new { Key = "__VariablesEnabled__Voice", Value = (object?)false },
+            new { Key = "__Variables__Voice", Value = (object?)new { } },
+            new { Key = "__PronunciationEnabled__Voice", Value = (object?)false },
+            new { Key = "__Pronunciation__Voice", Value = (object?)Array.Empty<object>() },
+            new { Key = "__EscalationEnabled__Voice", Value = (object?)false },
+            new { Key = "__EscalationDestination__Voice", Value = (object?)"" },
+            new { Key = "__EscalationCondition__Voice", Value = (object?)"" },
+            new { Key = "__EscalationFallback__Voice", Value = (object?)"reprompt" },
+            new { Key = "__TranscriptWebhookEnabled__Voice", Value = (object?)false },
+            new { Key = "__TranscriptWebhookUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxToolCallCueEnabled__Voice", Value = (object?)false },
+            new { Key = "__SfxToolCallCueUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxAmbienceEnabled__Voice", Value = (object?)false },
+            new { Key = "__SfxAmbienceUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxEnabled__Voice", Value = (object?)false },
+            new { Key = "__VirtualAvatar__Voice", Value = (object?)false },
+            new { Key = "__ScreenShare__Voice", Value = (object?)false },
+            new { Key = "__CameraFeed__Voice", Value = (object?)false }
         };
 
         var initialNodesList = new object[]

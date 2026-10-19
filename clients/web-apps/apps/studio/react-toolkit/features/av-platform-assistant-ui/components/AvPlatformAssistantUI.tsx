@@ -181,6 +181,8 @@ const RuntimeWrapper = ({
     tts: ttsConfig,
     voice: voiceConfig,
     isTextToSpeechConfigured,
+    sfx: voiceSfx,
+    pronunciations,
   } = useChatAgentVoiceConfig();
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const refId = currentFlow?.id ?? "";
@@ -194,6 +196,8 @@ const RuntimeWrapper = ({
     refId,
     refName,
     agentName,
+    pronunciations,
+    sfx: voiceSfx,
   });
 
   const handleSuggestionsUpdate = useCallback((actions: string[]) => {
@@ -288,6 +292,8 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
           onTextDelta: assistantVoice.onTextDelta,
+          onRunStart: assistantVoice.onRunStart,
+          onToolCallFrame: assistantVoice.onToolCallFrame,
           onRunFinished: assistantVoice.onRunFinished,
           isTempChat: mode === "temporary",
           // Chat streams are scoped to the current flow's space.
@@ -300,6 +306,8 @@ const RuntimeWrapper = ({
         handleSuggestionsUpdate,
         mode,
         assistantVoice.onTextDelta,
+        assistantVoice.onRunStart,
+        assistantVoice.onToolCallFrame,
         assistantVoice.onRunFinished,
       ],
     ),

@@ -58,6 +58,8 @@ const VoiceConfigField = ({
   const isByokValue = fieldNames.isByok ? watch(fieldNames.isByok) : undefined;
   const voiceValue = watch(fieldNames.voice);
   const speedValue = watch(fieldNames.speed);
+  const pronunciationValue = watch("__Pronunciation__Voice");
+  const pronunciationEnabled = watch("__PronunciationEnabled__Voice");
 
   // 2. Controllers for Voice fields
   const { field: languageField } = useController({
@@ -101,6 +103,12 @@ const VoiceConfigField = ({
     speed: speedValue,
     credentialName: credentialValue,
     isByokEnabled: isByokValue,
+    pronunciations:
+      pronunciationEnabled === false
+        ? []
+        : Array.isArray(pronunciationValue)
+          ? (pronunciationValue as Array<{ term: string; pronunciation: string }>)
+          : [],
   });
 
   // 5. Handle Field Resets (Reset state when provider or language changes)

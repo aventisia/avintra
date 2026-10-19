@@ -118,6 +118,25 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
       },
     },
     { key: "__ToolsConfig__Voice", value: [] },
+    { key: "__VariablesEnabled__Voice", value: false },
+    { key: "__Variables__Voice", value: {} },
+    { key: "__PronunciationEnabled__Voice", value: false },
+    { key: "__Pronunciation__Voice", value: [] },
+    { key: "__EscalationEnabled__Voice", value: false },
+    { key: "__EscalationDestination__Voice", value: "" },
+    { key: "__EscalationCondition__Voice", value: "" },
+    { key: "__EscalationFallback__Voice", value: "reprompt" },
+    { key: "__TranscriptWebhookEnabled__Voice", value: false },
+    { key: "__TranscriptWebhookUrl__Voice", value: "" },
+    { key: "__TranscriptWebhookSecret__Voice", value: "" },
+    { key: "__SfxToolCallCueEnabled__Voice", value: false },
+    { key: "__SfxToolCallCueUrl__Voice", value: "" },
+    { key: "__SfxAmbienceEnabled__Voice", value: false },
+    { key: "__SfxAmbienceUrl__Voice", value: "" },
+    { key: "__SfxEnabled__Voice", value: false },
+    { key: "__VirtualAvatar__Voice", value: false },
+    { key: "__ScreenShare__Voice", value: false },
+    { key: "__CameraFeed__Voice", value: false },
   ],
   outputs: [
     {
@@ -140,17 +159,67 @@ const mergeNodeValues = <T extends { key: string }>(defaults: T[], existing?: T[
   ];
 };
 
+const readInputValue = (inputs: NodeInputType[], key: string): unknown =>
+  inputs.find((input) => input.key === key)?.value;
+
+const hasObjectEntries = (value: unknown): boolean =>
+  typeof value === "object" &&
+  value !== null &&
+  !Array.isArray(value) &&
+  Object.keys(value).length > 0;
+
+const hasArrayEntries = (value: unknown): boolean => Array.isArray(value) && value.length > 0;
+
+const isNonBlankString = (value: unknown): boolean =>
+  typeof value === "string" && value.trim().length > 0;
+
+const VOICE_FEATURE_TOGGLE_INFERENCE: Record<string, (inputs: NodeInputType[]) => boolean> = {
+  __VariablesEnabled__Voice: (inputs) =>
+    hasObjectEntries(readInputValue(inputs, "__Variables__Voice")),
+  __PronunciationEnabled__Voice: (inputs) =>
+    hasArrayEntries(readInputValue(inputs, "__Pronunciation__Voice")),
+  __EscalationEnabled__Voice: (inputs) =>
+    isNonBlankString(readInputValue(inputs, "__EscalationDestination__Voice")) ||
+    isNonBlankString(readInputValue(inputs, "__EscalationCondition__Voice")),
+  __TranscriptWebhookEnabled__Voice: (inputs) =>
+    isNonBlankString(readInputValue(inputs, "__TranscriptWebhookUrl__Voice")),
+  __SfxToolCallCueEnabled__Voice: (inputs) =>
+    isNonBlankString(readInputValue(inputs, "__SfxToolCallCueUrl__Voice")),
+  __SfxAmbienceEnabled__Voice: (inputs) =>
+    isNonBlankString(readInputValue(inputs, "__SfxAmbienceUrl__Voice")),
+};
+
+// IMPORTANT NOTE: pre-toggle saved graphs are opaque JSON with no migration path, so a missing
+// feature toggle is inferred from its saved values instead of defaulting existing agents off.
+const applyLegacyVoiceFeatureDefaults = (
+  inputs: NodeInputType[],
+  existingInputs?: NodeInputType[],
+): NodeInputType[] => {
+  const savedKeys = new Set((existingInputs ?? []).map((input) => input.key));
+
+  return inputs.map((input) => {
+    const inferEnabled = VOICE_FEATURE_TOGGLE_INFERENCE[input.key];
+    if (!inferEnabled || savedKeys.has(input.key)) return input;
+
+    return { ...input, value: inferEnabled(inputs) };
+  });
+};
+
 /** Creates complete Voice AI data while preserving saved configuration values. */
 const createVoiceAgentData = (existingData?: NodeDataType): NodeDataType => {
   /** Default fields ensure incomplete legacy nodes become executable. */
   const defaultData = createDefaultVoiceAgentData();
+  const mergedInputs = mergeNodeValues<NodeInputType>(
+    defaultData.inputs ?? [],
+    existingData?.inputs,
+  );
 
   return {
     ...defaultData,
     ...existingData,
     type: "aiNode",
     name: VOICE_AGENT_NODE_NAME,
-    inputs: mergeNodeValues<NodeInputType>(defaultData.inputs ?? [], existingData?.inputs),
+    inputs: applyLegacyVoiceFeatureDefaults(mergedInputs, existingData?.inputs),
     outputs: mergeNodeValues<NodeOutputType>(defaultData.outputs ?? [], existingData?.outputs),
   };
 };
