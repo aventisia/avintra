@@ -330,6 +330,216 @@
       "name": "__ToolsConfig__Voice",
       "defaultValue": [],
       "category": "Tools"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__VariablesEnabled__Voice",
+      "label": "Enable Dynamic Variables",
+      "description": "Fill {{name}} placeholders in the goal, role, instructions, and introduction with the values below. Turn this off to keep the values but leave placeholders as written.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "__Variables__Voice",
+      "label": "Variables",
+      "description": "Default values for placeholders used in the Goal, Role, Instructions, and Introduction. Add a name and value pair, for example name company_name with value Acme. Each {{name}} placeholder is replaced with its default during conversations. Names without a default are left as written. Realtime sessions do not resolve these placeholders.",
+      "defaultValue": {},
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__PronunciationEnabled__Voice",
+      "label": "Enable Pronunciation",
+      "description": "Use the pronunciation list below when the voice speaks. Turn this off to keep the list but speak the original text.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "__Pronunciation__Voice",
+      "label": "Pronunciation",
+      "description": "Speak terms, names, and acronyms with an intended pronunciation. Add a term and how it should be spoken, for example term API spoken as A P I. Matching is case-insensitive and uses the longest term first. Applies to providers that support speech synthesis.",
+      "defaultValue": [],
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__EscalationEnabled__Voice",
+      "label": "Enable Escalation",
+      "description": "Allow this agent to escalate a caller using the settings below. Transfer is not executed today; turn this off to keep the settings without running escalation checks.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__EscalationDestination__Voice",
+      "label": "Escalation Destination",
+      "description": "Human destination for call escalation, for example a phone number or queue. Leave empty to disable escalation. Transfer is not executed today; this value is stored and documented for a later runtime change.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "textarea",
+      "name": "__EscalationCondition__Voice",
+      "label": "Escalation Condition",
+      "description": "When a caller should be escalated to the destination above. Transfer is not executed today; this value is stored and documented for a later runtime change.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "__EscalationFallback__Voice",
+      "label": "Escalation Fallback",
+      "description": "What should happen if an escalation cannot complete. Reprompt asks the caller to continue with the agent, Message plays a closing message and continues gracefully, and End closes the call gracefully. The fallback is not executed today; this value is stored and documented for a later runtime change.",
+      "defaultValue": "reprompt",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Reprompt caller",
+          "value": "reprompt",
+          "description": "Ask the caller to continue with the agent."
+        },
+        {
+          "label": "Play message",
+          "value": "message",
+          "description": "Play a closing message and continue gracefully."
+        },
+        {
+          "label": "End call",
+          "value": "end",
+          "description": "Close the call gracefully."
+        }
+      ],
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__TranscriptWebhookEnabled__Voice",
+      "label": "Enable Transcript Webhook",
+      "description": "Send the transcript to the URL below once a deployed conversation is archived. Turn this off to keep the URL but stop sending.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__TranscriptWebhookUrl__Voice",
+      "label": "Transcript Webhook URL",
+      "description": "The HTTPS endpoint where the transcript will be sent after a voice conversation is archived.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "password",
+      "name": "__TranscriptWebhookSecret__Voice",
+      "label": "Signing secret",
+      "description": "Used to sign webhook requests so your endpoint can verify that they were sent by the voice agent.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__SfxToolCallCueEnabled__Voice",
+      "label": "Enable Tool Call Sound",
+      "description": "Play the tool call sound below when a tool runs. Turn this off to keep the sound URL but stop playing it.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__SfxToolCallCueUrl__Voice",
+      "label": "Tool Call Sound",
+      "description": "URL of a sound played in the browser when a tool is called. Leave empty for silence. Sound plays in the browser only; it is not mixed into phone audio.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__SfxAmbienceEnabled__Voice",
+      "label": "Enable Ambience Sound",
+      "description": "Play the ambience sound below during a voice session. Turn this off to keep the sound URL but stop playing it.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "__SfxAmbienceUrl__Voice",
+      "label": "Ambience Sound",
+      "description": "URL of a sound looped in the browser during a voice session. Leave empty for silence. Sound plays in the browser only; it is not mixed into phone audio.",
+      "defaultValue": "",
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__SfxEnabled__Voice",
+      "label": "Enable Sound Effects",
+      "description": "Turn browser sound effects on. When off, the configured sounds are not played.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__VirtualAvatar__Voice",
+      "label": "Virtual Avatar",
+      "description": "Not yet available. Coming soon.",
+      "defaultValue": false,
+      "required": false,
+      "disabled": true,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__ScreenShare__Voice",
+      "label": "Screen Share",
+      "description": "Not yet available. Coming soon.",
+      "defaultValue": false,
+      "required": false,
+      "disabled": true,
+      "category": "Features"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "__CameraFeed__Voice",
+      "label": "Camera Feed",
+      "description": "Not yet available. Coming soon.",
+      "defaultValue": false,
+      "required": false,
+      "disabled": true,
+      "category": "Features"
     }
   ]
 }

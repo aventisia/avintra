@@ -1,5 +1,11 @@
 import { useMemo } from "react";
 
+import {
+  PronunciationConfigEntry,
+  SfxConfig,
+  getPronunciationConfig,
+  getSfxConfig,
+} from "@/features/dynamic-config-panel/utils/ai-node-config-helper";
 import { CHAT_AGENT_NODE_NAME } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -19,6 +25,10 @@ export type ChatAgentVoiceConfig = {
   voice: VoiceConfigType | null;
   /** True when a Text-to-Speech model is configured, so replies can be spoken. */
   isTextToSpeechConfigured: boolean;
+  /** VoiceAgent sound-effect settings; disabled when not configured. */
+  sfx: SfxConfig;
+  /** VoiceAgent pronunciation aliases; empty when not configured. */
+  pronunciations: PronunciationConfigEntry[];
 };
 
 /** Reads the single-node agent's voice configuration from the current flow graph. */
@@ -40,12 +50,15 @@ export const useChatAgentVoiceConfig = (): ChatAgentVoiceConfig => {
     const stt = (findValue(STT_INPUT_KEY) as ModelConfigType | undefined) ?? null;
     const tts = (findValue(TTS_INPUT_KEY) as ModelConfigType | undefined) ?? null;
     const voice = (findValue(VOICE_INPUT_KEY) as VoiceConfigType | undefined) ?? null;
+    const values = Object.fromEntries(inputs.map((input) => [input.key, input.value]));
 
     return {
       stt,
       tts,
       voice,
       isTextToSpeechConfigured: Boolean(tts?.model),
+      sfx: getSfxConfig(values),
+      pronunciations: getPronunciationConfig(values)?.config ?? [],
     };
   }, [nodes]);
 };

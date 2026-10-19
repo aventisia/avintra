@@ -15,6 +15,7 @@ type VoicePreviewRequest = {
   speed?: number;
   credentialName?: string;
   isByokEnabled?: boolean;
+  pronunciations?: Array<{ term: string; pronunciation: string }>;
 };
 
 /**
@@ -29,6 +30,7 @@ export const useVoicePreview = ({
   speed,
   credentialName,
   isByokEnabled,
+  pronunciations,
 }: VoicePreviewRequest) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
@@ -65,6 +67,7 @@ export const useVoicePreview = ({
         voice_id: voice || null,
         language: language || null,
         speed: speed ?? 1,
+        pronunciations: pronunciations && pronunciations.length > 0 ? pronunciations : null,
         stream: false,
         credential_name: credentialName || null,
         is_byok_enabled: isByokEnabled ?? false,
@@ -93,7 +96,17 @@ export const useVoicePreview = ({
       setError("Voice preview request failed.");
       setIsPreviewing(false);
     }
-  }, [isSupported, provider, model, voice, language, speed, credentialName, isByokEnabled]);
+  }, [
+    isSupported,
+    provider,
+    model,
+    voice,
+    language,
+    speed,
+    credentialName,
+    isByokEnabled,
+    pronunciations,
+  ]);
 
   return { isSupported, canPreview, isPreviewing, error, playPreview, stopPreview };
 };

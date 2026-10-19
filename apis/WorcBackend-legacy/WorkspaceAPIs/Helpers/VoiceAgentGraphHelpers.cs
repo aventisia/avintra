@@ -72,6 +72,81 @@ public static class VoiceAgentGraphHelpers
     public const string PipelineTextToSpeechKey = "__ModelConfig__TextToSpeech";
 
     /// <summary>
+    /// Input key holding the dynamic variable defaults.
+    /// </summary>
+    public const string VariablesKey = "__Variables__Voice";
+
+    /// <summary>
+    /// Input key holding the pronunciation alias list.
+    /// </summary>
+    public const string PronunciationKey = "__Pronunciation__Voice";
+
+    /// <summary>
+    /// Input key holding the escalation destination.
+    /// </summary>
+    public const string EscalationDestinationKey = "__EscalationDestination__Voice";
+
+    /// <summary>
+    /// Input key holding the escalation condition.
+    /// </summary>
+    public const string EscalationConditionKey = "__EscalationCondition__Voice";
+
+    /// <summary>
+    /// Input key holding the escalation fallback choice.
+    /// </summary>
+    public const string EscalationFallbackKey = "__EscalationFallback__Voice";
+
+    /// <summary>
+    /// Input key holding the transcript webhook URL.
+    /// </summary>
+    public const string TranscriptWebhookUrlKey = "__TranscriptWebhookUrl__Voice";
+
+    /// <summary>
+    /// Input key holding the tool-call cue sound URL.
+    /// </summary>
+    public const string SfxToolCallCueUrlKey = "__SfxToolCallCueUrl__Voice";
+
+    /// <summary>
+    /// Input key holding the ambience sound URL.
+    /// </summary>
+    public const string SfxAmbienceUrlKey = "__SfxAmbienceUrl__Voice";
+
+    /// <summary>
+    /// Input key holding the sound-effects enabled flag.
+    /// </summary>
+    public const string SfxEnabledKey = "__SfxEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the dynamic variables enabled flag.
+    /// </summary>
+    public const string VariablesEnabledKey = "__VariablesEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the pronunciation enabled flag.
+    /// </summary>
+    public const string PronunciationEnabledKey = "__PronunciationEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the escalation enabled flag.
+    /// </summary>
+    public const string EscalationEnabledKey = "__EscalationEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the transcript webhook enabled flag.
+    /// </summary>
+    public const string TranscriptWebhookEnabledKey = "__TranscriptWebhookEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the tool-call cue enabled flag.
+    /// </summary>
+    public const string SfxToolCallCueEnabledKey = "__SfxToolCallCueEnabled__Voice";
+
+    /// <summary>
+    /// Input key holding the ambience enabled flag.
+    /// </summary>
+    public const string SfxAmbienceEnabledKey = "__SfxAmbienceEnabled__Voice";
+
+    /// <summary>
     /// Engine modes accepted when publishing a VoiceAgent.
     /// </summary>
     public static readonly HashSet<string> AllowedEngineModes = new(StringComparer.OrdinalIgnoreCase)
@@ -91,6 +166,16 @@ public static class VoiceAgentGraphHelpers
         "vertex_ai",
         "xai",
         "bedrock"
+    };
+
+    /// <summary>
+    /// Escalation fallbacks accepted when publishing a VoiceAgent.
+    /// </summary>
+    public static readonly HashSet<string> AllowedEscalationFallbacks = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "reprompt",
+        "message",
+        "end"
     };
 
     /// <summary>
@@ -198,6 +283,65 @@ public static class VoiceAgentGraphHelpers
             : ValidatePipelineEngine(voiceNode);
     }
 
+    /// <summary>
+    /// Validates the VoiceAgent escalation configuration: an empty destination
+    /// disables escalation, and a configured destination must carry a supported fallback.
+    /// </summary>
+    /// <param name="parsedFlow">The parsed ReactFlow object.</param>
+    /// <returns>An error message when invalid; otherwise, null.</returns>
+    public static string? ValidateVoiceAgentEscalation(ReactFlowDataModel? parsedFlow)
+    {
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+        if (voiceNode is null)
+            return null;
+
+        if (GetInputBool(voiceNode, EscalationEnabledKey) == false)
+            return null;
+
+        var destination = GetInputString(voiceNode, EscalationDestinationKey);
+        if (string.IsNullOrWhiteSpace(destination))
+            return null;
+
+        if (destination.Trim().Length > 200)
+            return "Voice agent escalation destination cannot exceed 200 characters.";
+
+        var fallback = GetInputString(voiceNode, EscalationFallbackKey);
+        var normalizedFallback = string.IsNullOrWhiteSpace(fallback) ? "reprompt" : fallback.Trim();
+        if (!AllowedEscalationFallbacks.Contains(normalizedFallback))
+            return $"Voice agent escalation fallback '{fallback}' is not supported. Supported fallbacks: "
+                + string.Join(", ", AllowedEscalationFallbacks.OrderBy(name => name, StringComparer.Ordinal)) + ".";
+
+        return null;
+    }
+
+    /// <summary>
+    /// Validates the VoiceAgent transcript webhook URL: when set, it must be an
+    /// absolute http or https endpoint.
+    /// </summary>
+    /// <param name="parsedFlow">The parsed ReactFlow object.</param>
+    /// <returns>An error message when invalid; otherwise, null.</returns>
+    public static string? ValidateVoiceAgentTranscriptWebhook(ReactFlowDataModel? parsedFlow)
+    {
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+        if (voiceNode is null)
+            return null;
+
+        if (GetInputBool(voiceNode, TranscriptWebhookEnabledKey) == false)
+            return null;
+
+        var url = GetInputString(voiceNode, TranscriptWebhookUrlKey);
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        return IsAbsoluteHttpUrl(url)
+            ? null
+            : "Voice agent transcript webhook URL must be an absolute http or https URL.";
+    }
+
+    private static bool IsAbsoluteHttpUrl(string value) =>
+        Uri.TryCreate(value.Trim(), UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+
     private static string? ValidateRealtimeEngine(ReactFlowNodeModel voiceNode)
     {
         var provider = GetInputObjectField(voiceNode, RealtimeVoiceKey, "provider");
@@ -298,6 +442,34 @@ public static class VoiceAgentGraphHelpers
         var voiceNode = FindVoiceAgentNode(parsedFlow);
 
         return GetInputString(voiceNode, IntroductionKey) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Reads the configured transcript webhook URL from a persisted VoiceAgent
+    /// ReactFlow object, or null when unset.
+    /// </summary>
+    /// <param name="reactFlowObject">The persisted ReactFlow object JSON.</param>
+    /// <returns>The webhook URL, or null when unset.</returns>
+    public static string? GetTranscriptWebhookUrl(string? reactFlowObject)
+    {
+        var parsedFlow = TryParseFlow(reactFlowObject);
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+
+        return GetInputString(voiceNode, TranscriptWebhookUrlKey);
+    }
+
+    /// <summary>
+    /// Reports whether the VoiceAgent transcript webhook is enabled for a persisted graph;
+    /// an absent toggle keeps the legacy enabled behavior.
+    /// </summary>
+    /// <param name="reactFlowObject">The persisted ReactFlow object JSON.</param>
+    /// <returns><c>false</c> only when the toggle is explicitly disabled.</returns>
+    public static bool IsTranscriptWebhookEnabled(string? reactFlowObject)
+    {
+        var parsedFlow = TryParseFlow(reactFlowObject);
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+
+        return GetInputBool(voiceNode, TranscriptWebhookEnabledKey) != false;
     }
 
     /// <summary>
@@ -405,5 +577,26 @@ public static class VoiceAgentGraphHelpers
             return element.ValueKind == JsonValueKind.String ? element.GetString() : element.ToString();
 
         return input.Value.ToString();
+    }
+
+    private static bool? GetInputBool(ReactFlowNodeModel? node, string key)
+    {
+        var input = node?.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, key, StringComparison.OrdinalIgnoreCase));
+        if (input?.Value is null)
+            return null;
+
+        if (input.Value is JsonElement element)
+        {
+            return element.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.String when bool.TryParse(element.GetString(), out var parsed) => parsed,
+                _ => null,
+            };
+        }
+
+        return input.Value is bool boolean ? boolean : null;
     }
 }

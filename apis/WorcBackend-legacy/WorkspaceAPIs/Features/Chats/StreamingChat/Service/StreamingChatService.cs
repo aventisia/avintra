@@ -405,16 +405,16 @@ public class StreamingChatService : IStreamingChatService
 
         var voiceSystemPrompt = isVoiceAgent
             ? ComposeVoiceSystemPrompt(
-                GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.GoalKey),
-                GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.RoleKey),
-                GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.InstructionsKey))
+                ResolveVoiceVariables(nodeConfig, GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.GoalKey)),
+                ResolveVoiceVariables(nodeConfig, GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.RoleKey)),
+                ResolveVoiceVariables(nodeConfig, GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.InstructionsKey)))
             : null;
         var firstSpeaker = isVoiceAgent
             ? GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.FirstSpeakerKey) ?? "human"
             : "human";
         var introductionText = isVoiceAgent &&
             string.Equals(firstSpeaker, "ai", StringComparison.OrdinalIgnoreCase)
-                ? GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.IntroductionKey)
+                ? ResolveVoiceVariables(nodeConfig, GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.IntroductionKey))
                 : null;
         var managerAgentTarget = isVoiceAgent
             ? GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.ManagerAgentKey)
@@ -494,6 +494,8 @@ public class StreamingChatService : IStreamingChatService
         var sourceThreshold = hasKbNames ? GetDoubleProperty(kbConfig, "sourceThreshold") : null;
         var maxOutputTokens = GetIntProperty(modelConfig, "max_output_tokens");
         var maxShortTermTurns = GetIntProperty(memoryConfig, "maxDataStored");
+        var pronunciations = isVoiceAgent ? BuildPronunciationPayload(nodeConfig) : null;
+        var sfx = isVoiceAgent ? BuildSfxPayload(nodeConfig) : null;
 
         return new
         {
@@ -523,6 +525,8 @@ public class StreamingChatService : IStreamingChatService
             source_threshold = sourceThreshold,
             skill_names = hasSkillNames ? skillNames : null,
             max_short_term_turns = maxShortTermTurns,
+            pronunciations,
+            sfx,
             ref_type = "Agent",
             ref_id = flowVersion.FlowId.ToString(),
             ref_name = flowVersion.Flow?.Name ?? string.Empty,
@@ -547,6 +551,97 @@ public class StreamingChatService : IStreamingChatService
             sections.Add($"Instructions:\n{instructions.Trim()}");
 
         return sections.Count > 0 ? string.Join("\n\n", sections) : null;
+    }
+
+    private static readonly Regex VoiceVariablePattern = new(@"\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Replaces {{name}} placeholders in VoiceAgent text with the defaults from
+    /// <c>__Variables__Voice</c>; names without a default are left intact.
+    /// </summary>
+    private static string? ResolveVoiceVariables(JsonNode? nodeConfig, string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        var variables = ReadVoiceVariables(nodeConfig);
+        if (variables.Count == 0)
+            return text;
+
+        return VoiceVariablePattern.Replace(text, match =>
+        {
+            var name = match.Groups[1].Value;
+            return variables.TryGetValue(name, out var value) ? value : match.Value;
+        });
+    }
+
+    private static Dictionary<string, string> ReadVoiceVariables(JsonNode? nodeConfig)
+    {
+        var variables = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.VariablesEnabledKey) == false)
+            return variables;
+
+        if (GetObjectProperty(nodeConfig, VoiceAgentGraphHelpers.VariablesKey) is not JsonObject obj)
+            return variables;
+
+        foreach (var pair in obj)
+        {
+            if (pair.Value is null)
+                continue;
+
+            variables[pair.Key] = pair.Value.GetValueKind() == System.Text.Json.JsonValueKind.String
+                ? pair.Value.GetValue<string>()
+                : pair.Value.ToString();
+        }
+
+        return variables;
+    }
+
+    private static List<object>? BuildPronunciationPayload(JsonNode? nodeConfig)
+    {
+        if (GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.PronunciationEnabledKey) == false)
+            return null;
+
+        var arr = GetArrayProperty(nodeConfig, VoiceAgentGraphHelpers.PronunciationKey);
+        if (arr is null)
+            return null;
+
+        var entries = new List<object>();
+        foreach (var item in arr)
+        {
+            if (item is not JsonObject obj)
+                continue;
+
+            var term = GetStringProperty(obj, "term");
+            var pronunciation = GetStringProperty(obj, "pronunciation");
+            if (string.IsNullOrWhiteSpace(term) || string.IsNullOrWhiteSpace(pronunciation))
+                continue;
+
+            entries.Add(new { term, pronunciation });
+        }
+
+        return entries.Count > 0 ? entries : null;
+    }
+
+    private static object? BuildSfxPayload(JsonNode? nodeConfig)
+    {
+        var masterOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxEnabledKey) == true;
+        var cueUrl = GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.SfxToolCallCueUrlKey);
+        var ambienceUrl = GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.SfxAmbienceUrlKey);
+        var cueOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxToolCallCueEnabledKey)
+            ?? !string.IsNullOrWhiteSpace(cueUrl);
+        var ambienceOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxAmbienceEnabledKey)
+            ?? !string.IsNullOrWhiteSpace(ambienceUrl);
+
+        if (!masterOn && string.IsNullOrWhiteSpace(cueUrl) && string.IsNullOrWhiteSpace(ambienceUrl))
+            return null;
+
+        return new
+        {
+            enabled = masterOn,
+            tool_call_cue_url = masterOn && cueOn ? cueUrl : null,
+            ambience_url = masterOn && ambienceOn ? ambienceUrl : null,
+        };
     }
 
     // --- JsonNode helpers ---

@@ -8,7 +8,7 @@ import {
   useAui,
   useLocalRuntime,
 } from "@assistant-ui/react";
-import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
+import { createAssistantUIModelAdapter, createVoiceSfx } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -229,6 +229,37 @@ const RuntimeWrapper = ({
   /**
    * Execution API Runtime.
    */
+  const voiceSfx = useMemo(() => createVoiceSfx(), []);
+  const voiceSfxConfigRef = useRef<{
+    enabled?: boolean;
+    tool_call_cue_url?: string;
+    ambience_url?: string;
+  } | null>(null);
+
+  const handleRunStart = useCallback(() => {
+    const config = voiceSfxConfigRef.current;
+    if (!config?.enabled) return;
+    voiceSfx.startAmbience(config.ambience_url);
+  }, [voiceSfx]);
+
+  const handleToolCallFrame = useCallback(() => {
+    const config = voiceSfxConfigRef.current;
+    if (!config?.enabled) return;
+    voiceSfx.playToolCallCue(config.tool_call_cue_url);
+  }, [voiceSfx]);
+
+  const handleSfxConfig = useCallback((sfx: Record<string, unknown>) => {
+    voiceSfxConfigRef.current = sfx as {
+      enabled?: boolean;
+      tool_call_cue_url?: string;
+      ambience_url?: string;
+    };
+  }, []);
+
+  const handleRunFinished = useCallback(() => {
+    voiceSfx.stopAmbience();
+  }, [voiceSfx]);
+
   const runtime = useLocalRuntime(
     useMemo(
       () =>
@@ -237,11 +268,25 @@ const RuntimeWrapper = ({
           getConversationId, // Pass the dynamic getter
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
+          onRunStart: handleRunStart,
+          onToolCallFrame: handleToolCallFrame,
+          onSfxConfig: handleSfxConfig,
+          onRunFinished: handleRunFinished,
           isTempChat: mode === "temporary",
           // Chat streams are scoped to the current space.
           getExtraHeaders: getSpaceHeaders,
         }),
-      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
+      [
+        flowVersionId,
+        getConversationId,
+        onRequestComplete,
+        handleSuggestionsUpdate,
+        mode,
+        handleRunStart,
+        handleToolCallFrame,
+        handleSfxConfig,
+        handleRunFinished,
+      ],
     ),
     {
       initialMessages,

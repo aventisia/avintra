@@ -354,6 +354,12 @@ public class FlowBuilderService : IFlowBuilderService
 
                 if (VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(parsedVoiceFlow) is string voiceEngineError)
                     return serviceResponse.Update(voiceEngineError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentEscalation(parsedVoiceFlow) is string voiceEscalationError)
+                    return serviceResponse.Update(voiceEscalationError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentTranscriptWebhook(parsedVoiceFlow) is string voiceWebhookError)
+                    return serviceResponse.Update(voiceWebhookError, 400);
             }
 
             // TODO: Bug When there is a call block or call agent node exists then parsed flow is empty

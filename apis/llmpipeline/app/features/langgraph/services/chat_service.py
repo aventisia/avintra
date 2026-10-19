@@ -321,6 +321,7 @@ class ChatService:
 
         transcript_frames: list[dict[str, Any]] = []
         transcript_text: list[str] = []
+        voice_metadata = self._voice_frame_metadata(request)
 
         async for chunk in self._stream_normalized_impl(
             request=request,
@@ -328,6 +329,9 @@ class ChatService:
             db_session=db_session,
             resume_decisions=resume_decisions,
         ):
+            if voice_metadata and getattr(chunk, "metadata", None) is None:
+                chunk.metadata = voice_metadata
+
             chunk_type = getattr(chunk, "type", None)
             output = getattr(chunk, "output", None)
 
@@ -849,7 +853,23 @@ class ChatService:
             output=final_text,
             type="done",
             conversation_id=conversation_id,
+            metadata=self._voice_frame_metadata(request),
         )
+
+    @staticmethod
+    def _voice_frame_metadata(request: LLMRequest) -> dict | None:
+        """Client hints echoed on voice frames so deployed clients can apply
+        pronunciation aliases and sound effects without node-config access."""
+
+        if not request.is_voice_agent:
+            return None
+
+        metadata: dict = {}
+        if request.pronunciations:
+            metadata["pronunciations"] = request.pronunciations
+        if request.sfx:
+            metadata["sfx"] = request.sfx
+        return metadata or None
 
     @staticmethod
     def _extract_text_delta(chunk: Any) -> str:

@@ -46,6 +46,8 @@ class LLMRequest(BaseModel):
     introduction_text: Optional[str] = None   # Voice agent introduction already delivered to the caller (context only)
     voice_system_prompt: Optional[str] = None   # Voice agent persona (goal/role/instructions) composed by the workspace API
     manager_agent: Optional[dict] = None   # Voice agent delegation contract: {"target": str, "context": dict}
+    pronunciations: Optional[List[dict]] = None  # Voice agent term/pronunciation alias list passed to the TTS layer
+    sfx: Optional[dict] = None  # Voice agent sound-effect passthrough: {"enabled": bool, "tool_call_cue_url": str, "ambience_url": str}
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.
     ref_type: str = "" # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str = "" # Identifier to link back to Agent/Workflow
@@ -74,6 +76,7 @@ class LLMChunkResponse(BaseModel):
     output: Union[str, dict, list, ChatAgentResponse]  # Text, JSON, or structured chat-agent response
     conversation_id: Optional[str] = None # Unique identifier for the conversation/thread. Use this to maintain conversation context across multiple requests.
     type: Optional[str] = None
+    metadata: Optional[dict] = None  # Voice agent client hints (pronunciations, sfx) echoed to the caller
     
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):

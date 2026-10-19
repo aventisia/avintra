@@ -4,6 +4,7 @@ import { cn } from "@avplatform/ui/lib";
 import { SliderField } from "@/components/Slider/SliderField";
 import { CodeEditorField } from "@/components/code-editor/CodeEditorField";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 
 import {
   ConditionGroupsField,
@@ -11,6 +12,7 @@ import {
   ConfigPanelOuputField,
   DCPFieldSchemaType,
 } from "..";
+import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
@@ -22,13 +24,25 @@ import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VaultCredentialSelectField } from "./fields-for-form/VaultCredentialSelectField";
+import { VoiceFeaturesTab } from "./fields-for-form/VoiceFeaturesTab";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
 import { QueuePriorityGroupsField } from "./queue-condition-groups/QueuePriorityGroupsField";
 
+const isVoiceFeaturesField = (field: DCPFieldSchemaType): boolean =>
+  field.category === "Features" &&
+  /^__\w+__Voice$/.test(field.name) &&
+  useDynamicConfigPanelStore.getState().nodeData?.name === VOICE_AGENT_NODE_NAME;
+
 // Helper to render the correct field type
-export const RenderField = (field: DCPFieldSchemaType) => {
+export const RenderField = ({ force, ...field }: DCPFieldSchemaType & { force?: boolean }) => {
+  // IMPORTANT NOTE: sibling Features fields return null here; the untouched DCPForm loop and
+  // useDefineDCPForm derivation still own the 18-key inputKeys retention.
+  if (!force && isVoiceFeaturesField(field)) {
+    return field.name === "__VariablesEnabled__Voice" ? <VoiceFeaturesTab /> : null;
+  }
+
   // Create base props for the field
   const baseProps = {
     name: field.name,
