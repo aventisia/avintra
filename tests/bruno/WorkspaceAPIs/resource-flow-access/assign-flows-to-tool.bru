@@ -1,0 +1,43 @@
+meta {
+  name: Assign flows to tool
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/assign
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "resourceType": "Tool",
+    "resourceId": "{{TOOL_ID}}",
+    "flowIds": [
+      "{{FLOW_ID}}"
+    ]
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.data?.assignedCount >= 1) {
+    bru.setGlobalEnvVar("EXPECT_FLOW_ASSIGNED", "true");
+  }
+  test("assign flows returns 200 with the result counts", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.assignedCount).to.be.at.least(1);
+    expect(res.getBody().data.unassignedPublishedFlows).to.be.an("array");
+  });
+}
+
+docs {
+  > Assigns a single flow to the Dev custom tool identified by TOOL_ID through the
+  > bulk replace endpoint. The caller must be the tool owner or hold Edit access.
+  > Provide ACCESS_TOKEN, TOOL_ID and FLOW_ID through the environment.
+}

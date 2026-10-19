@@ -1,0 +1,57 @@
+meta {
+  name: Get assigned flows by resource
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Tool/{{TOOL_ID}}/assigned-flows
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const flowId = bru.getGlobalEnvVar("FLOW_ID") || bru.getEnvVar("FLOW_ID");
+  const toolId = bru.getGlobalEnvVar("TOOL_ID") || bru.getEnvVar("TOOL_ID");
+  const expectedAssigned = bru.getGlobalEnvVar("EXPECT_FLOW_ASSIGNED") || bru.getEnvVar("EXPECT_FLOW_ASSIGNED");
+  const entry = data.find((flow) => flow.id === flowId);
+
+  test("assigned flows request returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("assigned flow entry matches the last assign or unassign", function() {
+    if (expectedAssigned === "true") {
+      expect(entry, "flow " + flowId + " is missing from tool " + toolId + " assigned list").to.be.an("object");
+    } else if (expectedAssigned === "false") {
+      expect(entry, "flow " + flowId + " should be absent after unassign").to.equal(undefined);
+    } else {
+      expect(data).to.be.an("array");
+    }
+  });
+
+  test("assigned flow row carries the assigned-flow contract", function() {
+    if (expectedAssigned === "true") {
+      expect(entry, "flow " + flowId + " is missing from tool " + toolId + " assigned list").to.be.an("object");
+      expect(entry.name).to.be.a("string");
+      expect(entry.type).to.be.a("string");
+      expect(entry.versionCount).to.be.a("number");
+      expect(entry).to.have.property("lastModifiedOn");
+      expect(entry).to.not.have.property("isAssigned");
+      expect(entry).to.not.have.property("resourceType");
+      expect(entry).to.not.have.property("versionNumber");
+    }
+  });
+}
+
+docs {
+  > Lists only the flows already assigned to the tool. EXPECT_FLOW_ASSIGNED is
+  > chained by the assign and unassign requests; re-run this request after
+  > unassigning to observe the flow absent from the list.
+}

@@ -9,6 +9,7 @@ public class ToolService : IToolService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolService> _logger;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly CorsairConfigRepository _corsairConfigRepository;
@@ -22,6 +23,7 @@ public class ToolService : IToolService
         ILogger<ToolService> logger,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
         CorsairConfigRepository corsairConfigRepository,
@@ -31,6 +33,7 @@ public class ToolService : IToolService
         _unitOfWork = unitOfWork;
         _logger = logger;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
         _corsairConfigRepository = corsairConfigRepository;
@@ -826,6 +829,7 @@ public class ToolService : IToolService
             }
 
             await _resourceShareService.DeleteResourceSharesAsync(toolToDelete.Id, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolToDelete.Id);
             _unitOfWork.ToolRepo.Delete(toolToDelete);
 
             if (!await _unitOfWork.SaveAsync())
@@ -900,6 +904,7 @@ public class ToolService : IToolService
             }
 
             await _resourceShareService.DeleteResourceSharesAsync(toolIds, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolIds);
             _unitOfWork.ToolRepo.Delete(toolsToDelete);
 
             if (!await _unitOfWork.SaveAsync())

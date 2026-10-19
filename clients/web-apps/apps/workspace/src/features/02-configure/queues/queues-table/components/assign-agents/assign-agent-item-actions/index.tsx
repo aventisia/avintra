@@ -30,11 +30,12 @@ export const AgentsListItemActions = ({ item }: AgentsListItemActionsProps) => {
   return (
     <Button
       type="button"
-      variant="caution"
+      variant="ghost"
       size="icon7"
       onClick={handleRemove}
       disabled={isPending}
       aria-label="Remove agent"
+      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
     >
       {isPending ? (
         <Loader2Icon className="h-4 w-4 animate-spin" />

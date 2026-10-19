@@ -137,6 +137,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
         name={row.name}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess}
+        isResourceAccessRestricted={row.isResourceAccessRestricted}
         isPlatformTool={isPlatformTab}
       />
     ),
