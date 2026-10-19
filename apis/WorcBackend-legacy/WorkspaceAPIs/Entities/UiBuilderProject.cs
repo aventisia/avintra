@@ -50,6 +50,11 @@ public class UiBuilderProject : BaseEntity, IMustHaveTenant
     public int? PublishedVersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the data sources bound to the project. Stored as a JSON column.
+    /// </summary>
+    public List<UiBuilderDataConnection> DataConnections { get; set; } = new();
+
+    /// <summary>
     /// Gets or sets the list of generated versions to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<UiBuilderVersion>? UiBuilderVersions { get; set; }

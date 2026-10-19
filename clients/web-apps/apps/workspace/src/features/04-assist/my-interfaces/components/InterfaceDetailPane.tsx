@@ -1,10 +1,19 @@
 import { Skeleton } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
+import {
+  UiBuilderCalculationsButton,
+  UiBuilderHostFrame,
+  createUiBuilderDataRequester,
+  useUiBuilderCalculations,
+} from "@avplatform/ui/ui-builder-host";
 import { ArrowLeft, LayoutTemplate } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { UI_TYPE_LABEL } from "../constants";
 import { useFetchMyInterfaceView } from "../hooks/useFetchMyInterfaceView.hook";
@@ -22,6 +31,21 @@ export const InterfaceDetailPane = () => {
   const project = data?.data?.project;
   const headVersion = data?.data?.headVersion;
   const html = headVersion?.generatedHtml ?? "";
+  const calculations = useUiBuilderCalculations();
+  const resetCalculations = calculations.reset;
+
+  useEffect(() => resetCalculations(), [id, headVersion?.versionNumber, resetCalculations]);
+
+  const requestData = useMemo(
+    () =>
+      createUiBuilderDataRequester({
+        http: axiosInstance,
+        apiBaseUrl: import.meta.env.VITE_WORKSPACE_API_PATH,
+        projectId: id,
+        getHeaders: getSpaceHeaders,
+      }),
+    [id],
+  );
 
   if (isFetching) {
     return (
@@ -73,6 +97,8 @@ export const InterfaceDetailPane = () => {
         >
           {UI_TYPE_LABEL}
         </Badge>
+
+        <UiBuilderCalculationsButton sections={calculations.sections} className="ml-auto" />
       </div>
 
       {isUnavailable ? (
@@ -80,14 +106,13 @@ export const InterfaceDetailPane = () => {
           This interface is not available. It may have been disabled, unassigned, or unpublished.
         </div>
       ) : (
-        // IMPORTANT NOTE: published HTML must only ever run inside a sandbox limited to
-        // `allow-scripts`; adding any origin or navigation token would let the generated
-        // document reach the workspace origin.
         <div className="flex-1 p-3">
-          <iframe
+          <UiBuilderHostFrame
+            html={html}
             title={project?.name ?? "Interface"}
-            srcDoc={html}
-            sandbox="allow-scripts"
+            connections={project?.dataConnections ?? []}
+            onDataRequest={requestData}
+            onQueryResult={calculations.record}
             className="h-full w-full rounded-lg border border-slate-200 bg-white"
           />
         </div>

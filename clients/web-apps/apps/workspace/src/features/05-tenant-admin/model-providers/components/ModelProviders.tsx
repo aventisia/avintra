@@ -1,3 +1,4 @@
+import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   Card,
@@ -7,19 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@avplatform/ui/cards";
-import { Input } from "@avplatform/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import {
-  getProviderIcon,
-  modelProviderDefinitions,
-} from "../constants/model-provider-definitions";
+import { HelpButton } from "@/components/help/HelpButton";
+
+import { getProviderIcon, modelProviderDefinitions } from "../constants/model-provider-definitions";
 import { useFetchModelProviders } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
 import { ModelProviderSetupDialog } from "./ModelProviderSetupDialog";
-import { HelpButton } from "@/components/help/HelpButton";
 
 /**
  * Renders the grid of model provider cards under Tenant Admin > Model Providers.

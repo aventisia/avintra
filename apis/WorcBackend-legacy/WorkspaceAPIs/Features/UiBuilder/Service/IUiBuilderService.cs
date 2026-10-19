@@ -109,4 +109,63 @@ public interface IUiBuilderService
     /// <param name="id">The ID of the project to retrieve.</param>
     /// <returns>The task result contains the service response with the published project and pinned version.</returns>
     Task<ServiceResponse<UiBuilderProjectViewDto>> GetOmUiBuilderViewAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves the text-capable models enabled for the current tenant.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of models, without secrets.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderModelDto>>> GetUiBuilderModelsAsync();
+
+    /// <summary>
+    /// Replaces the data connections bound to a custom UI builder project.
+    /// </summary>
+    /// <param name="id">The ID of the project to update.</param>
+    /// <param name="dataConnectionDtos">The complete list of data connections.</param>
+    /// <returns>The task result contains the service response with the updated project details.</returns>
+    Task<ServiceResponse<UiBuilderProjectDto>> UpdateUiBuilderDataConnectionsAsync(Guid id, List<UiBuilderDataConnectionDto> dataConnectionDtos);
+
+    /// <summary>
+    /// Retrieves list of work items from the queue bound to a project data connection.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="key">The key of the data connection.</param>
+    /// <param name="uiBuilderDataListRequestDto">The status, paging, and payload conditions.</param>
+    /// <returns>The task result contains the service response with the list of work items.</returns>
+    Task<ServiceResponse<IEnumerable<QueueWorkItemDto>>> GetUiBuilderDataItemsAsync(Guid id, string key, UiBuilderDataListRequestDto uiBuilderDataListRequestDto);
+
+    /// <summary>
+    /// Runs a declarative query (filters, grouping, and metrics) over the queue bound to a project data connection.
+    /// </summary>
+    /// <param name="id">The project ID.</param>
+    /// <param name="key">The data connection key.</param>
+    /// <param name="uiBuilderDataQueryRequestDto">The shared filters and named queries.</param>
+    /// <returns>The rows of each named query.</returns>
+    Task<ServiceResponse<UiBuilderDataQueryResultDto>> QueryUiBuilderDataAsync(Guid id, string key, UiBuilderDataQueryRequestDto uiBuilderDataQueryRequestDto);
+
+    /// <summary>
+    /// Retrieves a work item by its ID from the queue bound to a project data connection.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="key">The key of the data connection.</param>
+    /// <param name="itemId">The ID of the work item.</param>
+    /// <returns>The task result contains the service response with the work item details.</returns>
+    Task<ServiceResponse<QueueWorkItemDto>> GetUiBuilderDataItemAsync(Guid id, string key, Guid itemId);
+
+    /// <summary>
+    /// Insert a new work item into the queue bound to a project data connection.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="key">The key of the data connection.</param>
+    /// <param name="uiBuilderDataItemInsertDto">The work item payload and description.</param>
+    /// <returns>The task result contains the service response with the inserted work item details.</returns>
+    Task<ServiceResponse<QueueWorkItemDto>> InsertUiBuilderDataItemAsync(Guid id, string key, UiBuilderDataItemInsertDto uiBuilderDataItemInsertDto);
+
+    /// <summary>
+    /// Updates an existing work item of the queue bound to a project data connection.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="key">The key of the data connection.</param>
+    /// <param name="uiBuilderDataItemUpdateDto">The work item ID with the new status and/or payload.</param>
+    /// <returns>The task result contains the service response with the updated work item details.</returns>
+    Task<ServiceResponse<QueueWorkItemDto>> UpdateUiBuilderDataItemAsync(Guid id, string key, UiBuilderDataItemUpdateDto uiBuilderDataItemUpdateDto);
 }

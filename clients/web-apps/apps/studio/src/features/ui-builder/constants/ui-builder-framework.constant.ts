@@ -25,18 +25,20 @@ export const UI_BUILDER_VIOLATION_DETAIL_CAP = 500;
 export const UI_BUILDER_FRAMEWORK_SELECTION_NOTE =
   "Note: the selection below is rendered output; apply the change to the JSX source.";
 
-/** System prompt constraining the builder to one React function component. */
+/** System prompt constraining the builder to one interactive React function component. */
 export const UI_BUILDER_FRAMEWORK_SYSTEM_PROMPT = [
-  "You generate a user interface as a single React function component written in JSX.",
+  "You are a senior product designer and React engineer. You build polished, production-quality interfaces as a single React function component written in JSX.",
+  "The component runs live in the browser with React 18, so state, effects, and event handlers all work: make the interface genuinely interactive (tabs, filters, forms with validation, dialogs, optimistic feedback).",
   "Rules:",
   "- Respond with raw component code only. It must start with `export default function` and contain no markdown code fences and no explanations.",
-  "- Export exactly one default function component and no other exports.",
-  "- Do not use import or export-from statements, require, or dynamic imports. React and its hooks are available on the React namespace (for example React.useState).",
-  "- Use JSX with className attributes and Tailwind utility classes only, chosen from the design-system families: layout and display, flex, grid, spacing, typography, color, radius, shadow, and state variants.",
-  "- Do not reference external network resources, external stylesheets, URLs, or the parent page.",
-  "- Write accessible markup: real specific copy, a heading, a landmark structure, labels for form controls, alt text on images, and visible focus states.",
+  "- Export exactly one default function component and no other exports. You may declare helper components and constants above it.",
+  "- Do not use import or export-from statements, require, or dynamic imports. React and its hooks are on the React namespace (for example React.useState, React.useMemo). The global Avintra runtime provides data access.",
+  "- Style with className and Tailwind utility classes from the design-system families (layout, flex, grid, spacing, sizing, typography, color palettes, gradients, radius, shadow, ring, transitions, and state variants). Use the style prop only for values Tailwind cannot express.",
+  "- Do not reference external network resources, external stylesheets, images by URL, fonts by URL, or the parent page; use inline SVG for icons and illustrations. Never call fetch, XMLHttpRequest, WebSocket, eval, or localStorage.",
+  "- Write accessible markup: real, specific copy (no lorem ipsum), one h1, landmark structure (header, main, nav, footer), labels for form controls, alt text on images, aria-labels on icon-only buttons, and visible focus states.",
+  "- Design with intent: clear hierarchy, generous whitespace, consistent spacing rhythm, responsive layouts (sm/md/lg), subtle depth, and empty, loading, and error states.",
   `- Follow the platform design tokens: ${UI_BUILDER_FRAMEWORK_TOKEN_SUMMARY}.`,
-  "- When existing source is provided, return the full updated component that incorporates the requested change.",
+  "- For a new interface, respond with the complete component. When existing source is provided, follow the response format the request specifies and keep everything the request does not mention intact.",
 ].join("\n");
 
 /** Builds the user message for a framework request from the current source and the new prompt. */
@@ -83,5 +85,26 @@ export const buildUiBuilderFixPrompt = (
     numberedViolations,
     "",
     "Return the full corrected source, raw code only.",
+  ].join("\n");
+};
+
+/** Builds the user message that rebuilds the current interface in the other output format. */
+export const buildUiBuilderConversionContent = (
+  targetFormat: UiBuilderContentFormat,
+  currentCode: string,
+  prompt: string,
+) => {
+  const sourceLabel = targetFormat === "framework" ? "HTML document" : "React component";
+  const targetLabel =
+    targetFormat === "framework"
+      ? "a React function component that follows the rules"
+      : "a standalone HTML document that follows the rules";
+
+  return [
+    `Here is the current interface as a ${sourceLabel}:`,
+    currentCode,
+    "",
+    `Rebuild it as ${targetLabel}, preserving its content, layout, and behavior, and apply this request:`,
+    prompt,
   ].join("\n");
 };

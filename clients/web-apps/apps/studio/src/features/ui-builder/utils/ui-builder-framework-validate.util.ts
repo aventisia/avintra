@@ -6,11 +6,8 @@ import {
   UI_BUILDER_VIOLATION_DETAIL_CAP,
 } from "../constants/ui-builder-framework.constant";
 import { UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE } from "./ui-builder-bridge.util";
-import {
-  renderUiBuilderFrameworkMarkup,
-  transpileUiBuilderFrameworkSource,
-  wrapUiBuilderFrameworkDocument,
-} from "./ui-builder-framework-build.util";
+import { transpileUiBuilderFrameworkSource } from "./ui-builder-framework-build.util";
+import { type UiBuilderProbeResult } from "./ui-builder-probe.util";
 
 /** A single framework quality violation raised by the validator. */
 export type UiBuilderFrameworkViolation = {
@@ -24,18 +21,29 @@ const CLASS_NAME_PATTERN = /className\s*=\s*"([^"]*)"|className\s*=\s*'([^']*)'/
 
 const UNLABELLED_INPUT_TYPES = ["hidden", "submit", "button", "reset", "image"];
 
+const EXTERNAL_URL_PATTERN = /(?:https?:)?\/\/(?!www\.w3\.org\/)[a-z0-9-]+(?:\.[a-z0-9-]+)+/i;
+
 const EXTERNAL_REFERENCE_PATTERNS: ReadonlyArray<readonly [RegExp, string]> = [
-  [/https?:\/\//i, "external URL"],
-  [/<link\b/i, "<link> element"],
-  [/\bsrc\s*=/i, "src attribute"],
-  [/\bhref\s*=/i, "href attribute"],
   [/\bfetch\s*\(/i, "fetch() call"],
   [/\bXMLHttpRequest\b/, "XMLHttpRequest"],
   [/\bWebSocket\b/, "WebSocket"],
+  [/\bEventSource\b/, "EventSource"],
   [/\beval\s*\(/, "eval() call"],
   [/\blocalStorage\b/, "localStorage access"],
-  [/\bdocument\./, "document access"],
-  [/\bwindow\./, "window access"],
+  [/\bsessionStorage\b/, "sessionStorage access"],
+  [/\bwindow\.(?:parent|top|opener)\b/, "parent window access"],
+];
+
+const HTML_EXTERNAL_REFERENCE_PATTERNS: ReadonlyArray<readonly [RegExp, string]> = [
+  [/<link\b[^>]*\bhref\s*=\s*["']?(?:https?:)?\/\//i, "external stylesheet or font"],
+  [/<script\b[^>]*\bsrc\s*=/i, "external script"],
+  [/\b(?:src|srcset)\s*=\s*["']?(?:https?:)?\/\//i, "external image or media URL"],
+  [/url\(\s*["']?(?:https?:)?\/\//i, "external CSS url()"],
+  [/@import\b/i, "@import rule"],
+  [/\bfetch\s*\(/i, "fetch() call"],
+  [/\bXMLHttpRequest\b/, "XMLHttpRequest"],
+  [/\bWebSocket\b/, "WebSocket"],
+  [/\blocalStorage\b/, "localStorage access"],
 ];
 
 const STYLESHEET_IMPORT_PATTERN = /@import\b/i;
@@ -250,13 +258,27 @@ const validateAccessibility = (document: string, add: ViolationRecorder): void =
   }
 };
 
-/** Runs the framework quality checks and returns every violation that blocks saving. */
-export const validateUiBuilderFramework = (source: string): UiBuilderFrameworkViolation[] => {
-  const violations: UiBuilderFrameworkViolation[] = [];
-  const add: ViolationRecorder = (code, detail) => {
-    if (violations.length >= UI_BUILDER_MAX_VIOLATIONS) return;
-    violations.push({ code, detail: detail.slice(0, UI_BUILDER_VIOLATION_DETAIL_CAP) });
+/** Static checks for one generated artifact, split into blocking violations and advisories. */
+export type UiBuilderCheckResult = {
+  violations: UiBuilderFrameworkViolation[];
+  warnings: UiBuilderFrameworkViolation[];
+};
+
+const createRecorder =
+  (target: UiBuilderFrameworkViolation[]): ViolationRecorder =>
+  (code, detail) => {
+    if (target.length >= UI_BUILDER_MAX_VIOLATIONS) return;
+    const trimmed = detail.slice(0, UI_BUILDER_VIOLATION_DETAIL_CAP);
+    if (target.some((entry) => entry.code === code && entry.detail === trimmed)) return;
+    target.push({ code, detail: trimmed });
   };
+
+/** Runs the static checks for a framework JSX source; never evaluates the code. */
+export const validateUiBuilderFrameworkSource = (source: string): UiBuilderCheckResult => {
+  const violations: UiBuilderFrameworkViolation[] = [];
+  const warnings: UiBuilderFrameworkViolation[] = [];
+  const add = createRecorder(violations);
+  const warn = createRecorder(warnings);
 
   const trimmed = source.trim();
   const codeSource = toCodeSource(trimmed);
@@ -287,19 +309,23 @@ export const validateUiBuilderFramework = (source: string): UiBuilderFrameworkVi
   }
 
   for (const [pattern, label] of EXTERNAL_REFERENCE_PATTERNS) {
-    if (pattern.test(codeSource)) {
-      add("V4", `The source must not use an ${label}.`);
-    }
+    if (pattern.test(codeSource)) add("V4", `The source must not use an ${label}.`);
   }
-
+  if (EXTERNAL_URL_PATTERN.test(trimmed)) {
+    add("V4", "The source must not reference external URLs; use inline SVG or data URIs instead.");
+  }
   if (STYLESHEET_IMPORT_PATTERN.test(trimmed)) {
     add("V4", "The source must not use an @import rule.");
   }
 
-  for (const token of collectClassNameTokens(trimmed)) {
-    if (!SAFELIST.has(token)) {
-      add("V5", `Unknown Tailwind utility class: ${token}.`);
-    }
+  const unknownClasses = [
+    ...new Set(collectClassNameTokens(trimmed).filter((token) => !SAFELIST.has(token))),
+  ];
+  if (unknownClasses.length > 0) {
+    warn(
+      "V5",
+      `Unstyled utility classes (not in the design system): ${unknownClasses.slice(0, 20).join(", ")}.`,
+    );
   }
 
   if (source.length > UI_BUILDER_SOURCE_CAP) {
@@ -309,36 +335,58 @@ export const validateUiBuilderFramework = (source: string): UiBuilderFrameworkVi
     add("V9", "The source must not contain the preview bridge marker.");
   }
 
-  let compiled: string;
   try {
-    compiled = transpileUiBuilderFrameworkSource(source);
+    transpileUiBuilderFrameworkSource(source);
   } catch (error) {
     add("V6", error instanceof Error ? error.message : String(error));
-    return violations;
   }
 
-  let markup: string;
-  try {
-    markup = renderUiBuilderFrameworkMarkup(compiled);
-  } catch (error) {
-    add("V7", error instanceof Error ? error.message : String(error));
-    return violations;
+  return { violations, warnings };
+};
+
+/** Runs the static checks for a generated HTML document. */
+export const validateUiBuilderHtmlSource = (html: string): UiBuilderCheckResult => {
+  const violations: UiBuilderFrameworkViolation[] = [];
+  const add = createRecorder(violations);
+  const trimmed = html.trim();
+
+  if (!/^<!doctype html/i.test(trimmed)) {
+    add("V1", "The document must start with <!doctype html>.");
+  }
+  if (trimmed.includes("```")) {
+    add("V1", "The document must not contain markdown code fences.");
+  }
+  if (!/<\/html>\s*$/i.test(trimmed)) {
+    add("V1", "The document is incomplete: it must end with </html>.");
+  }
+  for (const [pattern, label] of HTML_EXTERNAL_REFERENCE_PATTERNS) {
+    if (pattern.test(trimmed)) add("V4", `The document must not use an ${label}.`);
+  }
+  if (html.length > UI_BUILDER_BUILT_CAP) {
+    add("V8", `The document exceeds ${UI_BUILDER_BUILT_CAP} characters.`);
+  }
+  if (trimmed.includes(UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE)) {
+    add("V9", "The document must not contain the preview bridge marker.");
   }
 
-  if (!markup.trim()) {
-    add("V7", "The component rendered no visible markup.");
+  return { violations, warnings: [] };
+};
+
+/** Checks the result of rendering a document once: runtime errors, empty output, and accessibility. */
+export const checkUiBuilderRenderedOutput = (probe: UiBuilderProbeResult): UiBuilderCheckResult => {
+  const violations: UiBuilderFrameworkViolation[] = [];
+  const add = createRecorder(violations);
+
+  for (const message of probe.errors) add("V7", `Runtime error: ${message}`);
+  if (probe.timedOut && probe.errors.length === 0) {
+    add("V7", "The interface did not finish rendering (it may loop forever or block on startup).");
+  }
+  if (!probe.timedOut && probe.errors.length === 0 && !probe.markup.trim()) {
+    add("V7", "The interface rendered no visible markup.");
+  }
+  if (probe.markup.trim()) {
+    validateAccessibility(`<!doctype html><html><body>${probe.markup}</body></html>`, add);
   }
 
-  const document = wrapUiBuilderFrameworkDocument(markup);
-
-  if (document.length > UI_BUILDER_BUILT_CAP) {
-    add("V8", `The built document exceeds ${UI_BUILDER_BUILT_CAP} characters.`);
-  }
-  if (document.includes(UI_BUILDER_BRIDGE_MARKER_ATTRIBUTE)) {
-    add("V9", "The built document must not contain the preview bridge marker.");
-  }
-
-  validateAccessibility(document, add);
-
-  return violations;
+  return { violations, warnings: [] };
 };

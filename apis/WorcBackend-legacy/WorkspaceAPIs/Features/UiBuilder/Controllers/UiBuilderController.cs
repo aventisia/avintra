@@ -157,4 +157,67 @@ public class UiBuilderController : BaseApiController
     {
         return ResultHelper(await _uiBuilderService.GetOmUiBuilderViewAsync(id));
     }
+
+    /// <summary>
+    /// Retrieves the text-capable models enabled for the current tenant.
+    /// </summary>
+    [HttpGet("models")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderModelDto>>>> GetUiBuilderModels()
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderModelsAsync());
+    }
+
+    /// <summary>
+    /// Replaces the data connections bound to a custom UI builder project.
+    /// </summary>
+    [HttpPut("{id}/data-connections")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectDto>>> UpdateUiBuilderDataConnections(Guid id, [FromBody] List<UiBuilderDataConnectionDto> dataConnectionDtos)
+    {
+        return ResultHelper(await _uiBuilderService.UpdateUiBuilderDataConnectionsAsync(id, dataConnectionDtos));
+    }
+
+    /// <summary>
+    /// Retrieves list of work items from the queue bound to a project data connection.
+    /// </summary>
+    [HttpPost("{id}/data/{key}/list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueueWorkItemDto>>>> GetUiBuilderDataItems(Guid id, string key, [FromBody] UiBuilderDataListRequestDto uiBuilderDataListRequestDto)
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderDataItemsAsync(id, key, uiBuilderDataListRequestDto));
+    }
+
+    /// <summary>
+    /// Runs a declarative query (filters, grouping, and metrics) over the queue bound to a project data connection.
+    /// </summary>
+    [HttpPost("{id}/data/{key}/query")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderDataQueryResultDto>>> QueryUiBuilderData(Guid id, string key, [FromBody] UiBuilderDataQueryRequestDto uiBuilderDataQueryRequestDto)
+    {
+        return ResultHelper(await _uiBuilderService.QueryUiBuilderDataAsync(id, key, uiBuilderDataQueryRequestDto));
+    }
+
+    /// <summary>
+    /// Retrieves a work item by its ID from the queue bound to a project data connection.
+    /// </summary>
+    [HttpGet("{id}/data/{key}/items/{itemId}")]
+    public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> GetUiBuilderDataItem(Guid id, string key, Guid itemId)
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderDataItemAsync(id, key, itemId));
+    }
+
+    /// <summary>
+    /// Insert a new work item into the queue bound to a project data connection.
+    /// </summary>
+    [HttpPost("{id}/data/{key}/items")]
+    public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> InsertUiBuilderDataItem(Guid id, string key, [FromBody] UiBuilderDataItemInsertDto uiBuilderDataItemInsertDto)
+    {
+        return ResultHelper(await _uiBuilderService.InsertUiBuilderDataItemAsync(id, key, uiBuilderDataItemInsertDto));
+    }
+
+    /// <summary>
+    /// Updates an existing work item of the queue bound to a project data connection.
+    /// </summary>
+    [HttpPut("{id}/data/{key}/items")]
+    public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> UpdateUiBuilderDataItem(Guid id, string key, [FromBody] UiBuilderDataItemUpdateDto uiBuilderDataItemUpdateDto)
+    {
+        return ResultHelper(await _uiBuilderService.UpdateUiBuilderDataItemAsync(id, key, uiBuilderDataItemUpdateDto));
+    }
 }

@@ -299,6 +299,10 @@ def validate_model(provider: str, model: str, is_byok: bool = False, credential_
         # Catalog-less providers (empty model set) are valid; don't reject them.
         if not available:
             return
+        # LiteLLM keys some catalogs as 'provider/model' (e.g. gemini, groq);
+        # accept the bare id the tenant enabled as well as the prefixed form.
+        if model in available or build_litellm_model(provider, model) in available:
+            return
     else:
         available = set(get_models_for_provider(provider))
 

@@ -36,6 +36,11 @@ import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
+import {
+  canonicalizeEnabledModels,
+  canonicalizeModelIds,
+  canonicalizeProviderModels,
+} from "../utils/model-id.util";
 import { getSupportedModalities } from "../utils/supported-modalities.util";
 
 type Step = "credential" | "models";
@@ -87,8 +92,8 @@ export const ModelProviderSetupDialog = () => {
         if (config) {
           const savedCredential = config.credentialName ?? config.credentialId ?? "";
           setSelectedCredentialName(savedCredential);
-          setEnabledModelIds(config.enabledModelIds ?? []);
-          setEnabledModels(config.enabledModels ?? []);
+          setEnabledModelIds(canonicalizeModelIds(provider.value, config.enabledModelIds ?? []));
+          setEnabledModels(canonicalizeEnabledModels(provider.value, config.enabledModels ?? []));
           setIsDisabled(Boolean(config.isDisabled));
           setStep("models");
           void loadProviderModels(savedCredential);
@@ -129,7 +134,7 @@ export const ModelProviderSetupDialog = () => {
         undefined,
         credentialName ?? selectedCredentialName,
       );
-      setProviderModels(modelsRes?.models ?? []);
+      setProviderModels(canonicalizeProviderModels(provider.value, modelsRes?.models ?? []));
     } catch (err) {
       console.error("Failed to fetch models", err);
       toast.error("Failed to load models.");
