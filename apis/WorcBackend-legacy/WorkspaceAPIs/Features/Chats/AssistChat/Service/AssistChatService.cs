@@ -4,18 +4,21 @@ public class AssistChatService : IAssistChatService
 {
     private readonly ILogger<AssistChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
 
     public AssistChatService(
         ILogger<AssistChatService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Extract and initialize current userId from JWT claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Retrieves all assigned (published) flow versions.
@@ -266,6 +269,11 @@ public class AssistChatService : IAssistChatService
 
                 serviceResponse.Message = "Flow version not found.";
                 return serviceResponse;
+            }
+
+            if (!existingFlowVersion.IsArchived && assistChatDto.IsArchived)
+            {
+                await _resourceFlowAccessService.DeleteFlowAccessesIfArchivedAsync(existingFlowVersion.FlowId, existingFlowVersion.Id);
             }
 
             // Update fields (assignment / state update)

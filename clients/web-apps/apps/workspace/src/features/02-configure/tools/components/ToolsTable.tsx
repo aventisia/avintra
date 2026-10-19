@@ -12,6 +12,7 @@ import { NavLink } from "react-router-dom";
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 
 import {
   COLUMN_VISIBILITY_STATE,
@@ -108,6 +109,7 @@ export const ToolsTable = () => {
                       name={row.original.name}
                       accessLevel={row.original.accessLevel}
                       isTenantWideAccess={row.original.isTenantWideAccess}
+                      isResourceAccessRestricted={row.original.isResourceAccessRestricted}
                       isPlatformTool={isPlatformTab}
                     />
                   </div>
@@ -125,6 +127,8 @@ export const ToolsTable = () => {
           <DTPagination table={table} singularLabel="Tool" pluralLabel="Tools" />
 
           <ResourceShareDialog queryKey={queryKey} />
+
+          <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       )}
     </>

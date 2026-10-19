@@ -1,7 +1,7 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { EditIcon } from "lucide-react";
 
-import { ResourceShareDto } from "../../dtos/resource-share-dto";
+import { ResourceShareDto } from "../../dtos/resource-share.dto";
 import { ResourceAccessTypeEnum } from "../../enums/resource-access-type-enum";
 import { useUpdateResourceShareMutation } from "../../hooks/useUpdateResourceShareMutation";
 

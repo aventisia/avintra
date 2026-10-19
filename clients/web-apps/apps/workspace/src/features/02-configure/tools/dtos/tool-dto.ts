@@ -54,6 +54,8 @@ export interface ToolDto {
    */
   isVerified: boolean;
 
+  isResourceAccessRestricted: boolean;
+
   accessLevel: ResourceAccessTypeEnum;
 
   isDisabled?: boolean;

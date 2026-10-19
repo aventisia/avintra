@@ -94,6 +94,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
         baseUrl: "",
         openApiSpec: "",
         isTenantWideAccess: false,
+        isResourceAccessRestricted: false,
         isActive: false,
         isVerified: false,
         accessLevel: ResourceAccessTypeEnum.Owner,

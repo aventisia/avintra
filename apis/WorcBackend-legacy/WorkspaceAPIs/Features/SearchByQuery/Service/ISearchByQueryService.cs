@@ -14,6 +14,14 @@ public interface ISearchByQueryService
     Task<ServiceResponse<IEnumerable<FlowVersionSelectOption>>> SearchFlowVersionAsync(string searchKey, FlowTypesEnum type, bool includePublishedOnly, Guid? machineId);
 
     /// <summary>
+    /// Searches flows by name.
+    /// </summary>
+    /// <param name="searchKey">The search key to filter flows by name.</param>
+    /// <param name="types">Optional flow types to filter by; an empty filter defaults to every non-block flow.</param>
+    /// <returns>A list of select options representing flows that match the search criteria.</returns>
+    Task<ServiceResponse<IEnumerable<FlowSearchOptionDto>>> SearchFlowAsync(string? searchKey, IEnumerable<FlowTypesEnum>? types = null);
+
+    /// <summary>
     /// Searches machines by unique machine name with an optional flow version filter.
     /// NOTE: At least one of <paramref name="searchKey"/> or <paramref name="flowVersionId"/> must be provided.
     /// If only <paramref name="flowVersionId"/> is provided, all machines linked to that flow version are returned.

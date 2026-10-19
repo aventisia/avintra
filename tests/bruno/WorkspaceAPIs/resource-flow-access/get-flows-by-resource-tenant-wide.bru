@@ -1,0 +1,27 @@
+meta {
+  name: Get assigned flows by resource (tenant-wide)
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Tool/{{TENANT_WIDE_TOOL_ID}}/assigned-flows
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{VIEWER_ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("tenant-wide tool is viewable without a share", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > A viewer with no share on a tenant-wide tool gets 200. Provide
+  > TENANT_WIDE_TOOL_ID and a VIEWER_ACCESS_TOKEN without a tool share
+  > through the environment.
+}

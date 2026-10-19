@@ -42,6 +42,7 @@ public interface IUnitOfWork
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }
     IApiKeyRepo ApiKeyRepo { get; }
     IResourceShareRepo ResourceShareRepo { get; }
+    IResourceFlowAccessRepo ResourceFlowAccessRepo { get; }
     ISkillRepo SkillRepo { get; }
     ISkillFileRepo SkillFileRepo { get; }
     IToolRepo ToolRepo { get; }

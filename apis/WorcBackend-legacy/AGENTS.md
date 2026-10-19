@@ -2,127 +2,91 @@
 
 ## Scope
 
-- These conventions apply to ASP.NET controllers, services, DTOs, mappings, and EF Core entities beneath this `apis/` directory when those layers exist.
-- `apis/WorcBackend-legacy` (AccountsAPIs, WorkspaceAPIs, AspNetToolkit) and `apis/llmpipeline` are deployment references, absent in this configuration repository. Verify actual paths/contracts before use; do not apply ASP.NET rules to Python APIs, the new platform solution, or React frontends.
+- Governs `AccountsAPIs`, `WorkspaceAPIs`, and `AspNetToolkit` in this directory. Role scope and permissions come from the root `AGENTS.md`; these are code conventions only.
+- Much existing code predates these rules (controller methods with `Async`, `Delete[Entities]` instead of `DeleteMultiple[Entities]`, delete-multiple returning `bool`). Apply the rules to code you create or touch, and leave untouched code alone.
 
-## Application boundaries
+## Project layout
 
-- Apply these conventions within the assigned role and authorized scope; read-only reviewers report defects, never fix them.
-- Enforce naming, sequencing, DTO/entity alignment, validation attributes, service response patterns, and documentation consistency.
-- Prefer minimal, targeted edits that preserve existing architecture and style.
+- Features live in `Features/<FeatureName>/` (optionally nested under a domain such as `Features/Orchestrator/`). See `WorkspaceAPIs/Features/Orchestrator/MachinesTable/` for the reference shape:
+  - `<Feature>Controller.cs` and `<Feature>MappingProfile.cs` at the feature root
+  - `Service/` for the interface and implementation
+  - `DTOs/`
+  - `Helpers/` when the feature needs helper logic
+- Entities live in the project-level `Entities/` folder, not in features. Name many-to-many join entities `Entity1_Entity2` (singular, PascalCase), and place them in `Entities/M2M/`.
+- Before modifying a feature, read its `README.md` when one exists; it records domain boundaries, contracts, and exceptions. Add a README only when a feature has non-obvious boundaries or invariants.
 
-## Hard Constraints
+## Feature helpers
 
-- Maintain identical method names and vertical sequencing across Controllers, Service Interfaces, and Service Implementations.
-- Naming exception:
-  - Controller methods must omit the Async suffix.
-  - Service Interface and Service Implementation methods must include the Async suffix.
-- Use standard CRUD method name patterns:
-  - `[HttpGet("list")]` `Get[Entities]`
-  - `Get[Entity]`
-  - `Insert[Entity]`
-  - `Update[Entity]`
-  - `Delete[Entity]`
-  - `[HttpPost("delete-multiple")]` `DeleteMultiple[Entities]`
+- Put helper methods in `public static` methods of a `public static class` named `<Feature>Helpers` (for example, `MachinesTableHelpers.cs`) inside the feature's `Helpers/` folder.
+- Move a helper to `AspNetToolkit` only when multiple features or projects reuse it.
 
-## Project Layout
+## Global usings
 
-- Features are organized under `Features/<FeatureName>/` with subfolders such as:
-  - `Controllers` (when present)
-  - `Service` or `Services`
-  - `DTOs`
-  - `Entities`
-  - `Helpers` (when helper logic is required for the feature)
-  - Mapping profiles live alongside the feature or in a dedicated `MappingProfiles` folder.
+Each project has a `GlobalUsings.cs` that already imports the `AspNetToolkit.*` namespaces and the project's own `Entities`, `Data`, `Services`, `DTOs`, and similar. Check it before adding a `using`, and add one only for a namespace it does not cover.
 
-## Feature Helpers
+## Controllers and services
 
-- If a helper method is required for a feature, keep it inside that feature's `Helpers/` folder.
-- Name the file to match its purpose and use the `Helpers` suffix (for example, `MachinesTableHelpers.cs`).
-- Use `public static` methods in a `public static class` so the logic is stateless and easy to unit test.
-- Only place helpers in shared/toolkit folders when they are genuinely reused across multiple features or projects.
+- Keep method names and vertical order identical across the Controller, Service Interface, and Service Implementation.
+- Controller methods omit the `Async` suffix; Service Interface and Implementation methods include it.
+- Use these CRUD names, routes, and XML summaries:
 
-## Documentation and READMEs
+  | Method | Route | Summary |
+  |--------|-------|---------|
+  | `Get[Entities]` | `[HttpGet("list")]` | `Retrieves list of [entities].` |
+  | `Get[Entity]` | `[HttpGet("{[entity]Id}")]` | `Retrieves a [entity] by its ID.` |
+  | `Insert[Entity]` | `[HttpPost]` | `Inserts a new [entity].` |
+  | `Update[Entity]` | `[HttpPut]` | `Updates an existing [entity].` |
+  | `Delete[Entity]` | `[HttpDelete("{[entity]Id}")]` | `Deletes an existing [entity].` |
+  | `DeleteMultiple[Entities]` | `[HttpPost("delete-multiple")]` | `Deletes multiple [entities] by their IDs.` |
 
-- Before modifying a backend feature, read `Features/<FeatureName>/README.md` when it exists; it records domain boundaries, contracts, and exceptions.
-- Do not create feature READMEs proactively; add one only when a feature has non-obvious boundaries or invariants worth documenting.
+- `DeleteMultiple[Entities]` takes `[FromBody] IEnumerable<Guid>` and returns the number of records deleted (`ServiceResponse<int>`) in both the service and the controller.
+- Name DTO parameters camelCase after their type: `CreateMachineDto createMachineDto`.
 
-## Global Usings
+## Service responses
 
-- Do **not** add `using` statements to a file for namespaces that are already imported in the project's `GlobalUsings.cs`.
-- Before adding a `using` directive, check `GlobalUsings.cs` (and any other global usings files) to confirm the namespace is not already globally imported.
-- If a namespace is already in `GlobalUsings.cs`, omit the `using` statement entirely from the individual file.
-- Only add a `using` statement when the namespace is not covered by global usings.
+- `ServiceResponse<T>` (`AspNetToolkit/DTOs/ServiceResponse.cs`) serializes as `{ data, statusCode, message }`; the frontend reads it as `IHttpResponse<T>`.
+- Start every service method with a failed response: `var serviceResponse = ServiceResponse<bool>.Create("Failed to [action]", 500);`
+- Return through `Update`:
+  - Failure: `serviceResponse.Update("Machine not found", 404);`
+  - Success: `serviceResponse.Update("Machine added", 201, dataObject);` (or `null` message with `200`)
+- Keep messages terse and action-specific: "Machine added", not "Machine added successfully to the database."
+- Normalize a string before a database operation only when that field's contract permits it. Preserve case and whitespace in identifiers, tokens, passwords, and other exact values; treat email and search fields as case-sensitive unless their contract says otherwise.
+- Split complex service logic into small, precisely named blocks.
 
 ## Entities and DTOs
 
-- Match property sequence in DTOs and Mapping profiles exactly to the source Entity.
-- If DTO and entity property names are the same, do not explicitly map them in the mapping profile.
-- Do not add `[Required]` on DTO properties if the C# `required` keyword is already used.
-- Use `[RequiredGuid]` on non-optional Guid properties in DTOs.
-- Apply `[StringLength]` based on entity max length.
-- For public DTO properties that need hover details, include the entity max length in a short XML summary; keep DTO documentation within the root public/complex-type boundary.
-- Use camelCase for DTO parameter names in all methods (example: `CreateMachineDto createMachineDto`).
-- For many-to-many entities, use `Entity1_Entity2` (singular nouns with underscore) and keep PascalCase for the join entity/table name.
+- Match property order in DTOs and mapping profiles to the source entity.
+- In mapping profiles, map only properties whose names differ between DTO and entity.
+- Mark required properties with the C# `required` keyword alone; `[Required]` is redundant beside it.
+- Put `[RequiredGuid]` (from `AspNetToolkit/Attributes`) on non-optional `Guid` DTO properties.
+- Set `[StringLength]` from the entity's max length, and state that max length in the property's one-line XML summary.
 
-## Service Layer Rules
+## Logging and documentation
 
-- Initialize a failed `ServiceResponse` at the top of every service method.
-- Preferred pattern:
-  - `var serviceResponse = ServiceResponse<bool>.Create("Failed to [action]", 500);`
-- `ServiceResponse<T>` provides `Create(message, statusCode, data)` and `Update(message, statusCode, data)`; use these for fluent initialization and mutation.
-- For `delete-multiple` operations, the service method and controller must always return the number of records deleted (e.g., `ServiceResponse<int>`) instead of a boolean.
-- Normalize strings only according to verified field contracts before database operations. Trim or change casing only when that field permits it; preserve case-sensitive identifiers, tokens, passwords, and other exact values. Do not assume all email or search fields are case-insensitive.
-- Return responses using standardized methods:
-  - Failure: `serviceResponse.Update("Machine not found", 404);`
-  - Success: `serviceResponse.Update("Machine added/updated" or null, 201/200, dataObject);`
-- Keep the message in the `ServiceResponse` concise and relevant to the action performed. For example, use "Machine added" instead of "Machine added successfully" or "Machine added successfully to the database."
-- Split complex service logic into small isolated blocks.
-- Review service logic for incorrect, incomplete, or inconsistent behavior. Only an authorized write-capable role may fix clear defects within approved scope; all other cases become explicit findings.
-- Make non-trivial service logic scannable through precise naming and small isolated blocks, not inline comments.
+- Log with `_logger` only for critical production-debugging or compliance events.
+- Follow the root `AGENTS.md` "Documentation and code style boundaries": one-sentence `/// <summary>` docs on public controller methods and service-interface contracts (kept in sync) and on public DTO properties; self-documenting names everywhere else. Document a service implementation method only when it is itself a public API or a diagnostic requires it.
+- The only inline comment allowed is an `IMPORTANT NOTE:` for an external constraint, race condition, or required hack.
 
-## Logging and Documentation
+## Review checklist
 
-- Keep server-side logging minimal.
-- Use `_logger` only for critical production-debugging or compliance-relevant events.
-- Follow the root `AGENTS.md` "Documentation and Code Style Boundaries": no implementation comments, self-documenting names, and documentation only on public boundaries.
-- Synchronize short `/// <summary>` XML documentation across public Controller methods and Service Interface contracts. Document a Service Implementation method only when it is itself an intentional public API or a project diagnostic requires it; do not duplicate interface documentation on internal implementation details. Keep each summary to one sentence.
-- Use these summary patterns for the public CRUD methods; do not duplicate them as inline `//` comments:
-  - `Retrieves list of [entities].`
-  - `Retrieves a [entity] by its ID.`
-  - `Insert a new [entity].`
-  - `Updates an existing [entity].`
-  - `Deletes an existing [entity].`
-  - `Deletes multiple [entities] by their IDs.`
+Apply every item to each touched file:
 
-## Review Checklist
-
-1. Verify controller/interface/implementation method order is vertically aligned.
-2. Verify Async suffix usage is correct per layer.
-3. Verify CRUD naming and route patterns.
-4. Verify DTO and mapping property order matches Entity order.
-5. Verify Guid fields use `[RequiredGuid]` where needed.
-6. Verify `StringLength` values and XML summaries include max length.
-7. Verify DTO parameter names use camelCase.
-8. Verify `ServiceResponse` initialization and standardized success/failure returns.
-9. Verify delete-multiple endpoints return the count of deleted records instead of a boolean.
-10. Verify field-specific normalization follows established contracts and preserves case-sensitive values.
-11. Verify service logic is correct; report defects unless an authorized write-capable role may fix them within scope.
-12. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
-13. Verify XML docs and minimal logging rules are respected.
-14. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
-
-15. Verify XML summaries are limited to public boundaries and complex public DTO contracts; implementation details remain undocumented.
+1. Controller, interface, and implementation methods share names and vertical order.
+2. `Async` suffix is absent on controllers and present on services.
+3. CRUD names, routes, and summaries match the table.
+4. DTO and mapping-profile property order matches the entity.
+5. Non-optional `Guid`s use `[RequiredGuid]`; `[StringLength]` values and their XML summaries match the entity max length.
+6. DTO parameters are camelCase.
+7. Service methods start with a failed `ServiceResponse` and return through `Update`.
+8. Delete-multiple endpoints return the deleted count.
+9. String normalization follows each field's contract and preserves exact values.
+10. Service logic is correct, complete, and consistent; defects outside your role's write scope become findings.
+11. XML docs sit only on public boundaries; the only inline comments are `IMPORTANT NOTE:`s; logging is minimal.
+12. No `using` duplicates a `GlobalUsings.cs` import.
 
 ## Artifact contents
 
-- The root shared handoff controls agent returns; the following formats apply inside reports or explicitly requested standalone code output, not as additional role authority.
+The root handoff contract controls agent returns; these formats apply inside reports or explicitly requested standalone output.
 
-- For code review:
-  - Findings first, ordered by severity, each with file and line references.
-  - Then: open questions/assumptions.
-  - Then: minimal change summary.
-- For code generation:
-  - Produce complete, compilable snippets for all affected layers.
-  - Keep naming and ordering synchronized across files.
-  - Include documentation only on public controller/service-interface boundaries and complex public DTO contracts; document implementation methods only when they are themselves public APIs or required by diagnostics. Never add implementation comments.
+- Code review: findings first, ordered by severity, each with file and line; then open questions or assumptions; then a minimal change summary.
+- Code generation: complete, compilable code for every affected layer, with naming and ordering kept in sync across files.

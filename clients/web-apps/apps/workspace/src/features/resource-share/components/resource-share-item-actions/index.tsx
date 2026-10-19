@@ -4,7 +4,7 @@ import {
   DropdownMenuSeparator,
 } from "@avplatform/ui/dropdown-menu";
 
-import { ResourceShareDto } from "../../dtos/resource-share-dto";
+import { ResourceShareDto } from "../../dtos/resource-share.dto";
 // import { CanDeleteAction } from "./CanDeleteAction";
 import { CanEditAction } from "./CanEditAction";
 import { CanViewAction } from "./CanViewAction";

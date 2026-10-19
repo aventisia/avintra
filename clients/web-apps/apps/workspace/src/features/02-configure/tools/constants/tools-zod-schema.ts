@@ -112,6 +112,7 @@ export const toolZodSchema = z.object({
   authenticationType: z.nativeEnum(ToolAuthenticationTypeEnum).optional(),
   credentialName: z.string().optional(),
   isTenantWideAccess: z.boolean().default(false),
+  isResourceAccessRestricted: z.boolean().default(false),
   isActive: z.boolean().default(false),
   isVerified: z.boolean().default(false),
   isDisabled: z.boolean().optional(),
