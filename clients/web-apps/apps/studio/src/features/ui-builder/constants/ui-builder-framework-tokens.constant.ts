@@ -35,7 +35,9 @@ export const UI_BUILDER_FRAMEWORK_TOKEN_SUMMARY = [
   `radius ${UI_BUILDER_FRAMEWORK_TOKEN_VALUES["--ui-radius"]}`,
 ].join(", ");
 
-const SPACING_STEPS = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24];
+const SPACING_STEPS = [
+  0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32,
+];
 const SPACING_PREFIXES = [
   "p",
   "px",
@@ -54,9 +56,16 @@ const SPACING_PREFIXES = [
   "gap",
   "space-x",
   "space-y",
+  "gap-x",
+  "gap-y",
+  "inset",
+  "top",
+  "right",
+  "bottom",
+  "left",
 ];
 
-const TEXT_STEPS = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl"];
+const TEXT_STEPS = ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl"];
 const COLOR_KEYS = [
   "background",
   "foreground",
@@ -73,9 +82,35 @@ const COLOR_KEYS = [
   "white",
   "black",
 ];
-const NEUTRAL_SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-const RADIUS_KEYS = ["none", "sm", "", "md", "lg", "xl", "2xl", "full"];
-const SHADOW_KEYS = ["none", "sm", "", "md", "lg", "xl"];
+const NEUTRAL_SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+const PALETTE_COLORS = [
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+];
+const NEUTRAL_COLORS = ["slate", "gray", "zinc", "neutral", "stone"];
+const OPACITY_STEPS = [5, 10, 20, 30, 50, 70, 80, 90];
+const RADIUS_KEYS = ["none", "sm", "", "md", "lg", "xl", "2xl", "3xl", "full"];
+const SHADOW_KEYS = ["none", "sm", "", "md", "lg", "xl", "2xl", "inner"];
+const SIZE_STEPS = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 64, 72, 80,
+  96,
+];
+const FRACTIONS = ["1/2", "1/3", "2/3", "1/4", "3/4", "2/5", "3/5"];
 
 const layoutUtilities = [
   "mx-auto",
@@ -94,6 +129,53 @@ const layoutUtilities = [
   "overflow-auto",
   "overflow-x-auto",
   "overflow-y-auto",
+  "overflow-x-hidden",
+  "inline-grid",
+  "table",
+  "contents",
+  "isolate",
+  "z-0",
+  "z-10",
+  "z-20",
+  "z-30",
+  "z-40",
+  "z-50",
+  "inset-0",
+  "inset-x-0",
+  "inset-y-0",
+  "-z-10",
+  "pointer-events-none",
+  "select-none",
+  "whitespace-nowrap",
+  "whitespace-pre-wrap",
+  "break-words",
+  "break-all",
+  "line-clamp-1",
+  "line-clamp-2",
+  "line-clamp-3",
+  "list-disc",
+  "list-decimal",
+  "list-inside",
+  "tabular-nums",
+  "antialiased",
+  "backdrop-blur",
+  "backdrop-blur-sm",
+  "backdrop-blur-md",
+  "blur",
+  "blur-sm",
+  "blur-2xl",
+  "blur-3xl",
+  "animate-spin",
+  "animate-pulse",
+  "animate-ping",
+  "animate-bounce",
+  "scroll-smooth",
+  "snap-x",
+  "snap-start",
+  "resize-none",
+  "appearance-none",
+  "outline-none",
+  "accent-primary",
 ];
 
 const flexUtilities = [
@@ -128,7 +210,19 @@ const gridUtilities = [
   "grid-cols-3",
   "grid-cols-4",
   "grid-cols-6",
+  "grid-cols-5",
   "grid-cols-12",
+  "col-span-1",
+  "col-span-2",
+  "col-span-3",
+  "col-span-4",
+  "col-span-6",
+  "col-span-full",
+  "row-span-2",
+  "place-items-center",
+  "content-center",
+  "order-first",
+  "order-last",
 ];
 
 const sizingUtilities = [
@@ -152,6 +246,19 @@ const sizingUtilities = [
   "max-w-6xl",
   "max-w-7xl",
   "max-w-full",
+  ...SIZE_STEPS.flatMap((step) => [`w-${step}`, `h-${step}`, `size-${step}`, `min-w-${step}`]),
+  ...FRACTIONS.map((fraction) => `w-${fraction}`),
+  "min-w-0",
+  "min-h-0",
+  "min-h-full",
+  "max-h-full",
+  "max-h-screen",
+  "max-h-64",
+  "max-h-96",
+  "max-w-prose",
+  "max-w-none",
+  "h-px",
+  "w-px",
   "aspect-video",
   "aspect-square",
   "object-cover",
@@ -181,6 +288,31 @@ const typographyUtilities = [
   "truncate",
   "italic",
   "underline",
+  "font-light",
+  "font-extrabold",
+  "font-mono",
+  "leading-snug",
+  "leading-loose",
+  "leading-6",
+  "leading-7",
+  "tracking-tighter",
+  "tracking-wider",
+  "tracking-widest",
+  "no-underline",
+  "underline-offset-4",
+  "text-balance",
+  "text-pretty",
+  "text-transparent",
+  "bg-clip-text",
+  "bg-transparent",
+  "bg-gradient-to-r",
+  "bg-gradient-to-l",
+  "bg-gradient-to-b",
+  "bg-gradient-to-t",
+  "bg-gradient-to-br",
+  "bg-gradient-to-bl",
+  "bg-gradient-to-tr",
+  "bg-gradient-to-tl",
 ];
 
 const borderUtilities = [
@@ -196,6 +328,19 @@ const borderUtilities = [
   "divide-border",
   "ring-1",
   "ring-2",
+  "ring-4",
+  "ring-inset",
+  "ring-offset-2",
+  "border-4",
+  "border-x",
+  "border-y",
+  "border-dashed",
+  "border-transparent",
+  "divide-slate-100",
+  "divide-slate-200",
+  "outline",
+  "outline-2",
+  "outline-offset-2",
 ];
 
 const transitionUtilities = [
@@ -209,6 +354,30 @@ const transitionUtilities = [
   "ease-in-out",
   "cursor-pointer",
   "cursor-not-allowed",
+  "transition-all",
+  "transition-opacity",
+  "duration-500",
+  "duration-700",
+  "ease-out",
+  "ease-in",
+  "scale-95",
+  "scale-100",
+  "scale-105",
+  "rotate-45",
+  "rotate-90",
+  "rotate-180",
+  "-rotate-90",
+  "translate-x-0",
+  "translate-x-full",
+  "-translate-x-full",
+  "translate-y-0",
+  "translate-y-1",
+  "-translate-y-1",
+  "-translate-y-0.5",
+  "-translate-x-1/2",
+  "-translate-y-1/2",
+  "origin-top",
+  "origin-left",
 ];
 
 const stateUtilities = [
@@ -232,6 +401,40 @@ const stateUtilities = [
   "opacity-100",
   "sr-only",
   "not-sr-only",
+  "group",
+  "peer",
+  "group-hover:opacity-100",
+  "group-hover:text-primary",
+  "group-hover:translate-x-1",
+  "group-hover:scale-105",
+  "hover:-translate-y-0.5",
+  "hover:shadow-lg",
+  "hover:shadow-xl",
+  "hover:border-primary",
+  "hover:bg-primary/90",
+  "hover:bg-slate-50",
+  "hover:bg-slate-200",
+  "hover:bg-gray-50",
+  "hover:bg-gray-100",
+  "hover:text-slate-900",
+  "hover:opacity-90",
+  "hover:scale-105",
+  "focus:ring-2",
+  "focus:ring-primary",
+  "focus:border-primary",
+  "focus-visible:ring-offset-white",
+  "focus-within:ring-2",
+  "focus-within:ring-primary",
+  "placeholder:text-slate-400",
+  "placeholder:text-muted-foreground",
+  "disabled:pointer-events-none",
+  "last:border-0",
+  "first:pt-0",
+  "odd:bg-slate-50",
+  "even:bg-slate-50",
+  "opacity-25",
+  "opacity-60",
+  "opacity-90",
 ];
 
 const spacingUtilities = SPACING_STEPS.flatMap((step) =>
@@ -249,11 +452,74 @@ const neutralUtilities = NEUTRAL_SHADES.flatMap((shade) => [
   `border-gray-${shade}`,
 ]);
 
+const paletteUtilities = [...PALETTE_COLORS, ...NEUTRAL_COLORS].flatMap((color) =>
+  NEUTRAL_SHADES.flatMap((shade) => [
+    `text-${color}-${shade}`,
+    `bg-${color}-${shade}`,
+    `border-${color}-${shade}`,
+    `ring-${color}-${shade}`,
+    `from-${color}-${shade}`,
+    `via-${color}-${shade}`,
+    `to-${color}-${shade}`,
+    `hover:bg-${color}-${shade}`,
+    `hover:text-${color}-${shade}`,
+  ]),
+);
+
+const tokenOpacityUtilities = [
+  "primary",
+  "secondary",
+  "accent",
+  "muted",
+  "destructive",
+  "white",
+  "black",
+  "foreground",
+].flatMap((color) =>
+  OPACITY_STEPS.flatMap((step) => [
+    `bg-${color}/${step}`,
+    `text-${color}/${step}`,
+    `border-${color}/${step}`,
+    `ring-${color}/${step}`,
+  ]),
+);
+
+const tokenGradientUtilities = COLOR_KEYS.flatMap((key) => [
+  `from-${key}`,
+  `via-${key}`,
+  `to-${key}`,
+  `ring-${key}`,
+]);
+
 const radiusUtilities = RADIUS_KEYS.map((key) => (key ? `rounded-${key}` : "rounded"));
 
 const shadowUtilities = SHADOW_KEYS.map((key) => (key ? `shadow-${key}` : "shadow"));
 
 const responsiveBase = [
+  "grid-cols-5",
+  "col-span-2",
+  "col-span-3",
+  "flex-row",
+  "flex-col",
+  "items-center",
+  "justify-between",
+  "w-auto",
+  "w-1/2",
+  "w-1/3",
+  "w-2/3",
+  "px-6",
+  "px-8",
+  "py-12",
+  "py-16",
+  "py-24",
+  "gap-6",
+  "gap-8",
+  "text-5xl",
+  "text-6xl",
+  "max-w-xl",
+  "max-w-3xl",
+  "max-w-5xl",
+  "max-w-6xl",
   ...layoutUtilities,
   ...flexUtilities,
   ...gridUtilities,
@@ -275,7 +541,7 @@ const responsiveBase = [
   "mx-auto",
 ];
 
-const responsiveUtilities = ["sm", "md", "lg"].flatMap((variant) =>
+const responsiveUtilities = ["sm", "md", "lg", "xl"].flatMap((variant) =>
   responsiveBase.map((utility) => `${variant}:${utility}`),
 );
 
@@ -290,6 +556,9 @@ export const UI_BUILDER_FRAMEWORK_UTILITIES: readonly string[] = Array.from(
     ...typographyUtilities,
     ...colorUtilities,
     ...neutralUtilities,
+    ...paletteUtilities,
+    ...tokenOpacityUtilities,
+    ...tokenGradientUtilities,
     ...radiusUtilities,
     ...shadowUtilities,
     ...borderUtilities,

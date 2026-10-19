@@ -25,6 +25,7 @@ public class UiBuilderMappingProfile : IRegister
             .Ignore(dest => dest.IsPublished)
             .Ignore(dest => dest.IsPublishedTenantWide)
             .Ignore(nameof(UiBuilderProject.PublishedVersionNumber))
+            .Ignore(dest => dest.DataConnections)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);

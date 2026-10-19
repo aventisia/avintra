@@ -133,7 +133,7 @@ public class TenantModelProviderService : ITenantModelProviderService
             if (capability.HasValue)
             {
                 enabledModels = enabledModels
-                    .Where(m => IsCapabilityMatch(m.Capability, capability.Value))
+                    .Where(m => EnabledModelHelpers.IsCapabilityMatch(m.Capability, capability.Value))
                     .ToList();
             }
 
@@ -327,13 +327,6 @@ public class TenantModelProviderService : ITenantModelProviderService
             .ToList();
 
         return capabilityModels.Count > 0 ? capabilityModels : modelsByModelId.Take(1);
-    }
-
-    private static bool IsCapabilityMatch(ModelCapabilityEnum? modelCapability, ModelCapabilityEnum requestedCapability)
-    {
-        // IMPORTANT NOTE: Legacy enabled models have no capability; they default to Text.
-        return modelCapability == requestedCapability
-            || (requestedCapability == ModelCapabilityEnum.Text && modelCapability == null);
     }
 
     private async Task<Guid?> ResolveCredentialIdAsync(string? credentialName, Guid? existingCredentialId)

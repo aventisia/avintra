@@ -1,23 +1,53 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
+import { type UiBuilderDataConnection } from "@avplatform/ui/ui-builder-host";
 
-import { LLMRequestDto } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
-import { getStudioConfigHeaders, getStudioSpaceHeaders } from "@/utils/space-headers";
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import {
   CreateUiBuilderVersionPayload,
+  UiBuilderModelDto,
   UiBuilderProjectDto,
+  UiBuilderQueueDto,
   UiBuilderVersionDto,
 } from "../dtos/ui-builder-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/ui-builder`;
-const LLM_GENERATE_API_URL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/llm/generate`;
+const queueAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue`;
+const LLM_GENERATE_API_URL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/v2/llm/generate`;
+
+/** Request body sent to the LLM pipeline's LiteLLM generation route. */
+export type UiBuilderLlmRequest = {
+  provider: string;
+  model: string;
+  input: { role: "system" | "user" | "assistant"; content: string }[];
+  stream: boolean;
+  is_json_output?: boolean;
+  is_byok_enabled: boolean;
+  credential_name?: string | null;
+  max_output_tokens?: number;
+  temperature?: number;
+  skill_names?: string[];
+  ref_type: string;
+  ref_id: string;
+  ref_name: string;
+  action: string;
+};
+
+/** Options shared by builder LLM calls. */
+export type UiBuilderLlmCallOptions = {
+  envType: string;
+  onDelta?: (delta: string) => void;
+  signal?: AbortSignal;
+};
 
 /** One newline-delimited frame emitted by the LLM pipeline generation stream. */
 type LLMStreamFrame = {
   output?: unknown;
   status?: string | null;
   created_on?: string;
+  finish_reason?: string | null;
+  done?: boolean;
   error?: string | null;
 };
 
@@ -31,36 +61,49 @@ const parseLLMStreamFrame = (line: string): LLMStreamFrame | null => {
   }
 };
 
+const llmHeaders = (envType: string) => ({
+  "Content-Type": "application/json",
+  ...getStudioSpaceHeaders(),
+  "X-Env-Type": envType,
+});
+
+const parseErrorDetail = (text: string): string | null => {
+  try {
+    const parsed = JSON.parse(text) as { detail?: unknown; message?: unknown };
+    const detail = parsed.detail ?? parsed.message;
+    return typeof detail === "string" && detail ? detail : null;
+  } catch {
+    return null;
+  }
+};
+
+const readErrorResponse = async (response: Response) => {
+  const text = await response.text();
+  return parseErrorDetail(text) ?? (text || `Generation failed (${response.status}).`);
+};
+
 /**
- * Streams a UI builder generation from the LLM pipeline, reporting each output
- * delta and resolving with the complete document once the stream ends.
+ * Streams a builder generation from the LLM pipeline, reporting each output delta
+ * and resolving with the complete output once the stream ends.
  *
  * The pipeline emits newline-delimited JSON: intermediate frames are output-only
- * deltas, while the final frame is a full response carrying the complete document
- * (or the failure reason) and is identified by its `status`/`created_on` fields.
+ * deltas, while the final frame is a full response carrying the complete output
+ * (identified by its `status`/`created_on` fields) or an error frame.
  */
 export const streamUiBuilderGeneration = async (
-  request: LLMRequestDto,
-  handlers: { onDelta?: (delta: string) => void; signal?: AbortSignal } = {},
+  request: UiBuilderLlmRequest,
+  { envType, onDelta, signal }: UiBuilderLlmCallOptions,
 ): Promise<string> => {
   const response = await fetch(LLM_GENERATE_API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getStudioConfigHeaders(),
-    },
+    headers: llmHeaders(envType),
     credentials: "include",
     body: JSON.stringify({ ...request, stream: true }),
-    signal: handlers.signal,
+    signal,
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || `Generation failed (${response.status}).`);
-  }
-  if (!response.body) {
-    throw new Error("The generation response had no body.");
-  }
+  if (!response.ok) throw new Error(await readErrorResponse(response));
+  if (!response.body) throw new Error("The generation response had no body.");
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -79,12 +122,17 @@ export const streamUiBuilderGeneration = async (
         failure = "The generation stopped before it finished.";
         return;
       }
+      if (frame.status === "incomplete") {
+        failure =
+          "The model stopped before the page was complete (output limit reached). Try a smaller change or a model with a larger output limit.";
+        return;
+      }
       result = typeof frame.output === "string" ? frame.output : "";
       return;
     }
     if (typeof frame.output === "string" && frame.output) {
       streamed += frame.output;
-      handlers.onDelta?.(frame.output);
+      onDelta?.(frame.output);
     }
   };
 
@@ -108,6 +156,30 @@ export const streamUiBuilderGeneration = async (
 
   if (failure) throw new Error(failure);
   return result ?? streamed;
+};
+
+/** Runs a non-streaming builder call that returns JSON output. */
+export const generateUiBuilderJson = async <T>(
+  request: UiBuilderLlmRequest,
+  { envType, signal }: Omit<UiBuilderLlmCallOptions, "onDelta">,
+): Promise<T> => {
+  const response = await fetch(LLM_GENERATE_API_URL, {
+    method: "POST",
+    headers: llmHeaders(envType),
+    credentials: "include",
+    body: JSON.stringify({ ...request, stream: false, is_json_output: true }),
+    signal,
+  });
+
+  if (!response.ok) throw new Error(await readErrorResponse(response));
+
+  const body = (await response.json()) as { output?: unknown; error?: string | null };
+  if (body.error) throw new Error(body.error);
+  if (typeof body.output === "string") {
+    const cleaned = body.output.replace(/^\s*```(?:json)?\s*|\s*```\s*$/g, "");
+    return JSON.parse(cleaned) as T;
+  }
+  return body.output as T;
 };
 
 /**
@@ -171,10 +243,88 @@ const publishUiBuilderProject = (id: string) => {
     .then((res) => res.data);
 };
 
+/**
+ * Retrieves the tenant's enabled Text models with the credential each provider uses.
+ */
+const getUiBuilderModels = () => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderModelDto[]>>(`${baseAPIURL}/models`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Replaces the data connections bound to a custom UI builder project.
+ */
+const updateUiBuilderDataConnections = (id: string, connections: UiBuilderDataConnection[]) => {
+  return axiosInstance
+    .put<IHttpResponse<UiBuilderProjectDto>>(`${baseAPIURL}/${id}/data-connections`, connections, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the queues visible to the user in the given environment.
+ */
+const getUiBuilderQueues = (envType: string) => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderQueueDto[]>>(`${queueAPIURL}/list`, {
+      headers: { ...getStudioSpaceHeaders(), "X-Env-Type": envType },
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves one queue, including its work item schema, in the given environment.
+ */
+const getUiBuilderQueue = (queueId: string, envType: string) => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderQueueDto>>(`${queueAPIURL}/${queueId}`, {
+      headers: { ...getStudioSpaceHeaders(), "X-Env-Type": envType },
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Creates a queue in the given environment.
+ */
+const createUiBuilderQueue = (queue: UiBuilderQueueDto, envType: string) => {
+  return axiosInstance
+    .post<IHttpResponse<UiBuilderQueueDto>>(queueAPIURL, queue, {
+      headers: { ...getStudioSpaceHeaders(), "X-Env-Type": envType },
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts work items into a queue in the given environment; the queue's schema rules apply.
+ */
+const createUiBuilderQueueWorkItems = (
+  queueId: string,
+  envType: string,
+  items: Record<string, unknown>[],
+) => {
+  return axiosInstance
+    .post<IHttpResponse<unknown>>(
+      `${queueAPIURL}/workitem`,
+      { queueId, workItemData: JSON.stringify(items) },
+      { headers: { ...getStudioSpaceHeaders(), "X-Env-Type": envType } },
+    )
+    .then((res) => res.data);
+};
+
 export {
   getUiBuilderProject,
   getUiBuilderVersions,
   createUiBuilderVersion,
   restoreUiBuilderVersion,
   publishUiBuilderProject,
+  getUiBuilderModels,
+  updateUiBuilderDataConnections,
+  getUiBuilderQueues,
+  getUiBuilderQueue,
+  createUiBuilderQueue,
+  createUiBuilderQueueWorkItems,
 };

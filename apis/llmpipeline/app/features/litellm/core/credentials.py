@@ -139,7 +139,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_name: str | Non
     # Key-based providers: api_key + optional api_base/api_version.
     kwargs = {
         "api_key": credential_data.get("ApiKey"),
-        "api_base": credential_data.get("Url") or credential_data.get("Host"),
+        "api_base": _normalize_api_base(provider, credential_data.get("Url") or credential_data.get("Host")),
         "api_version": credential_data.get("ApiVersion"),
     }
     return CredentialResolution(
@@ -229,7 +229,7 @@ def _platform_credentials_kwargs(provider: str) -> dict:
     if provider == "anthropic":
         return _drop_empty(
             api_key=settings.CLAUDE_API_KEY,
-            api_base=settings.CLAUDE_API_URL,
+            api_base=_normalize_api_base(provider, settings.CLAUDE_API_URL),
         )
 
     if provider == "gemini":
@@ -265,6 +265,24 @@ def _platform_credentials_kwargs(provider: str) -> dict:
     # Unknown / unsupported provider: fall back to environment variables so we
     # don't break providers that rely on process-level env configuration.
     return {}
+
+
+def _normalize_api_base(provider: str, api_base: str | None) -> str | None:
+    """Adapt a platform-style base URL to what LiteLLM expects for the provider.
+
+    Platform credentials store Anthropic's URL as 'https://api.anthropic.com/v1'
+    (the legacy route appends '/messages'), while LiteLLM appends '/v1/messages'
+    to any base that does not already end with it, producing '/v1/v1/messages'.
+    """
+    if not api_base:
+        return api_base
+    base = api_base.strip().rstrip("/")
+    if provider.lower() == "anthropic":
+        if base.endswith("/v1/messages"):
+            return base
+        if base.endswith("/v1"):
+            return base[: -len("/v1")]
+    return base
 
 
 def _drop_empty(**kwargs) -> dict:
