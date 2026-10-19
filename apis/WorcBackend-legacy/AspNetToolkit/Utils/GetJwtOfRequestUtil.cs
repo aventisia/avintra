@@ -17,7 +17,13 @@ public static class GetJwtOfRequestUtil
             if (string.IsNullOrEmpty(jwt))
             {
                 string? bearerJwt = context.Request.Headers[HeaderNames.Authorization];
-                jwt = !string.IsNullOrEmpty(bearerJwt) ? bearerJwt.Substring(7, bearerJwt.Length - 7) : jwt;
+                if (!string.IsNullOrWhiteSpace(bearerJwt))
+                {
+                    const string bearerPrefix = "Bearer ";
+                    jwt = bearerJwt.StartsWith(bearerPrefix, StringComparison.OrdinalIgnoreCase)
+                        ? bearerJwt[bearerPrefix.Length..].Trim()
+                        : bearerJwt.Trim();
+                }
             } 
         }
         catch

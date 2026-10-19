@@ -35,7 +35,7 @@ export const ToolCrudForm = ({
     mutate: mutateTool,
     isPending: isMutating,
     isSuccess,
-  } = useListOptimisticMutation<ToolDto, ToolDto | boolean, ToolDto>(
+  } = useListOptimisticMutation<ToolDto, ToolDto | boolean | number, ToolDto>(
     [rowId],
     toolOptimisticMutationFn,
     queryKey,
@@ -86,6 +86,13 @@ export const ToolCrudForm = ({
         label="Description"
         placeholder="Describe what this tool does"
         description="A short summary of what the tool does."
+      />
+
+      <InputField
+        name="iconUrl"
+        label="Icon URL"
+        placeholder="https://example.com/icon.svg"
+        description="Optional URL of the icon that represents the tool. Defaults to the placeholder icon."
       />
 
       <InputField

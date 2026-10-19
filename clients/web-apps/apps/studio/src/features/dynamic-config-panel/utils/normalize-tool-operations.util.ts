@@ -1,10 +1,12 @@
-import { UsableToolOperation } from "../dtos/tool-dto";
+import { UsableToolOperation } from "../dtos/tool.dto";
 
 export type ToolOperation = {
   operationId: string;
   method?: string;
   path?: string;
   summary?: string;
+  /** Per-operation verification: unverified operations are not selectable. */
+  isVerified: boolean;
 };
 
 /**
@@ -18,5 +20,6 @@ export const normalizeToolOperations = (operations?: UsableToolOperation[]): Too
     method: operation.method,
     path: operation.path,
     summary: operation.summary,
+    isVerified: operation.isVerified === true,
   }));
 };

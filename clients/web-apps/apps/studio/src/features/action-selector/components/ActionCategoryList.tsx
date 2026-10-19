@@ -13,16 +13,18 @@ import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { NodeDataType } from "@/types/node-data-type";
 
+import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
 import ActionsList from "./ActionsList";
+import { CustomToolsPane } from "./CustomToolsPane";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 
-interface ActionCategoryListProps {
+type ActionCategoryListProps = {
   inputRef: React.RefObject<HTMLInputElement>;
   firstItemRef: React.MutableRefObject<HTMLButtonElement | null>;
-}
+};
 
 export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryListProps) => {
   const {
@@ -49,6 +51,8 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   const isOriginReplaceTrigger = origin === "ReplaceTrigger";
 
+  const isCustomToolsSection = !query && primaryCategoryLabel === CUSTOM_TOOLS_L1_LABEL;
+
   const actionCategories = useMemo(() => {
     if (query) {
       const normalizedQuery = query.toLowerCase();
@@ -56,7 +60,6 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
       actionSelectorData.forEach((primary) => {
         primary.actionCategories.forEach((category) => {
-          // If the category name itself matches, surface all of its actions.
           const categoryMatches = category.label.toLowerCase().includes(normalizedQuery);
 
           const matchingActions = categoryMatches
@@ -127,6 +130,17 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
     if (activePane === "left") leftRefs.current[leftIndex]?.focus();
     else rightRefs.current[rightIndex]?.focus();
   }, [activePane, leftIndex, rightIndex, isOriginReplaceTrigger, inputRef]);
+
+  const setBackButtonRef = (el: HTMLButtonElement | null) => {
+    backButtonRef.current = el;
+    if (el) firstItemRef.current = el;
+  };
+
+  const handleBack = () => {
+    setPrimaryCategoryLabel(null);
+    setQuery("");
+    inputRef.current?.focus();
+  };
 
   const handleBackKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === "ArrowUp") {
@@ -205,6 +219,21 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
     );
   }
 
+  if (isCustomToolsSection) {
+    return (
+      <CustomToolsPane
+        title={primaryCategoryLabel}
+        backButtonRef={setBackButtonRef}
+        onBack={handleBack}
+        onBackKeyDown={handleBackKeyDown}
+        onSelectNode={handleSelectNode}
+        rightRefs={rightRefs}
+        rightIndex={rightIndex}
+        onRightPaneKeyDown={handleRightPaneKeyDown}
+      />
+    );
+  }
+
   if (actionCategories.length === 0) {
     return <div className="p-4 text-center text-sm text-muted-foreground">No actions found.</div>;
   }
@@ -215,17 +244,10 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
         {!query && (
           <div className="flex shrink-0 items-center border-b p-2">
             <Button
-              ref={(el) => {
-                backButtonRef.current = el;
-                if (el) firstItemRef.current = el;
-              }}
+              ref={setBackButtonRef}
               variant="ghost"
               size="icon8"
-              onClick={() => {
-                setPrimaryCategoryLabel(null);
-                setQuery("");
-                inputRef.current?.focus();
-              }}
+              onClick={handleBack}
               onKeyDown={handleBackKeyDown}
               className="mr-2 outline-none focus-visible:bg-accent"
               aria-label="Go back"

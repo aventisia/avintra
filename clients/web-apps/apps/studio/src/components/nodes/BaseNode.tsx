@@ -72,7 +72,9 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
                 <MonitorIcon className="absolute left-1 top-1 h-2.5 w-2.5 text-muted-foreground" />
               )}
 
-            {nodeData.icon ? (
+            {nodeData.iconUrl ? (
+              <NodeImage src={nodeData.iconUrl} />
+            ) : nodeData.icon ? (
               Object.keys(customIconMapper).includes(nodeData.icon) ? (
                 customIconMapper[nodeData.icon]
               ) : (

@@ -1,5 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 
+import { resolveAssetSrc } from "@/utils/resolve-asset-src.util";
+
 interface FallbackImageIconProps extends React.HTMLAttributes<HTMLImageElement> {
   src?: string;
 }
@@ -13,7 +15,7 @@ export const FallbackImageIcon = ({ className, src, ...props }: FallbackImageIco
         alt="template"
         loading="lazy"
         decoding="async"
-        src={basePath + src}
+        src={resolveAssetSrc(src, basePath)}
         className={cn(
           "aspect-square h-5 rounded-[3px] object-cover opacity-80 transition-all",
           className,

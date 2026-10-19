@@ -15,12 +15,13 @@ import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
 import { Check, ChevronDown } from "lucide-react";
 import * as React from "react";
 
-// 1. Extend the option interface to accept an optional ReactNode for the icon
-export interface ISearchableSelectOption extends ISelectOption {
-  icon?: string;
-}
+import { resolveAssetSrc } from "@/utils/resolve-asset-src.util";
 
-interface SearchableSelectProps {
+export type ISearchableSelectOption = ISelectOption & {
+  icon?: string;
+};
+
+type SearchableSelectProps = {
   value?: string;
   onValueChange: (value: string) => void;
   options: ISearchableSelectOption[];
@@ -31,7 +32,9 @@ interface SearchableSelectProps {
   size?: FormFieldSizeType;
   className?: string;
   isLoading?: boolean;
-}
+  /** Rendered in place of the icon for options whose `icon` is not set. */
+  fallbackIcon?: React.ReactNode;
+};
 
 const sizeClasses: Record<FormFieldSizeType, string> = {
   xs: "h-7 text-2xs px-2",
@@ -50,6 +53,7 @@ export const SearchableSelect = ({
   size = "base",
   className,
   isLoading,
+  fallbackIcon,
 }: SearchableSelectProps) => {
   const [open, setOpen] = React.useState(false);
 
@@ -62,7 +66,10 @@ export const SearchableSelect = ({
 
   const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
-  // Scroll to selected item when popover opens
+  const selectedSrc = selectedOption?.icon
+    ? resolveAssetSrc(selectedOption.icon, basePath)
+    : undefined;
+
   React.useEffect(() => {
     if (open) {
       setTimeout(() => {
@@ -84,17 +91,15 @@ export const SearchableSelect = ({
           aria-expanded={open}
           className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
         >
-          {/* 2. Render the icon in the trigger if it exists */}
           <span className="flex items-center gap-2 truncate">
-            {selectedOption?.icon && (
+            {selectedSrc ? (
               <img
                 className="flex h-4 w-4 shrink-0 items-center justify-center"
-                src={
-                  selectedOption.icon.includes("http")
-                    ? selectedOption.icon
-                    : basePath + selectedOption.icon
-                }
+                src={selectedSrc}
+                alt=""
               />
+            ) : (
+              selectedOption && fallbackIcon
             )}
             <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
           </span>
@@ -122,39 +127,44 @@ export const SearchableSelect = ({
                     </>
                   </div>
                 ) : null}
-                {options.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.label}
-                    ref={value === option.value ? selectedItemRef : null}
-                    onSelect={() => {
-                      onValueChange(option.value);
-                      setOpen(false);
-                    }}
-                    className={cn(value === option.value && "bg-accent")}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      {/* 3. Render the icon in the dropdown list if it exists */}
-                      <div className="flex items-center gap-2">
-                        {option.icon && (
-                          <img
-                            className="flex h-4 w-4 shrink-0 items-center justify-center"
-                            src={
-                              option.icon.includes("http") ? option.icon : basePath + option.icon
-                            }
-                          />
-                        )}
-                        <span>{option.label}</span>
+                {options.map((option) => {
+                  const optionSrc = option.icon
+                    ? resolveAssetSrc(option.icon, basePath)
+                    : undefined;
+                  return (
+                    <CommandItem
+                      key={option.value}
+                      value={option.label}
+                      ref={value === option.value ? selectedItemRef : null}
+                      onSelect={() => {
+                        onValueChange(option.value);
+                        setOpen(false);
+                      }}
+                      className={cn(value === option.value && "bg-accent")}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {optionSrc ? (
+                            <img
+                              className="flex h-4 w-4 shrink-0 items-center justify-center"
+                              src={optionSrc}
+                              alt=""
+                            />
+                          ) : (
+                            fallbackIcon
+                          )}
+                          <span>{option.label}</span>
+                        </div>
+                        <Check
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0",
+                            value === option.value ? "opacity-100" : "opacity-0",
+                          )}
+                        />
                       </div>
-                      <Check
-                        className={cn(
-                          "h-3.5 w-3.5 shrink-0",
-                          value === option.value ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                    </div>
-                  </CommandItem>
-                ))}
+                    </CommandItem>
+                  );
+                })}
               </ScrollArea>
             </CommandGroup>
           </CommandList>

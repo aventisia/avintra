@@ -1,4 +1,5 @@
 using Serilog;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
 EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,21 @@ builder.Services.AddHttpClient("Corsair", client =>
     // We must read the Location header ourselves (to proxy the browser onward),
     // so disable automatic redirect following.
     AllowAutoRedirect = false
+});
+builder.Services.AddHttpClient("CustomTool", client =>
+{
+    // IMPORTANT NOTE: CustomToolTransportHelpers owns the 30-second upstream budget; a client timeout would race it and surface as a 500 instead of a 504.
+    client.Timeout = Timeout.InfiniteTimeSpan;
+}).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
+builder.Services.AddHttpClient("LLMPipeline", client =>
+{
+    var appBaseUrl = config["EnvironmentConfig:AppBaseUrl"]?.Trim().TrimEnd('/');
+    if (!string.IsNullOrWhiteSpace(appBaseUrl))
+    {
+        client.BaseAddress = new Uri($"https://{appBaseUrl}/llmpipeline/");
+    }
+    // IMPORTANT NOTE: a tool test spends up to 5 s on DNS, 60 s on the vault fetch and 30 s upstream in LLMPipeline, so this must stay above that budget.
+    client.Timeout = TimeSpan.FromSeconds(120);
 });
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
