@@ -1,4 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
+import { type ModelProviderEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,7 +17,7 @@ import {
   buildUiBuilderFixPrompt,
   buildUiBuilderFrameworkUserContent,
 } from "../constants/ui-builder-framework.constant";
-import { DEFAULT_UI_BUILDER_MODEL } from "../constants/ui-builder-models.constant";
+import { type UiBuilderGenerationModel } from "../constants/ui-builder-models.constant";
 import {
   buildUiBuilderSelectionBlock,
   buildUiBuilderTextEditPrompt,
@@ -114,7 +115,8 @@ const appendDerivedPairs = (
 export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   const queryClient = useQueryClient();
   const { projectQuery, versionsQuery } = useUiBuilderProject(projectId);
-  const { models, hasAnyEnabled, initialModel } = useUiBuilderModels();
+  const { providers, models, initialModelKey, isLoading, isError, isSuccess } =
+    useUiBuilderModels();
   const { generate, generateSource } = useUiBuilderGeneration();
 
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "anonymous");
@@ -133,7 +135,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   const headVersionNumber = headVersion?.versionNumber;
   const headFormat = normalizeUiBuilderFormat(headVersion?.contentFormat);
 
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_UI_BUILDER_MODEL);
+  const [selectedModelKey, setSelectedModelKey] = useState("");
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<UiBuilderChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -158,9 +160,9 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   }, [headVersionNumber]);
 
   useEffect(() => {
-    const isEnabled = models.some((model) => model.model === selectedModel && model.enabled);
-    if (!isEnabled) setSelectedModel(initialModel);
-  }, [models, initialModel, selectedModel]);
+    const isAvailable = models.some((model) => model.key === selectedModelKey);
+    if (!isAvailable) setSelectedModelKey(initialModelKey);
+  }, [models, initialModelKey, selectedModelKey]);
 
   useEffect(() => {
     if (isHistoryHydrated) return;
@@ -270,12 +272,18 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
     },
   });
 
-  const activeModel = models.find((model) => model.model === selectedModel);
+  const activeModel = models.find((model) => model.key === selectedModelKey) ?? null;
+  const selectedProviderType = activeModel?.providerType ?? "";
+
+  const handleProviderChange = (providerType: ModelProviderEnum) => {
+    const firstModel = models.find((model) => model.providerType === providerType);
+    setSelectedModelKey(firstModel?.key ?? "");
+  };
 
   const runFrameworkGeneration = async (
     assistantId: string,
     trimmedPrompt: string,
-    activeModelOption: NonNullable<typeof activeModel>,
+    activeModelOption: UiBuilderGenerationModel,
     selectionBlock: string,
     controller: AbortController,
   ) => {
@@ -372,7 +380,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
   const runHtmlGeneration = async (
     assistantId: string,
     trimmedPrompt: string,
-    activeModelOption: NonNullable<typeof activeModel>,
+    activeModelOption: UiBuilderGenerationModel,
     llmPrompt: string,
     controller: AbortController,
   ) => {
@@ -408,7 +416,12 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
 
   const handleSend = async () => {
     const trimmedPrompt = prompt.trim();
-    if (!activeModel?.enabled || !hasAnyEnabled || !trimmedPrompt || isGenerating) return;
+    if (!activeModel?.wireProvider || !trimmedPrompt || isGenerating) return;
+
+    const generationModel: UiBuilderGenerationModel = {
+      provider: activeModel.wireProvider,
+      model: activeModel.modelId,
+    };
 
     const effectiveFormat: UiBuilderContentFormat = formatOverride ?? headFormat;
     const selectionBlock = selection ? buildUiBuilderSelectionBlock(selection) : "";
@@ -439,12 +452,12 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
         await runFrameworkGeneration(
           assistantId,
           trimmedPrompt,
-          activeModel,
+          generationModel,
           selectionBlock,
           controller,
         );
       } else {
-        await runHtmlGeneration(assistantId, trimmedPrompt, activeModel, llmPrompt, controller);
+        await runHtmlGeneration(assistantId, trimmedPrompt, generationModel, llmPrompt, controller);
       }
     } catch (error) {
       const failedId = activeAssistantIdRef.current ?? assistantId;
@@ -571,9 +584,15 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
           className="overflow-hidden"
         >
           <UiBuilderChatPanel
+            providers={providers}
+            selectedProviderType={selectedProviderType}
+            onProviderChange={handleProviderChange}
             models={models}
-            selectedModel={selectedModel}
-            onModelChange={setSelectedModel}
+            selectedModelKey={selectedModelKey}
+            onModelChange={setSelectedModelKey}
+            isLoading={isLoading}
+            isError={isError}
+            isSuccess={isSuccess}
             messages={messages}
             prompt={prompt}
             onPromptChange={setPrompt}

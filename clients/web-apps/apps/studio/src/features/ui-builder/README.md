@@ -92,11 +92,16 @@ into the page you see.
   - **React versions use the same sandbox.** A React version's built page is rendered in the same
     `allow-scripts`-only iframe as an HTML version. Its styles are precompiled and inlined, so it
     makes no external requests, and the saved page never contains the selection bridge.
-- **Two models only.** GPT-4o mini (`openai`) and Gemini 3.1 Flash Lite (`googlegemini`).
-  A model is selectable only when the tenant has it enabled for the `Text` capability;
-  otherwise it is shown disabled with a reason, and generation is blocked when neither is
-  enabled. The switcher ignores casing and extra spaces when checking enabled models; the
-  exact model id is still sent for generation.
+- **Model selection comes from Tenant Admin.** The chat panel has **Model Provider** and
+  **Model** dropdowns filled only from the models the tenant has enabled for the `Text`
+  capability in Tenant Admin > Models. The Model list shows that provider's models by their
+  raw model id, and the builder keys a selection by provider plus model id so the same id on
+  two providers cannot be confused. With no enabled supported model, a warning asks you to
+  enable models and Send is disabled.
+- **Not every provider can be used yet.** Providers the model pipeline does not route (for
+  example Groq, Mistral, Bedrock, or Ollama Cloud) appear disabled with the reason "Not
+  supported by the builder yet" and are never sent for generation. The builder starts on the
+  first supported provider and its first enabled model; no model is hardcoded.
 - **Gemini is enabled by default.** Gemini 3.1 Flash Lite is enabled for every tenant for
   the `Text` capability automatically at API startup, using platform credits. A tenant
   admin can still disable it.

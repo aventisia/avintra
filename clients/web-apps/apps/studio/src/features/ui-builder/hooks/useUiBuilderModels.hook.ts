@@ -1,42 +1,91 @@
-import { ModelCapabilityEnum } from "@avplatform/ui/enums";
+import { ModelCapabilityEnum, type ModelProviderEnum } from "@avplatform/ui/enums";
 import { useMemo } from "react";
 
+import { type ProviderLiteral } from "@/features/dynamic-config-panel/dtos/llm-providers-dto";
 import { useFetchTenantEnabledModels } from "@/features/dynamic-config-panel/hooks/useFetchTenantEnabledModels.hook";
 
 import {
-  DEFAULT_UI_BUILDER_MODEL,
-  UI_BUILDER_MODELS,
-  type UiBuilderModelOption,
-} from "../constants/ui-builder-models.constant";
+  getUiBuilderProviderLabel,
+  getUiBuilderWireProvider,
+  toUiBuilderModelKey,
+} from "../utils/ui-builder-model-routing.util";
 
-/** A builder model paired with its tenant gating state. */
-export type UiBuilderModelState = UiBuilderModelOption & { enabled: boolean };
+/** A tenant-enabled provider shown in the builder's provider dropdown. */
+export type UiBuilderProviderState = {
+  providerType: ModelProviderEnum;
+  label: string;
+  isRoutable: boolean;
+};
 
-const toModelGateKey = (providerType: string, modelId: string) =>
-  `${providerType.trim()}::${modelId.trim()}`.toLowerCase();
+/** A tenant-enabled model shown in the builder's model dropdown. */
+export type UiBuilderModelState = {
+  key: string;
+  providerType: ModelProviderEnum;
+  providerLabel: string;
+  modelId: string;
+  wireProvider: ProviderLiteral | null;
+};
 
 /**
- * Resolves the tenant Text-capability gating state for the builder's fixed models.
+ * Derives the builder's provider and model options from the tenant's enabled Text models.
  */
 export const useUiBuilderModels = () => {
-  const { data, isLoading } = useFetchTenantEnabledModels(ModelCapabilityEnum.Text);
+  const { data, isLoading, isError, isSuccess } = useFetchTenantEnabledModels(
+    ModelCapabilityEnum.Text,
+  );
 
   const models = useMemo<UiBuilderModelState[]>(() => {
-    const enabledSet = new Set(
-      (data?.data ?? []).map((m) => toModelGateKey(m.providerType, m.modelId)),
-    );
-    return UI_BUILDER_MODELS.map((model) => ({
-      ...model,
-      enabled: enabledSet.has(toModelGateKey(model.providerType, model.model)),
-    }));
+    const seen = new Set<string>();
+    const options: UiBuilderModelState[] = [];
+
+    for (const enabledModel of data?.data ?? []) {
+      const modelId = enabledModel.modelId.trim();
+      const key = toUiBuilderModelKey(enabledModel.providerType, modelId);
+      if (!modelId || seen.has(key)) continue;
+
+      seen.add(key);
+      options.push({
+        key,
+        providerType: enabledModel.providerType,
+        providerLabel: getUiBuilderProviderLabel(enabledModel.providerType),
+        modelId,
+        wireProvider: getUiBuilderWireProvider(enabledModel.providerType),
+      });
+    }
+
+    return options;
   }, [data]);
 
-  const hasAnyEnabled = models.some((model) => model.enabled);
-  const defaultModel = models.find(
-    (model) => model.model === DEFAULT_UI_BUILDER_MODEL && model.enabled,
-  );
-  const initialModel =
-    (defaultModel ?? models.find((model) => model.enabled))?.model ?? DEFAULT_UI_BUILDER_MODEL;
+  const providers = useMemo<UiBuilderProviderState[]>(() => {
+    const seen = new Set<ModelProviderEnum>();
+    const options: UiBuilderProviderState[] = [];
 
-  return { models, hasAnyEnabled, initialModel, isLoading };
+    for (const model of models) {
+      if (seen.has(model.providerType)) continue;
+
+      seen.add(model.providerType);
+      options.push({
+        providerType: model.providerType,
+        label: model.providerLabel,
+        isRoutable: model.wireProvider !== null,
+      });
+    }
+
+    return options.sort((left, right) => Number(right.isRoutable) - Number(left.isRoutable));
+  }, [models]);
+
+  const initialModel = useMemo(() => {
+    const initialProvider = providers.find((provider) => provider.isRoutable) ?? providers[0];
+    return models.find((model) => model.providerType === initialProvider?.providerType) ?? null;
+  }, [models, providers]);
+
+  return {
+    providers,
+    models,
+    hasRoutableModel: models.some((model) => model.wireProvider !== null),
+    initialModelKey: initialModel?.key ?? "",
+    isLoading,
+    isError,
+    isSuccess,
+  };
 };
