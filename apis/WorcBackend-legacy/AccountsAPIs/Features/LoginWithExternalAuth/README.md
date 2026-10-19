@@ -32,10 +32,13 @@ unimplemented on purpose.
   Documents with an unknown version or another provider are ignored, which means such a tenant simply
   counts as "SSO off".
 - **Credentials are platform-level.** Sign-in, consent and token exchange always use the deployment app
-  configured through `AZURE_ENTRA_ID_CLIENT_ID` / `AZURE_ENTRA_ID_CLIENT_SECRET`. No tenant supplies or
+  configured through `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET`, and the enable gate validates those
+  same keys live. The tenant id and the enabled flag still come from `AZURE_TENANT_ID` /
+  `AZURE_ENTRA_ID_ENABLED`. No tenant supplies or
   stores client credentials, there is no secret field in the stored document, and no response returns
   credential material. Super Admin tenant reads omit `SSOConfigJson` completely; raw SSO JSON is editable
-  nowhere in the UI.
+  nowhere in the UI. The `AZURE_ENTRA_ID_CLIENT_ID` / `AZURE_ENTRA_ID_CLIENT_SECRET` loading is retained until
+  UAT proves the new flow; dropping it is future work.
 - **Disabling SSO only warns.** Turning SSO off never blocks. When users without a password are affected, the
   response carries a warning that names the affected admins and explains how they set a password, an
   `SSO_DISABLED_WARN_ONLY` audit entry is written, and the login screen tells those users to set a password
@@ -53,7 +56,7 @@ unimplemented on purpose.
   gated by the `TA` role on the server.
 - **Connect uses the admin-consent endpoint.** The tenant admin Connect button opens
   `…/organizations/v2.0/adminconsent` with `client_id`, `redirect_uri`, `state` and `scope`; the client id is
-  the platform `AZURE_ENTRA_ID_CLIENT_ID` and the ordinary login URL is unchanged.
+  the platform `MICROSOFT_CLIENT_ID` and the ordinary login URL is unchanged.
 
 ## Operator notes
 

@@ -51,8 +51,8 @@ tests {
 
 docs {
   > Preconditions: a tenant admin session (see `ta-login.bru` in this folder) and the platform app configured
-  > through `AZURE_ENTRA_ID_CLIENT_ID`; without a client id the endpoint fails safe with a 400
-  > "Azure SSO client id is not configured." message.
+  > through `MICROSOFT_CLIENT_ID`; without a client id the endpoint fails safe with a 400
+  > "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable." message.
   >
   > Reading a failure: 401 means no tenant admin session. Running this file on its own, without `ta-login.bru`
   > first, proves the TA gate but is expected to be red. A shape assertion failing means the consent URL
