@@ -49,6 +49,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   const {
     form,
     isDirty,
+    isValid,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
@@ -176,23 +177,40 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         description="Encrypts the work item data at rest in the database so it cannot be read in plain text."
         label="Store in encrypted format"
       />
-      <SwitchField
-        name="shouldRetryFailedItems"
-        label="Retry failed items"
-        description="Creates a retry when processing a work item fails."
-      />
-      <SwitchField
-        name="shouldRetryAbandonedItems"
-        label="Retry abandoned items"
-        description="Creates a retry when a work item is abandoned before processing completes."
-      />
-      {isReadMode ? (
-        <InputField {...maxRetriesProps} />
-      ) : (
-        (form.watch("shouldRetryFailedItems") || form.watch("shouldRetryAbandonedItems")) && (
-          <InputField {...maxRetriesProps} isRequired />
-        )
-      )}
+      {/* autor etry  */}
+      {/* <div className="flex flex-col gap-2">
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
+            Failed Items
+          </label>
+          <CheckboxField
+            name="shouldRetryFailedItems"
+            id="retryFailed"
+            label=""
+          />
+        </div>
+        <div className="ml-1 flex justify-between">
+          <label htmlFor="shouldRetryAbandonedItems" className="fm text-sm">
+            Abandoned Items
+          </label>
+          <CheckboxField
+            name="shouldRetryAbandonedItems"
+            id="retryAbandoned"
+            label=""
+          />
+        </div>
+
+        {form.getValues("shouldRetryAbandonedItems") ||
+        form.getValues("shouldRetryFailedItems") ? (
+          <div className="mt-4">
+            <InputField
+              {...maxRetriesProps}
+              isRequired={crudAction === "create"}
+            />
+          </div>
+        ) : null}
+      </div> */}
+      <InputField {...maxRetriesProps} isRequired />
       {/* additional options */}
       <div className="flex flex-col gap-3">
         <Input
@@ -288,7 +306,7 @@ Disposition statuses are always terminal (end) states.`}
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isDirty || !isValid || !isAvailable || isCheckPending}
           />
         </div>
       )}
