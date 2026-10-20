@@ -52,7 +52,7 @@ const QUERY_SPEC = [
   "    }",
   "  }",
   "  Fields: the schema field names above, or the system fields $status, $createdOn, $lastModifiedOn, $assignee.",
-  "  ops: eq, neq, in, nin, contains, startsWith, gt, gte, lt, lte, between ([from, to], inclusive, date-only 'to' includes that whole day), isNull, notNull.",
+  "  ops: eq, neq, in, nin, contains, startsWith, gt, gte, lt, lte, between ([from, to], inclusive), isNull, notNull. A date-only value (YYYY-MM-DD) means that whole day for every op.",
   "  fn: count (no field = count items; with field = count non-empty), countDistinct, sum, avg, min, max. A metric's where limits it to matching items (conditional counts and rates).",
   "  bucket (date fields only): day, week, month, year. A query with metrics or groupBy returns aggregate rows; a query without them returns matching items { id, status, createdOn, data }.",
   "  Result: { queries: { <name>: { rows: [...], totalRows, description, formulas: { <metric>: text }, title, labels: { <metric>: label }, derived: [ { label, formula } ] } }, scanned, truncated, filterDescription }. Every named query of the spec is always present; with no matching items an aggregate still returns one row of zero counts and null averages, and a row query returns no rows. Compute rates and percentages from the returned counts.",

@@ -5,6 +5,7 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
     private readonly ILogger<UiBuilderProjectUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly List<string> _userRoles;
 
     public UiBuilderProjectUserService(
         ILogger<UiBuilderProjectUserService> logger,
@@ -12,6 +13,7 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
         IHttpContextAccessor httpContextAccessor)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userRoles = httpContextAccessor.HttpContext?.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -47,6 +49,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
 
         try
         {
+            if (!await CanManageProjectsAsync([uiBuilderProjectId]))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
+                return serviceResponse;
+            }
+
             var uiBuilderProjectUsers = await _unitOfWork.UiBuilderProjectUserRepo
                 .GetByConditionAsync(w => w.UiBuilderProjectId == uiBuilderProjectId)
                 .Include(i => i.User)
@@ -78,6 +86,18 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
                 .ProjectToType<UiBuilderProjectUserDto>()
                 .SingleOrDefaultAsync();
 
+            if (uiBuilderProjectUser == null)
+            {
+                serviceResponse.Update("User not found", 404);
+                return serviceResponse;
+            }
+
+            if (!await CanManageProjectsAsync([uiBuilderProjectUser.UiBuilderProjectId]))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
+                return serviceResponse;
+            }
+
             serviceResponse.Update("User retrieved successfully", 200, uiBuilderProjectUser);
         }
         catch (Exception ex)
@@ -103,6 +123,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
             {
                 _logger.LogWarning("Published UI builder project not found. UiBuilderProjectId: {UiBuilderProjectId}", uiBuilderProjectUserDto.UiBuilderProjectId);
                 serviceResponse.Update("UI builder project not found", 404);
+                return serviceResponse;
+            }
+
+            if (!CanManageProject(project))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
                 return serviceResponse;
             }
 
@@ -210,6 +236,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
                 return serviceResponse;
             }
 
+            if (!projects.All(CanManageProject))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
+                return serviceResponse;
+            }
+
             var assignToAllUsersProjectIds = uiBuilderProjectUserDtos
                 .Where(dto => dto.IsAssignedToAllUsers)
                 .Select(dto => dto.UiBuilderProjectId)
@@ -225,7 +257,10 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
                 tenantWideAssigned = true;
             }
 
-            var userDtos = uiBuilderProjectUserDtos.Where(dto => !dto.IsAssignedToAllUsers).ToList();
+            var userDtos = uiBuilderProjectUserDtos
+                .Where(dto => !dto.IsAssignedToAllUsers)
+                .DistinctBy(dto => (dto.UiBuilderProjectId, dto.UserId))
+                .ToList();
             var userIds = userDtos.Select(x => x.UserId).Distinct().ToList();
 
             var existingUiBuilderProjectUsers = await _unitOfWork.UiBuilderProjectUserRepo
@@ -296,6 +331,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
                 return serviceResponse;
             }
 
+            if (!await CanManageProjectsAsync([uiBuilderProjectUser.UiBuilderProjectId, uiBuilderProjectUserDto.UiBuilderProjectId]))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
+                return serviceResponse;
+            }
+
             uiBuilderProjectUserDto.Adapt(uiBuilderProjectUser);
             _unitOfWork.UiBuilderProjectUserRepo.Update(uiBuilderProjectUser);
 
@@ -328,6 +369,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
             if (uiBuilderProjectUser == null)
             {
                 serviceResponse.Update("User not found", 404);
+                return serviceResponse;
+            }
+
+            if (!await CanManageProjectsAsync([uiBuilderProjectUser.UiBuilderProjectId]))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
                 return serviceResponse;
             }
 
@@ -365,6 +412,12 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
                 return serviceResponse;
             }
 
+            if (!await CanManageProjectsAsync(uiBuilderProjectUsers.Select(s => s.UiBuilderProjectId)))
+            {
+                serviceResponse.Update(ManageForbiddenMessage, 403);
+                return serviceResponse;
+            }
+
             _unitOfWork.UiBuilderProjectUserRepo.Delete(uiBuilderProjectUsers);
 
             if (!await _unitOfWork.SaveAsync())
@@ -381,5 +434,28 @@ public class UiBuilderProjectUserService : IUiBuilderProjectUserService
         }
 
         return serviceResponse;
+    }
+
+    private const string ManageForbiddenMessage = "You do not have access to manage users for this UI builder project";
+
+    private bool CanManageProject(UiBuilderProject project)
+    {
+        return project.CreatedByUserId == _userId || _userRoles.Contains("OM");
+    }
+
+    private async Task<bool> CanManageProjectsAsync(IEnumerable<Guid> uiBuilderProjectIds)
+    {
+        if (_userRoles.Contains("OM"))
+        {
+            return true;
+        }
+
+        var projectIds = uiBuilderProjectIds.Distinct().ToList();
+
+        var ownedProjectCount = await _unitOfWork.UiBuilderProjectRepo
+            .GetByConditionAsync(w => projectIds.Contains(w.Id) && w.CreatedByUserId == _userId)
+            .CountAsync();
+
+        return ownedProjectCount == projectIds.Count;
     }
 }

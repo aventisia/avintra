@@ -28,7 +28,7 @@ export const InterfaceDetailPane = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const { data, isFetching, isError } = useFetchMyInterfaceView(id);
+  const { data, isLoading, isError } = useFetchMyInterfaceView(id);
 
   const project = data?.data?.project;
   const headVersion = data?.data?.headVersion;
@@ -62,7 +62,7 @@ export const InterfaceDetailPane = () => {
     [id],
   );
 
-  if (isFetching) {
+  if (isLoading || assetsQuery.isLoading) {
     return (
       <div className="flex h-full w-full flex-col">
         <div className="flex h-16 min-h-16 max-h-16 items-center gap-3 border-b px-3">

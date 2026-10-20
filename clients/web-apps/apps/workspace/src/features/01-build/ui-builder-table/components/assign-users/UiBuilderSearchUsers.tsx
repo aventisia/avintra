@@ -7,10 +7,12 @@ import { useAssignUiBuilderUserMutation } from "../../hooks/useAssignUiBuilderUs
 import { useSearchUiBuilderUserMultiSelect } from "../../hooks/useSearchUiBuilderUserMultiSelect";
 
 export const UiBuilderSearchUsers = ({
+  uiBuilderProjectId,
   assignAll,
   savedAssignAll,
   onUpdateSuccess,
 }: {
+  uiBuilderProjectId: string;
   assignAll: boolean;
   savedAssignAll: boolean;
   onUpdateSuccess: (newValue: boolean) => void;
@@ -26,10 +28,10 @@ export const UiBuilderSearchUsers = ({
     searchData,
     isLoading,
     isError,
-    uiBuilderProjectId,
-  } = useSearchUiBuilderUserMultiSelect();
+  } = useSearchUiBuilderUserMultiSelect(uiBuilderProjectId);
 
-  const { mutate: assignToAllUsers, isPending: isAssigningAll } = useAssignUiBuilderUserMutation();
+  const { mutate: assignToAllUsers, isPending: isAssigningAll } =
+    useAssignUiBuilderUserMutation(uiBuilderProjectId);
 
   const assignAllChanged = assignAll !== savedAssignAll;
   const hasSelectedUsers = selectedItems && selectedItems.length > 0;

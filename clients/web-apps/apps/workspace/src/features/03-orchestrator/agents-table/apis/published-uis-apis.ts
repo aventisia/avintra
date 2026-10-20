@@ -3,12 +3,9 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
-import { PublishedUiDto, PublishedUiUserDto, PublishedUiViewDto } from "../dtos/published-ui-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
+import { PublishedUiDto, PublishedUiViewDto } from "../dtos/published-ui-dto";
 
 const uiBuilderApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/ui-builder`;
-const projectUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/uibuilder-project-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
 /**
  * Retrieves all published custom UI builder projects.
@@ -33,55 +30,20 @@ export const getOmUiView = (id: string) => {
 };
 
 /**
- * Updates a UI builder project (used to disable or enable it).
+ * Disables or enables a published UI builder project.
  */
-export const updatePublishedUi = (updatedProject: PublishedUiDto) => {
+export const updatePublishedUiStatus = ({
+  id,
+  isDisabled,
+}: {
+  id: string;
+  isDisabled: boolean;
+}) => {
   return axiosInstance
-    .put<IHttpResponse<PublishedUiDto>>(`${uiBuilderApiUrl}`, updatedProject, {
-      headers: getSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
-
-/**
- * Retrieves tenant users matching the search value.
- */
-export const getSearchPublishedUiUser = (value?: string, includeCurrentUser: boolean = true) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(
-      `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
+    .put<IHttpResponse<PublishedUiDto>>(
+      `${uiBuilderApiUrl}/${id}/status`,
+      { isDisabled },
       { headers: getSpaceHeaders() },
     )
-    .then((res) => res.data);
-};
-
-/**
- * Retrieves all users assigned to a published UI builder project.
- */
-export const getPublishedUiUsers = (uiBuilderProjectId: string) => {
-  return axiosInstance
-    .get<IHttpResponse<PublishedUiUserDto[]>>(`${projectUserApiUrl}/${uiBuilderProjectId}/list`, {
-      headers: getSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
-
-/**
- * Assigns a user (or all team members) to a published UI builder project.
- */
-export const insertPublishedUiUser = (newUiUser: PublishedUiUserDto) => {
-  return axiosInstance
-    .post<IHttpResponse<PublishedUiUserDto>>(`${projectUserApiUrl}`, newUiUser, {
-      headers: getSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
-
-/**
- * Removes a user assignment from a published UI builder project.
- */
-export const deletePublishedUiUser = (id: string) => {
-  return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${projectUserApiUrl}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };

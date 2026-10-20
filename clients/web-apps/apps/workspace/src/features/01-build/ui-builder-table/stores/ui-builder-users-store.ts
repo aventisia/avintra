@@ -2,13 +2,11 @@ import { create } from "zustand";
 
 type State = {
   showDialog: boolean;
-  view: "Users" | "Search";
   uiBuilderProjectId: string;
 };
 
 type Actions = {
   setShowDialog: (showDialog: boolean) => void;
-  setView: (view: "Users" | "Search") => void;
   setUiBuilderProjectId: (uiBuilderProjectId: string) => void;
 };
 
@@ -17,10 +15,8 @@ type Actions = {
  */
 export const useUiBuilderUsersStore = create<State & Actions>((set) => ({
   showDialog: false,
-  view: "Users",
   uiBuilderProjectId: "",
 
   setShowDialog: (showDialog) => set({ showDialog }),
-  setView: (view) => set({ view }),
   setUiBuilderProjectId: (uiBuilderProjectId) => set({ uiBuilderProjectId }),
 }));

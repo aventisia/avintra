@@ -1,6 +1,5 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
-import { DropdownMenu, DropdownMenuContent } from "@avplatform/ui/dropdown-menu";
-import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
 import { UserMinus2Icon } from "lucide-react";
 
@@ -11,10 +10,14 @@ import { useRemoveUiBuilderUserMutation } from "../../hooks/useRemoveUiBuilderUs
 
 interface UiBuilderUsersListItemActionsProps {
   item: UiBuilderUserDto;
+  uiBuilderProjectId: string;
 }
 
-export const UiBuilderUsersListItemActions = ({ item }: UiBuilderUsersListItemActionsProps) => {
-  const { mutate: removeUser } = useRemoveUiBuilderUserMutation();
+export const UiBuilderUsersListItemActions = ({
+  item,
+  uiBuilderProjectId,
+}: UiBuilderUsersListItemActionsProps) => {
+  const { mutate: removeUser } = useRemoveUiBuilderUserMutation(uiBuilderProjectId);
 
   return (
     <DropdownMenu>

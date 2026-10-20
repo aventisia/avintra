@@ -3,19 +3,11 @@ import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Command, CommandEmpty, CommandItem, CommandList } from "@avplatform/ui/command";
 import { cn } from "@avplatform/ui/lib";
 import { BotIcon } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 
 import { useFetchUiBuilderProjectUsers } from "../../hooks/useFetchUiBuilderProjectUsers";
-import { useUiBuilderUsersStore } from "../../stores/ui-builder-users-store";
 import { UiBuilderUsersListItemActions } from "./UiBuilderUsersListItemActions";
 
-const UiBuilderUsersList = () => {
-  const { uiBuilderProjectId } = useUiBuilderUsersStore(
-    useShallow((state) => ({
-      uiBuilderProjectId: state.uiBuilderProjectId,
-    })),
-  );
-
+const UiBuilderUsersList = ({ uiBuilderProjectId }: { uiBuilderProjectId: string }) => {
   const { data } = useFetchUiBuilderProjectUsers(uiBuilderProjectId);
 
   return (
@@ -44,7 +36,10 @@ const UiBuilderUsersList = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <UiBuilderUsersListItemActions item={val} />
+                  <UiBuilderUsersListItemActions
+                    item={val}
+                    uiBuilderProjectId={uiBuilderProjectId}
+                  />
                 </div>
               </div>
             </CommandItem>
