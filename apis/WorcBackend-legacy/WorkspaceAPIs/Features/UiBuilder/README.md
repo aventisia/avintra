@@ -89,3 +89,37 @@ Every result set also returns a plain-language `description` and a `formulas` ma
 formula text using the schema field labels and all filters that apply), and the response carries a
 `filterDescription` of the shared filters, so hosts and pages can explain each figure. Extra spec
 properties used only for display (`title`, metric `label`, `derived`) are ignored by the engine.
+
+## Project settings
+
+- `PUT ui-builder/{id}/settings` (owner only) replaces the project's **instructions** (max 4000,
+  sent with every generation), **theme** (JSON column: 6-digit hex primary color, neutral
+  `slate|gray|zinc|neutral|stone`, radius `none|sm|md|lg|xl`, font `inter|system|serif|mono`, mode
+  `light|dark`; null means the platform default), and **template** flag. Project insert and update
+  never change them. Themes are applied when a React version is built in the studio, so existing
+  versions keep the theme they were built with.
+
+## Templates
+
+- `GET ui-builder/templates` lists enabled template projects with at least one version in the
+  current tenant and space; their data connections are never returned.
+- `POST ui-builder/{id}/clone` creates a project owned by the caller from a template (or a project
+  the caller can read): the newest version becomes v1, and instructions, theme, and assets are
+  copied. **Data connections are not copied**, because the runtime proxy authorizes by project
+  access and copying them would hand the new owner the template's queue data.
+
+## Assets
+
+- Images uploaded to a project (`UiBuilderAssets` table, cascade delete with the project): PNG,
+  JPEG, WebP, GIF, or SVG, at most 512 KB each and 20 per project, with a name unique per project
+  that generated code uses (`Avintra.asset("logo")`).
+- `GET {id}/assets` lists metadata for builders; `POST {id}/assets` uploads base64 content and
+  `DELETE {id}/assets/{assetId}` removes one (write access). `GET {id}/assets/content` returns the
+  images with content to anyone who can open the project or its published view (the same rule as the
+  data proxy), so hosts can inject them into the sandboxed frame.
+- Assets are not versioned: a published interface shows the project's current images.
+
+## Version checkpoints
+
+- `PUT ui-builder/{id}/versions/{versionNumber}/label` names a version (max 100) or clears it with
+  null. Labels are not copied by restore or clone.

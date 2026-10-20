@@ -45,6 +45,8 @@ type UiBuilderHostFrameProps = {
   onFrameMessage?: (data: unknown) => void;
   /** Receives each successful query with its spec, so the host can explain the calculations. */
   onQueryResult?: (event: UiBuilderQueryResultEvent) => void;
+  /** Project images, by name, that the interface reads with `Avintra.asset(name)`. */
+  assets?: Record<string, string>;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -76,6 +78,7 @@ export const UiBuilderHostFrame = ({
   onReady,
   onFrameMessage,
   onQueryResult,
+  assets,
 }: UiBuilderHostFrameProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -96,7 +99,7 @@ export const UiBuilderHostFrame = ({
     onQueryResult,
   };
 
-  const srcDoc = useMemo(() => prepareUiBuilderDocument(html), [html]);
+  const srcDoc = useMemo(() => prepareUiBuilderDocument(html, { assets }), [html, assets]);
 
   useEffect(() => {
     const respond = (id: string, payload: { ok: boolean; data?: unknown; error?: string }) => {

@@ -55,6 +55,21 @@ export interface UiBuilderProjectDto {
   dataConnections?: UiBuilderDataConnection[];
 
   /**
+   * Gets the standing instructions sent with every generation.
+   */
+  instructions?: string | null;
+
+  /**
+   * Gets the visual theme, or null for the platform default.
+   */
+  theme?: UiBuilderThemeDto | null;
+
+  /**
+   * Indicates whether the project is offered to the tenant as a template.
+   */
+  isTemplate?: boolean;
+
+  /**
    * Gets or sets the username of the user who created the project record.
    */
   createdBy?: string;
@@ -123,6 +138,11 @@ export interface UiBuilderVersionDto {
    * Gets or sets the date and time when the version record was created.
    */
   createdOn?: string;
+
+  /**
+   * Gets the optional checkpoint name of the version.
+   */
+  label?: string | null;
 }
 
 /** Payload used to persist a newly generated version. */
@@ -176,4 +196,89 @@ export interface UiBuilderQueueDto {
   isTenantWideAccess: boolean;
   total?: number;
   pending?: number;
+}
+
+/**
+ * Represents the visual theme of a custom UI builder project.
+ */
+export interface UiBuilderThemeDto {
+  /**
+   * Gets or sets the primary brand color as a 6-digit hex value.
+   */
+  primaryColor: string;
+
+  /**
+   * Gets or sets the neutral palette.
+   */
+  neutralColor: "slate" | "gray" | "zinc" | "neutral" | "stone";
+
+  /**
+   * Gets or sets the corner radius scale.
+   */
+  radius: "none" | "sm" | "md" | "lg" | "xl";
+
+  /**
+   * Gets or sets the font family.
+   */
+  fontFamily: "inter" | "system" | "serif" | "mono";
+
+  /**
+   * Gets or sets the color mode.
+   */
+  mode: "light" | "dark";
+}
+
+/**
+ * Represents the owner-managed settings of a custom UI builder project.
+ */
+export interface UiBuilderProjectSettingsDto {
+  /**
+   * Gets or sets standing instructions sent with every generation. Max-4000
+   */
+  instructions?: string | null;
+
+  /**
+   * Gets or sets the visual theme, or null for the platform default.
+   */
+  theme?: UiBuilderThemeDto | null;
+
+  /**
+   * Indicates whether the project is offered to the tenant as a template.
+   */
+  isTemplate: boolean;
+}
+
+/**
+ * Represents an image uploaded to a custom UI builder project.
+ */
+export interface UiBuilderAssetDto {
+  /**
+   * Gets the primary key of the asset record.
+   */
+  id?: string;
+
+  /**
+   * Gets or sets the name generated code uses to reach the asset. Max-64
+   */
+  name: string;
+
+  /**
+   * Gets or sets the image media type.
+   */
+  contentType: string;
+
+  /**
+   * Gets or sets the base64-encoded image bytes; sent on upload and returned only with asset content.
+   */
+  dataBase64?: string | null;
+
+  /**
+   * Gets the image size in bytes.
+   */
+  sizeBytes?: number;
+
+  /**
+   * Gets the date and time when the asset was uploaded.
+   */
+  createdOn?: string;
 }

@@ -53,6 +53,24 @@ public class UiBuilderProjectDto
     public List<UiBuilderDataConnectionDto> DataConnections { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets standing instructions sent with every generation. Managed through the settings endpoint;
+    /// ignored on project insert and update.
+    /// </summary>
+    public string? Instructions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the visual theme, or null for the platform default. Managed through the settings endpoint;
+    /// ignored on project insert and update.
+    /// </summary>
+    public UiBuilderThemeDto? Theme { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the project is offered to the tenant as a template. Managed through
+    /// the settings endpoint; ignored on project insert and update.
+    /// </summary>
+    public bool IsTemplate { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of generated versions stored for the project.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>

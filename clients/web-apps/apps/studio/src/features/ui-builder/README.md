@@ -24,8 +24,11 @@ project row (`/studio/ui-builder?id=<projectId>`).
   collapses. The split is remembered per user and project in localStorage under
   `studio-ui-builder-split:<userEmail>:<projectId>` and restored on the next open.
 - The builder sends no conversation thread to the server: each request sends the system
-  prompt plus the current HTML and the new prompt, and generated pages are never stored in
-  the browser. The chat transcript is rebuilt from the saved versions plus this browser's
+  prompt plus the current code and the new prompt, and generated pages are never stored in
+  the browser. Two kinds of memory are added to the system prompt: the owner's **project
+  instructions** (Settings) and the last 5 prompts of this transcript.
+- After a version is saved, a small call suggests three follow-up prompts from the request and
+  the rendered page outline; they appear as chips under the last reply and fill the composer. The chat transcript is rebuilt from the saved versions plus this browser's
   own notes for the signed-in user and project, under the key
   `studio-ui-builder-chat:<userEmail>:<projectId>`. It therefore survives reload, leaving and
   returning, and switching projects, in the same browser. Failed, stopped, and error messages
@@ -49,6 +52,19 @@ The right preview pane has a toolbar at its top. The preview renders on a canvas
   The edit happens in the browser: it sends nothing to the model and spends no credits, and the
   transcript shows a marker such as `Manual text edit (<selector>): "<old>" → "<new>"`. Empty
   text is rejected, and a selector that no longer matches shows an error without saving anything.
+  On React versions the edit rewrites the static JSX text of the element's tag and rebuilds; text
+  computed in code is not editable this way.
+- **Style.** On React versions, Style opens a panel that restyles the selected element without the
+  model: padding, gap, text size, weight, alignment, text color, background, corners, and shadow.
+  Each choice replaces that family of utility classes in the tag's static `className` and rebuilds
+  the preview; **Save version** stores all pending changes as one version, **Discard** drops them.
+  Sending a prompt is blocked while style changes are unsaved. A tag whose `className` is computed
+  in code cannot be styled here.
+- **Source mapping.** Every build tags each JSX element with `data-avk-id="<n>"` (its opening-tag
+  index in the source, from the sucrase tokenizer) in a build-only copy of the source. The
+  selection bridge reports the nearest tagged ancestor, which is how Style, React Edit Text, and the
+  `Source JSX tag:` line of selection prompts find the tag. The saved source never contains the
+  attribute; the built page does.
 
 ## Preview / Code
 
@@ -56,6 +72,50 @@ The same toolbar has a **Preview / Code** switch. Preview (the default) shows th
 interface; Code shows the source read-only with a copy button. The switch lasts
 only for the current visit — a reload returns to Preview — and it does not touch the split
 layout, the chat, or any other saved setting.
+
+- **Changes** compares the current code with any earlier version of the same format as a unified
+  line diff (Myers, three lines of context); versions that differ too much are reported instead.
+- **Download** saves the React source as `.jsx`, or the page as one standalone `.html` with the
+  runtime and project images inlined (live data needs the platform).
+- **Checkpoints.** Each version in the header list can be named (pencil icon, up to 100
+  characters); names show in the list and in the Changes picker.
+
+## Runtime kit and build (React)
+
+React versions are built on a runtime kit in `kit/`, exposed to generated code as the globals
+`UI` (layout, cards, stats, forms, DataTable, dialogs, sheets, menus, tabs, toasts, formatters,
+`useRoute`), `Charts` (bar, line, area, donut, sparkline, theme colored, with tooltips and a
+screen-reader table), and `Icons` (any lucide icon by name). The API reference the model sees is
+`kit/kit-reference.constant.ts`; `kit/kit-manifest.constant.ts` lists the members the build accepts.
+
+- **Bundling.** `ui-builder-runtime.plugin.ts` bundles `kit/index.ts` with esbuild into an IIFE that
+  reads React from the page, and serves it, the lucide icon registry, the Inter font, and the
+  Tailwind v4 stylesheet as lazily loaded virtual modules.
+- **Build.** `buildUiBuilderFrameworkDocument(source, theme)` compiles exactly the utility classes
+  the source and kit use with Tailwind v4 (in the browser, against the project theme), inlines only
+  the icons the source names, embeds Inter when the theme uses it, and inlines React, the kit, and
+  the component. Every version is self-contained (about 450 KB): kit changes never alter published
+  versions, and the page is stamped `<meta name="avintra-kit">` with the kit version.
+- **Diagnostics.** The build reports unknown classes (`V5`, blocking from 3), unknown icons (`V11`,
+  with close matches), and unknown `UI`/`Charts` members (`V12`); inline SVGs and hand-built tables
+  are notes (`V13`).
+- **Multi-view apps** keep the active view in the URL hash with `UI.useRoute`, wired to
+  `UI.AppShell` navigation.
+
+## Theme and project settings
+
+The owner's **Settings** dialog (header) holds the project instructions, the theme, project
+images, and the template switch (`PUT ui-builder/{id}/settings`, images through
+`ui-builder/{id}/assets`).
+
+- **Theme:** brand color (presets or hex), light/dark mode, neutral palette, corner radius, and
+  font. It becomes the semantic color, radius, and font tokens of the Tailwind build. Saving a new
+  theme rebuilds the current React version with it as a new version, without the model.
+- **Images:** PNG, JPEG, WebP, GIF, or SVG up to 512 KB, named for code (`companyLogo`). Generated
+  code shows them with `Avintra.asset("companyLogo")`; the host injects the images into the frame
+  at render time (stripped before saving), in the studio, the probe, and Assist.
+- **Template:** builders in the tenant can start a project from it in the workspace create dialog
+  (newest version, instructions, theme, and images; not data connections).
 
 ## Output formats
 
@@ -77,6 +137,8 @@ The toolbar has a **React / HTML** switch. New projects start on **React**.
 
 Every prompt runs as one agent turn, shown as a step timeline in the chat:
 
+0. **Plan** — new pages only: a small JSON call proposes the title, archetype, sections,
+   components, and states; the plan is appended to the draft request. A failed plan is skipped.
 1. **Draft** — a new page (or a format conversion) streams the full component or document. A prompt
    on an existing page runs as an **edit**: the model returns only `SEARCH`/`REPLACE` blocks for the
    lines it changes, the studio applies them to the head version, and everything else stays exactly
@@ -87,14 +149,31 @@ Every prompt runs as one agent turn, shown as a step timeline in the chat:
    runtime errors and feeds the rendered markup to accessibility checks. Data requests in this render
    get empty pages, so empty states are exercised. Utility classes outside the design system are
    reported as a note, not a failure.
-3. **Repair** — only when the check fails: one repair pass with the numbered problems (as edit
-   blocks on edit turns).
-4. **Save** — nothing that still fails is saved.
+3. **Repair** — only when the check fails: up to two repair passes with the numbered problems (as
+   edit blocks on edit turns).
+4. **Visual review** — React turns with **Visual** on (composer, remembered per user): the probe
+   captures the page at 1280px and 390px inside the sandbox (an SVG `foreignObject` raster, injected
+   only in probe mode) and a vision call with the `ui-visual-review` skill scores it. High-severity
+   issues get one repair; the fix is kept only if it passes the checks again. Medium issues are
+   shown as notes. Models that cannot read images skip this step.
+5. **Save** — nothing that still fails is saved.
+
+Skills per pass: `ui-design-system` and `ui-a11y-review` always, `ui-data-viz` when data is
+connected, and `ui-page-archetypes` on new-page drafts only.
 
 All passes bill together as UI Builder usage. Stop cancels the whole turn. A pass is also stopped,
 with nothing saved, when the model writes past its budget (edits: the larger of 20,000 characters
 and the current code size; full drafts: 200,000) or sends nothing for 90 seconds. If the live preview later
-hits a runtime error, a banner offers **Fix with AI**, which sends the error as the next prompt.
+hits a runtime error, a banner offers **Fix with AI**, which sends the error as the next prompt. The
+first runtime error of a version generated in this session is fixed automatically, once.
+
+## Composer extras
+
+- **Reference images:** attach, paste, or drop up to 3 screenshots or mockups. They are downscaled
+  to 1600px JPEG in the browser and sent (as `files`) with the plan and draft passes; the transcript
+  keeps small thumbnails.
+- **Plan mode:** the agent discusses and plans without changing the interface or saving a version.
+  **Build this** under a reply sends the plan as a build prompt.
 
 ## Data connections
 
@@ -177,7 +256,7 @@ connections; they are stored on the project (`PUT ui-builder/{id}/data-connectio
   at API startup without a credential (platform credits), so the builder hides it. Configure the
   Gemini provider with a credential in Tenant Admin to use Gemini here.
 - **Requests.** Generations stream (`stream = true`), send no `conversation_id`, and attach the
-  `ui-design-system` and `ui-a11y-review` skills on React turns. Anthropic, Bedrock, and Vertex
+  platform skills listed under Agentic turns on React turns. Anthropic, Bedrock, and Vertex
   requests carry an explicit 16k output cap.
 - **Publishing.** Publishing happens from the studio builder top bar, next to the preferences
   control. Only the project owner sees the button, and the project needs at least one version.

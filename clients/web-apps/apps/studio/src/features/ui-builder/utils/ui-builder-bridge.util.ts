@@ -90,7 +90,11 @@ const UI_BUILDER_BRIDGE_SCRIPT = `(function () {
       type: "${UI_BUILDER_SELECTION_MESSAGE_TYPE}",
       selector: buildSelector(target),
       outerHtml: String(target.outerHTML || "").slice(0, OUTER_HTML_LIMIT),
-      textContent: String(target.innerText || "").slice(0, TEXT_LIMIT)
+      textContent: String(target.innerText || "").slice(0, TEXT_LIMIT),
+      sourceId: (function () {
+        var owner = target.closest ? target.closest("[data-avk-id]") : null;
+        return owner ? String(owner.getAttribute("data-avk-id")) : undefined;
+      })()
     }, "*");
   }, true);
 })();`;

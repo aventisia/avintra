@@ -69,6 +69,10 @@ const FRAMEWORK_USAGE = [
   '  const orders = Avintra.useQueue("orders", { params: { status: "Pending", top: 50 } }); // simple newest-first list',
   "  // orders.items → [{ id, status, data: { ...fields }, createdOn }]; orders.loading, orders.error, orders.refresh()",
   '  // await orders.add({ ...fields }); await orders.update(item.id, { status: "Completed", data: { ...changes } }); await orders.get(id)',
+  "Wire results straight into the kit, which renders loading, empty, and error states for you:",
+  '  <UI.Stat label="Avg turnaround" value={UI.format.number(stats.first("kpis")?.avgTat, 1)} loading={stats.loading} formula={stats.formula("kpis", "avgTat")} />',
+  '  <Charts.LineChart data={stats.rows("trend")} x="day" y="total" loading={stats.loading} />  <Charts.DonutChart data={stats.rows("byStatus")} label="status" value="total" />',
+  '  <UI.DataTable rows={orders.items} loading={orders.loading} error={orders.error && orders.error.message} onRetry={orders.refresh} columns={[{ key: "data.customer", header: "Customer", sortable: true }, { key: "status", header: "Status", render: (row) => <UI.StatusBadge status={row.status} /> }]} />',
   "",
   QUERY_SPEC,
 ].join("\n");
@@ -100,7 +104,9 @@ export const buildUiBuilderDataPrompt = (
     "- Aggregate on the server with query(): never download items to count, sum, average, or group them in the browser, because a queue can hold far more items than a list returns.",
     "- Put user filters (date range pickers, dropdowns, segment toggles) into spec.filters or a query's filters so every widget updates together. For date ranges, filter the schema's own date field (for example when the record happened); use $createdOn only when the schema has no date field.",
     "- Fetch all widgets of a view with one query() call containing several named queries.",
-    '- Make every computed figure explainable on the page: next to each KPI, chart title, and computed column header, show a small info button (aria-label "How is this calculated?") that reveals the formula on hover and on click or focus. Use the metric\'s formula text from the result, or for page-computed values the same words declared in derived. Keep it subtle and keep the existing look.',
+    format === "framework"
+      ? "- Make every computed figure explainable on the page: pass the formula to UI.Stat's formula prop, and put <UI.InfoHint formula={...} /> next to each chart title and computed column header. Use the metric's formula text from the result, or for page-computed values the same words declared in derived."
+      : '- Make every computed figure explainable on the page: next to each KPI, chart title, and computed column header, show a small info button (aria-label "How is this calculated?") that reveals the formula on hover and on click or focus. Use the metric\'s formula text from the result, or for page-computed values the same words declared in derived. Keep it subtle and keep the existing look.',
     "- Render real states for every connection: loading skeleton, empty state, and an error message with a retry control. If a result is truncated, say that totals cover the most recent items.",
     "- In every catch block for data calls, show the error message to the user with a retry control and call Avintra.reportError(error.message, error.stack) so the platform can detect and fix it. Never swallow errors silently. Guard optional values (for example an average can be null).",
     "- Never invent records for a connected queue; show what the queue returns. Field names must match the schema exactly.",
@@ -155,3 +161,16 @@ export const buildUiBuilderSampleDataPrompt = (
     "Schema:",
     ...fields.map(describeField),
   ].join("\n");
+
+/** Builds a one-line-per-connection summary of the bound data for small planning calls. */
+export const buildUiBuilderDataSummary = (contexts: UiBuilderConnectionContext[]) =>
+  contexts
+    .map(
+      ({ connection, fields }) =>
+        `- "${connection.key}" (queue "${connection.queueName}", operations ${connection.operations.join("/")}): ${
+          fields.length > 0
+            ? fields.map((field) => `${field.name} (${field.type})`).join(", ")
+            : "free-form data"
+        }`,
+    )
+    .join("\n");

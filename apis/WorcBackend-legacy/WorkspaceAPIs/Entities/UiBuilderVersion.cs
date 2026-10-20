@@ -64,4 +64,10 @@ public class UiBuilderVersion : BaseEntity, IMustHaveTenant
     /// </summary>
     [MaxLength(100)]
     public required string Model { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional checkpoint name for the version. Max-100 characters.
+    /// </summary>
+    [MaxLength(100)]
+    public string? Label { get; set; }
 }

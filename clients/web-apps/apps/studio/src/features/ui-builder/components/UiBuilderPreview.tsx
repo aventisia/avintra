@@ -28,6 +28,7 @@ type UiBuilderPreviewProps = {
   onDataRequest: (request: UiBuilderDataRequest) => Promise<unknown>;
   onRuntimeError: (error: UiBuilderRuntimeError) => void;
   onQueryResult: (event: UiBuilderQueryResultEvent) => void;
+  assets?: Record<string, string>;
 };
 
 const MAX_BRIDGE_FIELD_LENGTH = 8192;
@@ -40,7 +41,7 @@ const DEVICE_WIDTHS: Record<UiBuilderDevice, string> = {
 
 const isUiBuilderSelectionMessage = (
   data: unknown,
-): data is { selector: string; outerHtml: string; textContent: string } => {
+): data is { selector: string; outerHtml: string; textContent: string; sourceId?: string } => {
   if (!data || typeof data !== "object") return false;
 
   const candidate = data as Record<string, unknown>;
@@ -52,6 +53,8 @@ const isUiBuilderSelectionMessage = (
   if (candidate.selector.length > MAX_BRIDGE_FIELD_LENGTH) return false;
   if (candidate.outerHtml.length > MAX_BRIDGE_FIELD_LENGTH) return false;
   if (candidate.textContent.length > MAX_BRIDGE_FIELD_LENGTH) return false;
+  if (candidate.sourceId !== undefined && !/^\d{1,6}$/.test(String(candidate.sourceId)))
+    return false;
 
   return true;
 };
@@ -109,6 +112,7 @@ export const UiBuilderPreview = ({
   onDataRequest,
   onRuntimeError,
   onQueryResult,
+  assets,
 }: UiBuilderPreviewProps) => {
   const handleFrameMessage = useCallback(
     (data: unknown) => {
@@ -117,6 +121,7 @@ export const UiBuilderPreview = ({
         selector: data.selector,
         outerHtml: data.outerHtml,
         textContent: data.textContent,
+        sourceId: data.sourceId === undefined ? undefined : String(data.sourceId),
       });
     },
     [bridgeEnabled, onSelection],
@@ -147,6 +152,7 @@ export const UiBuilderPreview = ({
               onRuntimeError={onRuntimeError}
               onQueryResult={onQueryResult}
               onFrameMessage={handleFrameMessage}
+              assets={assets}
               className="h-full w-full border-0 bg-white"
             />
           </div>

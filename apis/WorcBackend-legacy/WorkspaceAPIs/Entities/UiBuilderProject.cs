@@ -55,6 +55,22 @@ public class UiBuilderProject : BaseEntity, IMustHaveTenant
     public List<UiBuilderDataConnection> DataConnections { get; set; } = new();
 
     /// <summary>
+    /// Gets or sets standing instructions sent with every generation for the project. Max-4000 characters.
+    /// </summary>
+    [MaxLength(4000)]
+    public string? Instructions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the visual theme applied to generated interfaces, or null for the platform default. Stored as a JSON column.
+    /// </summary>
+    public UiBuilderTheme? Theme { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the project is offered to the tenant as a template.
+    /// </summary>
+    public bool IsTemplate { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the list of generated versions to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<UiBuilderVersion>? UiBuilderVersions { get; set; }
@@ -63,4 +79,9 @@ public class UiBuilderProject : BaseEntity, IMustHaveTenant
     /// Gets or sets the list of users assigned to the published project.
     /// </summary>
     public virtual ICollection<UiBuilderProjectUser>? UiBuilderProjectUsers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of uploaded assets to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<UiBuilderAsset>? UiBuilderAssets { get; set; }
 }

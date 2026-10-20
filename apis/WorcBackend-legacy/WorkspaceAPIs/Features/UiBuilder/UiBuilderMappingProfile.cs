@@ -26,6 +26,9 @@ public class UiBuilderMappingProfile : IRegister
             .Ignore(dest => dest.IsPublishedTenantWide)
             .Ignore(nameof(UiBuilderProject.PublishedVersionNumber))
             .Ignore(dest => dest.DataConnections)
+            .Ignore(nameof(UiBuilderProject.Instructions))
+            .Ignore(nameof(UiBuilderProject.Theme))
+            .Ignore(dest => dest.IsTemplate)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
@@ -38,10 +41,14 @@ public class UiBuilderMappingProfile : IRegister
 
         config.NewConfig<UiBuilderVersionDto, UiBuilderVersion>()
             .Ignore(dest => dest.Id)
+            .Ignore(nameof(UiBuilderVersion.Label))
             .Ignore(dest => dest.VersionNumber)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
+
+        config.NewConfig<UiBuilderAsset, UiBuilderAssetDto>()
+            .Ignore(nameof(UiBuilderAssetDto.DataBase64));
 
         config.NewConfig<UiBuilderProjectUser, UiBuilderProjectUserDto>()
             .Map(dest => dest.FirstName,

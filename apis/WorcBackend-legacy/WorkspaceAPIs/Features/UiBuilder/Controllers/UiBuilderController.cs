@@ -220,4 +220,76 @@ public class UiBuilderController : BaseApiController
     {
         return ResultHelper(await _uiBuilderService.UpdateUiBuilderDataItemAsync(id, key, uiBuilderDataItemUpdateDto));
     }
+
+    /// <summary>
+    /// Replaces the owner-managed settings of a custom UI builder project.
+    /// </summary>
+    [HttpPut("{id}/settings")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectDto>>> UpdateUiBuilderProjectSettings(Guid id, [FromBody] UiBuilderProjectSettingsDto uiBuilderProjectSettingsDto)
+    {
+        return ResultHelper(await _uiBuilderService.UpdateUiBuilderProjectSettingsAsync(id, uiBuilderProjectSettingsDto));
+    }
+
+    /// <summary>
+    /// Retrieves custom UI builder projects offered to the tenant as templates.
+    /// </summary>
+    [HttpGet("templates")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderProjectDto>>>> GetUiBuilderTemplates()
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderTemplatesAsync());
+    }
+
+    /// <summary>
+    /// Creates a new custom UI builder project from a template.
+    /// </summary>
+    [HttpPost("{id}/clone")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectDto>>> CloneUiBuilderProject(Guid id, [FromBody] UiBuilderProjectDto uiBuilderProjectDto)
+    {
+        return ResultHelper(await _uiBuilderService.CloneUiBuilderProjectAsync(id, uiBuilderProjectDto));
+    }
+
+    /// <summary>
+    /// Retrieves the assets uploaded to a custom UI builder project.
+    /// </summary>
+    [HttpGet("{id}/assets")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderAssetDto>>>> GetUiBuilderAssets(Guid id)
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderAssetsAsync(id));
+    }
+
+    /// <summary>
+    /// Uploads an image asset to a custom UI builder project.
+    /// </summary>
+    [HttpPost("{id}/assets")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderAssetDto>>> InsertUiBuilderAsset(Guid id, [FromBody] UiBuilderAssetDto uiBuilderAssetDto)
+    {
+        return ResultHelper(await _uiBuilderService.InsertUiBuilderAssetAsync(id, uiBuilderAssetDto));
+    }
+
+    /// <summary>
+    /// Deletes an asset from a custom UI builder project.
+    /// </summary>
+    [HttpDelete("{id}/assets/{assetId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteUiBuilderAsset(Guid id, Guid assetId)
+    {
+        return ResultHelper(await _uiBuilderService.DeleteUiBuilderAssetAsync(id, assetId));
+    }
+
+    /// <summary>
+    /// Retrieves every asset of a custom UI builder project with its content, for rendering the interface.
+    /// </summary>
+    [HttpGet("{id}/assets/content")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<UiBuilderAssetDto>>>> GetUiBuilderAssetContents(Guid id)
+    {
+        return ResultHelper(await _uiBuilderService.GetUiBuilderAssetContentsAsync(id));
+    }
+
+    /// <summary>
+    /// Names a custom UI builder version as a checkpoint, or clears its name.
+    /// </summary>
+    [HttpPut("{id}/versions/{versionNumber}/label")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderVersionDto>>> UpdateUiBuilderVersionLabel(Guid id, int versionNumber, [FromBody] UiBuilderVersionLabelDto uiBuilderVersionLabelDto)
+    {
+        return ResultHelper(await _uiBuilderService.UpdateUiBuilderVersionLabelAsync(id, versionNumber, uiBuilderVersionLabelDto));
+    }
 }
