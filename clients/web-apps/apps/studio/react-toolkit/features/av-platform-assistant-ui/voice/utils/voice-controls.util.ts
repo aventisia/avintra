@@ -19,3 +19,19 @@ export const resolveMissingSpeechConfigReason = (
   if (missingCredential) return `Select a credential for ${label} to ${action}.`;
   return null;
 };
+
+/** Formats elapsed recording seconds as `m:ss`. */
+export const formatRecordingTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+/** Returns true when a request failed before any response arrived. */
+export const isNetworkRequestFailure = (error: unknown): boolean => {
+  if (typeof error !== "object" || error === null) return false;
+  const candidate = error as { isAxiosError?: boolean; response?: unknown };
+
+  return candidate.isAxiosError === true && candidate.response === undefined;
+};

@@ -1,17 +1,19 @@
 import { toast } from "@avplatform/ui/sonner";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { TTSRequestDto } from "@/features/dynamic-config-panel/dtos/tts-model-dto";
 import { useVoiceSfx } from "@/features/dynamic-config-panel/hooks/useVoiceSfx.hook";
 import { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 
 import { synthesizeTts } from "../apis/voice-apis";
+import { VoiceSynthesisError } from "../context/assistant-voice.context";
 import {
   LIVE_SPEECH_KEY,
   VoiceAudioClip,
   useVoicePlaybackStore,
 } from "../stores/voice-playback.store";
-import { createStreamingSpeechChunker } from "../utils/text-chunker.util";
+import { createStreamingSpeechChunker, splitIntoSpeechChunks } from "../utils/text-chunker.util";
+import { isNetworkRequestFailure } from "../utils/voice-controls.util";
 
 type UseAssistantVoiceParams = {
   ttsConfig: ModelConfigType | null;
@@ -26,6 +28,14 @@ type UseAssistantVoiceParams = {
 
 const resolveAudioMimeType = (audio: string): string =>
   /^data:([^;,]+)/.exec(audio)?.[1] ?? "audio/mpeg";
+
+const resolveSynthesisError = (error: unknown): VoiceSynthesisError =>
+  isNetworkRequestFailure(error)
+    ? {
+        kind: "network",
+        message: "Could not reach the speech service. Check your connection and retry.",
+      }
+    : { kind: "tts", message: "Could not generate speech for this reply." };
 
 /** Drives spoken replies for the Studio ChatAgent test panel. */
 export const useAssistantVoice = ({
@@ -43,6 +53,8 @@ export const useAssistantVoice = ({
   const setSpeakReplies = useVoicePlaybackStore((state) => state.setSpeakReplies);
   const stop = useVoicePlaybackStore((state) => state.stop);
   const sfxPlayer = useVoiceSfx();
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const [ttsError, setTtsError] = useState<VoiceSynthesisError | null>(null);
 
   const configRef = useRef({
     ttsConfig,
@@ -73,6 +85,17 @@ export const useAssistantVoice = ({
   const epochRef = useRef<Map<string, number>>(new Map());
   const pendingRef = useRef<Map<string, number>>(new Map());
   const disposedRef = useRef(false);
+  const replyBufferRef = useRef("");
+  const lastReplyTextRef = useRef("");
+
+  const syncSynthesisState = useCallback(() => {
+    if (disposedRef.current) return;
+    const pending = Array.from(pendingRef.current.values()).reduce(
+      (total, count) => total + count,
+      0,
+    );
+    setIsSynthesizing(pending > 0);
+  }, []);
 
   const synthesizeChunk = useCallback(
     async (text: string, signal?: AbortSignal): Promise<VoiceAudioClip | null> => {
@@ -126,39 +149,45 @@ export const useAssistantVoice = ({
       abortRef.current.delete(key);
       pendingRef.current.delete(key);
       epochRef.current.set(key, getEpoch(key) + 1);
+      syncSynthesisState();
     },
-    [getEpoch],
+    [getEpoch, syncSynthesisState],
   );
 
   const trackSynthesis = useCallback(
     (key: string, task: () => Promise<void>, signal?: AbortSignal) => {
       const epoch = getEpoch(key);
       pendingRef.current.set(key, (pendingRef.current.get(key) ?? 0) + 1);
+      syncSynthesisState();
 
       chainRef.current = chainRef.current
         .then(task)
         .catch((error: unknown) => {
           if (disposedRef.current || signal?.aborted || getEpoch(key) !== epoch) return;
           console.error("Chat agent voice synthesis failed:", error);
+          setTtsError(resolveSynthesisError(error));
           toast.error("Could not generate speech for this reply.");
         })
         .finally(() => {
           const pending = (pendingRef.current.get(key) ?? 1) - 1;
           if (pending > 0) {
             pendingRef.current.set(key, pending);
-            return;
+          } else {
+            pendingRef.current.delete(key);
           }
-          pendingRef.current.delete(key);
+          syncSynthesisState();
+          if (pending > 0) return;
           if (disposedRef.current || getEpoch(key) !== epoch) return;
           abortRef.current.delete(key);
         });
     },
-    [getEpoch],
+    [getEpoch, syncSynthesisState],
   );
 
   const queueSpeech = useCallback(
     (key: string, texts: string[], signal?: AbortSignal) => {
       if (texts.length === 0) return;
+      setTtsError(null);
       trackSynthesis(
         key,
         async () => {
@@ -180,6 +209,7 @@ export const useAssistantVoice = ({
   const onTextDelta = useCallback(
     (delta: string) => {
       if (disposedRef.current) return;
+      replyBufferRef.current += delta;
       const config = configRef.current;
       if (!config.speakReplies || !config.isTextToSpeechConfigured) return;
       queueSpeech(LIVE_SPEECH_KEY, chunkerRef.current.push(delta), getSignal(LIVE_SPEECH_KEY));
@@ -190,12 +220,21 @@ export const useAssistantVoice = ({
   const onRunFinished = useCallback(() => {
     sfxPlayer.stopAmbience();
     if (disposedRef.current) return;
+    lastReplyTextRef.current = replyBufferRef.current.trim();
+    replyBufferRef.current = "";
     const remaining = chunkerRef.current.flush();
     const config = configRef.current;
     if (config.speakReplies && config.isTextToSpeechConfigured && remaining.length > 0) {
       queueSpeech(LIVE_SPEECH_KEY, remaining, getSignal(LIVE_SPEECH_KEY));
     }
   }, [queueSpeech, getSignal, sfxPlayer]);
+
+  const retryLastReply = useCallback(() => {
+    if (disposedRef.current) return;
+    const text = lastReplyTextRef.current;
+    if (!text || !configRef.current.ttsConfig?.model) return;
+    queueSpeech(LIVE_SPEECH_KEY, splitIntoSpeechChunks(text), getSignal(LIVE_SPEECH_KEY));
+  }, [queueSpeech, getSignal]);
 
   const onRunStart = useCallback(() => {
     const config = configRef.current;
@@ -247,7 +286,11 @@ export const useAssistantVoice = ({
   return {
     speakReplies,
     isPlaying,
+    isSynthesizing,
+    ttsError,
     setSpeakReplies: handleSetSpeakReplies,
+    retryLastReply,
+    abortLiveSynthesis,
     onTextDelta,
     onRunStart,
     onToolCallFrame,
