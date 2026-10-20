@@ -67,7 +67,6 @@ public static class AppServicesExtension
         config.Apply(new QueueTransactionMappingProfile());
         config.Apply(new QueueTransactionEventMappingProfile());
         config.Apply(new QueueUserMappingProfile());
-        config.Apply(new QueueFlowVersionMappingProfile());
         config.Apply(new JobsTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new FlowUserMappingProfile());
@@ -143,7 +142,6 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IQueueTransactionEventService, QueueTransactionEventService>();
         services.AddScoped<IQueueUserService, QueueUserService>();
-        services.AddScoped<IQueueFlowVersionService, QueueFlowVersionService>();
         services.AddScoped<ICreditGateService, CreditGateService>();
         services.AddScoped<IJobsTableService, JobsTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();

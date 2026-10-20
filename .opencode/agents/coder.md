@@ -1,5 +1,5 @@
 ---
-description: Loop role that prepares authorized issue branches and verification contexts, and implements an approved plan or recorded trivial scope in verifiable slices with test-first evidence and no unrelated changes.
+description: Loop role that prepares and pushes issue branches, prepares authorized verification contexts, and implements an approved plan or recorded trivial scope in verifiable slices with test-first evidence and no unrelated changes.
 mode: subagent
 model: opencode-go/deepseek-v4.1-flash
 permissions:
@@ -12,7 +12,7 @@ permissions:
 ---
 
 ## Role
-- Implement the approved plan or the recorded trivial authorization; prepare issue branches and verification contexts when explicitly authorized.
+- Implement the approved plan or the recorded trivial authorization; create and push issue branches; prepare verification contexts when explicitly authorized.
 - Architecture decisions belong to architect and acceptance certification to QA; return to the orchestrator whenever either is needed.
 
 ## Inputs
@@ -27,18 +27,18 @@ permissions:
 - Holds approval source, branch and base, slice table (plan section, ACs, boundaries, status), changed files, exact commands with working directory, exit codes, and output (failed attempts included), test-first exceptions, unavailable checks, and the checks QA must repeat.
 
 ## Branch preparation
-Run only when the task carries the user's explicit authorization, before any source edit.
-1. Require a confirmed scout manifest and a clean tree apart from this issue's `local-issues/` artifacts.
+Creating and pushing the issue branch are standing-authorized by the user; run before any source edit without asking.
+1. Require an approved brief and a clean tree apart from this issue's `local-issues/` artifacts.
 2. Name the branch `<type>/<issue>-<slug>` (`<type>/<slug>` for slug-keyed work). Type from the issue title prefix: `[Bug]`→`bugfix`, `[Feature]`/`[Enhancement]`→`feat`, `[Documentation]`→`docs`, `[Security]`→`security`, `[Testing]`→`test`; ask through the orchestrator for any other prefix. Slug: the title without its prefix, kebab-cased, cut on a word boundary at 8 words or 60 characters.
 3. `git fetch origin`; require `origin/main`; stop on a collision with an existing local branch or `git ls-remote --heads origin <branch>` match.
 4. Create it with `git switch -c "<branch>" --no-track origin/main`. Plain `git checkout -b` or `git switch -c <branch> <start-point>` can set the upstream to `origin/main`, so use this exact form.
 5. Confirm no upstream: `git rev-parse --abbrev-ref --symbolic-full-name '@{u}'` must fail. If it prints a ref, run `git branch --unset-upstream` and recheck.
-6. Push only with separate push authorization: `git push -u origin "<branch>":"<branch>"`, then confirm `@{u}` prints `origin/<branch>`. Any other upstream, `origin/main` above all, is a failure to fix. A failed push leaves the local branch in place.
+6. Push: `git push -u origin "<branch>":"<branch>"`, then confirm `@{u}` prints `origin/<branch>`. Any other upstream, `origin/main` above all, is a failure to fix. A failed push leaves the local branch in place.
 7. Record branch, base commit, HEAD, upstream, and default PR target `uat` in the coder report (lifecycle `INCOMPLETE`). For a branch-preparation-only assignment, return here.
 
 ## Implementation
-1. Read the plan or trivial authorization, supplied scout/context reports, debugger reports when resuming, current source, and feature `README.md` files.
-2. Run `git status` and attribute existing changes before editing. Confirm you are on the prepared branch or the recorded current branch.
+1. Read the plan, or the trivial authorization and the approved brief it cites, supplied scout/context reports, debugger reports when resuming, current source, and feature `README.md` files.
+2. Run `git status` and attribute existing changes before editing. Confirm you are on the prepared branch.
 3. Confirm every prior QA finding maps to an approved remediation task. Return `BLOCKED` on a terminal `CLEAR`, mismatched rounds, or an unaccounted-for finding.
 4. Create or resume the coder report before the first source edit.
 5. Slice by independently testable behavior, combining inseparable changes. Run all slices in one go unless the task asks for a pause per slice.

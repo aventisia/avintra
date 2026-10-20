@@ -110,11 +110,6 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public virtual ICollection<Job>? Jobs { get; set; }
 
     /// <summary>
-    /// Configures the many-to-many relationship between queue and flow versions.
-    /// </summary>
-    public virtual ICollection<QueueFlowVersion>? QueueFlowVersions { get; set; }
-
-    /// <summary>
     /// Configures the many-to-many relationship between trigger and flow versions.
     /// </summary>
     public virtual ICollection<TimeTriggersFlowVersion>? TriggerFlowVersions { get; set; }

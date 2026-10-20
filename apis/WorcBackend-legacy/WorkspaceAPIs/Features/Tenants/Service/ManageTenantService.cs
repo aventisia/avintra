@@ -75,8 +75,10 @@ public class ManageTenantService : IManageTenantService
 
             // Delete WorkItemEvent - DeleteBehavior.Cascade set with QueueTransaction
             // Delete QueueTransaction - DeleteBehavior.Cascade set with Queue
-            // Delete QueueFlowVersion - DeleteBehavior.Cascade set with Queue
             // Delete QueueUser - DeleteBehavior.Cascade set with Queue
+
+            if (!await DeleteEntitiesAsync(_unitOfWork.ResourceFlowAccessRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceFlowAccess), tenantIdToBeDeleted))
+                return serviceResponse;
 
             // Delete Queue
             if (!await DeleteEntitiesAsync(_unitOfWork.QueueRepo, q => q.TenantId == tenantIdToBeDeleted, nameof(Queue), tenantIdToBeDeleted))

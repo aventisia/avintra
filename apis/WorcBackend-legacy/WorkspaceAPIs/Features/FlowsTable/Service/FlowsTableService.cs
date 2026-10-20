@@ -9,6 +9,7 @@ public class FlowsTableService : IFlowsTableService
     private readonly IFlowVersionService _flowVersionService;
     private readonly IFlowUserService _flowUserService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
 
     public FlowsTableService(
         ILogger<FlowsTableService> logger,
@@ -17,7 +18,8 @@ public class FlowsTableService : IFlowsTableService
         ICurrentTenantService currentTenantService,
         IFlowVersionService flowVersionService,
         IFlowUserService flowUserService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -28,6 +30,7 @@ public class FlowsTableService : IFlowsTableService
         _flowVersionService = flowVersionService;
         _flowUserService = flowUserService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Retrieves all flows created by the user.
@@ -128,38 +131,31 @@ public class FlowsTableService : IFlowsTableService
                 flowDto.AiModels = AiModelHelper.ExtractModelNames(latestVersion?.ReactFlowObject);
             }
 
-            // Resolve the queues linked to any version of the returned flows and attach
-            // them to the matching flow DTO.
-            var flowVersionIds = flows
-                .SelectMany(flow => flow.FlowVersions ?? new List<FlowVersion>())
-                .Select(version => version.Id)
-                .ToList();
-
-            if (flowVersionIds.Count > 0)
-            {
-                var queueFlowVersions = await _unitOfWork.QueueFlowVersionRepo
-                    .GetByConditionAsync(qf => flowVersionIds.Contains(qf.FlowVersionId))
-                    .Include(qf => qf.FlowVersion)
-                    .Include(qf => qf.Queue)
+            // Resolve the queues linked to the returned flows and attach them to the
+            // matching flow DTO.
+            var queueIdsByFlow = await _resourceFlowAccessService.GetAssignedResourceIdsAsync(
+                ResourceTypeEnum.Queue,
+                flowDtoList.Select(flow => flow.Id));
+            var queueIds = queueIdsByFlow.Values.SelectMany(ids => ids).Distinct().ToList();
+            var queuesById = queueIds.Count == 0
+                ? new Dictionary<Guid, Queue>()
+                : await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w => queueIds.Contains(w.Id))
                     .AsNoTracking()
-                    .ToListAsync();
+                    .ToDictionaryAsync(w => w.Id);
 
-                foreach (var flowDto in flowDtoList)
-                {
-                    flowDto.Queues = queueFlowVersions
-                        .Where(qf =>
-                            qf.FlowVersion != null &&
-                            qf.FlowVersion.FlowId == flowDto.Id &&
-                            qf.Queue != null)
-                        .GroupBy(qf => qf.Queue!.Id)
-                        .Select(group => new AgentQueueDto
-                        {
-                            Id = group.Key,
-                            Name = group.First().Queue!.Name,
-                            Type = group.First().Queue!.Type
-                        })
-                        .ToList();
-                }
+            foreach (var flowDto in flowDtoList)
+            {
+                flowDto.Queues = (queueIdsByFlow.GetValueOrDefault(flowDto.Id) ?? new HashSet<Guid>())
+                    .Select(id => queuesById.GetValueOrDefault(id))
+                    .Where(queue => queue != null)
+                    .Select(queue => new AgentQueueDto
+                    {
+                        Id = queue!.Id,
+                        Name = queue.Name,
+                        Type = queue.Type
+                    })
+                    .ToList();
             }
 
             // Task successful

@@ -35,18 +35,14 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
       className="relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] w-[min(35rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-[20px] bg-popover text-slate-900 shadow-[0_32px_80px_-16px_rgba(15,23,42,0.4)] ring-1 ring-slate-900/[0.06]"
     >
       <header className="flex items-start gap-4 px-6 pb-4 pt-6">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-popover shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)] ring-1 ring-border/80">
-          <ResourceMark
-            resourceName={draft.resourceName}
-            resourceType={draft.resourceType}
-            className="size-7"
-          />
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)]">
+          <ResourceMark resourceType={draft.resourceType} className="size-6" />
         </span>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 mt-1">
           <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
             Agent access
           </p>
-          <DialogPrimitive.Title className="mt-0.5 truncate text-[18px] font-semibold tracking-[-0.01em] text-slate-900">
+          <DialogPrimitive.Title className="truncate text-[18px] font-semibold tracking-[-0.01em] text-slate-900">
             {resourceName}
           </DialogPrimitive.Title>
         </div>

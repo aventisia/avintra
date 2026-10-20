@@ -12,6 +12,7 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -19,7 +20,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueues } from "../hooks/useFetchQueues";
 import { useTableTab } from "../hooks/useTableTab";
 import { queuesTableColumns } from "./QueuesTableColumns";
-import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
 
@@ -57,7 +57,6 @@ export const QueuesTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          <AssignAgentsDialog />
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -78,6 +77,7 @@ export const QueuesTable = () => {
 
           {/* Resource Share Dialog component */}
           <ResourceShareDialog queryKey={queryKey} />
+          <ResourceFlowAccessDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           <QueueBulkActions table={table} />
         </div>

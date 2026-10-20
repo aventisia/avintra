@@ -25,7 +25,6 @@ public class UnitOfWork : IUnitOfWork
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
     public IMachine_FlowVersionRepo Machine_FlowVersionRepo => new Machine_FlowVersionRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
-    public IQueueFlowVersionRepo QueueFlowVersionRepo => new QueueFlowVersionRepo(_workspaceDbContext);
     public IQueueTransactionRepo QueueTransactionRepo => new QueueTransactionRepo(_workspaceDbContext);
     public IQueueTransactionEventRepo QueueTransactionEventRepo => new QueueTransactionEventRepo(_workspaceDbContext);
     public IQueueUserRepo QueueUserRepo => new QueueUserRepo(_workspaceDbContext);

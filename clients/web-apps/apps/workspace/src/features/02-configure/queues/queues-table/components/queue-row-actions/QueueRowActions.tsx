@@ -3,12 +3,12 @@ import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
 
 import { useTableTab } from "../../hooks/useTableTab";
-import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
 import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
 import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
@@ -17,6 +17,7 @@ interface QueueRowActionsProps {
   queueName: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isResourceAccessRestricted: boolean;
 }
 
 export const QueueRowActions = ({
@@ -24,6 +25,7 @@ export const QueueRowActions = ({
   queueName,
   accessLevel,
   isTenantWideAccess,
+  isResourceAccessRestricted,
 }: QueueRowActionsProps) => {
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
@@ -37,7 +39,15 @@ export const QueueRowActions = ({
       {/* Edit Queue details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
 
-      {actions?.update && <AssignAgentsRowAction rowId={rowId} queueName={queueName} />}
+      {actions?.update && (
+        <ResourceFlowAccessRowAction
+          rowId={rowId}
+          resourceName={queueName}
+          resourceType={ResourceTypeEnum.Queue}
+          isRestricted={isResourceAccessRestricted}
+          disabled={isProd}
+        />
+      )}
 
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
 

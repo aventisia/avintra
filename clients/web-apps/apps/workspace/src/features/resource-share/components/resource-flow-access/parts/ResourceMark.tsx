@@ -1,27 +1,43 @@
 import { cn } from "@avplatform/ui/lib";
-import { useState } from "react";
+import type { IconProps } from "@avplatform/ui/types";
+import { QueueListIcon } from "@heroicons/react/24/outline";
+import {
+  BookOpenCheckIcon,
+  BoxesIcon,
+  FolderCogIcon,
+  PuzzleIcon,
+  Shield,
+  WrenchIcon,
+} from "lucide-react";
+import { AiOutlineThunderbolt } from "react-icons/ai";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { ResourceTypeEnum } from "../../../enums/resource-type-enum";
-import { FALLBACK_RESOURCE_ICON, getResourceIconSrc } from "../../../utils/resource-display.util";
 
-interface ResourceMarkProps {
-  resourceName: string;
+const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> = {
+  [ResourceTypeEnum.Queue]: QueueListIcon,
+  [ResourceTypeEnum.Trigger]: AiOutlineThunderbolt,
+  [ResourceTypeEnum.KeyStore]: FolderCogIcon,
+  [ResourceTypeEnum.VaultCredential]: Shield,
+  [ResourceTypeEnum.KnowledgeBase]: BookOpenCheckIcon,
+  [ResourceTypeEnum.Skill]: PuzzleIcon,
+  [ResourceTypeEnum.Tool]: WrenchIcon,
+  [ResourceTypeEnum.Flow]: NewAgentIcon,
+  [ResourceTypeEnum.FlowVersion]: NewAgentIcon,
+  [ResourceTypeEnum.Space]: FolderCogIcon,
+};
+
+type ResourceMarkProps = {
   resourceType: ResourceTypeEnum | null;
   className?: string;
-}
+};
 
 /**
- * Brand icon of the resource whose agent access is being configured.
+ * Sidebar icon of the resource whose agent access is being configured.
  */
-export const ResourceMark = ({ resourceName, resourceType, className }: ResourceMarkProps) => {
-  const [hasFailed, setHasFailed] = useState(false);
+export const ResourceMark = ({ resourceType, className }: ResourceMarkProps) => {
+  const Icon = (resourceType && RESOURCE_ICONS[resourceType]) || BoxesIcon;
 
-  return (
-    <img
-      src={hasFailed ? FALLBACK_RESOURCE_ICON : getResourceIconSrc(resourceName, resourceType)}
-      alt=""
-      className={cn("object-contain", className)}
-      onError={() => setHasFailed(true)}
-    />
-  );
+  return <Icon className={cn("text-[--icon-color]", className)} />;
 };

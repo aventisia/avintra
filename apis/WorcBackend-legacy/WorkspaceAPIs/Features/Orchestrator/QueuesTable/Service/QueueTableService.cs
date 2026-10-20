@@ -5,6 +5,7 @@ public class QueueTableService : IQueueTableService
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
@@ -15,6 +16,7 @@ public class QueueTableService : IQueueTableService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -25,6 +27,7 @@ public class QueueTableService : IQueueTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -97,7 +100,6 @@ public class QueueTableService : IQueueTableService
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.QueueTransactions)
-                    .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                     .Include(i => i.CreatedByUser)
                     .ToListAsync();
             }
@@ -132,7 +134,6 @@ public class QueueTableService : IQueueTableService
                         )
                     )
                     .Include(i => i.QueueTransactions)
-                    .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(o => o.CreatedOn)
                     .ToListAsync();
@@ -140,6 +141,7 @@ public class QueueTableService : IQueueTableService
 
             // Map to DTOs
             var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+            await PopulateAgentNamesAsync(queueDtoList);
 
             // Assign access levels:
             // - Personal queues are always owned by the current user.
@@ -176,11 +178,30 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Retrieve queues that have a QueueFlowVersion entry matching the given flow version
+            // IMPORTANT NOTE: grants are per-flow and space-agnostic, so the version lookup
+            // bypasses the space filter and applies the tenant explicitly instead.
+            var flowId = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == flowVersionId && w.TenantId == _currentTenantService.CurrentTenantId)
+                .IgnoreQueryFilters()
+                .Select(w => w.FlowId)
+                .FirstOrDefaultAsync();
+
+            if (flowId == Guid.Empty)
+            {
+                serviceResponse.StatusCode = 404;
+                serviceResponse.Message = "The agent does not exist.";
+                return serviceResponse;
+            }
+
+            var queueIdsByFlow = await _resourceFlowAccessService.GetAssignedResourceIdsAsync(
+                ResourceTypeEnum.Queue,
+                new[] { flowId });
+            var queueIds = queueIdsByFlow.GetValueOrDefault(flowId) ?? new HashSet<Guid>();
+
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
-                    w.QueueFlowVersions.Any(qf => qf.FlowVersionId == flowVersionId))
+                    queueIds.Contains(w.Id) &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
@@ -188,8 +209,8 @@ public class QueueTableService : IQueueTableService
 
             // Map to DTOs
             var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+            await PopulateAgentNamesAsync(queueDtoList);
 
-            // Queues assigned to an agent are owned by the queue creator; mark as Owner.
             queueDtoList.ForEach(fe =>
             {
                 fe.AccessLevel = ResourceAccessTypeEnum.Owner;
@@ -268,7 +289,9 @@ public class QueueTableService : IQueueTableService
             }
 
             // Task successful
-            serviceResponse.Data = queues.Adapt<IEnumerable<QueuesTableDto>>();
+            var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+            await PopulateAgentNamesAsync(queueDtoList);
+            serviceResponse.Data = queueDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully";
         }
@@ -329,7 +352,9 @@ public class QueueTableService : IQueueTableService
             }
 
             // Task successful
-            serviceResponse.Data = queue.Adapt<QueuesTableDto>();
+            var queueDto = queue.Adapt<QueuesTableDto>();
+            await PopulateAgentNamesAsync(new List<QueuesTableDto> { queueDto });
+            serviceResponse.Data = queueDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue retrieved successfully";
         }
@@ -410,7 +435,9 @@ public class QueueTableService : IQueueTableService
             }
 
             // Populate the successful response.
-            serviceResponse.Data = queue.Adapt<QueuesTableDto>();
+            var queueDto = queue.Adapt<QueuesTableDto>();
+            await PopulateAgentNamesAsync(new List<QueuesTableDto> { queueDto });
+            serviceResponse.Data = queueDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue retrieved successfully.";
         }
@@ -445,9 +472,9 @@ public class QueueTableService : IQueueTableService
 
             // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => 
+                .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.Name.ToLower() == queuesTableDto.Name.ToLower() && 
+                    w.Name.ToLower() == queuesTableDto.Name.ToLower() &&
                     w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .IgnoreQueryFilters()
@@ -786,6 +813,7 @@ public class QueueTableService : IQueueTableService
 
             // Remove access mappings
             await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queue.Id);
 
             // Delete queue
             _unitOfWork.QueueRepo.Delete(queue);
@@ -888,6 +916,7 @@ public class QueueTableService : IQueueTableService
 
             // Remove access mappings
             await _resourceShareService.DeleteResourceSharesAsync(queueIds, ResourceTypeEnum.Queue);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queueIds);
 
             // Delete queues
             _unitOfWork.QueueRepo.Delete(queues);
@@ -906,187 +935,6 @@ public class QueueTableService : IQueueTableService
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-
-    // Assigns multiple agents to an queue.
-    public async Task<ServiceResponse<bool>> AssignAgentsAsync(Guid queueId, IEnumerable<Guid> agentIds)
-    {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to assign agents. Please try again."
-        };
-
-        try
-        {
-            // Check if queue IDs are unique.
-            if (agentIds.Count() != agentIds.Distinct().Count())
-            {
-                serviceResponse.Message = "Queue IDs cannot contain duplicates.";
-                return serviceResponse;
-            }
-
-            // Check if the queue exists and belongs to the current user.
-            var queue = await _unitOfWork.QueueRepo
-                        .GetByConditionAsync(w =>
-                            w.Id == queueId && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType
-                        )
-                        .Include(a => a.QueueFlowVersions)
-                        .FirstOrDefaultAsync();
-
-            if (queue == null)
-            {
-                // If queue does not exist or does not belong to the current user, return failure.
-                serviceResponse.Message = "The queue does not exist.";
-                return serviceResponse;
-            }
-
-            // Require OM for PROD queue edits based on the persisted queue environment.
-            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<bool>(
-                queue.EnvType,
-                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
-                "queue");
-            if (prodUpdateBlock != null)
-            {
-                return prodUpdateBlock;
-            }
-
-            // Check if all provided queue IDs are valid and belong to the current user.
-            var agents = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w =>
-                            agentIds.Contains(w.Id) && w.CreatedByUserId == _userId
-                        )
-                        .ToListAsync();
-
-            var invalidAgnetIds = agentIds.Except(agents.Select(m => m.Id)).ToList();
-
-            if (invalidAgnetIds.Any())
-            {
-                // If there are invalid queue IDs, return failure.
-                serviceResponse.Message = $"The following queue IDs are invalid or do not belong to the user: {string.Join(", ", invalidAgnetIds)}";
-                return serviceResponse;
-            }
-
-            // Identify agents that are already assigned to the queue.
-            var existing = queue?.QueueFlowVersions?.ToList() ?? new List<QueueFlowVersion>();
-            var existingIds = existing.Select(mf => mf.FlowVersionId).ToList();
-
-            // Identify new queue IDs that are not yet assigned to the queue.
-            var newIds = agentIds.Except(existingIds).ToList();
-
-            // Identify queue IDs that are no longer assigned and need to be removed.
-            var removedIds = existingIds.Except(agentIds).ToList();
-
-            // If no changes are made (no new agents, no agents to remove), inform the user.
-            if (!newIds.Any() && !removedIds.Any())
-            {
-                serviceResponse.Message = "No changes made to the queue assignments.";
-                return serviceResponse;
-            }
-
-            // Create new QueueFlowVersion entries for agents not already assigned.
-            var toAdd = newIds.Select(id => new QueueFlowVersion()
-            {
-                QueueId = queueId,
-                FlowVersionId = id,
-                TenantId = _tenantId,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
-            }).ToList();
-
-            // Remove existing QueuFlowVersion entries for agents that are no longer assigned.
-            var toRemove = existing
-                .Where(mf => removedIds.Contains(mf.FlowVersionId))
-                .ToList();
-
-            // Begin the transaction to insert and remove data.
-            if (toAdd.Any())
-            {
-                await _unitOfWork.QueueFlowVersionRepo.InsertAsync(toAdd);
-            }
-
-            if (toRemove.Any())
-            {
-                _unitOfWork.QueueFlowVersionRepo.Delete(toRemove);
-            }
-
-            // Attempt to save the changes to the database.
-            if (!await _unitOfWork.SaveAsync())
-            {
-                // If saving fails, log and return failure.
-                serviceResponse.Message = "Failed to update agent assignments for the queue.";
-                return serviceResponse;
-            }
-
-            // Return success with the count of newly assigned and removed agents.
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{newIds.Count} agents assigned and {removedIds.Count} agents removed from the queue.";
-        }
-        catch (Exception ex)
-        {
-            // Log any unexpected error.
-            _logger.LogError(ex, "An unexpected error occurred while assigning agents.");
-            return serviceResponse;
-        }
-
-        // Return the service response.
-        return serviceResponse;
-    }
-
-    // Retrieve agent list
-    public async Task<ServiceResponse<IEnumerable<AssignAgentQueueDto>>> GetAgentsAsync(Guid queueId)
-    {
-        // Initialize the response with a failed result
-        var serviceResponse = new ServiceResponse<IEnumerable<AssignAgentQueueDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve agents. Please try again."
-        };
-
-        try
-        {
-            // Check if the queue exists and belongs to the current user
-            var queue = await _unitOfWork.QueueRepo
-                                            .GetByConditionAsync(w => w.Id == queueId)
-                                            .Include(i => i.QueueFlowVersions)
-                                            .FirstOrDefaultAsync();
-
-            // Return an error if the queue doesn't exist
-            if (queue == null)
-            {
-                serviceResponse.Message = "The queue does not exist.";
-                return serviceResponse;
-            }
-
-            // Retrieve all agents for the current user (includes both published and in-build agents)
-            var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w => w.Flow.Type != FlowTypesEnum.Block)
-                                            .Include(i => i.Flow)
-                                            .ProjectToType<AssignAgentQueueDto>()
-                                            .ToListAsync();
-
-            // Set IsAssigned to true if the agent is already assigned to the queue
-            agents.ForEach(fe =>
-            {
-                fe.IsAssigned = (queue.QueueFlowVersions ?? Enumerable.Empty<QueueFlowVersion>()).Any(a => a.FlowVersionId == fe.Id);
-                fe.QueueId = queue.Id;
-            });
-
-            // Return the agents along with their assignment status
-            serviceResponse.Data = agents;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Agents retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred while retrieving agents for queue {QueueId}.", queueId);
-            serviceResponse.Message = "An error occurred while retrieving agents from the queue.";
             return serviceResponse;
         }
 
@@ -1257,6 +1105,15 @@ public class QueueTableService : IQueueTableService
         }
 
         return serviceResponse;
+    }
+
+    private async Task PopulateAgentNamesAsync(List<QueuesTableDto> queueDtoList)
+    {
+        var agentNamesByQueue = await _resourceFlowAccessService.GetAssignedFlowNamesAsync(
+            ResourceTypeEnum.Queue,
+            queueDtoList.Select(queue => queue.Id));
+        queueDtoList.ForEach(queue =>
+            queue.AgentsNames = agentNamesByQueue.GetValueOrDefault(queue.Id) ?? new List<string>());
     }
 
 }

@@ -4,13 +4,15 @@ public class QueueUserService : IQueueUserService
 {
     private readonly ILogger<QueueUserService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
     public QueueUserService(
         ILogger<QueueUserService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Extract the user ID from the HTTP context. Default to Guid.Empty if the user is not found.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -18,6 +20,7 @@ public class QueueUserService : IQueueUserService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Retrieves the queues that the user is associated with
@@ -58,12 +61,12 @@ public class QueueUserService : IQueueUserService
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                 .ToListAsync();
 
             // Map to DTOs, then override the completed count and average processing
             // time to reflect only items closed within the requested date range.
             var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+            await PopulateAgentNamesAsync(queueDtoList);
 
             // Normalize the range to whole days (UTC). When not provided, default
             // to today. The frontend sends full timestamps, so we snap `from` to
@@ -147,12 +150,12 @@ public class QueueUserService : IQueueUserService
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                 .ToListAsync();
 
             // Map to DTOs, then override the completed count and average processing
             // time to reflect only items closed within the requested date range.
             var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+            await PopulateAgentNamesAsync(queueDtoList);
 
             // Normalize the range to whole days (UTC). When not provided, default
             // to today. The frontend sends full timestamps, so we snap `from` to
@@ -477,5 +480,14 @@ public class QueueUserService : IQueueUserService
         }
 
         return serviceResponse;
+    }
+
+    private async Task PopulateAgentNamesAsync(List<QueuesTableDto> queueDtoList)
+    {
+        var agentNamesByQueue = await _resourceFlowAccessService.GetAssignedFlowNamesAsync(
+            ResourceTypeEnum.Queue,
+            queueDtoList.Select(queue => queue.Id));
+        queueDtoList.ForEach(queue =>
+            queue.AgentsNames = agentNamesByQueue.GetValueOrDefault(queue.Id) ?? new List<string>());
     }
 }

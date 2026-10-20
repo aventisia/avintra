@@ -103,6 +103,11 @@ public class Queue : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the queue is restricted to its assigned flows.
+    /// </summary>
+    public bool IsResourceAccessRestricted { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the credential used to access resources associated with the queue.
     /// The Agent Builder stores and submits the resource NAME; the backend persists it directly.
     /// </summary>
@@ -113,11 +118,6 @@ public class Queue : BaseEntity, IMustHaveTenant
     /// Configures the many-to-many relationship between queue transactions and queues.
     /// </summary>
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }
-
-    /// <summary>
-    /// Configures the many-to-many relationship between queue and flow versions.
-    /// </summary>   
-    public virtual ICollection<QueueFlowVersion> QueueFlowVersions { get; set; } = new List<QueueFlowVersion>();
 
     /// <summary>
     /// Configures the many-to-many relationship between queue and users.

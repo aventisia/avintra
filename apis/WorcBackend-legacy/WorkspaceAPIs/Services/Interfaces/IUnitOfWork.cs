@@ -18,7 +18,6 @@ public interface IUnitOfWork
     IProjectTemplateRepo ProjectTemplateRepo { get; }
     ITemplateResourceRepo TemplateResourceRepo { get; }
     IQueueRepo QueueRepo { get; }
-    IQueueFlowVersionRepo QueueFlowVersionRepo { get; }
     IQueueTransactionRepo QueueTransactionRepo { get; }
     IQueueTransactionEventRepo QueueTransactionEventRepo { get; }
     IQueueUserRepo QueueUserRepo { get; }
