@@ -58,6 +58,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<UiBuilderProject>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<UiBuilderVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderAsset>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -95,6 +96,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<UiBuilderProject>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<UiBuilderProjectUser>().HasIndex(index => new { index.UiBuilderProjectId, index.UserId }).IsUnique();
+        modelBuilder.Entity<UiBuilderAsset>().HasIndex(index => new { index.UiBuilderProjectId, index.Name }).IsUnique();
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
@@ -184,6 +186,16 @@ public class WorkspaceDbContext : DbContext
                     (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
                     c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
                     c => System.Text.Json.JsonSerializer.Deserialize<List<UiBuilderDataConnection>>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null) ?? new List<UiBuilderDataConnection>()));
+        modelBuilder.Entity<UiBuilderProject>().Property(e => e.Theme)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => v == null ? null : System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => string.IsNullOrEmpty(v) ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(v, (JsonSerializerOptions?)null))
+            .Metadata.SetValueComparer(
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<UiBuilderTheme?>(
+                    (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
+                    c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
+                    c => c == null ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
@@ -236,6 +248,9 @@ public class WorkspaceDbContext : DbContext
 
         modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderVersions).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderProjectUsers).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderAssets).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProjectUser>().HasOne(one => one.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -407,6 +422,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<UiBuilderProject> UiBuilderProjects { get; set; }
     public DbSet<UiBuilderVersion> UiBuilderVersions { get; set; }
     public DbSet<UiBuilderProjectUser> UiBuilderProjectUsers { get; set; }
+    public DbSet<UiBuilderAsset> UiBuilderAssets { get; set; }
     public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }

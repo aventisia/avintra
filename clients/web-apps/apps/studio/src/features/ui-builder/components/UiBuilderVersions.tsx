@@ -7,12 +7,17 @@ import {
   PopoverWrapper,
 } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ChevronDownIcon, Loader2 } from "lucide-react";
-import { useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bookmark, ChevronDownIcon, Loader2, Pencil } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { updateUiBuilderVersionLabel } from "../apis/ui-builder.apis";
 import { useRestoreUiBuilderVersion } from "../hooks/useRestoreUiBuilderVersion.hook";
-import { useUiBuilderProject } from "../hooks/useUiBuilderProject.hook";
+import {
+  UI_BUILDER_VERSIONS_QUERY_KEY,
+  useUiBuilderProject,
+} from "../hooks/useUiBuilderProject.hook";
 import { useUiBuilderVersionsStore } from "../stores/ui-builder-versions.store";
 
 const CROSS_FORMAT_RESTORE_REASON = "Restoring a version of a different format is not supported.";
@@ -31,6 +36,18 @@ export const UiBuilderVersions = () => {
 
   const { versionsQuery } = useUiBuilderProject(projectId);
   const { restoreMutation } = useRestoreUiBuilderVersion(projectId);
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState<{ versionNumber: number; label: string } | null>(null);
+  const labelMutation = useMutation({
+    mutationFn: ({ versionNumber, label }: { versionNumber: number; label: string }) =>
+      updateUiBuilderVersionLabel(projectId, versionNumber, label.trim() || null),
+    onSuccess: () => {
+      setEditing(null);
+      void queryClient.invalidateQueries({
+        queryKey: [...UI_BUILDER_VERSIONS_QUERY_KEY, projectId],
+      });
+    },
+  });
 
   const versions = useMemo(
     () =>
@@ -84,16 +101,60 @@ export const UiBuilderVersions = () => {
                       {` · ${formatLabel(version.contentFormat)}`}
                       {isHead ? " · current" : ""}
                     </span>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      title={isCrossFormat ? CROSS_FORMAT_RESTORE_REASON : undefined}
-                      onClick={() => restoreMutation.mutate(version.versionNumber)}
-                      disabled={restoreMutation.isPending || isHead || isCrossFormat}
-                    >
-                      Restore
-                    </Button>
+                    <span className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        aria-label={`Name version ${version.versionNumber}`}
+                        onClick={() =>
+                          setEditing({
+                            versionNumber: version.versionNumber,
+                            label: version.label ?? "",
+                          })
+                        }
+                        className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        title={isCrossFormat ? CROSS_FORMAT_RESTORE_REASON : undefined}
+                        onClick={() => restoreMutation.mutate(version.versionNumber)}
+                        disabled={restoreMutation.isPending || isHead || isCrossFormat}
+                      >
+                        Restore
+                      </Button>
+                    </span>
                   </div>
+                  {editing?.versionNumber === version.versionNumber ? (
+                    <form
+                      className="mt-1.5 flex gap-1"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        labelMutation.mutate(editing);
+                      }}
+                    >
+                      <input
+                        autoFocus
+                        aria-label="Checkpoint name"
+                        maxLength={100}
+                        value={editing.label}
+                        placeholder="e.g. Approved by ops"
+                        onChange={(event) => setEditing({ ...editing, label: event.target.value })}
+                        className="h-6 min-w-0 flex-1 rounded border border-slate-200 px-1.5 text-2xs"
+                      />
+                      <Button size="xs" type="submit" disabled={labelMutation.isPending}>
+                        Save
+                      </Button>
+                    </form>
+                  ) : (
+                    version.label && (
+                      <p className="mt-1 inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-2xs font-medium text-amber-800">
+                        <Bookmark className="h-2.5 w-2.5" />
+                        {version.label}
+                      </p>
+                    )
+                  )}
                   <p className="mt-1 line-clamp-2 text-2xs text-muted-foreground">
                     {version.promptText}
                   </p>

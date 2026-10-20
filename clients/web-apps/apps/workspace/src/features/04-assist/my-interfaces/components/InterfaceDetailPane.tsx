@@ -5,8 +5,10 @@ import {
   UiBuilderCalculationsButton,
   UiBuilderHostFrame,
   createUiBuilderDataRequester,
+  fetchUiBuilderAssetMap,
   useUiBuilderCalculations,
 } from "@avplatform/ui/ui-builder-host";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, LayoutTemplate } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,6 +37,19 @@ export const InterfaceDetailPane = () => {
   const resetCalculations = calculations.reset;
 
   useEffect(() => resetCalculations(), [id, headVersion?.versionNumber, resetCalculations]);
+
+  const assetsQuery = useQuery({
+    queryKey: ["ui-builder-view-assets", id],
+    queryFn: () =>
+      fetchUiBuilderAssetMap({
+        http: axiosInstance,
+        apiBaseUrl: import.meta.env.VITE_WORKSPACE_API_PATH,
+        projectId: id,
+        getHeaders: getSpaceHeaders,
+      }),
+    enabled: Boolean(id),
+    staleTime: 5 * 60_000,
+  });
 
   const requestData = useMemo(
     () =>
@@ -113,6 +128,7 @@ export const InterfaceDetailPane = () => {
             connections={project?.dataConnections ?? []}
             onDataRequest={requestData}
             onQueryResult={calculations.record}
+            assets={assetsQuery.data}
             className="h-full w-full rounded-lg border border-slate-200 bg-white"
           />
         </div>

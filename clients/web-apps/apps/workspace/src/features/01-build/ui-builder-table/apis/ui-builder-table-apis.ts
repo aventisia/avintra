@@ -111,6 +111,28 @@ const uiBuilderOptimisticMutationFn = ({
   }
 };
 
+/**
+ * Retrieves custom UI builder projects offered to the tenant as templates.
+ */
+const getUiBuilderTemplates = () => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderTableDto[]>>(`${baseAPIURL}/templates`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Creates a new custom UI builder project from a template.
+ */
+const cloneUiBuilderProject = (templateId: string, newProject: UiBuilderTableDto) => {
+  return axiosInstance
+    .post<IHttpResponse<UiBuilderTableDto>>(`${baseAPIURL}/${templateId}/clone`, newProject, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
 export {
   getUiBuilderProjects,
   getUiBuilderProject,
@@ -120,4 +142,6 @@ export {
   deleteMultipleUiBuilderProjects,
   isUiBuilderNameAvailable,
   uiBuilderOptimisticMutationFn,
+  getUiBuilderTemplates,
+  cloneUiBuilderProject,
 };

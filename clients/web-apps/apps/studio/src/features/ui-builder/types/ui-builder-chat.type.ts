@@ -20,4 +20,10 @@ export type UiBuilderChatMessage = {
   model?: string;
   /** Selector the user prompt targeted, when it was scoped to one element. */
   selector?: string;
+  /** Thumbnails of the reference images attached to a user prompt. */
+  imageThumbnails?: string[];
+  /** Set on assistant replies from plan mode, which discuss without changing the interface. */
+  kind?: "discussion";
+  /** Follow-up prompts suggested after the turn was saved. */
+  suggestions?: string[];
 };

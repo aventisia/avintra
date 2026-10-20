@@ -25,6 +25,7 @@ export const buildUiBuilderSelectionBlock = (selection: UiBuilderSelection): str
   return [
     "Selected element:",
     `Selector: ${selection.selector}`,
+    ...(selection.sourceTag ? [`Source JSX tag: ${selection.sourceTag}`] : []),
     "HTML:",
     outerHtml,
     ...(isCapped ? ["…(truncated)"] : []),

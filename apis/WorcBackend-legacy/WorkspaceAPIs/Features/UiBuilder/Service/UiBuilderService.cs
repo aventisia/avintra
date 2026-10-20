@@ -2,7 +2,7 @@ using WorkspaceAPIs.Features.TenantModelProvider.Helpers;
 
 namespace WorkspaceAPIs.Services;
 
-public class UiBuilderService : IUiBuilderService
+public partial class UiBuilderService : IUiBuilderService
 {
     private readonly ILogger<UiBuilderService> _logger;
     private readonly IUnitOfWork _unitOfWork;

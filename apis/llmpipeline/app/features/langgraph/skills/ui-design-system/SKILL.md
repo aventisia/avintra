@@ -1,6 +1,6 @@
 ---
 name: ui-design-system
-description: Ground a generated interface in the platform design system, covering the token palette, type scale, spacing, radii, component states, responsive layout, and real copy.
+description: Design doctrine for UI builder interfaces built on the runtime kit, covering hierarchy, density, layout, theme tokens, component choice, states, and copy for internal business tools.
 providers: []
 license:
   name: MIT
@@ -17,56 +17,70 @@ tags:
 
 # UI Design System
 
-Guides the custom UI builder toward a composed, on-brand interface instead of a plain
-document. It applies to every framework generation and fix pass.
+Applies to every React (framework) generation, edit, and repair pass of the custom UI builder.
+The system prompt carries the runtime kit API (`UI`, `Charts`, `Icons`); this skill says how to
+compose it into an interface that looks deliberately designed rather than assembled.
 
-## Output contract
+## Who the pages are for
 
-- Return one React function component: `export default function <Name>() { ... }`.
-- No import or export-from statements, no `require`, and no dynamic imports. React and
-  its hooks are available on the `React` namespace (`React.useState`, `React.useMemo`).
-- Use `className` with Tailwind utility classes only, drawn from the families below.
-- No external references: no URLs, no `<link>`, no `@import`, no network images, and no
-  parent-page access.
-
-## Token doctrine
-
-- Primary `rgb(79, 70, 229)`, secondary `rgb(30, 27, 75)`, white background, near-black
-  slate foreground, light slate muted surfaces, and light slate borders.
-- Radius: `0.5rem` for cards and inputs, full for pills and avatars.
-- Type: Inter throughout, with one clear scale per page. Do not mix more than three text
-  sizes inside one block.
-- Spacing: a 4px-based scale with consistent section padding.
-- Contrast: text on a colored surface uses the matching foreground token.
-
-## Component anatomy
-
-- Cards: rounded corners, a 1px border, a small shadow, and generous internal padding.
-- Buttons: one primary action per view, secondary or ghost for the rest, and visible hover
-  and focus states.
-- Forms: a visible label per field, helper text where useful, and an obvious submit.
-- Lists and tables: clear row separation, aligned numbers, and readable empty states.
+Internal operators, reviewers, and managers who use the page every day: claims handlers,
+approvers, operations leads. Optimize for scanning, comparison, and fast repeated actions over
+marketing polish. No hero banners, stock taglines, or decorative gradients on work screens.
 
 ## Composition
 
-- Start from a landmark structure: `header`, `main`, `footer`, and optionally `nav`.
-- Lead with a strong hero or page title, then one-purpose sections.
-- Use real, specific copy. Never use lorem ipsum or placeholder text.
-- Provide the common states: default, hover, focus-visible, disabled, and empty.
-- Stay responsive: stack columns on small screens and widen on `sm`/`md`/`lg`.
+- Start from `UI.Page` (or `UI.AppShell` when the request implies several views), then
+  `UI.PageHeader` with a specific title, one-line description, and the page's primary action.
+- Order sections by decision value: KPIs first, then the trend or breakdown that explains
+  them, then the actionable list. Each `UI.Section` or `UI.Card` has one job.
+- Use a 12-column mental grid: `grid gap-4 lg:grid-cols-3` with a `lg:col-span-2` chart beside a
+  narrow breakdown is the default dashboard row. Stack everything on small screens.
+- Keep consistent rhythm: `space-y-6` between sections, `gap-4` inside grids, card padding from
+  the kit. Do not mix ad-hoc margins.
+- Put filters where they act: page-wide filters in the header actions, table filters in the
+  DataTable `toolbar`.
 
-## Utility families
+## Component choice
 
-- Layout and display: `mx-auto`, `block`, `flex`, `grid`, `hidden`.
-- Flex and grid: `flex-col`, `items-center`, `justify-between`, `gap-4`,
-  `grid-cols-2`, `md:grid-cols-3`.
-- Spacing: `p-4`, `px-6`, `py-8`, `mt-4`, `mb-6`, `space-y-4`.
-- Typography: `text-sm`, `text-lg`, `text-3xl`, `font-semibold`, `leading-tight`.
-- Color: `bg-primary`, `text-primary-foreground`, `bg-muted`, `text-muted-foreground`,
-  `border-border`.
-- Radius and shadow: `rounded-lg`, `rounded-full`, `shadow-sm`, `shadow-md`.
-- States: `hover:bg-primary`, `transition-colors`, `focus-visible:ring-2`,
-  `disabled:opacity-50`.
+- Tables of records → `UI.DataTable` (never a hand-built `<table>`). Status columns use
+  `UI.StatusBadge`; money and counts are right-aligned with `UI.format`.
+- Record details → `UI.Sheet` from a row click; confirmations and short forms → `UI.Dialog`.
+- KPIs → `UI.Stat` inside `UI.StatGrid`, with `delta`, `icon`, and `formula` when known.
+- Charts → `Charts.*` only; one idea per chart, titled with what it answers.
+- Option pickers: up to 4 options → `UI.Segmented`; more → `UI.Select`; on/off → `UI.Switch`.
+- Icons → `Icons.<LucideName>` or the components' `icon="Name"` prop. Never draw SVG icons.
 
-Never use a utility outside this set: the browser build validates every class name and
-blocks a version that uses an unknown class.
+## Theme and color
+
+- Color comes from the theme tokens: `bg-background`, `bg-card`, `bg-muted`, `text-foreground`,
+  `text-muted-foreground`, `bg-primary`, `text-primary`, `border-border`, and the status tokens
+  `text-success`, `text-warning`, `text-destructive`, `text-info`. Use opacity modifiers
+  (`bg-primary/10`) for tints. Avoid raw palette colors (`bg-indigo-600`) on themed surfaces so the
+  project theme and dark mode apply.
+- One primary action per view. Destructive actions use `variant="destructive"` and confirm.
+- Color is never the only signal: pair status colors with text or icons.
+
+## Typography and numbers
+
+- One h1 (from `UI.PageHeader`), section titles as h2, card titles as h3.
+- Body text `text-sm`; secondary text `text-muted-foreground`; at most three sizes per block.
+- Numbers use `tabular-nums` and `UI.format` (currency, compact, percent, dates, relative time).
+  Never show raw ISO dates, raw ids as primary labels, or unformatted floats.
+
+## States
+
+Every data-driven region shows loading (kit `loading` props or `UI.Skeleton`), empty
+(`UI.EmptyState` with a next step), and error (`UI.Alert tone="danger"` or DataTable `error` with
+`onRetry`). Actions show progress (`loading` on the button) and outcome (`UI.toast`).
+
+## Copy
+
+Real, domain-specific copy in sentence case: "Approve claim", not "Submit"; "No claims waiting
+for review", not "No data". No lorem ipsum, no placeholder names like "John Doe" when realistic
+names fit, no exclamation marks.
+
+## Tailwind
+
+Any standard Tailwind v4 utility works, including arbitrary values when needed. The build
+compiles exactly the classes the source uses; a class that is not a real utility renders
+unstyled and is reported back, so do not invent class names.

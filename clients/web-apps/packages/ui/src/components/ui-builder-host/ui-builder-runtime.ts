@@ -20,6 +20,42 @@ export const UI_BUILDER_CONTENT_SECURITY_POLICY = [
   "base-uri 'none'",
 ].join("; ");
 
+const UI_BUILDER_PROBE_CAPTURE_SCRIPT = `(function () {
+  var OUT = "${UI_BUILDER_RUNTIME_SOURCE}";
+  var IN = "${UI_BUILDER_HOST_SOURCE}";
+  var MAX_HEIGHT = 2400;
+  var rasterize = function (width) {
+    return new Promise(function (resolve, reject) {
+      var height = Math.min(MAX_HEIGHT, Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, 200));
+      var styles = Array.prototype.map.call(document.querySelectorAll("style"), function (node) { return node.textContent; }).join("\\n");
+      var body = new XMLSerializer().serializeToString(document.body).replace(/<script[\\s\\S]*?<\\/script>/gi, "");
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '"><foreignObject x="0" y="0" width="100%" height="100%"><html xmlns="http://www.w3.org/1999/xhtml" style="width:' + width + 'px"><head><style><![CDATA[' + styles.replace(/]]>/g, "]] >") + ']]></style></head>' + body + '</html></foreignObject></svg>';
+      var image = new Image();
+      image.onload = function () {
+        var canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        var context = canvas.getContext("2d");
+        context.fillStyle = getComputedStyle(document.body).backgroundColor || "#ffffff";
+        context.fillRect(0, 0, width, height);
+        context.drawImage(image, 0, 0);
+        try { resolve(canvas.toDataURL("image/jpeg", 0.72)); } catch (error) { reject(error); }
+      };
+      image.onerror = function () { reject(new Error("The page could not be captured.")); };
+      image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    });
+  };
+  window.addEventListener("message", function (event) {
+    if (event.source !== parent) return;
+    var data = event.data;
+    if (!data || data.source !== IN || data.type !== "probe:capture") return;
+    rasterize(Number(data.width) || window.innerWidth).then(
+      function (image) { parent.postMessage({ source: OUT, type: "probe:capture", id: data.id, image: image }, "*"); },
+      function (error) { parent.postMessage({ source: OUT, type: "probe:capture", id: data.id, error: String(error && error.message || error) }, "*"); }
+    );
+  });
+})();`;
+
 const UI_BUILDER_RUNTIME_SCRIPT = `(function () {
   if (window.Avintra) return;
   var OUT = "${UI_BUILDER_RUNTIME_SOURCE}";
@@ -169,7 +205,12 @@ const UI_BUILDER_RUNTIME_SCRIPT = `(function () {
     };
   };
 
-  window.Avintra = { data: { queue: queue }, useQueue: useQueue, useQueueQuery: useQueueQuery, reportError: reportError, ready: ready };
+  var asset = function (name) {
+    var assets = window.__AVINTRA_ASSETS__ || {};
+    return Object.prototype.hasOwnProperty.call(assets, name) ? assets[name] : "";
+  };
+
+  window.Avintra = { data: { queue: queue }, useQueue: useQueue, useQueueQuery: useQueueQuery, asset: asset, reportError: reportError, ready: ready };
 
   if (document.readyState === "complete") setTimeout(ready, 0);
   else window.addEventListener("load", function () { setTimeout(ready, 0); });
@@ -190,13 +231,21 @@ export const stripUiBuilderRuntime = (html: string): string =>
  *
  * The result is meant for `srcDoc` rendering only; never persist it.
  */
-export const prepareUiBuilderDocument = (html: string, options: { probe?: boolean } = {}) => {
+export const prepareUiBuilderDocument = (
+  html: string,
+  options: { probe?: boolean; assets?: Record<string, string> } = {},
+) => {
   const clean = stripUiBuilderRuntime(html);
   const marker = `${UI_BUILDER_RUNTIME_MARKER_ATTRIBUTE}="1"`;
-  const probeFlag = options.probe ? "window.__AVINTRA_PROBE__=true;" : "";
+  const probeFlag = options.probe
+    ? `window.__AVINTRA_PROBE__=true;${UI_BUILDER_PROBE_CAPTURE_SCRIPT}`
+    : "";
+  const assetScript = options.assets
+    ? `window.__AVINTRA_ASSETS__=${JSON.stringify(options.assets).replace(/</g, "\\u003c")};`
+    : "";
   const injected = [
     `<meta ${marker} http-equiv="Content-Security-Policy" content="${UI_BUILDER_CONTENT_SECURITY_POLICY}">`,
-    `<script ${marker}>${probeFlag}${UI_BUILDER_RUNTIME_SCRIPT}</script>`,
+    `<script ${marker}>${assetScript}${probeFlag}${UI_BUILDER_RUNTIME_SCRIPT}</script>`,
   ].join("");
 
   const headMatch = /<head\b[^>]*>/i.exec(clean);

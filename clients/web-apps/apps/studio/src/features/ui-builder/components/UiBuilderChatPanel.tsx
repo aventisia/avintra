@@ -7,12 +7,18 @@ import {
   Check,
   Circle,
   Database,
+  Eye,
+  EyeOff,
+  Hammer,
+  ImagePlus,
   Inbox,
   LayoutDashboard,
   ListChecks,
   Loader2,
+  MessagesSquare,
   MousePointer2,
   RotateCcw,
+  Sparkles,
   Square,
   Trash2,
   X,
@@ -30,6 +36,10 @@ import {
 } from "../hooks/useUiBuilderModels.hook";
 import { type UiBuilderChatMessage, type UiBuilderChatStep } from "../types/ui-builder-chat.type";
 import { type UiBuilderSelection } from "../types/ui-builder-selection.type";
+import {
+  UI_BUILDER_MAX_REFERENCE_IMAGES,
+  type UiBuilderReferenceImage,
+} from "../utils/ui-builder-image.util";
 import { UiBuilderModelPicker } from "./UiBuilderModelPicker";
 
 type UiBuilderStarter = { icon: ReactNode; title: string; prompt: string };
@@ -75,6 +85,15 @@ type UiBuilderChatPanelProps = {
   onClearSelection?: () => void;
   connectionCount: number;
   onOpenData: () => void;
+  visualReview: boolean;
+  onVisualReviewChange: (enabled: boolean) => void;
+  isVisualReviewAvailable: boolean;
+  planMode: boolean;
+  onPlanModeChange: (enabled: boolean) => void;
+  onBuildPlan: (plan: string) => void;
+  images: UiBuilderReferenceImage[];
+  onAddImages: (files: File[]) => void;
+  onRemoveImage: (index: number) => void;
 };
 
 const StepIcon = ({ status }: { status: UiBuilderChatStep["status"] }) => {
@@ -107,14 +126,40 @@ const StepTimeline = ({ steps }: { steps: UiBuilderChatStep[] }) => (
   </ol>
 );
 
+const SuggestionChips = ({
+  suggestions,
+  onPick,
+}: {
+  suggestions: string[];
+  onPick: (prompt: string) => void;
+}) => (
+  <div className="mt-2 flex flex-wrap gap-1.5 pl-1" aria-label="Suggested next steps">
+    {suggestions.map((suggestion) => (
+      <button
+        key={suggestion}
+        type="button"
+        onClick={() => onPick(suggestion)}
+        className="inline-flex max-w-full items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50/60 px-2.5 py-1 text-left text-[10px] font-medium text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100"
+      >
+        <Sparkles className="h-2.5 w-2.5 shrink-0" />
+        <span className="truncate">{suggestion}</span>
+      </button>
+    ))}
+  </div>
+);
+
 const AssistantMessage = ({
   message,
   onRetry,
   retryPrompt,
+  onPickSuggestion,
+  onBuildPlan,
 }: {
   message: UiBuilderChatMessage;
   onRetry?: (prompt: string) => void;
   retryPrompt?: string;
+  onPickSuggestion?: (prompt: string) => void;
+  onBuildPlan?: (plan: string) => void;
 }) => (
   <div className="flex gap-2.5">
     <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-sm">
@@ -134,6 +179,16 @@ const AssistantMessage = ({
       </div>
       <div className="mt-1 flex items-center gap-2 pl-1 text-[10px] text-slate-400">
         {message.model && <span className="truncate">{message.model}</span>}
+        {message.kind === "discussion" && !message.status && onBuildPlan && (
+          <button
+            type="button"
+            onClick={() => onBuildPlan(message.text)}
+            className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:underline"
+          >
+            <Hammer className="h-2.5 w-2.5" />
+            Build this
+          </button>
+        )}
         {message.status === "error" && retryPrompt && onRetry && (
           <button
             type="button"
@@ -145,6 +200,9 @@ const AssistantMessage = ({
           </button>
         )}
       </div>
+      {onPickSuggestion && message.suggestions && message.suggestions.length > 0 && (
+        <SuggestionChips suggestions={message.suggestions} onPick={onPickSuggestion} />
+      )}
     </div>
   </div>
 );
@@ -152,6 +210,18 @@ const AssistantMessage = ({
 const UserMessage = ({ message }: { message: UiBuilderChatMessage }) => (
   <div className="flex justify-end">
     <div className="max-w-[88%] rounded-xl rounded-tr-sm bg-slate-900 px-3 py-2 text-xs leading-relaxed text-white shadow-sm">
+      {message.imageThumbnails && message.imageThumbnails.length > 0 && (
+        <div className="mb-1.5 flex gap-1">
+          {message.imageThumbnails.map((thumbnail, index) => (
+            <img
+              key={index}
+              src={thumbnail}
+              alt={`Reference image ${index + 1}`}
+              className="h-12 w-12 rounded-md object-cover ring-1 ring-white/20"
+            />
+          ))}
+        </div>
+      )}
       {message.selector && (
         <span className="mb-1 inline-flex max-w-full items-center gap-1 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] text-slate-200">
           <MousePointer2 className="h-2.5 w-2.5 shrink-0" />
@@ -219,9 +289,28 @@ export const UiBuilderChatPanel = ({
   onClearSelection,
   connectionCount,
   onOpenData,
+  visualReview,
+  onVisualReviewChange,
+  isVisualReviewAvailable,
+  planMode,
+  onPlanModeChange,
+  onBuildPlan,
+  images,
+  onAddImages,
+  onRemoveImage,
 }: UiBuilderChatPanelProps) => {
   const [isConfirmingClear, setIsConfirmingClear] = useState(false);
-  const canSend = Boolean(selectedModel) && prompt.trim().length > 0 && !isGenerating;
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const canSend =
+    Boolean(selectedModel) && (prompt.trim().length > 0 || images.length > 0) && !isGenerating;
+  const canAttach = images.length < UI_BUILDER_MAX_REFERENCE_IMAGES && !isGenerating;
+
+  const takeImageFiles = (files: Iterable<File>) => {
+    const imageFiles = [...files].filter((file) => file.type.startsWith("image/"));
+    if (imageFiles.length > 0) onAddImages(imageFiles);
+    return imageFiles.length > 0;
+  };
   const showNoModels = isSuccess && groups.length === 0;
 
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -316,6 +405,10 @@ export const UiBuilderChatPanel = ({
                 message={message}
                 onRetry={isGenerating ? undefined : onRetry}
                 retryPrompt={promptBefore(index)}
+                onPickSuggestion={
+                  !isGenerating && index === messages.length - 1 ? pickStarter : undefined
+                }
+                onBuildPlan={isGenerating ? undefined : onBuildPlan}
               />
             ),
           )
@@ -339,11 +432,45 @@ export const UiBuilderChatPanel = ({
         )}
 
         <div
+          onDragOver={(event) => {
+            if (!canAttach || !event.dataTransfer.types.includes("Files")) return;
+            event.preventDefault();
+            setIsDraggingImage(true);
+          }}
+          onDragLeave={() => setIsDraggingImage(false)}
+          onDrop={(event) => {
+            setIsDraggingImage(false);
+            if (!canAttach) return;
+            if (takeImageFiles(event.dataTransfer.files)) event.preventDefault();
+          }}
           className={cn(
             "rounded-2xl border bg-white shadow-sm transition-all focus-within:border-indigo-300 focus-within:shadow-md focus-within:ring-4 focus-within:ring-indigo-500/10",
             isGenerating ? "border-indigo-200" : "border-slate-200",
+            isDraggingImage && "border-indigo-400 ring-4 ring-indigo-500/15",
           )}
         >
+          {images.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 px-3 pt-2.5">
+              {images.map((image, index) => (
+                <span key={`${image.name}-${index}`} className="group relative">
+                  <img
+                    src={image.thumbnail}
+                    alt={image.name}
+                    className="h-12 w-12 rounded-lg object-cover ring-1 ring-slate-200"
+                  />
+                  <button
+                    type="button"
+                    aria-label={`Remove ${image.name}`}
+                    onClick={() => onRemoveImage(index)}
+                    disabled={isGenerating}
+                    className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-white shadow"
+                  >
+                    <X className="h-2.5 w-2.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
           {selection && (
             <div className="flex items-center gap-1 px-3 pt-2.5">
               <span className="inline-flex min-w-0 items-center gap-1 rounded-md bg-indigo-50 px-2 py-1 text-[10px] font-medium text-indigo-700 ring-1 ring-indigo-200">
@@ -365,6 +492,10 @@ export const UiBuilderChatPanel = ({
             value={prompt}
             rows={2}
             onChange={(event) => onPromptChange(event.target.value)}
+            onPaste={(event) => {
+              if (!canAttach) return;
+              if (takeImageFiles(event.clipboardData.files)) event.preventDefault();
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
                 event.preventDefault();
@@ -372,11 +503,13 @@ export const UiBuilderChatPanel = ({
               }
             }}
             placeholder={
-              selection
-                ? "Describe the change to the selected element…"
-                : messages.length === 0
-                  ? "Describe the interface you want to build…"
-                  : "Ask for a change, a new section, or a fix…"
+              planMode
+                ? "Ask a question or discuss a change — nothing is built in plan mode…"
+                : selection
+                  ? "Describe the change to the selected element…"
+                  : messages.length === 0
+                    ? "Describe the interface you want to build…"
+                    : "Ask for a change, a new section, or a fix…"
             }
             aria-label="Prompt"
             className="block max-h-[200px] min-h-[56px] w-full resize-none bg-transparent px-3 pt-3 text-sm leading-relaxed text-slate-800 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed"
@@ -384,6 +517,30 @@ export const UiBuilderChatPanel = ({
           />
           <div className="flex items-center justify-between gap-2 px-2 pb-2">
             <div className="flex min-w-0 items-center gap-1.5">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                multiple
+                className="hidden"
+                aria-hidden
+                tabIndex={-1}
+                onChange={(event) => {
+                  if (event.target.files) takeImageFiles(event.target.files);
+                  event.target.value = "";
+                }}
+              />
+              <Tooltip content="Attach a screenshot or mockup (or paste / drop one)">
+                <button
+                  type="button"
+                  aria-label="Attach reference image"
+                  disabled={!canAttach}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-indigo-300 hover:text-indigo-700 disabled:opacity-50"
+                >
+                  <ImagePlus className="h-3.5 w-3.5" />
+                </button>
+              </Tooltip>
               <UiBuilderModelPicker
                 groups={groups}
                 selectedModel={selectedModel}
@@ -406,6 +563,56 @@ export const UiBuilderChatPanel = ({
                   {connectionCount > 0 ? connectionCount : "Data"}
                 </button>
               </Tooltip>
+              <Tooltip
+                content={
+                  planMode
+                    ? "Plan mode on: the agent discusses and plans without changing the interface"
+                    : "Plan mode: discuss before building"
+                }
+              >
+                <button
+                  type="button"
+                  aria-pressed={planMode}
+                  aria-label="Plan mode"
+                  disabled={isGenerating}
+                  onClick={() => onPlanModeChange(!planMode)}
+                  className={cn(
+                    "inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2 text-2xs font-medium shadow-sm transition-colors disabled:opacity-50",
+                    planMode
+                      ? "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      : "border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700",
+                  )}
+                >
+                  <MessagesSquare className="h-3 w-3" />
+                  Plan
+                </button>
+              </Tooltip>
+              {isVisualReviewAvailable && !planMode && (
+                <Tooltip
+                  content={
+                    visualReview
+                      ? "Visual check on: screenshots are reviewed and broken layouts fixed (uses more tokens)"
+                      : "Visual check off"
+                  }
+                >
+                  <button
+                    type="button"
+                    aria-pressed={visualReview}
+                    aria-label="Visual check"
+                    disabled={isGenerating}
+                    onClick={() => onVisualReviewChange(!visualReview)}
+                    className={cn(
+                      "inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2 text-2xs font-medium shadow-sm transition-colors disabled:opacity-50",
+                      visualReview
+                        ? "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                        : "border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700",
+                    )}
+                  >
+                    {visualReview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                    Visual
+                  </button>
+                </Tooltip>
+              )}
             </div>
             {isGenerating ? (
               <button
