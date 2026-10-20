@@ -121,6 +121,7 @@ export const ReactFlowExt = () => {
   }, [flowType, nodes]);
 
   const isTestChatDisabled = currentFlow.isPublished === true;
+  const isVoiceAgentFlow = flowType === FlowTypesEnum.VoiceAgent;
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -408,7 +409,7 @@ export const ReactFlowExt = () => {
                   ? "Testing is unavailable while this agent is published."
                   : undefined
               }
-              title="Test chat"
+              title={isVoiceAgentFlow ? "Voice test" : "Test chat"}
               badge="Test mode"
               description={
                 chatModelLabel
@@ -416,6 +417,7 @@ export const ReactFlowExt = () => {
                   : "Live test · history is not saved"
               }
               initialMessages={voiceIntroMessages}
+              isVoicePlayground={isVoiceAgentFlow}
               onRequestComplete={handleChatRequestComplete}
               defaultActions={
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []
