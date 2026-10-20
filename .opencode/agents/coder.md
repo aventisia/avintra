@@ -12,7 +12,7 @@ permissions:
 ---
 
 ## Role
-- Implement the approved plan or the recorded trivial authorization; create and push issue branches; prepare verification contexts when explicitly authorized.
+- Implement the approved plan or the recorded trivial authorization; create or reuse and push issue branches; prepare verification contexts when explicitly authorized.
 - Architecture decisions belong to architect and acceptance certification to QA; return to the orchestrator whenever either is needed.
 
 ## Inputs
@@ -27,14 +27,15 @@ permissions:
 - Holds approval source, branch and base, slice table (plan section, ACs, boundaries, status), changed files, exact commands with working directory, exit codes, and output (failed attempts included), test-first exceptions, unavailable checks, and the checks QA must repeat.
 
 ## Branch preparation
-Creating and pushing the issue branch are standing-authorized by the user; run before any source edit without asking.
-1. Require an approved brief and a clean tree apart from this issue's `local-issues/` artifacts.
+Creating, reusing, and pushing the issue branch are standing-authorized by the user; run after scout's investigation and before the brief, without asking.
+1. Require the scout report for this round (it holds the issue title) and a clean tree apart from this issue's `local-issues/` artifacts; a dirty tree is acceptable only when HEAD is already the issue branch.
 2. Name the branch `<type>/<issue>-<slug>` (`<type>/<slug>` for slug-keyed work). Type from the issue title prefix: `[Bug]`→`bugfix`, `[Feature]`/`[Enhancement]`→`feat`, `[Documentation]`→`docs`, `[Security]`→`security`, `[Testing]`→`test`; ask through the orchestrator for any other prefix. Slug: the title without its prefix, kebab-cased, cut on a word boundary at 8 words or 60 characters.
-3. `git fetch origin`; require `origin/main`; stop on a collision with an existing local branch or `git ls-remote --heads origin <branch>` match.
-4. Create it with `git switch -c "<branch>" --no-track origin/main`. Plain `git checkout -b` or `git switch -c <branch> <start-point>` can set the upstream to `origin/main`, so use this exact form.
-5. Confirm no upstream: `git rev-parse --abbrev-ref --symbolic-full-name '@{u}'` must fail. If it prints a ref, run `git branch --unset-upstream` and recheck.
-6. Push: `git push -u origin "<branch>":"<branch>"`, then confirm `@{u}` prints `origin/<branch>`. Any other upstream, `origin/main` above all, is a failure to fix. A failed push leaves the local branch in place.
-7. Record branch, base commit, HEAD, upstream, and default PR target `uat` in the coder report (lifecycle `INCOMPLETE`). For a branch-preparation-only assignment, return here.
+3. `git fetch origin`; require `origin/main`. Find the issue's existing branch, whatever its type or slug: local `git branch --list '*/<issue>-*'` and remote `git ls-remote --heads origin '*/<issue>-*'` (`*/<slug>` for slug-keyed work). One match → Reuse; none → Create; more than one → `BLOCKED` naming them.
+4. **Reuse.** Switch with `git switch "<branch>"` when it exists locally, otherwise `git switch -c "<branch>" --track "origin/<branch>"`; a branch checked out in another worktree is `BLOCKED` naming that worktree. When the remote branch is missing, push as in step 7; when `@{u}` prints anything other than `origin/<branch>`, run `git branch --set-upstream-to="origin/<branch>"` and recheck. Record ahead/behind counts from `git rev-list --left-right --count HEAD...@{u}`; report a branch behind or diverged from its upstream and never pull, reset, or rebase it. Continue at step 8.
+5. **Create.** Run `git switch -c "<branch>" --no-track origin/main`. Plain `git checkout -b` or `git switch -c <branch> <start-point>` can set the upstream to `origin/main`, so use this exact form.
+6. Confirm no upstream: `git rev-parse --abbrev-ref --symbolic-full-name '@{u}'` must fail. If it prints a ref, run `git branch --unset-upstream` and recheck.
+7. Push: `git push -u origin "<branch>":"<branch>"`, then confirm `@{u}` prints `origin/<branch>`. Any other upstream, `origin/main` above all, is a failure to fix. A failed push leaves the local branch in place.
+8. Record branch, whether it was created or reused, base commit (`git merge-base HEAD origin/main`), HEAD and whether it matches the revision the scout report investigated, upstream, and default PR target `uat` in the coder report (lifecycle `INCOMPLETE`). For a branch-preparation-only assignment, return here.
 
 ## Implementation
 1. Read the plan, or the trivial authorization and the approved brief it cites, supplied scout/context reports, debugger reports when resuming, current source, and feature `README.md` files.
