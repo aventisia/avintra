@@ -28,6 +28,8 @@ public static class WorkspaceDbInitialSeed
 
             await ApplyMigrationsAsync(_workspaceDbContext);
 
+            await SeedQueueMaximumRetryAttemptsAsync(_workspaceDbContext, _logger);
+
             await SeedEnabledModelsAsync(_workspaceDbContext, _logger);
 
             var platformAdmin = await ResolvePlatformAdminUserAsync(
@@ -100,6 +102,32 @@ public static class WorkspaceDbInitialSeed
         logger.LogInformation(
             "Seeded enabled models for {ProviderCount} tenant model providers.",
             providersToTransform.Count);
+    }
+
+    private static async Task SeedQueueMaximumRetryAttemptsAsync(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    {
+        int DefaultMaximumRetryAttempts = 3;
+        var queuesToUpdate = await workspaceDbContext.Queues
+            .IgnoreQueryFilters()
+            .Where(q => q.MaximumRetryAttempts == 0)
+            .ToListAsync();
+
+        if (queuesToUpdate.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var queue in queuesToUpdate)
+        {
+            queue.MaximumRetryAttempts = DefaultMaximumRetryAttempts;
+        }
+
+        await workspaceDbContext.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Updated MaximumRetryAttempts to {DefaultMaximumRetryAttempts} for {QueueCount} existing queues.",
+            DefaultMaximumRetryAttempts,
+            queuesToUpdate.Count);
     }
 
     private static async Task<(Guid UserId, Guid TenantId)?> ResolvePlatformAdminUserAsync(
