@@ -112,6 +112,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof queueZodSchema>>({
     resolver: zodResolver(queueZodSchema),
+    mode: "onChange",
     defaultValues: {
       crudAction: CrudActionTypeConverter(crudAction),
       id: "",
@@ -121,8 +122,8 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
       isUniqueReferencesEnforced: false,
       isStoredEncrypted: false,
-      shouldRetryFailedItems: false,
-      shouldRetryAbandonedItems: false,
+      // shouldRetryFailedItems: false,
+      // shouldRetryAbandonedItems: false,
       maximumRetryAttempts: 3,
       inputSchema: "[]",
       statuses: defaultStatuses,
@@ -139,26 +140,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     },
   });
 
-  useEffect(() => {
-    const subscription = form.watch((values, { name }) => {
-      const isRetryToggleEnabled =
-        (name === "shouldRetryFailedItems" && values.shouldRetryFailedItems === true) ||
-        (name === "shouldRetryAbandonedItems" && values.shouldRetryAbandonedItems === true);
-      const currentMaxRetryAttempts = values.maximumRetryAttempts;
-      const isMaxRetryAttemptsUnset =
-        !currentMaxRetryAttempts || Number(currentMaxRetryAttempts) === 0;
-
-      if (isRetryToggleEnabled && isMaxRetryAttemptsUnset) {
-        form.setValue("maximumRetryAttempts", 5, { shouldDirty: true });
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [form]);
-
   // Destructor form values and methods
   const {
-    formState: { isDirty },
+    formState: { isDirty, isValid },
   } = form;
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
@@ -207,9 +191,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       credentialName: queueData?.credentialName || "",
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
-      shouldRetryFailedItems: queueData?.shouldRetryFailedItems ?? false,
-      shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems ?? false,
-      maximumRetryAttempts: queueData?.maximumRetryAttempts ?? 0,
+      // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
+      // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
+      maximumRetryAttempts: queueData?.maximumRetryAttempts ?? 3,
       inputSchema:
         JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema, null, 2),
       statuses: JSON.stringify(queueData?.statuses, null, 2) ?? defaultStatuses,
@@ -276,6 +260,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   return {
     form,
     isDirty,
+    isValid,
     crudAction,
     refineFormData,
     isAvailable,
