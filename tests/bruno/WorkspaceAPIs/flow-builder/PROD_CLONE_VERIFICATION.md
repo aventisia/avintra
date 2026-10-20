@@ -85,10 +85,11 @@ JOIN "Queues" q ON q."Id" = qu."QueueId"
 WHERE q."TenantId" = :tenant_id AND q."EnvType" = 'Prod' AND q."Name" IN (:queue_names);
 -- Expect: matches the Dev queue's worc_QueueUsers count (mirrored, no duplicates).
 
-SELECT count(*) FROM "QueueFlowVersion" qf
-JOIN "Queues" q ON q."Id" = qf."QueueId"
-WHERE q."TenantId" = :tenant_id AND q."EnvType" = 'Prod' AND q."Name" IN (:queue_names);
--- Expect: matches the Dev queue's QueueFlowVersion count.
+SELECT count(*) FROM "ws_ResourceFlowAccess" rfa
+JOIN "Queues" q ON q."Id" = rfa."ResourceId"
+WHERE rfa."ResourceType" = 'Queue'
+  AND q."TenantId" = :tenant_id AND q."EnvType" = 'Prod' AND q."Name" IN (:queue_names);
+-- Expect: matches the Dev queue's ws_ResourceFlowAccess grant count (mirrored per-flow, no duplicates).
 ```
 
 ### 2.3 Tools

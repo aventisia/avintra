@@ -1,0 +1,27 @@
+meta {
+  name: Legacy queue-agent list is gone
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/queue-agent/{{QUEUE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("removed queue-agent route returns 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > The legacy per-link queue-agent API is removed. A 404 (not 200, not 405)
+  > confirms no controller still serves the route. Provide ACCESS_TOKEN and
+  > QUEUE_ID through the environment.
+}

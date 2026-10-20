@@ -1,0 +1,56 @@
+meta {
+  name: Get assigned flows by queue
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Queue/{{QUEUE_ID}}/assigned-flows
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const flowId = bru.getGlobalEnvVar("FLOW_ID") || bru.getEnvVar("FLOW_ID");
+  const queueId = bru.getGlobalEnvVar("QUEUE_ID") || bru.getEnvVar("QUEUE_ID");
+  const expectedAssigned = bru.getGlobalEnvVar("EXPECT_QUEUE_FLOW_ASSIGNED") || bru.getEnvVar("EXPECT_QUEUE_FLOW_ASSIGNED");
+  const entry = data.find((flow) => flow.id === flowId);
+
+  test("assigned flows request returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("assigned flow entry matches the last assign or unassign", function() {
+    if (expectedAssigned === "true") {
+      expect(entry, "flow " + flowId + " is missing from queue " + queueId + " assigned list").to.be.an("object");
+    } else if (expectedAssigned === "false") {
+      expect(entry, "flow " + flowId + " should be absent after unassign").to.equal(undefined);
+    } else {
+      expect(data).to.be.an("array");
+    }
+  });
+
+  test("assigned flow row carries the assigned-flow contract", function() {
+    if (expectedAssigned === "true") {
+      expect(entry, "flow " + flowId + " is missing from queue " + queueId + " assigned list").to.be.an("object");
+      expect(entry.name).to.be.a("string");
+      expect(entry.type).to.be.a("string");
+      expect(entry.versionCount).to.be.a("number");
+      expect(entry).to.have.property("lastModifiedOn");
+      expect(entry).to.not.have.property("isAssigned");
+      expect(entry).to.not.have.property("resourceType");
+    }
+  });
+}
+
+docs {
+  > Lists only the flows already assigned to the queue. EXPECT_QUEUE_FLOW_ASSIGNED is
+  > chained by the queue assign and unassign requests; re-run this request after
+  > unassigning to observe the flow absent from the list.
+}

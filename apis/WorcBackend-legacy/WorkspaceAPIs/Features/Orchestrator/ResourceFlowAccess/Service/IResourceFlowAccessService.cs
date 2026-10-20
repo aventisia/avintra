@@ -10,7 +10,7 @@ public interface IResourceFlowAccessService
     /// </summary>
     /// <param name="resourceType">The type of resource.</param>
     /// <param name="resourceId">The resource identifier.</param>
-    /// <param name="flowIds">The complete set of flow identifiers to assign; an empty set removes all and opens the tool to every flow.</param>
+    /// <param name="flowIds">The complete set of flow identifiers to assign; an empty set removes all and opens the resource to every flow.</param>
     /// <returns>A service response with the assigned and removed counts and the published flows left outside the list.</returns>
     Task<ServiceResponse<AssignResourceFlowsResultDto>> AssignFlowsAsync(ResourceTypeEnum resourceType, Guid resourceId, IEnumerable<Guid> flowIds);
 
@@ -30,6 +30,24 @@ public interface IResourceFlowAccessService
     /// <param name="resourceIds">The resource identifiers.</param>
     /// <returns>The assigned flow identifiers keyed by resource identifier.</returns>
     Task<Dictionary<Guid, HashSet<Guid>>> GetAssignedFlowIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> resourceIds);
+
+    /// <summary>
+    /// Retrieves, in one query, the identifiers of the resources assigned to each of the given flows.
+    /// Flows without rows are absent from the result.
+    /// </summary>
+    /// <param name="resourceType">The type of resource.</param>
+    /// <param name="flowIds">The flow identifiers.</param>
+    /// <returns>The assigned resource identifiers keyed by flow identifier.</returns>
+    Task<Dictionary<Guid, HashSet<Guid>>> GetAssignedResourceIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> flowIds);
+
+    /// <summary>
+    /// Retrieves, in one query, the names of the flows assigned to each of the given resources.
+    /// Resources without rows are absent from the result.
+    /// </summary>
+    /// <param name="resourceType">The type of resource.</param>
+    /// <param name="resourceIds">The resource identifiers.</param>
+    /// <returns>The assigned flow names keyed by resource identifier.</returns>
+    Task<Dictionary<Guid, List<string>>> GetAssignedFlowNamesAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> resourceIds);
 
     /// <summary>
     /// Stages the removal of every flow assignment for a resource.

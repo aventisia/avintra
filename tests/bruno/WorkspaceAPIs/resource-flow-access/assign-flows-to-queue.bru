@@ -1,0 +1,44 @@
+meta {
+  name: Assign flows to queue
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/assign
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{QUEUE_ID}}",
+    "flowIds": [
+      "{{FLOW_ID}}"
+    ]
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.data?.assignedCount >= 1) {
+    bru.setGlobalEnvVar("EXPECT_QUEUE_FLOW_ASSIGNED", "true");
+  }
+  test("assign flows to queue returns 200 with the result counts", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.assignedCount).to.be.at.least(1);
+    expect(res.getBody().data.unassignedPublishedFlows).to.be.an("array");
+  });
+}
+
+docs {
+  > Assigns a single flow to the Dev queue identified by QUEUE_ID through the bulk
+  > replace endpoint. The caller must be the queue owner or hold Edit access.
+  > Provide ACCESS_TOKEN, QUEUE_ID and FLOW_ID through the environment. The same
+  > flow can also be assigned to a tool; the queue rows live in ws_ResourceFlowAccess.
+}

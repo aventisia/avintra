@@ -23,6 +23,7 @@ permissions:
 - Read the root `AGENTS.md` first; its Shared handoff contract, Artifact conventions, and Execution conventions bind this role.
 - Required from the task: the original issue reference or problem statement, repository context, output path. Treat unknown repository identity as something to resolve, never to assume.
 - Read every artifact listed in `Inputs` from disk before acting, including your own report when resuming.
+- On a rerun against an approved brief, the brief is the requirements source: extend your report in place to cover what it adds.
 
 ## Process
 1. **Orient.** Read the area `AGENTS.md` and feature `README.md` files for likely areas. Run `git status`; note unrelated changes and whether they prevent reliable scope attribution (flag it; never stash).
@@ -42,7 +43,7 @@ permissions:
 
 ## Output
 - Status summary per the handoff contract; `COMPLETE` only when the Process done-criterion holds.
-- When the orchestrator requests manifest confirmation, return the manifest as a labeled payload; return questions as a numbered labeled payload.
+- Record open questions as a numbered list in the report for analyst to carry into the brief; return one as a labeled payload only when it blocks the investigation itself.
 
 ## Boundaries
 - Shell use is limited to inspection: reads, searches, `git status`/`log`/`diff`/`show`, and read-only `tea`. Application code, write options, redirections into files, and side-effecting commands stay unrun, whatever the shell permission allows.

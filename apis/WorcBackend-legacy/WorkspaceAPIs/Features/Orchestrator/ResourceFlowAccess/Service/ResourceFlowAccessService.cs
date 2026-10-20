@@ -58,26 +58,52 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType != ResourceTypeEnum.Tool)
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
 
-            var tool = await GetToolAsync(resourceId);
-            if (tool == null)
-            {
-                return serviceResponse.Update("The tool does not exist", 404);
-            }
+            var resourceLabel = resourceType.ToString().ToLowerInvariant();
+            Tool? tool = null;
+            Queue? queue = null;
+            ConfigureEnvironmentType resourceEnvType;
+            Guid resourceCreatedByUserId;
+            bool isResourceAccessRestricted;
 
-            if (tool.Type == ComponentTypeEnum.Platform)
+            if (resourceType == ResourceTypeEnum.Tool)
             {
-                return serviceResponse.Update("Flow access cannot be configured for platform tools", 400);
+                tool = await GetToolAsync(resourceId);
+                if (tool == null)
+                {
+                    return serviceResponse.Update("The tool does not exist", 404);
+                }
+
+                if (tool.Type == ComponentTypeEnum.Platform)
+                {
+                    return serviceResponse.Update("Flow access cannot be configured for platform tools", 400);
+                }
+
+                resourceEnvType = tool.EnvType;
+                resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
+                isResourceAccessRestricted = tool.IsResourceAccessRestricted;
+            }
+            else
+            {
+                queue = await GetQueueAsync(resourceId);
+                if (queue == null)
+                {
+                    return serviceResponse.Update("The queue does not exist", 404);
+                }
+
+                resourceEnvType = queue.EnvType;
+                resourceCreatedByUserId = queue.CreatedByUserId;
+                isResourceAccessRestricted = queue.IsResourceAccessRestricted;
             }
 
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AssignResourceFlowsResultDto>(
-                tool.EnvType,
+                resourceEnvType,
                 _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
-                "tool");
+                resourceLabel);
             if (prodUpdateBlock != null)
             {
                 return prodUpdateBlock;
@@ -85,9 +111,9 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
             var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
-                tool.Id,
-                ResourceTypeEnum.Tool,
-                tool.CreatedByUserId ?? Guid.Empty,
+                resourceId,
+                resourceType,
+                resourceCreatedByUserId,
                 false,
                 new[]
                 {
@@ -97,7 +123,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
             if (!canEdit)
             {
-                return serviceResponse.Update("You do not have access to update this tool", 403);
+                return serviceResponse.Update($"You do not have access to update this {resourceLabel}", 403);
             }
 
             var isRestricted = flowIdList.Count > 0;
@@ -114,14 +140,18 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                     await _unitOfWork.AcquireAdvisoryLockAsync($"resource-flow-access:{resourceType}:{resourceId}");
 
                     var existing = await _unitOfWork.ResourceFlowAccessRepo
-                        .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Tool && w.ResourceId == resourceId)
+                        .GetByConditionAsync(w => w.ResourceType == resourceType && w.ResourceId == resourceId)
                         .ToListAsync();
 
                     var existingIds = existing.Select(e => e.FlowId).ToList();
                     newIds = flowIdList.Except(existingIds).ToList();
                     removedIds = existingIds.Except(flowIdList).ToList();
 
-                    var assignableFlows = await _unitOfWork.FlowRepo
+                    // IMPORTANT NOTE: grants are tenant-scoped with no space on the relation,
+                    // but new picks must come from the current space; already-assigned flows
+                    // stay valid so cross-space grants survive a re-save.
+                    var currentSpaceId = _currentTenantService.CurrentSpaceId;
+                    var candidates = await _unitOfWork.FlowRepo
                         .GetByConditionAsync(w =>
                             flowIdList.Contains(w.Id) &&
                             w.TenantId == _tenantId &&
@@ -130,32 +160,43 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                         .Select(w => new
                         {
                             w.Id,
+                            w.SpaceId,
                             IsMember = w.CreatedByUserId == _userId || (w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId))
                         })
                         .ToListAsync();
 
-                    var validIds = assignableFlows
-                        .Where(w => existingIds.Contains(w.Id) || w.IsMember)
+                    bool InCurrentSpace(Guid? spaceId) =>
+                        currentSpaceId == Guid.Empty ? spaceId == null : spaceId == currentSpaceId;
+
+                    var validIds = candidates
+                        .Where(w => existingIds.Contains(w.Id) || (InCurrentSpace(w.SpaceId) && w.IsMember))
                         .Select(w => w.Id)
                         .ToHashSet();
 
                     var invalidFlowIds = flowIdList.Where(id => !validIds.Contains(id)).ToList();
                     if (invalidFlowIds.Any())
                     {
-                        earlyExit = serviceResponse.Update($"The following flow IDs are invalid: {string.Join(", ", invalidFlowIds)}", 400);
+                        var outsideSpaceIds = candidates
+                            .Where(w => invalidFlowIds.Contains(w.Id) && !existingIds.Contains(w.Id) && !InCurrentSpace(w.SpaceId))
+                            .Select(w => w.Id)
+                            .ToList();
+                        var message = outsideSpaceIds.Count > 0
+                            ? $"The following flows are outside the current space: {string.Join(", ", outsideSpaceIds)}"
+                            : $"The following flow IDs are invalid: {string.Join(", ", invalidFlowIds)}";
+                        earlyExit = serviceResponse.Update(message, 400);
                         return;
                     }
 
-                    if (newIds.Count == 0 && removedIds.Count == 0 && tool.IsResourceAccessRestricted == isRestricted)
+                    if (newIds.Count == 0 && removedIds.Count == 0 && isResourceAccessRestricted == isRestricted)
                     {
-                        earlyExit = serviceResponse.Update("No changes made to the tool assignments", 200, null);
+                        earlyExit = serviceResponse.Update($"No changes made to the {resourceLabel} assignments", 200, null);
                         return;
                     }
 
                     var toAdd = newIds.Select(id => new ResourceFlowAccess
                     {
                         TenantId = _tenantId,
-                        ResourceType = ResourceTypeEnum.Tool,
+                        ResourceType = resourceType,
                         ResourceId = resourceId,
                         FlowId = id,
                         CreatedByUserId = _userId
@@ -173,15 +214,23 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                         _unitOfWork.ResourceFlowAccessRepo.Delete(toRemove);
                     }
 
-                    if (tool.IsResourceAccessRestricted != isRestricted)
+                    if (isResourceAccessRestricted != isRestricted)
                     {
-                        tool.IsResourceAccessRestricted = isRestricted;
-                        _unitOfWork.ToolRepo.Update(tool);
+                        if (tool != null)
+                        {
+                            tool.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.ToolRepo.Update(tool);
+                        }
+                        else
+                        {
+                            queue!.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.QueueRepo.Update(queue);
+                        }
                     }
 
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        earlyExit = serviceResponse.Update("Failed to update flow assignments for the tool", 500);
+                        earlyExit = serviceResponse.Update($"Failed to update flow assignments for the {resourceLabel}", 500);
                     }
                 });
             }
@@ -195,9 +244,15 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return earlyExit;
             }
 
-            var unassignedPublishedFlows = isRestricted
-                ? await GetPublishedFlowsOutsideAccessAsync(tool, flowIdList)
-                : new List<string>();
+            var unassignedPublishedFlows = new List<string>();
+            if (isRestricted && tool != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(tool, flowIdList);
+            }
+            else if (isRestricted && queue != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(queue, flowIdList);
+            }
 
             var message = $"{ResourceFlowAccessHelpers.Pluralize(newIds.Count, "flow")} assigned, {ResourceFlowAccessHelpers.Pluralize(removedIds.Count, "flow")} removed";
 
@@ -221,23 +276,44 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType != ResourceTypeEnum.Tool)
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
 
-            var tool = await GetToolAsync(resourceId);
-            if (tool == null)
+            var resourceLabel = resourceType.ToString().ToLowerInvariant();
+            Guid resourceCreatedByUserId;
+            bool isTenantWideAccess;
+
+            if (resourceType == ResourceTypeEnum.Tool)
             {
-                return serviceResponse.Update("The tool does not exist", 404);
+                var tool = await GetToolAsync(resourceId);
+                if (tool == null)
+                {
+                    return serviceResponse.Update("The tool does not exist", 404);
+                }
+
+                resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
+                isTenantWideAccess = tool.IsTenantWideAccess;
+            }
+            else
+            {
+                var queue = await GetQueueAsync(resourceId);
+                if (queue == null)
+                {
+                    return serviceResponse.Update("The queue does not exist", 404);
+                }
+
+                resourceCreatedByUserId = queue.CreatedByUserId;
+                isTenantWideAccess = queue.IsTenantWideAccess;
             }
 
             var (canAccess, _) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
-                tool.Id,
-                ResourceTypeEnum.Tool,
-                tool.CreatedByUserId ?? Guid.Empty,
-                tool.IsTenantWideAccess,
+                resourceId,
+                resourceType,
+                resourceCreatedByUserId,
+                isTenantWideAccess,
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
@@ -247,11 +323,11 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
             if (!canAccess)
             {
-                return serviceResponse.Update("You do not have access to view this tool", 403);
+                return serviceResponse.Update($"You do not have access to view this {resourceLabel}", 403);
             }
 
             var assignedIds = await _unitOfWork.ResourceFlowAccessRepo
-                .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Tool && w.ResourceId == resourceId)
+                .GetByConditionAsync(w => w.ResourceType == resourceType && w.ResourceId == resourceId)
                 .Select(w => w.FlowId)
                 .ToListAsync();
 
@@ -281,6 +357,37 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
         return rows
             .GroupBy(w => w.ResourceId)
             .ToDictionary(g => g.Key, g => g.Select(w => w.FlowId).ToHashSet());
+    }
+
+    public async Task<Dictionary<Guid, HashSet<Guid>>> GetAssignedResourceIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> flowIds)
+    {
+        var idList = flowIds.ToList();
+        var rows = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == resourceType && idList.Contains(w.FlowId))
+            .Select(w => new { w.ResourceId, w.FlowId })
+            .ToListAsync();
+
+        return rows
+            .GroupBy(w => w.FlowId)
+            .ToDictionary(g => g.Key, g => g.Select(w => w.ResourceId).ToHashSet());
+    }
+
+    public async Task<Dictionary<Guid, List<string>>> GetAssignedFlowNamesAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> resourceIds)
+    {
+        var idList = resourceIds.ToList();
+        // IMPORTANT NOTE: grants are tenant-scoped, so this mirrors GetAssignedFlowsAsync:
+        // filters are bypassed and the tenant is applied explicitly instead of inheriting
+        // the current space, which would silently drop cross-space flows from the names.
+        var rows = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == resourceType && idList.Contains(w.ResourceId))
+            .IgnoreQueryFilters()
+            .Where(w => w.TenantId == _tenantId)
+            .Select(w => new { w.ResourceId, w.Flow!.Name })
+            .ToListAsync();
+
+        return rows
+            .GroupBy(w => w.ResourceId)
+            .ToDictionary(g => g.Key, g => g.Select(w => w.Name).Distinct().ToList());
     }
 
     public async Task DeleteResourceFlowAccessesAsync(ResourceTypeEnum resourceType, Guid resourceId)
@@ -364,9 +471,48 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(Queue queue, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(queue.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameQueues = await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w =>
+                w.Name == queue.Name &&
+                w.TenantId == _tenantId &&
+                w.EnvType == queue.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedQueueNames(w.ResourceReferences)?.Contains(queue.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedQueue(sameNameQueues, w.SpaceId)?.Id == queue.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<Tool?> GetToolAsync(Guid resourceId)
     {
         return await _unitOfWork.ToolRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<Queue?> GetQueueAsync(Guid resourceId)
+    {
+        return await _unitOfWork.QueueRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }

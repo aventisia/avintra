@@ -1,0 +1,28 @@
+meta {
+  name: Delete queue with flow access
+  type: http
+  seq: 19
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{QUEUE_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("queue delete returns 200 with data true", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}
+
+docs {
+  > Deletes the Dev queue identified by QUEUE_ID. Run the follow-up request
+  > "Get assigned flows after queue delete" to confirm its flow access rows no
+  > longer resolve to a queue. Use a DEDICATED fixture queue, never a shared one.
+}

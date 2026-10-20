@@ -1,0 +1,27 @@
+meta {
+  name: Legacy queue agents list is gone
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{QUEUE_ID}}/agents
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("removed queue agents route returns 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > The legacy agent list for a queue is removed; use GET
+  > resource-flows/Queue/{queueId}/assigned-flows. A 404 confirms the route is gone,
+  > while GET queue/by-agent/{flowVersionId} stays available for the studio.
+}

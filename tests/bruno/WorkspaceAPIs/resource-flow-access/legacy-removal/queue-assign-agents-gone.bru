@@ -1,0 +1,32 @@
+meta {
+  name: Legacy queue assign-agents is gone
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/queue/{{QUEUE_ID}}/assign-agents
+  body: json
+  auth: bearer
+}
+
+body:json {
+  [
+    "{{FLOW_VERSION_ID}}"
+  ]
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("removed queue assign-agents route returns 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > Queue flow assignment now goes through POST resource-flows/assign. A 404 here
+  > confirms the legacy per-version route no longer writes QueueFlowVersion rows.
+}

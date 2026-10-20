@@ -103,10 +103,12 @@ public class SearchByQueryService : ISearchByQueryService
             var flowTypes = types?.Where(t => t != FlowTypesEnum.Block).Distinct().ToArray() ?? Array.Empty<FlowTypesEnum>();
             var escapedSearchKey = SearchByQueryHelpers.EscapeLikePattern(trimmedSearchKey);
             var tenantId = _currentTenantService.CurrentTenantId;
+            var currentSpaceId = _currentTenantService.CurrentSpaceId;
 
             var flowsQuery = _unitOfWork.FlowRepo
                                 .GetByConditionAsync(w =>
                                     w.TenantId == tenantId &&
+                                    (currentSpaceId == Guid.Empty ? w.SpaceId == null : w.SpaceId == currentSpaceId) &&
                                     (w.CreatedByUserId == _userId || (w.FlowUsers != null && w.FlowUsers.Any(a => a.UserId == _userId))))
                                 .IgnoreQueryFilters()
                                 .Where(w => w.FlowVersions != null && w.FlowVersions.Any(v => !v.IsArchived));
