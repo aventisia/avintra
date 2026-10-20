@@ -41,6 +41,14 @@ public interface IUiBuilderService
     Task<ServiceResponse<UiBuilderProjectDto>> UpdateUiBuilderProjectAsync(UiBuilderProjectDto uiBuilderProjectDto);
 
     /// <summary>
+    /// Disables or enables a custom UI builder project. Allowed for the project creator and operations managers.
+    /// </summary>
+    /// <param name="id">The ID of the project to update.</param>
+    /// <param name="uiBuilderProjectStatusDto">The new enabled or disabled state.</param>
+    /// <returns>The task result contains the service response with the updated project details.</returns>
+    Task<ServiceResponse<UiBuilderProjectDto>> UpdateUiBuilderProjectStatusAsync(Guid id, UiBuilderProjectStatusDto uiBuilderProjectStatusDto);
+
+    /// <summary>
     /// Deletes a custom UI builder project by its ID.
     /// </summary>
     /// <param name="id">The ID of the project to delete.</param>

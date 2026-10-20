@@ -117,6 +117,65 @@ public static class UiBuilderDataQueryHelpers
         return result;
     }
 
+    /// <summary>
+    /// Derives the creation-date window implied by the request's shared <c>$createdOn</c> filters, so the scan can be narrowed in the database.
+    /// The window is never narrower than the in-memory filters it is derived from.
+    /// </summary>
+    public static (DateTimeOffset? From, DateTimeOffset? Before) GetCreatedOnScanWindow(UiBuilderDataQueryRequestDto request)
+    {
+        DateTimeOffset? from = null;
+        DateTimeOffset? before = null;
+
+        foreach (var filter in request.Filters ?? [])
+        {
+            if (!string.Equals(filter.Field?.Trim(), "$createdOn", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var op = (filter.Op ?? "eq").Trim().ToLowerInvariant();
+            var bounds = op == "between" ? ParseFilterArray(filter, FieldKind.Date) : [ParseFilterValue(filter.Value ?? default, FieldKind.Date)];
+            if (op == "between" && bounds.Count != 2)
+            {
+                continue;
+            }
+
+            var (lower, upper) = op switch
+            {
+                "eq" => (StartOf(bounds[0]), EndOf(bounds[0])),
+                "gt" or "gte" => (StartOf(bounds[0]), null),
+                "lt" => (null, StartOf(bounds[0])),
+                "lte" => (null, EndOf(bounds[0])),
+                "between" => (StartOf(bounds[0]), EndOf(bounds[1])),
+                _ => ((DateTimeOffset?)null, (DateTimeOffset?)null)
+            };
+
+            if (lower != null && (from == null || lower > from))
+            {
+                from = lower;
+            }
+
+            if (upper != null && (before == null || upper < before))
+            {
+                before = upper;
+            }
+        }
+
+        return (from, before);
+    }
+
+    private static DateTimeOffset? StartOf(FilterValue filterValue)
+    {
+        return filterValue.Value as DateTimeOffset?;
+    }
+
+    private static DateTimeOffset? EndOf(FilterValue filterValue)
+    {
+        return filterValue.Value is DateTimeOffset date
+            ? filterValue.IsDateOnly ? date.AddDays(1) : date.AddTicks(1)
+            : null;
+    }
+
     private static Dictionary<string, QueryField> BuildFieldMap(IReadOnlyList<QueueSchemaDefinitionDto> schema)
     {
         var fields = new Dictionary<string, QueryField>(StringComparer.OrdinalIgnoreCase)
@@ -248,14 +307,14 @@ public static class UiBuilderDataQueryHelpers
         };
     }
 
-    private static bool IsAtOrBefore(object value, FilterValue bound)
+    private static int CompareToFilter(object value, FilterValue filterValue)
     {
-        if (bound.IsDateOnly && value is DateTimeOffset date && bound.Value is DateTimeOffset boundDate)
+        if (filterValue.IsDateOnly && value is DateTimeOffset date && filterValue.Value is DateTimeOffset dayStart)
         {
-            return date < boundDate.AddDays(1);
+            return date < dayStart ? -1 : date < dayStart.AddDays(1) ? 0 : 1;
         }
 
-        return CompareValues(value, bound.Value!) <= 0;
+        return CompareValues(value, filterValue.Value!);
     }
 
     private static List<FilterValue> ParseFilterArray(UiBuilderDataFilterDto filter, FieldKind kind)
@@ -290,7 +349,7 @@ public static class UiBuilderDataQueryHelpers
             return item =>
             {
                 var value = ReadValue(item, field);
-                var found = values.Any(candidate => candidate.Value == null ? value == null : value != null && CompareValues(value, candidate.Value) == 0);
+                var found = values.Any(candidate => candidate.Value == null ? value == null : value != null && CompareToFilter(value, candidate) == 0);
                 return isIn ? found : !found;
             };
         }
@@ -312,7 +371,7 @@ public static class UiBuilderDataQueryHelpers
                     return false;
                 }
 
-                return (from.Value == null || CompareValues(value, from.Value) >= 0) && (to.Value == null || IsAtOrBefore(value, to));
+                return (from.Value == null || CompareToFilter(value, from) >= 0) && (to.Value == null || CompareToFilter(value, to) <= 0);
             };
         }
 
@@ -320,14 +379,14 @@ public static class UiBuilderDataQueryHelpers
 
         return op.ToLowerInvariant() switch
         {
-            "eq" => item => target.Value == null ? ReadValue(item, field) == null : ReadValue(item, field) is { } value && CompareValues(value, target.Value) == 0,
-            "neq" => item => target.Value == null ? ReadValue(item, field) != null : ReadValue(item, field) is not { } value || CompareValues(value, target.Value) != 0,
+            "eq" => item => target.Value == null ? ReadValue(item, field) == null : ReadValue(item, field) is { } value && CompareToFilter(value, target) == 0,
+            "neq" => item => target.Value == null ? ReadValue(item, field) != null : ReadValue(item, field) is not { } value || CompareToFilter(value, target) != 0,
             "contains" => item => ReadValue(item, field) is { } value && Convert.ToString(value, CultureInfo.InvariantCulture)!.Contains(Convert.ToString(target.Value, CultureInfo.InvariantCulture) ?? string.Empty, StringComparison.OrdinalIgnoreCase),
             "startswith" => item => ReadValue(item, field) is { } value && Convert.ToString(value, CultureInfo.InvariantCulture)!.StartsWith(Convert.ToString(target.Value, CultureInfo.InvariantCulture) ?? string.Empty, StringComparison.OrdinalIgnoreCase),
-            "gt" => item => target.Value != null && ReadValue(item, field) is { } value && CompareValues(value, target.Value) > 0,
-            "gte" => item => target.Value != null && ReadValue(item, field) is { } value && CompareValues(value, target.Value) >= 0,
-            "lt" => item => target.Value != null && ReadValue(item, field) is { } value && CompareValues(value, target.Value) < 0,
-            "lte" => item => target.Value != null && ReadValue(item, field) is { } value && IsAtOrBefore(value, target),
+            "gt" => item => target.Value != null && ReadValue(item, field) is { } value && CompareToFilter(value, target) > 0,
+            "gte" => item => target.Value != null && ReadValue(item, field) is { } value && CompareToFilter(value, target) >= 0,
+            "lt" => item => target.Value != null && ReadValue(item, field) is { } value && CompareToFilter(value, target) < 0,
+            "lte" => item => target.Value != null && ReadValue(item, field) is { } value && CompareToFilter(value, target) <= 0,
             _ => throw new ArgumentException($"Unknown filter operator '{filter.Op}'. Use eq, neq, in, nin, contains, startsWith, gt, gte, lt, lte, between, isNull, or notNull.")
         };
     }

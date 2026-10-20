@@ -321,8 +321,19 @@ export const useUiBuilderAgent = () => {
       try {
         const built = await buildUiBuilderFrameworkDocument(output, turn.theme);
         return { source: output, html: built.html, diagnostics: built.diagnostics };
-      } catch {
-        return { source: output, html: "", diagnostics: [] };
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        return {
+          source: output,
+          html: "",
+          diagnostics: [
+            {
+              code: "BUILD",
+              detail: `The page could not be built: ${reason.slice(0, 300)}`,
+              blocking: true,
+            },
+          ],
+        };
       }
     };
 
@@ -341,7 +352,10 @@ export const useUiBuilderAgent = () => {
         ...artifact.diagnostics.filter((entry) => !entry.blocking).map(toViolation),
       ];
       const violations = [...staticResult.violations, ...buildViolations];
-      if (violations.length > 0 || !artifact.html) return { violations, warnings };
+      if (violations.length === 0 && !artifact.html.trim()) {
+        violations.push({ code: "BUILD", detail: "The page produced an empty document." });
+      }
+      if (violations.length > 0) return { violations, warnings };
 
       const probe = await probeUiBuilderDocument(artifact.html, { capture, assets: turn.assets });
       renderedMarkup = probe.markup;

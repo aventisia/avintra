@@ -3,7 +3,6 @@ import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent } from "@avplatform/ui/dialog";
 import { useShallow } from "zustand/react/shallow";
 
-import { usePublishedUiView } from "../../hooks/usePublishedUiView.hook";
 import { useUpdatePublishedUi } from "../../hooks/useUpdatePublishedUi.hook";
 import { usePublishedUiStore } from "../../stores/published-ui-store";
 
@@ -18,14 +17,11 @@ const UiBuilderDisableDialog = () => {
     })),
   );
 
-  const { data } = usePublishedUiView(uiBuilderProjectId, open);
   const { isPending, mutate } = useUpdatePublishedUi();
 
-  const project = data?.data?.project;
-
   const handleConfirm = () => {
-    if (project) {
-      mutate({ ...project, isDisabled: !willEnable }, { onSettled: close });
+    if (uiBuilderProjectId) {
+      mutate({ id: uiBuilderProjectId, isDisabled: !willEnable }, { onSettled: close });
     }
   };
 
@@ -54,7 +50,7 @@ const UiBuilderDisableDialog = () => {
           </Button>
           <Button
             variant={willEnable ? "default" : "destructive"}
-            disabled={isPending || !project}
+            disabled={isPending || !uiBuilderProjectId}
             onClick={handleConfirm}
           >
             {isPending && <LoadingSpinner className="mr-2 h-4 w-4" />}
