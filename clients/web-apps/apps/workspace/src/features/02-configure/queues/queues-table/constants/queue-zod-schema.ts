@@ -2,7 +2,7 @@ import {
   flexibleNameError,
   flexibleNameRegex,
   maxLenError,
-  numericRegex,
+  // numericRegex,
   reqError,
 } from "@avplatform/ui/utils";
 import { z } from "zod";
@@ -91,16 +91,13 @@ export const queueZodSchema = z
 
     isUniqueReferencesEnforced: z.boolean().default(false),
     isStoredEncrypted: z.boolean().default(false),
-    shouldRetryFailedItems: z.boolean().default(false),
-    shouldRetryAbandonedItems: z.boolean().default(false),
-    maximumRetryAttempts: z.union([
-      z.number({ required_error: reqError("Retry count") }),
-      z
-        .string()
-        .min(1, { message: reqError("Retry count") })
-        .refine((check) => numericRegex.test(check), "Enter correct value for Retry count")
-        .transform((val) => parseInt(val)),
-    ]),
+    // shouldRetryFailedItems: z.boolean().default(false),
+    // shouldRetryAbandonedItems: z.boolean().default(false),
+    maximumRetryAttempts: z.coerce
+      .number({ invalid_type_error: reqError("Retry count") })
+      .int({ message: "Enter correct value for Retry count" })
+      .min(0, { message: "Value must be greater than or equal to 0." })
+      .max(10, { message: "Value must be less than or equal to 10." }),
     inputSchema: jsonInputSchema,
     statuses: jsonStatusesSchema,
 

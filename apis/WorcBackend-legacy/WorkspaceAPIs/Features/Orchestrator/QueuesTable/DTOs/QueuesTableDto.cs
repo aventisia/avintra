@@ -60,9 +60,9 @@ public class QueuesTableDto
 
     /// <summary>
     /// Gets or sets the maximum number of retry attempts for processing items.
-    /// This value must be non-negative.
+    /// This value must be between 0 and 10.
     /// </summary>
-    [Range(0, int.MaxValue)]
+    [Range(0, 10)]
     public int MaximumRetryAttempts { get; set; }
 
     /// <summary>
