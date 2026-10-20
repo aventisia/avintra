@@ -1,7 +1,7 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { updatePublishedUi } from "../apis/published-uis-apis";
+import { updatePublishedUiStatus } from "../apis/published-uis-apis";
 import { DATA_QUERY_KEY, MY_INTERFACES_QUERY_KEY, UI_BUILDER_QUERY_KEY } from "../constants";
 
 /**
@@ -11,7 +11,7 @@ export const useUpdatePublishedUi = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: updatePublishedUi,
+    mutationFn: updatePublishedUiStatus,
 
     onSuccess: (httpResponse) => {
       toast.success(httpResponse?.message ?? "Interface updated successfully.");

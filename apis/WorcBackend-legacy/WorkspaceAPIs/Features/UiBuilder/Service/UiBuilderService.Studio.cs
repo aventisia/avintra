@@ -65,21 +65,21 @@ public partial class UiBuilderService
         {
             var templates = await _unitOfWork.UiBuilderProjectRepo
                 .GetByConditionAsync(w => w.IsTemplate && !w.IsDisabled && w.UiBuilderVersions != null && w.UiBuilderVersions.Any())
-                .Include(i => i.UiBuilderVersions)
                 .Include(i => i.CreatedByUser)
                 .AsNoTracking()
                 .OrderBy(w => w.Name)
                 .ToListAsync();
 
-            var templateDtoList = templates.Select(template =>
+            var createdByUserIds = templates.ToDictionary(template => template.Id, template => template.CreatedByUserId);
+            var templateDtoList = await ToProjectDtosAsync(templates);
+
+            foreach (var templateDto in templateDtoList)
             {
-                var templateDto = template.Adapt<UiBuilderProjectDto>();
-                templateDto.AccessLevel = template.CreatedByUserId == _userId
+                templateDto.AccessLevel = createdByUserIds[templateDto.Id] == _userId
                     ? ResourceAccessTypeEnum.Owner
                     : ResourceAccessTypeEnum.View;
                 templateDto.DataConnections = new List<UiBuilderDataConnectionDto>();
-                return templateDto;
-            }).ToList();
+            }
 
             serviceResponse.Update("Templates retrieved successfully", 200, templateDtoList);
         }

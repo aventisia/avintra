@@ -1,29 +1,20 @@
 import { useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceUserDto } from "@/features/03-orchestrator/agents-table/dtos/workspace-user-dto";
 import { useDebounce } from "@/features/03-orchestrator/agents-table/hooks/useDebounce";
 
-import { useUiBuilderUsersStore } from "../stores/ui-builder-users-store";
 import { useAssignUiBuilderUserMutation } from "./useAssignUiBuilderUserMutation";
 import { useSearchUiBuilderUserList } from "./useSearchUiBuilderUserList";
 
 /**
  * Drives the user multi-select inside the UI builder project assignment dialog.
  */
-export const useSearchUiBuilderUserMultiSelect = () => {
+export const useSearchUiBuilderUserMultiSelect = (uiBuilderProjectId: string) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<WorkspaceUserDto[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
-  const { setView, uiBuilderProjectId } = useUiBuilderUsersStore(
-    useShallow((state) => ({
-      setView: state.setView,
-      uiBuilderProjectId: state.uiBuilderProjectId,
-    })),
-  );
 
   const { data: searchData, isLoading, isError } = useSearchUiBuilderUserList(debouncedSearchTerm);
 
@@ -39,7 +30,7 @@ export const useSearchUiBuilderUserMultiSelect = () => {
 
   const handleClearAll = () => setSelectedItems([]);
 
-  const { mutateAsync: assignUsers } = useAssignUiBuilderUserMutation();
+  const { mutateAsync: assignUsers } = useAssignUiBuilderUserMutation(uiBuilderProjectId);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -59,7 +50,6 @@ export const useSearchUiBuilderUserMultiSelect = () => {
       );
     } finally {
       handleClearAll();
-      setView("Users");
       setIsSubmitting(false);
     }
   };
@@ -76,6 +66,5 @@ export const useSearchUiBuilderUserMultiSelect = () => {
     searchData,
     isLoading,
     isError,
-    uiBuilderProjectId,
   };
 };

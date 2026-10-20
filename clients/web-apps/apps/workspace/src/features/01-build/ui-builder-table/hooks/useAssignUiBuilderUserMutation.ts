@@ -1,6 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 
 import { insertUiBuilderProjectUser } from "../apis/ui-builder-users-apis";
 import {
@@ -9,19 +8,12 @@ import {
   UI_BUILDER_QUERY_KEY,
   UI_BUILDER_USER_KEY,
 } from "../constants";
-import { useUiBuilderUsersStore } from "../stores/ui-builder-users-store";
 
 /**
  * Assigns a user (or all team members) to a UI builder project.
  */
-export const useAssignUiBuilderUserMutation = () => {
+export const useAssignUiBuilderUserMutation = (uiBuilderProjectId: string) => {
   const queryClient = useQueryClient();
-
-  const { uiBuilderProjectId } = useUiBuilderUsersStore(
-    useShallow((s) => ({
-      uiBuilderProjectId: s.uiBuilderProjectId,
-    })),
-  );
 
   return useMutation({
     mutationFn: insertUiBuilderProjectUser,

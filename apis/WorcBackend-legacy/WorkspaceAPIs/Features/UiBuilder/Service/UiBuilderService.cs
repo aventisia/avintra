@@ -10,6 +10,7 @@ public partial class UiBuilderService : IUiBuilderService
     private readonly IQueueWorkItemService _queueWorkItemService;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly Guid _userId;
+    private readonly List<string> _userRoles;
 
     public UiBuilderService(
         ILogger<UiBuilderService> logger,
@@ -20,6 +21,7 @@ public partial class UiBuilderService : IUiBuilderService
         IStringEncryptionService stringEncryptionService)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userRoles = httpContextAccessor.HttpContext?.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -37,18 +39,16 @@ public partial class UiBuilderService : IUiBuilderService
             var projects = isPersonal
                 ? await _unitOfWork.UiBuilderProjectRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
-                    .Include(i => i.UiBuilderVersions)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(w => w.CreatedOn)
                     .ToListAsync()
                 : await _unitOfWork.UiBuilderProjectRepo
                     .GetByConditionAsync(w => w.CreatedByUserId != _userId && w.IsTenantWideAccess)
-                    .Include(i => i.UiBuilderVersions)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(w => w.CreatedOn)
                     .ToListAsync();
 
-            var projectDtoList = projects.Adapt<List<UiBuilderProjectDto>>();
+            var projectDtoList = await ToProjectDtosAsync(projects);
 
             projectDtoList.ForEach(projectDto =>
                 projectDto.AccessLevel = isPersonal
@@ -76,7 +76,6 @@ public partial class UiBuilderService : IUiBuilderService
         {
             var project = await _unitOfWork.UiBuilderProjectRepo
                 .GetByConditionAsync(w => w.Id == id)
-                .Include(i => i.UiBuilderVersions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
@@ -87,7 +86,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            var projectDto = project.Adapt<UiBuilderProjectDto>();
+            var projectDto = (await ToProjectDtosAsync([project])).Single();
             projectDto.AccessLevel = project.CreatedByUserId == _userId
                 ? ResourceAccessTypeEnum.Owner
                 : ResourceAccessTypeEnum.View;
@@ -227,6 +226,51 @@ public partial class UiBuilderService : IUiBuilderService
             serviceResponse.Data = project.Adapt<UiBuilderProjectDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Project updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<UiBuilderProjectDto>> UpdateUiBuilderProjectStatusAsync(Guid id, UiBuilderProjectStatusDto uiBuilderProjectStatusDto)
+    {
+        var serviceResponse = ServiceResponse<UiBuilderProjectDto>.Create("Failed to update project status. Please try again", 400);
+
+        try
+        {
+            var project = await _unitOfWork.UiBuilderProjectRepo
+                .GetByConditionAsync(w => w.Id == id)
+                .SingleOrDefaultAsync();
+
+            if (project == null)
+            {
+                serviceResponse.Update("Project does not exist", 404);
+                return serviceResponse;
+            }
+
+            if (project.CreatedByUserId != _userId && !_userRoles.Contains("OM"))
+            {
+                _logger.LogWarning("Unauthorized project status update. User {UserId}, Project {ProjectId}", _userId, project.Id);
+                serviceResponse.Update("You do not have access to update this project.", 403);
+                return serviceResponse;
+            }
+
+            project.IsDisabled = uiBuilderProjectStatusDto.IsDisabled;
+            project.LastModifiedByUserId = _userId;
+            project.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.UiBuilderProjectRepo.Update(project);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            serviceResponse.Update(project.IsDisabled ? "Project disabled successfully" : "Project enabled successfully", 200, project.Adapt<UiBuilderProjectDto>());
         }
         catch (Exception ex)
         {
@@ -596,12 +640,11 @@ public partial class UiBuilderService : IUiBuilderService
             var projects = await _unitOfWork.UiBuilderProjectRepo
                 .GetByConditionAsync(w => w.IsPublished && !w.IsDisabled && w.PublishedVersionNumber != null)
                 .AsNoTracking()
-                .Include(i => i.UiBuilderVersions)
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(w => w.CreatedOn)
                 .ToListAsync();
 
-            var projectDtoList = projects.Adapt<List<UiBuilderProjectDto>>();
+            var projectDtoList = await ToProjectDtosAsync(projects);
 
             projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
 
@@ -630,12 +673,11 @@ public partial class UiBuilderService : IUiBuilderService
                     (w.IsPublishedTenantWide ||
                         (w.UiBuilderProjectUsers != null && w.UiBuilderProjectUsers.Any(user => user.UserId == _userId))))
                 .AsNoTracking()
-                .Include(i => i.UiBuilderVersions)
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(w => w.CreatedOn)
                 .ToListAsync();
 
-            var projectDtoList = projects.Adapt<List<UiBuilderProjectDto>>();
+            var projectDtoList = await ToProjectDtosAsync(projects);
 
             projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
 
@@ -670,7 +712,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            serviceResponse.Update("Interface retrieved successfully", 200, BuildPublishedView(project, pinnedVersion));
+            serviceResponse.Update("Interface retrieved successfully", 200, await BuildPublishedViewAsync(project, pinnedVersion));
         }
         catch (Exception ex)
         {
@@ -701,7 +743,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            serviceResponse.Update("Interface retrieved successfully", 200, BuildPublishedView(project, pinnedVersion));
+            serviceResponse.Update("Interface retrieved successfully", 200, await BuildPublishedViewAsync(project, pinnedVersion));
         }
         catch (Exception ex)
         {
@@ -731,7 +773,9 @@ public partial class UiBuilderService : IUiBuilderService
                 .SelectMany(provider => GetTextModelIds(provider)
                     .Select(modelId => BuildUiBuilderModel(provider, modelId, credentialsById)))
                 .GroupBy(model => new { model.ProviderType, model.ModelId })
-                .Select(group => group.First())
+                .Select(group => group
+                    .OrderByDescending(model => !string.IsNullOrEmpty(model.CredentialName))
+                    .First())
                 .OrderBy(model => model.ProviderType)
                 .ThenBy(model => model.ModelId)
                 .ToList();
@@ -865,10 +909,24 @@ public partial class UiBuilderService : IUiBuilderService
                 string.IsNullOrWhiteSpace(queue.InputSchema) ? "[]" : queue.InputSchema,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<QueueSchemaDefinitionDto>();
 
-            var workItems = await _unitOfWork.QueueTransactionRepo
+            var (createdFrom, createdBefore) = UiBuilderDataQueryHelpers.GetCreatedOnScanWindow(uiBuilderDataQueryRequestDto);
+
+            var workItemQuery = _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.TenantId == tenantId && w.QueueId == dataConnection.QueueId && !w.IsDisabled)
                 .IgnoreQueryFilters()
-                .AsNoTracking()
+                .AsNoTracking();
+
+            if (createdFrom != null)
+            {
+                workItemQuery = workItemQuery.Where(w => w.CreatedOn >= createdFrom.Value);
+            }
+
+            if (createdBefore != null)
+            {
+                workItemQuery = workItemQuery.Where(w => w.CreatedOn < createdBefore.Value);
+            }
+
+            var workItems = await workItemQuery
                 .OrderByDescending(o => o.CreatedOn)
                 .Take(UiBuilderDataQueryHelpers.MaxScannedItems + 1)
                 .Select(s => new { s.Id, s.Status, s.PayloadData, s.CreatedOn, s.LastModifiedOn, s.Assignee })
@@ -1016,7 +1074,6 @@ public partial class UiBuilderService : IUiBuilderService
     {
         var project = await _unitOfWork.UiBuilderProjectRepo
             .GetByConditionAsync(w => w.Id == id)
-            .Include(i => i.UiBuilderVersions)
             .Include(i => i.CreatedByUser)
             .SingleOrDefaultAsync();
 
@@ -1052,13 +1109,37 @@ public partial class UiBuilderService : IUiBuilderService
             .SingleOrDefaultAsync();
     }
 
-    private static UiBuilderProjectViewDto BuildPublishedView(UiBuilderProject project, UiBuilderVersion headVersion)
+    private async Task<UiBuilderProjectViewDto> BuildPublishedViewAsync(UiBuilderProject project, UiBuilderVersion headVersion)
     {
         return new UiBuilderProjectViewDto
         {
-            Project = project.Adapt<UiBuilderProjectDto>(),
+            Project = (await ToProjectDtosAsync([project])).Single(),
             HeadVersion = headVersion.Adapt<UiBuilderVersionDto>()
         };
+    }
+
+    private async Task<List<UiBuilderProjectDto>> ToProjectDtosAsync(IReadOnlyCollection<UiBuilderProject> projects)
+    {
+        var projectIds = projects.Select(project => project.Id).ToList();
+
+        var versionStats = await _unitOfWork.UiBuilderVersionRepo
+            .GetByConditionAsync(w => projectIds.Contains(w.UiBuilderProjectId))
+            .GroupBy(version => version.UiBuilderProjectId)
+            .Select(group => new { ProjectId = group.Key, Count = group.Count(), HeadVersionNumber = group.Max(version => version.VersionNumber) })
+            .ToDictionaryAsync(stat => stat.ProjectId);
+
+        var projectDtos = projects.Adapt<List<UiBuilderProjectDto>>();
+
+        foreach (var projectDto in projectDtos)
+        {
+            if (versionStats.TryGetValue(projectDto.Id, out var stat))
+            {
+                projectDto.VersionCount = stat.Count;
+                projectDto.HeadVersionNumber = stat.HeadVersionNumber;
+            }
+        }
+
+        return projectDtos;
     }
 
     private async Task<UiBuilderProject?> GetWritableProjectAsync(Guid id)

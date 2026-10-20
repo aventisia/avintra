@@ -67,6 +67,15 @@ public class UiBuilderController : BaseApiController
     }
 
     /// <summary>
+    /// Disables or enables a custom UI builder project.
+    /// </summary>
+    [HttpPut("{id}/status")]
+    public async Task<ActionResult<ServiceResponse<UiBuilderProjectDto>>> UpdateUiBuilderProjectStatus(Guid id, [FromBody] UiBuilderProjectStatusDto uiBuilderProjectStatusDto)
+    {
+        return ResultHelper(await _uiBuilderService.UpdateUiBuilderProjectStatusAsync(id, uiBuilderProjectStatusDto));
+    }
+
+    /// <summary>
     /// Deletes a custom UI builder project by its ID.
     /// </summary>
     [HttpDelete("{id}")]

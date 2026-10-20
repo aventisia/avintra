@@ -83,7 +83,7 @@ filtered, sorted row set. Fields are schema field names or `$status`, `$createdO
 `$assignee`; unknown fields, operators, or functions return 400 with the available fields. Access is the
 same as `list` (the binding must allow `list`). The engine is `UiBuilderDataQueryHelpers` (pure, in
 memory): it scans at most `MaxScannedItems` (100,000) newest non-disabled items, decrypts encrypted
-queues, and reports `truncated` when the cap is hit. Date-only upper bounds include the whole day.
+queues, and reports `truncated` when the cap is hit. A date-only value (`YYYY-MM-DD`) stands for that whole day in every comparison (`eq` matches any time that day, `gt` starts the next day, `lte` and `between` include it). Shared `$createdOn` filters also narrow the database scan.
 
 Every result set also returns a plain-language `description` and a `formulas` map (metric name →
 formula text using the schema field labels and all filters that apply), and the response carries a

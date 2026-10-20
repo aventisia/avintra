@@ -6,7 +6,6 @@ export const DATA_QUERY_KEY = ["agents"];
 export const CHAT_AGENT_USER_KEY = "chat-agent-user";
 export const UI_BUILDER_QUERY_KEY = ["ui-builder"];
 export const MY_INTERFACES_QUERY_KEY = ["my-interfaces"];
-export const PUBLISHED_UI_USER_KEY = "published-ui-user";
 
 export const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
