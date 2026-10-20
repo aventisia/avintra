@@ -7,11 +7,15 @@ import { useEffect, useMemo, useRef } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 // Import your static voice mappings here
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
 import { voiceProviderData } from "../../constants/voice-providers";
 import { useVoicePreview } from "../../hooks/useVoicePreview.hook";
+import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
+
+const LEGACY_TTS_NODE_NAME = "CreateTTSAIAgent";
 
 export interface VoiceConfigFieldProps {
   /** The base name of the form field */
@@ -34,6 +38,8 @@ const VoiceConfigField = ({
   isByokPath,
 }: VoiceConfigFieldProps) => {
   const { control, setValue, watch } = useFormContext();
+  const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
+  const isVoiceNode = nodeName === VOICE_AGENT_NODE_NAME || nodeName === LEGACY_TTS_NODE_NAME;
 
   // 1. Memoize Field Names
   const fieldNames = useMemo(
@@ -128,7 +134,11 @@ const VoiceConfigField = ({
     }
   }, [providerValue, languageValue, setValue, fieldNames]);
 
-  if (!providerValue) {
+  if (!isVoiceNode) {
+    return null;
+  }
+
+  if (providerVoiceData.languages.length === 0 && providerVoiceData.voices.length === 0) {
     return null;
   }
 

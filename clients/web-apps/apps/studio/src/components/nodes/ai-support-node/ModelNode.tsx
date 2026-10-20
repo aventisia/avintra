@@ -18,6 +18,7 @@ import {
   useDCPNavigationGuard,
   useDynamicConfigPanelStore,
 } from "@/features/dynamic-config-panel";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
@@ -43,21 +44,22 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
       const provider = data.name.includes("AIAgent")
         ? getProvider(data?.inputs)
         : (data?.selectedModel?.provider as unknown as string);
-      updateNodeData(id, {
-        label: provider ?? "",
-      });
+      if (provider) {
+        updateNodeData(id, {
+          label: provider,
+        });
+      }
     }
   }, [connectedNodeData]);
 
   function getProvider(config: NodeInputType[] | undefined): string {
-    const providers = (config ?? [])
-      .filter((item) => item.key.includes("__ModelConfig__"))
-      .map((item) => (item.value as ModelConfigType)?.provider)
-      .filter(Boolean);
-    if (providers.length > 0) return providers[0] as string;
+    const modelConfigItem = config?.find((item) => item.key.includes("__ModelConfig__"));
 
-    const first = config?.find((item) => item.key.includes("__ModelConfig__"));
-    return first ? (((first.value as ModelConfigType)?.provider ?? "") as string) : "";
+    if (!modelConfigItem) return "";
+
+    const value = modelConfigItem.value as ModelConfigType;
+
+    return value?.provider;
   }
 
   const providerLabelMapper: Record<string, string> = {
@@ -104,7 +106,13 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
             const nodeData = connectedNodeData.data as NodeDataType;
             void guardNavigation(() => {
               openNodeConfig(connectedNodeId, nodeData);
-              openModelConfigTab(nodeData);
+              if (nodeData.name === VOICE_AGENT_NODE_NAME) {
+                openModelConfigTab(nodeData);
+                return;
+              }
+              setTimeout(() => {
+                setSelectedTab("Model");
+              }, 100);
             });
           }}
         >
