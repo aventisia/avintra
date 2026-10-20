@@ -168,4 +168,64 @@ public interface IUiBuilderService
     /// <param name="uiBuilderDataItemUpdateDto">The work item ID with the new status and/or payload.</param>
     /// <returns>The task result contains the service response with the updated work item details.</returns>
     Task<ServiceResponse<QueueWorkItemDto>> UpdateUiBuilderDataItemAsync(Guid id, string key, UiBuilderDataItemUpdateDto uiBuilderDataItemUpdateDto);
+    /// <summary>
+    /// Replaces the owner-managed settings of a custom UI builder project: instructions, theme, and template flag.
+    /// </summary>
+    /// <param name="id">The ID of the project to update.</param>
+    /// <param name="uiBuilderProjectSettingsDto">The new settings.</param>
+    /// <returns>The task result contains the service response with the updated project details.</returns>
+    Task<ServiceResponse<UiBuilderProjectDto>> UpdateUiBuilderProjectSettingsAsync(Guid id, UiBuilderProjectSettingsDto uiBuilderProjectSettingsDto);
+
+    /// <summary>
+    /// Retrieves custom UI builder projects offered to the tenant as templates.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of template projects.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetUiBuilderTemplatesAsync();
+
+    /// <summary>
+    /// Creates a new project owned by the current user from a template's newest version, settings, and assets.
+    /// </summary>
+    /// <param name="id">The ID of the template project.</param>
+    /// <param name="uiBuilderProjectDto">The name and description of the new project.</param>
+    /// <returns>The task result contains the service response with the new project details.</returns>
+    Task<ServiceResponse<UiBuilderProjectDto>> CloneUiBuilderProjectAsync(Guid id, UiBuilderProjectDto uiBuilderProjectDto);
+
+    /// <summary>
+    /// Retrieves the assets uploaded to a custom UI builder project, without their content.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <returns>The task result contains the service response with the list of assets.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderAssetDto>>> GetUiBuilderAssetsAsync(Guid id);
+
+    /// <summary>
+    /// Uploads an image asset to a custom UI builder project.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="uiBuilderAssetDto">The asset name, media type, and base64 content.</param>
+    /// <returns>The task result contains the service response with the uploaded asset details.</returns>
+    Task<ServiceResponse<UiBuilderAssetDto>> InsertUiBuilderAssetAsync(Guid id, UiBuilderAssetDto uiBuilderAssetDto);
+
+    /// <summary>
+    /// Deletes an asset from a custom UI builder project.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="assetId">The ID of the asset.</param>
+    /// <returns>The task result contains the service response with the deletion status.</returns>
+    Task<ServiceResponse<bool>> DeleteUiBuilderAssetAsync(Guid id, Guid assetId);
+
+    /// <summary>
+    /// Retrieves every asset of a project with its base64 content, for anyone who can open the project or its published view.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <returns>The task result contains the service response with the list of assets and their content.</returns>
+    Task<ServiceResponse<IEnumerable<UiBuilderAssetDto>>> GetUiBuilderAssetContentsAsync(Guid id);
+
+    /// <summary>
+    /// Names a custom UI builder version as a checkpoint, or clears its name.
+    /// </summary>
+    /// <param name="id">The ID of the project.</param>
+    /// <param name="versionNumber">The version number to name.</param>
+    /// <param name="uiBuilderVersionLabelDto">The checkpoint name.</param>
+    /// <returns>The task result contains the service response with the updated version details.</returns>
+    Task<ServiceResponse<UiBuilderVersionDto>> UpdateUiBuilderVersionLabelAsync(Guid id, int versionNumber, UiBuilderVersionLabelDto uiBuilderVersionLabelDto);
 }

@@ -6,8 +6,10 @@ import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import {
   CreateUiBuilderVersionPayload,
+  UiBuilderAssetDto,
   UiBuilderModelDto,
   UiBuilderProjectDto,
+  UiBuilderProjectSettingsDto,
   UiBuilderQueueDto,
   UiBuilderVersionDto,
 } from "../dtos/ui-builder-dto";
@@ -28,6 +30,7 @@ export type UiBuilderLlmRequest = {
   max_output_tokens?: number;
   temperature?: number;
   skill_names?: string[];
+  files?: string[];
   ref_type: string;
   ref_id: string;
   ref_name: string;
@@ -315,6 +318,101 @@ const createUiBuilderQueueWorkItems = (
     .then((res) => res.data);
 };
 
+/**
+ * Replaces the owner-managed settings of a custom UI builder project.
+ */
+const updateUiBuilderProjectSettings = (id: string, settings: UiBuilderProjectSettingsDto) => {
+  return axiosInstance
+    .put<IHttpResponse<UiBuilderProjectDto>>(`${baseAPIURL}/${id}/settings`, settings, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves custom UI builder projects offered to the tenant as templates.
+ */
+const getUiBuilderTemplates = () => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderProjectDto[]>>(`${baseAPIURL}/templates`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Creates a new custom UI builder project from a template.
+ */
+const cloneUiBuilderProject = (
+  id: string,
+  project: Pick<UiBuilderProjectDto, "name" | "description">,
+) => {
+  return axiosInstance
+    .post<IHttpResponse<UiBuilderProjectDto>>(
+      `${baseAPIURL}/${id}/clone`,
+      { ...project, isTenantWideAccess: false, isPublished: false, accessLevel: "Owner" },
+      { headers: getStudioSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the assets uploaded to a custom UI builder project.
+ */
+const getUiBuilderAssets = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderAssetDto[]>>(`${baseAPIURL}/${id}/assets`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Uploads an image asset to a custom UI builder project.
+ */
+const createUiBuilderAsset = (id: string, asset: UiBuilderAssetDto) => {
+  return axiosInstance
+    .post<IHttpResponse<UiBuilderAssetDto>>(`${baseAPIURL}/${id}/assets`, asset, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Deletes an asset from a custom UI builder project.
+ */
+const deleteUiBuilderAsset = (id: string, assetId: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}/assets/${assetId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves every asset of a custom UI builder project with its content, for rendering the interface.
+ */
+const getUiBuilderAssetContents = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<UiBuilderAssetDto[]>>(`${baseAPIURL}/${id}/assets/content`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Names a custom UI builder version as a checkpoint, or clears its name.
+ */
+const updateUiBuilderVersionLabel = (id: string, versionNumber: number, label: string | null) => {
+  return axiosInstance
+    .put<IHttpResponse<UiBuilderVersionDto>>(
+      `${baseAPIURL}/${id}/versions/${versionNumber}/label`,
+      { label },
+      { headers: getStudioSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
 export {
   getUiBuilderProject,
   getUiBuilderVersions,
@@ -327,4 +425,12 @@ export {
   getUiBuilderQueue,
   createUiBuilderQueue,
   createUiBuilderQueueWorkItems,
+  updateUiBuilderProjectSettings,
+  getUiBuilderTemplates,
+  cloneUiBuilderProject,
+  getUiBuilderAssets,
+  createUiBuilderAsset,
+  deleteUiBuilderAsset,
+  getUiBuilderAssetContents,
+  updateUiBuilderVersionLabel,
 };

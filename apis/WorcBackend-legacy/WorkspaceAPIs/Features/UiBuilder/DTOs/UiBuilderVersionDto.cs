@@ -65,4 +65,11 @@ public class UiBuilderVersionDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional checkpoint name for the version. Max 100 characters. Managed through the label
+    /// endpoint; ignored on version insert.
+    /// </summary>
+    [StringLength(100)]
+    public string? Label { get; set; }
 }

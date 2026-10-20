@@ -6,6 +6,7 @@ import {
   Eye,
   Monitor,
   MousePointer2,
+  Paintbrush,
   PencilLine,
   RotateCw,
   Smartphone,
@@ -27,6 +28,9 @@ type UiBuilderPreviewToolbarProps = {
   hasSelection: boolean;
   onEditText: () => void;
   editTextDisabledReason?: string;
+  onStyle: () => void;
+  styleDisabledReason?: string;
+  isStyleOpen: boolean;
   format: UiBuilderContentFormat;
   onFormatChange: (format: UiBuilderContentFormat) => void;
   viewMode: UiBuilderViewMode;
@@ -113,6 +117,9 @@ export const UiBuilderPreviewToolbar = ({
   hasSelection,
   onEditText,
   editTextDisabledReason,
+  onStyle,
+  styleDisabledReason,
+  isStyleOpen,
   format,
   onFormatChange,
   viewMode,
@@ -143,6 +150,15 @@ export const UiBuilderPreviewToolbar = ({
       >
         <PencilLine className="h-3.5 w-3.5" />
         Edit text
+      </ToolButton>
+      <ToolButton
+        label={styleDisabledReason ?? "Restyle the selected element without the model"}
+        disabled={disabled || !hasSelection || Boolean(styleDisabledReason)}
+        active={isStyleOpen}
+        onClick={onStyle}
+      >
+        <Paintbrush className="h-3.5 w-3.5" />
+        Style
       </ToolButton>
       <span className="mx-1 h-4 w-px bg-slate-200" />
       <ToolButton label="Data connections" onClick={onOpenData}>

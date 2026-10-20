@@ -19,6 +19,8 @@ type UiBuilderCallArgs = {
   systemPrompt: string;
   userContent: string;
   skillNames?: string[];
+  maxOutputTokens?: number;
+  files?: string[];
   signal?: AbortSignal;
 };
 
@@ -32,10 +34,11 @@ const buildUiBuilderRequest = (args: UiBuilderCallArgs, stream: boolean): UiBuil
   stream,
   is_byok_enabled: true,
   credential_name: args.model.credentialName,
-  max_output_tokens: needsUiBuilderOutputCap(args.model.provider)
-    ? UI_BUILDER_MAX_OUTPUT_TOKENS
-    : undefined,
+  max_output_tokens:
+    args.maxOutputTokens ??
+    (needsUiBuilderOutputCap(args.model.provider) ? UI_BUILDER_MAX_OUTPUT_TOKENS : undefined),
   skill_names: args.skillNames,
+  files: args.files,
   ref_type: UsageSourceTypesEnum[UsageSourceTypesEnum.UiBuilder],
   ref_id: args.projectId,
   ref_name: args.projectName,

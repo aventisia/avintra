@@ -1,4 +1,3 @@
-import { UI_BUILDER_FRAMEWORK_UTILITIES } from "../constants/ui-builder-framework-tokens.constant";
 import {
   UI_BUILDER_BUILT_CAP,
   UI_BUILDER_MAX_VIOLATIONS,
@@ -15,9 +14,7 @@ export type UiBuilderFrameworkViolation = {
   detail: string;
 };
 
-const SAFELIST = new Set(UI_BUILDER_FRAMEWORK_UTILITIES);
-
-const CLASS_NAME_PATTERN = /className\s*=\s*"([^"]*)"|className\s*=\s*'([^']*)'/g;
+const INLINE_SVG_NOTE_THRESHOLD = 3;
 
 const UNLABELLED_INPUT_TYPES = ["hidden", "submit", "button", "reset", "image"];
 
@@ -204,19 +201,6 @@ const toCodeSource = (source: string): string => {
   return output.join("");
 };
 
-const collectClassNameTokens = (source: string): string[] => {
-  const tokens: string[] = [];
-
-  for (const match of source.matchAll(CLASS_NAME_PATTERN)) {
-    const value = match[1] ?? match[2] ?? "";
-    for (const token of value.split(/\s+/)) {
-      if (token) tokens.push(token);
-    }
-  }
-
-  return tokens;
-};
-
 type ViolationRecorder = (code: string, detail: string) => void;
 
 const validateAccessibility = (document: string, add: ViolationRecorder): void => {
@@ -283,9 +267,6 @@ export const validateUiBuilderFrameworkSource = (source: string): UiBuilderCheck
   const trimmed = source.trim();
   const codeSource = toCodeSource(trimmed);
 
-  if (!trimmed.startsWith("export default")) {
-    add("V1", "The source must start with `export default`.");
-  }
   if (trimmed.includes("```")) {
     add("V1", "The source must not contain markdown code fences.");
   }
@@ -318,13 +299,17 @@ export const validateUiBuilderFrameworkSource = (source: string): UiBuilderCheck
     add("V4", "The source must not use an @import rule.");
   }
 
-  const unknownClasses = [
-    ...new Set(collectClassNameTokens(trimmed).filter((token) => !SAFELIST.has(token))),
-  ];
-  if (unknownClasses.length > 0) {
+  const inlineSvgCount = (trimmed.match(/<svg\b/g) ?? []).length;
+  if (inlineSvgCount >= INLINE_SVG_NOTE_THRESHOLD) {
     warn(
-      "V5",
-      `Unstyled utility classes (not in the design system): ${unknownClasses.slice(0, 20).join(", ")}.`,
+      "V13",
+      `The source draws ${inlineSvgCount} inline SVGs; use Icons.<Name> for icons and Charts.* for charts so they stay consistent and accessible.`,
+    );
+  }
+  if (/<table\b/.test(trimmed) && !/UI\.DataTable|\bDataTable\b/.test(trimmed)) {
+    warn(
+      "V13",
+      "The source hand-builds a table; UI.DataTable adds sorting, paging, and empty states.",
     );
   }
 

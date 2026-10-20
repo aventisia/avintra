@@ -1,7 +1,11 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { UiBuilderHostFrame } from "@avplatform/ui/ui-builder-host";
+import { UiBuilderHostFrame, fetchUiBuilderAssetMap } from "@avplatform/ui/ui-builder-host";
+import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { usePublishedUiView } from "../../hooks/usePublishedUiView.hook";
 import { usePublishedUiStore } from "../../stores/published-ui-store";
@@ -19,6 +23,18 @@ const UiBuilderPreviewDialog = () => {
 
   const project = data?.data?.project;
   const html = data?.data?.headVersion?.generatedHtml ?? "";
+  const assetsQuery = useQuery({
+    queryKey: ["ui-builder-view-assets", uiBuilderProjectId],
+    queryFn: () =>
+      fetchUiBuilderAssetMap({
+        http: axiosInstance,
+        apiBaseUrl: import.meta.env.VITE_WORKSPACE_API_PATH,
+        projectId: uiBuilderProjectId ?? "",
+        getHeaders: getSpaceHeaders,
+      }),
+    enabled: open && Boolean(uiBuilderProjectId),
+    staleTime: 5 * 60_000,
+  });
 
   return (
     <Dialog
@@ -40,6 +56,7 @@ const UiBuilderPreviewDialog = () => {
           <UiBuilderHostFrame
             html={html}
             title={project?.name ?? "Interface"}
+            assets={assetsQuery.data}
             className="h-[calc(80vh-3.5rem)] w-full border-0 bg-white"
           />
         ) : (

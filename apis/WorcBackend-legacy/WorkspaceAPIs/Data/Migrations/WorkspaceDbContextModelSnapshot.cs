@@ -2580,6 +2580,71 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("run_TriggerFlowVersions");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderAsset", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("SizeBytes")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UiBuilderProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("UiBuilderProjectId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("UiBuilderAssets");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2602,6 +2667,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("Instructions")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -2609,6 +2678,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsPublishedTenantWide")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTemplate")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsTenantWideAccess")
@@ -2633,6 +2705,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Theme")
+                        .HasColumnType("jsonb");
 
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
@@ -2700,6 +2775,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
@@ -3732,6 +3811,33 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Trigger");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderAsset", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.UiBuilderProject", "UiBuilderProject")
+                        .WithMany("UiBuilderAssets")
+                        .HasForeignKey("UiBuilderProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("UiBuilderProject");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -3904,6 +4010,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
                 {
+                    b.Navigation("UiBuilderAssets");
+
                     b.Navigation("UiBuilderProjectUsers");
 
                     b.Navigation("UiBuilderVersions");

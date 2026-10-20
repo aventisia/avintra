@@ -196,3 +196,39 @@ export const createUiBuilderDataRequester =
     );
     return toUiBuilderRuntimeWorkItem(unwrapEnvelope(response.data));
   };
+
+/** An uploaded project image as returned by the asset content endpoint. */
+export type UiBuilderAssetContent = {
+  name: string;
+  contentType: string;
+  dataBase64?: string | null;
+};
+
+/** Turns asset content rows into the name → data URL map the host frame injects. */
+export const toUiBuilderAssetMap = (assets: UiBuilderAssetContent[] | null | undefined) =>
+  Object.fromEntries(
+    (assets ?? [])
+      .filter((asset) => asset.dataBase64)
+      .map((asset) => [asset.name, `data:${asset.contentType};base64,${asset.dataBase64}`]),
+  ) as Record<string, string>;
+
+/**
+ * Fetches a project's images as the name → data URL map `UiBuilderHostFrame` injects. Resolves to an
+ * empty map when the viewer cannot read them, so the interface still renders.
+ */
+export const fetchUiBuilderAssetMap = async (options: {
+  http: AxiosInstance;
+  apiBaseUrl: string;
+  projectId: string;
+  getHeaders?: () => Record<string, string>;
+}) => {
+  try {
+    const response = await options.http.get<{ data?: UiBuilderAssetContent[] }>(
+      `${options.apiBaseUrl}/ui-builder/${options.projectId}/assets/content`,
+      { headers: options.getHeaders?.() ?? {} },
+    );
+    return toUiBuilderAssetMap(response.data?.data);
+  } catch {
+    return {};
+  }
+};

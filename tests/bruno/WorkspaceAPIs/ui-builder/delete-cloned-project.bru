@@ -1,0 +1,17 @@
+meta {
+  name: Delete project created from template
+  type: http
+  seq: 38
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_CLONE_ID}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

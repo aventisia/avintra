@@ -1,0 +1,28 @@
+meta {
+  name: Update settings with invalid theme returns 400
+  type: http
+  seq: 30
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/settings
+  body: json
+  auth: none
+}
+
+body:json {
+  "theme": {
+    "primaryColor": "teal",
+    "neutralColor": "slate",
+    "radius": "md",
+    "fontFamily": "inter",
+    "mode": "light"
+  },
+  "isTemplate": false
+}
+
+tests {
+  test("status code is 400", function() {
+    expect(res.status).to.equal(400);
+  });
+}
