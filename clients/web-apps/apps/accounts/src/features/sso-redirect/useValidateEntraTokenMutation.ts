@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION, SSO_DISABLED } from "@/constants/variables";
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 
 import { validateEntraToken } from "./sso-redirect-apis";
 
@@ -22,10 +23,12 @@ export const useValidateEntraTokenMutation = () => {
         window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
         // Set authenticated user locally
-        setUserSessionLocally(data);
+        const userSession = setUserSessionLocally(data);
 
-        // Redirect to workspace app
-        window.location.assign(import.meta.env.VITE_WORKSPACE_PATH);
+        const redirect = new URLSearchParams(window.location.search).get("redirect");
+        window.location.assign(
+          redirect ? decodeURIComponent(redirect) : getPostLoginDestination(userSession.email),
+        );
       }
     },
     onError: (error) => {

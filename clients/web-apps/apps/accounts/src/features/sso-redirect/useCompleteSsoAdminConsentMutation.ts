@@ -7,7 +7,7 @@ export const useCompleteSsoAdminConsentMutation = () => {
     mutationFn: ({ grantedTenantId, state }: { grantedTenantId: string; state: string }) =>
       completeSsoAdminConsent(grantedTenantId, state),
     onSuccess: () => {
-      window.location.assign(import.meta.env.VITE_WORKSPACE_PATH);
+      window.location.assign(import.meta.env.VITE_WORKSPACE_PATH + "tenant/preferences");
     },
     onError: () => {
       window.location.assign(import.meta.env.VITE_ACCOUNTS_PATH + "login");

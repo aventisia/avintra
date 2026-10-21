@@ -51,6 +51,14 @@ public class TenantAccountController : BaseApiController
         return ResultHelper(await _tenantAccountService.UpdateTenantPreferencesAsync(tenantPreferenceDto));
     }
 
+    // Enables or disables single sign-on for the tenant.
+    [Authorize(Roles = "TA")]
+    [HttpPut("sso/enabled")]
+    public async Task<ActionResult<ServiceResponse<TenantPreferenceDto>>> UpdateTenantSsoState(TenantSsoStateDto tenantSsoStateDto)
+    {
+        return ResultHelper(await _tenantAccountService.UpdateTenantSsoStateAsync(tenantSsoStateDto));
+    }
+
     // Generates the administrator consent URL for connecting the tenant's identity provider.
     [Authorize(Roles = "TA")]
     [HttpGet("sso/admin-consent-url")]

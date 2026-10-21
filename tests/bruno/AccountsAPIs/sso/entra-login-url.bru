@@ -31,7 +31,8 @@ tests {
 }
 
 docs {
-  > Requires `MICROSOFT_CLIENT_ID` to be configured (local `.env.local`); without a client id the
-  > endpoint fails safe with a 400 "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID
+  > Requires `MICROSOFT_SSO_CLIENT_ID` to be configured and `MICROSOFT_SSO_ENABLED=true` in the deployment
+  > (local `.env.local`); without a client id the endpoint fails safe with a 400 "Microsoft SSO client id is
+  > not configured. Set the MICROSOFT_SSO_CLIENT_ID
   > environment variable." message.
 }
