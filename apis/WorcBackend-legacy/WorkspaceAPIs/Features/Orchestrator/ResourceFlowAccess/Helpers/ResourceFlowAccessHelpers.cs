@@ -4,6 +4,7 @@ public static class ResourceFlowAccessHelpers
 {
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
+    private const string SkillsReferenceKey = "skills";
     private const string ConfigStoresReferenceKey = "configStores";
     private const string KnowledgeBasesReferenceKey = "knowledgeBases";
     private const string CredentialsReferenceKey = "credentials";
@@ -22,6 +23,14 @@ public static class ResourceFlowAccessHelpers
     public static List<string>? TryReadReferencedQueueNames(string? resourceReferences)
     {
         return TryReadReferencedNames(resourceReferences, QueuesReferenceKey);
+    }
+
+    /// <summary>
+    /// Reads the referenced skill names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedSkillNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, SkillsReferenceKey);
     }
 
     /// <summary>
@@ -80,6 +89,14 @@ public static class ResourceFlowAccessHelpers
     /// Picks the config store a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
     public static ConfigStore? PickResolvedConfigStore(IEnumerable<ConfigStore> candidates, Guid? targetSpaceId)
+    {
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
+    }
+
+    /// <summary>
+    /// Picks the skill a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static Skill? PickResolvedSkill(IEnumerable<Skill> candidates, Guid? targetSpaceId)
     {
         return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }

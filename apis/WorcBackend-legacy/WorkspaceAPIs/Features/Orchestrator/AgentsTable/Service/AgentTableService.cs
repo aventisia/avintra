@@ -1175,6 +1175,7 @@ public class AgentTableService : IAgentTableService
             // Owned files go with the skill.
             await DeleteLinksAsync(_unitOfWork.SkillFileRepo, f => f.SkillId == skill.Id);
             await _resourceShareService.DeleteResourceSharesAsync(skill.Id, ResourceTypeEnum.Skill);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, skill.Id);
             _unitOfWork.SkillRepo.Delete(skill);
         }
     }

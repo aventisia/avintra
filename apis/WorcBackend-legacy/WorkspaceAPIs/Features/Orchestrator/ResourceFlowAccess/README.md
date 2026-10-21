@@ -95,8 +95,8 @@ only; it does not carry a space.
 
 ## Current rollout
 
-- The Tool, Queue, ConfigStore, VaultCredential, and KnowledgeBase resource types are wired. Other configure
-  types keep their existing behavior and will adopt the same list later.
+- The Tool, Queue, ConfigStore, VaultCredential, KnowledgeBase, and Skill resource types are wired.
+  Other configure types keep their existing behavior and will adopt the same list later.
 
 ## Known gaps
 

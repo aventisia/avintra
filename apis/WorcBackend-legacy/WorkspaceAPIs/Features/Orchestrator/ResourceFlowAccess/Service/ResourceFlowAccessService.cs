@@ -58,7 +58,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.Skill or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -68,6 +68,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 : resourceType.ToString().ToLowerInvariant();
             Tool? tool = null;
             Queue? queue = null;
+            Skill? skill = null;
             ConfigStore? configStore = null;
             KnowledgeBase? knowledgeBase = null;
             VaultCredential? vaultCredential = null;
@@ -103,6 +104,23 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceEnvType = queue.EnvType;
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isResourceAccessRestricted = queue.IsResourceAccessRestricted;
+            }
+            else if (resourceType == ResourceTypeEnum.Skill)
+            {
+                skill = await GetSkillAsync(resourceId);
+                if (skill == null)
+                {
+                    return serviceResponse.Update("The skill does not exist", 404);
+                }
+
+                if (skill.Type == ComponentTypeEnum.Platform || skill.IsGlobal)
+                {
+                    return serviceResponse.Update("Flow access cannot be configured for platform skills", 400);
+                }
+
+                resourceEnvType = skill.EnvType;
+                resourceCreatedByUserId = skill.CreatedByUserId;
+                isResourceAccessRestricted = skill.IsResourceAccessRestricted;
             }
             else if (resourceType == ResourceTypeEnum.ConfigStore)
             {
@@ -267,6 +285,11 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                             queue.IsResourceAccessRestricted = isRestricted;
                             _unitOfWork.QueueRepo.Update(queue);
                         }
+                        else if (skill != null)
+                        {
+                            skill.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.SkillRepo.Update(skill);
+                        }
                         else if (configStore != null)
                         {
                             configStore.IsResourceAccessRestricted = isRestricted;
@@ -309,6 +332,10 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(queue, flowIdList);
             }
+            else if (isRestricted && skill != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(skill, flowIdList);
+            }
             else if (isRestricted && knowledgeBase != null)
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(knowledgeBase, flowIdList);
@@ -344,7 +371,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.Skill or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -376,6 +403,17 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isTenantWideAccess = queue.IsTenantWideAccess;
+            }
+            else if (resourceType == ResourceTypeEnum.Skill)
+            {
+                var skill = await GetSkillAsync(resourceId);
+                if (skill == null)
+                {
+                    return serviceResponse.Update("The skill does not exist", 404);
+                }
+
+                resourceCreatedByUserId = skill.CreatedByUserId;
+                isTenantWideAccess = skill.IsTenantWideAccess;
             }
             else if (resourceType == ResourceTypeEnum.ConfigStore)
             {
@@ -606,6 +644,39 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(Skill skill, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(skill.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameSkills = await _unitOfWork.SkillRepo
+            .GetByConditionAsync(w =>
+                w.Name == skill.Name &&
+                w.Type == ComponentTypeEnum.Custom &&
+                w.TenantId == _tenantId &&
+                w.EnvType == skill.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedSkillNames(w.ResourceReferences)?.Contains(skill.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedSkill(sameNameSkills, w.SpaceId)?.Id == skill.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(KnowledgeBase knowledgeBase, List<Guid> allowedFlowIds)
     {
         var quotedName = System.Text.Json.JsonSerializer.Serialize(knowledgeBase.Name);
@@ -712,6 +783,13 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
     private async Task<Queue?> GetQueueAsync(Guid resourceId)
     {
         return await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<Skill?> GetSkillAsync(Guid resourceId)
+    {
+        return await _unitOfWork.SkillRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }

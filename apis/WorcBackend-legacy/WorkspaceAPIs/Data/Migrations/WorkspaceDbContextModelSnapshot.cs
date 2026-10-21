@@ -1891,6 +1891,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsGlobal")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsResourceAccessRestricted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsTenantWideAccess")
                         .HasColumnType("boolean");
 

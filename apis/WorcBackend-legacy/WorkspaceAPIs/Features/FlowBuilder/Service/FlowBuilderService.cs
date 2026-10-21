@@ -707,6 +707,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             await ValidateFlowToolAccessAsync(publishingFlowId, references["tools"], flowName);
             await ValidateFlowQueueAccessAsync(publishingFlowId, references["queues"], flowName);
+            await ValidateFlowSkillAccessAsync(publishingFlowId, references["skills"], flowName);
             await ValidateFlowConfigStoreAccessAsync(publishingFlowId, references["configStores"], flowName);
             await ValidateFlowKnowledgeBaseAccessAsync(publishingFlowId, references["knowledgeBases"], flowName);
             await ValidateFlowVaultCredentialAccessAsync(publishingFlowId, references["credentials"], flowName);
@@ -909,6 +910,56 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 throw new ResourceFlowAccessDeniedException(
                     $"Cannot publish: flow '{flowName}' is not assigned to restricted queue '{name}'. Ask the queue owner to assign this flow first.");
+            }
+        }
+    }
+
+    private async Task<Dictionary<string, Skill>> ResolveDevSkillsAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.SkillRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.Type == ComponentTypeEnum.Custom &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedSkill(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowSkillAccessAsync(Guid publishingFlowId, List<string> skillNames, string flowName)
+    {
+        if (skillNames.Count == 0)
+        {
+            return;
+        }
+
+        var devSkills = await ResolveDevSkillsAsync(skillNames);
+        var restrictedSkills = devSkills.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedSkills.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.Skill,
+            restrictedSkills.Select(w => w.Value.Id));
+
+        foreach (var (name, devSkill) in restrictedSkills)
+        {
+            if (!assignedFlowIds.TryGetValue(devSkill.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted skill '{name}'. Ask the skill owner to assign this flow first.");
             }
         }
     }
@@ -1769,12 +1820,11 @@ public class FlowBuilderService : IFlowBuilderService
         var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var hasProdSkillChanges = false;
 
         foreach (var name in names)
         {
-            // Resolve the source the same way the runtimes do: a custom skill in the current
-            // tenant/environment, preferring the request space, then Central, then the oldest
-            // other-space match. Query filters are disabled because the comparison is explicit.
             var devSkillCandidates = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.Name == name &&
@@ -1787,15 +1837,10 @@ public class FlowBuilderService : IFlowBuilderService
                 .ThenBy(w => w.Id)
                 .ToListAsync();
 
-            var devSkill = devSkillCandidates
-                .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-                .FirstOrDefault();
+            var devSkill = ResourceFlowAccessHelpers.PickResolvedSkill(devSkillCandidates, targetSpaceId);
 
             if (devSkill == null)
             {
-                // Platform default skills are shipped with the runtime and available in every
-                // environment (they are discovered from the installed skill package), so they
-                // never need a Production clone.
                 var platformSkillExists = await _unitOfWork.SkillRepo
                     .GetByConditionAsync(w => w.Name == name && w.Type == ComponentTypeEnum.Platform)
                     .IgnoreQueryFilters()
@@ -1806,6 +1851,9 @@ public class FlowBuilderService : IFlowBuilderService
                 missing.Add($"skill '{name}'");
                 continue;
             }
+
+            if (devSkill.IsGlobal)
+                continue;
 
             await AcquireProdCloneLockAsync("skill", name);
 
@@ -1829,6 +1877,7 @@ public class FlowBuilderService : IFlowBuilderService
                     Type = devSkill.Type,
                     IsGlobal = devSkill.IsGlobal,
                     IsTenantWideAccess = devSkill.IsTenantWideAccess,
+                    IsResourceAccessRestricted = devSkill.IsResourceAccessRestricted,
                     IsActive = devSkill.IsActive,
                     SpaceId = devSkill.SpaceId,
                     EnvType = ConfigureEnvironmentType.Prod,
@@ -1840,10 +1889,56 @@ public class FlowBuilderService : IFlowBuilderService
                 await AssignOwnerOrThrowAsync(prodSkill.Id, ResourceTypeEnum.Skill);
             }
 
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (devSkill.IsResourceAccessRestricted && !prodSkill.IsResourceAccessRestricted)
+            {
+                prodSkill.IsResourceAccessRestricted = true;
+                _unitOfWork.SkillRepo.Update(prodSkill);
+                hasProdSkillChanges = true;
+            }
+
+            await EnsureProdSkillFlowAccessAsync(devSkill.Id, prodSkill.Id, pendingFlowAccesses);
+
             await EnsureProdSkillFilesAsync(devSkill, prodSkill);
         }
 
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || hasProdSkillChanges)
+        {
+            await _unitOfWork.SaveAsync();
+        }
+
         return missing;
+    }
+
+    private async Task EnsureProdSkillFlowAccessAsync(Guid devSkillId, Guid prodSkillId, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Skill && w.ResourceId == devSkillId)
+            .ToListAsync();
+
+        if (sourceFlowAccesses.Count == 0)
+            return;
+
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Skill && w.ResourceId == prodSkillId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodSkillId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.Skill,
+                ResourceId = prodSkillId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     /// <summary>
