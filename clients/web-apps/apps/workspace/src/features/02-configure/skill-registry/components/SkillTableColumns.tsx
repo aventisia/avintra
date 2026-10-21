@@ -100,6 +100,7 @@ export const SkillTableColumns = (isPlatformTab: boolean = false): ColumnDef<Ski
         name={row.name}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.isResourceAccessRestricted || false}
         isPlatformSkill={isPlatformTab}
       />
     ),

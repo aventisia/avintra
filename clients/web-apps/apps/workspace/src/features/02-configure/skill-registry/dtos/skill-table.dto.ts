@@ -34,6 +34,11 @@ export interface SkillTableDto {
   isTenantWideAccess: boolean;
 
   /**
+   * Indicates whether the skill is restricted to its assigned flows.
+   */
+  isResourceAccessRestricted: boolean;
+
+  /**
    * Flag indicating whether the skill record is disabled.
    */
   isDisabled?: boolean;

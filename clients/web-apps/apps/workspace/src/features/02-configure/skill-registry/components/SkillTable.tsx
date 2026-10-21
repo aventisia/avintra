@@ -13,6 +13,7 @@ import { NavLink } from "react-router-dom";
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
@@ -95,6 +96,9 @@ export const SkillTable = () => {
                           rowId={row.original.id || ""}
                           accessLevel={row.original.accessLevel}
                           isTenantWideAccess={row.original.isTenantWideAccess || false}
+                          isResourceAccessRestricted={
+                            row.original.isResourceAccessRestricted || false
+                          }
                           name={row.original.name}
                           isPlatformSkill={isPlatformTab}
                         />
@@ -124,6 +128,8 @@ export const SkillTable = () => {
 
           {/* Resource Share Dialog component */}
           <ResourceShareDialog queryKey={queryKey} />
+
+          <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       ) : (
         // Show data table skeleton while fetching the skills data

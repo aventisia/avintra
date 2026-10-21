@@ -11,6 +11,7 @@ public class SkillRegistryService : ISkillRegistryService
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
 
     /// <summary>
@@ -25,6 +26,7 @@ public class SkillRegistryService : ISkillRegistryService
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         IUserManagementGuardService userManagementGuardService)
     {
         // Extract current user ID from JWT claim; fallback to empty Guid when missing.
@@ -33,6 +35,7 @@ public class SkillRegistryService : ISkillRegistryService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _userManagementGuardService = userManagementGuardService;
     }
 
@@ -622,6 +625,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Remove resource shares before deleting the skill.
             await _resourceShareService.DeleteResourceSharesAsync(skill.Id, ResourceTypeEnum.Skill);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, skill.Id);
 
             // Delete skill and save changes.
             _unitOfWork.SkillRepo.Delete(skill);
@@ -729,6 +733,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Remove all associated resource shares for the skills.
             await _resourceShareService.DeleteResourceSharesAsync(requestedIds, ResourceTypeEnum.Skill);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, requestedIds);
 
             // Delete each skill from the repository.
             foreach (var skill in allMatchedSkills)

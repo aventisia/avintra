@@ -4,6 +4,7 @@ public static class ResourceFlowAccessHelpers
 {
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
+    private const string SkillsReferenceKey = "skills";
 
     /// <summary>
     /// Reads the referenced tool names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
@@ -22,6 +23,14 @@ public static class ResourceFlowAccessHelpers
     }
 
     /// <summary>
+    /// Reads the referenced skill names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedSkillNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, SkillsReferenceKey);
+    }
+
+    /// <summary>
     /// Picks the tool a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
     public static Tool? PickResolvedTool(IEnumerable<Tool> candidates, Guid? targetSpaceId)
@@ -37,6 +46,18 @@ public static class ResourceFlowAccessHelpers
     /// Picks the queue a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
     public static Queue? PickResolvedQueue(IEnumerable<Queue> candidates, Guid? targetSpaceId)
+    {
+        return candidates
+            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
+            .ThenBy(w => w.CreatedOn)
+            .ThenBy(w => w.Id)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Picks the skill a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static Skill? PickResolvedSkill(IEnumerable<Skill> candidates, Guid? targetSpaceId)
     {
         return candidates
             .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))

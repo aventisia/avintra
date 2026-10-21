@@ -37,6 +37,11 @@ public class SkillDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the skill is restricted to its assigned flows.
+    /// </summary>
+    public bool IsResourceAccessRestricted { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the skill is active and available for use.
     /// </summary>
     public bool IsActive { get; set; }
