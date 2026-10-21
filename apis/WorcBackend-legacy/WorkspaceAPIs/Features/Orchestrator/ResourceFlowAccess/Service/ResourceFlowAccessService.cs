@@ -58,7 +58,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.Skill))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -66,6 +66,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             var resourceLabel = resourceType.ToString().ToLowerInvariant();
             Tool? tool = null;
             Queue? queue = null;
+            Skill? skill = null;
             ConfigureEnvironmentType resourceEnvType;
             Guid resourceCreatedByUserId;
             bool isResourceAccessRestricted;
@@ -87,7 +88,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
                 isResourceAccessRestricted = tool.IsResourceAccessRestricted;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.Queue)
             {
                 queue = await GetQueueAsync(resourceId);
                 if (queue == null)
@@ -98,6 +99,23 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceEnvType = queue.EnvType;
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isResourceAccessRestricted = queue.IsResourceAccessRestricted;
+            }
+            else
+            {
+                skill = await GetSkillAsync(resourceId);
+                if (skill == null)
+                {
+                    return serviceResponse.Update("The skill does not exist", 404);
+                }
+
+                if (skill.Type == ComponentTypeEnum.Platform || skill.IsGlobal)
+                {
+                    return serviceResponse.Update("Flow access cannot be configured for platform skills", 400);
+                }
+
+                resourceEnvType = skill.EnvType;
+                resourceCreatedByUserId = skill.CreatedByUserId;
+                isResourceAccessRestricted = skill.IsResourceAccessRestricted;
             }
 
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AssignResourceFlowsResultDto>(
@@ -221,10 +239,15 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                             tool.IsResourceAccessRestricted = isRestricted;
                             _unitOfWork.ToolRepo.Update(tool);
                         }
+                        else if (queue != null)
+                        {
+                            queue.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.QueueRepo.Update(queue);
+                        }
                         else
                         {
-                            queue!.IsResourceAccessRestricted = isRestricted;
-                            _unitOfWork.QueueRepo.Update(queue);
+                            skill!.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.SkillRepo.Update(skill);
                         }
                     }
 
@@ -253,6 +276,10 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(queue, flowIdList);
             }
+            else if (isRestricted && skill != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(skill, flowIdList);
+            }
 
             var message = $"{ResourceFlowAccessHelpers.Pluralize(newIds.Count, "flow")} assigned, {ResourceFlowAccessHelpers.Pluralize(removedIds.Count, "flow")} removed";
 
@@ -276,7 +303,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.Skill))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -296,7 +323,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
                 isTenantWideAccess = tool.IsTenantWideAccess;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.Queue)
             {
                 var queue = await GetQueueAsync(resourceId);
                 if (queue == null)
@@ -306,6 +333,17 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isTenantWideAccess = queue.IsTenantWideAccess;
+            }
+            else
+            {
+                var skill = await GetSkillAsync(resourceId);
+                if (skill == null)
+                {
+                    return serviceResponse.Update("The skill does not exist", 404);
+                }
+
+                resourceCreatedByUserId = skill.CreatedByUserId;
+                isTenantWideAccess = skill.IsTenantWideAccess;
             }
 
             var (canAccess, _) = await _resourceShareService.GetResourceAccessAsync(
@@ -503,6 +541,39 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(Skill skill, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(skill.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameSkills = await _unitOfWork.SkillRepo
+            .GetByConditionAsync(w =>
+                w.Name == skill.Name &&
+                w.Type == ComponentTypeEnum.Custom &&
+                w.TenantId == _tenantId &&
+                w.EnvType == skill.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedSkillNames(w.ResourceReferences)?.Contains(skill.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedSkill(sameNameSkills, w.SpaceId)?.Id == skill.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<Tool?> GetToolAsync(Guid resourceId)
     {
         return await _unitOfWork.ToolRepo
@@ -513,6 +584,13 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
     private async Task<Queue?> GetQueueAsync(Guid resourceId)
     {
         return await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<Skill?> GetSkillAsync(Guid resourceId)
+    {
+        return await _unitOfWork.SkillRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }

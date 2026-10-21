@@ -87,7 +87,7 @@ only; it does not carry a space.
 
 ## Current rollout
 
-- Only the Tool and Queue resource types are wired. Other configure types keep their
+- The Tool, Queue and Skill resource types are wired. Other configure types keep their
   existing behavior and will adopt the same list later.
 
 ## Known gaps
