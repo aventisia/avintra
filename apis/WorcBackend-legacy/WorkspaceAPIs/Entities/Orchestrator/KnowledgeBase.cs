@@ -84,6 +84,11 @@ public class KnowledgeBase : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the knowledge base is restricted to its assigned flows.
+    /// </summary>
+    public bool IsResourceAccessRestricted { get; set; }
+
+    /// <summary>
     /// Navigation property for the files associated with this Knowledge Base.
     /// </summary>
     public virtual ICollection<KnowledgeBaseFile> Files { get; set; } = new List<KnowledgeBaseFile>();

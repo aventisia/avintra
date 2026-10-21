@@ -703,6 +703,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             await ValidateFlowToolAccessAsync(publishingFlowId, references["tools"], flowName);
             await ValidateFlowQueueAccessAsync(publishingFlowId, references["queues"], flowName);
+            await ValidateFlowKnowledgeBaseAccessAsync(publishingFlowId, references["knowledgeBases"], flowName);
 
             // Ensure PROD clones exist for every referenced resource so the published agent can
             // resolve them in the Production environment. Missing resources are created with
@@ -895,6 +896,56 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 throw new ResourceFlowAccessDeniedException(
                     $"Cannot publish: flow '{flowName}' is not assigned to restricted queue '{name}'. Ask the queue owner to assign this flow first.");
+            }
+        }
+    }
+
+    private async Task<Dictionary<string, KnowledgeBase>> ResolveDevKnowledgeBasesAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.KnowledgeBaseRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .Include(kb => kb.Files)
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedKnowledgeBase(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowKnowledgeBaseAccessAsync(Guid publishingFlowId, List<string> knowledgeBaseNames, string flowName)
+    {
+        if (knowledgeBaseNames.Count == 0)
+        {
+            return;
+        }
+
+        var devKnowledgeBases = await ResolveDevKnowledgeBasesAsync(knowledgeBaseNames);
+        var restrictedKnowledgeBases = devKnowledgeBases.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedKnowledgeBases.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.KnowledgeBase,
+            restrictedKnowledgeBases.Select(w => w.Value.Id));
+
+        foreach (var (name, devKnowledgeBase) in restrictedKnowledgeBases)
+        {
+            if (!assignedFlowIds.TryGetValue(devKnowledgeBase.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted knowledge base '{name}'. Ask the knowledge base owner to assign this flow first.");
             }
         }
     }
@@ -1278,14 +1329,14 @@ public class FlowBuilderService : IFlowBuilderService
     private async Task<List<string>> EnsureProdKnowledgeBasesAsync(List<string> names)
     {
         var missing = new List<string>();
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var hasProdKnowledgeBaseChanges = false;
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var devKnowledgeBases = await ResolveDevKnowledgeBasesAsync(names);
         foreach (var name in names)
         {
             await AcquireProdCloneLockAsync("knowledge-base", name);
-            var devKb = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .Include(kb => kb.Files)
-                .FirstOrDefaultAsync();
-            if (devKb == null)
+            if (!devKnowledgeBases.TryGetValue(name, out var devKb))
             {
                 missing.Add($"knowledge base '{name}'");
                 continue;
@@ -1299,7 +1350,12 @@ public class FlowBuilderService : IFlowBuilderService
                     $"Cannot publish: knowledge base '{devKb.Name}' uses the '{devKb.VectorStore}' vector store, whose vectors cannot be copied to Production. Switch it to pgvector or remove it from the flow.");
 
             var prodKb = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devKb.SpaceId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Create the Production header when missing; otherwise repair its files/vectors below.
@@ -1317,6 +1373,7 @@ public class FlowBuilderService : IFlowBuilderService
                     CollectionName = devKb.CollectionName,
                     VectorStoreConfig = devKb.VectorStoreConfig,
                     IsTenantWideAccess = devKb.IsTenantWideAccess,
+                    IsResourceAccessRestricted = devKb.IsResourceAccessRestricted,
                     SpaceId = devKb.SpaceId,
                     EnvType = ConfigureEnvironmentType.Prod,
                     CreatedByUserId = _userId,
@@ -1327,12 +1384,58 @@ public class FlowBuilderService : IFlowBuilderService
                 await AssignOwnerOrThrowAsync(prodKb.Id, ResourceTypeEnum.KnowledgeBase);
             }
 
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (devKb.IsResourceAccessRestricted && !prodKb.IsResourceAccessRestricted)
+            {
+                prodKb.IsResourceAccessRestricted = true;
+                _unitOfWork.KnowledgeBaseRepo.Update(prodKb);
+                hasProdKnowledgeBaseChanges = true;
+            }
+
+            await EnsureProdKnowledgeBaseFlowAccessAsync(devKb.Id, prodKb.Id, pendingFlowAccesses);
+
             // Mirror file metadata and vectors so the Production KB is usable (idempotent repair).
             await EnsureProdKnowledgeBaseFilesAsync(devKb, prodKb);
             await EnsureProdKnowledgeBaseVectorsAsync(devKb, prodKb);
         }
 
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || hasProdKnowledgeBaseChanges)
+        {
+            await _unitOfWork.SaveAsync();
+        }
+
         return missing;
+    }
+
+    private async Task EnsureProdKnowledgeBaseFlowAccessAsync(Guid devKnowledgeBaseId, Guid prodKnowledgeBaseId, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.KnowledgeBase && w.ResourceId == devKnowledgeBaseId)
+            .ToListAsync();
+
+        if (sourceFlowAccesses.Count == 0)
+            return;
+
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.KnowledgeBase && w.ResourceId == prodKnowledgeBaseId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodKnowledgeBaseId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.KnowledgeBase,
+                ResourceId = prodKnowledgeBaseId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     /// <summary>
