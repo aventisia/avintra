@@ -4,14 +4,14 @@ import { type FC, useEffect, useMemo, useState } from "react";
 
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
-import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
-import { useVoicePlaybackStore } from "../voice/stores/voice-playback.store";
+import { useVoiceAssistantContext } from "../hooks/useVoiceAssistantContext.hook";
+import { useVoicePlaybackStore } from "../stores/voice-playback.store";
 import {
   SUPPRESSED_WEBHOOK_NOTICE,
   getPlaygroundNotices,
   getVoiceAgentPlaygroundInputs,
-} from "../voice/utils/voice-playground-info.util";
-import { resolveSessionRecoveryLabel } from "../voice/utils/voice-session.util";
+} from "../utils/voice-playground-info.util";
+import { resolveSessionRecoveryLabel } from "../utils/voice-session.util";
 
 export const SIMULATED_TOOL_BADGE_LABEL = "Test mode";
 
@@ -52,7 +52,7 @@ const useOnlineStatus = (): boolean => {
 
 /** Session errors, recovery actions, and Test notices for the Voice Test panel. */
 export const VoicePlaygroundStatus: FC = () => {
-  const voice = useAssistantVoiceContext();
+  const voice = useVoiceAssistantContext();
   const nodes = useReactFlowExtStore((state) => state.nodes);
   const playBlocked = useVoicePlaybackStore((state) => state.playBlocked);
   const resume = useVoicePlaybackStore((state) => state.resume);
@@ -62,7 +62,7 @@ export const VoicePlaygroundStatus: FC = () => {
     [nodes],
   );
 
-  if (!voice?.isVoicePlayground) return null;
+  if (!voice) return null;
 
   const { sessionError, realtimeInterimTranscript, ttsError } = voice;
   const recoveryLabel = sessionError ? resolveSessionRecoveryLabel(sessionError.kind) : null;

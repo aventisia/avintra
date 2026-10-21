@@ -13,7 +13,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import type { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 // API imports are kept as they are internal domain logic for this specific feature
@@ -26,11 +25,6 @@ import {
 } from "../voice/context/assistant-voice.context";
 import { useAssistantVoice } from "../voice/hooks/useAssistantVoice.hook";
 import { useChatAgentVoiceConfig } from "../voice/hooks/useChatAgentVoiceConfig.hook";
-import { useVoiceIntroSpeech } from "../voice/hooks/useVoiceIntroSpeech.hook";
-import { useVoicePipelineEngine } from "../voice/hooks/useVoicePipelineEngine.hook";
-import { useVoiceRealtimeEngine } from "../voice/hooks/useVoiceRealtimeEngine.hook";
-import { useVoiceSession } from "../voice/hooks/useVoiceSession.hook";
-import { useVoicePlaybackStore } from "../voice/stores/voice-playback.store";
 import { Thread } from "./thread";
 
 export interface AvPlatformAssistantUIProps {
@@ -60,8 +54,6 @@ export interface AvPlatformAssistantUIProps {
   defaultActions?: string[];
   /** Injected historical messages. */
   initialMessages?: readonly ThreadMessageLike[];
-  /** Renders the Voice Test controls, status, and simulated-action notices. */
-  isVoicePlayground?: boolean;
   /**
    * When true, renders a header action that starts a fresh chat session,
    * discarding the in-memory messages of the current session.
@@ -123,7 +115,6 @@ export const AvPlatformAssistantUI = ({
 
   // 3. Re-key the runtime to discard the current in-memory session and start fresh.
   const handleNewSession = useCallback(() => {
-    useVoicePlaybackStore.getState().stop();
     setSessionKey(`new-session-${window.crypto.randomUUID()}`);
   }, []);
 
@@ -176,7 +167,6 @@ const RuntimeWrapper = ({
   readOnly,
   readOnlyMessage,
   initialMessages = [],
-  isVoicePlayground = false,
   allowNewSession = false,
   defaultActions = [],
   onRequestComplete,
@@ -191,8 +181,6 @@ const RuntimeWrapper = ({
     tts: ttsConfig,
     voice: voiceConfig,
     isTextToSpeechConfigured,
-    sfx: voiceSfx,
-    pronunciations,
   } = useChatAgentVoiceConfig();
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const refId = currentFlow?.id ?? "";
@@ -206,16 +194,7 @@ const RuntimeWrapper = ({
     refId,
     refName,
     agentName,
-    pronunciations,
-    sfx: voiceSfx,
   });
-
-  const introText = useMemo(() => {
-    const firstMessage = initialMessages[0];
-    return firstMessage?.role === "assistant" && typeof firstMessage.content === "string"
-      ? firstMessage.content
-      : "";
-  }, [initialMessages]);
 
   const handleSuggestionsUpdate = useCallback((actions: string[]) => {
     activeSuggestionsRef.current = Array.isArray(actions) ? actions : [];
@@ -309,8 +288,6 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
           onTextDelta: assistantVoice.onTextDelta,
-          onRunStart: assistantVoice.onRunStart,
-          onToolCallFrame: assistantVoice.onToolCallFrame,
           onRunFinished: assistantVoice.onRunFinished,
           isTempChat: mode === "temporary",
           // Chat streams are scoped to the current flow's space.
@@ -323,8 +300,6 @@ const RuntimeWrapper = ({
         handleSuggestionsUpdate,
         mode,
         assistantVoice.onTextDelta,
-        assistantVoice.onRunStart,
-        assistantVoice.onToolCallFrame,
         assistantVoice.onRunFinished,
       ],
     ),
@@ -337,120 +312,11 @@ const RuntimeWrapper = ({
     },
   );
 
-  return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <VoiceSessionLayer
-        isVoicePlayground={isVoicePlayground}
-        assistantVoice={assistantVoice}
-        introText={introText}
-        sttConfig={sttConfig}
-        ttsConfig={ttsConfig}
-        voiceConfig={voiceConfig}
-        refId={refId}
-        refName={refName}
-        agentName={agentName}
-        title={title}
-        description={description}
-        badge={badge}
-        allowNewSession={allowNewSession}
-        defaultActions={defaultActions}
-        onNewSession={onNewSession}
-      />
-    </AssistantRuntimeProvider>
-  );
-};
-
-type VoiceSessionLayerProps = {
-  isVoicePlayground: boolean;
-  assistantVoice: ReturnType<typeof useAssistantVoice>;
-  introText: string;
-  sttConfig: ModelConfigType | null;
-  ttsConfig: ModelConfigType | null;
-  voiceConfig: VoiceConfigType | null;
-  refId: string;
-  refName: string;
-  agentName: string | null;
-  title?: string;
-  description?: string;
-  badge?: string;
-  allowNewSession?: boolean;
-  defaultActions?: string[];
-  onNewSession?: () => void;
-};
-
-type VoiceSession = ReturnType<typeof useVoiceSession>;
-
-const VoiceSessionLayer = ({
-  isVoicePlayground,
-  assistantVoice,
-  introText,
-  sttConfig,
-  ttsConfig,
-  voiceConfig,
-  refId,
-  refName,
-  agentName,
-  title,
-  description,
-  badge,
-  allowNewSession,
-  defaultActions,
-  onNewSession,
-}: VoiceSessionLayerProps) => {
-  const aui = useAui();
-  const [realtimeInterimTranscript, setRealtimeInterimTranscript] = useState("");
-  const session = useVoiceSession({
-    isVoicePlayground,
-    sttConfig,
-    ttsConfig,
-    voiceConfig,
-    setSpeakReplies: assistantVoice.setSpeakReplies,
-    abortLiveSynthesis: assistantVoice.abortLiveSynthesis,
-    isSynthesizing: assistantVoice.isSynthesizing,
-    onSessionEnded: onNewSession,
-  });
-
-  useVoiceIntroSpeech({
-    text: introText,
-    enabled: isVoicePlayground && session.isActive && assistantVoice.speakReplies,
-    engine: session.engine,
-    sessionKey: session.sessionId,
-    ttsConfig,
-    voiceConfig,
-    refId,
-    refName,
-    agentName,
-  });
-
-  const bargeIn = useCallback(() => {
-    useVoicePlaybackStore.getState().interrupt();
-    assistantVoice.abortLiveSynthesis();
-    aui.thread.cancelRun();
-    session.reportSessionState("listening");
-  }, [assistantVoice, aui, session]);
-
   const voiceContextValue = useMemo<AssistantVoiceContextValue>(
     () => ({
-      isVoicePlayground,
       speakReplies: assistantVoice.speakReplies,
       isPlaying: assistantVoice.isPlaying,
-      isSynthesizing: assistantVoice.isSynthesizing,
-      ttsError: assistantVoice.ttsError,
       setSpeakReplies: assistantVoice.setSpeakReplies,
-      retryLastReply: assistantVoice.retryLastReply,
-      abortLiveSynthesis: assistantVoice.abortLiveSynthesis,
-      sessionState: session.sessionState,
-      sessionEngine: session.engine,
-      configuredSessionEngine: session.configuredEngine,
-      isVoiceSessionActive: session.isActive,
-      startSession: session.startSession,
-      endSession: session.endSession,
-      sessionError: session.sessionError,
-      realtimeInterimTranscript: realtimeInterimTranscript || null,
-      pipelineSwitchOffered: session.pipelineSwitchOffered,
-      switchToPipelineForSession: session.switchToPipelineForSession,
-      retrySessionError: session.retrySessionError,
-      clearSessionError: session.clearSessionError,
       sttConfig,
       ttsConfig,
       language: voiceConfig?.language ?? null,
@@ -459,10 +325,9 @@ const VoiceSessionLayer = ({
       agentName,
     }),
     [
-      isVoicePlayground,
-      assistantVoice,
-      session,
-      realtimeInterimTranscript,
+      assistantVoice.speakReplies,
+      assistantVoice.isPlaying,
+      assistantVoice.setSpeakReplies,
       sttConfig,
       ttsConfig,
       voiceConfig?.language,
@@ -475,35 +340,7 @@ const VoiceSessionLayer = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <AssistantVoiceContext.Provider value={voiceContextValue}>
-        {session.isActive && session.micStream && session.config && (
-          <>
-            {session.engine === "pipeline" ? (
-              <PipelineEngineMount
-                stream={session.micStream}
-                config={session.config}
-                bridge={session.engineActionsRef}
-                refId={refId}
-                refName={refName}
-                agentName={agentName}
-                getState={session.getSessionState}
-                onState={session.reportSessionState}
-                onError={session.reportSessionError}
-                bargeIn={bargeIn}
-              />
-            ) : (
-              <RealtimeEngineMount
-                stream={session.micStream}
-                config={session.config}
-                bridge={session.engineActionsRef}
-                getState={session.getSessionState}
-                onState={session.reportSessionState}
-                onError={session.reportSessionError}
-                onInterimTranscript={setRealtimeInterimTranscript}
-                bargeIn={bargeIn}
-              />
-            )}
-          </>
-        )}
+
         <SuggestionsProvider defaultActions={defaultActions}>
           <Thread
             title={title}
@@ -517,66 +354,6 @@ const VoiceSessionLayer = ({
       </AssistantVoiceContext.Provider>
     </AssistantRuntimeProvider>
   );
-};
-
-type VoiceEngineMountProps = {
-  stream: MediaStream;
-  config: Parameters<typeof useVoicePipelineEngine>[0]["config"];
-  bridge: VoiceSession["engineActionsRef"];
-  getState: VoiceSession["getSessionState"];
-  onState: VoiceSession["reportSessionState"];
-  onError: VoiceSession["reportSessionError"];
-  bargeIn: () => void;
-};
-
-const PipelineEngineMount = ({
-  stream,
-  config,
-  bridge,
-  getState,
-  onState,
-  onError,
-  bargeIn,
-  refId,
-  refName,
-  agentName,
-}: VoiceEngineMountProps & { refId: string; refName: string; agentName: string | null }) => {
-  useVoicePipelineEngine({
-    stream,
-    config,
-    bridge,
-    refId,
-    refName,
-    agentName,
-    getState,
-    onState,
-    onError,
-    bargeIn,
-  });
-  return null;
-};
-
-const RealtimeEngineMount = ({
-  stream,
-  config,
-  bridge,
-  getState,
-  onState,
-  onError,
-  onInterimTranscript,
-  bargeIn,
-}: VoiceEngineMountProps & { onInterimTranscript: (text: string) => void }) => {
-  useVoiceRealtimeEngine({
-    stream,
-    config,
-    bridge,
-    getState,
-    onState,
-    onError,
-    onInterimTranscript,
-    bargeIn,
-  });
-  return null;
 };
 
 /**

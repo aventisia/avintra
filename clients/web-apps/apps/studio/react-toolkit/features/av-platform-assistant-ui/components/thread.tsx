@@ -53,29 +53,19 @@ import { useShallow } from "zustand/react/shallow";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
 import { useVoiceRecorder } from "../voice/hooks/useVoiceRecorder.hook";
-import {
-  formatRecordingTime,
-  resolveMissingSpeechConfigReason,
-} from "../voice/utils/voice-controls.util";
+import { resolveMissingSpeechConfigReason } from "../voice/utils/voice-controls.util";
 import Archived from "./Archived";
 import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
 import { TooltipIconButton } from "./tooltip-icon-button";
-import {
-  SIMULATED_TOOL_EVENT_COPY,
-  SimulatedToolBadge,
-  VoicePlaygroundStatus,
-} from "./voice-playground-status";
-import { VoiceSessionControls } from "./voice-session-controls";
 
 function FollowUps() {
   const suggestions = useAuiState((s) => s.thread.suggestions);
   const hasPending = useHasPendingToolCalls();
-  const voice = useAssistantVoiceContext();
 
   const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
 
-  if (voice?.isVoicePlayground) return null;
+  // Return null if there are no suggestions,
   if (!suggestions || suggestions.length === 0) return null;
 
   return (
@@ -271,12 +261,11 @@ const ReadOnlyBanner: FC<{ message?: string }> = ({ message }) => (
 
 const ThreadMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
-  const voice = useAssistantVoiceContext();
   const isDisabled = readOnly || archived;
   const role = useAuiState((s) => s.message.role);
   const isEditing = useAuiState((s) => s.message.composer.isEditing);
 
-  if (isEditing && !isDisabled && !voice?.isVoicePlayground) return <EditComposer />;
+  if (isEditing && !isDisabled) return <EditComposer />;
   if (role === "user") return <UserMessage />;
   return <AssistantMessage />;
 };
@@ -296,11 +285,6 @@ const ThreadScrollToBottom: FC = () => {
 };
 
 const ThreadWelcome = ({ title, description, badge }: ThreadHeaderProps) => {
-  const voice = useAssistantVoiceContext();
-  const welcomeDescription = voice?.isVoicePlayground
-    ? `${description?.trim() ? `${description.trim()}. ` : ""}Start a session to talk hands-free.`
-    : (description ?? "Send a message to start the conversation");
-
   return (
     <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-[var(--thread-max-width)] grow flex-col">
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
@@ -315,7 +299,7 @@ const ThreadWelcome = ({ title, description, badge }: ThreadHeaderProps) => {
             {title ?? "Hello"}
           </h1>
           <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-base delay-75 duration-200">
-            {welcomeDescription}
+            {description ?? "Send a message to start the conversation"}
           </p>
         </div>
       </div>
@@ -349,47 +333,7 @@ const ThreadSuggestionItem: FC = () => {
 };
 
 const Composer: FC = () => {
-  const voice = useAssistantVoiceContext();
-
-  return voice?.isVoicePlayground ? <VoiceTestComposer /> : <ChatComposer />;
-};
-
-const VoiceTestComposer: FC = () => (
-  <div className="aui-composer-root relative flex w-full flex-col">
-    <VoiceSessionControls />
-    <VoicePlaygroundStatus />
-    <div
-      data-slot="composer-shell"
-      className="flex w-full flex-col gap-2 rounded-[var(--composer-radius)] border bg-background p-[var(--composer-padding)]"
-    >
-      <p className="px-2 py-1 text-muted-foreground text-sm">
-        Voice session controls are above — hands-free listening is on.
-      </p>
-    </div>
-  </div>
-);
-
-const ChatComposer: FC = () => {
   const hasPending = useHasPendingToolCalls();
-  const aui = useAui();
-  const voice = useAssistantVoiceContext();
-
-  const handleTranscript = useCallback(
-    (text: string) => {
-      const existing = aui.composer.getState().text;
-      aui.composer.setText(existing.trim() ? `${existing.trimEnd()} ${text}` : text);
-    },
-    [aui],
-  );
-
-  const recorder = useVoiceRecorder({
-    sttConfig: voice?.sttConfig ?? null,
-    refId: voice?.refId ?? "",
-    refName: voice?.refName ?? "",
-    agentName: voice?.agentName ?? null,
-    language: voice?.language ?? null,
-    onTranscript: handleTranscript,
-  });
 
   return (
     <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
@@ -407,18 +351,33 @@ const ChatComposer: FC = () => {
             autoFocus={!hasPending}
             aria-label="Message input"
           />
-          <ComposerAction recorder={recorder} />
+          <ComposerAction />
         </div>
       </ComposerPrimitive.AttachmentDropzone>
     </ComposerPrimitive.Root>
   );
 };
 
-const ComposerAction: FC<{ recorder: ReturnType<typeof useVoiceRecorder> }> = ({ recorder }) => {
+const formatRecordingTime = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+const ComposerAction: FC = () => {
   const hasPending = useHasPendingToolCalls();
 
   const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
+  const aui = useAui();
   const voice = useAssistantVoiceContext();
+
+  const handleTranscript = useCallback(
+    (text: string) => {
+      const existing = aui.composer.getState().text;
+      aui.composer.setText(existing.trim() ? `${existing.trimEnd()} ${text}` : text);
+    },
+    [aui],
+  );
 
   const {
     isRecording,
@@ -427,7 +386,14 @@ const ComposerAction: FC<{ recorder: ReturnType<typeof useVoiceRecorder> }> = ({
     isMicDisabled,
     micTooltip,
     toggleRecording,
-  } = recorder;
+  } = useVoiceRecorder({
+    sttConfig: voice?.sttConfig ?? null,
+    refId: voice?.refId ?? "",
+    refName: voice?.refName ?? "",
+    agentName: voice?.agentName ?? null,
+    language: voice?.language ?? null,
+    onTranscript: handleTranscript,
+  });
 
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
@@ -651,8 +617,6 @@ const MessageThinking: FC = () => {
 const AssistantMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
-  const voice = useAssistantVoiceContext();
-  const isTestSurface = voice?.isVoicePlayground ?? false;
 
   return (
     <MessagePrimitive.Root
@@ -682,26 +646,14 @@ const AssistantMessage: FC = () => {
                 if (part.approval) {
                   return (
                     <div className="my-2 w-full">
-                      {isTestSurface && <SimulatedToolBadge />}
                       <ToolApprovalRequest {...part} disabled={isDisabled} />
-                      {isTestSurface && (
-                        <p className="mt-1 text-amber-700 text-xs dark:text-amber-300">
-                          {SIMULATED_TOOL_EVENT_COPY}
-                        </p>
-                      )}
                     </div>
                   );
                 }
                 return (
                   <div className="my-1 w-full">
-                    {isTestSurface && <SimulatedToolBadge />}
                     {/* Fallback pattern for dynamically rendered tool UIs */}
                     {part.toolUI ?? <ChatToolCall {...part} />}
-                    {isTestSurface && (
-                      <p className="mt-1 text-amber-700 text-xs dark:text-amber-300">
-                        {SIMULATED_TOOL_EVENT_COPY}
-                      </p>
-                    )}
                   </div>
                 );
               }
@@ -727,7 +679,7 @@ const AssistantMessage: FC = () => {
 
       <div className="aui-assistant-message-footer mt-1 ml-2 flex min-h-6 items-center">
         <BranchPicker />
-        <AssistantActionBar readOnly={isDisabled || isTestSurface} />
+        <AssistantActionBar readOnly={isDisabled} />
       </div>
     </MessagePrimitive.Root>
   );
@@ -785,9 +737,7 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
 
 const UserMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
-  const voice = useAssistantVoiceContext();
   const isDisabled = readOnly || archived;
-  const isReadOnlyMessage = isDisabled || Boolean(voice?.isVoicePlayground);
   return (
     <MessagePrimitive.Root
       className="aui-user-message-root text-sm fade-in slide-in-from-bottom-1 mx-auto grid w-full max-w-[var(--thread-max-width)] animate-in auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] content-start gap-y-2 px-2 py-3 duration-150 [&:where(>*)]:col-start-2"
@@ -800,7 +750,7 @@ const UserMessage: FC = () => {
           <MessagePrimitive.Parts />
         </div>
         {/* Edit button hidden in read-only */}
-        {!isReadOnlyMessage && (
+        {!isDisabled && (
           <div className="aui-user-action-bar-wrapper absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 pr-2 peer-empty:hidden">
             <UserActionBar />
           </div>

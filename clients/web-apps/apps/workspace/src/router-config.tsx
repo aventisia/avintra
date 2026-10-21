@@ -36,6 +36,7 @@ import { ConversationDetailsPage } from "./pages/03-orchestrator/conversations/C
 import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
+import { VoicePage } from "./pages/04-assist/VoicePage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
@@ -252,6 +253,14 @@ const routerConfig: RouteObject[] = [
                 element: <Chat />,
               },
             ],
+          },
+          {
+            path: "voice",
+            element: <VoicePage />,
+          },
+          {
+            path: "voice/:flowVersionId",
+            element: <VoicePage />,
           },
         ],
       },

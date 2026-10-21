@@ -75,7 +75,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         title: "Invalid JSON",
         description: "Please fix the JSON syntax before saving.",
         confirmBtnText: "Got it",
-        confirmActionFn: () => {},
+        confirmActionFn: () => { },
         isDestructive: false,
       });
     }
@@ -90,7 +90,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         title: "Invalid JSON",
         description: "Please ensure the arguments are valid JSON before executing.",
         confirmBtnText: "Got it",
-        confirmActionFn: () => {},
+        confirmActionFn: () => { },
         isDestructive: false,
       });
       return;

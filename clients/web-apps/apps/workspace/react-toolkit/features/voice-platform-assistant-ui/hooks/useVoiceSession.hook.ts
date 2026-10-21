@@ -1,30 +1,26 @@
 import { useAui, useAuiState } from "@assistant-ui/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
-
+import type {
+  RealtimeVoiceSettings,
+  VoiceModelConfig,
+  VoiceSettings,
+} from "../types/voice-model-config.type";
 import { useVoicePlaybackStore } from "../stores/voice-playback.store";
 import { resolveMissingSpeechConfigReason } from "../utils/voice-controls.util";
-import {
-  type RealtimeVoiceSettings,
-  getRealtimeVoiceSettings,
-  getVoiceAgentPlaygroundInputs,
-} from "../utils/voice-playground-info.util";
 import {
   type VoiceEngine,
   type VoiceSessionError,
   type VoiceSessionState,
   resolveMicrophoneError,
   resolveRealtimeUnavailableMessage,
-  resolveVoiceEngine,
 } from "../utils/voice-session.util";
 
 export type VoiceSessionConfig = {
   engine: VoiceEngine;
-  sttConfig: ModelConfigType | null;
-  ttsConfig: ModelConfigType | null;
-  voiceConfig: VoiceConfigType | null;
+  sttConfig: VoiceModelConfig | null;
+  ttsConfig: VoiceModelConfig | null;
+  voiceConfig: VoiceSettings | null;
   realtime: RealtimeVoiceSettings;
 };
 
@@ -35,10 +31,12 @@ export type VoiceEngineBridge = {
 };
 
 type UseVoiceSessionParams = {
-  isVoicePlayground: boolean;
-  sttConfig: ModelConfigType | null;
-  ttsConfig: ModelConfigType | null;
-  voiceConfig: VoiceConfigType | null;
+  /** Engine resolved by the config adapter before the session starts. */
+  configuredEngine: VoiceEngine;
+  sttConfig: VoiceModelConfig | null;
+  ttsConfig: VoiceModelConfig | null;
+  voiceConfig: VoiceSettings | null;
+  realtime: RealtimeVoiceSettings;
   setSpeakReplies: (value: boolean) => void;
   abortLiveSynthesis: () => void;
   isSynthesizing: boolean;
@@ -50,21 +48,17 @@ type UseVoiceSessionParams = {
  * selection; engine modules perform the transport work.
  */
 export const useVoiceSession = ({
-  isVoicePlayground,
+  configuredEngine,
   sttConfig,
   ttsConfig,
   voiceConfig,
+  realtime,
   setSpeakReplies,
   abortLiveSynthesis,
   isSynthesizing,
   onSessionEnded,
 }: UseVoiceSessionParams) => {
   const aui = useAui();
-  const nodes = useReactFlowExtStore((state) => state.nodes);
-  const configuredEngine = useMemo(
-    () => resolveVoiceEngine(getVoiceAgentPlaygroundInputs(nodes)),
-    [nodes],
-  );
   const isPlaying = useVoicePlaybackStore((state) => state.isPlaying);
   const isRunActive = useAuiState((state) => state.thread.isRunning);
   const lastAssistantState = useAuiState((state) => {
@@ -75,7 +69,7 @@ export const useVoiceSession = ({
       : last.status.type;
   });
 
-  const [engine, setEngine] = useState<VoiceEngine>("pipeline");
+  const [engine, setEngine] = useState<VoiceEngine>(configuredEngine);
   const [sessionState, setSessionState] = useState<VoiceSessionState>("idle");
   const [sessionError, setSessionError] = useState<VoiceSessionError | null>(null);
   const [sessionId, setSessionId] = useState("idle");
@@ -108,14 +102,12 @@ export const useVoiceSession = ({
 
   const startSession = useCallback(
     async (forcedEngine?: VoiceEngine) => {
-      if (!isVoicePlayground || activeRef.current) return;
+      if (activeRef.current) return;
 
       setSessionError(null);
       setPipelineSwitchOffered(false);
 
-      const inputs = getVoiceAgentPlaygroundInputs(useReactFlowExtStore.getState().nodes);
-      const selectedEngine = forcedEngine ?? resolveVoiceEngine(inputs);
-      const realtime = getRealtimeVoiceSettings(inputs);
+      const selectedEngine = forcedEngine ?? configuredEngine;
       const nextConfig: VoiceSessionConfig = {
         engine: selectedEngine,
         sttConfig,
@@ -186,10 +178,11 @@ export const useVoiceSession = ({
       }
     },
     [
-      isVoicePlayground,
+      configuredEngine,
       sttConfig,
       ttsConfig,
       voiceConfig,
+      realtime,
       setSpeakReplies,
       stopStream,
       restoreSpeakReplies,
