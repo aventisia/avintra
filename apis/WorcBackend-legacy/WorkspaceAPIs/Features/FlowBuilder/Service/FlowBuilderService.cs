@@ -703,6 +703,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             await ValidateFlowToolAccessAsync(publishingFlowId, references["tools"], flowName);
             await ValidateFlowQueueAccessAsync(publishingFlowId, references["queues"], flowName);
+            await ValidateFlowVaultCredentialAccessAsync(publishingFlowId, references["credentials"], flowName);
 
             // Ensure PROD clones exist for every referenced resource so the published agent can
             // resolve them in the Production environment. Missing resources are created with
@@ -729,6 +730,7 @@ public class FlowBuilderService : IFlowBuilderService
     private async Task ValidateCredentialReferencesAsync(List<string> credentialNames)
     {
         var unresolved = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var tenantId = _currentTenantService.CurrentTenantId;
 
         for (var i = credentialNames.Count - 1; i >= 0; i--)
         {
@@ -739,11 +741,23 @@ public class FlowBuilderService : IFlowBuilderService
                 continue;
             }
 
+            // IMPORTANT NOTE: a legacy value that parses as a GUID can also be a credential name;
+            // the name wins so publish and the flow-access gate resolve the same credential.
+            var byName = await _unitOfWork.VaultCredentialRepo
+                .GetByConditionAsync(w => w.Name == value && w.TenantId == tenantId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+            if (byName != null)
+            {
+                continue;
+            }
+
             // Legacy GUID value -> resolve to the actual credential name.
             if (Guid.TryParse(value, out var guid))
             {
                 var byId = await _unitOfWork.VaultCredentialRepo
-                    .GetByConditionAsync(w => w.Id == guid && w.EnvType == _currentTenantService.CurrentEnvType)
+                    .GetByConditionAsync(w => w.Id == guid && w.TenantId == tenantId && w.EnvType == _currentTenantService.CurrentEnvType)
+                    .IgnoreQueryFilters()
                     .FirstOrDefaultAsync();
                 if (byId != null)
                 {
@@ -754,14 +768,8 @@ public class FlowBuilderService : IFlowBuilderService
 
             // A reference that does not resolve in the current environment must fail the publish:
             // silently dropping it would publish a flow pointing at a missing credential.
-            var byName = await _unitOfWork.VaultCredentialRepo
-                .GetByConditionAsync(w => w.Name == value && w.EnvType == _currentTenantService.CurrentEnvType)
-                .FirstOrDefaultAsync();
-            if (byName == null)
-            {
-                unresolved.Add(value);
-                credentialNames.RemoveAt(i);
-            }
+            unresolved.Add(value);
+            credentialNames.RemoveAt(i);
         }
 
         if (unresolved.Count > 0)
@@ -900,6 +908,59 @@ public class FlowBuilderService : IFlowBuilderService
     }
 
     /// <summary>
+    /// Resolves each credential name to the Dev credential a publish would use, preferring the current
+    /// space, then the Central space, then any other space. Names without a credential are absent.
+    /// </summary>
+    private async Task<Dictionary<string, VaultCredential>> ResolveDevVaultCredentialsAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedCredential(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowVaultCredentialAccessAsync(Guid publishingFlowId, List<string> credentialNames, string flowName)
+    {
+        if (credentialNames.Count == 0)
+        {
+            return;
+        }
+
+        var devVaultCredentials = await ResolveDevVaultCredentialsAsync(credentialNames);
+        var restrictedVaultCredentials = devVaultCredentials.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedVaultCredentials.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.VaultCredential,
+            restrictedVaultCredentials.Select(w => w.Value.Id));
+
+        foreach (var (name, devVaultCredential) in restrictedVaultCredentials)
+        {
+            if (!assignedFlowIds.TryGetValue(devVaultCredential.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted credential '{name}'. Ask the credential owner to assign this flow first.");
+            }
+        }
+    }
+
+    /// <summary>
     /// Finds or creates the Production clone of a vault credential, including its encrypted
     /// key-value pairs. Returns the Production vault credential ID. A Dev credential GUID is never written
     /// onto a Production record: a missing source or failed clone fails the publish.
@@ -918,15 +979,41 @@ public class FlowBuilderService : IFlowBuilderService
 
         await AcquireProdCloneLockAsync("credential", sourceSecret.Name);
         var prodSecret = await _unitOfWork.VaultCredentialRepo
-            .GetByConditionAsync(w => w.Name == sourceSecret.Name && w.EnvType == ConfigureEnvironmentType.Prod)
+            .GetByConditionAsync(w =>
+                w.Name == sourceSecret.Name &&
+                w.TenantId == _currentTenantService.CurrentTenantId &&
+                w.EnvType == ConfigureEnvironmentType.Prod &&
+                w.SpaceId == sourceSecret.SpaceId)
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync();
         if (prodSecret != null)
         {
             await EnsureProdCredentialMirroredAsync(prodSecret);
+
+            var pendingFlowAccesses = new List<ResourceFlowAccess>();
+            var hasProdCredentialChanges = await StageProdCredentialAccessSyncAsync(sourceSecret, prodSecret, pendingFlowAccesses);
+            if (pendingFlowAccesses.Count > 0)
+            {
+                await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+            }
+
+            if (pendingFlowAccesses.Count > 0 || hasProdCredentialChanges)
+            {
+                await _unitOfWork.SaveAsync();
+            }
+
             return prodSecret.Id;
         }
 
         var clone = await CloneVaultCredentialToProdAsync(sourceSecret);
+        var clonePendingFlowAccesses = new List<ResourceFlowAccess>();
+        await StageProdCredentialAccessSyncAsync(sourceSecret, clone, clonePendingFlowAccesses);
+        if (clonePendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(clonePendingFlowAccesses);
+            await _unitOfWork.SaveAsync();
+        }
+
         return clone.Id;
     }
 
@@ -944,6 +1031,7 @@ public class FlowBuilderService : IFlowBuilderService
             Data = devSecret.Data,
             UsageCount = 0,
             IsTenantWideAccess = devSecret.IsTenantWideAccess,
+            IsResourceAccessRestricted = devSecret.IsResourceAccessRestricted,
             SpaceId = devSecret.SpaceId,
             EnvType = ConfigureEnvironmentType.Prod,
             CreatedByUserId = _userId,
@@ -977,32 +1065,98 @@ public class FlowBuilderService : IFlowBuilderService
     private async Task<List<string>> EnsureProdVaultCredentialsAsync(List<string> names)
     {
         var missing = new List<string>();
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var hasProdCredentialChanges = false;
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var devCredentials = await ResolveDevVaultCredentialsAsync(names);
+
         foreach (var name in names)
         {
             await AcquireProdCloneLockAsync("credential", name);
-            var devSecret = await _unitOfWork.VaultCredentialRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .FirstOrDefaultAsync();
-            if (devSecret == null)
+            if (!devCredentials.TryGetValue(name, out var devSecret))
             {
                 missing.Add($"credential '{name}'");
                 continue;
             }
 
             var prodSecret = await _unitOfWork.VaultCredentialRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devSecret.SpaceId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
-            if (prodSecret != null)
+
+            if (prodSecret == null)
+            {
+                prodSecret = await CloneVaultCredentialToProdAsync(devSecret);
+            }
+            else
             {
                 // Repair a Production clone that was created before Corsair mirroring existed.
                 await EnsureProdCredentialMirroredAsync(prodSecret);
-                continue;
             }
 
-            await CloneVaultCredentialToProdAsync(devSecret);
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (await StageProdCredentialAccessSyncAsync(devSecret, prodSecret, pendingFlowAccesses))
+            {
+                hasProdCredentialChanges = true;
+            }
+        }
+
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || hasProdCredentialChanges)
+        {
+            await _unitOfWork.SaveAsync();
         }
 
         return missing;
+    }
+
+    private async Task<bool> StageProdCredentialAccessSyncAsync(VaultCredential sourceSecret, VaultCredential prodSecret, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+        var hasProdCredentialChanges = false;
+        if (sourceSecret.IsResourceAccessRestricted && !prodSecret.IsResourceAccessRestricted)
+        {
+            prodSecret.IsResourceAccessRestricted = true;
+            _unitOfWork.VaultCredentialRepo.Update(prodSecret);
+            hasProdCredentialChanges = true;
+        }
+
+        await EnsureProdVaultCredentialFlowAccessAsync(sourceSecret.Id, prodSecret.Id, pendingFlowAccesses);
+        return hasProdCredentialChanges;
+    }
+
+    private async Task EnsureProdVaultCredentialFlowAccessAsync(Guid devCredentialId, Guid prodCredentialId, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.VaultCredential && w.ResourceId == devCredentialId)
+            .ToListAsync();
+
+        if (sourceFlowAccesses.Count == 0)
+            return;
+
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.VaultCredential && w.ResourceId == prodCredentialId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodCredentialId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.VaultCredential,
+                ResourceId = prodCredentialId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     /// <summary>
