@@ -60,10 +60,8 @@ public class JobsExecutorService : IJobsExecutorService
 
             if (!await _creditGateService.HasSufficientCreditsAsync(jobDetails.TenantId))
             {
-                _creditGateService.CancelForInsufficientCredits(jobDetails);
-                _unitOfWork.JobRepo.Update(jobDetails);
-                if (!await _unitOfWork.SaveAsync())
-                    _logger.LogWarning("Failed to persist insufficient-credit cancellation for job {JobId}.", jobDetails.Id);
+                if (await CancelJobForInsufficientCreditsAsync(jobDetails.Id) == 0)
+                    _logger.LogWarning("Job {JobId} was not canceled for insufficient credits; it is no longer in the Created state.", jobDetails.Id);
 
                 _logger.LogWarning("Blocking job dispatch for tenant {TenantId}: insufficient credits.", jobDetails.TenantId);
                 return;
@@ -126,17 +124,31 @@ public class JobsExecutorService : IJobsExecutorService
                 TenantId = jobDetails.TenantId
             };
 
+            var assignedMachineId = jobDetails.MachineId;
+
             // Delegate the actual execution to the TriggerExecutionAsync method
-            await TriggerExecutionAsync(executionCommandDto);
+            var delivered = await TriggerExecutionAsync(executionCommandDto);
 
-            // Update job status in the repository
-            _unitOfWork.JobRepo.Update(jobDetails);
-
-            // Save changes asynchronously
-            if (!await _unitOfWork.SaveAsync())
+            if (!delivered)
             {
-                _logger.LogError("Failed to save changes for Job ID: {JobId}.", jobDetails.Id);
+                if (assignedMachineId.HasValue && assignedMachineId.Value != Guid.Empty)
+                {
+                    var unassigned = await UnassignJobHeldByMachineAsync(jobDetails.Id, assignedMachineId.Value);
+
+                    if (unassigned == 1)
+                    {
+                        var reservedMachine = await _clientStatusStore.GetClientByIdAsync(assignedMachineId.Value);
+                        if (reservedMachine != null && PendingJobClaimHelpers.ReleaseIfHeldBy(reservedMachine, jobDetails.Id))
+                            await _clientStatusStore.UpdateClientStatusAsync(reservedMachine);
+                    }
+                }
+
+                _logger.LogWarning("Job {JobId} could not be delivered; it stays unassigned for retry.", jobDetails.Id);
+                return;
             }
+
+            if (await PersistManualAssignmentAsync(jobDetails.Id, assignedMachineId, jobDetails.ExecutedOn) == 0)
+                _logger.LogWarning("Job {JobId} assignment could not be persisted; another dispatcher already claimed it.", jobDetails.Id);
         }
         catch (Exception ex)
         {
@@ -145,7 +157,7 @@ public class JobsExecutorService : IJobsExecutorService
     }
 
     // Method to trigger the job execution on the assigned machine
-    public async Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto)
+    public async Task<bool> TriggerExecutionAsync(ExecutionCommandDto executionCommandDto)
     {
         try
         {
@@ -157,7 +169,7 @@ public class JobsExecutorService : IJobsExecutorService
             // runner side without joining the backend WebSocket hub, so skip hub dispatch entirely.
             if (JobsAssignmentHelpers.IsDesktopAppLocation(machineName))
             {
-                return;
+                return true;
             }
 
             var clientDataStore = await _clientStatusStore.GetClientByNameAsync(executionCommandDto.TenantId, machineName ?? string.Empty);
@@ -167,7 +179,7 @@ public class JobsExecutorService : IJobsExecutorService
                 // Log warning if the machine cannot be found
                 _logger.LogWarning("Machine {MachineName} not found in the client status store.", machineName);
                 await _hubContext.Clients.User(_userId.ToString()).SendAsync("error", "Assigned machine not found", _userId);
-                return;
+                return false;
             }
 
             // The machine's internal Guid id, used for DB job reassignment comparisons (Job.MachineId FK).
@@ -179,8 +191,8 @@ public class JobsExecutorService : IJobsExecutorService
             {
                 // Log and notify if the machine is not online or idle
                 _logger.LogWarning("Machine {MachineName} is not online or idle. Job execution cannot be triggered.", machineName);
-                await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
-                return;
+                await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
+                return false;
             }
 
             // Guard against double-dispatch: reject a new Initiate only while the machine already has a
@@ -197,8 +209,8 @@ public class JobsExecutorService : IJobsExecutorService
                 if (pendingLive)
                 {
                     _logger.LogWarning("Machine {MachineName} already has a pending job {PendingJobId}. Cannot initiate {JobId}.", machineName, clientDataStore.JobId, executionCommandDto.JobId);
-                    await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Machine already has a pending job.", _userId);
-                    return;
+                    await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("error", "Machine already has a pending job.", _userId);
+                    return false;
                 }
 
                 // Stale marker: the referenced job is no longer live. Clear it so this machine can be dispatched.
@@ -216,8 +228,8 @@ public class JobsExecutorService : IJobsExecutorService
             {
                 // Log and notify if the machine is not running when it should be
                 _logger.LogWarning("Machine {MachineName} is not running. Cannot perform actions like pause, stop, cancel, or cleanup.", machineName);
-                await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Machine is not running", _userId);
-                return;
+                await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("error", "Machine is not running", _userId);
+                return false;
             }
 
             // Update machine status based on the execution command.
@@ -256,75 +268,93 @@ public class JobsExecutorService : IJobsExecutorService
             // Send the execution command to the client machine
             await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
 
+            var delivered = true;
+
             // Log successful execution of the job
             _logger.LogInformation("Job {JobId} successfully executed on machine {MachineName}.", executionCommandDto.JobId, machineName);
 
-            // A machine can pull the next pending job only when it is free (no job dispatched/in-flight).
-            var isMachineFree = !clientDataStore.JobId.HasValue || clientDataStore.JobId.Value == Guid.Empty;
-
-            // A machine with a pending job falls through to the busy broadcast below.
-            if ((clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle) && isMachineFree)
+            try
             {
-                // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
-                var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
-                    .GetByConditionAsync(w => w.FlowVersionId == executionCommandDto.AgentId && w.TenantId == executionCommandDto.TenantId)
-                    .Select(s => s.FlowVersionId)
-                    .ToListAsync();
+                // A machine can pull the next pending job only when it is free (no job dispatched/in-flight).
+                var isMachineFree = !clientDataStore.JobId.HasValue || clientDataStore.JobId.Value == Guid.Empty;
 
-                var job = await _unitOfWork.JobRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == executionCommandDto.TenantId &&
-                        w.Status == JobStatusEnum.Created &&
-                        flowVersionIds.Contains(w.FlowVersionId) &&
-                        w.MachineId == machineClientId
-                    )
-                    .OrderBy(o => o.CreatedOn)
-                    .FirstOrDefaultAsync();
-
-                // If a job is found, assign it to the machine and update status
-                if (job != null)
+                // A machine with a pending job falls through to the busy broadcast below.
+                if ((clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle) && isMachineFree)
                 {
-                    job.MachineId = machineClientId;
-                    job.ExecutedOn = machineName;
-                    _unitOfWork.JobRepo.Update(job);
-                    await _unitOfWork.SaveAsync();
+                    // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
+                    var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
+                        .GetByConditionAsync(w => w.FlowVersionId == executionCommandDto.AgentId && w.TenantId == executionCommandDto.TenantId)
+                        .Select(s => s.FlowVersionId)
+                        .ToListAsync();
 
-                    // Mark the machine with a pending job; status flips to Running only when the runner starts it.
-                    clientDataStore.AgentId = job.FlowVersionId;
-                    clientDataStore.JobId = job.Id;
-                    await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+                    var chainedJob = await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w =>
+                            w.TenantId == executionCommandDto.TenantId &&
+                            w.Status == JobStatusEnum.Created &&
+                            flowVersionIds.Contains(w.FlowVersionId) &&
+                            w.MachineId == machineClientId
+                        )
+                        .OrderBy(o => o.CreatedOn)
+                        .FirstOrDefaultAsync();
 
-                    // Prepare the execution command with necessary job and machine details, and send it to the client machine for processing.
-                    executionCommandDto.JobId = job.Id;
-                    executionCommandDto.Command = ExecutionCommandTypesEnum.Initiate;
-                    executionCommandDto.AgentId = job.FlowVersionId;
-                    executionCommandDto.MachineName = machineName;
+                    var chainedClaimed = chainedJob != null
+                        && await ClaimJobForMachineAsync(chainedJob.Id, machineClientId, machineName) == 1;
 
-                    // Send execution command to the machine
-                    await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+                    // If a job is found and this dispatch wins the claim, bind it to the machine and update status
+                    if (chainedClaimed)
+                    {
+                        // Mark the machine with a pending job; status flips to Running only when the runner starts it.
+                        clientDataStore.AgentId = chainedJob!.FlowVersionId;
+                        clientDataStore.JobId = chainedJob!.Id;
+                        await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+
+                        // IMPORTANT NOTE: send a fresh command object. Mutating the already delivered command would
+                        // misattribute a later failure to the job that has already been sent to the machine.
+                        var chainedCommand = new ExecutionCommandDto
+                        {
+                            JobId = chainedJob!.Id,
+                            Command = ExecutionCommandTypesEnum.Initiate,
+                            AgentId = chainedJob!.FlowVersionId,
+                            MachineName = machineName,
+                            TenantId = executionCommandDto.TenantId
+                        };
+
+                        // Send execution command to the machine
+                        await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", chainedCommand);
+                    }
+                    else
+                    {
+                        // If no job is found, update the machine's status to 'Idle' and notify tenant group
+                        clientDataStore.AgentId = null;
+                        clientDataStore.JobId = null;
+                        clientDataStore.Status = MachineStatusEnum.Idle;
+                        await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
+
+                        // Notify tenant group that a machine is idle
+                        await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is now idle.");
+                    }
                 }
                 else
                 {
-                    // If no job is found, update the machine's status to 'Idle' and notify tenant group
-                    clientDataStore.AgentId = null;
-                    clientDataStore.JobId = null;
-                    clientDataStore.Status = MachineStatusEnum.Idle;
-                    await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
-
                     // Notify tenant group that a machine is idle
-                    await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is now idle.");
+                    await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is now busy.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // Notify tenant group that a machine is idle
-                await _hubContext.Clients.Group($"TENANT_{executionCommandDto.TenantId}").SendAsync("machine_status_update", "A machine is now busy.");
+                // IMPORTANT NOTE: the command is already on the wire (delivered). Post-dispatch notifications are
+                // best effort and must never flip the delivery result, otherwise callers unassign a job that is
+                // already in flight.
+                _logger.LogError(ex, "Post-dispatch notification failed for job {JobId}.", executionCommandDto.JobId);
             }
+
+            return delivered;
         }
         catch (Exception ex)
         {
             // Log any errors encountered during job execution
             _logger.LogError(ex, "An error occurred while executing job {JobId}.", executionCommandDto?.JobId);
+            return false;
         }
     }
 
@@ -345,9 +375,6 @@ public class JobsExecutorService : IJobsExecutorService
                 _logger.LogWarning("No jobs found with the provided job IDs: {JobIds}.", string.Join(", ", jobIds));
                 return;
             }
-
-            // List of jobs that need to be updated
-            List<Job> jobsNeedToUpdate = new List<Job>();
 
             // Process each tenant's jobs independently
             foreach (var tenantGroup in jobsGroupedByTenantId)
@@ -372,12 +399,12 @@ public class JobsExecutorService : IJobsExecutorService
                 }
 
                 // Fetch machine statuses for the tenant
-                var machineList = await _clientStatusStore.GetMachineStatusesAsync(tenantId);
+                var machineList = (await _clientStatusStore.GetMachineStatusesAsync(tenantId)).ToList();
 
                 // Process each job within this tenant group
                 foreach (var job in tenantGroup)
                 {
-                    if (job.MachineId != null && job.MachineId != Guid.Empty)
+                    if (!PendingJobClaimHelpers.IsUnassignedMachineId(job.MachineId))
                         continue;
 
                     var machineFlows = job.FlowVersion?.FlowVersionMachines?.Where(w => w != null).ToList();
@@ -387,68 +414,116 @@ public class JobsExecutorService : IJobsExecutorService
                         continue;
                     }
 
-                    var mappedMachineIds = machineFlows.Select(f => f.MachineId);
-
                     var unavailableMachineIds = new HashSet<Guid>();
                     foreach (var machine in machineList)
                     {
                         if (await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(machine))
                             unavailableMachineIds.Add(machine.ClientId);
                     }
-                    foreach (var pendingJob in jobsNeedToUpdate.Where(j => j.MachineId.HasValue))
-                        unavailableMachineIds.Add(pendingJob.MachineId!.Value);
 
-                    var targetMachine = JobsAssignmentHelpers.SelectDeterministicTargetMachine(mappedMachineIds, machineList, unavailableMachineIds);
+                    var targetMachine = JobsAssignmentHelpers.SelectDeterministicTargetMachine(machineFlows.Select(f => f.MachineId), machineList, unavailableMachineIds);
 
-                    if (targetMachine != null)
-                    {
-                        job.MachineId = targetMachine.ClientId;
-                        job.ExecutedOn = targetMachine.ClientName ?? targetMachine.ClientId.ToString();
-
-                        MachineReservationHelpers.Reserve(targetMachine, job.Id, job.FlowVersionId);
-                        await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
-
-                        jobsNeedToUpdate.Add(job);
-                    }
-                    else
+                    if (targetMachine == null)
                     {
                         _logger.LogWarning("No available machine found for Job ID: {JobId} in Tenant ID: {TenantId}.", job.Id, tenantId);
+                        continue;
                     }
+
+                    var machineId = targetMachine.ClientId;
+                    var machineName = targetMachine.ClientName ?? machineId.ToString();
+
+                    // IMPORTANT NOTE: claim the job before reserving the marker or sending anything. Exactly one
+                    // dispatcher observes one affected row; every other dispatcher must leave the job alone.
+                    if (await ClaimJobForMachineAsync(job.Id, machineId, machineName) != 1)
+                    {
+                        _logger.LogWarning("Scheduled job {JobId} was already claimed by another dispatcher; skipping.", job.Id);
+                        continue;
+                    }
+
+                    MachineReservationHelpers.Reserve(targetMachine, job.Id, job.FlowVersionId);
+                    await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
+
+                    // Create an ExecutionCommandDto to trigger the job execution
+                    var executionCommandDto = new ExecutionCommandDto
+                    {
+                        JobId = job.Id,
+                        Command = ExecutionCommandTypesEnum.Initiate,
+                        AgentId = job.FlowVersionId,
+                        MachineName = machineName,
+                        TenantId = job.TenantId
+                    };
+
+                    // Delegate the actual execution to the TriggerExecutionAsync method
+                    var delivered = await TriggerExecutionAsync(executionCommandDto);
+
+                    if (delivered)
+                        continue;
+
+                    var unassigned = await UnassignJobHeldByMachineAsync(job.Id, machineId);
+
+                    if (unassigned == 1 && PendingJobClaimHelpers.ReleaseIfHeldBy(targetMachine, job.Id))
+                        await _clientStatusStore.UpdateClientStatusAsync(targetMachine);
+
+                    _logger.LogWarning("Scheduled job {JobId} could not be delivered; it stays unassigned for retry.", job.Id);
                 }
-            }
-
-            if (jobsNeedToUpdate.Count == 0)
-            {
-                return;
-            }
-
-            // Process jobs that need to be updated
-            foreach (var job in jobsNeedToUpdate)
-            {
-                // Create an ExecutionCommandDto to trigger the job execution
-                var executionCommandDto = new ExecutionCommandDto
-                {
-                    JobId = job.Id,
-                    Command = ExecutionCommandTypesEnum.Initiate,
-                    AgentId = job.FlowVersionId,
-                    MachineName = job.ExecutedOn,
-                    TenantId = job.TenantId
-                };
-
-                // Delegate the actual execution to the TriggerExecutionAsync method
-                await TriggerExecutionAsync(executionCommandDto);
-
-                // Update the job
-                _workspaceInternalDbContext.Update(job);
-
-                // Save changes asynchronously
-                await _workspaceInternalDbContext.SaveChangesAsync();
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing job command.");
         }
+    }
+
+    private Task<int> ClaimJobForMachineAsync(Guid jobId, Guid machineId, string? machineName)
+        => _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, machineId)
+                .SetProperty(w => w.ExecutedOn, machineName));
+
+    private Task<int> UnassignJobHeldByMachineAsync(Guid jobId, Guid machineId)
+        => _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && w.MachineId == machineId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, (Guid?)null)
+                .SetProperty(w => w.ExecutedOn, (string?)null)
+                .SetProperty(w => w.RetryCount, w => w.RetryCount + 1));
+
+    private Task<int> CancelJobForInsufficientCreditsAsync(Guid jobId)
+    {
+        var endTime = DateTimeOffset.UtcNow;
+
+        return _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.Status, JobStatusEnum.Canceled)
+                .SetProperty(w => w.EndTime, endTime)
+                .SetProperty(w => w.Remark, CreditGateService.InsufficientCreditsRemark));
+    }
+
+    private Task<int> PersistManualAssignmentAsync(Guid jobId, Guid? machineId, string? executedOn)
+    {
+        if (PendingJobClaimHelpers.IsUnassignedMachineId(machineId))
+        {
+            return _workspaceInternalDbContext.Jobs
+                .Where(w => w.Id == jobId
+                    && w.Status == JobStatusEnum.Created)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(w => w.ExecutedOn, executedOn));
+        }
+
+        return _workspaceInternalDbContext.Jobs
+            .Where(w => w.Id == jobId
+                && w.Status == JobStatusEnum.Created
+                && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(w => w.MachineId, machineId)
+                .SetProperty(w => w.ExecutedOn, executedOn));
     }
 
     // Sends a command to the connected machine to terminate a stuck job.

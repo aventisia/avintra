@@ -7,6 +7,7 @@ public class AgentTableService : IAgentTableService
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
 
     public AgentTableService(
@@ -15,7 +16,8 @@ public class AgentTableService : IAgentTableService
         IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -25,6 +27,7 @@ public class AgentTableService : IAgentTableService
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
@@ -723,12 +726,17 @@ public class AgentTableService : IAgentTableService
 
             // Attach the queues linked to each agent (flow version) so the UI can render
             // them as hyperlinks to the queue's work items.
-            var flowVersionIds = agentDtos.Select(agent => agent.Id).ToList();
-            var queueFlowVersions = await _unitOfWork.QueueFlowVersionRepo
-                .GetByConditionAsync(qf => flowVersionIds.Contains(qf.FlowVersionId))
-                .Include(qf => qf.Queue)
-                .AsNoTracking()
-                .ToListAsync();
+            var flowIdByVersionId = flowVersions.ToDictionary(version => version!.Id, version => version!.FlowId);
+            var queueIdsByFlow = await _resourceFlowAccessService.GetAssignedResourceIdsAsync(
+                ResourceTypeEnum.Queue,
+                flowIdByVersionId.Values.Distinct());
+            var queueIds = queueIdsByFlow.Values.SelectMany(ids => ids).Distinct().ToList();
+            var queuesById = queueIds.Count == 0
+                ? new Dictionary<Guid, Queue>()
+                : await _unitOfWork.QueueRepo
+                    .GetByConditionAsync(w => queueIds.Contains(w.Id))
+                    .AsNoTracking()
+                    .ToDictionaryAsync(w => w.Id);
 
             // Index each agent's workflow definition so its referenced AI models can be resolved.
             var reactFlowObjectByVersionId = flowVersions
@@ -737,13 +745,14 @@ public class AgentTableService : IAgentTableService
 
             foreach (var agent in agentDtos)
             {
-                agent.Queues = queueFlowVersions
-                    .Where(qf => qf.FlowVersionId == agent.Id && qf.Queue != null)
-                    .Select(qf => new AgentQueueDto
+                agent.Queues = (queueIdsByFlow.GetValueOrDefault(flowIdByVersionId.GetValueOrDefault(agent.Id)) ?? new HashSet<Guid>())
+                    .Select(id => queuesById.GetValueOrDefault(id))
+                    .Where(queue => queue != null)
+                    .Select(queue => new AgentQueueDto
                     {
-                        Id = qf.Queue!.Id,
-                        Name = qf.Queue!.Name,
-                        Type = qf.Queue!.Type
+                        Id = queue!.Id,
+                        Name = queue.Name,
+                        Type = queue.Type
                     })
                     .ToList();
 
@@ -803,6 +812,7 @@ public class AgentTableService : IAgentTableService
 
         await UnlinkFlowVersionRelationshipsAsync(flowVersion);
         await DeleteOrphanedResourcesAsync(flowVersion, resourceReferences, linkedTriggerIds);
+        await _resourceFlowAccessService.DeleteFlowAccessesIfArchivedAsync(flowVersion.FlowId, flowVersion.Id);
     }
 
     // Stages the removal of every active relationship for a flow version being archived.
@@ -815,9 +825,6 @@ public class AgentTableService : IAgentTableService
 
         // Unlink machines so the archived version can no longer be dispatched
         await DeleteLinksAsync(_unitOfWork.Machine_FlowVersionRepo, w => w.FlowVersionId == flowVersionId);
-
-        // Unlink queues from the archived version
-        await DeleteLinksAsync(_unitOfWork.QueueFlowVersionRepo, w => w.FlowVersionId == flowVersionId);
 
         // Unlink triggers (time/webhook/email/message). Removing these rows is what
         // stops the trigger handlers from scheduling the archived version.
@@ -897,7 +904,7 @@ public class AgentTableService : IAgentTableService
         var usedNames = await GetResourceNamesUsedByOtherAgentsAsync(flowVersion.Id);
 
         await DeleteOrphanedCredentialsAsync(resourceReferences["credentials"], usedNames["credentials"]);
-        await DeleteOrphanedQueuesAsync(resourceReferences["queues"], usedNames["queues"], flowVersion.Id);
+        await DeleteOrphanedQueuesAsync(resourceReferences["queues"], usedNames["queues"], flowVersion.FlowId);
         await DeleteOrphanedKnowledgeBasesAsync(resourceReferences["knowledgeBases"], usedNames["knowledgeBases"]);
         await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"]);
         await DeleteOrphanedSkillsAsync(resourceReferences["skills"], usedNames["skills"]);
@@ -1029,7 +1036,7 @@ public class AgentTableService : IAgentTableService
 
     // Deletes queues referenced only by the archived agent when they are not shared and
     // have no work items, user assignments or inbound routing.
-    private async Task DeleteOrphanedQueuesAsync(List<string> names, HashSet<string> usedNames, Guid flowVersionId)
+    private async Task DeleteOrphanedQueuesAsync(List<string> names, HashSet<string> usedNames, Guid flowId)
     {
         foreach (var name in DistinctNames(names))
         {
@@ -1042,11 +1049,11 @@ public class AgentTableService : IAgentTableService
             if (queue == null || queue.IsTenantWideAccess)
                 continue;
 
-            // Still assigned to another active agent?
-            var assignedToOtherAgent = await _unitOfWork.QueueFlowVersionRepo
-                .GetByConditionAsync(w => w.QueueId == queue.Id && w.FlowVersionId != flowVersionId)
-                .AnyAsync();
-            if (assignedToOtherAgent)
+            // Still assigned to another flow?
+            var flowIdsByQueue = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(ResourceTypeEnum.Queue, new[] { queue.Id });
+            var assignedToOtherFlow = (flowIdsByQueue.GetValueOrDefault(queue.Id) ?? new HashSet<Guid>())
+                .Any(id => id != flowId);
+            if (assignedToOtherFlow)
                 continue;
 
             // Other relationships: work items, user assignments or inbound routing.
@@ -1066,6 +1073,7 @@ public class AgentTableService : IAgentTableService
                 continue;
 
             await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queue.Id);
             _unitOfWork.QueueRepo.Delete(queue);
         }
     }
@@ -1142,6 +1150,7 @@ public class AgentTableService : IAgentTableService
                 continue;
 
             await _resourceShareService.DeleteResourceSharesAsync(tool.Id, ResourceTypeEnum.Tool);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, tool.Id);
             _unitOfWork.ToolRepo.Delete(tool);
         }
     }

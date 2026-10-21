@@ -100,7 +100,14 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
       <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isVerified")} />
     ),
     cell: ({ row }) => (
-      <Badge variant={row.getValue("isVerified") ? "default" : "outline"}>
+      <Badge
+        variant="outline"
+        className={
+          row.getValue("isVerified")
+            ? "border-green-200 bg-green-50 text-green-700"
+            : "border-orange-200 bg-orange-50 text-orange-700"
+        }
+      >
         {row.getValue("isVerified") ? "Verified" : "Draft"}
       </Badge>
     ),
@@ -130,6 +137,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
         name={row.name}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess}
+        isResourceAccessRestricted={row.isResourceAccessRestricted}
         isPlatformTool={isPlatformTab}
       />
     ),

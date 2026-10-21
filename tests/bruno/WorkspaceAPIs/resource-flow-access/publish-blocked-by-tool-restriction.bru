@@ -1,0 +1,50 @@
+meta {
+  name: Publish blocked by restricted tool
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/publish
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "id": "{{RESTRICTED_FLOW_VERSION_ID}}",
+    "flowId": "{{RESTRICTED_FLOW_ID}}",
+    "name": "{{RESTRICTED_FLOW_NAME}}",
+    "type": "Agent"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const toolName = bru.getGlobalEnvVar("RESTRICTED_TOOL_NAME") || bru.getEnvVar("RESTRICTED_TOOL_NAME");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("publish is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("publish block message names the restricted tool", function() {
+    expect(text).to.contain("Cannot publish: flow ");
+    expect(text).to.contain(toolName);
+  });
+}
+
+docs {
+  > Requires RESTRICTED_FLOW_VERSION_ID to be a version of RESTRICTED_FLOW_ID whose
+  > saved reactFlowObject references a custom tool by name, and RESTRICTED_TOOL_NAME to
+  > name a Dev custom tool whose flow assignment is non-empty and does NOT include
+  > that flow. Publish then blocks with HTTP 403 and the message
+  > "Cannot publish: flow '<flow>' is not assigned to restricted tool '<tool>'".
+  > Run this before the unassign request while the restriction is still present.
+  > Clearing the tool restriction (POST resource-flows/assign with resourceType,
+  > resourceId and flowIds []) and re-running publish returns 200.
+}

@@ -1,7 +1,7 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
-import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
+import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 
 /**
  * Represents a data transfer object (DTO) for a queue.
@@ -106,15 +106,15 @@ export interface QueuesTableDto {
   total: number;
 
   /**
-   * Names of the agents (flow versions) assigned to the queue.
-   */
-  agentsNames?: string[] | null;
-
-  /**
    * Indicates whether the queue is accessible
    * to all users within the tenant.
    */
   isTenantWideAccess: boolean;
+
+  /**
+   * Indicates whether agent access to the queue is restricted to the assigned agents.
+   */
+  isResourceAccessRestricted: boolean;
 
   /**
    * Access level granted to the user.
@@ -151,6 +151,11 @@ export interface QueuesTableDto {
    * Last modification timestamp.
    */
   lastModifiedOn?: Date | string;
+
+  /**
+   * Names of the agents (flow versions) assigned to the queue.
+   */
+  agentsNames?: string[] | null;
 }
 
 export interface InputSchemaField {

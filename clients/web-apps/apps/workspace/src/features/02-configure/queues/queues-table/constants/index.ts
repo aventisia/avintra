@@ -5,7 +5,6 @@ import { DialogCrudAction } from "@avplatform/ui/types";
  */
 const DATA_QUERY_KEY = ["queues"];
 
-const QUEUE_AGENT_KEY = "QUEUE_AGENT";
 const QUEUE_USER_KEY = "QUEUE_USER";
 
 /**
@@ -28,11 +27,4 @@ const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   }
 };
 
-export {
-  DATA_QUERY_KEY,
-  QUEUE_AGENT_KEY,
-  QUEUE_USER_KEY,
-  getDialogHeadingDescription,
-  TABLE_HEADING,
-  TABLE_KEY,
-};
+export { DATA_QUERY_KEY, QUEUE_USER_KEY, getDialogHeadingDescription, TABLE_HEADING, TABLE_KEY };

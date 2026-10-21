@@ -1,5 +1,5 @@
 meta {
-  name: Poll next pending job (bound only)
+  name: Poll next pending job
   type: http
   seq: 6
 }
@@ -21,6 +21,10 @@ assert {
 docs {
   > Executor-only poll endpoint. Requires `register-machine` to have run so `MACHINE_ID` and
   > `MACHINE_JWT` are populated.
-  > A 200 response only ever contains a job already bound to the requesting machine (its
-  > `executionLocation` is that machine's name). A 200 with null data means no bound job is pending.
+  > The poll returns a `Created` job that is either already bound to the requesting machine or
+  > unassigned and recoverable: `MachineId` null/empty with `ExecutedOn` "Web Server"
+  > (case-insensitive), or an unassigned `TriggerType=Time` job the scheduler could not push.
+  > A 200 with null data means no such job was pending. A 200 response only ever contains a job
+  > the requesting machine now owns; concurrent polls for one machine can claim the same job only
+  > once, because the claim is a single conditional update.
 }

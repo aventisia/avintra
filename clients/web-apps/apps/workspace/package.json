@@ -10,6 +10,7 @@
     "build": "tsc -b && vite build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\"",
     "lint": "eslint . --max-warnings 27",
+    "test:e2e": "playwright test",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -87,6 +88,7 @@
     "@avplatform/tailwind-config": "*",
     "@avplatform/typescript-config": "*",
     "@avplatform/vite-config": "*",
+    "@playwright/test": "^1.64.1",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^24.3.0",
     "@types/react": "^18.3.3",

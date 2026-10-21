@@ -14,6 +14,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly ICollaborationStore _collaborationStore;
     private readonly IVaultCredentialService _vaultCredentialService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -27,7 +28,8 @@ public class FlowBuilderService : IFlowBuilderService
         INotificationEventService notificationEventService,
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
-        IVaultCredentialService vaultCredentialService)
+        IVaultCredentialService vaultCredentialService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -46,6 +48,7 @@ public class FlowBuilderService : IFlowBuilderService
         _currentTenantService = currentTenantService;
         _collaborationStore = collaborationStore;
         _vaultCredentialService = vaultCredentialService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -387,7 +390,10 @@ public class FlowBuilderService : IFlowBuilderService
                     await _unitOfWork.ExecuteInTransactionAsync(async () =>
                     {
                         // Collect and store the referenced resource names (credentials, queues, KBs, tools, skills)
-                        flowVersion.ResourceReferences = await CollectResourceReferencesAsync(flowVersion.ReactFlowObject);
+                        flowVersion.ResourceReferences = await CollectResourceReferencesAsync(
+                            flowVersion.ReactFlowObject,
+                            flowVersion.FlowId,
+                            flowVersion.Flow.Name);
 
                         // Mark the flow version as published
                         flowVersion.IsPublished = true;
@@ -425,6 +431,11 @@ public class FlowBuilderService : IFlowBuilderService
             // Final success response
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
+        }
+        catch (ResourceFlowAccessDeniedException ex)
+        {
+            _logger.LogWarning(ex, "Publish blocked by flow access restriction for flow version {FlowVersionId}.", publishFlowVersionDto.Id);
+            serviceResponse.Update(ex.Message, 403, false);
         }
         catch (Exception ex)
         {
@@ -586,7 +597,7 @@ public class FlowBuilderService : IFlowBuilderService
     /// resource type. All supported resource types are always present; unreferenced types hold
     /// an empty array. This powers publish-time Prod find-or-clone resolution.
     /// </summary>
-    private async Task<string?> CollectResourceReferencesAsync(string? reactFlowObject)
+    private async Task<string?> CollectResourceReferencesAsync(string? reactFlowObject, Guid publishingFlowId, string flowName)
     {
         var references = new Dictionary<string, List<string>>
         {
@@ -690,12 +701,15 @@ public class FlowBuilderService : IFlowBuilderService
             // credential names and drop references that no longer resolve in the current env.
             await ValidateCredentialReferencesAsync(references["credentials"]);
 
+            await ValidateFlowToolAccessAsync(publishingFlowId, references["tools"], flowName);
+            await ValidateFlowQueueAccessAsync(publishingFlowId, references["queues"], flowName);
+
             // Ensure PROD clones exist for every referenced resource so the published agent can
             // resolve them in the Production environment. Missing resources are created with
             // EnvType = Prod and their names are retained in the ResourceReferences JSON.
             await EnsureProdClonesAsync(references);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not ResourceFlowAccessDeniedException)
         {
             // Log and rethrow: a failed clone/validation must abort publish (the caller wraps this
             // pass in a transaction), never publish an agent whose Prod resources are missing.
@@ -775,6 +789,114 @@ public class FlowBuilderService : IFlowBuilderService
         if (missing.Count > 0)
             throw new InvalidOperationException(
                 $"Cannot publish: the following referenced resource(s) were not found in the {_currentTenantService.CurrentEnvType} environment: {string.Join(", ", missing)}.");
+    }
+
+    /// <summary>
+    /// Resolves each tool name to the Dev tool a publish would use, preferring the current space,
+    /// then the Central space, then any other space. Names without a custom tool are absent.
+    /// </summary>
+    private async Task<Dictionary<string, Tool>> ResolveDevToolsAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.ToolRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.Type == ComponentTypeEnum.Custom &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedTool(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowToolAccessAsync(Guid publishingFlowId, List<string> toolNames, string flowName)
+    {
+        if (toolNames.Count == 0)
+        {
+            return;
+        }
+
+        var devTools = await ResolveDevToolsAsync(toolNames);
+        var restrictedTools = devTools.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedTools.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.Tool,
+            restrictedTools.Select(w => w.Value.Id));
+
+        foreach (var (name, devTool) in restrictedTools)
+        {
+            if (!assignedFlowIds.TryGetValue(devTool.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted tool '{name}'. Ask the tool owner to assign this flow first.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resolves each queue name to the Dev queue a publish would use, preferring the current space,
+    /// then the Central space, then any other space. Names without a queue are absent.
+    /// </summary>
+    private async Task<Dictionary<string, Queue>> ResolveDevQueuesAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .Include(q => q.QueueUsers)
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedQueue(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowQueueAccessAsync(Guid publishingFlowId, List<string> queueNames, string flowName)
+    {
+        if (queueNames.Count == 0)
+        {
+            return;
+        }
+
+        var devQueues = await ResolveDevQueuesAsync(queueNames);
+        var restrictedQueues = devQueues.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedQueues.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.Queue,
+            restrictedQueues.Select(w => w.Value.Id));
+
+        foreach (var (name, devQueue) in restrictedQueues)
+        {
+            if (!assignedFlowIds.TryGetValue(devQueue.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted queue '{name}'. Ask the queue owner to assign this flow first.");
+            }
+        }
     }
 
     /// <summary>
@@ -901,27 +1023,29 @@ public class FlowBuilderService : IFlowBuilderService
     private async Task<List<string>> EnsureProdQueuesAsync(List<string> names)
     {
         var missing = new List<string>();
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingQueueUsers = new List<QueueUser>();
+        var hasProdQueueChanges = false;
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var devQueues = await ResolveDevQueuesAsync(names);
         foreach (var name in names)
         {
             await AcquireProdCloneLockAsync("queue", name);
-            // Load the source queue together with its user and agent assignments so the
-            // Production clone can be linked the same way.
-            var devQueue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .Include(q => q.QueueUsers)
-                .Include(q => q.QueueFlowVersions)
-                .FirstOrDefaultAsync();
-            if (devQueue == null)
+            if (!devQueues.TryGetValue(name, out var devQueue))
             {
                 missing.Add($"queue '{name}'");
                 continue;
             }
 
             var prodQueue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devQueue.SpaceId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
-            // Create the Production queue clone only when it does not exist yet.
             if (prodQueue == null)
             {
                 prodQueue = new Queue
@@ -940,6 +1064,7 @@ public class FlowBuilderService : IFlowBuilderService
                     OutputSchema = devQueue.OutputSchema,
                     Statuses = devQueue.Statuses,
                     IsTenantWideAccess = devQueue.IsTenantWideAccess,
+                    IsResourceAccessRestricted = devQueue.IsResourceAccessRestricted,
                     CredentialName = devQueue.CredentialName,
                     SpaceId = devQueue.SpaceId,
                     EnvType = ConfigureEnvironmentType.Prod,
@@ -951,34 +1076,50 @@ public class FlowBuilderService : IFlowBuilderService
                 await AssignOwnerOrThrowAsync(prodQueue.Id, ResourceTypeEnum.Queue);
             }
 
-            // Mirror the queue's user assignments onto the Production queue.
-            await EnsureProdQueueUsersAsync(devQueue, prodQueue);
+            await StageProdQueueUsersAsync(devQueue, prodQueue, pendingQueueUsers);
 
-            // Mirror the queue's agent (flow version) assignments onto the Production queue.
-            await EnsureProdQueueFlowVersionsAsync(devQueue, prodQueue);
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (devQueue.IsResourceAccessRestricted && !prodQueue.IsResourceAccessRestricted)
+            {
+                prodQueue.IsResourceAccessRestricted = true;
+                _unitOfWork.QueueRepo.Update(prodQueue);
+                hasProdQueueChanges = true;
+            }
+
+            await EnsureProdQueueFlowAccessAsync(devQueue.Id, prodQueue.Id, pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingQueueUsers.Count > 0)
+        {
+            await _unitOfWork.QueueUserRepo.InsertAsync(pendingQueueUsers);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingQueueUsers.Count > 0 || hasProdQueueChanges)
+        {
+            await _unitOfWork.SaveAsync();
         }
 
         return missing;
     }
 
-    /// <summary>
-    /// Copies the source queue's user assignments onto its Production clone. Existing links are
-    /// skipped so repeated publishes stay idempotent.
-    /// </summary>
-    private async Task EnsureProdQueueUsersAsync(Queue devQueue, Queue prodQueue)
+    private async Task StageProdQueueUsersAsync(Queue devQueue, Queue prodQueue, List<QueueUser> pendingQueueUsers)
     {
         var sourceUsers = devQueue.QueueUsers?.ToList() ?? new List<QueueUser>();
         if (sourceUsers.Count == 0)
             return;
 
-        // Fetch the users already linked to the Production queue to avoid duplicates.
         var existingUserIds = await _unitOfWork.QueueUserRepo
             .GetByConditionAsync(qu => qu.QueueId == prodQueue.Id)
             .Select(qu => qu.UserId)
             .ToListAsync();
 
-        var newQueueUsers = sourceUsers
-            .Where(qu => !existingUserIds.Contains(qu.UserId))
+        pendingQueueUsers.AddRange(sourceUsers
+            .Where(qu => !existingUserIds.Contains(qu.UserId) && !pendingQueueUsers.Any(p => p.QueueId == prodQueue.Id && p.UserId == qu.UserId))
             .Select(qu => new QueueUser
             {
                 QueueId = prodQueue.Id,
@@ -987,80 +1128,46 @@ public class FlowBuilderService : IFlowBuilderService
                 TenantId = qu.TenantId,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId
-            })
-            .ToList();
-
-        if (newQueueUsers.Count == 0)
-            return;
-
-        await _unitOfWork.QueueUserRepo.InsertAsync(newQueueUsers);
-        await _unitOfWork.SaveAsync();
+            }));
     }
 
-    /// <summary>
-    /// Copies the source queue's agent (flow version) assignments onto its Production clone.
-    /// Existing links are skipped so repeated publishes stay idempotent.
-    /// </summary>
-    private async Task EnsureProdQueueFlowVersionsAsync(Queue devQueue, Queue prodQueue)
+    private async Task EnsureProdQueueFlowAccessAsync(Guid devQueueId, Guid prodQueueId, List<ResourceFlowAccess> pendingFlowAccesses)
     {
-        var sourceFlowVersions = devQueue.QueueFlowVersions?.ToList() ?? new List<QueueFlowVersion>();
-        if (sourceFlowVersions.Count == 0)
-            return;
-
-        // Fetch the flow versions already linked to the Production queue to avoid duplicates.
-        var existingFlowVersionIds = await _unitOfWork.QueueFlowVersionRepo
-            .GetByConditionAsync(qf => qf.QueueId == prodQueue.Id)
-            .Select(qf => qf.FlowVersionId)
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Queue && w.ResourceId == devQueueId)
             .ToListAsync();
 
-        var newQueueFlowVersions = sourceFlowVersions
-            .Where(qf => !existingFlowVersionIds.Contains(qf.FlowVersionId))
-            .Select(qf => new QueueFlowVersion
-            {
-                QueueId = prodQueue.Id,
-                FlowVersionId = qf.FlowVersionId,
-                AccessType = qf.AccessType,
-                TenantId = qf.TenantId,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
-            })
-            .ToList();
-
-        if (newQueueFlowVersions.Count == 0)
+        if (sourceFlowAccesses.Count == 0)
             return;
 
-        await _unitOfWork.QueueFlowVersionRepo.InsertAsync(newQueueFlowVersions);
-        await _unitOfWork.SaveAsync();
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Queue && w.ResourceId == prodQueueId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodQueueId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.Queue,
+                ResourceId = prodQueueId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     private async Task<List<string>> EnsureProdToolsAsync(List<string> names)
     {
         var missing = new List<string>();
         var tenantId = _currentTenantService.CurrentTenantId;
-        var envType = _currentTenantService.CurrentEnvType;
-        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
-            ? (Guid?)null
-            : _currentTenantService.CurrentSpaceId;
+        var devTools = await ResolveDevToolsAsync(names);
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var hasProdToolChanges = false;
 
         foreach (var name in names)
         {
-            // Resolve the source the same way the runtimes do: a custom tool in the current
-            // tenant/environment, preferring the request space, then Central, then the oldest
-            // other-space match. Query filters are disabled because the comparison is explicit.
-            var devToolCandidates = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w =>
-                    w.Name == name &&
-                    w.Type == ComponentTypeEnum.Custom &&
-                    w.TenantId == tenantId &&
-                    w.EnvType == envType)
-                .IgnoreQueryFilters()
-                .OrderBy(w => w.CreatedOn)
-                .ThenBy(w => w.Id)
-                .ToListAsync();
-
-            var devTool = devToolCandidates
-                .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-                .FirstOrDefault();
+            devTools.TryGetValue(name, out var devTool);
 
             if (devTool == null)
             {
@@ -1092,33 +1199,80 @@ public class FlowBuilderService : IFlowBuilderService
                     w.SpaceId == devTool.SpaceId)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
-            if (prodTool != null)
-                continue;
-
-            var clone = new Tool
+            if (prodTool == null)
             {
-                Name = devTool.Name,
-                Description = devTool.Description,
-                Type = devTool.Type,
-                BaseUrl = devTool.BaseUrl,
-                OpenApiSpec = devTool.OpenApiSpec,
-                ParsedSchema = devTool.ParsedSchema,
-                AuthenticationType = devTool.AuthenticationType,
-                CredentialName = devTool.CredentialName,
-                IsTenantWideAccess = devTool.IsTenantWideAccess,
-                IsActive = devTool.IsActive,
-                IsVerified = devTool.IsVerified,
-                SpaceId = devTool.SpaceId,
-                EnvType = ConfigureEnvironmentType.Prod,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-            await _unitOfWork.ToolRepo.InsertAsync(clone);
+                prodTool = new Tool
+                {
+                    Name = devTool.Name,
+                    Description = devTool.Description,
+                    Type = devTool.Type,
+                    BaseUrl = devTool.BaseUrl,
+                    OpenApiSpec = devTool.OpenApiSpec,
+                    ParsedSchema = devTool.ParsedSchema,
+                    AuthenticationType = devTool.AuthenticationType,
+                    CredentialName = devTool.CredentialName,
+                    IsTenantWideAccess = devTool.IsTenantWideAccess,
+                    IsActive = devTool.IsActive,
+                    IsVerified = devTool.IsVerified,
+                    IsResourceAccessRestricted = devTool.IsResourceAccessRestricted,
+                    SpaceId = devTool.SpaceId,
+                    EnvType = ConfigureEnvironmentType.Prod,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                };
+                await _unitOfWork.ToolRepo.InsertAsync(prodTool);
+                await _unitOfWork.SaveAsync();
+                await AssignOwnerOrThrowAsync(prodTool.Id, ResourceTypeEnum.Tool);
+            }
+
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (devTool.IsResourceAccessRestricted && !prodTool.IsResourceAccessRestricted)
+            {
+                prodTool.IsResourceAccessRestricted = true;
+                _unitOfWork.ToolRepo.Update(prodTool);
+                hasProdToolChanges = true;
+            }
+
+            await EnsureProdToolFlowAccessAsync(devTool.Id, prodTool.Id, pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || hasProdToolChanges)
+        {
             await _unitOfWork.SaveAsync();
-            await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.Tool);
         }
 
         return missing;
+    }
+
+    private async Task EnsureProdToolFlowAccessAsync(Guid devToolId, Guid prodToolId, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Tool && w.ResourceId == devToolId)
+            .ToListAsync();
+
+        if (sourceFlowAccesses.Count == 0)
+            return;
+
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.Tool && w.ResourceId == prodToolId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodToolId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.Tool,
+                ResourceId = prodToolId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     private async Task<List<string>> EnsureProdKnowledgeBasesAsync(List<string> names)

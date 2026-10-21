@@ -1,6 +1,5 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
-import { cn } from "@avplatform/ui/lib";
 import { Trash2 } from "lucide-react";
 
 import { useRemoveResourceShareMutation } from "../../hooks/useRemoveResourceShareMutation";
@@ -22,13 +21,12 @@ export const RemoveUserIconButton = ({ id }: RemoveUserIconButtonProps) => {
   const { mutate } = useRemoveResourceShareMutation();
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon7"
       aria-label="Remove access"
-      className={cn(
-        buttonVariants({ variant: "ghost", size: "icon8" }),
-        "text-destructive hover:bg-destructive hover:text-white",
-      )}
+      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
       onClick={() => {
         showCustomAlertDialog({
           confirmActionFn: () => mutate(id),
@@ -39,6 +37,6 @@ export const RemoveUserIconButton = ({ id }: RemoveUserIconButtonProps) => {
       }}
     >
       <Trash2 className="h-4 w-4" />
-    </button>
+    </Button>
   );
 };

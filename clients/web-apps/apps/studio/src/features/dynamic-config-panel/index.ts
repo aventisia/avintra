@@ -1,5 +1,5 @@
 // apis
-export * from "./apis/get-node-config";
+export * from "./apis/get-node-config.apis";
 
 // components
 export * from "./components/condition-groups/ConditionGroupsField";

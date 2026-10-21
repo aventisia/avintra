@@ -12,8 +12,8 @@ import { NavLink } from "react-router-dom";
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 
-import { getToolIcon } from "../constants/tool-icon-mapper";
 import {
   COLUMN_VISIBILITY_STATE,
   TABLE_HEADING,
@@ -24,6 +24,7 @@ import {
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
+import { ToolIcon } from "./ToolIcon";
 import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
@@ -46,7 +47,6 @@ export const ToolsTable = () => {
   const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
-  const basePath = import.meta.env.VITE_WORKSPACE_PATH?.replace(/\/$/, "") || "";
 
   return (
     <>
@@ -80,14 +80,10 @@ export const ToolsTable = () => {
                     {/* Left: Icon with centered content */}
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
-                        <img
-                          src={basePath + getToolIcon(row.getValue("name") as string)}
-                          alt={row.getValue("name") as string}
+                        <ToolIcon
+                          name={row.getValue("name") as string}
+                          iconUrl={row.original.iconUrl}
                           className="h-6 w-6 object-contain"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              basePath + "/brand-img/default-provider.svg";
-                          }}
                         />
                       </div>
 
@@ -113,6 +109,7 @@ export const ToolsTable = () => {
                       name={row.original.name}
                       accessLevel={row.original.accessLevel}
                       isTenantWideAccess={row.original.isTenantWideAccess}
+                      isResourceAccessRestricted={row.original.isResourceAccessRestricted}
                       isPlatformTool={isPlatformTab}
                     />
                   </div>
@@ -130,6 +127,8 @@ export const ToolsTable = () => {
           <DTPagination table={table} singularLabel="Tool" pluralLabel="Tools" />
 
           <ResourceShareDialog queryKey={queryKey} />
+
+          <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       )}
     </>

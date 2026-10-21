@@ -6,27 +6,27 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
     private readonly ILogger<CloudConnectorsVaultCredentialService> _logger;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceShareService _resourceShareService;
 
     public CloudConnectorsVaultCredentialService(
         IUnitOfWork unitOfWork,
         ILogger<CloudConnectorsVaultCredentialService> logger,
         IStringEncryptionService stringEncryptionService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceShareService resourceShareService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _stringEncryptionService = stringEncryptionService;
         _currentTenantService = currentTenantService;
+        _resourceShareService = resourceShareService;
     }
 
     public async Task<VaultCredentialObj?> GetVaultCredentialAsync(string credentialName)
     {
         try
         {
-            // Fetch the credential entity along with its encrypted key-value pairs by NAME.
-            // Scoped by Name + TenantId (+ EnvType) so the (credential_name, tenant_id)
-            // combination resolves the correct, unique credential.
-            var vaultCredential = await _unitOfWork.VaultCredentialRepo
+                var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == credentialName &&
                     !w.IsDisabled &&
@@ -36,10 +36,19 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                 .Include(i => i.EncryptedKeyValues)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
-                
+
             if (vaultCredential == null) return null;
 
-            // Decrypt and merge key-value pairs into the VaultCredentialObj's data object
+            var currentUserId = _currentTenantService.CurrentUserId;
+            if (!await CanUseCredentialAsync(vaultCredential, currentUserId))
+            {
+                _logger.LogWarning(
+                    "Denied vault access to credential {CredentialName} for user {UserId}.",
+                    credentialName,
+                    currentUserId);
+                return null;
+            }
+
             var decryptedData = new Dictionary<string, string>();
             foreach (var kvp in vaultCredential.EncryptedKeyValues)
             {
@@ -47,18 +56,30 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                 decryptedData[kvp.Name] = decryptedValue;
             }
 
-            // Replace the key-value pairs in the Data property where key matches (if vaultCredential is not null then Data property will not be null)
-            var dataDict = new Dictionary<string, object>();
-            if (!string.IsNullOrEmpty(vaultCredential.Data))
-            {
-                dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(vaultCredential.Data) ?? new Dictionary<string, object>();
-            }
+            // IMPORTANT NOTE: CustomApiTool vault secrets nest their values under "Parameters", while every other
+            // credential type keeps them at the top level; both shapes must be merged or nested secrets are dropped.
+            var dataNode = (string.IsNullOrEmpty(vaultCredential.Data)
+                ? null
+                : System.Text.Json.Nodes.JsonNode.Parse(vaultCredential.Data)) as System.Text.Json.Nodes.JsonObject
+                ?? new System.Text.Json.Nodes.JsonObject();
+
             foreach (var kvp in decryptedData)
             {
-                if (dataDict.ContainsKey(kvp.Key)) dataDict[kvp.Key] = kvp.Value;
+                var parameters = dataNode["Parameters"] as System.Text.Json.Nodes.JsonObject;
+
+                if (parameters is not null && (parameters.ContainsKey(kvp.Key) || !dataNode.ContainsKey(kvp.Key)))
+                {
+                    parameters[kvp.Key] = kvp.Value;
+                }
+                else
+                {
+                    dataNode[kvp.Key] = kvp.Value;
+                }
             }
 
-            // Return the VaultCredentialObj
+            var dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dataNode.ToJsonString())
+                ?? new Dictionary<string, object>();
+
             return new VaultCredentialObj
             {
                 Name = vaultCredential.Name,
@@ -72,5 +93,32 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
         }
 
         return null;
+    }
+
+    private async Task<bool> CanUseCredentialAsync(VaultCredential credential, Guid currentUserId)
+    {
+        // IMPORTANT NOTE: unauthenticated HTTP callers receive a random user id, so an empty id means the
+        // call did not originate from an authorized request and must not fall back to unrestricted access.
+        if (currentUserId == Guid.Empty)
+        {
+            return false;
+        }
+
+        if (credential.CreatedByUserId == currentUserId || credential.IsTenantWideAccess)
+        {
+            return true;
+        }
+
+        var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            currentUserId,
+            credential.Id,
+            ResourceTypeEnum.VaultCredential,
+            credential.CreatedByUserId,
+            credential.IsTenantWideAccess,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.View,
+            ResourceAccessTypeEnum.Edit);
+
+        return hasAccess;
     }
 }

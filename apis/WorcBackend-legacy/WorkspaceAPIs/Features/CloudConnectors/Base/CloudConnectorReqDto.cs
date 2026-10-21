@@ -2,10 +2,33 @@ namespace WorkspaceAPIs.Features.CloudConnectors;
 
 public class CloudConnectorReqDto
 {
-    public required string AgentId { get; set; } // The agent invoking the connector
-    public required string AgentName { get; set; } // The name of the agent invoking the connector
-    public required string Provider { get; set; } // e.g., SendGrid, OpenAI
-    public required string Action { get; set; } // e.g., SendEmail, OpenAI inferencing request
-    public required string CredentialName { get; set; } // Vault credential name (resolved by name)
-    public required Dictionary<string, object> Payload { get; set; } // The payload object (can be deserialized as needed)
+    /// <summary>
+    /// Gets or sets the agent identifier.
+    /// </summary>
+    public required string AgentId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the agent name.
+    /// </summary>
+    public required string AgentName { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the provider name.
+    /// </summary>
+    public required string Provider { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the action name.
+    /// </summary>
+    public required string Action { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the vault credential name.
+    /// </summary>
+    public string? CredentialName { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the request payload.
+    /// </summary>
+    public required Dictionary<string, object> Payload { get; set; }
 }

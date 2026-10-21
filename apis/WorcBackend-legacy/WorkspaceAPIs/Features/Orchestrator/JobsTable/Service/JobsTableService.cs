@@ -895,9 +895,7 @@ public class JobsTableService : IJobsTableService
     }
 
     /// <summary>
-    /// Finds the oldest Created job attached to the given machine's FlowVersions, assigns it to the
-    /// machine, and returns the job record. Returns a successful response with null data when none
-    /// is available.
+    /// Finds the oldest Created job bound to the machine or unassigned by the scheduler, assigns it to the machine, and returns the job record. Returns a successful response with null data when none is available.
     /// </summary>
     public async Task<ServiceResponse<JobRecordDto?>> GetAndAssignNextPendingJobForMachineAsync(Guid machineId)
     {
@@ -969,11 +967,26 @@ public class JobsTableService : IJobsTableService
                     return;
                 }
 
+                // IMPORTANT NOTE: the pick locks the row, but the bind must still be conditional. A row claimed
+                // between the pick and this update (or already held by another machine) yields affected 0, and the
+                // loser must not report a job it does not own.
+                var claimed = await _workspaceDbContext.Jobs
+                    .IgnoreQueryFilters()
+                    .Where(w => w.Id == nextJob.Id
+                        && w.Status == JobStatusEnum.Created
+                        && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
+                    .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(w => w.MachineId, machineId)
+                        .SetProperty(w => w.ExecutedOn, machine.Name ?? machineId.ToString()));
+
+                if (claimed != 1)
+                {
+                    nextJob = null;
+                    return;
+                }
+
                 nextJob.MachineId = machineId;
                 nextJob.ExecutedOn = machine.Name ?? machineId.ToString();
-                _unitOfWork.JobRepo.Update(nextJob);
-                if (!await _unitOfWork.SaveAsync())
-                    throw new InvalidOperationException("Failed to assign pending job.");
 
                 MachineReservationHelpers.Reserve(machineStatus, nextJob.Id, nextJob.FlowVersionId);
                 await _clientStatusStore.UpdateClientStatusAsync(machineStatus);
@@ -1035,7 +1048,7 @@ public class JobsTableService : IJobsTableService
         await using var command = dbConnection.CreateCommand();
         command.Transaction = _workspaceDbContext.Database.CurrentTransaction?.GetDbTransaction();
         command.CommandText =
-            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR (\"MachineId\" IS NULL AND LOWER(\"ExecutedOn\") = 'web server')) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
+            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR ((\"MachineId\" IS NULL OR \"MachineId\" = @emptyMachineId) AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" = @triggerType))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
 
         var tenantParam = command.CreateParameter();
         tenantParam.ParameterName = "tenantId";
@@ -1054,11 +1067,23 @@ public class JobsTableService : IJobsTableService
         machineParam.Value = machineId;
         command.Parameters.Add(machineParam);
 
+        var emptyMachineParam = command.CreateParameter();
+        emptyMachineParam.ParameterName = "emptyMachineId";
+        emptyMachineParam.Value = Guid.Empty;
+        command.Parameters.Add(emptyMachineParam);
+
         var flowVersionsParam = (Npgsql.NpgsqlParameter)command.CreateParameter();
         flowVersionsParam.ParameterName = "flowVersionIds";
         flowVersionsParam.Value = flowVersionIds.ToArray();
         flowVersionsParam.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Uuid;
         command.Parameters.Add(flowVersionsParam);
+
+        var triggerTypeParam = command.CreateParameter();
+        triggerTypeParam.ParameterName = "triggerType";
+        // IMPORTANT NOTE: "TriggerType" is persisted as text (EnumToStringConverter<TriggerTypesEnum>), so the parameter must be the enum name, not its integer value.
+        triggerTypeParam.Value = TriggerTypesEnum.Time.ToString();
+        triggerTypeParam.DbType = DbType.String;
+        command.Parameters.Add(triggerTypeParam);
 
         var result = await command.ExecuteScalarAsync();
         return result is Guid jobId ? jobId : Guid.Empty;

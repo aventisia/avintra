@@ -37,10 +37,10 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine_FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersionHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AgentRiskRegistry>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
-        modelBuilder.Entity<QueueFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TriggerFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ResourceFlowAccess>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TenantModelProvider>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -118,7 +118,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<VaultCredential>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<QueueTransaction>().HasIndex(e => new { e.SourceWorkItemId, e.RetryCount }).IsUnique();
-        modelBuilder.Entity<QueueFlowVersion>().HasIndex(e => new { e.QueueId, e.FlowVersionId }).IsUnique();
+        modelBuilder.Entity<ResourceFlowAccess>().HasIndex(e => new { e.TenantId, e.ResourceType, e.ResourceId, e.FlowId }).IsUnique();
         
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
@@ -137,7 +137,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Queue>().Property(e => e.ProcessingMode).HasConversion(new EnumToStringConverter<QueueProcessingModeEnum>());
         modelBuilder.Entity<QueueTransactionEvent>().Property(e => e.EventType).HasConversion(new EnumToStringConverter<QueueTransactionEventEnum>());
         modelBuilder.Entity<QueueUser>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<QueueWorkItemAccessTypesEnum>());
-        modelBuilder.Entity<QueueFlowVersion>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<QueueWorkItemAccessTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.Type).HasConversion(new EnumToStringConverter<KeyStoreTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
@@ -204,6 +203,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
+        modelBuilder.Entity<ResourceFlowAccess>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Tool>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
@@ -239,7 +239,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
         modelBuilder.Entity<EncryptedKeyValue>().HasOne(one => one.VaultCredential).WithMany(many => many.EncryptedKeyValues).HasForeignKey(fKey => fKey.VaultCredentialId).OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<QueueFlowVersion>().HasOne(one => one.Queue).WithMany(many => many.QueueFlowVersions).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueTransactionEvent>().HasOne(one => one.QueueTransaction).WithMany(many => many.QueueTransactionEvents).HasForeignKey(fKey => fKey.QueueTransactionId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueUser>().HasOne(one => one.Queue).WithMany(many => many.QueueUsers).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasOne(one => one.Flow).WithMany(many => many.FlowVersions).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
@@ -276,6 +275,8 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Tool and WorkspaceUser
         modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ResourceFlowAccess>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -448,6 +449,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
     public DbSet<ApiKey> ApiKeys { get; set; }
     public DbSet<ResourceShare> ResourceShares { get; set; }
+    public DbSet<ResourceFlowAccess> ResourceFlowAccesses { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
     public DbSet<Tool> Tools { get; set; }

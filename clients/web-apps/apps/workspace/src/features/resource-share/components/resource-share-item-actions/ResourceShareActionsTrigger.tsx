@@ -11,11 +11,11 @@ export const ResourceShareActionsTrigger = () => {
     <DropdownMenuTrigger
       className={cn(
         buttonVariants({ variant: "ghost", size: "icon7" }),
-        "hover:bg-slate-200",
-        "data-[state=open]:bg-slate-200 data-[state=open]:opacity-100",
+        "hover:bg-accent",
+        "data-[state=open]:bg-accent data-[state=open]:opacity-100",
       )}
     >
-      <EditIcon className="h-4 w-4 text-[--icon-color]" />
+      <EditIcon className="h-4 w-4" />
     </DropdownMenuTrigger>
   );
 };

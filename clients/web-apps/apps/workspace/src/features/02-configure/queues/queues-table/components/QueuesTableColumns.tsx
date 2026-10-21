@@ -171,6 +171,7 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
         queueName={row.name ?? ""}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.isResourceAccessRestricted || false}
       />
     ),
   }),

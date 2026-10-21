@@ -2,8 +2,8 @@ import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { ResourceShareRecipientDto } from "../dtos/resource-share-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
+import { ResourceShareRecipientDto } from "../dtos/resource-share.dto";
+import { WorkspaceUserDto } from "../dtos/workspace-user.dto";
 import { useResourceShareStore } from "../stores/resource-share-store";
 import { useInsertResourceShareMutation } from "./useInsertResourceShareMutation";
 import { useSearchUsersList } from "./useSearchUsersList";

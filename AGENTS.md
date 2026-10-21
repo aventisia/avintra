@@ -67,8 +67,8 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Read source files before proposing or changing paths, APIs, or symbols.
 - Preserve unrelated work; report scope changes instead of taking them.
 - Save one report per agent per round at `local-issues/<issue-or-slug>/round-NN/<agent>-report-r<N>.md`; `NN` is the zero-padded round and `N` the round number. An agent has exactly one report file per round: update that file in place for later same-round work instead of adding another file. Never overwrite a completed report from another round; resume only an explicitly incomplete matching report.
-- Return a status summary of at most 10 lines: artifact path, status, AC results, evidence references, blockers, next step. Separately labeled full payloads are allowed only when requested for manifest confirmation, plan approval, questions, or routing-critical findings.
-- Separate execution status (`COMPLETE`, `FAIL`, `BLOCKED`, `NEEDS_APPROVAL`), approval state (`PENDING`, `APPROVED`, `SUPERSEDED`), and QA verdict (`CLEAR`, `NEEDS_REWORK`).
+- Return a status summary of at most 10 lines: artifact path, status, AC results, evidence references, blockers, next step. Separately labeled full payloads are allowed only when requested for the brief, the final brief and PR report, plan approval, questions, or routing-critical findings.
+- Separate execution status (`COMPLETE`, `FAIL`, `BLOCKED`, `NEEDS_APPROVAL`), approval state (`PENDING`, `APPROVED`, `SUPERSEDED`), QA verdict (`CLEAR`, `NEEDS_REWORK`), and merge safety (`SAFE`, `CONDITIONAL`, `UNSAFE`).
 - Record exact commands, working directory, exit codes, and relevant verbatim output; redact secrets.
 - Treat missing checks as unverified; escalate ambiguity, destructive actions, and unavailable permissions.
 - Agent contracts override legacy skill paths, branch mutations, and human-started stage transitions.
@@ -79,13 +79,15 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Reference legacy reports from other locations only when supplied; leave them unchanged.
 - Record identity, revision/base, approval state, scope, findings, evidence, and limitations.
 - Preserve stable AC and finding IDs across rounds.
-- Save proposals with execution status `NEEDS_APPROVAL` and approval state `PENDING`. Freeze the proposal content; record explicit approval by updating the architect's report in place with an approval receipt that references the exact proposal path/revision. Changed content requires a new proposal and approval; never rewrite frozen proposal content or prior approval history.
-- Keep implementation slice state in coder's report; keep independent evidence in QA's report.
+- The analyst's brief is the user's standing approval: revised in place until the user explicitly approves an exact revision, then frozen. Its checklist IDs are the ACs.
+- Freeze proposal content once saved. A proposal that stays within the approved brief carries a brief-authorized receipt citing the brief revision. Any other proposal is saved with execution status `NEEDS_APPROVAL` and approval state `PENDING` until the user explicitly approves it, recorded by updating the architect's report in place with an approval receipt that references the exact proposal path/revision. Changed content requires a new proposal and approval; never rewrite frozen proposal content or prior approval history.
+- Keep implementation slice state in coder's report; keep independent evidence, blast radius, and merge safety in QA's report.
+- After QA `CLEAR`, analyst writes `local-issues/<key>/final-brief.md` (a fresh account of what was built: Problem, How it will work, Rules and exceptions, Out of scope, Possible follow-ups; no revision history) and `local-issues/<key>/pr-report.md` (PR title and description with QA's blast radius and merge safety). Both sit outside the round folders, and each wrap-up rewrites them in place.
 - Cite evidence by artifact path and section.
 
 ## Execution conventions
 
-- Keep source read-only for scout, architect, and QA; allow approved report writes only.
+- Keep source read-only for scout, analyst, architect, and QA; allow approved report writes only.
 - Keep read-only roles to inspection commands; never exploit write-capable shell options.
 - Run tests only after inspecting scripts and identifying permitted generated outputs.
 - Keep commands and edits within the active repository; permissions are not a filesystem sandbox.
@@ -93,8 +95,8 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - A configured denial cannot be overridden by a saved approval; escalate for a narrow configuration change rather than bypassing it.
 - Launch repository-root subagents even for nested scope; use repository-relative report paths. Recheck normalized paths if a nested location is unavoidable.
 - Coder owns explicitly authorized isolated baseline/target preparation and cleanup; QA only verifies supplied contexts and exact revisions. Record dirty-tree snapshots, generated-output boundaries, and unavailable checks.
-- After the scout manifest is confirmed, the orchestrator delegates coder to prepare the issue branch from `origin/main` before implementation; scout, architect, and QA never create or switch branches.
-- Architect selects the planning mode from the scout manifest and complexity; in Grilling mode it loads the `grilling` skill, and the orchestrator relays each frontier and the user's answers until the frontier is empty before any plan is written.
+- After scout's investigation and before the brief, the orchestrator delegates coder to create the issue branch from `origin/main` and push it, without asking the user (standing authorization); scout, analyst, architect, and QA never create or switch branches.
+- Architect selects the planning mode from the scout manifest and complexity; in Grilling mode it loads the `grilling` skill. It settles questions the approved brief covers on its own recommendation, and the orchestrator relays only uncovered questions and the user's answers until the frontier is empty before any plan is written.
 - Let only the orchestrator route agents, track the loop budget, and declare completion.
 
 ## Documentation and code style boundaries
@@ -107,4 +109,4 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 
 - `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
 - Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
-- Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, coder, and debugger have no mandatory supporting skill.
+- Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, analyst, coder, and debugger have no mandatory supporting skill.

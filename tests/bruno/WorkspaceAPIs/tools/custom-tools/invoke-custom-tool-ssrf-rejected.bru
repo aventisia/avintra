@@ -1,0 +1,40 @@
+meta {
+  name: Invoke custom tool rejects non-public base URL
+  type: http
+  seq: 20
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/custom-tool/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Bruno Custom Tool SSRF Test",
+    "provider": "customtool",
+    "action": "{{SSRF_CUSTOM_TOOL_ACTION}}",
+    "credentialName": null,
+    "payload": {}
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+
+  test("rejects a non-public base URL with a plain-text 400", function() {
+    expect(status).to.equal(400);
+    expect(typeof res.getBody()).to.equal("string");
+    expect(res.getBody()).to.include("non-public");
+  });
+}
+
+tests {
+  // Prereq: SSRF_CUSTOM_TOOL_ACTION env var = "{toolName}.{operationId}" of an
+  // active tool (verification not required) whose base URL resolves to a non-public
+  // address (e.g. http://169.254.169.254/). Create it with tool-registry/create-tool.bru;
+  // the base URL is checked before operation verification, so it never needs a 2xx test.
+  // Legacy "{toolId}.{operationId}" is still accepted.
+}

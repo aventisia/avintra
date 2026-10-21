@@ -29,7 +29,6 @@ public class UnitOfWork : IUnitOfWork
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
     public IMachine_FlowVersionRepo Machine_FlowVersionRepo => new Machine_FlowVersionRepo(_workspaceDbContext);
     public IQueueRepo QueueRepo => new QueueRepo(_workspaceDbContext);
-    public IQueueFlowVersionRepo QueueFlowVersionRepo => new QueueFlowVersionRepo(_workspaceDbContext);
     public IQueueTransactionRepo QueueTransactionRepo => new QueueTransactionRepo(_workspaceDbContext);
     public IQueueTransactionEventRepo QueueTransactionEventRepo => new QueueTransactionEventRepo(_workspaceDbContext);
     public IQueueUserRepo QueueUserRepo => new QueueUserRepo(_workspaceDbContext);
@@ -53,6 +52,7 @@ public class UnitOfWork : IUnitOfWork
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);
     public IApiKeyRepo ApiKeyRepo => new ApiKeyRepo(_workspaceDbContext);
     public IResourceShareRepo ResourceShareRepo => new ResourceShareRepo(_workspaceDbContext);
+    public IResourceFlowAccessRepo ResourceFlowAccessRepo => new ResourceFlowAccessRepo(_workspaceDbContext);
     public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
     public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);
     public IToolRepo ToolRepo => new ToolRepo(_workspaceDbContext);

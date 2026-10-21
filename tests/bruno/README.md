@@ -59,7 +59,28 @@ Folder runs require `-r` (recursive) — without it `bru` silently runs 0 reques
 
 ### Secrets and login credentials
 
-The CLI cannot read Bruno's app-side Global Environment. Pass secrets per run with `--env-var` (appended after `--` so npm forwards them):
+Store secrets in a `.env` file at this collection's root — `tests/bruno/.env` (gitignored). Bruno loads it automatically for both the CLI and the desktop app, and `environments/*.bru` map the login credentials into variables:
+
+```sh
+# tests/bruno/.env  — copy .env.sample and fill in your own values
+MY_EMAIL=you@example.com
+MY_PWD='secret'
+
+# Local service ports read by environments/localhost.bru
+ACCOUNTS_API_PORT=4000
+WORKSPACE_API_PORT=4001
+LLMPIPELINE_API_PORT=4003
+CAMEL_API_PORT=4005
+CORSAIR_API_PORT=4006
+```
+
+With that in place, the normal commands work with no extra flags:
+
+```sh
+npm run test:localhost
+```
+
+Quote values containing `#`, `\`, `"`, or newlines (e.g. `MY_PWD="p@ss#word"`); see the [DotEnv docs](https://docs.usebruno.com/secrets-management/dotenv-file). For CI or one-off overrides, `--env-var` still takes precedence over `.env` (appended after `--` so npm forwards them):
 
 ```sh
 npm run test:local -- --env-var MY_EMAIL=you@example.com --env-var MY_PWD='secret'
@@ -67,6 +88,14 @@ BRU_ENV=local npm run test:ci -- --env-var MY_EMAIL=you@example.com --env-var MY
 ```
 
 Auto-chained ids (`ACCESS_TOKEN`, `TENANT_ID`, `FLOW_ID`, …) are populated in-memory by `script:post-response` blocks during a single `bru run`, so run folders top-down in one invocation rather than request-by-request.
+
+### Running from a git worktree
+
+`environments/localhost.bru` takes its ports from the `*_API_PORT` entries in `.env`. `scripts/create-worktree.sh` (or `.ps1`) copies `.env` into each new worktree and re-prefixes those ports with the worktree number, so the usual command targets the worktree's own services with no extra flags:
+
+```sh
+npm run test:localhost
+```
 
 ### CI
 
@@ -83,9 +112,10 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 
 ## Environments vs Global Environment
 
-- `environments/*.bru` contain **only the 5 API base URLs** (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`). No secrets, no IDs.
+- `environments/*.bru` contain the API base URLs (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`, `GLOBALADMIN_API_BASE_URL`) plus `MY_EMAIL`/`MY_PWD` and the localhost ports (`*_API_PORT`) mapped from `.env`. No literal secrets, no IDs.
+- Login credentials (`MY_EMAIL`, `MY_PWD`) come from the gitignored `tests/bruno/.env`, not the Global Environment.
 - Everything else lives in Bruno's **Global Environment** (per-tester, never committed):
-  - **Seed these yourself:** `MY_EMAIL`, `MY_PWD` (login), plus credentials for the connectors you exercise (`SQL_CREDENTIAL_NAME`, `MAILBOX_ADDRESS`/`MAIL_USERNAME`/`MAIL_PASSWORD`, `FTP_HOST`/`FTP_USERNAME`/`FTP_PASSWORD`, `POSTGRES_*`, `KAFKA_*`, `JMS_*`, `IMAP_*/SMTP_*`, `CORSAIR_*`, `CUSTOM_API_KEY`, `API_KEY`, `FILE_PATH`, `tenant_id`, `workspace_session_cookie`).
+  - **Seed these yourself:** credentials for the connectors you exercise (`SQL_CREDENTIAL_NAME`, `MAILBOX_ADDRESS`/`MAIL_USERNAME`/`MAIL_PASSWORD`, `FTP_HOST`/`FTP_USERNAME`/`FTP_PASSWORD`, `POSTGRES_*`, `KAFKA_*`, `JMS_*`, `IMAP_*/SMTP_*`, `CORSAIR_*`, `CUSTOM_API_KEY`, `API_KEY`, `FILE_PATH`, `tenant_id`, `workspace_session_cookie`).
   - **Auto-chained, do not set manually:** `ACCESS_TOKEN`, `TENANT_ID`, `FLOW_ID`, `FLOW_VERSION_ID`, `*_ID` resource ids, `SEARCH_KEY`, `VERIFICATION_CODE_ID` — populated by `script:post-response` blocks as you run the collection top-down.
 - Request bodies use Bruno **native dynamic variables** (`{{$randomEmail}}`, `{{$randomCompanyName}}`, `{{$guid}}`, `{{$isoTimestamp}}`, …) — no `faker`/`moment` dependencies, no `script:pre-request` body building (except `notification-scheduling`, which needs real timers).
 
@@ -93,7 +123,8 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 
 - `collection.bru` — Root collection metadata
 - `bruno.json` — Bruno configuration
-- `environments/` — Environment-specific variables (host, tokens, etc.)
+- `environments/` — Environment-specific variables (base URLs, login credential and localhost port mapping)
+- `.env.sample` — Template for the gitignored `.env` (secrets; copy and fill in)
 
 ## Notes
 

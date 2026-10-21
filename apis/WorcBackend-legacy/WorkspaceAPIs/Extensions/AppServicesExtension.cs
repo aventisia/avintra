@@ -3,6 +3,7 @@ using WorkspaceAPIs.Features.CloudConnectors.Camel;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
@@ -67,7 +68,6 @@ public static class AppServicesExtension
         config.Apply(new QueueTransactionMappingProfile());
         config.Apply(new QueueTransactionEventMappingProfile());
         config.Apply(new QueueUserMappingProfile());
-        config.Apply(new QueueFlowVersionMappingProfile());
         config.Apply(new JobsTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new FlowUserMappingProfile());
@@ -90,6 +90,7 @@ public static class AppServicesExtension
         config.Apply(new SkillMappingProfile());
         config.Apply(new JobExecutionLogMappingProfile());
         config.Apply(new ResourceShareMappingProfile());
+        config.Apply(new ResourceFlowAccessMappingProfile());
         config.Apply(new ApiKeyMappingProfile());
         config.Apply(new ToolMappingProfile());
         config.Apply(new TicketMappingProfile());
@@ -144,7 +145,6 @@ public static class AppServicesExtension
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IQueueTransactionEventService, QueueTransactionEventService>();
         services.AddScoped<IQueueUserService, QueueUserService>();
-        services.AddScoped<IQueueFlowVersionService, QueueFlowVersionService>();
         services.AddScoped<ICreditGateService, CreditGateService>();
         services.AddScoped<IJobsTableService, JobsTableService>();
         services.AddScoped<IKeyStoreService, KeyStoreService>();
@@ -192,9 +192,12 @@ public static class AppServicesExtension
         services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
         services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();
+        services.AddScoped<IResourceFlowAccessService, ResourceFlowAccessService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
+        services.AddScoped<IToolCatalogService, ToolCatalogService>();
+        services.AddScoped<IToolVerificationService, ToolVerificationService>();
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
@@ -223,6 +226,7 @@ public static class AppServicesExtension
         services.AddScoped<IM365OutlookConnectorsService, M365OutlookConnectorsService>();
         services.AddScoped<IM365SharePointConnectorsService, M365SharePointConnectorsService>();
         services.AddScoped<IVectorConnectorsService, VectorConnectorsService>();
+        services.AddScoped<ICustomToolConnectorService, CustomToolConnectorService>();
 
         // Common services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

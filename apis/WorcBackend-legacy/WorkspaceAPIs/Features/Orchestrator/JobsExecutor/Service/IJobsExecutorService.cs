@@ -21,8 +21,8 @@ public interface IJobsExecutorService
     /// It will update the machine's status and ensure the machine is in a valid state to run the job.
     /// </summary>
     /// <param name="executionCommandDto">The details of the command to be executed. This includes the job ID, machine ID, and command type (e.g., execute, pause, etc.).</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    Task TriggerExecutionAsync(ExecutionCommandDto executionCommandDto);
+    /// <returns>True when the command was sent to the machine or no hub dispatch is required; false when dispatch was blocked before the command was sent.</returns>
+    Task<bool> TriggerExecutionAsync(ExecutionCommandDto executionCommandDto);
 
     /// <summary>
     /// Executes commands for multiple jobs by their IDs asynchronously.
