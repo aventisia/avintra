@@ -1,15 +1,38 @@
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
-import { getSsoAdminConsentUrl } from "@/features/05-tenant-admin/tenant/apis/tenant-info-apis";
+import {
+  getSsoAdminConsentUrl,
+  updateTenantSsoState,
+} from "@/features/05-tenant-admin/tenant/apis/tenant-info-apis";
+import {
+  ssoDisableConfirmBtnText,
+  ssoDisableConfirmDescription,
+  ssoDisableConfirmTitle,
+  ssoDisabledSuccessMessage,
+  ssoEnableConfirmBtnText,
+  ssoEnableConfirmDescription,
+  ssoEnableConfirmTitle,
+  ssoEnabledSuccessMessage,
+  ssoUpdateErrorMessage,
+} from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-field-props";
 import { useFetchTenantPreferences } from "@/features/05-tenant-admin/tenant/hooks/useFetchTenantPreferences";
 import { parseSsoConfig } from "@/features/05-tenant-admin/tenant/utils/sso-config-summary.util";
 
 export const useSsoConnectionCard = () => {
+  const queryClient = useQueryClient();
   const { data, isLoading } = useFetchTenantPreferences();
+  const { showCustomAlertDialog } = useShowAlertHandler();
+  const [optimisticSsoEnabled, setOptimisticSsoEnabled] = useState<boolean | null>(null);
 
   const preferences = data?.data;
   const config = parseSsoConfig(preferences?.ssoConfigJson);
+  const isConnected = Boolean(config.externalTenantId);
+  const persistedSsoEnabled = Boolean(preferences?.isSSOEnabled);
+  const isSSOAvailable = Boolean(preferences?.isSSOAvailable);
+  const isSSOEnabled = optimisticSsoEnabled ?? persistedSsoEnabled;
 
   const { mutate: connectWithEntra, isPending: isConnectPending } = useMutation({
     mutationFn: getSsoAdminConsentUrl,
@@ -24,14 +47,53 @@ export const useSsoConnectionCard = () => {
     onError: (error) => toast.error(error.toString()),
   });
 
+  const { mutateAsync: toggleSsoAsync, isPending: isTogglePending } = useMutation({
+    mutationFn: updateTenantSsoState,
+    onSuccess: (response) => {
+      setOptimisticSsoEnabled(null);
+      queryClient.setQueryData(["TENANT_PREFERENCES"], response);
+      toast.success(
+        response.data.isSSOEnabled ? ssoEnabledSuccessMessage : ssoDisabledSuccessMessage,
+      );
+    },
+    onError: (error) => {
+      setOptimisticSsoEnabled(null);
+      toast.error(typeof error === "string" ? error : ssoUpdateErrorMessage);
+    },
+  });
+
   const connectHandler = () => connectWithEntra();
+
+  const toggleSsoHandler = (next: boolean) => {
+    if (isTogglePending || next === isSSOEnabled || (!isConnected && next)) return;
+    showCustomAlertDialog({
+      title: next ? ssoEnableConfirmTitle : ssoDisableConfirmTitle,
+      description: next ? ssoEnableConfirmDescription : ssoDisableConfirmDescription,
+      confirmBtnText: next ? ssoEnableConfirmBtnText : ssoDisableConfirmBtnText,
+      isDestructive: !next,
+      showLoadingOnConfirm: true,
+      confirmActionFn: async () => {
+        setOptimisticSsoEnabled(next);
+        try {
+          await toggleSsoAsync({ isSSOEnabled: next });
+        } catch {
+          return;
+        }
+      },
+    });
+  };
 
   return {
     isLoading,
-    isConnected: Boolean(config.externalTenantId),
+    isConnected,
     emailDomain: config.emailDomain,
-    isSSOEnabled: Boolean(preferences?.isSSOEnabled),
+    isSSOAvailable,
+    isSSOEnabled,
+    persistedSsoEnabled,
+    ssoDisableWarning: preferences?.ssoDisableWarning,
     connectHandler,
     isConnectPending,
+    toggleSsoHandler,
+    isTogglePending,
   };
 };

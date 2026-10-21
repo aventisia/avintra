@@ -15,16 +15,31 @@ const isPwdNeverExpiresEnabledProps: SwitchFieldProps = {
 };
 
 // Is SSO Enabled
-const isSSOEnabledProps: SwitchFieldProps = {
-  name: "isSSOEnabled",
-  label: "Enable Single Sign-On (SSO)",
-  description: "If enabled, users can log in using an external authentication provider",
-};
+const ssoToggleLabel = "Enable SSO";
+const ssoEnabledTooltip = "Single sign-on is enabled. Click to disable.";
+const ssoDisabledTooltip = "Single sign-on is disabled. Click to enable.";
+const ssoEnableConfirmTitle = "Enable single sign-on?";
+const ssoEnableConfirmDescription =
+  "Users in your organization will be able to sign in with Microsoft Entra ID.";
+const ssoEnableConfirmBtnText = "Yes, enable";
+const ssoDisableConfirmTitle = "Disable single sign-on?";
+const ssoDisableConfirmDescription =
+  "Users will no longer be able to sign in with Microsoft Entra ID. Users without a password will be unable to sign in until they set one using Forgot password.";
+const ssoDisableConfirmBtnText = "Yes, disable";
+const ssoEnabledSuccessMessage = "Single sign-on enabled successfully.";
+const ssoDisabledSuccessMessage = "Single sign-on disabled successfully.";
+const ssoUpdateErrorMessage = "Single sign-on was not updated. Please try again.";
+const ssoStatusConnectedLabel = "Connected";
+const ssoProviderInfoTooltip = "Single sign-on provider for your organization";
+const ssoEmailDomainLabel = "Email domain";
+const ssoDisableWarningTitle = "Single sign-on is disabled";
 
-const ssoConnectRequiredHint =
-  "Connect the identity provider before enabling single sign-on. Use the Connect button in the Microsoft Entra ID card above.";
+const ssoConnectRequiredHint = "Connect the identity provider before enabling single sign-on.";
 
 const ssoAdminOnlyNotice = "Only a tenant administrator can change single sign-on settings.";
+
+const ssoConnectLabel = "Connect";
+const ssoReconnectLabel = "Reconnect";
 
 // Is Two-Factor Authentication Enabled (2FA)
 const isTwoFAEnabledProps: SwitchFieldProps = {
@@ -59,9 +74,26 @@ export {
   isPwdEnabledProps,
   isPwdNeverExpiresEnabledProps,
   daysBeforePwdExpiresProps,
-  isSSOEnabledProps,
+  ssoToggleLabel,
+  ssoEnabledTooltip,
+  ssoDisabledTooltip,
+  ssoEnableConfirmTitle,
+  ssoEnableConfirmDescription,
+  ssoEnableConfirmBtnText,
+  ssoDisableConfirmTitle,
+  ssoDisableConfirmDescription,
+  ssoDisableConfirmBtnText,
+  ssoEnabledSuccessMessage,
+  ssoDisabledSuccessMessage,
+  ssoUpdateErrorMessage,
+  ssoStatusConnectedLabel,
+  ssoProviderInfoTooltip,
+  ssoEmailDomainLabel,
+  ssoDisableWarningTitle,
   ssoConnectRequiredHint,
   ssoAdminOnlyNotice,
+  ssoConnectLabel,
+  ssoReconnectLabel,
   isTwoFAEnabledProps,
   isIdleSessionTimeoutEnabledProps,
   idleSessionTimeoutMinutesProps,

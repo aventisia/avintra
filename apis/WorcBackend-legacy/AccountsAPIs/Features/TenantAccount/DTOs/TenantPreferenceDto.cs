@@ -62,6 +62,11 @@ public class TenantPreferenceDto
     /// Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.
     /// </summary>
     public SsoDisableWarningDto? SsoDisableWarning { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether single sign-on is available in this deployment.
+    /// </summary>
+    public bool IsSSOAvailable { get; set; }
 }
 
 
