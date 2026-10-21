@@ -1,7 +1,10 @@
-# Voice Test
+# Voice Platform Assistant UI (Voice Test)
 
-The Voice Test is the panel on the right side of a Voice Agent flow. It lets you talk to the agent
-before deploying it. Nothing from a Test session is saved.
+This feature is the Voice Test panel on the right side of a Voice Agent flow. It lets you talk to
+the agent before deploying it. Nothing from a Test session is saved.
+
+It is separate from the Chat feature (`av-platform-assistant-ui`). The Voice feature never imports
+from the Chat feature; both keep their own speech helpers, playback queue, and context.
 
 ## Starting and ending a session
 
@@ -81,6 +84,11 @@ it is suppressed and recorded as a simulated event instead.
 
 Avatar, screen share, camera feed, call recording, noise cancellation, and preemptive generation
 are display-only: they are listed when configured, but they do not run.
+
+## Shared helpers
+
+`utils/voice-controls.util.ts` and `utils/text-chunker.util.ts` are pure helpers that also exist in
+the Chat feature. Fix a shared bug in both copies, or consolidate them deliberately.
 
 ## What still needs a person
 

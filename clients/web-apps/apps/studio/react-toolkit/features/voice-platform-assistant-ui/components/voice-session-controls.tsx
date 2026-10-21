@@ -3,8 +3,8 @@ import { cn } from "@avplatform/ui/lib";
 import { Mic, SquareIcon } from "lucide-react";
 import { type FC, useEffect, useState } from "react";
 
-import { useAssistantVoiceContext } from "../voice/hooks/useAssistantVoiceContext.hook";
-import { VOICE_ENGINE_LABEL, VOICE_SESSION_STATE_LABEL } from "../voice/utils/voice-session.util";
+import { useVoiceAssistantContext } from "../hooks/useVoiceAssistantContext.hook";
+import { VOICE_ENGINE_LABEL, VOICE_SESSION_STATE_LABEL } from "../utils/voice-session.util";
 
 const useOnlineStatus = (): boolean => {
   const [isOnline, setIsOnline] = useState(() =>
@@ -27,10 +27,10 @@ const useOnlineStatus = (): boolean => {
 
 /** Start/End controls, session state, and engine tag for the Voice Test surface. */
 export const VoiceSessionControls: FC = () => {
-  const voice = useAssistantVoiceContext();
+  const voice = useVoiceAssistantContext();
   const isOnline = useOnlineStatus();
 
-  if (!voice?.isVoicePlayground) return null;
+  if (!voice) return null;
 
   const isActive = voice.isVoiceSessionActive;
   const isConnecting = voice.sessionState === "connecting";

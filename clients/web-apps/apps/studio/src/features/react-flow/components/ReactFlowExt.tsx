@@ -32,6 +32,7 @@ import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execu
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
+import { VoicePlatformAssistantUI } from "@/react-toolkit/features/voice-platform-assistant-ui/components/VoicePlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -219,6 +220,10 @@ export const ReactFlowExt = () => {
   const recommendActions = useDefaultActions();
 
   const voiceIntroMessages = useVoiceIntroduction();
+  const testPanelActions = recommendActions?.defaultActions ?? [];
+  const testPanelDescription = chatModelLabel
+    ? `Live test · ${chatModelLabel} · history is not saved`
+    : "Live test · history is not saved";
 
   const calculateMenuPosition = (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
     const pane = reactFlowWrapper.current?.getBoundingClientRect();
@@ -399,30 +404,37 @@ export const ReactFlowExt = () => {
         <>
           <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
           <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
-            <AvPlatformAssistantUI
-              flowVersionId={currentFlow.versionId}
-              mode="temporary"
-              allowNewSession
-              readOnly={isTestChatDisabled}
-              readOnlyMessage={
-                isTestChatDisabled
-                  ? "Testing is unavailable while this agent is published."
-                  : undefined
-              }
-              title={isVoiceAgentFlow ? "Voice test" : "Test chat"}
-              badge="Test mode"
-              description={
-                chatModelLabel
-                  ? `Live test · ${chatModelLabel} · history is not saved`
-                  : "Live test · history is not saved"
-              }
-              initialMessages={voiceIntroMessages}
-              isVoicePlayground={isVoiceAgentFlow}
-              onRequestComplete={handleChatRequestComplete}
-              defaultActions={
-                recommendActions?.defaultActions ? recommendActions?.defaultActions : []
-              }
-            />
+            {isVoiceAgentFlow ? (
+              <VoicePlatformAssistantUI
+                flowVersionId={currentFlow.versionId}
+                mode="temporary"
+                allowNewSession
+                title="Voice test"
+                badge="Test mode"
+                description={testPanelDescription}
+                initialMessages={voiceIntroMessages}
+                onRequestComplete={handleChatRequestComplete}
+                defaultActions={testPanelActions}
+              />
+            ) : (
+              <AvPlatformAssistantUI
+                flowVersionId={currentFlow.versionId}
+                mode="temporary"
+                allowNewSession
+                readOnly={isTestChatDisabled}
+                readOnlyMessage={
+                  isTestChatDisabled
+                    ? "Testing is unavailable while this agent is published."
+                    : undefined
+                }
+                title="Test chat"
+                badge="Test mode"
+                description={testPanelDescription}
+                initialMessages={voiceIntroMessages}
+                onRequestComplete={handleChatRequestComplete}
+                defaultActions={testPanelActions}
+              />
+            )}
           </ResizablePanel>
         </>
       )}

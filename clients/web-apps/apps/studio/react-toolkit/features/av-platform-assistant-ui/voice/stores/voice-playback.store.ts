@@ -36,7 +36,6 @@ const writeSpeakRepliesPreference = (value: boolean): void => {
 let audioElement: HTMLAudioElement | null = null;
 let queue: QueuedClip[] = [];
 let current: QueuedClip | null = null;
-let blockedClip: QueuedClip | null = null;
 const resolvedUrls = new Map<string, string>();
 
 const getAudioElement = (onEnded: () => void): HTMLAudioElement => {
@@ -75,23 +74,23 @@ const releaseResolvedUrls = (): void => {
   resolvedUrls.clear();
 };
 
+const releaseClipUrl = (clip: VoiceAudioClip): void => {
+  const url = resolvedUrls.get(clip.id);
+  if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
+  resolvedUrls.delete(clip.id);
+};
+
 type VoicePlaybackState = {
   /** Whether streamed replies are spoken aloud (persisted). */
   speakReplies: boolean;
   /** Whether the player is actively producing audio. */
   isPlaying: boolean;
-  /** Whether the browser blocked playback, so a user gesture is needed to resume. */
-  playBlocked: boolean;
 
   setSpeakReplies: (value: boolean) => void;
   /** Appends clips to the FIFO queue; playback starts when the player is idle. */
   enqueue: (key: string, clips: VoiceAudioClip[]) => void;
   /** Stops playback and drops the queue without aborting the run. */
   stop: () => void;
-  /** Halts agent audio for barge-in; the speak-replies preference stays unchanged. */
-  interrupt: () => void;
-  /** Replays the clip the browser blocked, after a user gesture. */
-  resume: () => void;
 };
 
 export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
@@ -108,27 +107,19 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
 
     const element = getAudioElement(playNext);
     element.src = resolveClipUrl(next);
-    element
-      .play()
-      .then(() => {
-        blockedClip = null;
-        set({ playBlocked: false });
-      })
-      .catch(() => {
-        // IMPORTANT NOTE: browsers block autoplay without a prior user gesture; keep the
-        // clip for an explicit resume and advance instead of wedging the queue behind
-        // audio that cannot start.
-        current = null;
-        blockedClip = next;
-        set({ isPlaying: false, playBlocked: true });
-        playNext();
-      });
+    element.play().catch(() => {
+      // IMPORTANT NOTE: browsers block autoplay without a prior user gesture; drop the
+      // clip and advance instead of wedging the queue behind audio that cannot start.
+      releaseClipUrl(next);
+      current = null;
+      set({ isPlaying: false });
+      playNext();
+    });
   };
 
   return {
     speakReplies: readSpeakRepliesPreference(),
     isPlaying: false,
-    playBlocked: false,
 
     setSpeakReplies: (value) => {
       writeSpeakRepliesPreference(value);
@@ -148,27 +139,13 @@ export const useVoicePlaybackStore = create<VoicePlaybackState>((set, get) => {
     stop: () => {
       queue = [];
       current = null;
-      blockedClip = null;
       if (audioElement) {
         audioElement.pause();
         audioElement.removeAttribute("src");
         audioElement.load();
       }
       releaseResolvedUrls();
-      set({ isPlaying: false, playBlocked: false });
-    },
-
-    interrupt: () => {
-      get().stop();
-    },
-
-    resume: () => {
-      const clip = blockedClip;
-      blockedClip = null;
-      set({ playBlocked: false });
-      if (!clip) return;
-      queue.unshift(clip);
-      if (current === null) playNext();
+      set({ isPlaying: false });
     },
   };
 });

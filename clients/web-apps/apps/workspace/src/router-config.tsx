@@ -47,6 +47,7 @@ import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { UserInterfacesPage } from "./pages/04-assist/UserInterfacesPage";
+import { VoicePage } from "./pages/04-assist/VoicePage";
 import { WorkspaceChatArtifactsPage } from "./pages/04-assist/WorkspaceChatArtifactsPage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
@@ -311,6 +312,14 @@ const routerConfig: RouteObject[] = [
                 element: <InterfaceDetailPane />,
               },
             ],
+          },
+          {
+            path: "voice",
+            element: <VoicePage />,
+          },
+          {
+            path: "voice/:flowVersionId",
+            element: <VoicePage />,
           },
         ],
       },
