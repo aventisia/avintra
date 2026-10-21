@@ -1,0 +1,42 @@
+meta {
+  name: Unassign all flows from knowledge base
+  type: http
+  seq: 32
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/assign
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "resourceType": "KnowledgeBase",
+    "resourceId": "{{KNOWLEDGE_BASE_ID}}",
+    "flowIds": []
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body?.data?.removedCount >= 1) {
+    bru.setGlobalEnvVar("EXPECT_FLOW_ASSIGNED", "false");
+  }
+  test("unassign flows returns 200 with a removed count", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.removedCount).to.be.at.least(1);
+    expect(res.getBody().data.assignedCount).to.equal(0);
+  });
+}
+
+docs {
+  > Empties the target knowledge base's flow assignments through the bulk endpoint so
+  > the removal branch of AssignFlowsAsync is exercised (empty set = remove all), which
+  > is also the only way to open a restricted knowledge base again.
+  > Use a DEDICATED fixture knowledge base: this request clears every assignment on it.
+}

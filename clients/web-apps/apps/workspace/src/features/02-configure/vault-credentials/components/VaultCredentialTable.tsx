@@ -12,6 +12,7 @@ import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 import { Tooltip } from "@/ui/components/tooltip";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -155,6 +156,7 @@ export const VaultCredentialTable = () => {
                     name={row.original.name}
                     type={row.original.type}
                     isTenantWideAccess={row.original.isTenantWideAccess || false}
+                    isResourceAccessRestricted={row.original.isResourceAccessRestricted || false}
                   />
                 </div>
               ))}
@@ -169,6 +171,7 @@ export const VaultCredentialTable = () => {
           <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
 
           <ResourceShareDialog queryKey={queryKey} />
+          <ResourceFlowAccessDialog queryKey={queryKey} />
 
           <VaultCredentialBulkActions table={table} />
         </div>

@@ -1,0 +1,29 @@
+meta {
+  name: Delete knowledge base with flow access
+  type: http
+  seq: 34
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/knowledge-base/{{KNOWLEDGE_BASE_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("knowledge base delete returns 200 with data true", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}
+
+docs {
+  > Deletes the Dev knowledge base identified by KNOWLEDGE_BASE_ID. Run the follow-up
+  > request "Get assigned flows after knowledge base delete" to confirm its flow access
+  > rows no longer resolve to a knowledge base. Use a DEDICATED fixture knowledge base,
+  > never a shared one.
+}

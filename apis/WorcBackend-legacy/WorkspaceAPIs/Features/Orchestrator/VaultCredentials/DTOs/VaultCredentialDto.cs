@@ -36,6 +36,11 @@ public class VaultCredentialDto
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the vault credential is restricted to its assigned flows.
+    /// </summary>
+    public bool IsResourceAccessRestricted { get; set; }
+
+    /// <summary>
     /// Gets or sets the permission level granted to the user.
     /// </summary>
     public ResourceAccessTypeEnum AccessLevel { get; set; }
