@@ -52,6 +52,16 @@ public class TenantPreferenceDto
     /// Gets or sets a value indicating whether an additional verification step is required for all users to log in.
     /// </summary>
     public bool IsTwoFAEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the versioned single sign-on configuration document.
+    /// </summary>
+    public string? SSOConfigJson { get; set; }
+
+    /// <summary>
+    /// Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.
+    /// </summary>
+    public SsoDisableWarningDto? SsoDisableWarning { get; set; }
 }
 
 

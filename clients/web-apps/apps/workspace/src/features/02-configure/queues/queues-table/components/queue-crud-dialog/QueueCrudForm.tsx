@@ -22,6 +22,7 @@ import {
   descriptionProps,
   idProps,
   isDisabledProps,
+  maxRetriesProps,
   nameProps,
   processingModeProps,
   typeProps,
@@ -48,6 +49,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   const {
     form,
     isDirty,
+    isValid,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
@@ -208,6 +210,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
           </div>
         ) : null}
       </div> */}
+      <InputField {...maxRetriesProps} isRequired />
       {/* additional options */}
       <div className="flex flex-col gap-3">
         <Input
@@ -303,7 +306,7 @@ Disposition statuses are always terminal (end) states.`}
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
+            disabled={!isDirty || !isValid || !isAvailable || isCheckPending}
           />
         </div>
       )}

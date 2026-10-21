@@ -1,0 +1,25 @@
+meta {
+  name: Get branding
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/branding
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const data = res.getBody()?.data ?? {};
+
+  test("returns the deployment branding contract", function() {
+    expect(res.getStatus()).to.equal(200);
+
+    // Every branding field is optional and serialized as null when unset, so assert the
+    // contract shape is present rather than specific values.
+    ["appName", "companyName", "companyLogoUrlLight", "companyLogoUrlDark", "productLogoUrlLight", "productLogoUrlDark", "shortLogoUrlLight", "shortLogoUrlDark", "faviconUrlLight", "faviconUrlDark", "backgroundColor", "foregroundColor", "primaryColor", "primaryForegroundColor", "secondaryColor", "secondaryForegroundColor", "accentColor", "accentForegroundColor"].forEach((field) => {
+      expect(data).to.have.property(field);
+    });
+  });
+}

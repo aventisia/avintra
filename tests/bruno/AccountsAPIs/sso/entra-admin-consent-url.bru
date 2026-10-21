@@ -1,0 +1,63 @@
+meta {
+  name: Entra admin consent URL shape
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/sso/admin-consent-url
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("uses the dedicated multi-tenant admin-consent endpoint", function() {
+    expect(res.getBody().data).to.match(/^https:\/\/login\.microsoftonline\.com\/organizations\/v2\.0\/adminconsent\?/);
+  });
+
+  test("carries exactly the documented parameters", function() {
+    const query = res.getBody().data.split("?")[1] || "";
+    const names = query.split("&").map(parameter => parameter.split("=")[0]).sort();
+
+    expect(names).to.deep.equal(["client_id", "redirect_uri", "scope", "state"]);
+  });
+
+  test("redirects back to the accounts callback", function() {
+    const url = decodeURIComponent(res.getBody().data);
+
+    expect(url).to.contain("https://");
+    expect(url).to.contain("/accounts/sso-redirect");
+  });
+
+  test("requests the sign-in scopes", function() {
+    expect(decodeURIComponent(res.getBody().data)).to.contain("scope=openid profile email offline_access");
+  });
+
+  test("does not use the authorize flow", function() {
+    const url = res.getBody().data;
+
+    expect(url).to.not.contain("/authorize");
+    expect(url).to.not.contain("prompt=");
+    expect(url).to.not.contain("response_type=");
+    expect(url).to.not.contain("response_mode=");
+    expect(url).to.not.contain("nonce=");
+    expect(url).to.not.contain("login_hint=");
+  });
+}
+
+docs {
+  > Preconditions: a tenant admin session (see `ta-login.bru` in this folder) and the platform app configured
+  > through `MICROSOFT_CLIENT_ID`; without a client id the endpoint fails safe with a 400
+  > "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable." message.
+  >
+  > Reading a failure: 401 means no tenant admin session. Running this file on its own, without `ta-login.bru`
+  > first, proves the TA gate but is expected to be red. A shape assertion failing means the consent URL
+  > regressed: it must target `.../organizations/v2.0/adminconsent` with exactly `client_id`, `redirect_uri`,
+  > `state` and `scope`, and must not carry `prompt`, `response_type`, `response_mode`, `nonce` or `login_hint`.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD`.
+}

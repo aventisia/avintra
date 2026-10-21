@@ -1,0 +1,17 @@
+meta {
+  name: Search users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/search/user?query={{SEARCH_KEY}}&includeCurrentUser=false&onlyCurrentSpace=false
+  body: none
+  auth: none
+}
+
+params:query {
+  query: {{SEARCH_KEY}}
+  includeCurrentUser: false
+  onlyCurrentSpace: false
+}

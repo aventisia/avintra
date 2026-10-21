@@ -1,0 +1,51 @@
+meta {
+  name: Invoke custom tool
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/cloud-connector/custom-tool/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "Bruno Custom Tool Invoke Test",
+    "provider": "customtool",
+    "action": "{{CUSTOM_TOOL_ACTION}}",
+    "credentialName": null,
+    "payload": {}
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+  const body = res.getBody();
+
+  test("responds with a valid envelope or a documented plain-text error", function() {
+    expect([200, 400, 401, 404, 502]).to.include(status);
+    if (status === 200) {
+      expect(body).to.have.property("statusCode", 200);
+      expect(body).to.have.property("data");
+      expect(body.data).to.have.property("provider", "customtool");
+      expect(body.data).to.have.property("action", "{{CUSTOM_TOOL_ACTION}}");
+      expect(body.data).to.have.property("response");
+    } else {
+      // Errors are returned as plain text by ResultHelper.
+      expect(typeof body).to.equal("string");
+    }
+  });
+}
+
+tests {
+  // Prereqs:
+  // 1. A verified, active Custom tool must exist (create via tools/create-tool,
+  //    then verify via tools/{toolId}/test or set IsVerified manually).
+  // 2. CUSTOM_TOOL_ACTION env var = "{toolName}.{operationId}" (e.g. "MyWeatherTool.getUsers").
+  //    Legacy "{toolId}.{operationId}" references are still accepted.
+  // 3. If the operation requires auth, a CustomApiTool credential must exist and
+  //    the tool's credentialName must reference it.
+}

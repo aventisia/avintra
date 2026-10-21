@@ -36,6 +36,20 @@ public interface ITenantAccountService
     Task<ServiceResponse<TenantPreferenceDto>> UpdateTenantPreferencesAsync(TenantPreferenceDto preferencesDto);
 
     /// <summary>
+    /// Generates the administrator consent URL for connecting the tenant's identity provider.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation, containing the consent URL.</returns>
+    Task<ServiceResponse<string>> GetSsoAdminConsentUrlAsync();
+
+    /// <summary>
+    /// Binds the tenant granted by the identity provider to the tenant's single sign-on configuration.
+    /// </summary>
+    /// <param name="grantedTenantId">The external tenant identifier returned by the identity provider.</param>
+    /// <param name="state">The single-use OAuth state returned by the identity provider.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the updated tenant preferences.</returns>
+    Task<ServiceResponse<TenantPreferenceDto>> CompleteSsoAdminConsentAsync(string grantedTenantId, string? state);
+
+    /// <summary>
     /// Retrieves the tenant's automatic notification settings, applying per-type defaults
     /// for any missing keys (FR-2, FR-6).
     /// </summary>
@@ -50,12 +64,4 @@ public interface ITenantAccountService
     /// <param name="settingsDto">The notification settings to apply.</param>
     /// <returns>A task representing the asynchronous operation, returning the updated notification settings.</returns>
     Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(NotificationSettingsDto settingsDto);
-
-    /// <summary>
-    /// Retrieves a list of account users whose properties match the provided search key.
-    /// </summary>
-    /// <param name="searchKey">The keyword to search account users by.</param>
-    /// <param name="includeCurrentUser">A flag indicating whether to include the current user in the results.</param>
-    /// <returns>A task that returns a service response with an enumerable collection of matching account user DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<AppUserBaseDto>>> SearchAccountUserAsync(string searchKey, bool includeCurrentUser);
 }

@@ -2678,6 +2678,10 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("text")
                         .HasDefaultValue("Dev");
 
+                    b.Property<string>("IconUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -2852,6 +2856,78 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TriggerId");
 
                     b.ToTable("worc_TriggerFlowVersions");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTenantWideAccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ws_VaultCredentials");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderAsset", b =>
@@ -3104,78 +3180,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("UiBuilderProjectId");
 
                     b.ToTable("UiBuilderVersions");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("EnvType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("Dev");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTenantWideAccess")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("SpaceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UsageCount")
-                        .HasColumnType("integer");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
-                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
-                        .IsUnique();
-
-                    b.ToTable("ws_VaultCredentials");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.VectorStore", b =>
@@ -4419,6 +4423,11 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("TriggerFlowVersions");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
+                {
+                    b.Navigation("EncryptedKeyValues");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
                 {
                     b.Navigation("UiBuilderAssets");
@@ -4426,11 +4435,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("UiBuilderProjectUsers");
 
                     b.Navigation("UiBuilderVersions");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
-                {
-                    b.Navigation("EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>

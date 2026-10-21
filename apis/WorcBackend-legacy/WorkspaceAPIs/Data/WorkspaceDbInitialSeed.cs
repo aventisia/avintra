@@ -32,6 +32,8 @@ public static class WorkspaceDbInitialSeed
 
             await SeedGeminiBuilderModelAsync(_workspaceDbContext, _tenantDbContext, _logger);
 
+            await SeedQueueMaximumRetryAttemptsAsync(_workspaceDbContext, _logger);
+
             var platformAdmin = await ResolvePlatformAdminUserAsync(
                 _workspaceDbContext,
                 _tenantDbContext,
@@ -228,6 +230,32 @@ public static class WorkspaceDbInitialSeed
         {
             logger.LogError(ex, "Error seeding the Gemini builder model. Continuing startup.");
         }
+    }
+
+    private static async Task SeedQueueMaximumRetryAttemptsAsync(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    {
+        int DefaultMaximumRetryAttempts = 3;
+        var queuesToUpdate = await workspaceDbContext.Queues
+            .IgnoreQueryFilters()
+            .Where(q => q.MaximumRetryAttempts == 0)
+            .ToListAsync();
+
+        if (queuesToUpdate.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var queue in queuesToUpdate)
+        {
+            queue.MaximumRetryAttempts = DefaultMaximumRetryAttempts;
+        }
+
+        await workspaceDbContext.SaveChangesAsync();
+
+        logger.LogInformation(
+            "Updated MaximumRetryAttempts to {DefaultMaximumRetryAttempts} for {QueueCount} existing queues.",
+            DefaultMaximumRetryAttempts,
+            queuesToUpdate.Count);
     }
 
     private static async Task<(Guid UserId, Guid TenantId)?> ResolvePlatformAdminUserAsync(

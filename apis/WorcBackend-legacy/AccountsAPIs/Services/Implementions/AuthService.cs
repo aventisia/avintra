@@ -145,7 +145,8 @@ public class AuthService : IAuthService
 
             // Generate Azure login URL only if SSO is enabled
             var azureLoginUrl = user.Tenant.IsSSOEnabled
-                    ? _loginWithExternalAuthService.GenerateLoginUrlAsync(ExternalAuthProviderEnum.Azure).Data
+                    ? _loginWithExternalAuthService.GenerateLoginUrlAsync(
+                        ExternalAuthProviderEnum.Azure, user.UserName, user.Tenant.Id).Data
                     : null;
 
             // Check if the user is associated with an organization (tenant)
@@ -187,6 +188,87 @@ public class AuthService : IAuthService
         {
             _logger.LogError(ex, "Failed to retrieve tenant info.");
             return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Resolves the single sign-on tenant for an email address for home realm discovery.
+    public async Task<ServiceResponse<SsoDiscoverDto>> DiscoverTenantAsync(EmailDto emailDto)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<SsoDiscoverDto>
+        {
+            Data = null,
+            Message = "Failed to discover single sign-on configuration. Please try again later"
+        };
+
+        try
+        {
+            // Check if authentication-related operations are globally disabled.
+            if (_environmentConfig.OnPremLoginDisabled)
+            {
+                serviceResponse.StatusCode = 403;
+                serviceResponse.Message = "Authentication is currently disabled. Please contact Aventisia Support for assistance.";
+                return serviceResponse;
+            }
+
+            var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(emailDto.Email);
+            var noMatch = new SsoDiscoverDto { SsoLoginUrl = null, Provider = null, TenantId = null };
+
+            // Consumer/public mail domains can never map to an organization single sign-on tenant
+            if (string.IsNullOrWhiteSpace(emailDomain) || SsoConfigHelpers.IsConsumerEmailDomain(emailDomain))
+            {
+                serviceResponse.Data = noMatch;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Success";
+                return serviceResponse;
+            }
+
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t =>
+                    t.Domain != string.Empty &&
+                    t.IsSSOEnabled &&
+                    t.Type == TenantTypesEnum.Organization &&
+                    t.Domain.ToLower() == emailDomain)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            var ssoConfig = SsoConfigHelpers.Parse(tenant?.SSOConfigJson);
+
+            if (tenant == null || ssoConfig == null)
+            {
+                serviceResponse.Data = noMatch;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Success";
+                _logger.LogInformation("SSO discovery completed without a matching tenant. EmailDomain={EmailDomain}", emailDomain);
+                return serviceResponse;
+            }
+
+            var loginUrlResult = _loginWithExternalAuthService.GenerateLoginUrlAsync(
+                ExternalAuthProviderEnum.Azure, emailDto.Email, tenant.Id);
+
+            if (string.IsNullOrWhiteSpace(loginUrlResult.Data))
+            {
+                serviceResponse.Data = noMatch;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Success";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = new SsoDiscoverDto
+            {
+                SsoLoginUrl = loginUrlResult.Data,
+                Provider = SsoConfigHelpers.MicrosoftEntraProvider,
+                TenantId = tenant.Id
+            };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Success";
+            _logger.LogInformation("SSO discovery matched a tenant. TenantId={TenantId}, EmailDomain={EmailDomain}", tenant.Id, emailDomain);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to discover single sign-on configuration.");
         }
 
         return serviceResponse;
@@ -287,8 +369,14 @@ public class AuthService : IAuthService
                     // Try to add user in other databases
                     var createUserInOtherDbsResult = await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Create, jwt);
 
-                    // Failed to add user in other databases
-                    if (!createUserInOtherDbsResult) return serviceResponse;
+                    // Failed to add user in other databases: no session is issued so the sync is retried on the next login
+                    if (!createUserInOtherDbsResult)
+                    {
+                        _logger.LogError("Failed to synchronize the user across services. UserId={UserId}", user.Id);
+                        serviceResponse.Message = "Failed to provision your account across services. Please try again later.";
+                        serviceResponse.StatusCode = 502;
+                        return serviceResponse;
+                    }
 
                     // Update user's IsCreatedInOtherDbs status using direct database update to avoid tracking conflicts
                     var updateResult = await _unitOfWork.AccountUserRepo
@@ -298,6 +386,8 @@ public class AuthService : IAuthService
                     // Update AccountUser job failed
                     if (updateResult == 0)
                     {
+                        serviceResponse.Message = "Failed to provision your account across services. Please try again later.";
+                        serviceResponse.StatusCode = 502;
                         return serviceResponse;
                     }
 
@@ -307,6 +397,9 @@ public class AuthService : IAuthService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to create user session.");
+                    serviceResponse.Message = "Failed to provision your account across services. Please try again later.";
+                    serviceResponse.StatusCode = 502;
+                    return serviceResponse;
                 }
             }
 

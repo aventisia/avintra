@@ -10,10 +10,18 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/to
 /**
  * Retrieves list of tools based on ownership scope.
  */
-export const getTools = ({ isPersonal = true }: { isPersonal: boolean }) => {
-  const path = isPersonal ? `list` : `list/shared`;
+export const getPersonalTools = () => {
   return axiosInstance
-    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/list`, { headers: getSpaceHeaders() })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves all shared tools.
+ */
+export const getSharedTools = () => {
+  return axiosInstance
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/list/shared`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -38,9 +46,9 @@ export const getToolById = (id: string) => {
 };
 
 /**
- * Inserts a new tool.
+ * Creates a new tool.
  */
-export const insertTool = (newTool: ToolDto) => {
+export const createTool = (newTool: ToolDto) => {
   return axiosInstance
     .post<IHttpResponse<ToolDto>>(`${baseAPIURL}`, newTool, { headers: getSpaceHeaders() })
     .then((res) => res.data);
@@ -66,10 +74,11 @@ export const deleteTool = (id: string) => {
 
 /**
  * Deletes multiple tools by their identifiers.
+ * The backend returns the number of tools actually deleted.
  */
 export const deleteTools = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -91,7 +100,7 @@ export const testTool = (id: string, dto: TestToolDto) => {
  * Tests a tool operation by calling the LLM pipeline API directly.
  * Authentication is forwarded via the existing JWT cookie/Authorization header.
  */
-export const testToolDirectly = (dto: TestToolDto) => {
+export const testToolDirectly = (dto: TestToolDto & { baseUrl: string; openApiSpec?: string }) => {
   const llmPipelineBaseUrl = import.meta.env.VITE_LLMPIPELINE_API_PATH;
   return axiosInstance
     .post<TestToolResponseDto>(`${llmPipelineBaseUrl}/custom-tools/test`, dto, {
@@ -133,7 +142,7 @@ export const toolOptimisticMutationFn = ({
 }: IOptimisticMutation<ToolDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTool(payload as ToolDto);
+      return createTool(payload as ToolDto);
     case "update":
       return updateTool(payload as ToolDto);
     case "delete":

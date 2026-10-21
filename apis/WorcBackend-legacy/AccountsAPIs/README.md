@@ -46,7 +46,45 @@ sudo docker run -d --name accounts-apis -p 4000:4000 \
 	avplatform/accounts-apis:latest
 ```
 
-In local development (`ASPNETCORE_ENVIRONMENT` or `DOTNET_ENVIRONMENT` set to `Localhost`), `.env.local` in this directory is loaded before Kestrel binds, so its `ASPNETCORE_URLS` takes precedence over the launch profile URL. Use it to run parallel worktrees on separate ports, and start the service with this directory as the working directory (`cd apis/WorcBackend-legacy/AccountsAPIs && dotnet run`, or the `accounts_apis` VS Code task) so `.env.local` is found.
+### Deployment branding (self-hosted white-label)
+
+Branding customization applies to **Enterprise** and **Commercial** deployments. **Community**
+deployments keep the built-in Avintra/Aventisia branding (the endpoint returns defaults).
+
+All keys are optional; an unset key falls back to the built-in default on the client. Invalid
+values and oversized text (over 100 characters) are ignored at startup with a warning.
+
+| Variable                              | Description                                                                        |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| `BRANDING_APP_NAME`                   | Product/app name used in the UI and document title (max 100 chars).               |
+| `BRANDING_COMPANY_NAME`               | Company name (max 100 chars).                                                      |
+| `BRANDING_COMPANY_LOGO_URL_LIGHT`     | Light full company wordmark used by the accounts app and the redirect, error, loading and not-found screens (absolute HTTPS URL on the deployment's domain). |
+| `BRANDING_COMPANY_LOGO_URL_DARK`      | Dark company wordmark (same rules). Reserved for a future dark theme; used as the light variant's fallback. |
+| `BRANDING_PRODUCT_LOGO_URL_LIGHT`     | Light product logo used by the workspace header (same rules).                      |
+| `BRANDING_PRODUCT_LOGO_URL_DARK`      | Dark product logo (same rules). Used as the light variant's fallback.              |
+| `BRANDING_SHORT_LOGO_URL_LIGHT`       | Light short logo used by the studio header (same rules).                           |
+| `BRANDING_SHORT_LOGO_URL_DARK`        | Dark short logo (same rules). Used as the light variant's fallback.                |
+| `BRANDING_FAVICON_URL_LIGHT`          | Light favicon (same rules).                                                        |
+| `BRANDING_FAVICON_URL_DARK`           | Dark favicon (same rules). Used as the light variant's fallback.                   |
+| `BRANDING_BACKGROUND_COLOR`           | `--background` brand color — hex, `rgb()`/`rgba()` or `hsl()`/`hsla()`.            |
+| `BRANDING_FOREGROUND_COLOR`           | `--foreground` brand color (same formats).                                         |
+| `BRANDING_PRIMARY_COLOR`              | `--primary` brand color (same formats).                                            |
+| `BRANDING_PRIMARY_FOREGROUND_COLOR`   | `--primary-foreground` brand color; derived for contrast when unset (same formats).|
+| `BRANDING_SECONDARY_COLOR`            | `--secondary` brand color — buttons, banner, tooltip (same formats).               |
+| `BRANDING_SECONDARY_FOREGROUND_COLOR` | `--secondary-foreground` brand color; derived for contrast when unset (same formats).|
+| `BRANDING_ACCENT_COLOR`               | `--accent` brand color; derived from the primary color when unset (same formats).  |
+| `BRANDING_ACCENT_FOREGROUND_COLOR`    | `--accent-foreground` brand color (same formats).                                  |
+
+Asset URLs must be absolute **HTTPS** and hosted on the deployment's own domain (the
+`APP_BASE_URL` host), a subdomain of it, or a host under its parent domain — so with
+`APP_BASE_URL=uat-avintra.aventisia.com` the sibling hosts `local-avintra.aventisia.com` and
+`avintra.aventisia.com` are accepted too. Absolute-URL `http`, relative paths and any other
+domain are rejected. Colors must use one of the listed formats, with every channel a number.
+
+`--accent` falls back to a tint of the primary color when unset and the focus `--ring` is always
+derived from the primary color; readable `*-foreground` tokens are derived for contrast when unset.
+The resolved values are served unauthenticated at `GET /accounts/api/branding` for the web apps to
+consume at boot.
 
 ### 3. WSL2/PostgreSQL connectivity notes
 

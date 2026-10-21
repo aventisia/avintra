@@ -1,11 +1,133 @@
+import json
+import re
 import time
+from dataclasses import dataclass
 from typing import Any
+from urllib.parse import quote
 
+import httpcore
 import httpx
 
-from app.core.logger import logger
-from app.features.custom_tools.vault_credential_client import fetch_decrypted_vault_credential
+from app.core.config import settings
+from app.features.custom_tools.vault_credential_client import (
+    apply_credential_auth,
+    fetch_decrypted_vault_credential,
+)
+
 from app.features.custom_tools.schemas import ToolOperation
+from app.features.custom_tools.url_guard import UnsafeUrlError, resolve_public_addresses
+
+_PATH_PLACEHOLDER_PATTERN = re.compile(r"\{([^/{}]+)\}")
+MAX_RESPONSE_BYTES = 5 * 1024 * 1024
+_REQUEST_TIMEOUT_SECONDS = 30.0
+
+
+class ResponseTooLargeError(Exception):
+    """Raised when an upstream response exceeds the 5 MB read cap."""
+
+
+class _PinnedNetworkBackend(httpcore.AnyIOBackend):
+    async def connect_tcp(
+        self,
+        host: str,
+        port: int,
+        timeout: float | None = None,
+        local_address: str | None = None,
+        socket_options: Any = None,
+    ) -> httpcore.AsyncNetworkStream:
+        addresses = resolve_public_addresses(host)
+        last_error: Exception | None = None
+        for address in addresses:
+            try:
+                return await super().connect_tcp(
+                    str(address),
+                    port,
+                    timeout=timeout,
+                    local_address=local_address,
+                    socket_options=socket_options,
+                )
+            except OSError as error:
+                last_error = error
+        raise UnsafeUrlError("The upstream host could not be reached.") from last_error
+
+
+class PublicHostTransport(httpx.AsyncHTTPTransport):
+    """Connects only to an address validated as public at connect time."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        # IMPORTANT NOTE: httpx exposes no public hook for the connect backend, so the pool backend is replaced after construction to pin each connection to a validated address.
+        self._pool._network_backend = _PinnedNetworkBackend()
+
+
+@dataclass
+class RequestParts:
+    """The outbound method, path, headers, query and JSON body for an operation."""
+
+    method: str
+    path: str
+    headers: dict[str, str]
+    query_params: dict[str, Any]
+    body: Any
+
+
+def build_request_parts(operation: ToolOperation, parameters: dict[str, Any]) -> RequestParts:
+    """Build the outbound request parts for an operation from the supplied parameters."""
+    headers: dict[str, str] = {}
+    query_params: dict[str, Any] = {}
+    body: Any = None
+
+    for param in operation.parameters:
+        name = param["name"]
+        value = parameters.get(name)
+        if value is None:
+            continue
+        if param.get("in", "query") == "header":
+            headers[name] = str(value)
+        elif param.get("in", "query") == "query":
+            query_params[name] = value
+
+    if operation.request_body:
+        body = _extract_body(parameters, operation.request_body)
+
+    return RequestParts(
+        method=operation.method.upper(),
+        path=resolve_path_template(operation.path, parameters),
+        headers=headers,
+        query_params=query_params,
+        body=body,
+    )
+
+
+def create_client() -> httpx.AsyncClient:
+    """Create an HTTP client that pins connections to validated public addresses."""
+    return httpx.AsyncClient(
+        timeout=_REQUEST_TIMEOUT_SECONDS,
+        follow_redirects=False,
+        transport=PublicHostTransport(verify=settings.SSL_VERIFY),
+    )
+
+
+async def send_capped_request(
+    client: httpx.AsyncClient,
+    *,
+    method: str,
+    url: str,
+    headers: dict[str, str],
+    params: dict[str, Any],
+    json_body: Any,
+) -> tuple[int, bytes]:
+    """Send a request and read at most the 5 MB response cap."""
+    async with client.stream(
+        method=method,
+        url=url,
+        headers=headers,
+        params=params,
+        json=json_body,
+    ) as response:
+        status_code = response.status_code
+        content = await _read_capped_body(response)
+    return status_code, content
 
 
 async def execute_operation(
@@ -18,100 +140,130 @@ async def execute_operation(
     access_token: str | None = None,
     env_type: str = "dev",
 ) -> dict[str, Any]:
-    resolved_path = _resolve_path(operation.path, parameters)
-    method = operation.method.upper()
-    headers: dict[str, str] = {}
-    query_params: dict[str, Any] = {}
-    body: Any = None
-
-    for param in operation.parameters:
-        name = param["name"]
-        param_in = param.get("in", "query")
-        value = parameters.get(name)
-        if value is None:
-            continue
-        if param_in == "query":
-            query_params[name] = value
-        elif param_in == "header":
-            headers[name] = str(value)
-
-    if operation.request_body:
-        body = _extract_body(parameters, operation.request_body)
-
-    if authentication_type and authentication_type != "none":
-        if credential_name and workspace_api:
-            credential = await fetch_decrypted_vault_credential(
-                workspace_api, credential_name, access_token, env_type=env_type
-            )
-            _inject_auth(headers, query_params, authentication_type, credential)
-
-    url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
-
     start = time.perf_counter()
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.request(
-            method=method,
-            url=url,
-            headers=headers,
-            params=query_params,
-            json=body,
-        )
-    duration_ms = round((time.perf_counter() - start) * 1000, 2)
-
     try:
-        response_body = response.json()
-    except Exception:
-        response_body = response.text
+        parts = build_request_parts(operation, parameters)
+
+        if authentication_type and authentication_type.lower() != "none":
+            if credential_name and workspace_api:
+                credential = await fetch_decrypted_vault_credential(
+                    workspace_api, credential_name, access_token, env_type=env_type
+                )
+                apply_credential_auth(
+                    parts.headers, parts.query_params, credential, fallback_type=authentication_type
+                )
+
+        url = f"{base_url.rstrip('/')}/{parts.path.lstrip('/')}"
+        async with create_client() as client:
+            status_code, content = await send_capped_request(
+                client,
+                method=parts.method,
+                url=url,
+                headers=parts.headers,
+                params=parts.query_params,
+                json_body=parts.body,
+            )
+    except ResponseTooLargeError:
+        return _failure_envelope(
+            "The upstream API response exceeded the 5 MB limit.", start, status_code=502
+        )
+    except (httpx.HTTPError, ValueError) as error:
+        return _failure_envelope(str(error), start)
 
     return {
-        "success": 200 <= response.status_code < 300,
-        "status_code": response.status_code,
-        "body": response_body,
-        "duration_ms": duration_ms,
+        "success": 200 <= status_code < 300,
+        "status_code": status_code,
+        "body": _decode_body(content),
+        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
     }
 
 
-def _resolve_path(path_template: str, parameters: dict[str, Any]) -> str:
+def resolve_path_template(path_template: str, parameters: dict[str, Any]) -> str:
+    """Substitute ``{placeholder}`` tokens in a path template from ``parameters``."""
     result = path_template
     for key, value in parameters.items():
-        result = result.replace(f"{{{key}}}", str(value))
+        result = result.replace(f"{{{key}}}", quote(str(value), safe=""))
     return result
 
 
+def path_placeholder_names(path_template: str) -> set[str]:
+    """Return the ``{placeholder}`` names declared in a path template."""
+    return set(_PATH_PLACEHOLDER_PATTERN.findall(path_template))
+
+
+async def _read_capped_body(response: httpx.Response) -> bytes:
+    buffer = bytearray()
+    async for chunk in response.aiter_bytes():
+        if len(buffer) + len(chunk) > MAX_RESPONSE_BYTES:
+            raise ResponseTooLargeError()
+        buffer.extend(chunk)
+    return bytes(buffer)
+
+
+def _decode_body(content: bytes) -> Any:
+    try:
+        return json.loads(content)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return content.decode("utf-8", errors="replace")
+
+
+def _failure_envelope(
+    message: str, start: float, status_code: int | None = None
+) -> dict[str, Any]:
+    return {
+        "success": False,
+        "status_code": status_code,
+        "body": message,
+        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+    }
+
+
 def _extract_body(parameters: dict[str, Any], request_body: dict[str, Any]) -> dict[str, Any]:
-    content = request_body.get("content", {})
-    for media in content.values():
-        schema = media.get("schema", {})
-        if schema.get("type") == "object" and "properties" in schema:
-            body = {}
-            for name in schema["properties"].keys():
-                if name in parameters:
-                    body[name] = parameters[name]
-            return body
-    return {}
+    """Build the JSON request body from the supplied parameters.
+
+    Supports both the raw OpenAPI shape
+    (``content.<media>.schema.properties`` as a name -> schema map) and the
+    flattened shape emitted by the .NET ``OpenApiSpecHelpers`` (``properties``
+    as an array of ``{name, ...}`` objects, directly on the request body or
+    nested under ``schema``). When no property schema is declared the supplied
+    parameters are forwarded as-is, matching the .NET free-form body behavior.
+    """
+    property_names = _extract_body_property_names(request_body)
+    if not property_names:
+        return dict(parameters)
+
+    return {name: parameters[name] for name in property_names if name in parameters}
 
 
-def _inject_auth(
-    headers: dict[str, str],
-    query_params: dict[str, Any],
-    authentication_type: str,
-    credential: dict[str, Any],
-) -> None:
-    # Credential data is shaped as { "Type": "...", "Parameters": { ... } }
-    credential_type = credential.get("Type") or credential.get("type") or authentication_type
-    parameters = credential.get("Parameters") or credential.get("parameters") or {}
+def _extract_body_property_names(request_body: dict[str, Any]) -> list[str]:
+    content = request_body.get("content")
+    if isinstance(content, dict):
+        for media in content.values():
+            if not isinstance(media, dict):
+                continue
+            names = _property_names(media.get("schema"))
+            if names:
+                return names
 
-    if credential_type == "ApiKeyHeader":
-        key_name = parameters.get("KeyName") or parameters.get("key_name") or "X-API-Key"
-        headers[key_name] = parameters.get("ApiKey") or parameters.get("api_key") or ""
-    elif credential_type == "ApiKeyQuery":
-        key_name = parameters.get("KeyName") or parameters.get("key_name") or "api_key"
-        query_params[key_name] = parameters.get("ApiKey") or parameters.get("api_key") or ""
-    elif credential_type == "Bearer":
-        headers["Authorization"] = f"Bearer {parameters.get('Token') or parameters.get('token', '')}"
-    elif credential_type == "Basic":
-        import base64
-        username = parameters.get("Username") or parameters.get("basic_username") or ""
-        password = parameters.get("Password") or parameters.get("basic_password") or ""
-        encoded = base64.b64encode(f"{username}:{password}".encode()).decode()
-        headers["Authorization"] = f"Basic {encoded}"
+    for container in (request_body.get("schema"), request_body):
+        names = _property_names(container)
+        if names:
+            return names
+
+    return []
+
+
+def _property_names(schema: Any) -> list[str]:
+    if not isinstance(schema, dict):
+        return []
+
+    properties = schema.get("properties")
+    if isinstance(properties, dict):
+        return list(properties.keys())
+    if isinstance(properties, list):
+        return [
+            prop["name"]
+            for prop in properties
+            if isinstance(prop, dict) and prop.get("name")
+        ]
+    return []

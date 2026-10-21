@@ -1,5 +1,6 @@
 using ExecutorLibrary.Models;
 using ExecutorLibrary.Helpers;
+using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
 
@@ -606,6 +607,8 @@ public class FlowBuilderService : IFlowBuilderService
 
             foreach (var node in flow.Nodes)
             {
+                await AddCustomToolNodeReferenceAsync(node, references["tools"]);
+
                 if (node?.Data?.Inputs is null)
                     continue;
 
@@ -705,6 +708,35 @@ public class FlowBuilderService : IFlowBuilderService
 
         return System.Text.Json.JsonSerializer.Serialize(references);
     }
+
+    /// <summary>
+    /// Adds the custom tool referenced by a standalone custom-tool node to the tool references. The
+    /// node identity lives in the node name ("CustomTool/{toolName}.{operationId}") rather than in a
+    /// __ToolsConfig__ input, so it is resolved against the tool registry to record the canonical name.
+    /// </summary>
+    private async Task AddCustomToolNodeReferenceAsync(ReactFlowNodeModel? node, List<string> toolReferences)
+    {
+        if (node?.Type != "cloudConnectorNode")
+            return;
+
+        var nodeName = node.Data?.Name;
+        if (string.IsNullOrWhiteSpace(nodeName) || !IsCustomToolNodeName(nodeName))
+            return;
+
+        var (tool, _) = await CustomToolActionHelpers.ResolveToolAsync(
+            _unitOfWork.ToolRepo,
+            _currentTenantService,
+            nodeName);
+
+        // An unresolved node keeps its action reference so publish reports the tool as missing instead
+        // of silently producing an agent whose custom tool cannot resolve in Production.
+        AddIfNotPresent(toolReferences, tool?.Name ?? nodeName["CustomTool".Length..].TrimStart('/', '_'));
+    }
+
+    private static bool IsCustomToolNodeName(string nodeName) =>
+        nodeName.StartsWith("CustomTool", StringComparison.OrdinalIgnoreCase) &&
+        nodeName.Length > "CustomTool".Length &&
+        nodeName["CustomTool".Length] is '/' or '_';
 
     /// <summary>
     /// Normalizes the collected credential references. Legacy rows may store a GUID instead of a

@@ -11,7 +11,6 @@ public class ToolMappingProfile : IRegister
     /// <param name="config">The Mapster configuration.</param>
     public void Register(TypeAdapterConfig config)
     {
-        // Maps Tool to ToolDto.
         config.NewConfig<Tool, ToolDto>()
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
@@ -20,13 +19,8 @@ public class ToolMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
-                    : null)
-            .Map(dest => dest.IsVerified, src => src.IsVerified);
+                    : null);
 
-        // Maps Tool to UsableToolDto.
-        config.NewConfig<Tool, UsableToolDto>();
-
-        // Maps ToolDto to Tool.
         config.NewConfig<ToolDto, Tool>()
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)

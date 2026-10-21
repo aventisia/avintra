@@ -2,6 +2,11 @@ import tailwindcssTypography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
+// IMPORTANT NOTE: Tailwind cannot add an alpha channel to a plain `var(--x)` color, so `/opacity`
+// modifiers are dropped. Mixing with transparent restores them, and a 100% mix equals the source color.
+const withAlpha = (value: string) =>
+  `color-mix(in srgb, ${value} calc(<alpha-value> * 100%), transparent)`;
+
 const config = {
   darkMode: ["class"],
   content: ["./src/**/*.{html,js,jsx,ts,tsx,md,mdx}"],
@@ -51,58 +56,58 @@ const config = {
         "3lg": "1224px", // 3-large => @media (min-width: 1224px) { ... }
       },
       colors: {
-        border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        border: withAlpha("var(--border)"),
+        input: withAlpha("var(--input)"),
+        ring: withAlpha("var(--ring)"),
+        background: withAlpha("var(--background)"),
+        foreground: withAlpha("var(--foreground)"),
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
-          50: "hsl(240, 83%, 95%)",
-          100: "hsl(243, 77%, 88%)",
-          200: "hsl(240, 78%, 81%)",
-          300: "hsl(239, 79%, 73%)",
-          400: "hsl(241, 78%, 66%)",
-          500: "hsl(243, 75%, 59%)", // Primary color
-          600: "hsl(245, 67%, 55%)",
-          700: "hsl(246, 61%, 50%)",
-          800: "hsl(248, 69%, 45%)",
-          900: "hsl(255, 100%, 35%)",
+          DEFAULT: withAlpha("var(--primary)"),
+          foreground: withAlpha("var(--primary-foreground)"),
+          50: withAlpha("var(--primary-50, hsl(240, 83%, 95%))"),
+          100: withAlpha("var(--primary-100, hsl(243, 77%, 88%))"),
+          200: withAlpha("var(--primary-200, hsl(240, 78%, 81%))"),
+          300: withAlpha("var(--primary-300, hsl(239, 79%, 73%))"),
+          400: withAlpha("var(--primary-400, hsl(241, 78%, 66%))"),
+          500: withAlpha("var(--primary-500, hsl(243, 75%, 59%))"),
+          600: withAlpha("var(--primary-600, hsl(245, 67%, 55%))"),
+          700: withAlpha("var(--primary-700, hsl(246, 61%, 50%))"),
+          800: withAlpha("var(--primary-800, hsl(248, 69%, 45%))"),
+          900: withAlpha("var(--primary-900, hsl(255, 100%, 35%))"),
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
-          50: "hsl(227, 22%, 92%)",
-          100: "hsl(232, 24%, 80%)",
-          200: "hsl(233, 22%, 67%)",
-          300: "hsl(233, 21%, 55%)",
-          400: "hsl(235, 24%, 46%)",
-          500: "hsl(236, 35%, 38%)",
-          600: "hsl(237, 35%, 35%)",
-          700: "hsl(238, 38%, 31%)",
-          800: "hsl(240, 40%, 27%)",
-          900: "hsl(244, 47%, 20%)", // Secondary color
+          DEFAULT: withAlpha("var(--secondary)"),
+          foreground: withAlpha("var(--secondary-foreground)"),
+          50: withAlpha("var(--secondary-50, hsl(227, 22%, 92%))"),
+          100: withAlpha("var(--secondary-100, hsl(232, 24%, 80%))"),
+          200: withAlpha("var(--secondary-200, hsl(233, 22%, 67%))"),
+          300: withAlpha("var(--secondary-300, hsl(233, 21%, 55%))"),
+          400: withAlpha("var(--secondary-400, hsl(235, 24%, 46%))"),
+          500: withAlpha("var(--secondary-500, hsl(236, 35%, 38%))"),
+          600: withAlpha("var(--secondary-600, hsl(237, 35%, 35%))"),
+          700: withAlpha("var(--secondary-700, hsl(238, 38%, 31%))"),
+          800: withAlpha("var(--secondary-800, hsl(240, 40%, 27%))"),
+          900: withAlpha("var(--secondary-900, hsl(244, 47%, 20%))"),
         },
         destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
+          DEFAULT: withAlpha("var(--destructive)"),
+          foreground: withAlpha("var(--destructive-foreground)"),
         },
         muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          DEFAULT: withAlpha("var(--muted)"),
+          foreground: withAlpha("var(--muted-foreground)"),
         },
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
+          DEFAULT: withAlpha("var(--accent)"),
+          foreground: withAlpha("var(--accent-foreground)"),
         },
         popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
+          DEFAULT: withAlpha("var(--popover)"),
+          foreground: withAlpha("var(--popover-foreground)"),
         },
         card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
+          DEFAULT: withAlpha("var(--card)"),
+          foreground: withAlpha("var(--card-foreground)"),
         },
       },
       borderRadius: {

@@ -2,6 +2,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 
 import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
+import { ManualToolOperation } from "./manual-tool-operation-dto";
 
 /**
  * Represents a data transfer object (DTO) for a tool entry.
@@ -14,29 +15,20 @@ export interface ToolDto {
    */
   name: string;
 
-  /**
-   * Optional short code or alias for the tool (max 100 chars).
-   */
-  code?: string;
+  description?: string;
 
   /**
-   * Description of the tool.
+   * Optional icon URL of the tool (max 1000 chars); blank uses the default placeholder icon.
    */
-  description?: string;
+  iconUrl?: string;
 
   /**
    * Component type of the tool. Always Custom for user-created tools.
    */
   type: ComponentTypeEnum;
 
-  /**
-   * Base URL of the external API.
-   */
   baseUrl: string;
 
-  /**
-   * Raw OpenAPI specification for the tool.
-   */
   openApiSpec?: string;
 
   /**
@@ -45,23 +37,16 @@ export interface ToolDto {
   parsedSchema?: object;
 
   /**
-   * Authentication method required by the tool.
+   * Manually authored operations, synthesized into an OpenAPI spec by the backend when no spec is provided.
    */
+  manualOperations?: ManualToolOperation[];
+
   authenticationType?: ToolAuthenticationTypeEnum;
 
-  /**
-   * Unique name of the credential associated with the tool.
-   */
   credentialName?: string;
 
-  /**
-   * Indicates whether the tool is accessible to all users within the tenant.
-   */
   isTenantWideAccess: boolean;
 
-  /**
-   * Indicates whether the tool is active and available for use.
-   */
   isActive: boolean;
 
   /**
@@ -69,33 +54,15 @@ export interface ToolDto {
    */
   isVerified: boolean;
 
-  /**
-   * Optional flag indicating whether the tool record is disabled.
-   */
-  isDisabled?: boolean;
-
-  /**
-   * Access level of the tool record.
-   */
   accessLevel: ResourceAccessTypeEnum;
 
-  /**
-   * Username of the user who created the tool record.
-   */
+  isDisabled?: boolean;
+
   createdBy?: string;
 
-  /**
-   * Date and time when the tool record was created.
-   */
   createdOn?: string;
 
-  /**
-   * Username of the user who last modified the tool record.
-   */
   lastModifiedBy?: string;
 
-  /**
-   * Date and time when the tool record was last modified.
-   */
   lastModifiedOn?: string;
 }

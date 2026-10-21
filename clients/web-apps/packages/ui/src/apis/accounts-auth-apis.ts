@@ -4,6 +4,7 @@ import type { CheckVerificationCodeDto } from "@/ui/dtos/request/check-verificat
 import type { CreateVerificationCodeDto } from "@/ui/dtos/request/create-verification-code-dto";
 import type { EmailDto } from "@/ui/dtos/request/email-dto";
 import type { CreatedVerificationCodeDto } from "@/ui/dtos/response/created-verification-code-dto";
+import type { SsoDiscoverDto } from "@/ui/dtos/response/sso-discover-dto";
 import type { TenantInfoDto } from "@/ui/dtos/response/tenant-info-dto";
 import type { TrueFalseResultDto } from "@/ui/dtos/response/true-false-result-dto";
 import { axiosInstance } from "@/ui/lib/axios-instance";
@@ -31,6 +32,13 @@ const getTenantInfo = (postObj: EmailDto) => {
     .then((res) => res.data);
 };
 
+/** Resolves the single sign-on tenant for an email address (home realm discovery) */
+const discoverTenant = (postObj: EmailDto) => {
+  return axiosInstance
+    .post<IHttpResponse<SsoDiscoverDto>>(`${baseAPIURL}/discover`, postObj)
+    .then((res) => res.data);
+};
+
 /** Checks verification code matches or not For "ResetPwd" & other request type */
 const checkVerificationCode = (postObj: CheckVerificationCodeDto) => {
   return axiosInstance
@@ -38,4 +46,4 @@ const checkVerificationCode = (postObj: CheckVerificationCodeDto) => {
     .then((res) => res.data);
 };
 
-export { checkVerificationCode, createVerificationCode, getTenantInfo, isEmailAvailable };
+export { checkVerificationCode, createVerificationCode, discoverTenant, getTenantInfo, isEmailAvailable };

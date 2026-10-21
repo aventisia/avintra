@@ -22,7 +22,5 @@ export const AppErrorPage = () => {
     }
   }, [error?.message]);
 
-  return (
-    <ErrorPage appLogo={<AppLogo logoSrc="/logo.svg" />} minimalFooter={<AppMinimalFooter />} />
-  );
+  return <ErrorPage appLogo={<AppLogo showFullLogo />} minimalFooter={<AppMinimalFooter />} />;
 };

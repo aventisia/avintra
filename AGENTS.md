@@ -1,6 +1,9 @@
 # Aventisia WORC Platform — Agent Guide
 
 Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only primary agent. The shared handoff contract at the bottom of this file is referenced by those agents.
+# Aventisia WORC Platform — Agent Guide
+
+Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only primary agent. The shared handoff contract at the bottom of this file is referenced by those agents.
 
 ## Quick repo facts
 
@@ -102,9 +105,32 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Keep public JSDoc/XML and complex public-type documentation short; leave internal functions undocumented.
 - Prohibit explanatory internal comments except `IMPORTANT NOTE:` warnings for external constraints, race conditions, or required hacks. Prefer precise names and decomposition.
 - Domain review headings and complete snippets belong inside artifacts, not in place of compact handoffs; domain conventions never expand a role's scope or permissions.
+## Execution conventions
+
+- Keep source read-only for scout, architect, and QA; allow approved report writes only.
+- Keep read-only roles to inspection commands; never exploit write-capable shell options.
+- Run tests only after inspecting scripts and identifying permitted generated outputs.
+- Keep commands and edits within the active repository; permissions are not a filesystem sandbox.
+- Require explicit authorization for Git mutations and remote state changes.
+- A configured denial cannot be overridden by a saved approval; escalate for a narrow configuration change rather than bypassing it.
+- Launch repository-root subagents even for nested scope; use repository-relative report paths. Recheck normalized paths if a nested location is unavoidable.
+- Coder owns explicitly authorized isolated baseline/target preparation and cleanup; QA only verifies supplied contexts and exact revisions. Record dirty-tree snapshots, generated-output boundaries, and unavailable checks.
+- After the scout manifest is confirmed, the orchestrator delegates coder to prepare the issue branch from `origin/main` before implementation; scout, architect, and QA never create or switch branches.
+- Architect selects the planning mode from the scout manifest and complexity; in Grilling mode it loads the `grilling` skill, and the orchestrator relays each frontier and the user's answers until the frontier is empty before any plan is written.
+- Let only the orchestrator route agents, track the loop budget, and declare completion.
+
+## Documentation and code style boundaries
+
+- Keep public JSDoc/XML and complex public-type documentation short; leave internal functions undocumented.
+- Prohibit explanatory internal comments except `IMPORTANT NOTE:` warnings for external constraints, race conditions, or required hacks. Prefer precise names and decomposition.
+- Domain review headings and complete snippets belong inside artifacts, not in place of compact handoffs; domain conventions never expand a role's scope or permissions.
 
 ## Standalone lifecycle operations
+## Standalone lifecycle operations
 
+- `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
+- Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
+- Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, coder, and debugger have no mandatory supporting skill.
 - `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
 - Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
 - Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, coder, and debugger have no mandatory supporting skill.

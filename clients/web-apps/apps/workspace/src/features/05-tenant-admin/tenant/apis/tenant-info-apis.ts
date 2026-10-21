@@ -30,6 +30,11 @@ const updateTenantPreferences = (pref: TenantPreferencesDto) =>
     .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`, pref)
     .then((res) => res.data);
 
+const getSsoAdminConsentUrl = () =>
+  axiosInstance
+    .get<IHttpResponse<string>>(`${baseAPIURL}/sso/admin-consent-url`)
+    .then((res) => res.data);
+
 const getNotificationSettings = () =>
   axiosInstance
     .get<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`)
@@ -64,6 +69,7 @@ export {
   getCompanyDetails,
   getTenantPreferences,
   updateTenantPreferences,
+  getSsoAdminConsentUrl,
   getNotificationSettings,
   updateNotificationSettings,
   updateCompanyDetails,

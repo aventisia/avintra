@@ -1,10 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using WorkspaceAPIs.DTOs;
 
 namespace WorkspaceAPIs.Features.Tools.Helpers;
 
 /// <summary>
-/// Provides helper methods for extracting invocable operations from a tool's parsed OpenAPI schema.
+/// Extracts invocable operations from a tool's parsed OpenAPI schema and manages their verification flags.
 /// </summary>
 public static class ToolOperationHelpers
 {
@@ -22,11 +23,10 @@ public static class ToolOperationHelpers
 
     /// <summary>
     /// Extracts the flat list of operations from a tool's parsed OpenAPI schema.
-    /// Supports both the flattened `paths` shape and a pre-flattened `operations` array.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <returns>The list of operations; empty when the schema is missing or malformed.</returns>
-    public static List<UsableToolOperationDto> ExtractOperations(JsonDocument? parsedSchema)
+    public static List<UsableToolOperationDto> ExtractOperations(
+        JsonDocument? parsedSchema,
+        bool persistedIsVerified = false)
     {
         var operations = new List<UsableToolOperationDto>();
         if (parsedSchema is null)
@@ -38,13 +38,12 @@ public static class ToolOperationHelpers
         {
             var root = parsedSchema.RootElement;
 
-            // Already-flattened operations array.
             if (root.TryGetProperty("operations", out var operationsElement) &&
                 operationsElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (var operationElement in operationsElement.EnumerateArray())
                 {
-                    var operation = ReadOperation(operationElement, method: null, path: null);
+                    var operation = ReadOperation(operationElement, method: null, path: null, persistedIsVerified);
                     if (operation is not null)
                     {
                         operations.Add(operation);
@@ -54,7 +53,6 @@ public static class ToolOperationHelpers
                 return operations;
             }
 
-            // OpenAPI paths -> path -> method -> details.
             if (!root.TryGetProperty("paths", out var pathsElement) ||
                 pathsElement.ValueKind != JsonValueKind.Object)
             {
@@ -78,7 +76,8 @@ public static class ToolOperationHelpers
                     var operation = ReadOperation(
                         methodProperty.Value,
                         methodProperty.Name.ToUpperInvariant(),
-                        pathProperty.Name);
+                        pathProperty.Name,
+                        persistedIsVerified);
 
                     if (operation is not null)
                     {
@@ -89,7 +88,6 @@ public static class ToolOperationHelpers
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed schemas and return what was collected.
         }
 
         return operations;
@@ -97,10 +95,7 @@ public static class ToolOperationHelpers
 
     /// <summary>
     /// Extracts the Corsair plugin id from a tool's parsed OpenAPI schema, when present.
-    /// Corsair specs expose paths shaped as <c>/corsair/{pluginId}/{action}</c>.
     /// </summary>
-    /// <param name="parsedSchema">The tool's parsed OpenAPI schema.</param>
-    /// <returns>The plugin id; <c>null</c> when the schema is not a Corsair spec.</returns>
     public static string? TryGetCorsairPluginId(JsonDocument? parsedSchema)
     {
         if (parsedSchema is null)
@@ -125,7 +120,6 @@ public static class ToolOperationHelpers
                 }
             }
 
-            // Fall back to the operationId prefix ("{pluginId}.{action}").
             if (root.TryGetProperty("operations", out var operationsElement) &&
                 operationsElement.ValueKind == JsonValueKind.Array)
             {
@@ -145,15 +139,11 @@ public static class ToolOperationHelpers
         }
         catch (System.Text.Json.JsonException)
         {
-            // Ignore malformed schemas.
         }
 
         return null;
     }
 
-    /// <summary>
-    /// Parses the plugin id segment from a <c>/corsair/{pluginId}/{action}</c> path.
-    /// </summary>
     private static string? ParseCorsairPath(string path)
     {
         const string prefix = "/corsair/";
@@ -169,10 +159,11 @@ public static class ToolOperationHelpers
         return string.IsNullOrWhiteSpace(pluginId) ? null : pluginId;
     }
 
-    /// <summary>
-    /// Reads a single operation from its JSON element, falling back to the method/path for the identifier.
-    /// </summary>
-    private static UsableToolOperationDto? ReadOperation(JsonElement element, string? method, string? path)
+    private static UsableToolOperationDto? ReadOperation(
+        JsonElement element,
+        string? method,
+        string? path,
+        bool persistedIsVerified = false)
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
@@ -183,7 +174,6 @@ public static class ToolOperationHelpers
         var resolvedMethod = GetString(element, "method") ?? method;
         var resolvedPath = GetString(element, "path") ?? path;
 
-        // Fall back to a derived identifier when the spec omits operationId.
         if (string.IsNullOrWhiteSpace(operationId))
         {
             if (string.IsNullOrWhiteSpace(resolvedMethod) || string.IsNullOrWhiteSpace(resolvedPath))
@@ -200,12 +190,285 @@ public static class ToolOperationHelpers
             Method = resolvedMethod,
             Path = resolvedPath,
             Summary = GetString(element, "summary"),
+            Description = GetString(element, "description"),
+            Parameters = ReadParameters(element),
+            RequestBody = ReadRequestBody(element),
+            Response = ReadResponse(element),
+            Icon = ReadAgentNodeValue(element, "icon"),
+            Color = ReadAgentNodeValue(element, "color"),
+            IsVerified = GetBool(element, "isVerified") ?? persistedIsVerified,
         };
     }
 
     /// <summary>
-    /// Reads a non-empty string property from a JSON object.
+    /// Returns a copy of the parsed schema with the given operation's <c>isVerified</c> flag set.
     /// </summary>
+    public static JsonDocument? SetOperationVerification(
+        JsonDocument? parsedSchema,
+        string operationId,
+        bool isVerified)
+    {
+        if (parsedSchema is null || string.IsNullOrWhiteSpace(operationId))
+        {
+            return parsedSchema;
+        }
+
+        try
+        {
+            if (JsonNode.Parse(parsedSchema.RootElement.GetRawText()) is not JsonObject root)
+            {
+                return parsedSchema;
+            }
+
+            var updated = false;
+
+            if (root["operations"] is JsonArray operationsArray)
+            {
+                foreach (var operationNode in operationsArray)
+                {
+                    if (operationNode is JsonObject operationObject &&
+                        MatchesOperationId(operationObject, operationId, method: null, path: null))
+                    {
+                        operationObject["isVerified"] = isVerified;
+                        updated = true;
+                    }
+                }
+            }
+            else if (root["paths"] is JsonObject paths)
+            {
+                foreach (var pathProperty in paths)
+                {
+                    if (pathProperty.Value is not JsonObject methods)
+                    {
+                        continue;
+                    }
+
+                    foreach (var methodProperty in methods)
+                    {
+                        if (methodProperty.Value is JsonObject operationObject &&
+                            MatchesOperationId(
+                                operationObject,
+                                operationId,
+                                methodProperty.Key.ToUpperInvariant(),
+                                pathProperty.Key))
+                        {
+                            operationObject["isVerified"] = isVerified;
+                            updated = true;
+                        }
+                    }
+                }
+            }
+
+            return updated ? JsonDocument.Parse(root.ToJsonString()) : parsedSchema;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return parsedSchema;
+        }
+    }
+
+    /// <summary>
+    /// Indicates whether every operation in the schema is verified; false when the schema exposes no operations.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="persistedIsVerified"/> is the tool's stored verification flag and must never come from a
+    /// request payload: it only backfills operations of legacy schemas that predate the per-operation flag.
+    /// </remarks>
+    public static bool AreAllOperationsVerified(JsonDocument? parsedSchema, bool persistedIsVerified = false)
+    {
+        var operations = ExtractOperations(parsedSchema, persistedIsVerified);
+        return operations.Count > 0 && operations.All(operation => operation.IsVerified);
+    }
+
+    /// <summary>
+    /// Indicates whether all parsed operations have unique identifiers.
+    /// </summary>
+    public static bool HasUniqueOperationNames(JsonDocument? parsedSchema)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        return ExtractOperations(parsedSchema)
+            .All(operation => !string.IsNullOrWhiteSpace(operation.OperationId) &&
+                              names.Add(operation.OperationId.Trim()));
+    }
+
+    /// <summary>
+    /// Copies the verified operation ids of a tool's stored schema onto a freshly flattened schema.
+    /// </summary>
+    public static JsonDocument? CopyOperationVerification(
+        JsonDocument? persistedSchema,
+        JsonDocument? flattenedSchema)
+    {
+        if (persistedSchema is null || flattenedSchema is null)
+        {
+            return flattenedSchema;
+        }
+
+        var verifiedOperationIds = ExtractOperations(persistedSchema)
+            .Where(operation => operation.IsVerified && !string.IsNullOrWhiteSpace(operation.OperationId))
+            .Select(operation => operation.OperationId);
+
+        var result = flattenedSchema;
+        foreach (var operationId in verifiedOperationIds)
+        {
+            result = SetOperationVerification(result, operationId, isVerified: true);
+        }
+
+        return result;
+    }
+
+    private static bool MatchesOperationId(
+        JsonObject operationObject,
+        string operationId,
+        string? method,
+        string? path)
+    {
+        var candidate = GetNodeString(operationObject["operationId"]);
+        if (string.IsNullOrWhiteSpace(candidate))
+        {
+            var resolvedMethod = GetNodeString(operationObject["method"]) ?? method;
+            var resolvedPath = GetNodeString(operationObject["path"]) ?? path;
+            candidate = string.IsNullOrWhiteSpace(resolvedMethod) || string.IsNullOrWhiteSpace(resolvedPath)
+                ? null
+                : $"{resolvedMethod}_{resolvedPath}";
+        }
+
+        return string.Equals(candidate, operationId, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string? GetNodeString(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue<string>(out var text) && !string.IsNullOrWhiteSpace(text)
+            ? text
+            : null;
+
+    private static bool? GetBool(JsonElement element, string propertyName)
+    {
+        if (!element.TryGetProperty(propertyName, out var property))
+        {
+            return null;
+        }
+
+        return property.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            _ => null,
+        };
+    }
+
+    private static List<UsableToolOperationParameterDto>? ReadParameters(JsonElement element)
+    {
+        if (!element.TryGetProperty("parameters", out var parametersElement) ||
+            parametersElement.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var parameters = new List<UsableToolOperationParameterDto>();
+        foreach (var parameterElement in parametersElement.EnumerateArray())
+        {
+            var name = GetString(parameterElement, "name");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                continue;
+            }
+
+            parameters.Add(new UsableToolOperationParameterDto
+            {
+                Name = name,
+                In = GetString(parameterElement, "in"),
+                Required = parameterElement.TryGetProperty("required", out var requiredElement) &&
+                    requiredElement.ValueKind == JsonValueKind.True,
+                Description = GetString(parameterElement, "description"),
+                Type = GetString(parameterElement, "type"),
+            });
+        }
+
+        return parameters;
+    }
+
+    private static UsableToolOperationRequestBodyDto? ReadRequestBody(JsonElement element)
+    {
+        if (!element.TryGetProperty("requestBody", out var requestBodyElement) ||
+            requestBodyElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var requestBody = new UsableToolOperationRequestBodyDto
+        {
+            Required = requestBodyElement.TryGetProperty("required", out var requiredElement) &&
+                requiredElement.ValueKind == JsonValueKind.True,
+            ContentType = GetString(requestBodyElement, "contentType"),
+            Properties = ReadProperties(requestBodyElement),
+        };
+
+        return requestBody;
+    }
+
+    private static UsableToolOperationResponseDto? ReadResponse(JsonElement element)
+    {
+        if (!element.TryGetProperty("responses", out var responsesElement) ||
+            responsesElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        var response = new UsableToolOperationResponseDto
+        {
+            StatusCode = responsesElement.TryGetProperty("statusCode", out var statusCodeElement) &&
+                statusCodeElement.ValueKind == JsonValueKind.Number
+                    ? statusCodeElement.GetInt32()
+                    : null,
+            ContentType = GetString(responsesElement, "contentType"),
+            Properties = ReadProperties(responsesElement),
+        };
+
+        return response;
+    }
+
+    private static List<UsableToolOperationPropertyDto>? ReadProperties(JsonElement element)
+    {
+        if (!element.TryGetProperty("schema", out var schemaElement) ||
+            schemaElement.ValueKind != JsonValueKind.Object ||
+            !schemaElement.TryGetProperty("properties", out var propertiesElement) ||
+            propertiesElement.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+
+        var properties = new List<UsableToolOperationPropertyDto>();
+        foreach (var propertyElement in propertiesElement.EnumerateArray())
+        {
+            var name = GetString(propertyElement, "name");
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                continue;
+            }
+
+            properties.Add(new UsableToolOperationPropertyDto
+            {
+                Name = name,
+                Type = GetString(propertyElement, "type"),
+                Description = GetString(propertyElement, "description"),
+                Required = propertyElement.TryGetProperty("required", out var requiredElement) &&
+                    requiredElement.ValueKind == JsonValueKind.True,
+            });
+        }
+
+        return properties;
+    }
+
+    private static string? ReadAgentNodeValue(JsonElement element, string propertyName)
+    {
+        if (!element.TryGetProperty("x-agent-node", out var agentNodeElement) ||
+            agentNodeElement.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        return GetString(agentNodeElement, propertyName);
+    }
+
     private static string? GetString(JsonElement element, string propertyName)
     {
         if (!element.TryGetProperty(propertyName, out var property) ||
@@ -218,3 +481,4 @@ public static class ToolOperationHelpers
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 }
+

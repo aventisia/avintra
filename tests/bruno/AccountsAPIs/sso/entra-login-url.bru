@@ -1,0 +1,37 @@
+meta {
+  name: Entra login URL shape
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/entra/login-url?type=Azure&email={{MY_EMAIL}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("uses the multi-tenant organizations authority", function() {
+    expect(res.getBody().data).to.contain("login.microsoftonline.com/organizations/oauth2/v2.0/authorize");
+  });
+
+  test("carries login_hint, state and nonce", function() {
+    expect(res.getBody().data).to.contain("login_hint=");
+    expect(res.getBody().data).to.contain("state=");
+    expect(res.getBody().data).to.contain("nonce=");
+  });
+
+  test("requests offline access", function() {
+    expect(decodeURIComponent(res.getBody().data)).to.contain("offline_access");
+  });
+}
+
+docs {
+  > Requires `MICROSOFT_CLIENT_ID` to be configured (local `.env.local`); without a client id the
+  > endpoint fails safe with a 400 "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID
+  > environment variable." message.
+}

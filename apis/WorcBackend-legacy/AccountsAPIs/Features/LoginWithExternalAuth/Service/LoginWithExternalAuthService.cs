@@ -1,29 +1,52 @@
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+
 namespace AccountsAPIs.Services;
 
 public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 {
+    private const string EntraOrganizationsAuthority = "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize";
+    private const string EntraAdminConsentAuthority = "https://login.microsoftonline.com/organizations/v2.0/adminconsent";
+    private const string EntraOrganizationsDiscovery = "https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration";
+    private const string EntraLoginScope = "openid profile email offline_access";
+    private const string MicrosoftConsumerTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
+    private static readonly TimeSpan AuthStateTtl = TimeSpan.FromMinutes(10);
+
+    private static readonly ConfigurationManager<OpenIdConnectConfiguration> EntraConfigurationManager =
+        new(EntraOrganizationsDiscovery, new OpenIdConnectConfigurationRetriever(), new HttpDocumentRetriever());
+
     private readonly ILogger<LoginWithExternalAuthService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
+    private readonly IMemoryCache _memoryCache;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
         IUnitOfWork unitOfWork,
         EnvironmentConfig environmentConfig,
         UserManager<AccountUser> userManager,
-        IEmailService emailService)
+        IEmailService emailService,
+        IMemoryCache memoryCache)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _environmentConfig = environmentConfig;
         _userManager = userManager;
         _emailService = emailService;
+        _memoryCache = memoryCache;
     }
 
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
     public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
+    {
+        return GenerateLoginUrlAsync(type, null, Guid.Empty);
+    }
+
+    // Generates an authentication URL carrying the email hint and the OAuth state binding for a specific tenant.
+    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId)
     {
         // Initialize default service response with failure state
         var serviceResponse = new ServiceResponse<string>
@@ -32,65 +55,98 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             Message = "Failed to generate login URL. Please try again"
         };
 
-        // Variable to hold the generated authentication URL
-        string loginUrl = string.Empty;
-
-        // Redirect URI used by Azure Entra after successful login
-        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
         try
         {
-            // Determine which external provider to use
             switch (type)
             {
                 case ExternalAuthProviderEnum.Azure:
-                    // Build Azure OAuth 2.0 authorization URL
-                    loginUrl =
-                        $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/authorize" +
-                        $"?client_id={_environmentConfig.AzureEntraIdClientId}" +
-                        $"&response_type=code" +
-                        $"&redirect_uri={Uri.EscapeDataString(redirectUrl)}" +
-                        $"&response_mode=query" +
-                        $"&scope=openid profile email";
+                    var resolvedClientId = _environmentConfig.MicrosoftClientId;
+                    if (string.IsNullOrWhiteSpace(resolvedClientId))
+                    {
+                        serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
+                        _logger.LogWarning("Microsoft login URL generation blocked because no client id is configured.");
+                        return serviceResponse;
+                    }
 
+                    serviceResponse.Data = BuildEntraAuthorizeUrl(resolvedClientId, email, tenantId, false);
                     break;
 
                 case ExternalAuthProviderEnum.Google:
-                    // Provider validation: Google not implemented
                     _logger.LogWarning("Google login URL generation not implemented.");
                     return serviceResponse;
 
                 case ExternalAuthProviderEnum.Facebook:
-                    // Provider validation: Facebook not implemented
                     _logger.LogWarning("Facebook login URL generation not implemented.");
                     return serviceResponse;
 
                 case ExternalAuthProviderEnum.Twitter:
-                    // Provider validation: Twitter not implemented
                     _logger.LogWarning("Twitter login URL generation not implemented.");
                     return serviceResponse;
 
                 default:
-                    // Validation: unsupported authentication provider
                     serviceResponse.Message = "Unsupported authentication provider";
                     _logger.LogError("Unsupported authentication provider requested. Provider={Provider}", type);
                     return serviceResponse;
             }
 
-            // Populate successful response
             serviceResponse.StatusCode = 200;
-            serviceResponse.Data = loginUrl;
             serviceResponse.Message = "Login URL generated successfully";
         }
         catch (Exception ex)
         {
-            // Catch unexpected exceptions during URL generation
             _logger.LogError(ex, "Error generating login URL for provider {Provider}", type);
         }
 
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code)
+    // Generates an administrator consent URL that binds the granted tenant id to the supplied tenant.
+    public ServiceResponse<string> GenerateAdminConsentUrlAsync(string? email, Guid tenantId)
+    {
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Failed to generate administrator consent URL. Please try again"
+        };
+
+        try
+        {
+            var resolvedClientId = _environmentConfig.MicrosoftClientId;
+            if (string.IsNullOrWhiteSpace(resolvedClientId))
+            {
+                serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
+                _logger.LogWarning("Admin consent URL generation blocked because no client id is configured.");
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = BuildEntraAdminConsentUrl(resolvedClientId, email, tenantId);
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Administrator consent URL generated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating administrator consent URL.");
+        }
+
+        return serviceResponse;
+    }
+
+    // Consumes the single-use OAuth state created while generating an authorization URL.
+    public SsoAuthStateDto? ConsumeAuthState(string? state)
+    {
+        if (string.IsNullOrWhiteSpace(state)) return null;
+
+        var cacheKey = BuildAuthStateCacheKey(state);
+        if (!_memoryCache.TryGetValue(cacheKey, out SsoAuthStateDto? authState) || authState == null)
+        {
+            return null;
+        }
+
+        _memoryCache.Remove(cacheKey);
+        return authState;
+    }
+
+    public async Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code, string? state)
     {
         // Initialize default failure response object
         var serviceResponse = new ServiceResponse<AccountUser>
@@ -105,92 +161,338 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             _logger.LogWarning("EntraTokenAsync called with empty or null authorization code.");
 
             serviceResponse.Message = "Authorization code is missing.";
+            serviceResponse.StatusCode = 400;
+            return serviceResponse;
+        }
+
+        // CSRF precondition: the single-use state must be present and unexpired
+        var authState = ConsumeAuthState(state);
+        if (authState == null)
+        {
+            _logger.LogWarning("Entra callback rejected because the OAuth state is missing, unknown or already used.");
+            serviceResponse.Message = "Invalid or expired SSO state.";
+            serviceResponse.StatusCode = 400;
+            return serviceResponse;
+        }
+
+        return await ExchangeAndValidateEntraCodeAsync(code, authState);
+    }
+
+    private async Task<ServiceResponse<AccountUser>> ExchangeAndValidateEntraCodeAsync(string code, SsoAuthStateDto authState)
+    {
+        var serviceResponse = new ServiceResponse<AccountUser>
+        {
+            Data = null,
+            Message = "Failed to validate token. Please try again"
+        };
+
+        var ssoTenant = await ResolveSsoTenantAsync(authState);
+        var ssoConfig = SsoConfigHelpers.Parse(ssoTenant?.SSOConfigJson);
+        var clientId = _environmentConfig.MicrosoftClientId;
+        var clientSecret = _environmentConfig.MicrosoftClientSecret;
+
+        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+        {
+            serviceResponse.Message = "Microsoft SSO credentials are not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables.";
+            serviceResponse.StatusCode = 400;
             return serviceResponse;
         }
 
         // Build redirect URI used in both authorize and token calls (must match exactly)
         string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
 
-        // Azure Entra token endpoint for this tenant
-        string tokenEndpoint = $"https://login.microsoftonline.com/{_environmentConfig.AzureTenantId}/oauth2/v2.0/token";
+        // Token authority: the tenant-supplied authority when present, otherwise the global application tenant
+        var tokenAuthority = string.IsNullOrWhiteSpace(ssoConfig?.ExternalTenantId)
+            ? _environmentConfig.AzureTenantId
+            : ssoConfig.ExternalTenantId;
+        string tokenEndpoint = $"https://login.microsoftonline.com/{tokenAuthority}/oauth2/v2.0/token";
 
-        _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}, RedirectUrl={RedirectUrl}", _environmentConfig.AzureTenantId, redirectUrl);
+        _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}", authState.TenantId);
 
         try
         {
-            // Build form-urlencoded payload for token exchange
             var form = new Dictionary<string, string>
             {
-                ["client_id"] = _environmentConfig.AzureEntraIdClientId,
-                ["client_secret"] = _environmentConfig.AzureEntraIdClientSecret,
+                ["client_id"] = clientId,
+                ["client_secret"] = clientSecret,
                 ["grant_type"] = "authorization_code",
                 ["code"] = code,
                 ["redirect_uri"] = redirectUrl,
-                ["scope"] = "openid profile email"
+                ["scope"] = EntraLoginScope
             };
 
-            _logger.LogInformation("Sending token request to Azure Entra endpoint.");
-
-            // Create HTTP client and send POST request to token endpoint
             using var http = new HttpClient();
             using var response = await http.PostAsync(tokenEndpoint, new FormUrlEncodedContent(form));
 
-            // Read raw response body as string
             var json = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Received response from Azure token endpoint. Status={StatusCode}", response.StatusCode);
-
-            // Condition: Azure returned a non-success HTTP status code
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("Azure token endpoint failed. Status={Status}, Body={Body}", response.StatusCode, json);
+                _logger.LogError("Azure token endpoint failed. Status={Status}", response.StatusCode);
                 serviceResponse.Message = "Azure token endpoint returned an error.";
+                serviceResponse.StatusCode = 401;
                 return serviceResponse;
             }
 
-            // Parse JSON response body
             using var jsonDoc = JsonDocument.Parse(json);
 
-            _logger.LogInformation("Parsed JSON response from Azure token endpoint.");
-
-            // Condition: access_token field must be present
-            if (!jsonDoc.RootElement.TryGetProperty("access_token", out var accessTokenElement))
+            if (!jsonDoc.RootElement.TryGetProperty("id_token", out var idTokenElement))
             {
-                _logger.LogError("Azure token response missing access_token. Body={Body}", json);
+                _logger.LogError("Azure token response missing id_token.");
                 serviceResponse.Message = "Invalid token response from Azure.";
+                serviceResponse.StatusCode = 401;
                 return serviceResponse;
             }
 
-            // Extract access_token value
-            var accessToken = accessTokenElement.GetString();
+            var idToken = idTokenElement.GetString();
 
-            _logger.LogInformation("Extracted access_token from Azure response.");
-
-            // Condition: access_token must not be null or empty
-            if (string.IsNullOrWhiteSpace(accessToken))
+            if (string.IsNullOrWhiteSpace(idToken))
             {
-                _logger.LogError("Azure token response returned empty access_token. Body={Body}", json);
+                _logger.LogError("Azure token response returned an empty id_token.");
                 serviceResponse.Message = "Received empty token from Azure.";
+                serviceResponse.StatusCode = 401;
                 return serviceResponse;
             }
 
-
-            // Validate token and create or load local user
             var validateRequest = new ValidateTokenRequestDto
             {
                 Type = ExternalAuthProviderEnum.Azure,
-                Token = accessToken
+                Token = idToken,
+                ClientId = clientId,
+                AuthState = authState,
+                SsoTenantId = ssoTenant?.Id
             };
-
-            _logger.LogInformation("Calling ValidateTokenAndCreateUserAsync.");
 
             return await ValidateTokenAndCreateUserAsync(validateRequest);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error during EntraTokenAsync.");
+            _logger.LogError(ex, "Unexpected error during Entra token exchange.");
+            serviceResponse.Message = "Failed to validate token. Please try again";
             return serviceResponse;
         }
+    }
+
+    private async Task<Tenant?> ResolveSsoTenantAsync(SsoAuthStateDto authState)
+    {
+        if (authState.TenantId != Guid.Empty)
+        {
+            return await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t =>
+                    t.Id == authState.TenantId &&
+                    t.IsSSOEnabled &&
+                    t.Type == TenantTypesEnum.Organization)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+
+        return await ResolveSsoTenantByDomainAsync(authState.Email);
+    }
+
+    private async Task<Tenant?> ResolveSsoTenantByDomainAsync(string? email)
+    {
+        var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
+        if (string.IsNullOrWhiteSpace(emailDomain)) return null;
+
+        return await _unitOfWork.TenantRepo
+            .GetByConditionAsync(t =>
+                t.Domain != string.Empty &&
+                t.IsSSOEnabled &&
+                t.Type == TenantTypesEnum.Organization &&
+                t.Domain.ToLower() == emailDomain)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+    }
+
+    private string BuildEntraAuthorizeUrl(string clientId, string? email, Guid tenantId, bool adminConsent)
+    {
+        var state = GenerateOpaqueValue();
+        var nonce = GenerateOpaqueValue();
+
+        _memoryCache.Set(
+            BuildAuthStateCacheKey(state),
+            new SsoAuthStateDto
+            {
+                Nonce = nonce,
+                TenantId = tenantId,
+                Email = email,
+                AdminConsent = adminConsent
+            },
+            AuthStateTtl);
+
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
+
+        var parameters = new List<string>
+        {
+            $"client_id={Uri.EscapeDataString(clientId)}",
+            "response_type=code",
+            $"redirect_uri={Uri.EscapeDataString(redirectUrl)}",
+            "response_mode=query",
+            $"scope={Uri.EscapeDataString(EntraLoginScope)}",
+            $"state={state}",
+            $"nonce={nonce}"
+        };
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            parameters.Add($"login_hint={Uri.EscapeDataString(email)}");
+        }
+
+        return $"{EntraOrganizationsAuthority}?{string.Join("&", parameters)}";
+    }
+
+    private string BuildEntraAdminConsentUrl(string clientId, string? email, Guid tenantId)
+    {
+        var state = GenerateOpaqueValue();
+
+        _memoryCache.Set(
+            BuildAuthStateCacheKey(state),
+            new SsoAuthStateDto
+            {
+                Nonce = string.Empty,
+                TenantId = tenantId,
+                Email = email,
+                AdminConsent = true
+            },
+            AuthStateTtl);
+
+        string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
+
+        var parameters = new List<string>
+        {
+            $"client_id={Uri.EscapeDataString(clientId)}",
+            $"redirect_uri={Uri.EscapeDataString(redirectUrl)}",
+            $"state={state}",
+            $"scope={Uri.EscapeDataString(EntraLoginScope)}"
+        };
+
+        return $"{EntraAdminConsentAuthority}?{string.Join("&", parameters)}";
+    }
+
+    private static string BuildAuthStateCacheKey(string state) => $"sso-state:{state}";
+
+    private static string GenerateOpaqueValue() => Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+
+    private static string GetClaimValue(JwtSecurityToken token, params string[] claimTypes)
+    {
+        foreach (var claimType in claimTypes)
+        {
+            var value = token.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
+            if (!string.IsNullOrWhiteSpace(value)) return value;
+        }
+
+        return string.Empty;
+    }
+
+    // Verifies the Entra id_token signature, audience and lifetime, then binds tid, issuer, nonce and domain to the registered tenant.
+    private async Task<(bool IsValid, int StatusCode, string Message, JwtSecurityToken? Token)> ValidateEntraIdTokenAsync(ValidateTokenRequestDto request)
+    {
+        var authState = request.AuthState;
+        if (authState == null)
+        {
+            return (false, 400, "Invalid or expired SSO state.", null);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.ClientId))
+        {
+            return (false, 401, "SSO client id is not configured.", null);
+        }
+
+        // Resolve the tenant that was registered for this authorization attempt before trusting any token claim
+        var registeredTenant = await ResolveSsoTenantAsync(authState);
+        var registeredConfig = SsoConfigHelpers.Parse(registeredTenant?.SSOConfigJson);
+
+        if (registeredTenant == null || registeredConfig == null || string.IsNullOrWhiteSpace(registeredConfig.ExternalTenantId))
+        {
+            _logger.LogWarning("Entra callback rejected because no active single sign-on tenant matched the authorization attempt.");
+            return (false, 400, "No single sign-on tenant is registered for this email domain.", null);
+        }
+
+        OpenIdConnectConfiguration configuration;
+        try
+        {
+            configuration = await EntraConfigurationManager.GetConfigurationAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve the Entra OpenID configuration.");
+            return (false, 401, "Unable to verify the identity token. Please try again later.", null);
+        }
+
+        var validationParameters = SsoConfigHelpers.BuildEntraIdTokenValidationParameters(configuration, request.ClientId);
+
+        ClaimsPrincipal principal;
+        SecurityToken validatedToken;
+        try
+        {
+            var validationHandler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+            principal = validationHandler.ValidateToken(request.Token, validationParameters, out validatedToken);
+        }
+        catch (SecurityTokenException ex)
+        {
+            _logger.LogWarning("Entra identity token signature, audience or lifetime validation failed. Reason={Reason}", ex.GetType().Name);
+            return (false, 401, "The identity token is not valid.", null);
+        }
+
+        var tokenTenantId = principal.FindFirst("tid")?.Value;
+        var issuer = principal.FindFirst("iss")?.Value;
+        var nonce = principal.FindFirst("nonce")?.Value;
+        var email = principal.FindFirst("preferred_username")?.Value
+            ?? principal.FindFirst("upn")?.Value
+            ?? principal.FindFirst("unique_name")?.Value
+            ?? principal.FindFirst("email")?.Value;
+
+        if (string.IsNullOrWhiteSpace(tokenTenantId))
+        {
+            return (false, 401, "The identity token is missing the tenant claim.", null);
+        }
+
+        // Reject the Microsoft consumer tenant outright
+        if (string.Equals(tokenTenantId, MicrosoftConsumerTenantId, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Entra callback rejected a personal Microsoft account.");
+            return (false, 400, "Personal Microsoft accounts are not allowed.", null);
+        }
+
+        // The issuer must be the verified tenant claim, which must equal the registered external tenant id
+        var expectedIssuer = $"https://login.microsoftonline.com/{tokenTenantId}/v2.0";
+        if (!string.Equals(issuer, expectedIssuer, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Entra identity token issuer did not match its tenant claim.");
+            return (false, 401, "The identity token is not valid.", null);
+        }
+
+        if (!string.Equals(registeredConfig.ExternalTenantId, tokenTenantId, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Cross-tenant identity token rejected. TenantId={TenantId}", registeredTenant.Id);
+            return (false, 401, "The identity token does not match the registered tenant.", null);
+        }
+
+        if (string.IsNullOrWhiteSpace(nonce) || !string.Equals(nonce, authState.Nonce, StringComparison.Ordinal))
+        {
+            _logger.LogWarning("Entra identity token nonce did not match the issued nonce. TenantId={TenantId}", registeredTenant.Id);
+            return (false, 400, "Invalid or expired SSO state.", null);
+        }
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return (false, 401, "Email not found in token.", null);
+        }
+
+        var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
+        if (SsoConfigHelpers.IsConsumerEmailDomain(emailDomain))
+        {
+            _logger.LogWarning("Entra callback rejected a consumer email domain. EmailDomain={EmailDomain}", emailDomain);
+            return (false, 400, "Personal email domains are not allowed.", null);
+        }
+
+        if (!string.Equals(registeredConfig.EmailDomain, emailDomain, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning("Entra identity token email domain did not match the registered domain. TenantId={TenantId}", registeredTenant.Id);
+            return (false, 400, "Email domain does not match the registered single sign-on domain.", null);
+        }
+
+        return (true, 200, "Identity token verified.", (JwtSecurityToken)validatedToken);
     }
 
     // Validates the external authentication token and creates or retrieves the user
@@ -205,7 +507,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         try
         {
-            // JWT handler for reading token payload
+            // JWT handler for the issued identity token
             var handler = new JwtSecurityTokenHandler();
 
             // Validation: ensure the token format is readable
@@ -213,11 +515,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             {
                 _logger.LogWarning("Invalid or unreadable JWT token received.");
                 serviceResponse.Message = "Invalid token format.";
+                serviceResponse.StatusCode = 401;
                 return serviceResponse;
             }
-
-            // Parse JWT token
-            var jwtToken = handler.ReadJwtToken(validateTokenRequestDto.Token);
 
             // Initialize user identity variables extracted from token
             string firstName = string.Empty;
@@ -228,15 +528,26 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             switch (validateTokenRequestDto.Type)
             {
                 case ExternalAuthProviderEnum.Azure:
+                    var entraValidation = await ValidateEntraIdTokenAsync(validateTokenRequestDto);
+                    if (!entraValidation.IsValid || entraValidation.Token == null)
+                    {
+                        _logger.LogWarning(
+                            "Entra identity token rejected. StatusCode={StatusCode}, Reason={Reason}",
+                            entraValidation.StatusCode, entraValidation.Message);
+
+                        serviceResponse.Message = entraValidation.Message;
+                        serviceResponse.StatusCode = entraValidation.StatusCode;
+                        return serviceResponse;
+                    }
+
                     // Extract email-related claims
-                    email = jwtToken.Claims
-                        .FirstOrDefault(c => c.Type == "unique_name" || c.Type == "upn")?.Value ?? string.Empty;
+                    email = GetClaimValue(entraValidation.Token, "preferred_username", "upn", "unique_name", "email");
 
                     // Extract name-related claims
-                    firstName = jwtToken.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value ?? string.Empty;
-                    lastName = jwtToken.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value ?? string.Empty;
+                    firstName = GetClaimValue(entraValidation.Token, "given_name");
+                    lastName = GetClaimValue(entraValidation.Token, "family_name");
 
-                    _logger.LogInformation("User claims extracted from token. Email={Email}, FirstName={FirstName}, LastName={LastName}", email, firstName, lastName);
+                    _logger.LogInformation("User claims extracted from a verified Entra identity token. Email={Email}", email);
                     break;
 
                 case ExternalAuthProviderEnum.Google:
@@ -275,6 +586,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             {
                 _logger.LogWarning("Token validation failed: email claim missing.");
                 serviceResponse.Message = "Email not found in token.";
+                serviceResponse.StatusCode = 401;
                 return serviceResponse;
             }
 
@@ -358,6 +670,13 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                     userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TD.ToString() };
                     tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
                     _logger.LogInformation("Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
+                }
+                else if (validateTokenRequestDto.SsoTenantId.HasValue)
+                {
+                    // Join the domain-matched single sign-on tenant with the default member roles only
+                    tenantId = validateTokenRequestDto.SsoTenantId.Value;
+                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
+                    _logger.LogInformation("Single sign-on tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
                 }
                 else
                 {

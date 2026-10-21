@@ -58,7 +58,7 @@
       "type": "select",
       "name": "Base64Variant",
       "label": "Base64 Variant",
-      "description": "The Base64 alphabet to emit: Standard, URL-safe, or Auto (behaves as Standard). URL-safe uses '-' and '_' with no '=' padding.",
+      "description": "The Base64 alphabet to emit. URL-safe uses -/_ with no padding (for Gmail); Auto behaves as Standard.",
       "defaultValue": "Standard",
       "required": false,
       "selectOptions": [

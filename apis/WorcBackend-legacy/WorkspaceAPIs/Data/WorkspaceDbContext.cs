@@ -164,38 +164,6 @@ public class WorkspaceDbContext : DbContext
                     (a, b) => (a ?? Enumerable.Empty<string>()).SequenceEqual(b ?? Enumerable.Empty<string>()),
                     c => (c ?? Enumerable.Empty<string>()).Aggregate(0, (acc, s) => HashCode.Combine(acc, s.GetHashCode())),
                     c => (c ?? new List<string>()).ToList()));
-        modelBuilder.Entity<TenantModelProvider>().Property(e => e.EnabledModels)
-            .HasColumnType("jsonb")
-            .HasDefaultValueSql("'[]'::jsonb")
-            .HasConversion(
-                v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => System.Text.Json.JsonSerializer.Deserialize<List<EnabledModel>>(v, (JsonSerializerOptions?)null) ?? new List<EnabledModel>())
-            .Metadata.SetValueComparer(
-                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<EnabledModel>>(
-                    (a, b) => (a ?? Enumerable.Empty<EnabledModel>()).Select(m => new { m.ModelId, m.Capability }).SequenceEqual((b ?? Enumerable.Empty<EnabledModel>()).Select(m => new { m.ModelId, m.Capability })),
-                    c => (c ?? Enumerable.Empty<EnabledModel>()).Aggregate(0, (acc, m) => HashCode.Combine(acc, m.ModelId, m.Capability)),
-                    c => (c ?? new List<EnabledModel>()).Select(m => new EnabledModel { ModelId = m.ModelId, Capability = m.Capability }).ToList()));
-        modelBuilder.Entity<UiBuilderProject>().Property(e => e.DataConnections)
-            .HasColumnType("jsonb")
-            .HasDefaultValueSql("'[]'::jsonb")
-            .HasConversion(
-                v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => System.Text.Json.JsonSerializer.Deserialize<List<UiBuilderDataConnection>>(v, (JsonSerializerOptions?)null) ?? new List<UiBuilderDataConnection>())
-            .Metadata.SetValueComparer(
-                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<UiBuilderDataConnection>>(
-                    (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
-                    c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
-                    c => System.Text.Json.JsonSerializer.Deserialize<List<UiBuilderDataConnection>>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null) ?? new List<UiBuilderDataConnection>()));
-        modelBuilder.Entity<UiBuilderProject>().Property(e => e.Theme)
-            .HasColumnType("jsonb")
-            .HasConversion(
-                v => v == null ? null : System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => string.IsNullOrEmpty(v) ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(v, (JsonSerializerOptions?)null))
-            .Metadata.SetValueComparer(
-                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<UiBuilderTheme?>(
-                    (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
-                    c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
-                    c => c == null ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());

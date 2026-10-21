@@ -51,6 +51,22 @@ public class TenantAccountController : BaseApiController
         return ResultHelper(await _tenantAccountService.UpdateTenantPreferencesAsync(tenantPreferenceDto));
     }
 
+    // Generates the administrator consent URL for connecting the tenant's identity provider.
+    [Authorize(Roles = "TA")]
+    [HttpGet("sso/admin-consent-url")]
+    public async Task<ActionResult<ServiceResponse<string>>> GetSsoAdminConsentUrl()
+    {
+        return ResultHelper(await _tenantAccountService.GetSsoAdminConsentUrlAsync());
+    }
+
+    // Binds the tenant granted by the identity provider to the tenant's single sign-on configuration.
+    [Authorize(Roles = "TA")]
+    [HttpGet("sso/admin-consent-callback")]
+    public async Task<ActionResult<ServiceResponse<TenantPreferenceDto>>> CompleteSsoAdminConsent([FromQuery(Name = "tenant")] string grantedTenantId, [FromQuery] string? state)
+    {
+        return ResultHelper(await _tenantAccountService.CompleteSsoAdminConsentAsync(grantedTenantId, state));
+    }
+
     // Retrieves the current automatic notification settings of the tenant.
     [Authorize(Roles = "TA")]
     [HttpGet("notification-settings")]
@@ -65,13 +81,5 @@ public class TenantAccountController : BaseApiController
     public async Task<ActionResult<ServiceResponse<NotificationSettingsDto>>> UpdateNotificationSettings(NotificationSettingsDto settingsDto)
     {
         return ResultHelper(await _tenantAccountService.UpdateNotificationSettingsAsync(settingsDto));
-    }
-
-    // Searches for account users matching the specified search key.
-    [Authorize]
-    [HttpGet("users/search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AppUserBaseDto>>>> SearchAccountUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
-    {
-        return ResultHelper(await _tenantAccountService.SearchAccountUserAsync(searchKey, includeCurrentUser));
     }
 }

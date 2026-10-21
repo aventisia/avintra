@@ -1,4 +1,5 @@
 using Serilog;
+using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
 EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,19 @@ builder.Services.AddHttpClient("Corsair", client =>
     // We must read the Location header ourselves (to proxy the browser onward),
     // so disable automatic redirect following.
     AllowAutoRedirect = false
+});
+builder.Services.AddHttpClient("CustomTool", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
+builder.Services.AddHttpClient("LLMPipeline", client =>
+{
+    var appBaseUrl = config["EnvironmentConfig:AppBaseUrl"]?.Trim().TrimEnd('/');
+    if (!string.IsNullOrWhiteSpace(appBaseUrl))
+    {
+        client.BaseAddress = new Uri($"https://{appBaseUrl}/llmpipeline/");
+    }
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/

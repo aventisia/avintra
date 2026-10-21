@@ -1,4 +1,5 @@
 // -------------------- Utils --------------------
+export * from "./branding-color-util";
 export * from "./date-formatter";
 export * from "./enum-to-array";
 export * from "./error-message-list";

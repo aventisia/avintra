@@ -6,7 +6,8 @@ public class TenantAccountMappingProfile : IRegister
     {
         // Used when retrieving tenant preferences.
         config.NewConfig<Tenant, TenantPreferenceDto>()
-            .Map(dest => dest.TenantName, src => src.Name);
+            .Map(dest => dest.TenantName, src => src.Name)
+            .Ignore(dest => dest.SSOConfigJson);
 
         // Used when fetching tenant billing details.
         config.NewConfig<BillingDetail, TenantOrganizationBillingDto>();
@@ -14,6 +15,7 @@ public class TenantAccountMappingProfile : IRegister
         // Used when inserting or updating a subscription plan record.
         config.NewConfig<TenantPreferenceDto, Tenant>()
             .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.SSOConfigJson)
             .IgnoreNullValues(true);
 
         // Used when updating billing details (e.g., name).
@@ -21,8 +23,5 @@ public class TenantAccountMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Country)
             .IgnoreNullValues(true);
-
-        // Maps AccountUser to AppUserBaseDto for tenant preference retrieval.
-        config.NewConfig<AccountUser, AppUserBaseDto>();
     }
 }

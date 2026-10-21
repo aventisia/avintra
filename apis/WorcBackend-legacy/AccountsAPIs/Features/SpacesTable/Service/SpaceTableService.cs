@@ -206,6 +206,19 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
+            // Community deployments are limited to one space regardless of plan data.
+            var currentSpaceCount = _environmentConfig.IsCommunityDeployment
+                ? await _unitOfWork.SpaceRepo
+                    .GetByConditionAsync(s => s.TenantId == _tenantId)
+                    .CountAsync()
+                : 0;
+            if (_environmentConfig.IsCommunityDeployment && currentSpaceCount >= 1)
+            {
+                _logger.LogWarning("Space creation blocked: community deployments support a single space.");
+                serviceResponse.Message = "Your community edition supports a single space. Upgrade to create more spaces.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
 
             // Check if a space with the same name already exists within the tenant (case-insensitive)
             var existingSpace = await _unitOfWork.SpaceRepo
@@ -302,6 +315,15 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
+            // Community deployments are limited to the single seeded Central space.
+            // Editing spaces requires upgrading to a commercial or enterprise plan.
+            if (_environmentConfig.IsCommunityDeployment)
+            {
+                _logger.LogWarning("Space update blocked: community deployments support a single space.");
+                serviceResponse.Message = "Your community edition supports a single space. Upgrade to manage more spaces.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
 
             // Retrieve the existing space
             var existingSpace = await _unitOfWork.SpaceRepo
@@ -413,6 +435,15 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
+            // Community deployments are limited to the single seeded Central space.
+            // Deleting spaces requires upgrading to a commercial or enterprise plan.
+            if (_environmentConfig.IsCommunityDeployment)
+            {
+                _logger.LogWarning("Space deletion blocked: community deployments support a single space.");
+                serviceResponse.Message = "Your community edition supports a single space. Upgrade to manage more spaces.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
 
             // Retrieve the space entity from the repository
             var spaceEntity = await _unitOfWork.SpaceRepo
@@ -610,6 +641,15 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
+            // Community deployments are limited to the single seeded Central space.
+            // Bulk deletion requires upgrading to a commercial or enterprise plan.
+            if (_environmentConfig.IsCommunityDeployment)
+            {
+                _logger.LogWarning("Bulk space deletion blocked: community deployments support a single space.");
+                serviceResponse.Message = "Your community edition supports a single space. Upgrade to manage more spaces.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
 
             // Retrieve matching space entities from the repository
             var spaces = await _unitOfWork.SpaceRepo

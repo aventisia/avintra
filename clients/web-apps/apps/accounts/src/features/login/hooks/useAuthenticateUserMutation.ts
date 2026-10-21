@@ -8,6 +8,7 @@ import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
+  SSO_DISABLED,
   TWO_FA_ENABLED,
 } from "@/constants/variables";
 import { getPostLoginDestination } from "@/constants/post-login-destination";
@@ -43,9 +44,17 @@ export const useAuthenticateUserMutation = () => {
         return;
       }
 
+      // Single sign-on was disabled for the tenant but the account has no password
+      if (message.includes(SSO_DISABLED)) {
+        toast.warning("Single sign-on disabled", {
+          description: `${message}. Set a password with Forgot password to sign in.`,
+        });
+
+        return;
+      }
+
       // TwoFA is enabled
-      if (message.includes(TWO_FA_ENABLED)) {
-        // Set verification code id
+      if (message.includes(TWO_FA_ENABLED)) {        // Set verification code id
         setTwoFACodeData({
           email: data.email,
           requestType: data.requestType,

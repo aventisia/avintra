@@ -1253,7 +1253,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     SubscriptionId = s.Id,
                     TenantId = s.TenantId,
-                    HistoryRetentionDays = s.HistoryRetentionDays
+                    HistoryRetentionDays = _environmentConfig.IsCommunityDeployment
+                        ? 1
+                        : s.HistoryRetentionDays
                 }).ToList();
             }
             else

@@ -1,19 +1,55 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import {
+  CUSTOM_TOOL_NODE_PREFIX,
+  buildCustomToolNodeConfig,
+  parseCustomToolNodeReference,
+} from "@/features/action-selector/utils/custom-tools.util";
+
 import { DCPFieldSchemaType } from "..";
+import { UsableToolCatalogItemDto } from "../dtos/tool-dto";
+import { NodeConfigSchemaType } from "../types/node-config-schema-type";
+import { getUsableToolCatalog } from "./tools-apis";
 
 const modules = {
   ...import.meta.glob("../constants/config-json/*.json"),
   ...import.meta.glob("../constants/custom-config-json/**/*.json"),
 };
 
-// In-memory cache for node configs
-const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
+type NodeConfigValue = DCPFieldSchemaType[] | NodeConfigSchemaType | undefined;
 
-/**
- * Computes the static JSON file path for a given node unique name.
- * Keeps the existing routing logic for special/custom folders.
- */
+const nodeConfigCache: Record<string, NodeConfigValue> = {};
+const nodeConfigInFlight: Record<string, Promise<NodeConfigValue> | undefined> = {};
+
+let usableToolCatalogPromise: Promise<UsableToolCatalogItemDto[] | null> | undefined;
+
+const getUsableToolCatalogOnce = (): Promise<UsableToolCatalogItemDto[] | null> => {
+  if (!usableToolCatalogPromise) {
+    usableToolCatalogPromise = getUsableToolCatalog()
+      .then((res) => (Array.isArray(res.data) ? res.data : null))
+      .catch((error) => {
+        console.error("Custom tool catalog fetch error:", error);
+        return null;
+      })
+      .finally(() => {
+        usableToolCatalogPromise = undefined;
+      });
+  }
+  return usableToolCatalogPromise;
+};
+
+const isCustomToolNodeName = (nodeUniqueName: string): boolean => {
+  if (nodeUniqueName.startsWith(CUSTOM_TOOL_NODE_PREFIX)) return true;
+
+  const separatorIndex = nodeUniqueName.lastIndexOf(".");
+  if (separatorIndex <= 0) return false;
+  const toolRef = nodeUniqueName.slice(0, separatorIndex);
+  const operationId = nodeUniqueName.slice(separatorIndex + 1);
+  const guidPattern =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return guidPattern.test(toolRef) && operationId.length > 0;
+};
+
 const getJsonFilepath = (nodeUniqueName: string): string => {
   if (
     nodeUniqueName === "ConditionalActivity" ||
@@ -30,15 +66,35 @@ const getJsonFilepath = (nodeUniqueName: string): string => {
   return `../constants/config-json/${nodeUniqueName}.json`;
 };
 
+const buildSchemaAwareCustomToolConfig = async (
+  nodeUniqueName: string,
+): Promise<NodeConfigSchemaType | null> => {
+  const { toolName, operationId } = parseCustomToolNodeReference(nodeUniqueName);
+  const catalog = await getUsableToolCatalogOnce();
+  if (catalog === null) {
+    return null;
+  }
+
+  const operation = catalog
+    .find((tool) => tool.name === toolName)
+    ?.operations?.find((candidate) => candidate.operationId === operationId);
+  if (!operation) {
+    return null;
+  }
+
+  return buildCustomToolNodeConfig(nodeUniqueName, operation);
+};
+
 /**
- * Gets the node config JSON for a given nodeUniqueName/activityName.
- * For now, loads the JSON statically from the constants/config-json folder.
- * @param nodeUniqueName The node Unique name/activity name (e.g., "WriteTextToFileActivity")
+ * Gets the node config JSON for a given nodeUniqueName.
  */
 export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) => {
-  // Check cache first
   if (nodeConfigCache[nodeUniqueName]) {
     return nodeConfigCache[nodeUniqueName];
+  }
+
+  if (nodeConfigInFlight[nodeUniqueName] !== undefined) {
+    return nodeConfigInFlight[nodeUniqueName];
   }
 
   if (nodeType == "blockNode") {
@@ -47,32 +103,34 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   }
 
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
-    // For Cloud Connectors (including Corsair connectors, which are named
-    // "Corsair/{Plugin}/{Action}Connector"), fetch the config from the
-    // WorkspaceAPIs server.
+    // IMPORTANT NOTE: cloud connector configs, including Corsair connectors named "Corsair/{Plugin}/{Action}Connector", are fetched from the Workspace API and have no local JSON.
+    const connectorFetch = axiosInstance
+      .get(
+        `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
+      )
+      .then((res) => res.data);
+    nodeConfigInFlight[nodeUniqueName] = connectorFetch;
     try {
-      const connectorConfig = await axiosInstance
-        .get(
-          `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/${nodeUniqueName}.json`,
-        )
-        .then((res) => res.data);
+      const connectorConfig = await connectorFetch;
       if (connectorConfig) {
-        // Cache the fetched config
         nodeConfigCache[nodeUniqueName] = connectorConfig;
         return connectorConfig;
       }
     } catch (error) {
       console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
+    } finally {
+      delete nodeConfigInFlight[nodeUniqueName];
     }
   }
 
-  // Try the original nodeUniqueName first
+  if (isCustomToolNodeName(nodeUniqueName)) {
+    // IMPORTANT NOTE: custom-tool node configs are rebuilt per open and never cached, so catalog and tenant changes are always reflected.
+    const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
+    return customToolConfig ?? buildCustomToolNodeConfig(nodeUniqueName);
+  }
+
   const namesToTry = [nodeUniqueName];
 
-  // TODO: Remove this fallback once all legacy flows using the "Activity"
-  // suffix have been migrated to the "Node" suffix.
-  // Fallback: some legacy nodes were saved with an "Activity" suffix,
-  // but their config files have been renamed with a "Node" suffix.
   if (nodeUniqueName.endsWith("Activity")) {
     namesToTry.push(`${nodeUniqueName.slice(0, -"Activity".length)}Node`);
   }
@@ -83,7 +141,6 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
 
     if (loader) {
       const module = (await loader()) as { default: DCPFieldSchemaType[] };
-      // Cache under the requested name so subsequent lookups are fast
       nodeConfigCache[nodeUniqueName] = module.default;
       return module.default;
     }

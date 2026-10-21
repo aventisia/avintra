@@ -595,7 +595,7 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-            // CANNOT DELETE THE JOB: Job is not in 'Created' status
+             // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (job.Status != JobStatusEnum.Created)
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
@@ -632,7 +632,7 @@ public class JobsTableService : IJobsTableService
             // If records not found, log and return
             if (jobs.Count == 0)
                 return serviceResponse.Update("Jobs not found.", 404);
-
+            
             // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (jobs.Any(j => j.Status != JobStatusEnum.Created))
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
