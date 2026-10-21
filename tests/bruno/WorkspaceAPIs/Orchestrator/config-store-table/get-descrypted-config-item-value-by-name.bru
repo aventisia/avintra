@@ -1,0 +1,11 @@
+meta {
+  name: Get descrypted config store value by name
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store/decrypt/by-name/{{CONFIGSTORE_NAME}}
+  body: none
+  auth: none
+}

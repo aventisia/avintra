@@ -1,0 +1,28 @@
+meta {
+  name: Insert config store
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store
+  body: json
+  auth: none
+}
+
+body:json {
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "type": "CREDENTIAL",
+  "value": "{{$randomLoremParagraph}}",
+  "accessLevel": "PUBLIC"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "CONFIG_ITEM_ID",
+          res.getBody().data.id
+      );
+  }
+}

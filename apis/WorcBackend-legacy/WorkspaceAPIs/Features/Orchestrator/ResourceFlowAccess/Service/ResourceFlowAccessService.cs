@@ -58,7 +58,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -68,6 +68,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 : resourceType.ToString().ToLowerInvariant();
             Tool? tool = null;
             Queue? queue = null;
+            ConfigStore? configStore = null;
             KnowledgeBase? knowledgeBase = null;
             VaultCredential? vaultCredential = null;
             ConfigureEnvironmentType resourceEnvType;
@@ -102,6 +103,18 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceEnvType = queue.EnvType;
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isResourceAccessRestricted = queue.IsResourceAccessRestricted;
+            }
+            else if (resourceType == ResourceTypeEnum.ConfigStore)
+            {
+                configStore = await GetConfigStoreAsync(resourceId);
+                if (configStore == null)
+                {
+                    return serviceResponse.Update("The key store does not exist", 404);
+                }
+
+                resourceEnvType = configStore.EnvType;
+                resourceCreatedByUserId = configStore.CreatedByUserId;
+                isResourceAccessRestricted = configStore.IsResourceAccessRestricted;
             }
             else if (resourceType == ResourceTypeEnum.KnowledgeBase)
             {
@@ -254,6 +267,11 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                             queue.IsResourceAccessRestricted = isRestricted;
                             _unitOfWork.QueueRepo.Update(queue);
                         }
+                        else if (configStore != null)
+                        {
+                            configStore.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.ConfigStoreRepo.Update(configStore);
+                        }
                         else if (knowledgeBase != null)
                         {
                             knowledgeBase.IsResourceAccessRestricted = isRestricted;
@@ -299,6 +317,10 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(vaultCredential, flowIdList);
             }
+            else if (isRestricted && configStore != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(configStore, flowIdList);
+            }
 
             var message = $"{ResourceFlowAccessHelpers.Pluralize(newIds.Count, "flow")} assigned, {ResourceFlowAccessHelpers.Pluralize(removedIds.Count, "flow")} removed";
 
@@ -322,7 +344,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential or ResourceTypeEnum.ConfigStore))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -354,6 +376,17 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isTenantWideAccess = queue.IsTenantWideAccess;
+            }
+            else if (resourceType == ResourceTypeEnum.ConfigStore)
+            {
+                var configStore = await GetConfigStoreAsync(resourceId);
+                if (configStore == null)
+                {
+                    return serviceResponse.Update("The key store does not exist", 404);
+                }
+
+                resourceCreatedByUserId = configStore.CreatedByUserId;
+                isTenantWideAccess = configStore.IsTenantWideAccess;
             }
             else if (resourceType == ResourceTypeEnum.KnowledgeBase)
             {
@@ -637,6 +670,38 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(ConfigStore configStore, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(configStore.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameConfigStores = await _unitOfWork.ConfigStoreRepo
+            .GetByConditionAsync(w =>
+                w.Name == configStore.Name &&
+                w.TenantId == _tenantId &&
+                w.EnvType == configStore.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedConfigStoreNames(w.ResourceReferences)?.Contains(configStore.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedConfigStore(sameNameConfigStores, w.SpaceId)?.Id == configStore.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<Tool?> GetToolAsync(Guid resourceId)
     {
         return await _unitOfWork.ToolRepo
@@ -661,6 +726,13 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
     private async Task<VaultCredential?> GetVaultCredentialAsync(Guid resourceId)
     {
         return await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<ConfigStore?> GetConfigStoreAsync(Guid resourceId)
+    {
+        return await _unitOfWork.ConfigStoreRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }

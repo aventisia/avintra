@@ -606,7 +606,7 @@ public class FlowBuilderService : IFlowBuilderService
             ["knowledgeBases"] = new(),
             ["tools"] = new(),
             ["skills"] = new(),
-            ["keyStores"] = new(),
+            ["configStores"] = new(),
         };
 
         try
@@ -630,6 +630,10 @@ public class FlowBuilderService : IFlowBuilderService
                         ? JsonNode.Parse(je.GetRawText())
                         : JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input.Value));
                 }
+
+                // Config stores: {{__config__<name>}} placeholders anywhere in the node inputs, including nested objects
+                foreach (Match match in Regex.Matches(configObj.ToJsonString(), @"\{\{__config__([^}]+)\}\}", RegexOptions.IgnoreCase))
+                    AddIfNotPresent(references["configStores"], match.Groups[1].Value.Trim());
 
                 // Credentials: any key containing __CredentialName__ (value is the credential name)
                 foreach (var kvp in configObj)
@@ -703,6 +707,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             await ValidateFlowToolAccessAsync(publishingFlowId, references["tools"], flowName);
             await ValidateFlowQueueAccessAsync(publishingFlowId, references["queues"], flowName);
+            await ValidateFlowConfigStoreAccessAsync(publishingFlowId, references["configStores"], flowName);
             await ValidateFlowKnowledgeBaseAccessAsync(publishingFlowId, references["knowledgeBases"], flowName);
             await ValidateFlowVaultCredentialAccessAsync(publishingFlowId, references["credentials"], flowName);
 
@@ -793,7 +798,7 @@ public class FlowBuilderService : IFlowBuilderService
         missing.AddRange(await EnsureProdToolsAsync(references["tools"]));
         missing.AddRange(await EnsureProdKnowledgeBasesAsync(references["knowledgeBases"]));
         missing.AddRange(await EnsureProdSkillsAsync(references["skills"]));
-        missing.AddRange(await EnsureProdKeyStoresAsync(references["keyStores"]));
+        missing.AddRange(await EnsureProdConfigStoresAsync(references["configStores"]));
 
         if (missing.Count > 0)
             throw new InvalidOperationException(
@@ -1007,6 +1012,55 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 throw new ResourceFlowAccessDeniedException(
                     $"Cannot publish: flow '{flowName}' is not assigned to restricted credential '{name}'. Ask the credential owner to assign this flow first.");
+            }
+        }
+    }
+
+    private async Task<Dictionary<string, ConfigStore>> ResolveDevConfigStoresAsync(List<string> names)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var envType = _currentTenantService.CurrentEnvType;
+        var targetSpaceId = _currentTenantService.CurrentSpaceId == Guid.Empty
+            ? (Guid?)null
+            : _currentTenantService.CurrentSpaceId;
+
+        var candidates = await _unitOfWork.ConfigStoreRepo
+            .GetByConditionAsync(w =>
+                names.Contains(w.Name) &&
+                w.TenantId == tenantId &&
+                w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedConfigStore(g, targetSpaceId)!);
+    }
+
+    private async Task ValidateFlowConfigStoreAccessAsync(Guid publishingFlowId, List<string> configStoreNames, string flowName)
+    {
+        if (configStoreNames.Count == 0)
+        {
+            return;
+        }
+
+        var devConfigStores = await ResolveDevConfigStoresAsync(configStoreNames);
+        var restrictedConfigStores = devConfigStores.Where(w => w.Value.IsResourceAccessRestricted).ToList();
+        if (restrictedConfigStores.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(
+            ResourceTypeEnum.ConfigStore,
+            restrictedConfigStores.Select(w => w.Value.Id));
+
+        foreach (var (name, devConfigStore) in restrictedConfigStores)
+        {
+            if (!assignedFlowIds.TryGetValue(devConfigStore.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
+            {
+                throw new ResourceFlowAccessDeniedException(
+                    $"Cannot publish: flow '{flowName}' is not assigned to restricted key store '{name}'. Ask the key store owner to assign this flow first.");
             }
         }
     }
@@ -1829,47 +1883,101 @@ public class FlowBuilderService : IFlowBuilderService
         await _unitOfWork.SaveAsync();
     }
 
-    private async Task<List<string>> EnsureProdKeyStoresAsync(List<string> names)
+    private async Task<List<string>> EnsureProdConfigStoresAsync(List<string> names)
     {
         var missing = new List<string>();
+        var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var hasProdConfigStoreChanges = false;
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var devConfigStores = await ResolveDevConfigStoresAsync(names);
         foreach (var name in names)
         {
-            await AcquireProdCloneLockAsync("key-store", name);
-            var devKeyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
-                .FirstOrDefaultAsync();
-            if (devKeyStore == null)
+            await AcquireProdCloneLockAsync("config-store", name);
+            if (!devConfigStores.TryGetValue(name, out var devConfigStore))
             {
                 missing.Add($"key store '{name}'");
                 continue;
             }
 
-            var prodKeyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+            var prodConfigStore = await _unitOfWork.ConfigStoreRepo
+                .GetByConditionAsync(w =>
+                    w.Name == name &&
+                    w.TenantId == tenantId &&
+                    w.EnvType == ConfigureEnvironmentType.Prod &&
+                    w.SpaceId == devConfigStore.SpaceId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
-            if (prodKeyStore != null)
-                continue;
 
-            var clone = new KeyStore
+            if (prodConfigStore == null)
             {
-                Name = devKeyStore.Name,
-                Description = devKeyStore.Description,
-                Type = devKeyStore.Type,
-                Value = devKeyStore.Value,
-                IsEncrypted = devKeyStore.IsEncrypted,
-                AccessLevel = devKeyStore.AccessLevel,
-                IsTenantWideAccess = devKeyStore.IsTenantWideAccess,
-                SpaceId = devKeyStore.SpaceId,
-                EnvType = ConfigureEnvironmentType.Prod,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-            };
-            await _unitOfWork.KeyStoreRepo.InsertAsync(clone);
+                prodConfigStore = new ConfigStore
+                {
+                    Name = devConfigStore.Name,
+                    Description = devConfigStore.Description,
+                    Type = devConfigStore.Type,
+                    Value = devConfigStore.Value,
+                    IsEncrypted = devConfigStore.IsEncrypted,
+                    AccessLevel = devConfigStore.AccessLevel,
+                    IsTenantWideAccess = devConfigStore.IsTenantWideAccess,
+                    IsResourceAccessRestricted = devConfigStore.IsResourceAccessRestricted,
+                    SpaceId = devConfigStore.SpaceId,
+                    EnvType = ConfigureEnvironmentType.Prod,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                };
+                await _unitOfWork.ConfigStoreRepo.InsertAsync(prodConfigStore);
+                await _unitOfWork.SaveAsync();
+                await AssignOwnerOrThrowAsync(prodConfigStore.Id, ResourceTypeEnum.ConfigStore);
+            }
+
+            // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
+            if (devConfigStore.IsResourceAccessRestricted && !prodConfigStore.IsResourceAccessRestricted)
+            {
+                prodConfigStore.IsResourceAccessRestricted = true;
+                _unitOfWork.ConfigStoreRepo.Update(prodConfigStore);
+                hasProdConfigStoreChanges = true;
+            }
+
+            await EnsureProdConfigStoreFlowAccessAsync(devConfigStore.Id, prodConfigStore.Id, pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || hasProdConfigStoreChanges)
+        {
             await _unitOfWork.SaveAsync();
-            await AssignOwnerOrThrowAsync(clone.Id, ResourceTypeEnum.KeyStore);
         }
 
         return missing;
+    }
+
+    private async Task EnsureProdConfigStoreFlowAccessAsync(Guid devConfigStoreId, Guid prodConfigStoreId, List<ResourceFlowAccess> pendingFlowAccesses)
+    {
+        var sourceFlowAccesses = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.ConfigStore && w.ResourceId == devConfigStoreId)
+            .ToListAsync();
+
+        if (sourceFlowAccesses.Count == 0)
+            return;
+
+        var existing = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == ResourceTypeEnum.ConfigStore && w.ResourceId == prodConfigStoreId)
+            .ToListAsync();
+
+        var existingFlowIds = existing.Select(w => w.FlowId).ToHashSet();
+        pendingFlowAccesses.AddRange(sourceFlowAccesses
+            .Where(w => !existingFlowIds.Contains(w.FlowId) && !pendingFlowAccesses.Any(p => p.ResourceId == prodConfigStoreId && p.FlowId == w.FlowId))
+            .Select(w => new ResourceFlowAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = ResourceTypeEnum.ConfigStore,
+                ResourceId = prodConfigStoreId,
+                FlowId = w.FlowId,
+                CreatedByUserId = _userId
+            }));
     }
 
     private static bool IsEmptyCredential(string? value) =>

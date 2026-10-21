@@ -55,7 +55,7 @@ const VariableSelectorWrapper = ({
             <TabsTrigger value="variables" className="w-full">
               Variables
             </TabsTrigger>
-            <TabsTrigger value="keystore" className="w-full">
+            <TabsTrigger value="configstore" className="w-full">
               Key Store
             </TabsTrigger>
           </TabsList>
@@ -66,7 +66,7 @@ const VariableSelectorWrapper = ({
             <VariableSelectorContent />
           </TabsContent>
           <TabsContent
-            value="keystore"
+            value="configstore"
             className="flex flex-1 flex-col overflow-hidden min-h-0 data-[state=inactive]:hidden"
           >
             <ConfigSelectorContent />

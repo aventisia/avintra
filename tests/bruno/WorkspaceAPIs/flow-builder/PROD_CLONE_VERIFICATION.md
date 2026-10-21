@@ -10,7 +10,7 @@ Run the steps against a **non-production** Workspace DB.
 ## 1. Publish
 
 1. Author a Dev (`EnvType = Dev`) Agent flow that references:
-   - a credential (by name) and a key store,
+   - a credential (by name) and a config store,
    - a queue,
    - a custom tool,
    - a **pgvector** knowledge base with at least one file, plus at least two
@@ -176,17 +176,17 @@ WHERE dev."TenantId" = :tenant_id AND dev."EnvType" = 'Dev'
 -- Expect: prod_matches = 1 for every source skill file name.
 ```
 
-### 2.6 Key stores
+### 2.6 Config stores
 
 ```sql
 SELECT d."Name", d."SpaceId" AS dev_space, p."Id" AS prod_id, p."SpaceId" AS prod_space
-FROM "KeyStores" d
-LEFT JOIN "KeyStores" p
+FROM "ConfigStores" d
+LEFT JOIN "ConfigStores" p
        ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
-  AND d."Name" IN (:key_store_names);
--- Expect a Prod key store per referenced key store.
+  AND d."Name" IN (:config_store_names);
+-- Expect a Prod config store per referenced config store.
 ```
 
 ### 2.7 Platform library resources (no clone)

@@ -50,11 +50,11 @@ public class ManageTenantService : IManageTenantService
             var tenantIdToBeDeleted = _currentTenantService.CurrentTenantId;
 
             // Delete VectorStore
-            if (!await DeleteEntitiesAsync(_unitOfWork.VectorStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(KeyStore), tenantIdToBeDeleted))
+            if (!await DeleteEntitiesAsync(_unitOfWork.VectorStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(VectorStore), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete KeyStore
-            if (!await DeleteEntitiesAsync(_unitOfWork.KeyStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(KeyStore), tenantIdToBeDeleted))
+            // Delete ConfigStore
+            if (!await DeleteEntitiesAsync(_unitOfWork.ConfigStoreRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(ConfigStore), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete EncryptedKeyValue - DeleteBehavior.Cascade set with VaultCredential

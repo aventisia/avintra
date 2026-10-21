@@ -1,0 +1,15 @@
+meta {
+  name: Is config store name available
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  "userInput": "{{$randomCompanyName}}"
+}
