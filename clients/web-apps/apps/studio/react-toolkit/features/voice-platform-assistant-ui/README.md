@@ -11,8 +11,9 @@ from the Chat feature; both keep their own speech helpers, playback queue, and c
 Choose **Start Session**. The browser asks for the microphone, then the panel opens a hands-free
 conversation: just speak, and the agent answers aloud. There is no send button and no record button.
 
-Choose **End Session** to stop listening, stop the audio, close the voice connection, and return to
-the start. The plus button in the header also starts a fresh transcript.
+While a session is running the same button reads **Disconnect**. Choose it to stop listening, stop the
+audio, close the voice connection, and return to the start. The plus button in the header also starts
+a fresh transcript.
 
 The Test borrows your speak-aloud setting so replies play during the session, and puts your previous
 setting back when the session ends. Your saved preference is not changed.
@@ -23,9 +24,8 @@ The pill shows what the Test is doing:
 
 - **Idle** — no session is running.
 - **Connecting** — the microphone and voice connection are opening.
-- **Listening–Recording** — hands-free listening is on; speak normally.
-- **Processing** — your words are being turned into a reply.
-- **Speaking** — the reply is playing. Speaking over it interrupts the reply.
+- **Connected** — the session is running; you may be listened to, processed, or answered. Speaking
+  over the reply interrupts it.
 - **Reconnecting** — the realtime connection dropped briefly and is retrying.
 
 The tag next to it names the engine: **Pipeline** or **Realtime**.
@@ -38,9 +38,17 @@ engines never mix:
 - **Pipeline** records what you say, turns it into text, runs the agent, and speaks the reply.
 - **Realtime** streams audio both ways over a WebSocket and plays the agent's audio as it arrives.
 
-On Realtime, a draft line reading **Hearing… (interim — not final)** appears while the provider is
-still turning your speech into text. It is replaced by the final reply in the transcript; the draft
-is never saved as a message.
+On Realtime, your speech and the agent's reply both appear in the conversation while they are still
+being transcribed. The live text sits at the end of the conversation in italics and turns into a
+normal message when the provider finishes that turn. A draft is never saved as a message, and a turn
+is never added twice.
+
+All transcript text stays in the conversation area above the session controls. Nothing from the
+transcript appears below the Start Session button.
+
+User transcription is turned on when the session opens. OpenAI and Azure are expected to show your
+words while you speak. Gemini and Vertex AI are expected to show only the finished sentence. xAI and
+Bedrock do not provide user transcription in this version; audio and the agent's reply still work.
 
 Realtime support can only be checked against a mocked gateway in this environment. Live provider
 support is not verified. If a realtime session cannot start, the panel says so and offers

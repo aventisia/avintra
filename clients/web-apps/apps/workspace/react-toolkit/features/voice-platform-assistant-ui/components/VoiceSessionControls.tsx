@@ -56,7 +56,7 @@ export const VoiceSessionControls: FC<VoiceSessionControlsProps> = ({ startDisab
           onClick={isActive ? voice.endSession : voice.startSession}
         >
           {isActive ? <SquareIcon className="size-3.5" /> : <Mic className="size-3.5" />}
-          {isActive ? "End Session" : "Start Session"}
+          {isActive ? "Disconnect" : "Start Session"}
         </Button>
 
         <span

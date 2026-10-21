@@ -25,6 +25,7 @@ import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VaultCredentialSelectField } from "./fields-for-form/VaultCredentialSelectField";
 import { VoiceFeaturesTab } from "./fields-for-form/VoiceFeaturesTab";
+import { VoicePronunciationTab } from "./fields-for-form/VoicePronunciationTab";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
@@ -35,8 +36,17 @@ const isVoiceFeaturesField = (field: DCPFieldSchemaType): boolean =>
   /^__\w+__Voice$/.test(field.name) &&
   useDynamicConfigPanelStore.getState().nodeData?.name === VOICE_AGENT_NODE_NAME;
 
+const isVoicePronunciationField = (field: DCPFieldSchemaType): boolean =>
+  field.category === "Pronunciation" &&
+  /^__\w+__Voice$/.test(field.name) &&
+  useDynamicConfigPanelStore.getState().nodeData?.name === VOICE_AGENT_NODE_NAME;
+
 // Helper to render the correct field type
 export const RenderField = ({ force, ...field }: DCPFieldSchemaType & { force?: boolean }) => {
+  if (!force && isVoicePronunciationField(field)) {
+    return field.name === "__PronunciationEnabled__Voice" ? <VoicePronunciationTab /> : null;
+  }
+
   // IMPORTANT NOTE: sibling Features fields return null here; the untouched DCPForm loop and
   // useDefineDCPForm derivation still own the 18-key inputKeys retention.
   if (!force && isVoiceFeaturesField(field)) {
