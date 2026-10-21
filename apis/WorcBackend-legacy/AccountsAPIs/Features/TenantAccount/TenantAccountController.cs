@@ -66,12 +66,4 @@ public class TenantAccountController : BaseApiController
     {
         return ResultHelper(await _tenantAccountService.UpdateNotificationSettingsAsync(settingsDto));
     }
-
-    // Searches for account users matching the specified search key.
-    [Authorize]
-    [HttpGet("users/search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AppUserBaseDto>>>> SearchAccountUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
-    {
-        return ResultHelper(await _tenantAccountService.SearchAccountUserAsync(searchKey, includeCurrentUser));
-    }
 }

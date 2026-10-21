@@ -1,9 +1,9 @@
+import { searchUsers, toUserSelectItem } from "@avplatform/ui/apis/search-users-apis";
 import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
-
-import { getSearchUser } from "../../apis/chat-agents-users-apis";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 /**
  * Custom hook to fetch users using react query.
@@ -19,7 +19,11 @@ export const useSearchUsersList = (query: string) => {
 
   return useQuery({
     queryKey: ["users-list", query, currentSpace?.id],
-    queryFn: () => getSearchUser(query),
+    queryFn: () =>
+      searchUsers(query, true, true, getSpaceHeaders()).then((res) => ({
+        ...res,
+        data: (res.data ?? []).map(toUserSelectItem),
+      })),
 
     enabled: !!query,
   });
