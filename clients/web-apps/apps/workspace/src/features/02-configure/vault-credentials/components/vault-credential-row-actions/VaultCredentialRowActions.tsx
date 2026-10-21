@@ -3,6 +3,7 @@ import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
@@ -20,6 +21,7 @@ interface VaultCredentialRowActionsProps {
   type?: string;
   accessLevel?: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isResourceAccessRestricted: boolean;
 }
 
 export const VaultCredentialRowActions = ({
@@ -28,6 +30,7 @@ export const VaultCredentialRowActions = ({
   type,
   accessLevel = ResourceAccessTypeEnum.View,
   isTenantWideAccess,
+  isResourceAccessRestricted,
 }: VaultCredentialRowActionsProps) => {
   const { queryKey } = useTableTab();
 
@@ -37,6 +40,16 @@ export const VaultCredentialRowActions = ({
     <DataTableRowActions className="w-36 min-w-36">
       {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="vault" />}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="vault" />}
+
+      {actions?.update && (
+        <ResourceFlowAccessRowAction
+          rowId={rowId}
+          resourceName={name}
+          resourceType={ResourceTypeEnum.VaultCredential}
+          isRestricted={isResourceAccessRestricted}
+          disabled={isProd}
+        />
+      )}
 
       {resourceActions.share && (
         <ResourceShareRowAction

@@ -58,15 +58,18 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
 
-            var resourceLabel = resourceType.ToString().ToLowerInvariant();
+            var resourceLabel = resourceType == ResourceTypeEnum.VaultCredential
+                ? "credential"
+                : resourceType.ToString().ToLowerInvariant();
             Tool? tool = null;
             Queue? queue = null;
             KnowledgeBase? knowledgeBase = null;
+            VaultCredential? vaultCredential = null;
             ConfigureEnvironmentType resourceEnvType;
             Guid resourceCreatedByUserId;
             bool isResourceAccessRestricted;
@@ -100,7 +103,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isResourceAccessRestricted = queue.IsResourceAccessRestricted;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.KnowledgeBase)
             {
                 knowledgeBase = await GetKnowledgeBaseAsync(resourceId);
                 if (knowledgeBase == null)
@@ -111,6 +114,18 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceEnvType = knowledgeBase.EnvType;
                 resourceCreatedByUserId = knowledgeBase.CreatedByUserId;
                 isResourceAccessRestricted = knowledgeBase.IsResourceAccessRestricted;
+            }
+            else
+            {
+                vaultCredential = await GetVaultCredentialAsync(resourceId);
+                if (vaultCredential == null)
+                {
+                    return serviceResponse.Update("The credential does not exist", 404);
+                }
+
+                resourceEnvType = vaultCredential.EnvType;
+                resourceCreatedByUserId = vaultCredential.CreatedByUserId;
+                isResourceAccessRestricted = vaultCredential.IsResourceAccessRestricted;
             }
 
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AssignResourceFlowsResultDto>(
@@ -239,10 +254,15 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                             queue.IsResourceAccessRestricted = isRestricted;
                             _unitOfWork.QueueRepo.Update(queue);
                         }
+                        else if (knowledgeBase != null)
+                        {
+                            knowledgeBase.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.KnowledgeBaseRepo.Update(knowledgeBase);
+                        }
                         else
                         {
-                            knowledgeBase!.IsResourceAccessRestricted = isRestricted;
-                            _unitOfWork.KnowledgeBaseRepo.Update(knowledgeBase);
+                            vaultCredential!.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.VaultCredentialRepo.Update(vaultCredential);
                         }
                     }
 
@@ -275,6 +295,10 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(knowledgeBase, flowIdList);
             }
+            else if (isRestricted && vaultCredential != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(vaultCredential, flowIdList);
+            }
 
             var message = $"{ResourceFlowAccessHelpers.Pluralize(newIds.Count, "flow")} assigned, {ResourceFlowAccessHelpers.Pluralize(removedIds.Count, "flow")} removed";
 
@@ -298,12 +322,14 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase or ResourceTypeEnum.VaultCredential))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
 
-            var resourceLabel = resourceType.ToString().ToLowerInvariant();
+            var resourceLabel = resourceType == ResourceTypeEnum.VaultCredential
+                ? "credential"
+                : resourceType.ToString().ToLowerInvariant();
             Guid resourceCreatedByUserId;
             bool isTenantWideAccess;
 
@@ -329,7 +355,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isTenantWideAccess = queue.IsTenantWideAccess;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.KnowledgeBase)
             {
                 var knowledgeBase = await GetKnowledgeBaseAsync(resourceId);
                 if (knowledgeBase == null)
@@ -339,6 +365,17 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
                 resourceCreatedByUserId = knowledgeBase.CreatedByUserId;
                 isTenantWideAccess = knowledgeBase.IsTenantWideAccess;
+            }
+            else
+            {
+                var vaultCredential = await GetVaultCredentialAsync(resourceId);
+                if (vaultCredential == null)
+                {
+                    return serviceResponse.Update("The credential does not exist", 404);
+                }
+
+                resourceCreatedByUserId = vaultCredential.CreatedByUserId;
+                isTenantWideAccess = vaultCredential.IsTenantWideAccess;
             }
 
             var (canAccess, _) = await _resourceShareService.GetResourceAccessAsync(
@@ -568,6 +605,38 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(VaultCredential credential, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(credential.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameCredentials = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w =>
+                w.Name == credential.Name &&
+                w.TenantId == _tenantId &&
+                w.EnvType == credential.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedCredentialNames(w.ResourceReferences)?.Contains(credential.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedCredential(sameNameCredentials, w.SpaceId)?.Id == credential.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<Tool?> GetToolAsync(Guid resourceId)
     {
         return await _unitOfWork.ToolRepo
@@ -585,6 +654,13 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
     private async Task<KnowledgeBase?> GetKnowledgeBaseAsync(Guid resourceId)
     {
         return await _unitOfWork.KnowledgeBaseRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<VaultCredential?> GetVaultCredentialAsync(Guid resourceId)
+    {
+        return await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }
