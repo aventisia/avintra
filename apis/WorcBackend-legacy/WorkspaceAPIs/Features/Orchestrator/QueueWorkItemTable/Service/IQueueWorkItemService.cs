@@ -35,7 +35,7 @@ public interface IQueueWorkItemService
     Task<ServiceResponse<QueueWorkItemDto>> GetQueueWorkItemByIdAsync(Guid queueWorkItemId);
 
     /// <summary>
-    /// Inserts single/multiple work items into the queue.
+    /// Inserts single/multiple work items into the queue. Rejects the request with 409 when a retry would exceed the queue's MaximumRetryAttempts (0 means unbounded).
     /// </summary>
     /// <param name="queueWorkItemDto">Details of the work items to be added to the queue (PayloadData contains a list of work items)</param>
     /// <returns>A service response indicating whether the work items were successfully inserted</returns>

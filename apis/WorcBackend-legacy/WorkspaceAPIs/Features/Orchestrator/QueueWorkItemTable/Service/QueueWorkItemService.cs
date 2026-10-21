@@ -830,6 +830,17 @@ public class QueueWorkItemService : IQueueWorkItemService
                 }
             }
 
+            if (isRetry &&
+                queue.MaximumRetryAttempts > 0 &&
+                nextRetryCount.HasValue &&
+                nextRetryCount.Value > queue.MaximumRetryAttempts)
+            {
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Data = queueWorkItemDto;
+                serviceResponse.Message = $"Maximum retry attempts exceeded. Queue allows {queue.MaximumRetryAttempts} retries.";
+                return serviceResponse;
+            }
+
             // Begin validating each workitem object
             foreach (var dataItem in dataArray)
             {

@@ -64,6 +64,10 @@ export const maxRetriesProps: InputFieldProps = {
   name: "maximumRetryAttempts",
   label: "Max Of Retries",
   description: "The maximum number of times an item can be retried.",
+  type: "number",
+  min: 0,
+  max: 10,
+  step: 1,
 };
 
 export const inputJsonSchemaProps: InputFieldProps = {
