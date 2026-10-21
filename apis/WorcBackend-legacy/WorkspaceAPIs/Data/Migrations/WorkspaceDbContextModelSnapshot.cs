@@ -969,6 +969,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsResourceAccessRestricted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsTenantWideAccess")
                         .HasColumnType("boolean");
 
@@ -2882,6 +2885,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasDefaultValue("Dev");
 
                     b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsResourceAccessRestricted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsTenantWideAccess")

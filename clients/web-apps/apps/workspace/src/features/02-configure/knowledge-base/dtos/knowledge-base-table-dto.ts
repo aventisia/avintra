@@ -80,6 +80,11 @@ export interface KnowledgeBaseTableDto {
   isTenantWideAccess: boolean;
 
   /**
+   * Indicates whether flow access to the knowledge base is restricted to the assigned flows.
+   */
+  isResourceAccessRestricted: boolean;
+
+  /**
    * Flag indicating whether the Knowledge Base record is disabled.
    */
   isDisabled?: boolean;

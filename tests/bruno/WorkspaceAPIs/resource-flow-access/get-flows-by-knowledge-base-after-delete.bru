@@ -1,0 +1,35 @@
+meta {
+  name: Get assigned flows after knowledge base delete
+  type: http
+  seq: 35
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/KnowledgeBase/{{KNOWLEDGE_BASE_ID}}/assigned-flows
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("deleted knowledge base no longer resolves", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("error names the missing knowledge base", function() {
+    expect(text).to.contain("The knowledge base does not exist");
+  });
+}
+
+docs {
+  > Run after "Delete knowledge base with flow access". A 404 confirms the knowledge
+  > base is gone and that its ws_ResourceFlowAccess rows were staged for deletion
+  > with it instead of being left behind. A 200 with an empty list would mean the
+  > knowledge base row survived.
+}

@@ -1006,6 +1006,7 @@ public class AgentTableService : IAgentTableService
             // Owned key-value pairs go with the credential.
             await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.VaultCredentialId == credential.Id);
             await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.VaultCredential);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, credential.Id);
             _unitOfWork.VaultCredentialRepo.Delete(credential);
         }
     }
@@ -1115,6 +1116,7 @@ public class AgentTableService : IAgentTableService
 
             await DeleteLinksAsync(_unitOfWork.KnowledgeBaseFileRepo, f => f.KnowledgeBaseId == knowledgeBase.Id);
             await _resourceShareService.DeleteResourceSharesAsync(knowledgeBase.Id, ResourceTypeEnum.KnowledgeBase);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, knowledgeBase.Id);
             _unitOfWork.KnowledgeBaseRepo.Delete(knowledgeBase);
         }
     }

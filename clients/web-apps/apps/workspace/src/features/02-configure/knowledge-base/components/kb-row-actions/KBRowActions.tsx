@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
@@ -17,6 +18,7 @@ interface KBRowActionsProps {
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isResourceAccessRestricted: boolean;
 }
 
 export const KBRowActions = ({
@@ -24,6 +26,7 @@ export const KBRowActions = ({
   name,
   accessLevel,
   isTenantWideAccess,
+  isResourceAccessRestricted,
 }: KBRowActionsProps) => {
   const navigate = useNavigate();
 
@@ -46,6 +49,15 @@ export const KBRowActions = ({
       )}
       {/* Edit KB details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="knowledgeBase" />}
+      {actions?.update && (
+        <ResourceFlowAccessRowAction
+          rowId={rowId}
+          resourceName={name}
+          resourceType={ResourceTypeEnum.KnowledgeBase}
+          isRestricted={isResourceAccessRestricted}
+          disabled={isProd}
+        />
+      )}
       {/* Share Access */}
       {resourceActions.share && (
         <ResourceShareRowAction
