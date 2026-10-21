@@ -79,8 +79,11 @@ public static class EnvironmentConfigurationExtension
             AZURE_ENTRA_ID_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_CLIENT_SECRET") ?? string.Empty;
         }
 
-        var MICROSOFT_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_CLIENT_ID") ?? string.Empty;
-        var MICROSOFT_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_CLIENT_SECRET") ?? string.Empty;
+        var MICROSOFT_SSO_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("MICROSOFT_SSO_ENABLED") ?? config["EnvironmentConfig:MicrosoftSsoEnabled"] ?? "false");
+        var MICROSOFT_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_ID") ?? string.Empty;
+        var MICROSOFT_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_SECRET") ?? string.Empty;
+        var GOOGLE_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_ID") ?? string.Empty;
+        var GOOGLE_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_SECRET") ?? string.Empty;
 
         // SMTP environment variables
         var SMTP_HOST = Environment.GetEnvironmentVariable("SMTP_HOST") ?? string.Empty;
@@ -240,8 +243,11 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:AzureTenantId", AZURE_TENANT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientId", AZURE_ENTRA_ID_CLIENT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientSecret", AZURE_ENTRA_ID_CLIENT_SECRET },
-                    { "EnvironmentConfig:MicrosoftClientId", MICROSOFT_CLIENT_ID },
-                    { "EnvironmentConfig:MicrosoftClientSecret", MICROSOFT_CLIENT_SECRET },
+                    { "EnvironmentConfig:MicrosoftSsoEnabled", MICROSOFT_SSO_ENABLED.ToString() },
+                    { "EnvironmentConfig:MicrosoftSsoClientId", MICROSOFT_SSO_CLIENT_ID },
+                    { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },
+                    { "EnvironmentConfig:GoogleSsoClientId", GOOGLE_SSO_CLIENT_ID },
+                    { "EnvironmentConfig:GoogleSsoClientSecret", GOOGLE_SSO_CLIENT_SECRET },
 
                     { "EnvironmentConfig:JwtSecretKey", JWT_SECRET_KEY },
                     { "EnvironmentConfig:JwtValidityInMinutes", JWT_VALIDITY_IN_MINUTES },

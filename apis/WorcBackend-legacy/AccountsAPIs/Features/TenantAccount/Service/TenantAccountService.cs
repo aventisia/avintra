@@ -271,6 +271,7 @@ public class TenantAccountService : ITenantAccountService
 
             // Redact the stored single sign-on configuration; the client secret never leaves the server
             ApplyRedactedSsoConfig(tenantPreferencesDto, tenant.SSOConfigJson);
+            ApplySsoAvailability(tenantPreferencesDto);
 
             // Keep the actionable warning visible while a previously connected tenant stays disabled with passwordless users
             var storedSsoConfig = SsoConfigHelpers.Parse(tenant.SSOConfigJson);
@@ -321,24 +322,10 @@ public class TenantAccountService : ITenantAccountService
             }
 
             // Map updated values from the DTO into the existing entity
-            var existingSsoConfig = SsoConfigHelpers.Parse(tenant.SSOConfigJson);
-            var wasSsoEnabled = tenant.IsSSOEnabled;
+            var storedIsSsoEnabled = tenant.IsSSOEnabled;
             preferencesDto.Adapt(tenant);
+            tenant.IsSSOEnabled = storedIsSsoEnabled;
             tenant.LastModifiedByUserId = _userId;
-            var isDisablingSso = wasSsoEnabled && !tenant.IsSSOEnabled;
-
-            if (tenant.IsSSOEnabled)
-            {
-                var enableValidation = await ValidateSsoEnablementAsync(tenant, existingSsoConfig);
-
-                if (!enableValidation.IsValid)
-                {
-                    serviceResponse.StatusCode = enableValidation.StatusCode;
-                    serviceResponse.Message = enableValidation.Message;
-                    _logger.LogWarning("SSO enablement blocked for TenantId {TenantId}: {Reason}", _tenantId, enableValidation.Message);
-                    return serviceResponse;
-                }
-            }
 
             // Mark entity as updated
             _unitOfWork.TenantRepo.Update(tenant);
@@ -353,8 +340,94 @@ public class TenantAccountService : ITenantAccountService
             // Map updated entity back to DTO for response
             var updatedPreferencesDto = tenant.Adapt<TenantPreferenceDto>();
             ApplyRedactedSsoConfig(updatedPreferencesDto, tenant.SSOConfigJson);
+            ApplySsoAvailability(updatedPreferencesDto);
 
-            if (isDisablingSso)
+            // Populate success response
+            serviceResponse.Data = updatedPreferencesDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Tenant preferences updated successfully.";
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while updating tenant preferences for TenantId: {TenantId}", _tenantId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <inheritdoc />
+    public async Task<ServiceResponse<TenantPreferenceDto>> UpdateTenantSsoStateAsync(TenantSsoStateDto tenantSsoStateDto)
+    {
+        var serviceResponse = new ServiceResponse<TenantPreferenceDto>
+        {
+            Data = null,
+            Message = "Failed to update tenant single sign-on. Please try again later."
+        };
+
+        try
+        {
+            var availability = GetSsoAvailability();
+            if (!availability.IsAvailable)
+            {
+                serviceResponse.StatusCode = availability.StatusCode;
+                serviceResponse.Message = availability.Message;
+                return serviceResponse;
+            }
+
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.Id == _tenantId)
+                .FirstOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found.";
+                _logger.LogWarning("Tenant not found for single sign-on update with TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
+            }
+
+            var wasSsoEnabled = tenant.IsSSOEnabled;
+            if (wasSsoEnabled == tenantSsoStateDto.IsSSOEnabled)
+            {
+                var currentPreferencesDto = tenant.Adapt<TenantPreferenceDto>();
+                ApplyRedactedSsoConfig(currentPreferencesDto, tenant.SSOConfigJson);
+                ApplySsoAvailability(currentPreferencesDto);
+
+                serviceResponse.Data = currentPreferencesDto;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Tenant single sign-on state unchanged.";
+                return serviceResponse;
+            }
+
+            if (tenantSsoStateDto.IsSSOEnabled)
+            {
+                var storedConfig = SsoConfigHelpers.Parse(tenant.SSOConfigJson);
+                var enableValidation = await ValidateSsoEnablementAsync(tenant, storedConfig);
+
+                if (!enableValidation.IsValid)
+                {
+                    serviceResponse.StatusCode = enableValidation.StatusCode;
+                    serviceResponse.Message = enableValidation.Message;
+                    _logger.LogWarning("SSO enablement blocked for TenantId {TenantId}: {Reason}", _tenantId, enableValidation.Message);
+                    return serviceResponse;
+                }
+            }
+
+            tenant.IsSSOEnabled = tenantSsoStateDto.IsSSOEnabled;
+            tenant.LastModifiedByUserId = _userId;
+            _unitOfWork.TenantRepo.Update(tenant);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Update failed while saving the tenant single sign-on state for TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
+            }
+
+            var updatedPreferencesDto = tenant.Adapt<TenantPreferenceDto>();
+            ApplyRedactedSsoConfig(updatedPreferencesDto, tenant.SSOConfigJson);
+            ApplySsoAvailability(updatedPreferencesDto);
+
+            if (wasSsoEnabled && !tenantSsoStateDto.IsSSOEnabled)
             {
                 var disableWarning = await BuildSsoDisableWarningAsync();
                 updatedPreferencesDto.SsoDisableWarning = disableWarning;
@@ -369,15 +442,13 @@ public class TenantAccountService : ITenantAccountService
                 }
             }
 
-            // Populate success response
             serviceResponse.Data = updatedPreferencesDto;
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Tenant preferences updated successfully.";
-
+            serviceResponse.Message = "Tenant single sign-on state updated successfully.";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while updating tenant preferences for TenantId: {TenantId}", _tenantId);
+            _logger.LogError(ex, "Error occurred while updating the tenant single sign-on state for TenantId: {TenantId}", _tenantId);
         }
 
         return serviceResponse;
@@ -402,6 +473,14 @@ public class TenantAccountService : ITenantAccountService
             if (tenant == null)
             {
                 serviceResponse.Message = "Tenant not found.";
+                return serviceResponse;
+            }
+
+            var availability = GetSsoAvailability();
+            if (!availability.IsAvailable)
+            {
+                serviceResponse.StatusCode = availability.StatusCode;
+                serviceResponse.Message = availability.Message;
                 return serviceResponse;
             }
 
@@ -444,6 +523,14 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
+            var availability = GetSsoAvailability();
+            if (!availability.IsAvailable)
+            {
+                serviceResponse.StatusCode = availability.StatusCode;
+                serviceResponse.Message = availability.Message;
+                return serviceResponse;
+            }
+
             var authState = _loginWithExternalAuthService.ConsumeAuthState(state);
             if (authState == null || authState.TenantId != _tenantId || !authState.AdminConsent)
             {
@@ -494,6 +581,7 @@ public class TenantAccountService : ITenantAccountService
 
             var preferencesDto = tenant.Adapt<TenantPreferenceDto>();
             ApplyRedactedSsoConfig(preferencesDto, tenant.SSOConfigJson);
+            ApplySsoAvailability(preferencesDto);
 
             serviceResponse.Data = preferencesDto;
             serviceResponse.StatusCode = 200;
@@ -656,6 +744,26 @@ public class TenantAccountService : ITenantAccountService
         dto.SSOConfigJson = SsoConfigHelpers.ToRedactedJson(ssoConfig);
     }
 
+    private (bool IsAvailable, int StatusCode, string Message) GetSsoAvailability()
+    {
+        if (_environmentConfig.IsCommunityDeployment)
+        {
+            return (false, 400, "Single sign-on is not available in the Community edition.");
+        }
+
+        if (!_environmentConfig.MicrosoftSsoEnabled)
+        {
+            return (false, 400, "Single sign-on is not enabled for this deployment.");
+        }
+
+        return (true, 200, string.Empty);
+    }
+
+    private void ApplySsoAvailability(TenantPreferenceDto dto)
+    {
+        dto.IsSSOAvailable = _environmentConfig.MicrosoftSsoEnabled && !_environmentConfig.IsCommunityDeployment;
+    }
+
     private async Task<SsoDisableWarningDto?> BuildSsoDisableWarningAsync()
     {
         var taRoleId = await _unitOfWork.AccountRoleRepo
@@ -754,6 +862,12 @@ public class TenantAccountService : ITenantAccountService
     private async Task<(bool IsValid, int StatusCode, string Message)> ValidateSsoEnablementAsync(
         Tenant tenant, TenantSsoConfigDto? storedConfig)
     {
+        var availability = GetSsoAvailability();
+        if (!availability.IsAvailable)
+        {
+            return (false, availability.StatusCode, availability.Message);
+        }
+
         if (tenant.Type != TenantTypesEnum.Organization)
         {
             return (false, 400, "Single sign-on is available for organization tenants only.");
@@ -775,18 +889,16 @@ public class TenantAccountService : ITenantAccountService
         }
 
         var isPlatformConfigured =
-            _environmentConfig.AzureEntraIdEnabled &&
-            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftClientId) &&
-            !string.IsNullOrWhiteSpace(_environmentConfig.AzureTenantId) &&
-            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftClientSecret);
+            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftSsoClientId) &&
+            !string.IsNullOrWhiteSpace(_environmentConfig.MicrosoftSsoClientSecret);
 
         if (!isPlatformConfigured)
         {
-            return (false, 400, "SSO credentials are not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables.");
+            return (false, 400, "SSO credentials are not configured. Set the MICROSOFT_SSO_CLIENT_ID and MICROSOFT_SSO_CLIENT_SECRET environment variables.");
         }
 
         var areCredentialsValid = await ValidateEntraClientCredentialsAsync(
-            _environmentConfig.AzureTenantId, _environmentConfig.MicrosoftClientId, _environmentConfig.MicrosoftClientSecret);
+            storedConfig.ExternalTenantId, _environmentConfig.MicrosoftSsoClientId, _environmentConfig.MicrosoftSsoClientSecret);
 
         if (!areCredentialsValid)
         {

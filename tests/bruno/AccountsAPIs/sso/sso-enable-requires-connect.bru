@@ -5,21 +5,14 @@ meta {
 }
 
 put {
-  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/preferences
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-account/sso/enabled
   body: json
   auth: none
 }
 
 body:json {
   {
-    "id": "{{TENANT_ID}}",
-    "isSSOEnabled": true,
-    "isPwdEnabled": true,
-    "isPwdNeverExpiresEnabled": true,
-    "daysBeforePwdExpires": 730,
-    "isIdleSessionTimeoutEnabled": true,
-    "idleSessionTimeoutMinutes": 10,
-    "isTwoFAEnabled": false
+    "isSSOEnabled": true
   }
 }
 
@@ -40,14 +33,16 @@ tests {
 
 docs {
   > Preconditions: a tenant admin session (see `ta-login.bru`), `TENANT_ID` pointing at an Organization
-  > tenant that has an email domain set but has never completed a Connect (no stored `externalTenantId`).
+  > tenant that has an email domain set but has never completed a Connect (no stored `externalTenantId`),
+  > and the deployment running with `MICROSOFT_SSO_ENABLED=true` outside the Community edition.
   > Enabling without a bound identity provider must fail with the Connect message; the response must not
   > mention any removed verification field.
   >
   > Reading a failure: 401 means no tenant admin session, 200 means the tenant fixture is already connected
   > (the gate then moved on to the platform-credential check, which fails safe with a 400 "SSO credentials are
-  > not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables." message
-  > when the new keys are absent), and 400 with a different message means the
+  > not configured. Set the MICROSOFT_SSO_CLIENT_ID and MICROSOFT_SSO_CLIENT_SECRET environment variables."
+  > message when the new keys are absent) or already enabled (idempotent no-op that returns the current
+  > preferences), and 400 with a different message means the
   > tenant is not an Organization or has no email domain. All are fixture gaps; the assertions stay
   > unconditional.
   >

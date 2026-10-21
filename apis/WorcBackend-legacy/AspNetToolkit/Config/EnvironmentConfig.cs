@@ -31,15 +31,28 @@ public class EnvironmentConfig
     public string AzureEntraIdClientId { get; set; } = string.Empty;
     public string AzureEntraIdClientSecret { get; set; } = string.Empty;
 
+    // Single sign-on
+    public bool MicrosoftSsoEnabled { get; set; }
+
     /// <summary>
     /// Microsoft Entra client id used by the single sign-on flow.
     /// </summary>
-    public string MicrosoftClientId { get; set; } = string.Empty;
+    public string MicrosoftSsoClientId { get; set; } = string.Empty;
 
     /// <summary>
     /// Microsoft Entra client secret used by the single sign-on flow.
     /// </summary>
-    public string MicrosoftClientSecret { get; set; } = string.Empty;
+    public string MicrosoftSsoClientSecret { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Google client id reserved for the single sign-on flow.
+    /// </summary>
+    public string GoogleSsoClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Google client secret reserved for the single sign-on flow.
+    /// </summary>
+    public string GoogleSsoClientSecret { get; set; } = string.Empty;
 
     // JWT
     public string JwtSecretKey { get; set; } = string.Empty;
