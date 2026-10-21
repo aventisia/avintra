@@ -4,6 +4,7 @@ public static class ResourceFlowAccessHelpers
 {
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
+    private const string KeyStoresReferenceKey = "keyStores";
 
     /// <summary>
     /// Reads the referenced tool names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
@@ -22,15 +23,31 @@ public static class ResourceFlowAccessHelpers
     }
 
     /// <summary>
+    /// Reads the referenced key store names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedKeyStoreNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, KeyStoresReferenceKey);
+    }
+
+    /// <summary>
+    /// Picks the resource a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static T? PickResolved<T>(IEnumerable<T> candidates, Guid? targetSpaceId, Func<T, Guid?> spaceSelector, Func<T, DateTimeOffset> createdOnSelector, Func<T, Guid> idSelector)
+    {
+        return candidates
+            .OrderBy(w => spaceSelector(w) == targetSpaceId ? 0 : (spaceSelector(w) == null ? 1 : 2))
+            .ThenBy(w => createdOnSelector(w))
+            .ThenBy(w => idSelector(w))
+            .FirstOrDefault();
+    }
+
+    /// <summary>
     /// Picks the tool a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
     public static Tool? PickResolvedTool(IEnumerable<Tool> candidates, Guid? targetSpaceId)
     {
-        return candidates
-            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-            .ThenBy(w => w.CreatedOn)
-            .ThenBy(w => w.Id)
-            .FirstOrDefault();
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>
@@ -38,11 +55,15 @@ public static class ResourceFlowAccessHelpers
     /// </summary>
     public static Queue? PickResolvedQueue(IEnumerable<Queue> candidates, Guid? targetSpaceId)
     {
-        return candidates
-            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-            .ThenBy(w => w.CreatedOn)
-            .ThenBy(w => w.Id)
-            .FirstOrDefault();
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
+    }
+
+    /// <summary>
+    /// Picks the key store a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static KeyStore? PickResolvedKeyStore(IEnumerable<KeyStore> candidates, Guid? targetSpaceId)
+    {
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>

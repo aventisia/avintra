@@ -908,7 +908,7 @@ public class AgentTableService : IAgentTableService
         await DeleteOrphanedKnowledgeBasesAsync(resourceReferences["knowledgeBases"], usedNames["knowledgeBases"]);
         await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"]);
         await DeleteOrphanedSkillsAsync(resourceReferences["skills"], usedNames["skills"]);
-        await DeleteOrphanedKeyStoresAsync(resourceReferences["keyStores"], usedNames["keyStores"]);
+        await DeleteOrphanedKeyStoresAsync(resourceReferences["keyStores"], usedNames["keyStores"], flowVersion.FlowId);
         await DeleteOrphanedTriggersAsync(linkedTriggerIds, flowVersion.Id);
     }
 
@@ -1178,7 +1178,7 @@ public class AgentTableService : IAgentTableService
     }
 
     // Deletes key stores referenced only by the archived agent when they are not shared.
-    private async Task DeleteOrphanedKeyStoresAsync(List<string> names, HashSet<string> usedNames)
+    private async Task DeleteOrphanedKeyStoresAsync(List<string> names, HashSet<string> usedNames, Guid flowId)
     {
         foreach (var name in DistinctNames(names))
         {
@@ -1191,7 +1191,15 @@ public class AgentTableService : IAgentTableService
             if (keyStore == null || keyStore.IsTenantWideAccess)
                 continue;
 
+            // Still assigned to another flow?
+            var flowIdsByKeyStore = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(ResourceTypeEnum.KeyStore, new[] { keyStore.Id });
+            var assignedToOtherFlow = (flowIdsByKeyStore.GetValueOrDefault(keyStore.Id) ?? new HashSet<Guid>())
+                .Any(id => id != flowId);
+            if (assignedToOtherFlow)
+                continue;
+
             await _resourceShareService.DeleteResourceSharesAsync(keyStore.Id, ResourceTypeEnum.KeyStore);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KeyStore, keyStore.Id);
             _unitOfWork.KeyStoreRepo.Delete(keyStore);
         }
     }

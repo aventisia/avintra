@@ -12,6 +12,7 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -73,6 +74,7 @@ export const KeystoresTable = () => {
           <DTPagination table={table} />
           {/* Resource Share Dialog component */}
           <ResourceShareDialog queryKey={queryKey} />
+          <ResourceFlowAccessDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           <KeystoresBulkActions table={table} />
         </div>

@@ -3,6 +3,7 @@ import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
@@ -15,6 +16,7 @@ interface KeystoreRowActionsProps {
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isResourceAccessRestricted: boolean;
 }
 
 export const KeystoreRowActions = ({
@@ -22,6 +24,7 @@ export const KeystoreRowActions = ({
   name,
   accessLevel,
   isTenantWideAccess,
+  isResourceAccessRestricted,
 }: KeystoreRowActionsProps) => {
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
@@ -36,6 +39,17 @@ export const KeystoreRowActions = ({
 
       {/* Edit keystore details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="keystore" />}
+
+      {/* Assign agents */}
+      {actions?.update && (
+        <ResourceFlowAccessRowAction
+          rowId={rowId}
+          resourceName={name}
+          resourceType={ResourceTypeEnum.KeyStore}
+          isRestricted={isResourceAccessRestricted}
+          disabled={isProd}
+        />
+      )}
 
       {/* Share Access */}
       {resourceActions.share && (
