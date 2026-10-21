@@ -874,7 +874,7 @@ public class AgentTableService : IAgentTableService
                 ["knowledgeBases"] = new(),
                 ["tools"] = new(),
                 ["skills"] = new(),
-                ["keyStores"] = new(),
+                ["configStores"] = new(),
             });
     }
 
@@ -891,7 +891,7 @@ public class AgentTableService : IAgentTableService
         }
     }
 
-    // Deletes the credentials, queues, knowledge bases, tools, skills, key stores and
+    // Deletes the credentials, queues, knowledge bases, tools, skills, config stores and
     // triggers the archived agent referenced when no other active agent uses them and they
     // have no other relationships. Platform, global, tenant-wide and PROD-guarded resources
     // are always kept.
@@ -908,7 +908,7 @@ public class AgentTableService : IAgentTableService
         await DeleteOrphanedKnowledgeBasesAsync(resourceReferences["knowledgeBases"], usedNames["knowledgeBases"]);
         await DeleteOrphanedToolsAsync(resourceReferences["tools"], usedNames["tools"]);
         await DeleteOrphanedSkillsAsync(resourceReferences["skills"], usedNames["skills"]);
-        await DeleteOrphanedKeyStoresAsync(resourceReferences["keyStores"], usedNames["keyStores"]);
+        await DeleteOrphanedConfigStoresAsync(resourceReferences["configStores"], usedNames["configStores"], flowVersion.FlowId);
         await DeleteOrphanedTriggersAsync(linkedTriggerIds, flowVersion.Id);
     }
 
@@ -923,7 +923,7 @@ public class AgentTableService : IAgentTableService
             ["knowledgeBases"] = new(),
             ["tools"] = new(),
             ["skills"] = new(),
-            ["keyStores"] = new(),
+            ["configStores"] = new(),
         };
 
         if (string.IsNullOrWhiteSpace(resourceReferences))
@@ -960,7 +960,7 @@ public class AgentTableService : IAgentTableService
             ["knowledgeBases"] = new(StringComparer.OrdinalIgnoreCase),
             ["tools"] = new(StringComparer.OrdinalIgnoreCase),
             ["skills"] = new(StringComparer.OrdinalIgnoreCase),
-            ["keyStores"] = new(StringComparer.OrdinalIgnoreCase),
+            ["configStores"] = new(StringComparer.OrdinalIgnoreCase),
         };
 
         // Only active agents keep a resource alive; archived agents no longer use it.
@@ -1180,22 +1180,30 @@ public class AgentTableService : IAgentTableService
         }
     }
 
-    // Deletes key stores referenced only by the archived agent when they are not shared.
-    private async Task DeleteOrphanedKeyStoresAsync(List<string> names, HashSet<string> usedNames)
+    // Deletes config stores referenced only by the archived agent when they are not shared.
+    private async Task DeleteOrphanedConfigStoresAsync(List<string> names, HashSet<string> usedNames, Guid flowId)
     {
         foreach (var name in DistinctNames(names))
         {
             if (usedNames.Contains(name))
                 continue;
 
-            var keyStore = await _unitOfWork.KeyStoreRepo
+            var configStore = await _unitOfWork.ConfigStoreRepo
                 .GetByConditionAsync(w => w.Name.ToLower() == name.ToLower() && w.EnvType == ConfigureEnvironmentType.Prod)
                 .FirstOrDefaultAsync();
-            if (keyStore == null || keyStore.IsTenantWideAccess)
+            if (configStore == null || configStore.IsTenantWideAccess)
                 continue;
 
-            await _resourceShareService.DeleteResourceSharesAsync(keyStore.Id, ResourceTypeEnum.KeyStore);
-            _unitOfWork.KeyStoreRepo.Delete(keyStore);
+            // Still assigned to another flow?
+            var flowIdsByConfigStore = await _resourceFlowAccessService.GetAssignedFlowIdsAsync(ResourceTypeEnum.ConfigStore, new[] { configStore.Id });
+            var assignedToOtherFlow = (flowIdsByConfigStore.GetValueOrDefault(configStore.Id) ?? new HashSet<Guid>())
+                .Any(id => id != flowId);
+            if (assignedToOtherFlow)
+                continue;
+
+            await _resourceShareService.DeleteResourceSharesAsync(configStore.Id, ResourceTypeEnum.ConfigStore);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStore.Id);
+            _unitOfWork.ConfigStoreRepo.Delete(configStore);
         }
     }
 

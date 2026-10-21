@@ -10,7 +10,7 @@ import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
-import { KeystorePage } from "./pages/02-configure/KeystorePage";
+import { ConfigStorePage } from "./pages/02-configure/ConfigStorePage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultCredentialPage } from "./pages/02-configure/VaultCredentialPage";
 import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
@@ -127,8 +127,8 @@ const routerConfig: RouteObject[] = [
             ],
           },
           {
-            path: "keystore",
-            element: <KeystorePage />,
+            path: "configstore",
+            element: <ConfigStorePage />,
           },
           {
             path: "vault",

@@ -882,6 +882,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsEncrypted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsResourceAccessRestricted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsTenantWideAccess")
                         .HasColumnType("boolean");
 

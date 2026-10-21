@@ -9,7 +9,7 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { fetchConfigKeyValuePairs } from "../apis/config-store-apis";
 
 /**
- * Fetches key store entries for the currently loaded flow's space.
+ * Fetches config store entries for the currently loaded flow's space.
  */
 export const useFetchConfigKeys = () => {
   const { spaceId, flowId } = useCurrentFlowStore(
@@ -20,7 +20,7 @@ export const useFetchConfigKeys = () => {
   );
 
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["KEYSTORE", spaceId],
+    queryKey: ["CONFIG_STORE", spaceId],
     queryFn: () => fetchConfigKeyValuePairs(),
     enabled: !!flowId,
   });

@@ -6,8 +6,6 @@
  * headings via the `HelpButton` component. `docsSiteUrl` provides the hybrid
  * "View full docs" link to the external docs site.
  */
-import type { HelpGuideContent } from "./types";
-
 // Guides are imported statically (as raw strings) so they are bundled with the
 // app and render instantly.
 import agentRiskRegistry from "./guides/agent-risk-registry.md?raw";
@@ -16,14 +14,16 @@ import apiKeys from "./guides/api-keys.md?raw";
 import assistAgents from "./guides/assist-agents.md?raw";
 import assistChats from "./guides/assist-chats.md?raw";
 import assistQueues from "./guides/assist-queues.md?raw";
+import configstore from "./guides/config-store.md?raw";
 import conversations from "./guides/conversations.md?raw";
 import creditPlans from "./guides/credit-plans.md?raw";
+import emailTriggers from "./guides/email-triggers.md?raw";
 import getStarted from "./guides/get-started.md?raw";
 import jobs from "./guides/jobs.md?raw";
-import keystore from "./guides/keystore.md?raw";
 import knowledgeBases from "./guides/knowledge-bases.md?raw";
 import library from "./guides/library.md?raw";
 import machines from "./guides/machines.md?raw";
+import messageTriggers from "./guides/message-triggers.md?raw";
 import models from "./guides/models.md?raw";
 import onPremTenants from "./guides/on-prem-tenants.md?raw";
 import publishedAgents from "./guides/published-agents.md?raw";
@@ -32,18 +32,17 @@ import skills from "./guides/skills.md?raw";
 import spaces from "./guides/spaces.md?raw";
 import subscriptionPlans from "./guides/subscription-plans.md?raw";
 import support from "./guides/support.md?raw";
-import tenant from "./guides/tenant.md?raw";
 import tenantNotifications from "./guides/tenant-notifications.md?raw";
+import tenant from "./guides/tenant.md?raw";
 import tenants from "./guides/tenants.md?raw";
 import timeTriggers from "./guides/time-triggers.md?raw";
-import emailTriggers from "./guides/email-triggers.md?raw";
-import messageTriggers from "./guides/message-triggers.md?raw";
-import webhookTriggers from "./guides/webhook-triggers.md?raw";
 import tools from "./guides/tools.md?raw";
 import triggers from "./guides/triggers.md?raw";
 import usage from "./guides/usage.md?raw";
 import users from "./guides/users.md?raw";
 import vault from "./guides/vault.md?raw";
+import webhookTriggers from "./guides/webhook-triggers.md?raw";
+import type { HelpGuideContent } from "./types";
 
 /** Full guide definitions (metadata merged with Markdown body). */
 const guides: HelpGuideContent[] = [
@@ -51,7 +50,8 @@ const guides: HelpGuideContent[] = [
   {
     id: "get-started",
     title: "Get Started",
-    summary: "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",
+    summary:
+      "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
     related: ["users", "spaces", "vault", "models", "agents"],
@@ -124,12 +124,12 @@ const guides: HelpGuideContent[] = [
     content: webhookTriggers,
   },
   {
-    id: "keystore",
+    id: "configstore",
     title: "Key Store",
     summary: "Manage API keys and configuration values referenced by agents.",
     section: "configure",
-    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/key-store",
-    content: keystore,
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/config-store",
+    content: configstore,
   },
   {
     id: "vault",
@@ -293,7 +293,8 @@ const guides: HelpGuideContent[] = [
   {
     id: "tenant-notifications",
     title: "Notifications",
-    summary: "Broadcast manual notifications and configure automatic notifications for your tenant.",
+    summary:
+      "Broadcast manual notifications and configure automatic notifications for your tenant.",
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
     content: tenantNotifications,
