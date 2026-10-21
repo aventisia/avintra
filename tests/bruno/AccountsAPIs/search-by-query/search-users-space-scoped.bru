@@ -1,0 +1,21 @@
+meta {
+  name: Search users (space-scoped)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/search/user?query={{SEARCH_KEY}}&includeCurrentUser=false&onlyCurrentSpace=true
+  body: none
+  auth: none
+}
+
+params:query {
+  query: {{SEARCH_KEY}}
+  includeCurrentUser: false
+  onlyCurrentSpace: true
+}
+
+headers {
+  X-Space-Id: {{SPACE_ID}}
+}

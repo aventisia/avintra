@@ -1,31 +1,14 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
 
 import {
   CreateResourceShareDto,
   ResourceShareDto,
   TenantAccessResourceShareDto,
 } from "../dtos/resource-share.dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user.dto";
 
 const resourceShareApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-share`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
-
-/**
- * Retrieves all Workspace users.
- * Scoped to the currently selected space so only users with access to that
- * space can be assigned.
- */
-const getSearchUser = (value?: string, includeCurrentUser: boolean = false) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(
-      `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
-      { headers: getSpaceHeaders() },
-    )
-    .then((res) => res.data);
-};
 
 /**
  * Retrieves all ResourceShare list.
@@ -91,7 +74,6 @@ const deleteResourceShare = (id: string) => {
 };
 
 export {
-  getSearchUser,
   getAllResourceShare,
   getResourceShareById,
   insertResourceShare,

@@ -4,19 +4,9 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AgentModelDTO } from "../dtos/agents-models-dto";
 import { ExportChartDTO } from "../dtos/export-chart-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 const accountAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
-
-/**
- * Retrieves all flows users of a flow.
- */
-const getSearchUser = (value?: string) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(`${workspaceUserApiUrl}/users/search/${value}`)
-    .then((res) => res.data);
-};
 
 const getSearchAgent = (value?: string) => {
   return axiosInstance
@@ -32,4 +22,4 @@ const exportCreditUsageCSV = (postObj: ExportChartDTO) => {
     .then((res) => res.data); // just return the blob
 };
 
-export { getSearchUser, getSearchAgent, exportCreditUsageCSV };
+export { getSearchAgent, exportCreditUsageCSV };

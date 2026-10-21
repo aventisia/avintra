@@ -4,22 +4,8 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { ChatAgentUserDto } from "../dtos/chat-agent-users-dto";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
 const agentUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flowversion-user`;
-const workspaceUserApiUrl: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
-
-/**
- * Retrieves all Workspace users.
- */
-const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
-  return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(
-      `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
-      { headers: getSpaceHeaders() },
-    )
-    .then((res) => res.data);
-};
 
 /**
  * Retrieves all ChatAgent users.
@@ -62,10 +48,4 @@ const deleteChatAgentUser = (id: string) => {
     .then((res) => res.data);
 };
 
-export {
-  getSearchUser,
-  getChatAgentUsers,
-  insertChatAgentUser,
-  updateChatAgentUser,
-  deleteChatAgentUser,
-};
+export { getChatAgentUsers, insertChatAgentUser, updateChatAgentUser, deleteChatAgentUser };

@@ -50,12 +50,4 @@ public interface ITenantAccountService
     /// <param name="settingsDto">The notification settings to apply.</param>
     /// <returns>A task representing the asynchronous operation, returning the updated notification settings.</returns>
     Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(NotificationSettingsDto settingsDto);
-
-    /// <summary>
-    /// Retrieves a list of account users whose properties match the provided search key.
-    /// </summary>
-    /// <param name="searchKey">The keyword to search account users by.</param>
-    /// <param name="includeCurrentUser">A flag indicating whether to include the current user in the results.</param>
-    /// <returns>A task that returns a service response with an enumerable collection of matching account user DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<AppUserBaseDto>>> SearchAccountUserAsync(string searchKey, bool includeCurrentUser);
 }
