@@ -39,6 +39,21 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         _memoryCache = memoryCache;
     }
 
+    private string? GetSsoUnavailableMessage()
+    {
+        if (_environmentConfig.IsCommunityDeployment)
+        {
+            return "Single sign-on is not available in the Community edition.";
+        }
+
+        if (!_environmentConfig.MicrosoftSsoEnabled)
+        {
+            return "Single sign-on is not enabled for this deployment.";
+        }
+
+        return null;
+    }
+
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
     public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
     {
@@ -60,10 +75,18 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             switch (type)
             {
                 case ExternalAuthProviderEnum.Azure:
-                    var resolvedClientId = _environmentConfig.MicrosoftClientId;
+                    var ssoUnavailableMessage = GetSsoUnavailableMessage();
+                    if (ssoUnavailableMessage != null)
+                    {
+                        serviceResponse.Message = ssoUnavailableMessage;
+                        _logger.LogWarning("Microsoft login URL generation blocked because single sign-on is unavailable.");
+                        return serviceResponse;
+                    }
+
+                    var resolvedClientId = _environmentConfig.MicrosoftSsoClientId;
                     if (string.IsNullOrWhiteSpace(resolvedClientId))
                     {
-                        serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
+                        serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_SSO_CLIENT_ID environment variable.";
                         _logger.LogWarning("Microsoft login URL generation blocked because no client id is configured.");
                         return serviceResponse;
                     }
@@ -111,10 +134,18 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         try
         {
-            var resolvedClientId = _environmentConfig.MicrosoftClientId;
+            var ssoUnavailableMessage = GetSsoUnavailableMessage();
+            if (ssoUnavailableMessage != null)
+            {
+                serviceResponse.Message = ssoUnavailableMessage;
+                _logger.LogWarning("Admin consent URL generation blocked because single sign-on is unavailable.");
+                return serviceResponse;
+            }
+
+            var resolvedClientId = _environmentConfig.MicrosoftSsoClientId;
             if (string.IsNullOrWhiteSpace(resolvedClientId))
             {
-                serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_CLIENT_ID environment variable.";
+                serviceResponse.Message = "Microsoft SSO client id is not configured. Set the MICROSOFT_SSO_CLIENT_ID environment variable.";
                 _logger.LogWarning("Admin consent URL generation blocked because no client id is configured.");
                 return serviceResponse;
             }
@@ -186,14 +217,22 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             Message = "Failed to validate token. Please try again"
         };
 
+        var ssoUnavailableMessage = GetSsoUnavailableMessage();
+        if (ssoUnavailableMessage != null)
+        {
+            serviceResponse.StatusCode = 400;
+            serviceResponse.Message = ssoUnavailableMessage;
+            return serviceResponse;
+        }
+
         var ssoTenant = await ResolveSsoTenantAsync(authState);
         var ssoConfig = SsoConfigHelpers.Parse(ssoTenant?.SSOConfigJson);
-        var clientId = _environmentConfig.MicrosoftClientId;
-        var clientSecret = _environmentConfig.MicrosoftClientSecret;
+        var clientId = _environmentConfig.MicrosoftSsoClientId;
+        var clientSecret = _environmentConfig.MicrosoftSsoClientSecret;
 
         if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
         {
-            serviceResponse.Message = "Microsoft SSO credentials are not configured. Set the MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET environment variables.";
+            serviceResponse.Message = "Microsoft SSO credentials are not configured. Set the MICROSOFT_SSO_CLIENT_ID and MICROSOFT_SSO_CLIENT_SECRET environment variables.";
             serviceResponse.StatusCode = 400;
             return serviceResponse;
         }
@@ -201,10 +240,14 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         // Build redirect URI used in both authorize and token calls (must match exactly)
         string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
 
-        // Token authority: the tenant-supplied authority when present, otherwise the global application tenant
-        var tokenAuthority = string.IsNullOrWhiteSpace(ssoConfig?.ExternalTenantId)
-            ? _environmentConfig.AzureTenantId
-            : ssoConfig.ExternalTenantId;
+        if (string.IsNullOrWhiteSpace(ssoConfig?.ExternalTenantId))
+        {
+            serviceResponse.Message = "Single sign-on is not configured for this tenant.";
+            serviceResponse.StatusCode = 400;
+            return serviceResponse;
+        }
+
+        var tokenAuthority = ssoConfig.ExternalTenantId;
         string tokenEndpoint = $"https://login.microsoftonline.com/{tokenAuthority}/oauth2/v2.0/token";
 
         _logger.LogInformation("Prepared Azure token request. TenantId={TenantId}", authState.TenantId);

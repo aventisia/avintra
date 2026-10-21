@@ -9,3 +9,10 @@ get {
   body: none
   auth: none
 }
+
+tests {
+  test("reports SSO availability", function() {
+    expect(res.getBody().data).to.have.property("isSSOAvailable");
+    expect(res.getBody().data.isSSOAvailable).to.be.a("boolean");
+  });
+}

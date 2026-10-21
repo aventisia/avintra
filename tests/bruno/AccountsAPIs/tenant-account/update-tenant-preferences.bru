@@ -23,3 +23,8 @@ body:json {
     "isTwoFAEnabled": false
   }
 }
+
+docs {
+  > `isSSOEnabled` in this payload is ignored: single sign-on state is owned by
+  > `PUT tenant-account/sso/enabled`. This request still updates the remaining preferences.
+}

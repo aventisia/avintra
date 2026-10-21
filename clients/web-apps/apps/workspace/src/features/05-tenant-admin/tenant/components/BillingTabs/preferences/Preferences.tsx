@@ -1,11 +1,12 @@
-import SsoConnectionCard from "./SsoConnectionCard";
 import PreferencesForm from "./PreferencesForm";
+import SsoConnectionCard from "./SsoConnectionCard";
 
 const Preferences = () => {
-  // Return the single sign-on connection card above the preference switches
   return (
     <>
-      <SsoConnectionCard />
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+        <SsoConnectionCard />
+      </div>
       <PreferencesForm />
     </>
   );
