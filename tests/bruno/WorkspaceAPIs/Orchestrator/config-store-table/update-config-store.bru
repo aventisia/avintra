@@ -1,0 +1,22 @@
+meta {
+  name: Update config store
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store
+  body: json
+  auth: none
+}
+
+body:json {
+  "id": "{{CONFIG_ITEM_ID}}",
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}",
+  "isDisabled": false,
+  "type": "TEXT",
+  "value": "{{$randomLoremParagraph}}",
+  "isEncrypted": false,
+  "accessLevel": "PUBLIC"
+}

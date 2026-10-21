@@ -10,7 +10,7 @@ export * from "./deployment-types-enum";
 export * from "./environment-types-enum";
 export * from "./execution-status-type-enum";
 export * from "./flow-types-enum";
-export * from "./key-store-types-enum";
+export * from "./config-store-types-enum";
 export * from "./license-credit-status-enum";
 export * from "./machine-status-enum";
 export * from "./machine-task-types-enum";

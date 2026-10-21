@@ -4,7 +4,7 @@ public static class ResourceFlowAccessHelpers
 {
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
-    private const string KeyStoresReferenceKey = "keyStores";
+    private const string ConfigStoresReferenceKey = "configStores";
 
     /// <summary>
     /// Reads the referenced tool names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
@@ -23,11 +23,11 @@ public static class ResourceFlowAccessHelpers
     }
 
     /// <summary>
-    /// Reads the referenced key store names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// Reads the referenced config store names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
     /// </summary>
-    public static List<string>? TryReadReferencedKeyStoreNames(string? resourceReferences)
+    public static List<string>? TryReadReferencedConfigStoreNames(string? resourceReferences)
     {
-        return TryReadReferencedNames(resourceReferences, KeyStoresReferenceKey);
+        return TryReadReferencedNames(resourceReferences, ConfigStoresReferenceKey);
     }
 
     /// <summary>
@@ -59,9 +59,9 @@ public static class ResourceFlowAccessHelpers
     }
 
     /// <summary>
-    /// Picks the key store a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// Picks the config store a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
-    public static KeyStore? PickResolvedKeyStore(IEnumerable<KeyStore> candidates, Guid? targetSpaceId)
+    public static ConfigStore? PickResolvedConfigStore(IEnumerable<ConfigStore> candidates, Guid? targetSpaceId)
     {
         return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
