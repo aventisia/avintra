@@ -54,6 +54,13 @@ controlled through `ResourceShare` rows keyed by `ResourceTypeEnum.VaultCredenti
 `IResourceShareService.GetResourceAccessAsync`. Delete operations also remove the
 credential's `ResourceShare` rows.
 
+Agent access uses the shared flow-access list (`ws_ResourceFlowAccess`, keyed by
+`ResourceTypeEnum.VaultCredential`). Saving a non-empty agent list restricts the credential
+(`IsResourceAccessRestricted`) to exactly those agents; saving an empty list is the only way
+to open it again. Publishing an agent that references a restricted credential it is not
+assigned to fails at publish time. Production clones copy the flag and gain missing
+flow-access rows add-only. Delete operations also remove the credential's flow-access rows.
+
 ## Environment guardrails
 
 PROD rules are enforced in the service via shared guards:
