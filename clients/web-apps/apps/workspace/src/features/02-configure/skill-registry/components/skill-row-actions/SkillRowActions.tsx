@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
 import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
@@ -18,6 +19,7 @@ interface SkillRowActionsProps {
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isResourceAccessRestricted: boolean;
   isPlatformSkill?: boolean;
 }
 
@@ -26,6 +28,7 @@ export const SkillRowActions = ({
   name,
   accessLevel,
   isTenantWideAccess,
+  isResourceAccessRestricted,
   isPlatformSkill: isPlatformSkillRow = false,
 }: SkillRowActionsProps) => {
   const navigate = useNavigate();
@@ -57,6 +60,15 @@ export const SkillRowActions = ({
       {/* Edit skill details (not available for platform default skills) */}
       {!readOnly && actions?.update && (
         <DTRowAction rowId={rowId} crudAction="update" entity="skill" />
+      )}
+      {!readOnly && actions?.update && (
+        <ResourceFlowAccessRowAction
+          rowId={rowId}
+          resourceName={name}
+          resourceType={ResourceTypeEnum.Skill}
+          isRestricted={isResourceAccessRestricted}
+          disabled={isProd}
+        />
       )}
       {/* Share Access (not available for platform default skills) */}
       {!readOnly && resourceActions.share && (
