@@ -90,6 +90,7 @@ export const vaultCredentialTableColumns = (): ColumnDef<VaultCredentialDto>[] =
         type={row.type}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.isResourceAccessRestricted || false}
       />
     ),
   }),

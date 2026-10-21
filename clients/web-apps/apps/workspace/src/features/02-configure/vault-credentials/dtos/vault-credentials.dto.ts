@@ -41,6 +41,12 @@ export interface VaultCredentialDto {
   isTenantWideAccess?: boolean;
 
   /**
+   * Gets or sets a value indicating whether the vault credential is
+   * restricted to its assigned agents.
+   */
+  isResourceAccessRestricted?: boolean;
+
+  /**
    * Gets or sets the permission level granted to the user.
    */
   accessLevel?: ResourceAccessTypeEnum;

@@ -34,6 +34,10 @@ revoke access and toggle tenant-wide access. Rows that are shared with the user 
 remove-from-shared-list and reconnect actions. Actions post
 `ResourceTypeEnum.VaultCredential` to the resource-share flow.
 
+Rows also expose `Assign Agents`, which opens the shared flow-assignment dialog. A non-empty
+list restricts the credential to those agents and an empty list opens it again; the action is
+disabled on PROD rows, like Share.
+
 ## Corsair OAuth connect flow
 
 OAuth-capable credential types (M365, Google Workspace, and catalog integrations with an
