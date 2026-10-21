@@ -7,6 +7,7 @@ public class KeyStoreService : IKeyStoreService
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
 
@@ -16,6 +17,7 @@ public class KeyStoreService : IKeyStoreService
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -26,6 +28,7 @@ public class KeyStoreService : IKeyStoreService
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -386,6 +389,8 @@ public class KeyStoreService : IKeyStoreService
             newKeyStore.CreatedByUserId = _userId;
             newKeyStore.LastModifiedByUserId = _userId;
             newKeyStore.EnvType = _currentTenantService.CurrentEnvType;
+            // IMPORTANT NOTE: restriction is assign-endpoint-only; a create carrying the flag would start restricted with no rows (usable by no flow).
+            newKeyStore.IsResourceAccessRestricted = false;
 
             // Insert the new key store into the repository
             await _unitOfWork.KeyStoreRepo.InsertAsync(newKeyStore);
@@ -511,6 +516,8 @@ public class KeyStoreService : IKeyStoreService
                 keyStore.IsTenantWideAccess = keyStoreDto.IsTenantWideAccess;
             }
 
+            // IMPORTANT NOTE: IsResourceAccessRestricted is assign-endpoint-only and never copied from the DTO, so edit saves cannot lift or impose a restriction.
+
             // Update the key store type if it has changed
             if (keyStore.Type != keyStoreDto.Type)
             {
@@ -614,6 +621,7 @@ public class KeyStoreService : IKeyStoreService
 
             // Remove resource shares
             await _resourceShareService.DeleteResourceSharesAsync(keyStoreId, ResourceTypeEnum.KeyStore);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KeyStore, keyStoreId);
 
             // Delete the key store from the repository
             _unitOfWork.KeyStoreRepo.Delete(keyStore);
@@ -708,6 +716,7 @@ public class KeyStoreService : IKeyStoreService
 
             // Remove resource shares
             await _resourceShareService.DeleteResourceSharesAsync(keyStoreIds, ResourceTypeEnum.KeyStore);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KeyStore, keyStoreIds);
 
             // Delete the key stores from the repository
             _unitOfWork.KeyStoreRepo.Delete(keyStores);

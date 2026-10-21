@@ -19,9 +19,10 @@ only; it does not carry a space.
 
 ## Restricted flag
 
-- Restricted or open is stored on the resource (`Tool.IsResourceAccessRestricted` and
-  `Queue.IsResourceAccessRestricted`), not inferred from the rows. A restricted resource is
-  usable only by the flows listed; a restricted resource with no rows is usable by no flow.
+- Restricted or open is stored on the resource (`Tool.IsResourceAccessRestricted`,
+  `Queue.IsResourceAccessRestricted` and `KeyStore.IsResourceAccessRestricted`), not inferred
+  from the rows. A restricted resource is usable only by the flows listed; a restricted
+  resource with no rows is usable by no flow.
 - Saving a non-empty list restricts the resource. Saving an empty list is the only way to
   open it again, so removing rows by other paths (archive, flow delete) never lifts a
   restriction.
@@ -57,18 +58,21 @@ only; it does not carry a space.
   is archived are excluded. Results carry the same version count and modification time as
   the assigned list.
 - `FlowBuilderService.PublishFlowVersionAsync` enforces the check at publish time: it blocks
-  with a 403 when the publishing flow is not listed on a restricted referenced tool or queue.
-  Definition resolution is the enforcement point; execution-time pickup is not covered yet.
+  with a 403 when the publishing flow is not listed on a restricted referenced tool, queue,
+  or keystore. Keystore references are collected from `{{__config__<name>}}` placeholders in
+  string node input values. Definition resolution is the enforcement point; execution-time
+  pickup is not covered yet.
 - `GET queue/by-agent/{flowVersionId}` stays for the studio. It resolves the version to its
   flow space-free and answers from the queue rows, then lists queues in the current space,
   so it returns the same space-scoped queues the assignment list holds. An unknown version is a 404.
-- PROD parity lives in `FlowBuilderService.EnsureProdToolsAsync` and
-  `EnsureProdQueuesAsync`, which copy a Dev resource's flow set onto its Production clone.
+- PROD parity lives in `FlowBuilderService.EnsureProdToolsAsync`,
+  `EnsureProdQueuesAsync`, and `EnsureProdKeyStoresAsync`, which copy a Dev resource's flow
+  set onto its Production clone.
   The sync is add-only: it adds missing rows and sets the restricted flag when Dev has it,
   but never removes rows or lifts a restriction set directly on Prod by an OM. PROD edits
   stay blocked by the OM-only guard.
-- Flow rows are removed when the resource is deleted (`ToolService`, `QueueTableService`),
-  when archive deletes an orphaned Prod resource (`AgentTableService`), when archiving every
+- Flow rows are removed when the resource is deleted (`ToolService`, `QueueTableService`,
+  `KeyStoreService`), when archive deletes an orphaned Prod resource (`AgentTableService`), when archiving every
   non-archived version of a flow (`AgentTableService` and `AssistChatService`; a failure
   fails the archive), when a tenant is deleted (`ManageTenantService`), and by database
   cascade when the flow is deleted. Archiving a version while a sibling stays active keeps
@@ -87,7 +91,7 @@ only; it does not carry a space.
 
 ## Current rollout
 
-- Only the Tool and Queue resource types are wired. Other configure types keep their
+- Tool, Queue and KeyStore resource types are wired. Other configure types keep their
   existing behavior and will adopt the same list later.
 
 ## Known gaps
@@ -96,3 +100,5 @@ only; it does not carry a space.
   not check flow access yet; enforcement happens only at publish time.
 - The restriction on a Prod clone is inert: nothing reads it, so it neither blocks nor allows
   a flow until runtime enforcement lands.
+- Keystore references held only inside subflows are not collected at publish time; the
+  collector scans the root graph only, like the tool and queue collectors.

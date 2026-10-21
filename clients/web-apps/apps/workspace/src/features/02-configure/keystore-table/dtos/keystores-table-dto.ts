@@ -56,6 +56,11 @@ export interface KeystoresTableDto {
   isTenantWideAccess: boolean;
 
   /**
+   * Indicates whether agent access to the keystore is restricted to the assigned agents.
+   */
+  isResourceAccessRestricted: boolean;
+
+  /**
    * Indicates whether the record is disabled.
    *
    */

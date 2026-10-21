@@ -91,6 +91,7 @@ export const keystoresTableColumns = (): ColumnDef<KeystoresTableDto>[] => [
         accessLevel={row.accessLevel}
         name={row.name}
         isTenantWideAccess={row.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.isResourceAccessRestricted}
       />
     ),
   }),
