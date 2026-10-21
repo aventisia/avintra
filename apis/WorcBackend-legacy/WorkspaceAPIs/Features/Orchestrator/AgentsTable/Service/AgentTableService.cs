@@ -1006,6 +1006,7 @@ public class AgentTableService : IAgentTableService
             // Owned key-value pairs go with the credential.
             await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.VaultCredentialId == credential.Id);
             await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.VaultCredential);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, credential.Id);
             _unitOfWork.VaultCredentialRepo.Delete(credential);
         }
     }

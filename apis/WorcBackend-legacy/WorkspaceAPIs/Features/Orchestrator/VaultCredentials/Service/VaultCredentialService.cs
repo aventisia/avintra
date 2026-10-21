@@ -12,6 +12,7 @@ public class VaultCredentialService : IVaultCredentialService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     public VaultCredentialService(
@@ -20,6 +21,7 @@ public class VaultCredentialService : IVaultCredentialService
         httpContextAccessor,
         IStringEncryptionService encryptionService,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
         ICorsairSidecarService corsairSidecarService,
@@ -36,6 +38,7 @@ public class VaultCredentialService : IVaultCredentialService
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -565,6 +568,7 @@ public class VaultCredentialService : IVaultCredentialService
                 existingVaultCredential.IsTenantWideAccess = vaultCredentialDto.IsTenantWideAccess;
             }
 
+            // IMPORTANT NOTE: IsResourceAccessRestricted is owned by the flow-access assign flow; the update payload omits the flag, so writing it here would silently lift restrictions.
             if (typeChanged)
             {
                 existingVaultCredential.Type = vaultCredentialDto.Type;
@@ -731,6 +735,7 @@ public class VaultCredentialService : IVaultCredentialService
             }
 
             await _resourceShareService.DeleteResourceSharesAsync(vaultCredential.Id, ResourceTypeEnum.VaultCredential);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, vaultCredential.Id);
 
             _unitOfWork.VaultCredentialRepo.Delete(vaultCredential);
 
@@ -818,6 +823,7 @@ public class VaultCredentialService : IVaultCredentialService
             }
 
             await _resourceShareService.DeleteResourceSharesAsync(vaultCredentialIds, ResourceTypeEnum.VaultCredential);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, vaultCredentialIds);
 
             _unitOfWork.VaultCredentialRepo.Delete(vaultCredentials);
 

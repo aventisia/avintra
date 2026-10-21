@@ -5,6 +5,7 @@ public static class ResourceFlowAccessHelpers
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
     private const string KnowledgeBasesReferenceKey = "knowledgeBases";
+    private const string CredentialsReferenceKey = "credentials";
 
     /// <summary>
     /// Reads the referenced tool names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
@@ -61,6 +62,22 @@ public static class ResourceFlowAccessHelpers
             .ThenBy(w => createdOf(w))
             .ThenBy(w => idOf(w))
             .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Reads the referenced credential names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedCredentialNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, CredentialsReferenceKey);
+    }
+
+    /// <summary>
+    /// Picks the credential a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static VaultCredential? PickResolvedCredential(IEnumerable<VaultCredential> candidates, Guid? targetSpaceId)
+    {
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>
