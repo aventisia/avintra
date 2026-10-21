@@ -13,6 +13,7 @@ from app.features.custom_tools.vault_credential_client import (
     apply_credential_auth,
     fetch_decrypted_vault_credential,
 )
+
 from app.features.custom_tools.schemas import ToolOperation
 from app.features.custom_tools.url_guard import UnsafeUrlError, resolve_public_addresses
 

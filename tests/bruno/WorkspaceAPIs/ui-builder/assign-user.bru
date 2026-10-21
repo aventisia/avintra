@@ -1,0 +1,31 @@
+meta {
+  name: Assign user to UI builder project
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/uibuilder-project-user
+  body: json
+  auth: none
+}
+
+body:json {
+  "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
+  "userId": "{{USER_ID}}"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_PROJECT_USER_ID",
+          res.getBody().data.id
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

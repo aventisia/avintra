@@ -19,6 +19,10 @@ public class UnitOfWork : IUnitOfWork
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
+    public IUiBuilderProjectRepo UiBuilderProjectRepo => new UiBuilderProjectRepo(_workspaceDbContext);
+    public IUiBuilderVersionRepo UiBuilderVersionRepo => new UiBuilderVersionRepo(_workspaceDbContext);
+    public IUiBuilderAssetRepo UiBuilderAssetRepo => new UiBuilderAssetRepo(_workspaceDbContext);
+    public IUiBuilderProjectUserRepo UiBuilderProjectUserRepo => new UiBuilderProjectUserRepo(_workspaceDbContext);
     public IFlowVersionUserRepo FlowVersionUserRepo => new FlowVersionUserRepo(_workspaceDbContext);
     public IFlowVersionHistoryRepo FlowVersionHistoryRepo => new FlowVersionHistoryRepo(_workspaceDbContext);
     public IAgentRiskRegistryRepo AgentRiskRegistryRepo => new AgentRiskRegistryRepo(_workspaceDbContext);

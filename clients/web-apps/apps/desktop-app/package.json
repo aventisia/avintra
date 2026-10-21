@@ -4,7 +4,7 @@
   "version": "0.2.35",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 2999",
+    "dev": "vite",
     "typecheck": "tsc -b",
     "pregit": "tsc -b && prettier --write .",
     "build": "tsc -b && vite build",

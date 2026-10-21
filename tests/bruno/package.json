@@ -1,8 +1,25 @@
 {
-  "name": "accounts-api-collection",
+  "name": "avplatform-bruno-tests",
   "version": "1.0.0",
-  "main": "index.js",
-  "dependencies": {
+  "private": true,
+  "description": "Bruno API test collections for the Aventisia Platform. Run with the Bruno CLI (@usebruno/cli).",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "bru run --env localhost",
+    "test:local": "bru run --env local",
+    "test:localhost": "bru run --env localhost",
+    "test:uat": "bru run --env uat",
+    "test:tests-only": "bru run --env localhost --tests-only",
+    "test:accounts": "bru run -r --env localhost AccountsAPIs",
+    "test:workspace": "bru run -r --env localhost WorkspaceAPIs",
+    "test:llmpipeline": "bru run -r --env localhost llmpipelineapis",
+    "test:camel": "bru run -r --env localhost CamelAPIs",
+    "test:corsair": "bru run -r --env localhost Corsair",
+    "test:globaladmin": "bru run -r --env localhost GlobalAdminAPIs",
+    "test:report": "bru run --env localhost --reporter-html results/report.html --reporter-json results/report.json --reporter-junit results/report.xml",
+    "test:ci": "bru run --env ${BRU_ENV:-uat} --reporter-junit results/junit.xml --reporter-html results/report.html"
   },
   "devDependencies": {
     "@usebruno/cli": "^4.0.0"

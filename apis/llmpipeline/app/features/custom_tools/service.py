@@ -3,10 +3,10 @@ import json
 import time
 from urllib.parse import urljoin
 
+from app.core.vault_credential_manager import VaultCredentialManager
 import httpx
 
 from app.core.logger import logger
-from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.custom_tools.vault_credential_client import apply_credential_auth
 from app.features.custom_tools.custom_tool_executor import (
     ResponseTooLargeError,

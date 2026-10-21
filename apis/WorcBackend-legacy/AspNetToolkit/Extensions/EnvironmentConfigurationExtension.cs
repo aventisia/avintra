@@ -20,6 +20,18 @@ public static class EnvironmentConfigurationExtension
         RegexOptions.Compiled);
 
     /// <summary>
+    /// Loads .env.local into process environment before Kestrel binds ports.
+    /// </summary>
+    public static void LoadDotEnvForKestrel()
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+        if (environment != "Localhost")
+            return;
+        LoadDotEnvLocal();
+    }
+
+    /// <summary>
     /// Loads sensitive configuration from environment variables and merges with existing configuration
     /// </summary>
     public static IConfigurationRoot LoadEnvironmentConfiguration(
@@ -27,14 +39,9 @@ public static class EnvironmentConfigurationExtension
         bool isLocalhostEnvironment
     )
     {
-        // Load .env.local file if it exists (for local development)
         if (isLocalhostEnvironment)
         {
-            var envLocalPath = Path.Combine(Directory.GetCurrentDirectory(), ".env.local");
-            if (File.Exists(envLocalPath))
-            {
-                DotNetEnv.Env.Load(envLocalPath);
-            }
+            LoadDotEnvLocal();
         }
 
         // Basic environment variables
@@ -472,6 +479,15 @@ public static class EnvironmentConfigurationExtension
             Environment.GetEnvironmentVariable(key),
             message: $"{key} environment variable cannot be null or empty"
         );
+    }
+
+    private static void LoadDotEnvLocal()
+    {
+        var envLocalPath = Path.Combine(Directory.GetCurrentDirectory(), ".env.local");
+        if (File.Exists(envLocalPath))
+        {
+            DotNetEnv.Env.Load(envLocalPath);
+        }
     }
 
     /// <summary>

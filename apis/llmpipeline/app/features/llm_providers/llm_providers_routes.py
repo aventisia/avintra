@@ -48,7 +48,15 @@ async def generate_llm_response_route(llm_request: LLMRequest, _user: User = Dep
         if llm_request.stream:
             job_id, event_stream = await start_llm_streaming_job(llm_provider, llm_request, _user)
             # Use StreamingResponse for streaming
-            return StreamingResponse(event_stream(), media_type="text/event-stream", headers={"X-Job-Id": job_id})
+            return StreamingResponse(
+                event_stream(),
+                media_type="text/event-stream",
+                headers={
+                    "X-Job-Id": job_id,
+                    "X-Accel-Buffering": "no",
+                    "Cache-Control": "no-cache",
+                },
+            )
         else:
             # Use await for non-streaming
             return await llm_provider.generate_llm_response(llm_request, _user)

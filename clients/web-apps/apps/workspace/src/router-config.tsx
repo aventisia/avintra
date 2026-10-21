@@ -7,9 +7,12 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { InterfaceDetailPane } from "./features/04-assist/my-interfaces/components/InterfaceDetailPane";
+import { InterfaceNoSelection } from "./features/04-assist/my-interfaces/components/InterfaceNoSelection";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
+import { UiBuilderPage } from "./pages/01-build/UiBuilderPage";
 import { KeystorePage } from "./pages/02-configure/KeystorePage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultCredentialPage } from "./pages/02-configure/VaultCredentialPage";
@@ -35,6 +38,7 @@ import { ConversationDetailsPage } from "./pages/03-orchestrator/conversations/C
 import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
+import { UserInterfacesPage } from "./pages/04-assist/UserInterfacesPage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
@@ -75,6 +79,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
+      },
+      {
+        path: "/ui-builder",
+        element: <UiBuilderPage />,
       },
       {
         path: "/account",
@@ -245,6 +253,20 @@ const routerConfig: RouteObject[] = [
               {
                 path: ":flowVersionId/:conversationId",
                 element: <Chat />,
+              },
+            ],
+          },
+          {
+            path: "user-interfaces",
+            element: <UserInterfacesPage />,
+            children: [
+              {
+                index: true,
+                element: <InterfaceNoSelection />,
+              },
+              {
+                path: ":id",
+                element: <InterfaceDetailPane />,
               },
             ],
           },

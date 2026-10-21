@@ -1,5 +1,6 @@
 using Serilog;
 
+EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
 
 /*---------appsettings and sharedsettings---------*/

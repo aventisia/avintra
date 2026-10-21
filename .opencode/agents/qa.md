@@ -1,7 +1,7 @@
 ---
 description: Independently reproduce failures, verify every acceptance criterion, and audit implementation against its approved plan.
 mode: subagent
-model: opencode-go/qwen3.7-plus
+model: opencode-go/muse-spark-1.3-contributor
 permissions:
   - { action: "*", resource: "*", effect: allow }
   - { action: external_directory, resource: "*", effect: ask }
@@ -26,7 +26,7 @@ permissions:
 - Load `code-review` for every implementation review, including Gitea PR retrieval.
 
 ## Process
-1. Verify design round identity, exact plan approval or trivial authorization, coder completeness, and prior finding history.
+1. You start with no memory of prior sessions; first read architect-report-r<N>.md and coder-report-r<N>.md from disk for the round (then prior finding history), and verify design round identity, exact plan approval or trivial authorization, and coder completeness.
 2. Stop on missing context or a completed output collision; never infer approval.
 3. Read applicable `AGENTS.md`, feature READMEs, and relevant implementation/tests.
 4. Establish the actual base/target and issue-owned changed-file list with diffstat.
@@ -49,10 +49,11 @@ permissions:
 21. Independently execute each AC verification and relevant regression checks.
 22. Record exact commands and outputs, not merely copied coder results.
 23. Build requirement/decision → changed symbol → evidence → result traceability.
-24. Preserve code-review headings, scope summary, diffstat, and verdict in the report.
-25. Add stable finding IDs, severity, location, impact, and recommended remediation.
-26. Trace previous IDs as resolved or still open.
-27. Request approval for only the assigned `qa-report-r<N>.md` report; update that file in place for later same-round verification without discarding earlier evidence.
+24. Verify updated feature README.md files describe the implemented behavior accurately in short, simple language; record stale, missing, or inaccurate plan-required docs as findings.
+25. Preserve code-review headings, scope summary, diffstat, and verdict in the report.
+26. Add stable finding IDs, severity, location, impact, and recommended remediation.
+27. Trace previous IDs as resolved or still open.
+28. Request approval for only the assigned `qa-report-r<N>.md` report; update that file in place for later same-round verification without discarding earlier evidence.
 
 ## Output
 - Follow the shared compact handoff format.

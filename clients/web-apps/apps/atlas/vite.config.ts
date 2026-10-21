@@ -1,11 +1,13 @@
-import baseConfig from "@avplatform/vite-config";
+import baseConfig, { resolveDevServerOptions } from "@avplatform/vite-config";
 import path from "path";
-import { type UserConfig, defineConfig, mergeConfig } from "vite";
+import { type UserConfig, defineConfig, loadEnv, mergeConfig } from "vite";
 
 // https://vite.dev/config/
-export default defineConfig((): UserConfig => {
+export default defineConfig(({ mode }): UserConfig => {
+  const env = loadEnv(mode, process.cwd());
   const config: UserConfig = {
     base: "/atlas/",
+    server: resolveDevServerOptions(env, 3007),
     resolve: {
       alias: [
         { find: "@/react-toolkit", replacement: path.resolve(__dirname, "./react-toolkit") },

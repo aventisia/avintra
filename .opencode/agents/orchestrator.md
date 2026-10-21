@@ -34,7 +34,7 @@ permissions:
 ## Shared handoff contract
 - Use `local-issues/<issue-or-slug>/round-NN/`; follow the matching contract in `AGENTS.md`.
 - Supply goal, AC IDs/verifications, repository, scope, constraints, design round, input paths, and output path.
-- Start every delegated task in fresh context; never rely on another session's memory.
+- Spawn a new subagent session for every delegation; never continue or reuse a prior subagent session. Context travels only via the report files listed in Inputs:; never rely on another session's memory.
 - Read source files before proposing or changing paths, APIs, or symbols.
 - Preserve unrelated work; report scope changes instead of taking them.
 - Save one detailed report per agent per round and update it in place for later same-round work; never overwrite a completed report from another round. Resume only an explicitly incomplete matching report.

@@ -1,6 +1,9 @@
 # Aventisia WORC Platform — Agent Guide
 
 Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only primary agent. The shared handoff contract at the bottom of this file is referenced by those agents.
+# Aventisia WORC Platform — Agent Guide
+
+Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only primary agent. The shared handoff contract at the bottom of this file is referenced by those agents.
 
 ## Quick repo facts
 
@@ -19,10 +22,10 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
   - Ports: accounts 3001, workspace 3002, studio 3006, atlas from app config, desktop-app 2999.
   - Ready-to-commit: `npm run pregit` (format + eslint --fix + `tsc -b`)
   - `turbo.json` makes `lint` depend on `^build`, so lint may require a prior build.
-- LLM Pipeline (Python/FastAPI):
+- LLM Pipeline (Python/FastAPI) — dev port via `UVICORN_PORT` in `apis/llmpipeline/.env.local` (default 4003):
   ```sh
   cd apis/llmpipeline
-  ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload
+  ENV=local ./venv/bin/python dev.py
   ```
 - Apache Camel (Java 21):
   ```sh
@@ -49,14 +52,12 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Jenkins targets: `uat` → `avuat.aventisia.com`, `main` → `avweb1.aventisia.com`. Web app build modes: `uat`→`staging`, `main`→`production`. Manual `REPOS_TO_BUILD` param; `web_apps` covers accounts/workspace/studio/atlas (**desktop-app excluded**).
 - `.env.local` is gitignored; example defaults are in `deploy/.env`.
 - Feature PRs target `uat`, not `main`.
-- Port cleanup prompt: `.github/prompts/kill-project-ports.prompt.md`.
 
 ## Where conventions live
 
 - Backend: `apis/WorcBackend-legacy/AGENTS.md`
 - Frontend: `clients/web-apps/AGENTS.md`
 - Full setup, Docker commands, custom HTTP headers: `README.md`
-- Detailed dev commands and architecture: `CLAUDE.md`
 - VS Code tasks: `.vscode/tasks.json`
 - CI pipeline: `Jenkinsfile`
 
@@ -64,7 +65,8 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 
 - Use `local-issues/<issue-or-slug>/round-NN/` for reports; the orchestrator carries the matching contract.
 - Supply goal, AC IDs/verifications, repository, prepared branch/base, scope, constraints, design round, input paths, and output path.
-- Start every delegated task in fresh context; never rely on another session's memory.
+- Spawn a new subagent session for every delegation; never continue or reuse a prior subagent session. Context travels only via the report files listed as inputs; never rely on another session's memory.
+- Subagents start each assignment with no memory of prior sessions; first step is reading every listed input report from disk before inspecting source or acting.
 - Read source files before proposing or changing paths, APIs, or symbols.
 - Preserve unrelated work; report scope changes instead of taking them.
 - Save one report per agent per round at `local-issues/<issue-or-slug>/round-NN/<agent>-report-r<N>.md`; `NN` is the zero-padded round and `N` the round number. An agent has exactly one report file per round: update that file in place for later same-round work instead of adding another file. Never overwrite a completed report from another round; resume only an explicitly incomplete matching report.
@@ -103,9 +105,32 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Keep public JSDoc/XML and complex public-type documentation short; leave internal functions undocumented.
 - Prohibit explanatory internal comments except `IMPORTANT NOTE:` warnings for external constraints, race conditions, or required hacks. Prefer precise names and decomposition.
 - Domain review headings and complete snippets belong inside artifacts, not in place of compact handoffs; domain conventions never expand a role's scope or permissions.
+## Execution conventions
+
+- Keep source read-only for scout, architect, and QA; allow approved report writes only.
+- Keep read-only roles to inspection commands; never exploit write-capable shell options.
+- Run tests only after inspecting scripts and identifying permitted generated outputs.
+- Keep commands and edits within the active repository; permissions are not a filesystem sandbox.
+- Require explicit authorization for Git mutations and remote state changes.
+- A configured denial cannot be overridden by a saved approval; escalate for a narrow configuration change rather than bypassing it.
+- Launch repository-root subagents even for nested scope; use repository-relative report paths. Recheck normalized paths if a nested location is unavoidable.
+- Coder owns explicitly authorized isolated baseline/target preparation and cleanup; QA only verifies supplied contexts and exact revisions. Record dirty-tree snapshots, generated-output boundaries, and unavailable checks.
+- After the scout manifest is confirmed, the orchestrator delegates coder to prepare the issue branch from `origin/main` before implementation; scout, architect, and QA never create or switch branches.
+- Architect selects the planning mode from the scout manifest and complexity; in Grilling mode it loads the `grilling` skill, and the orchestrator relays each frontier and the user's answers until the frontier is empty before any plan is written.
+- Let only the orchestrator route agents, track the loop budget, and declare completion.
+
+## Documentation and code style boundaries
+
+- Keep public JSDoc/XML and complex public-type documentation short; leave internal functions undocumented.
+- Prohibit explanatory internal comments except `IMPORTANT NOTE:` warnings for external constraints, race conditions, or required hacks. Prefer precise names and decomposition.
+- Domain review headings and complete snippets belong inside artifacts, not in place of compact handoffs; domain conventions never expand a role's scope or permissions.
 
 ## Standalone lifecycle operations
+## Standalone lifecycle operations
 
+- `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
+- Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
+- Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, coder, and debugger have no mandatory supporting skill.
 - `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
 - Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
 - Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, coder, and debugger have no mandatory supporting skill.
