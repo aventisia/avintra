@@ -58,7 +58,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return serviceResponse.Update($"Cannot assign more than {MaxFlowsPerAssignment} flows at a time", 400);
             }
 
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -66,6 +66,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             var resourceLabel = resourceType.ToString().ToLowerInvariant();
             Tool? tool = null;
             Queue? queue = null;
+            KnowledgeBase? knowledgeBase = null;
             ConfigureEnvironmentType resourceEnvType;
             Guid resourceCreatedByUserId;
             bool isResourceAccessRestricted;
@@ -87,7 +88,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
                 isResourceAccessRestricted = tool.IsResourceAccessRestricted;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.Queue)
             {
                 queue = await GetQueueAsync(resourceId);
                 if (queue == null)
@@ -98,6 +99,18 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceEnvType = queue.EnvType;
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isResourceAccessRestricted = queue.IsResourceAccessRestricted;
+            }
+            else
+            {
+                knowledgeBase = await GetKnowledgeBaseAsync(resourceId);
+                if (knowledgeBase == null)
+                {
+                    return serviceResponse.Update("The knowledge base does not exist", 404);
+                }
+
+                resourceEnvType = knowledgeBase.EnvType;
+                resourceCreatedByUserId = knowledgeBase.CreatedByUserId;
+                isResourceAccessRestricted = knowledgeBase.IsResourceAccessRestricted;
             }
 
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<AssignResourceFlowsResultDto>(
@@ -221,10 +234,15 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                             tool.IsResourceAccessRestricted = isRestricted;
                             _unitOfWork.ToolRepo.Update(tool);
                         }
+                        else if (queue != null)
+                        {
+                            queue.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.QueueRepo.Update(queue);
+                        }
                         else
                         {
-                            queue!.IsResourceAccessRestricted = isRestricted;
-                            _unitOfWork.QueueRepo.Update(queue);
+                            knowledgeBase!.IsResourceAccessRestricted = isRestricted;
+                            _unitOfWork.KnowledgeBaseRepo.Update(knowledgeBase);
                         }
                     }
 
@@ -253,6 +271,10 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             {
                 unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(queue, flowIdList);
             }
+            else if (isRestricted && knowledgeBase != null)
+            {
+                unassignedPublishedFlows = await GetPublishedFlowsOutsideAccessAsync(knowledgeBase, flowIdList);
+            }
 
             var message = $"{ResourceFlowAccessHelpers.Pluralize(newIds.Count, "flow")} assigned, {ResourceFlowAccessHelpers.Pluralize(removedIds.Count, "flow")} removed";
 
@@ -276,7 +298,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         try
         {
-            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue))
+            if (resourceType is not (ResourceTypeEnum.Tool or ResourceTypeEnum.Queue or ResourceTypeEnum.KnowledgeBase))
             {
                 return serviceResponse.Update($"Resource type '{resourceType}' is not enabled for flow access", 400);
             }
@@ -296,7 +318,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 resourceCreatedByUserId = tool.CreatedByUserId ?? Guid.Empty;
                 isTenantWideAccess = tool.IsTenantWideAccess;
             }
-            else
+            else if (resourceType == ResourceTypeEnum.Queue)
             {
                 var queue = await GetQueueAsync(resourceId);
                 if (queue == null)
@@ -306,6 +328,17 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
                 resourceCreatedByUserId = queue.CreatedByUserId;
                 isTenantWideAccess = queue.IsTenantWideAccess;
+            }
+            else
+            {
+                var knowledgeBase = await GetKnowledgeBaseAsync(resourceId);
+                if (knowledgeBase == null)
+                {
+                    return serviceResponse.Update("The knowledge base does not exist", 404);
+                }
+
+                resourceCreatedByUserId = knowledgeBase.CreatedByUserId;
+                isTenantWideAccess = knowledgeBase.IsTenantWideAccess;
             }
 
             var (canAccess, _) = await _resourceShareService.GetResourceAccessAsync(
@@ -503,6 +536,38 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToList();
     }
 
+    private async Task<List<string>> GetPublishedFlowsOutsideAccessAsync(KnowledgeBase knowledgeBase, List<Guid> allowedFlowIds)
+    {
+        var quotedName = System.Text.Json.JsonSerializer.Serialize(knowledgeBase.Name);
+        var candidates = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _tenantId &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                !allowedFlowIds.Contains(w.FlowId) &&
+                w.ResourceReferences != null &&
+                w.ResourceReferences.Contains(quotedName))
+            .IgnoreQueryFilters()
+            .Select(w => new { w.FlowId, w.SpaceId, FlowName = w.Flow!.Name, w.ResourceReferences })
+            .ToListAsync();
+
+        var sameNameKnowledgeBases = await _unitOfWork.KnowledgeBaseRepo
+            .GetByConditionAsync(w =>
+                w.Name == knowledgeBase.Name &&
+                w.TenantId == _tenantId &&
+                w.EnvType == knowledgeBase.EnvType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .Where(w =>
+                ResourceFlowAccessHelpers.TryReadReferencedKnowledgeBaseNames(w.ResourceReferences)?.Contains(knowledgeBase.Name) == true &&
+                ResourceFlowAccessHelpers.PickResolvedKnowledgeBase(sameNameKnowledgeBases, w.SpaceId)?.Id == knowledgeBase.Id)
+            .Select(w => w.FlowName)
+            .Distinct()
+            .ToList();
+    }
+
     private async Task<Tool?> GetToolAsync(Guid resourceId)
     {
         return await _unitOfWork.ToolRepo
@@ -513,6 +578,13 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
     private async Task<Queue?> GetQueueAsync(Guid resourceId)
     {
         return await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+    }
+
+    private async Task<KnowledgeBase?> GetKnowledgeBaseAsync(Guid resourceId)
+    {
+        return await _unitOfWork.KnowledgeBaseRepo
             .GetByConditionAsync(w => w.Id == resourceId && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
     }

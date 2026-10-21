@@ -1115,6 +1115,7 @@ public class AgentTableService : IAgentTableService
 
             await DeleteLinksAsync(_unitOfWork.KnowledgeBaseFileRepo, f => f.KnowledgeBaseId == knowledgeBase.Id);
             await _resourceShareService.DeleteResourceSharesAsync(knowledgeBase.Id, ResourceTypeEnum.KnowledgeBase);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, knowledgeBase.Id);
             _unitOfWork.KnowledgeBaseRepo.Delete(knowledgeBase);
         }
     }
