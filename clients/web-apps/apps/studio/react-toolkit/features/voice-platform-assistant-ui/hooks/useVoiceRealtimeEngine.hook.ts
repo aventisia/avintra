@@ -25,6 +25,8 @@ import type { VoiceEngineBridge, VoiceSessionConfig } from "./useVoiceSession.ho
 const REALTIME_SPEECH_KEY = "realtime";
 const REALTIME_CHUNK_MS = 100;
 
+type TranscriptRole = "user" | "assistant";
+
 type UseVoiceRealtimeEngineParams = {
   stream: MediaStream;
   config: VoiceSessionConfig;
@@ -32,7 +34,7 @@ type UseVoiceRealtimeEngineParams = {
   getState: () => VoiceSessionState;
   onState: (state: VoiceSessionState) => void;
   onError: (error: VoiceSessionError) => void;
-  onInterimTranscript: (text: string) => void;
+  onInterimTranscripts: (next: { user: string; assistant: string }) => void;
   bargeIn: () => void;
 };
 
@@ -47,7 +49,7 @@ export const useVoiceRealtimeEngine = ({
   getState,
   onState,
   onError,
-  onInterimTranscript,
+  onInterimTranscripts,
   bargeIn,
 }: UseVoiceRealtimeEngineParams) => {
   const aui = useAui();
@@ -56,16 +58,19 @@ export const useVoiceRealtimeEngine = ({
     getState,
     onState,
     onError,
-    onInterimTranscript,
+    onInterimTranscripts,
     bargeIn,
     aui,
     config,
   });
-  latestRef.current = { getState, onState, onError, onInterimTranscript, bargeIn, aui, config };
+  latestRef.current = { getState, onState, onError, onInterimTranscripts, bargeIn, aui, config };
 
   const disposedRef = useRef(false);
-  const turnCompleteRef = useRef(false);
-  const interimBufferRef = useRef("");
+  const interimRef = useRef<Record<TranscriptRole, string>>({ user: "", assistant: "" });
+  const turnCompleteRef = useRef<Record<TranscriptRole, boolean>>({
+    user: false,
+    assistant: false,
+  });
   const ringRef = useRef<Float32Array[]>([]);
   const ringSamplesRef = useRef(0);
   const chunkRef = useRef<Float32Array[]>([]);
@@ -73,9 +78,10 @@ export const useVoiceRealtimeEngine = ({
   const chunkRateRef = useRef(48000);
   const streamingRef = useRef(false);
 
-  const clearInterim = useCallback(() => {
-    interimBufferRef.current = "";
-    latestRef.current.onInterimTranscript("");
+  const clearInterim = useCallback((role: TranscriptRole | "both" = "both") => {
+    if (role !== "assistant") interimRef.current.user = "";
+    if (role !== "user") interimRef.current.assistant = "";
+    latestRef.current.onInterimTranscripts({ ...interimRef.current });
   }, []);
 
   const handleFrame = useCallback(
@@ -84,6 +90,8 @@ export const useVoiceRealtimeEngine = ({
       const current = latestRef.current;
 
       if (frame.type === "session.ready") {
+        turnCompleteRef.current.user = false;
+        turnCompleteRef.current.assistant = false;
         if (current.getState() !== "speaking") current.onState("listening");
         return;
       }
@@ -105,23 +113,25 @@ export const useVoiceRealtimeEngine = ({
       }
 
       if (frame.type === "transcript.delta") {
+        const role: TranscriptRole = frame.role ?? "assistant";
         if (!frame.final) {
-          if (!frame.text || turnCompleteRef.current) return;
-          interimBufferRef.current += frame.text;
-          current.onInterimTranscript(interimBufferRef.current);
+          if (!frame.text || turnCompleteRef.current[role]) return;
+          interimRef.current[role] += frame.text;
+          current.onInterimTranscripts({ ...interimRef.current });
           return;
         }
         const finalText = frame.text.trim();
-        if (finalText && !turnCompleteRef.current) {
+        if (finalText && !turnCompleteRef.current[role]) {
           current.aui.thread.append({
-            role: "assistant",
+            role,
             content: [{ type: "text", text: finalText }],
             startRun: false,
           });
-          turnCompleteRef.current = true;
+          turnCompleteRef.current[role] = true;
+          if (role === "user") turnCompleteRef.current.assistant = false;
           if (!useVoicePlaybackStore.getState().isPlaying) current.onState("listening");
         }
-        clearInterim();
+        clearInterim(role);
         return;
       }
 
@@ -252,9 +262,9 @@ export const useVoiceRealtimeEngine = ({
       onSpeechStart: () => {
         const current = latestRef.current;
         if (current.getState() === "speaking") current.bargeIn();
-        clearInterim();
+        clearInterim("user");
         streamingRef.current = true;
-        turnCompleteRef.current = false;
+        turnCompleteRef.current.user = false;
         chunkRef.current = [...ringRef.current];
         chunkSamplesRef.current = ringSamplesRef.current;
         ringRef.current = [];
@@ -299,7 +309,7 @@ export const useVoiceRealtimeEngine = ({
   }, [isPlaying, onState]);
 
   useEffect(() => {
-    if (isPlaying || !turnCompleteRef.current) return;
+    if (isPlaying || !turnCompleteRef.current.assistant) return;
     if (getState() === "speaking") onState("listening");
   }, [getState, isPlaying, onState]);
 };

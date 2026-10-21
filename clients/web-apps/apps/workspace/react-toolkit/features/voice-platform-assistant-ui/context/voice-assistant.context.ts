@@ -39,8 +39,10 @@ export type VoiceAssistantContextValue = {
   endSession: () => void;
   /** Blocking session failure, or null. */
   sessionError: VoiceSessionError | null;
-  /** Live interim realtime transcript for the current turn, or null. */
-  realtimeInterimTranscript: string | null;
+  /** Live interim user transcript for the current turn, or null. */
+  realtimeUserInterimTranscript: string | null;
+  /** Live interim assistant transcript for the current turn, or null. */
+  realtimeAssistantInterimTranscript: string | null;
   /** True when a blocking realtime failure may offer a session-only Pipeline switch. */
   pipelineSwitchOffered: boolean;
   /** Switches this session to Pipeline after an explicit user confirmation. */

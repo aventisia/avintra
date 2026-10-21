@@ -14,7 +14,7 @@ export type RealtimeSessionStatus =
 export type RealtimeServerFrame =
   | { type: "session.ready"; provider: string; model: string; output_sample_rate: number }
   | { type: "output_audio_chunk"; audio_base64: string; sample_rate: number }
-  | { type: "transcript.delta"; text: string; final: boolean }
+  | { type: "transcript.delta"; text: string; final: boolean; role?: "user" | "assistant" }
   | { type: "session.closed" }
   | { type: "error"; code: string; message: string; retryable: boolean };
 

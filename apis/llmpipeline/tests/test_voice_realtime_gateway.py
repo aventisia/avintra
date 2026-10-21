@@ -65,9 +65,15 @@ def _access_token() -> str:
 class FakeProviderSession:
     """Echoes canonical input audio back as provider audio plus a transcript."""
 
-    def __init__(self, output_sample_rate: int = 24000) -> None:
+    def __init__(
+        self,
+        output_sample_rate: int = 24000,
+        scripted_events: Optional[list] = None,
+    ) -> None:
         self.output_sample_rate = output_sample_rate
         self._inbox: asyncio.Queue[Optional[bytes]] = asyncio.Queue()
+        self._scripted_events = list(scripted_events or [])
+        self.transcription_models: list[str] = []
         self.commits = 0
         self.closed = False
 
@@ -77,7 +83,12 @@ class FakeProviderSession:
     async def send_commit(self) -> None:
         self.commits += 1
 
+    async def send_transcription_config(self, model: str) -> None:
+        self.transcription_models.append(model)
+
     async def events(self):
+        for event in self._scripted_events:
+            yield event
         while True:
             pcm = await self._inbox.get()
             if pcm is None:
@@ -88,6 +99,13 @@ class FakeProviderSession:
     async def close(self) -> None:
         self.closed = True
         await self._inbox.put(None)
+
+
+class FailingTranscriptionProviderSession(FakeProviderSession):
+    """Rejects transcription enablement to exercise the audio-only fallback."""
+
+    async def send_transcription_config(self, model: str) -> None:
+        raise RuntimeError("transcription rejected")
 
 
 def _build_app() -> FastAPI:
@@ -140,6 +158,50 @@ def _receive_close(websocket) -> WebSocketDisconnect:
     return error.value
 
 
+EXPECTED_TRANSCRIPTION_MODELS = {
+    "openai": "whisper-1",
+    "azure": "whisper-1",
+    "gemini": "default",
+    "vertex_ai": "default",
+}
+
+
+def _script_provider(
+    service: RealtimeGatewayService,
+    scripted_events: Optional[list] = None,
+    session: Optional[FakeProviderSession] = None,
+) -> FakeProviderSession:
+    fake = session or FakeProviderSession(scripted_events=scripted_events)
+
+    async def _connect(**kwargs) -> FakeProviderSession:
+        return fake
+
+    service._connector = _connect
+    return fake
+
+
+def _start_session(websocket, provider: str, model: Optional[str] = None) -> dict:
+    websocket.send_json(
+        {
+            "type": "session.start",
+            "provider": provider,
+            "model": model or REALTIME_MODELS[provider],
+            "credential_name": "tenant-realtime-key",
+            "voice": "alloy",
+            "language": "en",
+        }
+    )
+    ready = websocket.receive_json()
+    assert ready["type"] == "session.ready"
+    return ready
+
+
+def _stop_session(websocket) -> None:
+    websocket.send_json({"type": "session.stop"})
+    assert websocket.receive_json() == {"type": "session.closed"}
+    assert _receive_close(websocket).code == 1000
+
+
 # ---------------------------------------------------------------------------
 # Accept path — round trip for every allowlisted provider
 # ---------------------------------------------------------------------------
@@ -183,11 +245,215 @@ def test_round_trip_for_allowlisted_provider(client, service, provider):
         assert transcript["type"] == "transcript.delta"
         assert transcript["text"] == "echo"
         assert transcript["final"] is False
+        assert transcript["role"] == "assistant"
 
-        websocket.send_json({"type": "session.stop"})
-        assert websocket.receive_json() == {"type": "session.closed"}
-        close = _receive_close(websocket)
-        assert close.code == 1000
+        _stop_session(websocket)
+
+
+# ---------------------------------------------------------------------------
+# Input transcription enablement and transcript normalization
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("provider", sorted(REALTIME_MODELS))
+def test_input_transcription_enablement_follows_provider_table(client, service, provider):
+    fake = _script_provider(service)
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, provider)
+
+        expected = EXPECTED_TRANSCRIPTION_MODELS.get(provider)
+        if expected is None:
+            assert fake.transcription_models == []
+        else:
+            assert fake.transcription_models == [expected]
+
+        _stop_session(websocket)
+
+
+def test_transcription_enablement_failure_keeps_the_session_audio_only(client, service):
+    fake = _script_provider(service, session=FailingTranscriptionProviderSession())
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        websocket.send_json(
+            {
+                "type": "input_audio_chunk",
+                "audio_base64": base64.b64encode(PCM_FRAME).decode("ascii"),
+                "commit": True,
+            }
+        )
+        audio = websocket.receive_json()
+        assert audio["type"] == "output_audio_chunk"
+        assert base64.b64decode(audio["audio_base64"]) == PCM_FRAME
+        assert fake.commits == 1
+
+        transcript = websocket.receive_json()
+        assert transcript["type"] == "transcript.delta"
+        assert transcript["role"] == "assistant"
+
+        _stop_session(websocket)
+
+
+def test_user_and_assistant_transcripts_are_role_tagged(client, service):
+    _script_provider(
+        service,
+        [
+            ProviderTranscript(text="hi", final=False, role="user"),
+            ProviderTranscript(text="hello", final=False),
+        ],
+    )
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        user = websocket.receive_json()
+        assert user == {"type": "transcript.delta", "text": "hi", "final": False, "role": "user"}
+
+        assistant = websocket.receive_json()
+        assert assistant == {
+            "type": "transcript.delta",
+            "text": "hello",
+            "final": False,
+            "role": "assistant",
+        }
+
+        _stop_session(websocket)
+
+
+def test_incremental_deltas_pass_through_as_fragments(client, service):
+    _script_provider(service, [ProviderTranscript(text="hel"), ProviderTranscript(text="lo")])
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        assert websocket.receive_json()["text"] == "hel"
+        assert websocket.receive_json()["text"] == "lo"
+
+        _stop_session(websocket)
+
+
+def test_cumulative_deltas_reduce_to_suffixes(client, service):
+    _script_provider(
+        service,
+        [
+            ProviderTranscript(text="hel"),
+            ProviderTranscript(text="hello"),
+            ProviderTranscript(text="hello world"),
+        ],
+    )
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        assert websocket.receive_json()["text"] == "hel"
+        assert websocket.receive_json()["text"] == "lo"
+        assert websocket.receive_json()["text"] == " world"
+
+        _stop_session(websocket)
+
+
+def test_identical_resend_and_empty_deltas_are_suppressed(client, service):
+    _script_provider(
+        service,
+        [
+            ProviderTranscript(text="echo"),
+            ProviderTranscript(text="echo"),
+            ProviderTranscript(text=""),
+            ProviderTranscript(text="next"),
+        ],
+    )
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        assert websocket.receive_json()["text"] == "echo"
+        assert websocket.receive_json()["text"] == "next"
+
+        _stop_session(websocket)
+
+
+def test_final_transcript_is_authoritative_and_clears_that_role(client, service):
+    _script_provider(
+        service,
+        [
+            ProviderTranscript(text="hi", final=False, role="user"),
+            ProviderTranscript(text="hi there", final=True, role="user"),
+            ProviderTranscript(text="hi there again", final=False, role="user"),
+            ProviderTranscript(text="done", final=True),
+        ],
+    )
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        assert websocket.receive_json() == {
+            "type": "transcript.delta",
+            "text": "hi",
+            "final": False,
+            "role": "user",
+        }
+        assert websocket.receive_json() == {
+            "type": "transcript.delta",
+            "text": "hi there",
+            "final": True,
+            "role": "user",
+        }
+        assert websocket.receive_json() == {
+            "type": "transcript.delta",
+            "text": "hi there again",
+            "final": False,
+            "role": "user",
+        }
+        assert websocket.receive_json() == {
+            "type": "transcript.delta",
+            "text": "done",
+            "final": True,
+            "role": "assistant",
+        }
+
+        _stop_session(websocket)
+
+
+def test_role_normalization_is_independent_per_speaker(client, service):
+    _script_provider(
+        service,
+        [
+            ProviderTranscript(text="a", final=False, role="user"),
+            ProviderTranscript(text="b", final=False, role="assistant"),
+            ProviderTranscript(text="ab", final=False, role="user"),
+            ProviderTranscript(text="bc", final=False, role="assistant"),
+        ],
+    )
+
+    with _connect(client, _access_token()) as websocket:
+        _start_session(websocket, "openai")
+
+        assert websocket.receive_json()["text"] == "a"
+        assert websocket.receive_json()["text"] == "b"
+        assert websocket.receive_json()["text"] == "b"
+        assert websocket.receive_json()["text"] == "c"
+
+        _stop_session(websocket)
+
+
+def test_map_provider_event_translates_user_and_assistant_transcripts():
+    from app.features.realtime_voice.provider_transport import _map_provider_event
+
+    assert _map_provider_event(
+        {"type": "conversation.item.input_audio_transcription.delta", "delta": "hel"}
+    ) == ProviderTranscript(text="hel", final=False, role="user")
+    assert _map_provider_event(
+        {"type": "conversation.item.input_audio_transcription.completed", "transcript": "hello"}
+    ) == ProviderTranscript(text="hello", final=True, role="user")
+    assert _map_provider_event({"type": "response.output_audio_transcript.delta", "delta": "hi"}) == (
+        ProviderTranscript(text="hi", final=False, role="assistant")
+    )
+    assert _map_provider_event({"type": "response.output_audio_transcript.done", "transcript": "hi"}) == (
+        ProviderTranscript(text="hi", final=True, role="assistant")
+    )
+    assert _map_provider_event({"type": "conversation.item.created"}) is None
 
 
 # ---------------------------------------------------------------------------
@@ -434,6 +700,9 @@ def test_unknown_frame_after_ready_errors_without_silent_drop(client, service):
             }
         )
         assert websocket.receive_json()["type"] == "output_audio_chunk"
+        assert websocket.receive_json()["type"] == "transcript.delta"
+
+        _stop_session(websocket)
 
 
 # ---------------------------------------------------------------------------

@@ -7,11 +7,9 @@ import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-g
 import { getCachedNodeConfig, getNodeConfig } from "../../apis/get-node-config";
 import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 import { DCPFieldSchemaType } from "../../types/dcp-field-schema-type";
-import { isTtsPreviewSupported } from "../../utils/voice-preview.util";
 import { RenderField } from "../RenderField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 import { VoiceFeatureCard } from "./VoiceFeatureCard";
-import { VoicePronunciationField } from "./VoicePronunciationField";
 import { VoiceVariablesField } from "./VoiceVariablesField";
 import { VoiceWebhookField } from "./VoiceWebhookField";
 
@@ -19,7 +17,6 @@ const VOICE_FEATURES_CATEGORY = "Features";
 
 const TOGGLE_NAMES = {
   variables: "__VariablesEnabled__Voice",
-  pronunciation: "__PronunciationEnabled__Voice",
   escalation: "__EscalationEnabled__Voice",
   transcriptWebhook: "__TranscriptWebhookEnabled__Voice",
   sfx: "__SfxEnabled__Voice",
@@ -29,7 +26,6 @@ const TOGGLE_NAMES = {
 
 const CONFIG_FIELD_NAMES = {
   variables: ["__Variables__Voice"],
-  pronunciation: ["__Pronunciation__Voice"],
   escalation: [
     "__EscalationDestination__Voice",
     "__EscalationCondition__Voice",
@@ -60,8 +56,6 @@ const hasObjectEntries = (value: unknown): boolean =>
   value !== null &&
   !Array.isArray(value) &&
   Object.keys(value).length > 0;
-
-const hasArrayEntries = (value: unknown): boolean => Array.isArray(value) && value.length > 0;
 
 const normalizeFields = (config: CachedNodeConfig | undefined): DCPFieldSchemaType[] =>
   Array.isArray(config) ? config : (config?.fields ?? []);
@@ -111,13 +105,11 @@ export const VoiceFeaturesTab = () => {
   if (!nodeName || nodeName !== VOICE_AGENT_NODE_NAME || featuresFields.length === 0) return null;
 
   const variablesEnabled = watch(TOGGLE_NAMES.variables) === true;
-  const pronunciationEnabled = watch(TOGGLE_NAMES.pronunciation) === true;
   const escalationEnabled = watch(TOGGLE_NAMES.escalation) === true;
   const webhookEnabled = watch(TOGGLE_NAMES.transcriptWebhook) === true;
   const sfxEnabled = watch(TOGGLE_NAMES.sfx) === true;
 
   const variablesValue = watch("__Variables__Voice");
-  const pronunciationValue = watch("__Pronunciation__Voice");
   const escalationDestination = watch("__EscalationDestination__Voice");
   const escalationCondition = watch("__EscalationCondition__Voice");
   const webhookUrl = watch("__TranscriptWebhookUrl__Voice");
@@ -125,10 +117,8 @@ export const VoiceFeaturesTab = () => {
   const ambienceUrl = watch("__SfxAmbienceUrl__Voice");
   const cueToggle = watch(TOGGLE_NAMES.sfxToolCallCue);
   const ambienceToggle = watch(TOGGLE_NAMES.sfxAmbience);
-  const ttsProvider = watch("__ModelConfig__TextToSpeech.provider");
 
   const variablesToggle = fieldByName.get(TOGGLE_NAMES.variables);
-  const pronunciationToggle = fieldByName.get(TOGGLE_NAMES.pronunciation);
   const escalationToggle = fieldByName.get(TOGGLE_NAMES.escalation);
   const webhookToggle = fieldByName.get(TOGGLE_NAMES.transcriptWebhook);
   const sfxToggle = fieldByName.get(TOGGLE_NAMES.sfx);
@@ -168,30 +158,6 @@ export const VoiceFeaturesTab = () => {
           description={fieldByName.get("__Variables__Voice")?.description}
           size="sm"
         />
-      </VoiceFeatureCard>
-
-      <VoiceFeatureCard
-        title="Pronunciation"
-        description="Speak names, terms, and acronyms the way you want during speech synthesis."
-        toggleName={TOGGLE_NAMES.pronunciation}
-        toggleLabel={pronunciationToggle?.label}
-        toggleDescription={pronunciationToggle?.description}
-        fieldNames={[...CONFIG_FIELD_NAMES.pronunciation, TOGGLE_NAMES.pronunciation]}
-        badge={statusBadge(pronunciationEnabled, hasArrayEntries(pronunciationValue))}
-      >
-        <VoicePronunciationField
-          name="__Pronunciation__Voice"
-          disabled={!pronunciationEnabled}
-          label={fieldByName.get("__Pronunciation__Voice")?.label}
-          description={fieldByName.get("__Pronunciation__Voice")?.description}
-          size="sm"
-        />
-        {ttsProvider && !isTtsPreviewSupported(ttsProvider as string) ? (
-          <p className="text-2xs text-muted-foreground">
-            Voice preview is not supported for this provider. Pronunciation aliases still apply
-            where speech synthesis is supported.
-          </p>
-        ) : null}
       </VoiceFeatureCard>
 
       <VoiceFeatureCard

@@ -86,11 +86,12 @@ class OutputAudioChunkFrame(BaseModel):
 
 
 class TranscriptDeltaFrame(BaseModel):
-    """A transcript fragment produced by the provider."""
+    """A transcript fragment for one speaker."""
 
     type: Literal["transcript.delta"] = "transcript.delta"
     text: str
     final: bool = False
+    role: Literal["user", "assistant"] = "assistant"
 
 
 class ErrorFrame(BaseModel):

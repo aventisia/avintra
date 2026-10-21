@@ -20,8 +20,9 @@ Choose **Start Session**. The browser asks for the microphone, then the page ope
 conversation: just speak, and the agent answers aloud. There is no message box, no send button, and
 no record button.
 
-Choose **End Session** to stop listening, stop the audio, close the voice connection, and return to
-the start. Leaving the page also stops everything.
+While a session is running the same button reads **Disconnect**. Choose it to stop listening, stop
+the audio, close the voice connection, and return to the start. Leaving the page also stops
+everything.
 
 The session borrows your speak-aloud setting so replies play, and puts your previous setting back when
 the session ends. Your saved preference is not changed.
@@ -32,9 +33,8 @@ The pill shows what the page is doing:
 
 - **Idle** — no session is running.
 - **Connecting** — the microphone and voice connection are opening.
-- **Listening–Recording** — hands-free listening is on; speak normally.
-- **Processing** — your words are being turned into a reply.
-- **Speaking** — the reply is playing. Speaking over it interrupts the reply.
+- **Connected** — the session is running; you may be listened to, processed, or answered. Speaking
+  over the reply interrupts it.
 - **Reconnecting** — the realtime connection dropped briefly and is retrying.
 
 The tag next to it names the engine: **Pipeline** or **Realtime**. The dot shows whether the browser
@@ -43,9 +43,18 @@ is online.
 ## Pipeline and Realtime
 
 - **Pipeline** records what you say, turns it into text, runs the agent, and speaks the reply.
-- **Realtime** streams audio both ways and plays the agent audio as it arrives. A draft line reading
-  **Hearing… (interim — not final)** appears while your speech is still being transcribed; it is
-  replaced by the final reply and is never saved as a message.
+- **Realtime** streams audio both ways and plays the agent audio as it arrives. Your speech and the
+  agent's reply appear in the conversation while they are still being transcribed. The live text is
+  shown in italics at the end of the conversation and turns into a normal message when that turn
+  finishes; a draft is never saved as a message and a turn is never added twice.
+
+All transcript text stays in the conversation area above the session controls; nothing from the
+transcript appears below the Start Session button.
+
+User transcription is turned on when the session opens. OpenAI and Azure are expected to show your
+words while you speak, while Gemini and Vertex AI are expected to show only the finished sentence.
+xAI and Bedrock do not provide user transcription in this version; audio and the agent's reply still
+work.
 
 Realtime is used only when the agent actually has a realtime provider and model. If a realtime session
 cannot start, the page offers **Switch to Pipeline for this session**. That switch only affects the
@@ -56,7 +65,8 @@ current session and never happens on its own.
 The workspace agent data does not include speech model settings yet. So most agents open with a
 notice saying which capabilities are missing — Speech-to-Text, Text-to-Speech, and/or Realtime — and
 **Start Session** stays disabled. This is expected: the page does not invent model settings. Once the
-agent data carries those settings, the same page starts a normal session.
+agent data carries those settings, the same page starts a normal session. While a session is running,
+the button reads **Disconnect** and is always available.
 
 ## When something goes wrong
 
