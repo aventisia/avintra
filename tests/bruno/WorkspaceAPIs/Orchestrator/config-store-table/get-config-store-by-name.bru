@@ -1,0 +1,11 @@
+meta {
+  name: Get config store by name
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store/by-name/{{CONFIGSTORE_NAME}}
+  body: none
+  auth: none
+}

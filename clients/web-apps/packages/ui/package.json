@@ -75,7 +75,7 @@
     "./enums/environment-types-enum": "./src/enums/environment-types-enum.ts",
     "./enums/execution-status-type-enum": "./src/enums/execution-status-type-enum.ts",
     "./enums/flow-types-enum": "./src/enums/flow-types-enum.ts",
-    "./enums/key-store-types-enum": "./src/enums/key-store-types-enum.ts",
+    "./enums/config-store-types-enum": "./src/enums/config-store-types-enum.ts",
     "./enums/license-credit-status-enum": "./src/enums/license-credit-status-enum.ts",
     "./enums/machine-status-enum": "./src/enums/machine-status-enum.ts",
     "./enums/machine-task-types-enum": "./src/enums/machine-task-types-enum.ts",

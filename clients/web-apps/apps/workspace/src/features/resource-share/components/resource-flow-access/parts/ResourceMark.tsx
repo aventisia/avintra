@@ -18,7 +18,7 @@ import { ResourceTypeEnum } from "../../../enums/resource-type-enum";
 const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> = {
   [ResourceTypeEnum.Queue]: QueueListIcon,
   [ResourceTypeEnum.Trigger]: AiOutlineThunderbolt,
-  [ResourceTypeEnum.KeyStore]: FolderCogIcon,
+  [ResourceTypeEnum.ConfigStore]: FolderCogIcon,
   [ResourceTypeEnum.VaultCredential]: Shield,
   [ResourceTypeEnum.KnowledgeBase]: BookOpenCheckIcon,
   [ResourceTypeEnum.Skill]: PuzzleIcon,

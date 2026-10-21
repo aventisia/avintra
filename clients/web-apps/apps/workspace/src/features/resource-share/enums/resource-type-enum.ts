@@ -1,7 +1,7 @@
 export enum ResourceTypeEnum {
   Queue = "Queue",
   Trigger = "Trigger",
-  KeyStore = "KeyStore",
+  ConfigStore = "ConfigStore",
   VaultCredential = "VaultCredential",
   KnowledgeBase = "KnowledgeBase",
   Skill = "Skill",

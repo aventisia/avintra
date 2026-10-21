@@ -11,9 +11,9 @@ public class BackendHttpClient : IBackendClient
     private readonly MachineTokenManager? _tokenManager;
 
     // Space of the last-fetched execution graph. The backend derives it from the job, and
-    // we echo it as "X-Space-Id" on the key-store fetch (which carries no jobId) so
+    // we echo it as "X-Space-Id" on the config-store fetch (which carries no jobId) so
     // space-scoped config keys resolve. Null for Central flows; graph is always fetched
-    // before any key-store call.
+    // before any config-store call.
     private Guid? _graphSpaceId;
 
     public BackendHttpClient(HttpClient httpClient, string accessToken)
@@ -41,7 +41,7 @@ public class BackendHttpClient : IBackendClient
 
     public async Task<IReadOnlyDictionary<string, string>> FetchConfigKeyValuePairsAsync(IEnumerable<string> keys, CancellationToken ct = default)
     {
-        using var request = await CreateRequestAsync(HttpMethod.Post, "workspace/api/key-store/fetch", ct);
+        using var request = await CreateRequestAsync(HttpMethod.Post, "workspace/api/config-store/fetch", ct);
         request.Content = JsonContent.Create(keys);
         if (_graphSpaceId.HasValue)
         {

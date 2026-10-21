@@ -16,8 +16,8 @@ const meta: MetaRecord = {
   executions: {
     title: "Executions",
   },
-  "key-store": {
-    title: "Key-Store",
+  "config-store": {
+    title: "Key Store",
   },
   vault: {
     title: "Vault",
