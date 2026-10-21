@@ -495,18 +495,18 @@ public class ResourceShareService : IResourceShareService
                         break;
                     }
 
-                case ResourceTypeEnum.KeyStore:
+                case ResourceTypeEnum.ConfigStore:
                     {
-                        // Retrieve the KeyStore resource.
-                        var keyStore = await _unitOfWork.KeyStoreRepo
+                        // Retrieve the ConfigStore resource.
+                        var configStore = await _unitOfWork.ConfigStoreRepo
                             .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
-                        if (keyStore == null)
+                        if (configStore == null)
                             return serviceResponse;
 
-                        keyStore.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.KeyStoreRepo.Update(keyStore);
+                        configStore.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.ConfigStoreRepo.Update(configStore);
                         break;
                     }
 

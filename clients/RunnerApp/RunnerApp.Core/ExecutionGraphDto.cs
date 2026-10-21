@@ -7,7 +7,7 @@ public class ExecutionGraphDto
 
     /// <summary>
     /// Space of the executed flow, resolved server-side from the job. Echoed back as
-    /// "X-Space-Id" on the key-store fetch so space-scoped config keys resolve; null when
+    /// "X-Space-Id" on the config-store fetch so space-scoped config keys resolve; null when
     /// the flow lives in Central.
     /// </summary>
     public Guid? SpaceId { get; set; }

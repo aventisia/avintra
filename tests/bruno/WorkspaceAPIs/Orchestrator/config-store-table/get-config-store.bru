@@ -1,0 +1,11 @@
+meta {
+  name: Get conifg items
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/config-store/list
+  body: none
+  auth: none
+}

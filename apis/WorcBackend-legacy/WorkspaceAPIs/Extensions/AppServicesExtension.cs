@@ -68,7 +68,7 @@ public static class AppServicesExtension
         config.Apply(new QueueTransactionEventMappingProfile());
         config.Apply(new QueueUserMappingProfile());
         config.Apply(new JobsTableMappingProfile());
-        config.Apply(new KeyStoreMappingProfile());
+        config.Apply(new ConfigStoreMappingProfile());
         config.Apply(new FlowUserMappingProfile());
         config.Apply(new VaultCredentialMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
@@ -144,7 +144,7 @@ public static class AppServicesExtension
         services.AddScoped<IQueueUserService, QueueUserService>();
         services.AddScoped<ICreditGateService, CreditGateService>();
         services.AddScoped<IJobsTableService, JobsTableService>();
-        services.AddScoped<IKeyStoreService, KeyStoreService>();
+        services.AddScoped<IConfigStoreService, ConfigStoreService>();
         services.AddScoped<ITriggerApiKeyService, TriggerApiKeyService>();
         services.AddScoped<ITimeTriggerService, TimeTriggerService>();
         services.AddScoped<IEmailTriggerService, EmailTriggerService>();

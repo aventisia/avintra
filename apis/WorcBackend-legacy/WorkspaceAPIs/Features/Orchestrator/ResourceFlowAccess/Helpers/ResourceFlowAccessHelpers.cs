@@ -5,6 +5,7 @@ public static class ResourceFlowAccessHelpers
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
     private const string SkillsReferenceKey = "skills";
+    private const string ConfigStoresReferenceKey = "configStores";
     private const string KnowledgeBasesReferenceKey = "knowledgeBases";
     private const string CredentialsReferenceKey = "credentials";
 
@@ -30,6 +31,26 @@ public static class ResourceFlowAccessHelpers
     public static List<string>? TryReadReferencedSkillNames(string? resourceReferences)
     {
         return TryReadReferencedNames(resourceReferences, SkillsReferenceKey);
+    }
+
+    /// <summary>
+    /// Reads the referenced config store names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedConfigStoreNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, ConfigStoresReferenceKey);
+    }
+
+    /// <summary>
+    /// Picks the resource a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static T? PickResolved<T>(IEnumerable<T> candidates, Guid? targetSpaceId, Func<T, Guid?> spaceSelector, Func<T, DateTimeOffset> createdOnSelector, Func<T, Guid> idSelector)
+    {
+        return candidates
+            .OrderBy(w => spaceSelector(w) == targetSpaceId ? 0 : (spaceSelector(w) == null ? 1 : 2))
+            .ThenBy(w => createdOnSelector(w))
+            .ThenBy(w => idSelector(w))
+            .FirstOrDefault();
     }
 
     /// <summary>
@@ -64,13 +85,12 @@ public static class ResourceFlowAccessHelpers
         return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
-    private static T? PickResolved<T>(IEnumerable<T> candidates, Guid? targetSpaceId, Func<T, Guid?> spaceOf, Func<T, DateTimeOffset> createdOf, Func<T, Guid> idOf)
+    /// <summary>
+    /// Picks the config store a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static ConfigStore? PickResolvedConfigStore(IEnumerable<ConfigStore> candidates, Guid? targetSpaceId)
     {
-        return candidates
-            .OrderBy(w => spaceOf(w) == targetSpaceId ? 0 : (spaceOf(w) == null ? 1 : 2))
-            .ThenBy(w => createdOf(w))
-            .ThenBy(w => idOf(w))
-            .FirstOrDefault();
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>
