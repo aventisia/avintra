@@ -8,7 +8,7 @@ namespace RunnerApp.Services;
 
 /// <summary>
 /// Resolves <c>{{__config__KeyName}}</c> placeholders defined in a flow (and its sub-flows)
-/// by fetching matching key/value pairs from the workspace key store and seeding them into
+/// by fetching matching key/value pairs from the workspace config store and seeding them into
 /// <see cref="ExecutionGraphDto.InputArgumentsJson"/>. The execution context then exposes
 /// each resolved value as a top-level variable named <c>__config__KeyName</c>, which the
 /// existing template engine substitutes wherever the placeholder appears.
@@ -52,7 +52,7 @@ public static class ConfigKeyResolver
         }
         catch (Exception ex)
         {
-            DebugLog.Error("Failed to fetch config key values from key store. Continuing without resolved config keys.", ex);
+            DebugLog.Error("Failed to fetch config key values from config store. Continuing without resolved config keys.", ex);
             return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -77,7 +77,7 @@ public static class ConfigKeyResolver
             }
             else
             {
-                DebugLog.Warn($"Config key not found in key store: {key}");
+                DebugLog.Warn($"Config key not found in config store: {key}");
             }
         }
 

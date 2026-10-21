@@ -18,10 +18,10 @@ public enum ResourceTypeEnum
     Trigger,
 
     /// <summary>
-    /// Represents a key store resource used for storing keys and configuration values.
+    /// Represents a config store resource used for storing keys and configuration values.
     /// </summary>
-    [Description("Represents a key store resource used for storing keys and configuration values.")]
-    KeyStore,
+    [Description("Represents a config store resource used for storing keys and configuration values.")]
+    ConfigStore,
 
     /// <summary>
     /// Represents a vault credential resource.

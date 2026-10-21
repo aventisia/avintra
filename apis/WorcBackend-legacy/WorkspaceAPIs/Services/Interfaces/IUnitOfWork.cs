@@ -23,7 +23,7 @@ public interface IUnitOfWork
     IQueueUserRepo QueueUserRepo { get; }
     IJobRepo JobRepo { get; }
     IJobNodeExecutionLogRepo JobNodeExecutionLogRepo { get; }
-    IKeyStoreRepo KeyStoreRepo { get; }
+    IConfigStoreRepo ConfigStoreRepo { get; }
     ITimeTriggerRepo TimeTriggerRepo { get; }
     ITimeTriggerFlowRepo TimeTriggerFlowRepo { get; }
     ITriggerRepo TriggerRepo { get; }

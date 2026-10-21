@@ -5,7 +5,7 @@ import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import { ConfigKeyValueDto } from "../dtos/config-key-value-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/key-store`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/config-store`;
 
 /**
  * Retrieves list of personal+shared config key-value pairs and their values. Optionally can filter by specific keys.

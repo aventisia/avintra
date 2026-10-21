@@ -97,7 +97,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         permissions: ["OM", "TD"],
         Icon: FolderCogIcon,
         name: "Key Store",
-        route: "/configure/keystore",
+        route: "/configure/configstore",
         type: ["Commercial", "Enterprise"],
       },
       {
