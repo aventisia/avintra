@@ -11,6 +11,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
 
     public KnowledgeBaseService(
@@ -19,6 +20,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
         IResourceShareService resourceShareService,
+        IResourceFlowAccessService resourceFlowAccessService,
         IUserManagementGuardService userManagementGuardService)
     {
         // Extract user ID from HttpContext
@@ -28,6 +30,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _resourceShareService = resourceShareService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _userManagementGuardService = userManagementGuardService;
     }
 
@@ -685,6 +688,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
             // Remove all resource sharing mappings. Prevent orphan permission records
             await _resourceShareService.DeleteResourceSharesAsync(kb.Id, ResourceTypeEnum.KnowledgeBase);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, kb.Id);
 
             // Delete the knowledge base
             _unitOfWork.KnowledgeBaseRepo.Delete(kb);
@@ -818,10 +822,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 _unitOfWork.KnowledgeBaseRepo.Delete(kb);
             }
 
-            await _unitOfWork.SaveAsync();
+            var kbIds = kbs.Select(kb => kb.Id).ToList();
+            await _resourceShareService.DeleteResourceSharesAsync(kbIds, ResourceTypeEnum.KnowledgeBase);
+            await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, kbIds);
 
-            // Remove resource access mappings. Prevent orphan permission records
-            await _resourceShareService.DeleteResourceSharesAsync(ids, ResourceTypeEnum.KnowledgeBase);
+            await _unitOfWork.SaveAsync();
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;

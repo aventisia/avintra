@@ -20,9 +20,10 @@ only; it does not carry a space.
 ## Restricted flag
 
 - Restricted or open is stored on the resource (`Tool.IsResourceAccessRestricted`,
-  `Queue.IsResourceAccessRestricted` and `VaultCredential.IsResourceAccessRestricted`), not
-  inferred from the rows. A restricted resource is usable only by the flows listed; a
-  restricted resource with no rows is usable by no flow.
+  `Queue.IsResourceAccessRestricted`, `VaultCredential.IsResourceAccessRestricted`, and
+  `KnowledgeBase.IsResourceAccessRestricted`), not inferred from the rows. A restricted
+  resource is usable only by the flows listed; a restricted resource with no rows is
+  usable by no flow.
 - Saving a non-empty list restricts the resource. Saving an empty list is the only way to
   open it again, so removing rows by other paths (archive, flow delete) never lifts a
   restriction.
@@ -91,8 +92,8 @@ only; it does not carry a space.
 
 ## Current rollout
 
-- Only the Tool, Queue and VaultCredential resource types are wired. Other configure types keep
-  their existing behavior and will adopt the same list later.
+- The Tool, Queue, VaultCredential, and KnowledgeBase resource types are wired. Other configure
+  types keep their existing behavior and will adopt the same list later.
 
 ## Known gaps
 
