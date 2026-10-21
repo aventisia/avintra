@@ -35,6 +35,15 @@ _TRANSCRIPT_DONE_EVENTS = (
     "response.audio_transcript.done",
     "response.output_audio_transcript.done",
 )
+_INPUT_TRANSCRIPT_DELTA_EVENTS = ("conversation.item.input_audio_transcription.delta",)
+_INPUT_TRANSCRIPT_DONE_EVENTS = ("conversation.item.input_audio_transcription.completed",)
+
+INPUT_TRANSCRIPTION_MODEL_BY_PROVIDER: dict[str, str | None] = {
+    "openai": "whisper-1",
+    "azure": "whisper-1",
+    "gemini": "default",
+    "vertex_ai": "default",
+}
 
 
 @dataclass
@@ -51,6 +60,7 @@ class ProviderTranscript:
 
     text: str
     final: bool = False
+    role: str = "assistant"
 
 
 ProviderEvent = ProviderAudio | ProviderTranscript
@@ -78,6 +88,9 @@ class RealtimeProviderSession(Protocol):
 
     async def send_commit(self) -> None:
         """Signal the provider that the current client turn is complete."""
+
+    async def send_transcription_config(self, model: str) -> None:
+        """Enable provider-side input transcription with the given model."""
 
     def events(self) -> AsyncIterator[ProviderEvent]:
         """Yield provider events until the upstream session ends."""
@@ -179,6 +192,12 @@ def _map_provider_event(payload: dict) -> Optional[ProviderEvent]:
     if event_type in _TRANSCRIPT_DONE_EVENTS:
         return ProviderTranscript(str(payload.get("transcript", "")), True)
 
+    if event_type in _INPUT_TRANSCRIPT_DELTA_EVENTS:
+        return ProviderTranscript(str(payload.get("delta", "")), False, role="user")
+
+    if event_type in _INPUT_TRANSCRIPT_DONE_EVENTS:
+        return ProviderTranscript(str(payload.get("transcript", "")), True, role="user")
+
     if event_type == "error":
         detail = payload.get("error") or {}
         message = detail.get("message") if isinstance(detail, dict) else None
@@ -241,6 +260,16 @@ class LiteLLMRealtimeSession:
     async def send_commit(self) -> None:
         await self._socket.to_provider.put(json.dumps({"type": "input_audio_buffer.commit"}))
 
+    async def send_transcription_config(self, model: str) -> None:
+        await self._socket.to_provider.put(
+            json.dumps(
+                {
+                    "type": "session.update",
+                    "session": {"input_audio_transcription": {"model": model}},
+                }
+            )
+        )
+
     async def events(self) -> AsyncIterator[ProviderEvent]:
         while True:
             payload = await self._socket.from_provider.get()
@@ -286,6 +315,7 @@ __all__ = [
     "RealtimeProviderSession",
     "LiteLLMRealtimeSession",
     "open_provider_session",
+    "INPUT_TRANSCRIPTION_MODEL_BY_PROVIDER",
     "PROVIDER_INPUT_SAMPLE_RATE",
     "PROVIDER_OUTPUT_SAMPLE_RATE",
 ]

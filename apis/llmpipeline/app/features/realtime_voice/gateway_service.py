@@ -27,6 +27,7 @@ from app.features.litellm.core.provider_registry import (
 )
 
 from .provider_transport import (
+    INPUT_TRANSCRIPTION_MODEL_BY_PROVIDER,
     ProviderAudio,
     ProviderConnector,
     RealtimeProviderError,
@@ -280,6 +281,8 @@ class RealtimeGatewayService:
             )
             return None
 
+        await self._enable_input_transcription(provider, session)
+
         await websocket.send_text(
             SessionReadyFrame(
                 provider=provider,
@@ -288,6 +291,25 @@ class RealtimeGatewayService:
             ).model_dump_json()
         )
         return session
+
+    async def _enable_input_transcription(
+        self, provider: str, session: RealtimeProviderSession
+    ) -> None:
+        model = INPUT_TRANSCRIPTION_MODEL_BY_PROVIDER.get(provider)
+        if not model:
+            logger.warning(
+                f"[REALTIME] input transcription unsupported for provider='{provider}'; "
+                "continuing audio-only"
+            )
+            return
+
+        try:
+            await session.send_transcription_config(model)
+        except Exception as error:  # noqa: BLE001
+            logger.warning(
+                f"[REALTIME] input transcription enablement failed for provider='{provider}': "
+                f"{error}; continuing audio-only"
+            )
 
     async def _relay(self, websocket: WebSocket, session: RealtimeProviderSession) -> bool:
         """Relay frames until either side ends. Returns True only on a graceful client stop."""
@@ -311,15 +333,38 @@ class RealtimeGatewayService:
         return stopped_by_client
 
     async def _relay_provider(self, websocket: WebSocket, session: RealtimeProviderSession) -> None:
+        last_sent: dict[str, str] = {"user": "", "assistant": ""}
+
         async for event in session.events():
             if isinstance(event, ProviderAudio):
                 frame = OutputAudioChunkFrame(
                     audio_base64=base64.b64encode(event.pcm).decode("ascii"),
                     sample_rate=event.sample_rate,
                 )
-            else:
-                frame = TranscriptDeltaFrame(text=event.text, final=event.final)
-            await websocket.send_text(frame.model_dump_json())
+                await websocket.send_text(frame.model_dump_json())
+                continue
+
+            role = event.role if event.role in last_sent else "assistant"
+            text = event.text or ""
+
+            if event.final:
+                last_sent[role] = ""
+                if not text.strip():
+                    continue
+                await websocket.send_text(
+                    TranscriptDeltaFrame(text=text, final=True, role=role).model_dump_json()
+                )
+                continue
+
+            previous = last_sent[role]
+            last_sent[role] = text
+            if previous and text.startswith(previous):
+                text = text[len(previous) :]
+            if not text:
+                continue
+            await websocket.send_text(
+                TranscriptDeltaFrame(text=text, final=False, role=role).model_dump_json()
+            )
 
     async def _relay_client(self, websocket: WebSocket, session: RealtimeProviderSession) -> str:
         while True:

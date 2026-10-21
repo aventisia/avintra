@@ -53,11 +53,10 @@ export const VoiceStatusNotice: FC<VoiceStatusNoticeProps> = ({
 
   if (!voice) return null;
 
-  const { sessionError, realtimeInterimTranscript, ttsError } = voice;
+  const { sessionError, ttsError } = voice;
   const recoveryLabel = sessionError ? resolveSessionRecoveryLabel(sessionError.kind) : null;
   const hasContent =
     Boolean(sessionError) ||
-    Boolean(realtimeInterimTranscript) ||
     Boolean(ttsError) ||
     playBlocked ||
     !isOnline ||
@@ -72,15 +71,6 @@ export const VoiceStatusNotice: FC<VoiceStatusNoticeProps> = ({
 
   return (
     <div className="aui-voice-status mb-2 flex flex-col gap-1 rounded-md border bg-muted/40 px-3 py-2 text-muted-foreground text-xs">
-      {realtimeInterimTranscript && (
-        <p
-          className="aui-voice-interim-transcript italic opacity-80"
-          aria-live="polite"
-          aria-label="Interim transcript, not final"
-        >
-          {`Hearing… (interim — not final): ${realtimeInterimTranscript}`}
-        </p>
-      )}
       {!isOnline && sessionError?.kind !== "offline" && (
         <p>
           Connection lost — check your network, then retry. Reload the page if it stays offline.

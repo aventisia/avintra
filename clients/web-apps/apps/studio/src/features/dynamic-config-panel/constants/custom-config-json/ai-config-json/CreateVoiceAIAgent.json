@@ -334,6 +334,26 @@
     {
       "direction": "Input",
       "type": "switch",
+      "name": "__PronunciationEnabled__Voice",
+      "label": "Enable Pronunciation",
+      "description": "Use the pronunciation list below when the voice speaks. Turn this off to keep the list but speak the original text.",
+      "defaultValue": false,
+      "required": false,
+      "category": "Pronunciation"
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "__Pronunciation__Voice",
+      "label": "Pronunciation",
+      "description": "Speak terms, names, and acronyms with an intended pronunciation. Add a term and how it should be spoken, for example term API spoken as A P I. Matching is case-insensitive and uses the longest term first. Applies to providers that support speech synthesis.",
+      "defaultValue": [],
+      "required": false,
+      "category": "Pronunciation"
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
       "name": "__VariablesEnabled__Voice",
       "label": "Enable Dynamic Variables",
       "description": "Fill {{name}} placeholders in the goal, role, instructions, and introduction with the values below. Turn this off to keep the values but leave placeholders as written.",
@@ -348,26 +368,6 @@
       "label": "Variables",
       "description": "Default values for placeholders used in the Goal, Role, Instructions, and Introduction. Add a name and value pair, for example name company_name with value Acme. Each {{name}} placeholder is replaced with its default during conversations. Names without a default are left as written. Realtime sessions do not resolve these placeholders.",
       "defaultValue": {},
-      "required": false,
-      "category": "Features"
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "__PronunciationEnabled__Voice",
-      "label": "Enable Pronunciation",
-      "description": "Use the pronunciation list below when the voice speaks. Turn this off to keep the list but speak the original text.",
-      "defaultValue": false,
-      "required": false,
-      "category": "Features"
-    },
-    {
-      "direction": "Input",
-      "type": "json-editor",
-      "name": "__Pronunciation__Voice",
-      "label": "Pronunciation",
-      "description": "Speak terms, names, and acronyms with an intended pronunciation. Add a term and how it should be spoken, for example term API spoken as A P I. Matching is case-insensitive and uses the longest term first. Applies to providers that support speech synthesis.",
-      "defaultValue": [],
       "required": false,
       "category": "Features"
     },

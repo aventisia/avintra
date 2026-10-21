@@ -39,9 +39,9 @@ export const VOICE_VAD_DEFAULTS = {
 export const VOICE_SESSION_STATE_LABEL: Record<VoiceSessionState, string> = {
   idle: "Idle",
   connecting: "Connecting",
-  listening: "Listening–Recording",
-  processing: "Processing",
-  speaking: "Speaking",
+  listening: "Connected",
+  processing: "Connected",
+  speaking: "Connected",
   reconnecting: "Reconnecting",
 };
 

@@ -46,12 +46,45 @@ Gateway to browser:
 | --- | --- |
 | `session.ready` | The provider session is live. |
 | `output_audio_chunk` | Provider audio for playback. |
-| `transcript.delta` | A transcript fragment, with a `final` flag. |
+| `transcript.delta` | A transcript fragment for one speaker, with `role` and a `final` flag. |
 | `session.closed` | Acknowledges a graceful `session.stop`. |
 | `error` | A non-silent failure report with a `retryable` flag. |
 
 An unknown or malformed frame always produces an `error` frame; it is never
 dropped silently.
+
+## Transcripts
+
+`transcript.delta` carries `role` (`user` or `assistant`, defaulting to
+`assistant`) and `final`.
+
+- Interim frames (`final: false`) are always incremental. Some providers send
+  growing snapshots instead; the gateway compares each frame with the last text
+  it sent for that speaker and forwards only the new part, so the browser can
+  simply append. Repeated or empty text is not forwarded.
+- Final frames (`final: true`) carry the provider's full transcript for that
+  turn. They are forwarded once, as sent, and reset the per-speaker state.
+- User and assistant transcripts are normalized the same way, independently.
+
+User transcription has to be turned on for the provider session. The gateway
+sends a `session.update` with `input_audio_transcription` after the provider
+session opens and before it tells the browser the session is ready. The model
+comes from a small server-side table:
+
+| Provider | Input transcription model | Notes |
+| --- | --- | --- |
+| `openai` | `whisper-1` | Interim and final user transcripts expected. |
+| `azure` | `whisper-1` | Same protocol as OpenAI; interim and final expected. |
+| `gemini` | `default` | LiteLLM ignores the value and enables Gemini's own transcription; expect the final user transcript only. |
+| `vertex_ai` | `default` | Same as Gemini; expect the final user transcript only. |
+| `xai` | — | Not enabled this round. Audio and assistant transcripts keep working. |
+| `bedrock` | — | Not enabled this round. Audio and assistant transcripts keep working. |
+
+If enablement fails, or the provider has no table entry, the gateway logs a
+warning and continues with audio and assistant transcripts. It never fails the
+session for this, never sends an `error` frame, and never changes the engine.
+Live provider behaviour is not verified in this environment; the values above
+come from the installed LiteLLM mapping.
 
 ## When a session ends
 

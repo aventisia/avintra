@@ -237,7 +237,12 @@ const VoiceSessionLayer = ({
   onNewSession,
 }: VoiceSessionLayerProps) => {
   const aui = useAui();
-  const [realtimeInterimTranscript, setRealtimeInterimTranscript] = useState("");
+  const [realtimeUserInterimTranscript, setRealtimeUserInterimTranscript] = useState("");
+  const [realtimeAssistantInterimTranscript, setRealtimeAssistantInterimTranscript] = useState("");
+  const handleInterimTranscripts = useCallback((next: { user: string; assistant: string }) => {
+    setRealtimeUserInterimTranscript(next.user);
+    setRealtimeAssistantInterimTranscript(next.assistant);
+  }, []);
   const session = useVoiceSession({
     sttConfig,
     ttsConfig,
@@ -283,7 +288,8 @@ const VoiceSessionLayer = ({
       startSession: session.startSession,
       endSession: session.endSession,
       sessionError: session.sessionError,
-      realtimeInterimTranscript: realtimeInterimTranscript || null,
+      realtimeUserInterimTranscript: realtimeUserInterimTranscript || null,
+      realtimeAssistantInterimTranscript: realtimeAssistantInterimTranscript || null,
       pipelineSwitchOffered: session.pipelineSwitchOffered,
       switchToPipelineForSession: session.switchToPipelineForSession,
       retrySessionError: session.retrySessionError,
@@ -298,7 +304,8 @@ const VoiceSessionLayer = ({
     [
       speech,
       session,
-      realtimeInterimTranscript,
+      realtimeUserInterimTranscript,
+      realtimeAssistantInterimTranscript,
       sttConfig,
       ttsConfig,
       voiceConfig?.language,
@@ -333,7 +340,7 @@ const VoiceSessionLayer = ({
               getState={session.getSessionState}
               onState={session.reportSessionState}
               onError={session.reportSessionError}
-              onInterimTranscript={setRealtimeInterimTranscript}
+              onInterimTranscripts={handleInterimTranscripts}
               bargeIn={bargeIn}
             />
           )}
@@ -394,9 +401,11 @@ const RealtimeEngineMount = ({
   getState,
   onState,
   onError,
-  onInterimTranscript,
+  onInterimTranscripts,
   bargeIn,
-}: VoiceEngineMountProps & { onInterimTranscript: (text: string) => void }) => {
+}: VoiceEngineMountProps & {
+  onInterimTranscripts: (next: { user: string; assistant: string }) => void;
+}) => {
   useVoiceRealtimeEngine({
     stream,
     config,
@@ -404,7 +413,7 @@ const RealtimeEngineMount = ({
     getState,
     onState,
     onError,
-    onInterimTranscript,
+    onInterimTranscripts,
     bargeIn,
   });
   return null;

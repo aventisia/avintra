@@ -11,6 +11,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { Plus } from "lucide-react";
 import type { FC } from "react";
 
+import { useVoiceAssistantContext } from "../hooks/useVoiceAssistantContext.hook";
 import {
   SIMULATED_TOOL_EVENT_COPY,
   SimulatedToolBadge,
@@ -26,7 +27,7 @@ export type VoiceThreadViewProps = {
   onNewSession?: () => void;
 };
 
-/** Read-only voice transcript with the Start/End session controls above it. */
+/** Read-only voice transcript with the session controls below it. */
 export const VoiceThreadView: FC<VoiceThreadViewProps> = ({
   title,
   description,
@@ -49,11 +50,6 @@ export const VoiceThreadView: FC<VoiceThreadViewProps> = ({
       onNewSession={onNewSession}
     />
 
-    <div className="flex w-full shrink-0 flex-col px-4 pt-3">
-      <VoiceSessionControls />
-      <VoicePlaygroundStatus />
-    </div>
-
     <ThreadPrimitive.Viewport
       turnAnchor="top"
       scrollToBottomOnRunStart
@@ -66,7 +62,14 @@ export const VoiceThreadView: FC<VoiceThreadViewProps> = ({
       </AuiIf>
 
       <ThreadPrimitive.Messages>{() => <VoiceMessage />}</ThreadPrimitive.Messages>
+
+      <VoiceInterimMessages />
     </ThreadPrimitive.Viewport>
+
+    <div className="flex w-full shrink-0 flex-col px-4 pt-3">
+      <VoiceSessionControls />
+      <VoicePlaygroundStatus />
+    </div>
   </ThreadPrimitive.Root>
 );
 
@@ -164,6 +167,45 @@ const VoiceMessage: FC = () => {
   const role = useAuiState((s) => s.message.role);
 
   return role === "user" ? <VoiceUserMessage /> : <VoiceAssistantMessage />;
+};
+
+const VoiceInterimMessages: FC = () => {
+  const voice = useVoiceAssistantContext();
+  const userInterim = voice?.realtimeUserInterimTranscript ?? "";
+  const assistantInterim = voice?.realtimeAssistantInterimTranscript ?? "";
+
+  return (
+    <>
+      {userInterim && (
+        <div
+          key="realtime-interim-user"
+          className="aui-user-message-root text-sm fade-in slide-in-from-bottom-1 mx-auto grid w-full max-w-[var(--thread-max-width)] animate-in auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] content-start gap-y-2 px-2 py-3 duration-150 [&:where(>*)]:col-start-2"
+          data-role="user"
+          aria-label="Interim user transcript"
+          aria-live="polite"
+        >
+          <div className="aui-user-message-content-wrapper col-start-2 min-w-0">
+            <div className="aui-user-message-content wrap-break-word rounded-2xl bg-muted px-4 py-2.5 text-foreground italic opacity-80">
+              {userInterim}
+            </div>
+          </div>
+        </div>
+      )}
+      {assistantInterim && (
+        <div
+          key="realtime-interim-assistant"
+          className="aui-assistant-message-root text-sm fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-[var(--thread-max-width)] animate-in py-3 duration-150 !min-h-fit !h-fit"
+          data-role="assistant"
+          aria-label="Interim assistant transcript"
+          aria-live="polite"
+        >
+          <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground italic leading-relaxed opacity-80">
+            <p className="whitespace-pre-wrap">{assistantInterim}</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 const VoiceUserMessage: FC = () => (
