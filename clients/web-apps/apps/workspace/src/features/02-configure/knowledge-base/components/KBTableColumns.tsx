@@ -97,6 +97,7 @@ export const KBTableColumns = (): ColumnDef<KnowledgeBaseTableDto>[] => [
         name={row.name}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.isResourceAccessRestricted || false}
       />
     ),
   }),

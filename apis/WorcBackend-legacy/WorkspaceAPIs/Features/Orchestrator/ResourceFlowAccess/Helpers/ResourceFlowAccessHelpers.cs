@@ -4,6 +4,7 @@ public static class ResourceFlowAccessHelpers
 {
     private const string ToolsReferenceKey = "tools";
     private const string QueuesReferenceKey = "queues";
+    private const string KnowledgeBasesReferenceKey = "knowledgeBases";
     private const string CredentialsReferenceKey = "credentials";
 
     /// <summary>
@@ -23,15 +24,19 @@ public static class ResourceFlowAccessHelpers
     }
 
     /// <summary>
+    /// Reads the referenced knowledge base names stored in the publish snapshot. Returns null when the snapshot is not valid JSON.
+    /// </summary>
+    public static List<string>? TryReadReferencedKnowledgeBaseNames(string? resourceReferences)
+    {
+        return TryReadReferencedNames(resourceReferences, KnowledgeBasesReferenceKey);
+    }
+
+    /// <summary>
     /// Picks the tool a publish resolves a name to: current space, then Central, then other spaces, oldest first.
     /// </summary>
     public static Tool? PickResolvedTool(IEnumerable<Tool> candidates, Guid? targetSpaceId)
     {
-        return candidates
-            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-            .ThenBy(w => w.CreatedOn)
-            .ThenBy(w => w.Id)
-            .FirstOrDefault();
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>
@@ -39,10 +44,23 @@ public static class ResourceFlowAccessHelpers
     /// </summary>
     public static Queue? PickResolvedQueue(IEnumerable<Queue> candidates, Guid? targetSpaceId)
     {
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
+    }
+
+    /// <summary>
+    /// Picks the knowledge base a publish resolves a name to: current space, then Central, then other spaces, oldest first.
+    /// </summary>
+    public static KnowledgeBase? PickResolvedKnowledgeBase(IEnumerable<KnowledgeBase> candidates, Guid? targetSpaceId)
+    {
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
+    }
+
+    private static T? PickResolved<T>(IEnumerable<T> candidates, Guid? targetSpaceId, Func<T, Guid?> spaceOf, Func<T, DateTimeOffset> createdOf, Func<T, Guid> idOf)
+    {
         return candidates
-            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-            .ThenBy(w => w.CreatedOn)
-            .ThenBy(w => w.Id)
+            .OrderBy(w => spaceOf(w) == targetSpaceId ? 0 : (spaceOf(w) == null ? 1 : 2))
+            .ThenBy(w => createdOf(w))
+            .ThenBy(w => idOf(w))
             .FirstOrDefault();
     }
 
@@ -59,11 +77,7 @@ public static class ResourceFlowAccessHelpers
     /// </summary>
     public static VaultCredential? PickResolvedCredential(IEnumerable<VaultCredential> candidates, Guid? targetSpaceId)
     {
-        return candidates
-            .OrderBy(w => w.SpaceId == targetSpaceId ? 0 : (w.SpaceId == null ? 1 : 2))
-            .ThenBy(w => w.CreatedOn)
-            .ThenBy(w => w.Id)
-            .FirstOrDefault();
+        return PickResolved(candidates, targetSpaceId, w => w.SpaceId, w => w.CreatedOn, w => w.Id);
     }
 
     /// <summary>

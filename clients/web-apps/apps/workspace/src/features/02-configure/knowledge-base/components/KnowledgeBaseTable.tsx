@@ -11,6 +11,7 @@ import { NavLink } from "react-router-dom";
 
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -81,12 +82,20 @@ export const KnowledgeBaseTable = () => {
                           <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
                             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                           </span>
+                          {row.original.isResourceAccessRestricted && (
+                            <span className="border border-amber-500/40 bg-amber-500/15 px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-amber-700 rounded-full">
+                              Restricted
+                            </span>
+                          )}
                         </div>
                         {/* Action trigger */}
                         <KBRowActions
                           rowId={row.original.id || ""}
                           accessLevel={row.original.accessLevel}
                           isTenantWideAccess={row.original.isTenantWideAccess || false}
+                          isResourceAccessRestricted={
+                            row.original.isResourceAccessRestricted || false
+                          }
                           name={row.original.name}
                         />
                       </div>
@@ -113,8 +122,8 @@ export const KnowledgeBaseTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="KB" pluralLabel="KBs" />
 
-          {/* Resource Share Dialog component */}
           <ResourceShareDialog queryKey={queryKey} />
+          <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       ) : (
         // Show data table skeleton while fetching the configs data
