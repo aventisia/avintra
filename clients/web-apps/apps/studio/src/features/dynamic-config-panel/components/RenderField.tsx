@@ -13,7 +13,9 @@ import {
   DCPFieldSchemaType,
 } from "..";
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
+import { CloudExecutionSwitchField } from "./fields-for-form/CloudExecutionSwitchField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
+import { FlowSelectorField } from "./fields-for-form/FlowSelectorField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
@@ -151,6 +153,10 @@ export const RenderField = ({ force, ...field }: DCPFieldSchemaType & { force?: 
       return <JsonEditorField {...baseProps} className={field.className} />;
     case "queue-select":
       return <QueueSelectorField {...baseProps} selectOptions={[]} size="sm" />;
+    case "flow-select":
+      return <FlowSelectorField {...baseProps} />;
+    case "cloud-execution-switch":
+      return <CloudExecutionSwitchField {...baseProps} />;
     case "queue-status-select":
       return <StatusSelectorField {...baseProps} size="sm" />;
     case "queue-conditional-group":

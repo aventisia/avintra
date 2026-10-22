@@ -63,4 +63,24 @@ public class ExecutionController : BaseApiController
         var response = await _jobsTableService.GetAndAssignNextPendingJobForMachineAsync(machineId);
         return ResultHelper(response);
     }
+
+    /// <summary>
+    /// Creates a job for another flow on behalf of a runner machine identity.
+    /// </summary>
+    [HttpPost("job")]
+    [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
+    public async Task<ActionResult<ServiceResponse<JobRecordDto>>> CreateFlowJob([FromBody] JobInsertDto jobInsertDto)
+    {
+        return ResultHelper(await _jobsTableService.CreateFlowJobAsync(jobInsertDto));
+    }
+
+    /// <summary>
+    /// Retrieves a job's status and output for a waiting Create Job step, scoped to the requesting machine's tenant.
+    /// </summary>
+    [HttpGet("job/{jobId}")]
+    [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
+    public async Task<ActionResult<ServiceResponse<FlowJobStatusDto>>> GetFlowJobStatus(Guid jobId)
+    {
+        return ResultHelper(await _jobsTableService.GetFlowJobStatusAsync(jobId));
+    }
 }
