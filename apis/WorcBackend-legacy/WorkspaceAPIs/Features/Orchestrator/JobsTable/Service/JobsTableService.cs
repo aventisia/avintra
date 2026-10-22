@@ -381,26 +381,10 @@ public class JobsTableService : IJobsTableService
         }
     }
 
-    public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto)
+    public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId)
     {
-        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
-
-        var tenantId = ResolveJobTenantId(jobInsertDto.ExecutionLocation);
-        if (tenantId == Guid.Empty)
-            return serviceResponse.Update("Tenant could not be resolved from the request.", 403);
-
         jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
         return await InsertJobAsync(jobInsertDto, tenantId);
-    }
-
-    private Guid ResolveJobTenantId(string? executionLocation)
-    {
-        if (JobsAssignmentHelpers.IsCloudExecutionLocation(executionLocation))
-            return _currentTenantService.CurrentTenantId;
-
-        return MachineIdentityClaims.TryGetTenantId(_httpContextAccessor.HttpContext?.User, out var tenantId)
-            ? tenantId
-            : Guid.Empty;
     }
 
     // Updates an existing job.
@@ -868,7 +852,10 @@ public class JobsTableService : IJobsTableService
             // Notify the initiating user (job.RefId) so the frontend can refresh the
             // credit balance immediately after the run completes. This covers the
             // runner/desktop path, which does not otherwise emit a JobCompleted signal.
-            if (job.RefId.HasValue && job.RefId.Value != Guid.Empty)
+            // IMPORTANT NOTE: Flow-triggered jobs carry the parent job id in RefId, not a user id.
+            if (job.TriggerType != TriggerTypesEnum.Flow
+                && job.RefId.HasValue
+                && job.RefId.Value != Guid.Empty)
             {
                 await _executionNotificationService.NotifyExecutionCompletedAsync(
                     job.RefId.Value, job.Id, job.Status, job.Remark);
@@ -1311,12 +1298,9 @@ public class JobsTableService : IJobsTableService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId)
+    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId)
     {
-        var serviceResponse = ServiceResponse<FlowJobStatusDto>.Create("Failed to fetch job status", 401);
-
-        if (!MachineIdentityClaims.TryGetTenantId(_httpContextAccessor.HttpContext?.User, out var tenantId))
-            return serviceResponse.Update("Machine credentials are required.", 403);
+        var serviceResponse = ServiceResponse<FlowJobStatusDto>.Create("Failed to fetch job status", 500);
 
         try
         {

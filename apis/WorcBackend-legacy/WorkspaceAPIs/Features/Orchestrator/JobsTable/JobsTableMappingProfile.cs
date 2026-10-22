@@ -25,7 +25,7 @@ public class JobsTableMappingProfile : IRegister
             .Map(dest => dest.FlowType, src => src.FlowVersion != null && src.FlowVersion.Flow != null ? src.FlowVersion.Flow.Type : FlowTypesEnum.Agent)
             .Map(dest => dest.IsFlowVersionPublished, src => src.FlowVersion != null ? src.FlowVersion.IsPublished : false)
             .Map(dest => dest.CreatedByName, src => src.ExecutedBy)
-            .Map(dest => dest.CreatedById, src => src.RefId)
+            .Map(dest => dest.CreatedById, src => src.TriggerType == TriggerTypesEnum.Flow ? Guid.Empty : src.RefId ?? Guid.Empty)
             .Map(dest => dest.CreatedAt, src => src.CreatedOn)
             .Map(dest => dest.ExecutionLocation, src => src.ExecutedOn)
             .Map(dest => dest.Remarks, src => src.Remark)
