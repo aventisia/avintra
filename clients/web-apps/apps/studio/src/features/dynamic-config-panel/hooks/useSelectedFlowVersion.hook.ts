@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getFlowVersion, searchFlowVersions } from "@/apis/search-flow-versions-api";
-
-const searchFlows = (query: string) =>
-  searchFlowVersions(query, "Agent", false).then((response) => response.data ?? []);
+import { getFlowVersion } from "@/apis/search-flow-versions-api";
 
 /**
  * Resolves the agent version behind a flow-select value.
@@ -18,5 +15,3 @@ export const useSelectedFlowVersion = (flowVersionId?: string) => {
 
   return data ?? null;
 };
-
-export { searchFlows };
