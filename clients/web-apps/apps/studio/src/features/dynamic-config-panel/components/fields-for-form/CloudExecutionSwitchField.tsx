@@ -8,11 +8,12 @@ interface CloudExecutionSwitchFieldProps extends BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
+  /** The form field holding the selected flow version the cloud support is resolved from. */
+  dependsOn?: string;
+
   /** If true, the field is disabled and cannot be interacted with. */
   disabled?: boolean;
 }
-
-const FLOW_VERSION_FIELD = "TargetFlowVersionId";
 
 const CLOUD_LOCATION = "cloud";
 
@@ -31,14 +32,19 @@ const CloudExecutionSwitchField = ({
   name,
   label,
   description,
+  dependsOn,
   disabled,
 }: CloudExecutionSwitchFieldProps) => {
   const { control, setValue } = useFormContext<FieldValues>();
-  const flowVersionId = useWatch({ control, name: FLOW_VERSION_FIELD }) as string | undefined;
+  const watchedDependency = useWatch({
+    control,
+    name: (dependsOn ?? name) as FieldPath<FieldValues>,
+  });
+  const flowVersionId = dependsOn ? (watchedDependency as string | undefined) : undefined;
   const selectedFlowVersion = useSelectedFlowVersion(flowVersionId);
   const value = useWatch({ control, name }) as boolean | undefined;
 
-  const supportsCloud = isCloudSupported(selectedFlowVersion?.supportedPlatform);
+  const supportsCloud = !dependsOn || isCloudSupported(selectedFlowVersion?.supportedPlatform);
   const isUnsupported = Boolean(flowVersionId) && !supportsCloud;
 
   useEffect(() => {

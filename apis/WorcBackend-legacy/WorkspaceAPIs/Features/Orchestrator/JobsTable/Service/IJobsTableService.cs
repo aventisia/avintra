@@ -29,6 +29,14 @@ public interface IJobsTableService
     Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto, Guid? providedTenantId = null);
 
     /// <summary>
+    /// Creates a job for another flow for the given tenant.
+    /// </summary>
+    /// <param name="jobInsertDto">The data needed to create the new job.</param>
+    /// <param name="tenantId">The tenant of the requesting machine identity.</param>
+    /// <returns>A task representing the service response containing the details of the newly created job.</returns>
+    Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId);
+
+    /// <summary>
     /// Updates an existing job.
     /// </summary>
     /// <param name="jobUpdateDto">The data required to update the job.</param>
@@ -99,18 +107,12 @@ public interface IJobsTableService
     Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
 
     /// <summary>
-    /// Creates a job for another flow, resolving the tenant from the request before inserting it.
-    /// </summary>
-    /// <param name="jobInsertDto">The data needed to create the new job.</param>
-    /// <returns>A task representing the service response containing the details of the newly created job.</returns>
-    Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto);
-
-    /// <summary>
-    /// Gets the status and output of a job scoped to the requesting machine's tenant.
+    /// Gets the status and output of a job scoped to the given tenant.
     /// </summary>
     /// <param name="jobId">The identifier of the job to retrieve.</param>
+    /// <param name="tenantId">The tenant of the requesting machine identity.</param>
     /// <returns>A task representing the service response containing the job status.</returns>
-    Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId);
+    Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId);
 
     // TODO: Need to check this
     // /// <summary>

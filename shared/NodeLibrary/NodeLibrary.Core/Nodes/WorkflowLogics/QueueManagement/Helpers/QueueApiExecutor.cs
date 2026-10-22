@@ -4,7 +4,7 @@ using NodeLibrary.Helpers;
 namespace NodeLibrary.QueueManagementNodes.Helpers;
 
 /// <summary>
-/// Utility class for executing HTTP requests against Queue Management APIs.
+/// Utility class for executing HTTP requests against the platform APIs.
 /// </summary>
 public static class QueueApiExecutor
 {
@@ -92,10 +92,13 @@ public static class QueueApiExecutor
         if (statusCode < 200 || statusCode >= 300)
         {
             throw new HttpRequestException(
-                message ?? $"Request failed with status code {(int)response.StatusCode} ({(int)response.StatusCode}).",
+                message ?? $"Request failed with status code {statusCode}.",
                 null,
                 (HttpStatusCode)statusCode);
         }
+
+        if (string.IsNullOrWhiteSpace(responseContent))
+            throw new HttpRequestException("Request failed with an empty response body.", null, (HttpStatusCode)statusCode);
 
         using var doc = JsonDocument.Parse(responseContent);
         return doc.RootElement.TryGetProperty("data", out var dataEl)

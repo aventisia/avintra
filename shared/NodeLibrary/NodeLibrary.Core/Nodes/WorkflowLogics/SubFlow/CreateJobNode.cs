@@ -1,4 +1,4 @@
-using NodeLibrary.SubFlowNodes.Helpers;
+using NodeLibrary.QueueManagementNodes.Helpers;
 
 namespace NodeLibrary.SubFlowNodes;
 
@@ -85,6 +85,11 @@ public class CreateJobNode : BaseNode
             var jobInputData = ParseJobInputData(context);
             var existingJobId = ParseExistingJobId(context);
             var waitForCompletion = WaitForCompletion.Get(context);
+            var pollIntervalSeconds = PollIntervalSeconds.Get(context);
+            var timeoutSeconds = TimeoutSeconds.Get(context);
+            if (waitForCompletion
+                && (pollIntervalSeconds < 1 || timeoutSeconds < 1 || pollIntervalSeconds >= timeoutSeconds))
+                throw new ArgumentException("Poll Interval must be at least 1 second and less than the Timeout.");
             var priority = Priority.Get(context).ToString();
             var parentJobId = jobContext?.Id == Guid.Empty ? (Guid?)null : jobContext?.Id;
 
@@ -99,7 +104,7 @@ public class CreateJobNode : BaseNode
                 existingJobId
             };
 
-            var createdJob = await JobApiExecutor.ExecuteAsync(
+            var createdJob = await QueueApiExecutor.ExecuteAsync(
                 baseUrl,
                 "workspace/api/execution/job",
                 HttpMethod.Post,
@@ -117,8 +122,8 @@ public class CreateJobNode : BaseNode
                 return;
             }
 
-            var deadline = DateTimeOffset.UtcNow.AddSeconds(Math.Max(1, TimeoutSeconds.Get(context)));
-            var (isCompleted, status) = await PollChildJobAsync(context, callerContext, baseUrl, childJobId, deadline);
+            var deadline = DateTimeOffset.UtcNow.AddSeconds(timeoutSeconds);
+            var (isCompleted, status) = await PollChildJobAsync(context, callerContext, baseUrl, childJobId, deadline, pollIntervalSeconds);
 
             if (!isCompleted)
                 throw new InvalidOperationException($"Created job {childJobId} finished with status {status}.");
@@ -174,9 +179,9 @@ public class CreateJobNode : BaseNode
         return parsedExistingJobId;
     }
 
-    private async Task<(bool IsCompleted, string Status)> PollChildJobAsync(INodeContext context, CallerContext callerContext, string baseUrl, Guid childJobId, DateTimeOffset deadline)
+    private async Task<(bool IsCompleted, string Status)> PollChildJobAsync(INodeContext context, CallerContext callerContext, string baseUrl, Guid childJobId, DateTimeOffset deadline, int pollIntervalSeconds)
     {
-        var interval = TimeSpan.FromSeconds(Math.Max(1, PollIntervalSeconds.Get(context)));
+        var interval = TimeSpan.FromSeconds(pollIntervalSeconds);
 
         while (DateTimeOffset.UtcNow < deadline)
         {
@@ -184,7 +189,7 @@ public class CreateJobNode : BaseNode
             await Task.Delay(interval < remaining ? interval : remaining);
 
             // IMPORTANT NOTE: the token is read through CallerContext on every poll so a refreshed machine JWT is picked up.
-            var childJob = await JobApiExecutor.ExecuteAsync(
+            var childJob = await QueueApiExecutor.ExecuteAsync(
                 baseUrl,
                 $"workspace/api/execution/job/{childJobId}",
                 HttpMethod.Get,
