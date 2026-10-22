@@ -98,6 +98,20 @@ public interface IJobsTableService
     /// <returns>A service response containing the fixed credits amount, if configured.</returns>
     Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
 
+    /// <summary>
+    /// Creates a job for another flow, resolving the tenant from the request before inserting it.
+    /// </summary>
+    /// <param name="jobInsertDto">The data needed to create the new job.</param>
+    /// <returns>A task representing the service response containing the details of the newly created job.</returns>
+    Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto);
+
+    /// <summary>
+    /// Gets the status and output of a job scoped to the requesting machine's tenant.
+    /// </summary>
+    /// <param name="jobId">The identifier of the job to retrieve.</param>
+    /// <returns>A task representing the service response containing the job status.</returns>
+    Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId);
+
     // TODO: Need to check this
     // /// <summary>
     // /// Retrieves a list of all job logs between optional start and end date filters.

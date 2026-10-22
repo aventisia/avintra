@@ -151,6 +151,15 @@
             "icon": "BlockNodeIcon",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "CreateJobNode",
+            "label": "Create Job",
+            "description": "Creates a separate job for another agent, optionally waits for it to finish.",
+            "img": "/function.png",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"]
           }
         ]
       }
@@ -2898,6 +2907,15 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "ExtractLinkedInApplicantsV2Node",
+            "label": "Extract LinkedIn Applicants - v2",
+            "description": "Extracts LinkedIn applicants from a job posting using the new LinkedIn applicants UI, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
+            "img": "/assets/BrowserAutomation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
             "name": "CheckElementStateNode",
             "label": "Check Element State",
             "description": "Verifies if an element is visible, enabled, or selected.",
@@ -2964,15 +2982,6 @@
             "name": "ExtractLinkedInApplicantsNode",
             "label": "Extract LinkedIn Applicants",
             "description": "Extracts LinkedIn applicants from a job posting, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
-            "img": "/assets/BrowserAutomation.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "ExtractLinkedInApplicantsV2Node",
-            "label": "Extract LinkedIn Applicants - v2",
-            "description": "Extracts LinkedIn applicants from a job posting using the new LinkedIn applicants UI, writes applicant data to Excel, downloads resumes, and moves files to a target folder.",
             "img": "/assets/BrowserAutomation.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]

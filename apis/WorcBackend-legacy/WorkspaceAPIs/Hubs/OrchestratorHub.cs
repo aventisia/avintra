@@ -184,7 +184,7 @@ public class OrchestratorHub : Hub
                             flowVersionIds.Contains(w.FlowVersionId) &&
                             (w.MachineId == clientId
                                 || ((w.MachineId == null || w.MachineId == Guid.Empty)
-                                    && ((w.ExecutedOn != null && w.ExecutedOn.ToLower() == "web server") || w.TriggerType == TriggerTypesEnum.Time)))
+                                    && ((w.ExecutedOn != null && w.ExecutedOn.ToLower() == "web server") || w.TriggerType == TriggerTypesEnum.Time || w.TriggerType == TriggerTypesEnum.Flow)))
                         )
                         .OrderBy(o => o.CreatedOn)
                         .FirstOrDefaultAsync();
