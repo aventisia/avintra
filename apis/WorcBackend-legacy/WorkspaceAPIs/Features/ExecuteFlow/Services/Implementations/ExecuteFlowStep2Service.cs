@@ -220,7 +220,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             {
                 _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", flowExecutionArgs.JobId);
             }
-            else
+            else if (job.TriggerType != TriggerTypesEnum.Flow)
             {
                 // Send real-time notification to the user about job completion
                 await executionNotificationService.NotifyExecutionCompletedAsync(flowExecutionArgs.UserId, flowExecutionArgs.JobId, job.Status);
@@ -335,7 +335,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             {
                 _logger.LogWarning("Context SaveChanges failed while persisting final flow execution status for job. JobId: {JobId}", flowExecutionArgs.JobId);
             }
-            else
+            else if (job.TriggerType != TriggerTypesEnum.Flow)
             {
                 await executionNotificationService.NotifyExecutionCompletedAsync(flowExecutionArgs.UserId, flowExecutionArgs.JobId, job.Status);
             }
@@ -499,7 +499,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             job.Remark = TruncateRemark(errorMessage);
 
             unitOfWork.JobRepo.Update(job);
-            if (await unitOfWork.SaveAsync())
+            if (await unitOfWork.SaveAsync() && job.TriggerType != TriggerTypesEnum.Flow)
             {
                 // Send real-time notification to the user about job failure
                 await executionNotificationService.NotifyExecutionCompletedAsync(userId, jobId, JobStatusEnum.Failed, errorMessage);

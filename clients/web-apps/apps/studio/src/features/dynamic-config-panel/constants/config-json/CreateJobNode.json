@@ -4,10 +4,7 @@
   "description": "Creates a separate job for another agent, optionally waits for it to finish.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": [
-    "cloud",
-    "windows"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
@@ -58,7 +55,8 @@
       "label": "Execute it on Cloud",
       "description": "Runs the created job on the cloud queue instead of a registered machine.",
       "defaultValue": false,
-      "required": false
+      "required": false,
+      "dependsOn": "TargetFlowVersionId"
     },
     {
       "direction": "Input",
