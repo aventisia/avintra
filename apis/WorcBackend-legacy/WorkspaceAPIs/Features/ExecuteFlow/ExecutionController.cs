@@ -65,22 +65,36 @@ public class ExecutionController : BaseApiController
     }
 
     /// <summary>
-    /// Creates a job for another flow on behalf of a runner machine identity.
+    /// Creates a job for another flow on behalf of a runner machine identity. Machine JWT only, since the tenant is resolved from its claims.
     /// </summary>
     [HttpPost("job")]
     [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> CreateFlowJob([FromBody] JobInsertDto jobInsertDto)
     {
-        return ResultHelper(await _jobsTableService.CreateFlowJobAsync(jobInsertDto));
+        if (!TryGetMachineTenantId(out var tenantId))
+            return PlainTextError(403, "Machine credentials are required.");
+
+        return ResultHelper(await _jobsTableService.CreateFlowJobAsync(jobInsertDto, tenantId));
     }
 
     /// <summary>
-    /// Retrieves a job's status and output for a waiting Create Job step, scoped to the requesting machine's tenant.
+    /// Retrieves a job's status and output for a waiting Create Job step, scoped to the requesting machine's tenant. Machine JWT only.
     /// </summary>
     [HttpGet("job/{jobId}")]
     [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
     public async Task<ActionResult<ServiceResponse<FlowJobStatusDto>>> GetFlowJobStatus(Guid jobId)
     {
-        return ResultHelper(await _jobsTableService.GetFlowJobStatusAsync(jobId));
+        if (!TryGetMachineTenantId(out var tenantId))
+            return PlainTextError(403, "Machine credentials are required.");
+
+        return ResultHelper(await _jobsTableService.GetFlowJobStatusAsync(jobId, tenantId));
+    }
+
+    private bool TryGetMachineTenantId(out Guid tenantId)
+    {
+        tenantId = Guid.Empty;
+
+        return MachineIdentityClaims.TryGetMachineId(User, out _)
+            && MachineIdentityClaims.TryGetTenantId(User, out tenantId);
     }
 }

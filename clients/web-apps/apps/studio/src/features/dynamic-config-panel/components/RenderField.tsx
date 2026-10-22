@@ -156,7 +156,7 @@ export const RenderField = ({ force, ...field }: DCPFieldSchemaType & { force?: 
     case "flow-select":
       return <FlowSelectorField {...baseProps} />;
     case "cloud-execution-switch":
-      return <CloudExecutionSwitchField {...baseProps} />;
+      return <CloudExecutionSwitchField {...baseProps} dependsOn={field.dependsOn} />;
     case "queue-status-select":
       return <StatusSelectorField {...baseProps} size="sm" />;
     case "queue-conditional-group":
