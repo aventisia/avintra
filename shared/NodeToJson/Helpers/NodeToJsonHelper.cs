@@ -161,6 +161,13 @@ public static class NodeToJsonHelper
                 field["placeholder"] = placeholderAttr.Placeholder;
             }
 
+            // If DependsOn attribute is present then add the dependency to the field
+            var dependsOnAttr = prop.GetCustomAttribute<DependsOnAttribute>();
+            if (dependsOnAttr != null)
+            {
+                field["dependsOn"] = dependsOnAttr.FieldName;
+            }
+
             // Get RenderIf attributes
             var renderIfConditions = prop.GetCustomAttributes<RenderIfConditionAttribute>().ToList();
 
