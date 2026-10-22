@@ -422,6 +422,7 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return applyFieldOptions(z.number(), field);
     case "checkbox":
     case "switch":
+    case "cloud-execution-switch":
       return applyFieldOptions(z.boolean(), field);
     case "condition-groups":
       return getConditionSchema(field);
