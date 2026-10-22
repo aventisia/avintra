@@ -29,4 +29,18 @@ const searchFlowVersions = (
     .then((res) => res.data);
 };
 
-export { searchFlowVersions };
+/**
+ * Fetch a flow version by its id.
+ *
+ * @param flowVersionId - Id of the flow version to retrieve.
+ * @returns A promise that resolves to the matching flow version wrapped in an HTTP response object.
+ */
+const getFlowVersion = (flowVersionId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SearchFlowVersionResDto>>(`${baseAPIURL}/flow-version/${flowVersionId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+export { getFlowVersion, searchFlowVersions };

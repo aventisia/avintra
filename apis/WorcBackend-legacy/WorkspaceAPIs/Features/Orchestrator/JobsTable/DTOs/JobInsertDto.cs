@@ -20,6 +20,11 @@ public class JobInsertDto
     public TriggerTypesEnum? TriggerType { get; set; } = TriggerTypesEnum.Manual;
 
     /// <summary>
+    /// Gets or sets the reference identifier for the job. For jobs created by another flow, this is the parent job's ID.
+    /// </summary>
+    public Guid? RefId { get; set; }
+
+    /// <summary>
     /// Gets or sets the priority level of the job.
     /// </summary>
     public JobPriorityEnum? Priority { get; set; } = JobPriorityEnum.Normal;
