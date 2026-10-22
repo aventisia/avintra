@@ -371,6 +371,22 @@ public class JobsTableService : IJobsTableService
 
     public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId)
     {
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
+
+        if (!IsMachineCaller())
+        {
+            var parentJobId = jobInsertDto.RefId;
+            var parentIsRunning = parentJobId.HasValue
+                && await _unitOfWork.JobRepo
+                    .GetByConditionAsync(w => w.Id == parentJobId.Value
+                        && w.TenantId == tenantId
+                        && w.Status == JobStatusEnum.Running)
+                    .AnyAsync();
+
+            if (!parentIsRunning)
+                return serviceResponse.Update("Parent job not found.", 404);
+        }
+
         jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
         return await InsertJobAsync(jobInsertDto, tenantId);
     }
@@ -1029,6 +1045,9 @@ public class JobsTableService : IJobsTableService
         }
     }
 
+    private bool IsMachineCaller()
+        => MachineIdentityClaims.TryGetMachineId(_httpContextAccessor.HttpContext?.User, out _);
+
     private async Task<bool> DoesCallerMatchMachineAsync(Guid machineId)
     {
         var user = _httpContextAccessor.HttpContext?.User;
@@ -1286,16 +1305,42 @@ public class JobsTableService : IJobsTableService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId)
+    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId, Guid? parentJobId)
     {
         var serviceResponse = ServiceResponse<FlowJobStatusDto>.Create("Failed to fetch job status", 500);
 
         try
         {
-            var job = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobId && w.TenantId == tenantId)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            Job? job;
+
+            if (IsMachineCaller())
+            {
+                job = await _unitOfWork.JobRepo
+                    .GetByConditionAsync(w => w.Id == jobId && w.TenantId == tenantId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+            }
+            else
+            {
+                if (!parentJobId.HasValue)
+                    return serviceResponse.Update("Job not found.", 404);
+
+                var linkedParentJobId = parentJobId.Value;
+
+                job = await _unitOfWork.JobRepo
+                    .GetByConditionAsync(w => w.Id == jobId
+                        && w.TenantId == tenantId
+                        && w.TriggerType == TriggerTypesEnum.Flow
+                        && w.RefId == linkedParentJobId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                if (job != null
+                    && !await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == linkedParentJobId && w.TenantId == tenantId)
+                        .AnyAsync())
+                    job = null;
+            }
 
             // If record not found, log and return
             if (job == null)
