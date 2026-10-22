@@ -14,6 +14,7 @@ import {
 import { onErrorFieldsJson } from "../constants/OnErrorFields";
 import { NodeConfigSchemaType } from "../types/node-config-schema-type";
 import { useFlushNodeConfig } from "./useFlushNodeConfig";
+import { useNodeConfigValidation } from "./useNodeConfigValidation.hook";
 import { useRegisterFormFlush } from "./useRegisterFormFlush";
 
 /**
@@ -137,6 +138,8 @@ export const useDefineDCPForm = () => {
   // Expose the latest flush to boundary handlers (panel close / node switch /
   // tab switch / before Test / before Save).
   useRegisterFormFlush(flushNow);
+
+  useNodeConfigValidation(form as unknown as UseFormReturn<FieldValues>, nodeUniqueName);
 
   // Publish dirty state for the navigation guard (X / Escape / node switch).
   // Reading formState.isDirty during render subscribes to dirty updates.

@@ -59,6 +59,11 @@ public class SearchFlowVersionResDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the comma-separated platforms the flow version supports.
+    /// </summary>
+    public string? SupportedPlatform { get; set; }
+
+    /// <summary>
     /// Gets or sets the username of the user who last modified the user record.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>

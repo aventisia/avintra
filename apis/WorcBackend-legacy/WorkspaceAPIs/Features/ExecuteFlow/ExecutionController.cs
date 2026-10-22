@@ -63,4 +63,33 @@ public class ExecutionController : BaseApiController
         var response = await _jobsTableService.GetAndAssignNextPendingJobForMachineAsync(machineId);
         return ResultHelper(response);
     }
+
+    /// <summary>
+    /// Creates a job for another flow for a machine identity or for a user whose running parent job links to the new job. Requires a JWT; API-key authentication is not sufficient.
+    /// </summary>
+    [HttpPost("job")]
+    [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
+    public async Task<ActionResult<ServiceResponse<JobRecordDto>>> CreateFlowJob([FromBody] JobInsertDto jobInsertDto)
+    {
+        if (!TryResolveFlowJobTenant(out var tenantId))
+            return PlainTextError(403, "Machine credentials are required.");
+
+        return ResultHelper(await _jobsTableService.CreateFlowJobAsync(jobInsertDto, tenantId));
+    }
+
+    /// <summary>
+    /// Retrieves a job's status and output for a waiting Create Job step, scoped to the caller's tenant and, for user tokens, to the parent job. Requires a JWT; API-key authentication is not sufficient.
+    /// </summary>
+    [HttpGet("job/{jobId}")]
+    [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
+    public async Task<ActionResult<ServiceResponse<FlowJobStatusDto>>> GetFlowJobStatus(Guid jobId, [FromQuery] Guid? parentJobId)
+    {
+        if (!TryResolveFlowJobTenant(out var tenantId))
+            return PlainTextError(403, "Machine credentials are required.");
+
+        return ResultHelper(await _jobsTableService.GetFlowJobStatusAsync(jobId, tenantId, parentJobId));
+    }
+
+    private bool TryResolveFlowJobTenant(out Guid tenantId)
+        => MachineIdentityClaims.TryGetTenantId(User, out tenantId);
 }

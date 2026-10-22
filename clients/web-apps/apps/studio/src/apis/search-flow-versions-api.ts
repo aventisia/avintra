@@ -29,4 +29,27 @@ const searchFlowVersions = (
     .then((res) => res.data);
 };
 
-export { searchFlowVersions };
+/**
+ * Fetch agent flow versions for the flow selector, including unpublished versions.
+ *
+ * @param query - Optional search keyword to filter flow versions.
+ * @returns A promise that resolves to the matching agent flow versions.
+ */
+const searchAgentFlowVersions = (query: string = "") =>
+  searchFlowVersions(query, "Agent", false).then((response) => response.data ?? []);
+
+/**
+ * Fetch a flow version by its id.
+ *
+ * @param flowVersionId - Id of the flow version to retrieve.
+ * @returns A promise that resolves to the matching flow version wrapped in an HTTP response object.
+ */
+const getFlowVersion = (flowVersionId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SearchFlowVersionResDto>>(`${baseAPIURL}/flow-version/${flowVersionId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+export { getFlowVersion, searchAgentFlowVersions, searchFlowVersions };
