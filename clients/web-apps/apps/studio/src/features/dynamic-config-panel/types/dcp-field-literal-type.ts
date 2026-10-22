@@ -57,6 +57,8 @@ export type DCPControlType =
   | "json-editor"
   | "queue-select"
   | "queue-status-select"
+  | "flow-select"
+  | "cloud-execution-switch"
   | "queue-conditional-group"
   | "queue-priority-group"
   | "string-array"

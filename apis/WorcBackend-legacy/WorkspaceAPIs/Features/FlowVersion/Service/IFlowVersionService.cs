@@ -10,6 +10,13 @@ public interface IFlowVersionService
     Task<ServiceResponse<IEnumerable<FlowVersionDto>>> GetFlowVersionsAsync(Guid flowId);
 
     /// <summary>
+    /// Get a flow version by its identifier
+    /// </summary>
+    /// <param name="flowVersionId">Flow version Id</param>
+    /// <returns>The matching flow version</returns>
+    Task<ServiceResponse<SearchFlowVersionResDto>> GetFlowVersionAsync(Guid flowVersionId);
+
+    /// <summary>
     /// Creates a new flow version
     /// </summary>
     /// <param name="flowVersionDto">Flow version dto</param>
