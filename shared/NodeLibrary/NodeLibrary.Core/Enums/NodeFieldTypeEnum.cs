@@ -21,6 +21,8 @@ public enum NodeFieldTypeEnum
     CredentialsSelect,
     QueueSelect,
     QueueStatusSelect,
+    FlowSelect,
+    CloudExecutionSwitch,
     JsonEditor,
     CodeEditor,
     ConfigPanelModelOutput
