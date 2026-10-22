@@ -10,10 +10,11 @@ import {
 import { useState } from "react";
 import { FieldPath, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
+import { searchAgentFlowVersions } from "@/apis/search-flow-versions-api";
 import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
-import { searchFlows, useSelectedFlowVersion } from "../../hooks/useSelectedFlowVersion.hook";
+import { useSelectedFlowVersion } from "../../hooks/useSelectedFlowVersion.hook";
 
 interface FlowSelectorFieldProps extends BaseFieldProps {
   /** The name of the form field. */
@@ -40,6 +41,7 @@ const FlowSelectorField = ({
   const value = useWatch({ control, name }) as string | undefined;
   const selectedFlowVersion = useSelectedFlowVersion(value);
   const currentFlowVersionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
+  const currentFlowId = useCurrentFlowStore((state) => state.currentFlow.id);
   const [pickedFlow, setPickedFlow] = useState<SearchFlowVersionResDto | null>(null);
 
   const selectedFlow = value
@@ -61,8 +63,10 @@ const FlowSelectorField = ({
               placeholder={placeholder ?? "Search agent"}
               queryKeyBase={["flow-select-versions", "search"]}
               fetcher={(query) =>
-                searchFlows(query).then((flows) =>
-                  flows.filter((flow) => flow.id !== currentFlowVersionId),
+                searchAgentFlowVersions(query).then((flows) =>
+                  flows.filter(
+                    (flow) => flow.id !== currentFlowVersionId && flow.flowId !== currentFlowId,
+                  ),
                 )
               }
               filters={undefined}
