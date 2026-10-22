@@ -79,7 +79,8 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Attribution rules:
             // 1. ManualTrigger (non-published) → current authenticated user name or Agent Builder fallback.
             // 2. API, Email, Event, Message, Queue, Time, Webhook → trigger name (prefixed for traceability).
-            // 3. All other trigger types → constructed machine identity (OS username + OS ID).
+            // 3. Flow → the parent flow's name (prefixed for traceability).
+            // 4. All other trigger types → constructed machine identity (OS username + OS ID).
             //
             // NOTE: This mapping should be reviewed whenever new TriggerTypesEnum values are introduced.
             if (string.IsNullOrWhiteSpace(job.ExecutedBy))
@@ -115,6 +116,23 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                     job.ExecutedBy = trigger != null
                         ? $"trigger_{trigger.Name}"
                         : "trigger_Unknown";
+
+                    job.ExecutedOn = job.Machine != null
+                        ? $"machine_{job.Machine.Name}"
+                        : "Web Server";
+                }
+                else if (job.TriggerType == TriggerTypesEnum.Flow)
+                {
+                    var parentFlowName = job.RefId.HasValue
+                        ? await unitOfWork.JobRepo
+                            .GetByConditionAsync(w => w.Id == job.RefId.Value)
+                            .Select(s => s.FlowVersion.Flow.Name)
+                            .FirstOrDefaultAsync()
+                        : null;
+
+                    job.ExecutedBy = parentFlowName != null
+                        ? $"flow_{parentFlowName}"
+                        : "flow_Unknown";
 
                     job.ExecutedOn = job.Machine != null
                         ? $"machine_{job.Machine.Name}"
@@ -178,9 +196,10 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var flowProcessor = new FlowProcessor(new NodeProcessor());
             var flowResult = await flowProcessor.ExecuteAsync(flowExecutionArgs.FlowData, initialVariables);
 
-            // Only persist output data for chat-triggered executions or ChatAgent flows.
+            // Only persist output data for chat-triggered executions, ChatAgent flows, and
+            // flow-created children (a waiting parent step returns the child's outputs).
             var flowType = job.FlowVersion?.Flow?.Type;
-            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType);
+            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType, job.TriggerType);
 
             // Update the job with the final status and results after execution
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
@@ -296,7 +315,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 
             // Only persist output data for chat-triggered executions or ChatAgent flows.
             var flowType = job.FlowVersion?.Flow?.Type;
-            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType);
+            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType, job.TriggerType);
 
             // Update the job with the final status and results
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
@@ -387,11 +406,27 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         }
     }
 
-    // Helper: Extracts the OutputDataJson string for the job only when it is a chat-triggered flow
-    // or the flow type is ChatAgent. For chat flows, extracts the LLM response text from _ChatLLMResult.
-    // For all other cases, returns null so that no output data is persisted.
-    private static string? ExtractOutputDataJson(Dictionary<string, object?> initialVariables, FlowExecutionResult flowResult, FlowTypesEnum? flowType)
+    // Helper: Extracts the OutputDataJson string for the job when it is a chat-triggered flow,
+    // the flow type is ChatAgent, or the job was created by another flow (a waiting parent reads it).
+    // For chat flows, extracts the LLM response text from _ChatLLMResult; for flow-created jobs,
+    // serializes the flow's output variables. All other cases return null so no output is persisted.
+    private static string? ExtractOutputDataJson(Dictionary<string, object?> initialVariables, FlowExecutionResult flowResult, FlowTypesEnum? flowType, TriggerTypesEnum triggerType)
     {
+        if (triggerType == TriggerTypesEnum.Flow)
+        {
+            if (flowResult.OutputVariables is null || flowResult.OutputVariables.Count == 0)
+                return null;
+
+            try
+            {
+                return System.Text.Json.JsonSerializer.Serialize(flowResult.OutputVariables);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         bool isChatOutput = (initialVariables.TryGetValue("TriggeredBy", out var triggeredBy) &&
             string.Equals(triggeredBy?.ToString(), "chat", StringComparison.OrdinalIgnoreCase)) ||
             flowType == FlowTypesEnum.ChatAgent;

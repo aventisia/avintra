@@ -263,7 +263,7 @@ public class JobsTableService : IJobsTableService
                     .GetByConditionAsync(w =>
                         w.Name.ToLower() == requestedMachineName.ToLower())
                     .FirstOrDefaultAsync();
-                    
+
                 if (requestedMachine == null)
                     return serviceResponse.Update("Invalid execution location.", 400);
 
@@ -358,6 +358,28 @@ public class JobsTableService : IJobsTableService
             _logger.LogError(ex, "Error occurred while inserting new job.");
             return serviceResponse;
         }
+    }
+
+    public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto)
+    {
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
+
+        var tenantId = ResolveJobTenantId(jobInsertDto.ExecutionLocation);
+        if (tenantId == Guid.Empty)
+            return serviceResponse.Update("Tenant could not be resolved from the request.", 403);
+
+        jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
+        return await InsertJobAsync(jobInsertDto, tenantId);
+    }
+
+    private Guid ResolveJobTenantId(string? executionLocation)
+    {
+        if (JobsAssignmentHelpers.IsCloudExecutionLocation(executionLocation))
+            return _currentTenantService.CurrentTenantId;
+
+        return MachineIdentityClaims.TryGetTenantId(_httpContextAccessor.HttpContext?.User, out var tenantId)
+            ? tenantId
+            : Guid.Empty;
     }
 
     // Updates an existing job.
@@ -1035,7 +1057,7 @@ public class JobsTableService : IJobsTableService
         await using var command = dbConnection.CreateCommand();
         command.Transaction = _workspaceDbContext.Database.CurrentTransaction?.GetDbTransaction();
         command.CommandText =
-            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR (\"MachineId\" IS NULL AND LOWER(\"ExecutedOn\") = 'web server')) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
+            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR (\"MachineId\" IS NULL AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" = @flowTriggerType))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
 
         var tenantParam = command.CreateParameter();
         tenantParam.ParameterName = "tenantId";
@@ -1059,6 +1081,13 @@ public class JobsTableService : IJobsTableService
         flowVersionsParam.Value = flowVersionIds.ToArray();
         flowVersionsParam.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Uuid;
         command.Parameters.Add(flowVersionsParam);
+
+        var flowTriggerTypeParam = command.CreateParameter();
+        flowTriggerTypeParam.ParameterName = "flowTriggerType";
+        // IMPORTANT NOTE: "TriggerType" is persisted as text (EnumToStringConverter<TriggerTypesEnum>), so the parameter must be the enum name, not its integer value.
+        flowTriggerTypeParam.Value = TriggerTypesEnum.Flow.ToString();
+        flowTriggerTypeParam.DbType = DbType.String;
+        command.Parameters.Add(flowTriggerTypeParam);
 
         var result = await command.ExecuteScalarAsync();
         return result is Guid jobId ? jobId : Guid.Empty;
@@ -1234,6 +1263,38 @@ public class JobsTableService : IJobsTableService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId)
+    {
+        var serviceResponse = ServiceResponse<FlowJobStatusDto>.Create("Failed to fetch job status", 401);
+
+        if (!MachineIdentityClaims.TryGetTenantId(_httpContextAccessor.HttpContext?.User, out var tenantId))
+            return serviceResponse.Update("Machine credentials are required.", 403);
+
+        try
+        {
+            var job = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == jobId && w.TenantId == tenantId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            // If record not found, log and return
+            if (job == null)
+                return serviceResponse.Update("Job not found.", 404);
+
+            return serviceResponse.Update(null, 200, new FlowJobStatusDto
+            {
+                Id = job.Id,
+                Status = job.Status,
+                OutputDataJson = job.OutputDataJson
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving job status for Job ID {jobId}.", jobId);
+            return serviceResponse;
+        }
     }
 
     // Exports jobs data into a CSV file 
