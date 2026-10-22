@@ -19,6 +19,7 @@ public class CreateJobNode : BaseNode
     [DisplayName("Execute it on Cloud")]
     [Description("Runs the created job on the cloud queue instead of a registered machine.")]
     [DefaultValue(false)]
+    [DependsOn(nameof(TargetFlowVersionId))]
     [NodeFieldType(NodeFieldTypeEnum.CloudExecutionSwitch)]
     public InArgument<bool> ExecuteOnCloud { get; set; } = new InArgument<bool>(false);
 
@@ -123,7 +124,7 @@ public class CreateJobNode : BaseNode
             }
 
             var deadline = DateTimeOffset.UtcNow.AddSeconds(timeoutSeconds);
-            var (isCompleted, status) = await PollChildJobAsync(context, callerContext, baseUrl, childJobId, deadline, pollIntervalSeconds);
+            var (isCompleted, status) = await PollChildJobAsync(context, callerContext, baseUrl, childJobId, parentJobId, deadline, pollIntervalSeconds);
 
             if (!isCompleted)
                 throw new InvalidOperationException($"Created job {childJobId} finished with status {status}.");
@@ -179,9 +180,12 @@ public class CreateJobNode : BaseNode
         return parsedExistingJobId;
     }
 
-    private async Task<(bool IsCompleted, string Status)> PollChildJobAsync(INodeContext context, CallerContext callerContext, string baseUrl, Guid childJobId, DateTimeOffset deadline, int pollIntervalSeconds)
+    private async Task<(bool IsCompleted, string Status)> PollChildJobAsync(INodeContext context, CallerContext callerContext, string baseUrl, Guid childJobId, Guid? parentJobId, DateTimeOffset deadline, int pollIntervalSeconds)
     {
         var interval = TimeSpan.FromSeconds(pollIntervalSeconds);
+        var pollUrl = parentJobId.HasValue
+            ? $"workspace/api/execution/job/{childJobId}?parentJobId={parentJobId.Value}"
+            : $"workspace/api/execution/job/{childJobId}";
 
         while (DateTimeOffset.UtcNow < deadline)
         {
@@ -191,7 +195,7 @@ public class CreateJobNode : BaseNode
             // IMPORTANT NOTE: the token is read through CallerContext on every poll so a refreshed machine JWT is picked up.
             var childJob = await QueueApiExecutor.ExecuteAsync(
                 baseUrl,
-                $"workspace/api/execution/job/{childJobId}",
+                pollUrl,
                 HttpMethod.Get,
                 callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required"),
                 null,
