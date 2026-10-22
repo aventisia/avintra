@@ -1,14 +1,6 @@
-import { AsyncSingleSelect } from "@avplatform/ui/async-select";
-import {
-  BaseFieldProps,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabelExt,
-  FormMessage,
-} from "@avplatform/ui/form";
+import { AsyncSingleSelectField, BaseFieldProps } from "@avplatform/ui/form";
 import { useState } from "react";
-import { FieldPath, FieldValues, useFormContext, useWatch } from "react-hook-form";
+import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 
 import { searchAgentFlowVersions } from "@/apis/search-flow-versions-api";
 import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
@@ -38,7 +30,8 @@ const FlowSelectorField = ({
   disabled,
 }: FlowSelectorFieldProps) => {
   const { control } = useFormContext<FieldValues>();
-  const value = useWatch({ control, name }) as string | undefined;
+  const { field } = useController({ control, name });
+  const value = field.value as string | undefined;
   const selectedFlowVersion = useSelectedFlowVersion(value);
   const currentFlowVersionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
   const currentFlowId = useCurrentFlowStore((state) => state.currentFlow.id);
@@ -50,40 +43,27 @@ const FlowSelectorField = ({
     : null;
 
   return (
-    <FormField
+    <AsyncSingleSelectField<SearchFlowVersionResDto>
       name={name}
-      control={control}
-      render={({ field }) => (
-        <FormItem size="sm">
-          <FormLabelExt size="sm" label={label} description={description} disabled={disabled} />
-
-          <FormControl>
-            <AsyncSingleSelect<SearchFlowVersionResDto>
-              size="sm"
-              placeholder={placeholder ?? "Search agent"}
-              queryKeyBase={["flow-select-versions", "search"]}
-              fetcher={(query) =>
-                searchAgentFlowVersions(query).then((flows) =>
-                  flows.filter(
-                    (flow) => flow.id !== currentFlowVersionId && flow.flowId !== currentFlowId,
-                  ),
-                )
-              }
-              filters={undefined}
-              selectedItem={selectedFlow}
-              onSelect={(flow) => {
-                setPickedFlow(flow);
-                field.onChange(flow?.id ?? "");
-              }}
-              getItemId={(flow) => flow.id}
-              getItemLabel={getFlowLabel}
-              disabled={disabled}
-            />
-          </FormControl>
-
-          <FormMessage size="sm" />
-        </FormItem>
-      )}
+      size="sm"
+      label={label}
+      description={description}
+      placeholder={placeholder ?? "Search agent"}
+      queryKeyBase={["flow-select-versions", "search"]}
+      fetcher={(query) =>
+        searchAgentFlowVersions(query).then((flows) =>
+          flows.filter((flow) => flow.id !== currentFlowVersionId && flow.flowId !== currentFlowId),
+        )
+      }
+      filters={undefined}
+      selectedItem={selectedFlow}
+      onSelect={(flow) => {
+        setPickedFlow(flow);
+        field.onChange(flow?.id ?? "");
+      }}
+      getItemId={(flow) => flow.id}
+      getItemLabel={getFlowLabel}
+      disabled={disabled}
     />
   );
 };
