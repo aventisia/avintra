@@ -477,6 +477,10 @@ public class OrchestratorHub : Hub
                 return;
             }
 
+            // IMPORTANT NOTE: Flow-triggered jobs carry the parent job id in RefId, so there is no initiating user group to notify.
+            if (job.TriggerType == TriggerTypesEnum.Flow)
+                return;
+
             await _flowExecutionHubContext.Clients
                 .Group($"user_{job.RefId}")
                 .SendAsync("JobProgress", new
@@ -507,6 +511,10 @@ public class OrchestratorHub : Hub
                 _logger.LogWarning("Completion report received for unknown job {JobId}.", jobId);
                 return;
             }
+
+            // IMPORTANT NOTE: Flow-triggered jobs carry the parent job id in RefId, so there is no initiating user group to notify.
+            if (job.TriggerType == TriggerTypesEnum.Flow)
+                return;
 
             await _flowExecutionHubContext.Clients
                 .Group($"user_{job.RefId}")

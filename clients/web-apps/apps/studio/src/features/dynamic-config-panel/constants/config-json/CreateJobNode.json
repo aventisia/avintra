@@ -4,7 +4,10 @@
   "description": "Creates a separate job for another agent, optionally waits for it to finish.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["cloud", "windows"],
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [
