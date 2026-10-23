@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
@@ -21,7 +21,8 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
-    private readonly IMemoryCache _memoryCache;
+    private readonly IDistributedCache _authStateCache;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
@@ -29,14 +30,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         EnvironmentConfig environmentConfig,
         UserManager<AccountUser> userManager,
         IEmailService emailService,
-        IMemoryCache memoryCache)
+        IDistributedCache authStateCache,
+        IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _environmentConfig = environmentConfig;
         _userManager = userManager;
         _emailService = emailService;
-        _memoryCache = memoryCache;
+        _authStateCache = authStateCache;
+        _httpClientFactory = httpClientFactory;
     }
 
     private string? GetSsoUnavailableMessage()
@@ -168,13 +171,19 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         if (string.IsNullOrWhiteSpace(state)) return null;
 
         var cacheKey = BuildAuthStateCacheKey(state);
-        if (!_memoryCache.TryGetValue(cacheKey, out SsoAuthStateDto? authState) || authState == null)
+        var stored = _authStateCache.GetString(cacheKey);
+        if (stored == null) return null;
+
+        _authStateCache.Remove(cacheKey);
+
+        try
+        {
+            return JsonSerializer.Deserialize<SsoAuthStateDto>(stored);
+        }
+        catch (JsonException)
         {
             return null;
         }
-
-        _memoryCache.Remove(cacheKey);
-        return authState;
     }
 
     public async Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code, string? state)
@@ -272,7 +281,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 ["scope"] = EntraLoginScope
             };
 
-            using var http = new HttpClient();
+            using var http = _httpClientFactory.CreateClient();
             using var response = await http.PostAsync(tokenEndpoint, new FormUrlEncodedContent(form));
 
             var json = await response.Content.ReadAsStringAsync();
@@ -360,16 +369,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         var state = GenerateOpaqueValue();
         var nonce = GenerateOpaqueValue();
 
-        _memoryCache.Set(
+        _authStateCache.SetString(
             BuildAuthStateCacheKey(state),
-            new SsoAuthStateDto
+            JsonSerializer.Serialize(new SsoAuthStateDto
             {
                 Nonce = nonce,
                 TenantId = tenantId,
                 Email = email,
                 AdminConsent = adminConsent
-            },
-            AuthStateTtl);
+            }),
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = AuthStateTtl });
 
         string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
 
@@ -396,16 +405,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     {
         var state = GenerateOpaqueValue();
 
-        _memoryCache.Set(
+        _authStateCache.SetString(
             BuildAuthStateCacheKey(state),
-            new SsoAuthStateDto
+            JsonSerializer.Serialize(new SsoAuthStateDto
             {
                 Nonce = string.Empty,
                 TenantId = tenantId,
                 Email = email,
                 AdminConsent = true
-            },
-            AuthStateTtl);
+            }),
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = AuthStateTtl });
 
         string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
 
