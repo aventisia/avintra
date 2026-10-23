@@ -547,6 +547,28 @@ public class TenantAccountService : ITenantAccountService
                 return serviceResponse;
             }
 
+            if (!Guid.TryParse(grantedTenantId.Trim(), out var parsedGrantedTenantId))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "The granted tenant identifier is not valid.";
+                return serviceResponse;
+            }
+
+            var provenGrantedTenantId = parsedGrantedTenantId.ToString();
+
+            // IMPORTANT NOTE: the tenant id comes from an unauthenticated callback query parameter, so the
+            // platform app being granted consent in that tenant is the only proof that Microsoft granted it.
+            var isConsentProven = await ValidateEntraClientCredentialsAsync(
+                provenGrantedTenantId, _environmentConfig.MicrosoftSsoClientId, _environmentConfig.MicrosoftSsoClientSecret);
+
+            if (!isConsentProven)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Microsoft consent could not be verified for the requested tenant.";
+                _logger.LogWarning("Admin consent callback rejected for TenantId {TenantId}: consent was not proven.", _tenantId);
+                return serviceResponse;
+            }
+
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t => t.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -565,8 +587,8 @@ public class TenantAccountService : ITenantAccountService
             }
 
             var config = SsoConfigHelpers.Parse(tenant.SSOConfigJson)
-                ?? SsoConfigHelpers.CreateDefault(grantedTenantId, tenant.Domain);
-            config.ExternalTenantId = grantedTenantId.Trim();
+                ?? SsoConfigHelpers.CreateDefault(provenGrantedTenantId, tenant.Domain);
+            config.ExternalTenantId = provenGrantedTenantId;
             config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
 
             tenant.SSOConfigJson = SsoConfigHelpers.ToPersistedJson(config);

@@ -145,7 +145,7 @@ public class InstanceService : IInstanceService
 
         try
         {
-            var httpClient = new HttpClient();
+            using var httpClient = new HttpClient();
 
             // Add the API Key and Instance details to the headers for authentication
             httpClient.DefaultRequestHeaders.Add("X-OnPrem-Tenant-Id", $"{_environmentConfig.OnPremTenantId}");

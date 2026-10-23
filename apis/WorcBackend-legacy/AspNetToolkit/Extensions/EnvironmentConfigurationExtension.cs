@@ -351,10 +351,9 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// Validates an optional branding URL. The URL must be absolute HTTPS and hosted on the
-    /// deployment's own domain (the <c>APP_BASE_URL</c> host), a subdomain of it, or a host under
-    /// its parent domain; anything else is dropped with a warning so the client falls back to
-    /// defaults.
+    /// Validates an optional branding URL: absolute HTTPS, served from the <c>APP_BASE_URL</c> host,
+    /// one of its subdomains, or a host listed in <c>EXTRA_BRANDING_HOSTS</c>. Anything else is
+    /// dropped with a warning so the client falls back to defaults.
     /// </summary>
     private static string? SanitizeBrandingUrl(string key, string? value, string appBaseUrl)
     {
@@ -373,11 +372,11 @@ public static class EnvironmentConfigurationExtension
             return null;
         }
 
-        // ...and from the deployment's domain (subdomains and sibling hosts allowed).
+        // ...and from the deployment's domain (subdomains and allowlisted hosts allowed).
         if (!IsDeploymentHost(uri.Host, appBaseUrl))
         {
             Console.Error.WriteLine(
-                $"{key} must be hosted on {appBaseUrl}, a subdomain of it, or a host under its parent domain; ignoring the value and using the default branding."
+                $"{key} must be an absolute https URL hosted on {appBaseUrl}, a subdomain of it, or a host listed in EXTRA_BRANDING_HOSTS; ignoring the value and using the default branding."
             );
             return null;
         }
@@ -386,51 +385,52 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// True when the candidate host is the deployment host, a subdomain of it, or a host under
-    /// the deployment host's parent domain (sibling environments such as
-    /// <c>local-avintra.aventisia.com</c> and <c>uat-avintra.aventisia.com</c>).
+    /// True when the candidate host is the deployment host, a subdomain of it, or a host (or its
+    /// subdomain) listed in <c>EXTRA_BRANDING_HOSTS</c>.
     /// </summary>
-    /// <remarks>
-    /// The parent-domain rule is skipped when it would leave a single label. It widens the accepted
-    /// set to the whole shared parent domain, so a deployment host under a multi-part public suffix
-    /// such as <c>co.uk</c> trusts every sibling host under it.
-    /// </remarks>
     private static bool IsDeploymentHost(string candidateHost, string appBaseUrl)
     {
         var baseHost = GetHostFromValue(appBaseUrl).TrimEnd('.');
         var normalizedCandidate = candidateHost.ToLowerInvariant().TrimEnd('.');
-        if (string.IsNullOrWhiteSpace(baseHost) || string.IsNullOrWhiteSpace(normalizedCandidate))
+        if (string.IsNullOrWhiteSpace(normalizedCandidate))
         {
             return false;
         }
 
-        if (string.Equals(normalizedCandidate, baseHost, StringComparison.OrdinalIgnoreCase)
-            || normalizedCandidate.EndsWith("." + baseHost, StringComparison.OrdinalIgnoreCase)
-            || (normalizedCandidate.Contains('.')
-                && baseHost.EndsWith("." + normalizedCandidate, StringComparison.OrdinalIgnoreCase)))
+        if (IsHostOrSubdomain(normalizedCandidate, baseHost))
         {
             return true;
         }
 
-        var parentHost = GetParentHost(baseHost);
-        return parentHost != null
-            && (string.Equals(normalizedCandidate, parentHost, StringComparison.OrdinalIgnoreCase)
-                || normalizedCandidate.EndsWith("." + parentHost, StringComparison.OrdinalIgnoreCase));
+        return GetExtraBrandingHosts()
+            .Any(extraHost => IsHostOrSubdomain(normalizedCandidate, extraHost));
     }
 
     /// <summary>
-    /// The deployment host without its leading label, or null when that leaves a single label.
+    /// True when the candidate host is the base host itself or a subdomain of it.
     /// </summary>
-    private static string? GetParentHost(string baseHost)
+    private static bool IsHostOrSubdomain(string candidateHost, string baseHost)
     {
-        var separatorIndex = baseHost.IndexOf('.');
-        if (separatorIndex < 0)
+        return !string.IsNullOrWhiteSpace(baseHost)
+            && (string.Equals(candidateHost, baseHost, StringComparison.OrdinalIgnoreCase)
+                || candidateHost.EndsWith("." + baseHost, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// The opted-in extra branding hosts from <c>EXTRA_BRANDING_HOSTS</c>, or an empty list.
+    /// </summary>
+    private static string[] GetExtraBrandingHosts()
+    {
+        var configuredHosts = Environment.GetEnvironmentVariable("EXTRA_BRANDING_HOSTS");
+        if (string.IsNullOrWhiteSpace(configuredHosts))
         {
-            return null;
+            return Array.Empty<string>();
         }
 
-        var parentHost = baseHost[(separatorIndex + 1)..];
-        return parentHost.Contains('.') ? parentHost : null;
+        return configuredHosts
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(host => host.ToLowerInvariant())
+            .ToArray();
     }
 
     /// <summary>
@@ -514,7 +514,7 @@ public static class EnvironmentConfigurationExtension
             var request = new HttpRequestMessage(HttpMethod.Get, $"{globalAdminApiBaseUrl}/api/onprem/instance/metadata")
             {
                 Version = HttpVersion.Version20,
-                VersionPolicy = HttpVersionPolicy.RequestVersionExact
+                VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
             };
 
             // Get tenant metadata

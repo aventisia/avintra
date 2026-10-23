@@ -217,6 +217,14 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             Message = "Failed to validate token. Please try again"
         };
 
+        if (authState.AdminConsent)
+        {
+            _logger.LogWarning("Entra login callback rejected because the state belongs to an administrator consent request.");
+            serviceResponse.Message = "Invalid or expired SSO state.";
+            serviceResponse.StatusCode = 400;
+            return serviceResponse;
+        }
+
         var ssoUnavailableMessage = GetSsoUnavailableMessage();
         if (ssoUnavailableMessage != null)
         {
@@ -710,7 +718,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
                 {
                     // Assign enterprise tenant and default role
-                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TD.ToString() };
+                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
                     tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
                     _logger.LogInformation("Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
                 }

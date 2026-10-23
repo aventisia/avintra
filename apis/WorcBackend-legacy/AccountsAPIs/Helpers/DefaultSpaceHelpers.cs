@@ -1,5 +1,7 @@
 namespace AccountsAPIs.Helpers;
 
+using Npgsql;
+
 /// <summary>
 /// Helper for creating the default "Central" space that every tenant owns.
 /// </summary>
@@ -27,20 +29,20 @@ public static class DefaultSpaceHelpers
     {
         try
         {
-            // Ignore query filters: the current request's tenant filter must not hide the target tenant.
-            var hasDefaultSpace = await accountsDbContext.Spaces
-                .IgnoreQueryFilters()
-                .AnyAsync(w => w.TenantId == tenantId && w.IsDefault);
-
-            // Default space already exists for this tenant
-            if (hasDefaultSpace) return;
-
-            // Insert the default "Central" space directly via raw SQL
             var centralSpaceId = Guid.NewGuid();
             var now = DateTimeOffset.UtcNow;
+
+            // IMPORTANT NOTE: a single INSERT ... SELECT makes the existence check and the insert
+            // atomic, so two replicas booting together no longer both pass a separate check.
             await accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
                 $@"INSERT INTO ""Spaces"" (""Id"", ""TenantId"", ""Name"", ""Description"", ""IsDefault"", ""CreatedByUserId"", ""CreatedOn"", ""LastModifiedByUserId"", ""LastModifiedOn"", ""IsDisabled"")
-                  VALUES ({centralSpaceId}, {tenantId}, {CentralName}, {CentralDescription}, {true}, {createdByUserId}, {now}, {lastModifiedByUserId}, {now}, {false})");
+                   SELECT {centralSpaceId}, {tenantId}, {CentralName}, {CentralDescription}, {true}, {createdByUserId}, {now}, {lastModifiedByUserId}, {now}, {false}
+                   WHERE NOT EXISTS (SELECT 1 FROM ""Spaces"" WHERE ""TenantId"" = {tenantId} AND ""IsDefault"" = true)");
+        }
+        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+        {
+            // IMPORTANT NOTE: the unique filtered index rejected the row, so another replica won the race.
+            logger.LogDebug("Default Central space already exists for tenant {TenantId}.", tenantId);
         }
         catch (Exception ex)
         {
