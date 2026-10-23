@@ -1,6 +1,6 @@
 import { Header, HeaderContainer } from "@avplatform/layout";
 import { Button } from "@avplatform/ui/buttons";
-import { useAlertDialogStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { useAlertDialogStore, useBrandingStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
@@ -44,6 +44,12 @@ const AppHeader: React.FC = () => {
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
   const isUiBuilder = useIsUiBuilderRoute();
+  const serverBranding = useBrandingStore((state) => state.branding);
+  const headerLabel =
+    serverBranding?.appName ||
+    (serverBranding && Object.values(serverBranding).some((value) => !!value)
+      ? "Agent Builder"
+      : undefined);
 
   // ChatAgent flows hide search, flow settings, and studio preferences.
   const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
@@ -81,7 +87,7 @@ const AppHeader: React.FC = () => {
           </Tooltip>
 
           {/* App Logo */}
-          <AppLogo label="Agent Builder" />
+          <AppLogo label={headerLabel} />
 
           {/* separator */}
           <span className="rotate-12 text-primary-foreground/50">/</span>

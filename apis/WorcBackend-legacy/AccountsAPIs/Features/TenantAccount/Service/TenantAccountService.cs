@@ -10,6 +10,7 @@ public class TenantAccountService : ITenantAccountService
     private readonly Guid _tenantId;
     private readonly string _userEmail;
     private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     public TenantAccountService(
         ILogger<TenantAccountService> logger,
@@ -17,7 +18,8 @@ public class TenantAccountService : ITenantAccountService
         IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
-        ILoginWithExternalAuthService loginWithExternalAuthService)
+        ILoginWithExternalAuthService loginWithExternalAuthService,
+        IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -31,6 +33,7 @@ public class TenantAccountService : ITenantAccountService
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _loginWithExternalAuthService = loginWithExternalAuthService;
+        _httpClientFactory = httpClientFactory;
     }
 
     // acccounts-api/tenant/user/
@@ -547,6 +550,28 @@ public class TenantAccountService : ITenantAccountService
                 return serviceResponse;
             }
 
+            if (!Guid.TryParse(grantedTenantId.Trim(), out var parsedGrantedTenantId))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "The granted tenant identifier is not valid.";
+                return serviceResponse;
+            }
+
+            var provenGrantedTenantId = parsedGrantedTenantId.ToString();
+
+            // IMPORTANT NOTE: the tenant id comes from an unauthenticated callback query parameter, so the
+            // platform app being granted consent in that tenant is the only proof that Microsoft granted it.
+            var isConsentProven = await ValidateEntraClientCredentialsAsync(
+                provenGrantedTenantId, _environmentConfig.MicrosoftSsoClientId, _environmentConfig.MicrosoftSsoClientSecret);
+
+            if (!isConsentProven)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Microsoft consent could not be verified for the requested tenant.";
+                _logger.LogWarning("Admin consent callback rejected for TenantId {TenantId}: consent was not proven.", _tenantId);
+                return serviceResponse;
+            }
+
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t => t.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -565,8 +590,8 @@ public class TenantAccountService : ITenantAccountService
             }
 
             var config = SsoConfigHelpers.Parse(tenant.SSOConfigJson)
-                ?? SsoConfigHelpers.CreateDefault(grantedTenantId, tenant.Domain);
-            config.ExternalTenantId = grantedTenantId.Trim();
+                ?? SsoConfigHelpers.CreateDefault(provenGrantedTenantId, tenant.Domain);
+            config.ExternalTenantId = provenGrantedTenantId;
             config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
 
             tenant.SSOConfigJson = SsoConfigHelpers.ToPersistedJson(config);
@@ -830,35 +855,6 @@ public class TenantAccountService : ITenantAccountService
         }
     }
 
-    private (bool IsValid, int StatusCode, string Message, TenantSsoConfigDto? Config) BuildStoredSsoConfigAsync(
-        Tenant tenant, TenantSsoConfigDto requestedConfig, TenantSsoConfigDto? existingConfig)
-    {
-        if (tenant.Type != TenantTypesEnum.Organization)
-        {
-            return (false, 400, "Single sign-on is available for organization tenants only.", null);
-        }
-
-        if (string.IsNullOrWhiteSpace(tenant.Domain))
-        {
-            return (false, 400, "Set the tenant's email domain before connecting single sign-on.", null);
-        }
-
-        var requestedDomain = string.IsNullOrWhiteSpace(requestedConfig.EmailDomain) ? tenant.Domain : requestedConfig.EmailDomain;
-
-        if (!string.Equals(requestedDomain.Trim(), tenant.Domain.Trim(), StringComparison.OrdinalIgnoreCase))
-        {
-            return (false, 400, "The single sign-on email domain must match the tenant's email domain.", null);
-        }
-
-        var config = SsoConfigHelpers.Clone(requestedConfig);
-        config.V = SsoConfigHelpers.SchemaVersion;
-        config.Provider = SsoConfigHelpers.MicrosoftEntraProvider;
-        config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
-        config.ExternalTenantId = config.ExternalTenantId?.Trim() ?? string.Empty;
-
-        return (true, 200, "Single sign-on configuration validated.", config);
-    }
-
     private async Task<(bool IsValid, int StatusCode, string Message)> ValidateSsoEnablementAsync(
         Tenant tenant, TenantSsoConfigDto? storedConfig)
     {
@@ -919,7 +915,7 @@ public class TenantAccountService : ITenantAccountService
 
             var tokenEndpoint = $"https://login.microsoftonline.com/{tenantAuthority}/oauth2/v2.0/token";
 
-            using var httpClient = new HttpClient();
+            var httpClient = _httpClientFactory.CreateClient();
 
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {

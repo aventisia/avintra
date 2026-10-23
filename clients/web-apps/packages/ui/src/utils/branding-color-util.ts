@@ -97,4 +97,22 @@ const pickReadableForeground = (color: string): string => {
   return brightness >= 150 ? "#111827" : "#ffffff";
 };
 
-export { pickReadableForeground };
+const CHANNEL = "[-+]?\\d*\\.?\\d+%?";
+const COLOR_ALLOWLIST = new RegExp(
+  `^(?:#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})|(?:rgb|rgba|hsl|hsla)\\(\\s*${CHANNEL}(?:\\s*[,\\s/]\\s*${CHANNEL}){2,3}\\s*\\))$`,
+  "i",
+);
+
+/** Returns true when the value is a hex color or an rgb()/hsl() color with numeric channels. */
+const isSafeBrandColor = (value: string): boolean => COLOR_ALLOWLIST.test(value.trim());
+
+/** Returns true when the value is an absolute https URL, rejecting unsafe schemes such as `javascript:`. */
+const isHttpsBrandAssetUrl = (value: string): boolean => {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+export { isHttpsBrandAssetUrl, isSafeBrandColor, pickReadableForeground };

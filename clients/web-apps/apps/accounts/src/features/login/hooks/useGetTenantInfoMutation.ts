@@ -1,11 +1,24 @@
 import { discoverTenant, getTenantInfo } from "@avplatform/ui/apis/accounts-auth-apis";
-import type { EmailDto } from "@avplatform/ui/dtos";
 import { USER_NAME_LS_KEY } from "@avplatform/ui/constants";
+import type { EmailDto } from "@avplatform/ui/dtos";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { useLoginStore } from "../stores/login-store";
+
+const isMicrosoftLoginUrl = (url: string) => {
+  try {
+    const { protocol, hostname } = new URL(url);
+
+    return (
+      protocol === "https:" &&
+      (hostname === "login.microsoftonline.com" || hostname.endsWith(".microsoftonline.com"))
+    );
+  } catch {
+    return false;
+  }
+};
 
 export const useGetTenantInfoMutation = () => {
   // Get store state and actions
@@ -23,7 +36,7 @@ export const useGetTenantInfoMutation = () => {
       const discoverResponse = await discoverTenant(postObj);
       const ssoLoginUrl = discoverResponse?.data?.ssoLoginUrl ?? null;
 
-      if (ssoLoginUrl) {
+      if (ssoLoginUrl && isMicrosoftLoginUrl(ssoLoginUrl)) {
         return { ssoLoginUrl, tenantId: discoverResponse?.data?.tenantId ?? "", tenantInfo: null };
       }
 
@@ -51,7 +64,7 @@ export const useGetTenantInfoMutation = () => {
       // Set userName in localstorage
       localStorage.setItem(USER_NAME_LS_KEY, tenantInfo.data.userName);
 
-      if (tenantInfo.data.ssoConfigJson) {
+      if (tenantInfo.data.ssoConfigJson && isMicrosoftLoginUrl(tenantInfo.data.ssoConfigJson)) {
         setLoginData({
           tenantId: tenantInfo.data.tenantId,
           email: tenantInfo.data.userName,

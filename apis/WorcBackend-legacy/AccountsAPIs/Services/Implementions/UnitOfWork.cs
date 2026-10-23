@@ -39,4 +39,25 @@ public class UnitOfWork : IUnitOfWork
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;
 
     public bool HasChanges() => _accountsDbContext.ChangeTracker.HasChanges();
+
+    public async Task ExecuteInTransactionAsync(Func<Task> operation)
+    {
+        await using var transaction = await _accountsDbContext.Database.BeginTransactionAsync();
+        try
+        {
+            await operation();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public Task AcquireAdvisoryLockAsync(string resourceKey)
+    {
+        return _accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_advisory_xact_lock(hashtextextended({resourceKey}, 0))");
+    }
 }

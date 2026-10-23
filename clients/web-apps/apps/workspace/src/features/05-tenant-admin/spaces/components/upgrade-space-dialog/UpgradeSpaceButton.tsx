@@ -1,7 +1,8 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-const UPGRADE_PRICING_URL = `${import.meta.env.VITE_MARKETING_URL}/pricing`;
+const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
+const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefined;
 
 /**
  * Spaces toolbar button for community deployments.
@@ -19,7 +20,6 @@ export const UpgradeSpaceButton = () => {
       size="xs"
       variant="default"
       className="gap-2 text-sm tracking-wide"
-      openOnMount
     />
   );
 };

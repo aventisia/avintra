@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
@@ -11,7 +12,6 @@ import {
   SSO_DISABLED,
   TWO_FA_ENABLED,
 } from "@/constants/variables";
-import { getPostLoginDestination } from "@/constants/post-login-destination";
 
 import { authenticateUser } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";
@@ -44,17 +44,9 @@ export const useAuthenticateUserMutation = () => {
         return;
       }
 
-      // Single sign-on was disabled for the tenant but the account has no password
-      if (message.includes(SSO_DISABLED)) {
-        toast.warning("Single sign-on disabled", {
-          description: `${message}. Set a password with Forgot password to sign in.`,
-        });
-
-        return;
-      }
-
       // TwoFA is enabled
-      if (message.includes(TWO_FA_ENABLED)) {        // Set verification code id
+      if (message.includes(TWO_FA_ENABLED)) {
+        // Set verification code id
         setTwoFACodeData({
           email: data.email,
           requestType: data.requestType,
@@ -91,8 +83,17 @@ export const useAuthenticateUserMutation = () => {
         navigate("/redirect?msg=Logging in...&url=" + destination);
       }
     },
-    onError: (error) => {
-      toast.error(error.toString());
+    onError: (error: unknown) => {
+      if (typeof error === "string" && error.includes(SSO_DISABLED)) {
+        toast.warning("Single sign-on disabled", {
+          description: `${error}. Set a password with Forgot password to sign in.`,
+        });
+
+        resetLoginProcess();
+        return;
+      }
+
+      toast.error(String(error));
       resetLoginProcess();
     },
   });

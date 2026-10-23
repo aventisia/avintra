@@ -21,7 +21,7 @@ const AppLogo = ({
   lightLogo = true,
   className = "h-6 text-xl",
 }: AppLogoProps) => {
-  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product");
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product", lightLogo);
 
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
   const logoSrc =

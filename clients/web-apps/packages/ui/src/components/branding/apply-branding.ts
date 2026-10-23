@@ -1,5 +1,12 @@
 import type { ResolvedBranding } from "@/ui/stores";
-import { pickReadableForeground } from "@/ui/utils";
+import { isHttpsBrandAssetUrl, isSafeBrandColor, pickReadableForeground } from "@/ui/utils";
+
+// Each branding value is validated on its own so one bad value falls back to the built-in default.
+const acceptColor = (value: string | undefined): string | undefined =>
+  value && isSafeBrandColor(value) ? value : undefined;
+
+const acceptAsset = (value: string | undefined): string | undefined =>
+  value && isHttpsBrandAssetUrl(value) ? value : undefined;
 
 // Numeric shade ramp mixes (percent of the brand color toward white/black).
 const COLOR_RAMP_MIX: Array<{ shade: string; percent: number; base: "white" | "black" }> = [
@@ -30,16 +37,14 @@ const applyColorRamp = (root: HTMLElement, token: string, color: string) => {
 
 /** Applies the brand colors, their shade ramps, the ring tint and readable foregrounds. */
 const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
-  const {
-    background,
-    foreground,
-    primary,
-    primaryForeground,
-    secondary,
-    secondaryForeground,
-    accent,
-    accentForeground,
-  } = branding;
+  const background = acceptColor(branding.background);
+  const foreground = acceptColor(branding.foreground);
+  const primary = acceptColor(branding.primary);
+  const primaryForeground = acceptColor(branding.primaryForeground);
+  const secondary = acceptColor(branding.secondary);
+  const secondaryForeground = acceptColor(branding.secondaryForeground);
+  const accent = acceptColor(branding.accent);
+  const accentForeground = acceptColor(branding.accentForeground);
 
   if (background) {
     root.style.setProperty("--background", background);
@@ -57,6 +62,9 @@ const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
     );
     root.style.setProperty("--ring", `color-mix(in srgb, ${primary} 20%, transparent)`);
     applyColorRamp(root, "primary", primary);
+    // Branded header gradient. Only set when a brand color is present so the
+    // unbranded header keeps the built-in gradient from the Header fallback.
+    root.style.setProperty("--header-via", primary);
   } else if (primaryForeground) {
     root.style.setProperty("--primary-foreground", primaryForeground);
   }
@@ -82,11 +90,18 @@ const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
   } else if (secondaryForeground) {
     root.style.setProperty("--secondary-foreground", secondaryForeground);
   }
+
+  // Branded header edges need both colors; otherwise the Header fallback keeps the built-in gradient.
+  if (primary && secondary) {
+    const headerEdge = `color-mix(in srgb, ${primary} 75%, ${secondary})`;
+    root.style.setProperty("--header-from", headerEdge);
+    root.style.setProperty("--header-to", headerEdge);
+  }
 };
 
 /** Points every favicon link at the branded icon. */
 const applyBrandFavicon = (branding: ResolvedBranding) => {
-  const faviconUrl = branding.faviconUrlLight ?? branding.faviconUrlDark;
+  const faviconUrl = acceptAsset(branding.faviconUrlLight) ?? acceptAsset(branding.faviconUrlDark);
   if (!faviconUrl) {
     return;
   }
