@@ -55,6 +55,14 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<AccountUser>().HasIndex(index => index.UserName).IsUnique();
         builder.Entity<Tenant>().HasIndex(index => index.Name).IsUnique();
 
+        // IMPORTANT NOTE: concurrent startups can both decide a tenant lacks its default space,
+        // so the filtered unique index is what actually prevents a duplicate "Central".
+        builder.Entity<Space>()
+            .HasIndex(index => index.TenantId)
+            .IsUnique()
+            .HasFilter("\"IsDefault\" = true")
+            .HasDatabaseName("IX_Spaces_TenantId_IsDefault");
+
         // Enum to string conversion
         builder.Entity<Tenant>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
         builder.Entity<Tenant>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());

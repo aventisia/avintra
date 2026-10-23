@@ -9,7 +9,9 @@ const validateEntraToken = (code: string, state: string | null) => {
   const stateQuery = state ? `&state=${encodeURIComponent(state)}` : "";
 
   return axiosInstance
-    .get<IHttpResponse<UserSessionDto>>(`${baseAPIURL}/entra/token?code=${code}${stateQuery}`)
+    .get<IHttpResponse<UserSessionDto>>(
+      `${baseAPIURL}/entra/token?code=${encodeURIComponent(code)}${stateQuery}`,
+    )
     .then((res) => res.data);
 };
 

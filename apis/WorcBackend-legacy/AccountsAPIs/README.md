@@ -58,7 +58,7 @@ values and oversized text (over 100 characters) are ignored at startup with a wa
 | ------------------------------------- | ---------------------------------------------------------------------------------- |
 | `BRANDING_APP_NAME`                   | Product/app name used in the UI and document title (max 100 chars).               |
 | `BRANDING_COMPANY_NAME`               | Company name (max 100 chars).                                                      |
-| `BRANDING_COMPANY_LOGO_URL_LIGHT`     | Light full company wordmark used by the accounts app and the redirect, error, loading and not-found screens (absolute HTTPS URL on the deployment's domain). |
+| `BRANDING_COMPANY_LOGO_URL_LIGHT`     | Light full company wordmark used by the accounts app and the redirect, error, loading and not-found screens (absolute HTTPS URL on the deployment host, its subdomains, or an `EXTRA_BRANDING_HOSTS` entry). |
 | `BRANDING_COMPANY_LOGO_URL_DARK`      | Dark company wordmark (same rules). Reserved for a future dark theme; used as the light variant's fallback. |
 | `BRANDING_PRODUCT_LOGO_URL_LIGHT`     | Light product logo used by the workspace header (same rules).                      |
 | `BRANDING_PRODUCT_LOGO_URL_DARK`      | Dark product logo (same rules). Used as the light variant's fallback.              |
@@ -74,12 +74,16 @@ values and oversized text (over 100 characters) are ignored at startup with a wa
 | `BRANDING_SECONDARY_FOREGROUND_COLOR` | `--secondary-foreground` brand color; derived for contrast when unset (same formats).|
 | `BRANDING_ACCENT_COLOR`               | `--accent` brand color; derived from the primary color when unset (same formats).  |
 | `BRANDING_ACCENT_FOREGROUND_COLOR`    | `--accent-foreground` brand color (same formats).                                  |
+| `EXTRA_BRANDING_HOSTS`                | Comma-separated extra hosts allowed to serve the asset URLs (each host and its subdomains). |
 
-Asset URLs must be absolute **HTTPS** and hosted on the deployment's own domain (the
-`APP_BASE_URL` host), a subdomain of it, or a host under its parent domain — so with
-`APP_BASE_URL=uat-avintra.aventisia.com` the sibling hosts `local-avintra.aventisia.com` and
-`avintra.aventisia.com` are accepted too. Absolute-URL `http`, relative paths and any other
-domain are rejected. Colors must use one of the listed formats, with every channel a number.
+Asset URLs must be absolute **HTTPS** and served from the deployment's own domain: the
+`APP_BASE_URL` host itself or any subdomain of it. Any other host is rejected unless it is listed
+in `EXTRA_BRANDING_HOSTS` (comma-separated, trimmed, case-insensitive), which accepts each listed
+host and its subdomains — use it for multi-environment setups that serve assets from a sibling
+host. With `APP_BASE_URL=uat-avintra.aventisia.com`, `cdn.uat-avintra.aventisia.com` is accepted
+but the parent `aventisia.com` and siblings such as `evil.aventisia.com` are not.
+Absolute-URL `http`, relative paths and any other domain are rejected. Colors must use one of the
+listed formats, with every channel a number.
 
 `--accent` falls back to a tint of the primary color when unset and the focus `--ring` is always
 derived from the primary color; readable `*-foreground` tokens are derived for contrast when unset.
@@ -102,3 +106,16 @@ On error `net::ERR_CERT_AUTHORITY_INVALID`
 
 - Ensure that your local development environment is set up to trust the self-signed SSL certificate.
 - Open `https://localhost:4000` in your browser and accept the risk to add the certificate exception.
+
+On migration `AddUniqueDefaultSpacePerTenant` (index `IX_Spaces_TenantId_IsDefault`) failing at startup
+
+- The migration must be applied before the service runs, because startup applies pending
+  migrations; a failure blocks the deployment.
+- A database holding more than one default space per tenant (from the old check-then-insert race)
+  aborts the unique index. De-duplicate first — keep one `IsDefault` space per tenant and unset or
+  merge the rest; do not delete spaces blindly.
+- Detect the affected tenants:
+
+  ```sql
+  SELECT "TenantId", count(*) FROM "Spaces" WHERE "IsDefault" GROUP BY 1 HAVING count(*) > 1;
+  ```

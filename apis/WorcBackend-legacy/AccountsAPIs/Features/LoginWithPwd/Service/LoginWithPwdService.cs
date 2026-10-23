@@ -78,7 +78,7 @@ public class LoginWithPwdService : ILoginWithPwdService
 
                 if (passwordlessUserTenant != null && !passwordlessUserTenant.IsSSOEnabled && storedSsoConfig != null)
                 {
-                    serviceResponse.StatusCode = 200;
+                    serviceResponse.StatusCode = 409;
                     serviceResponse.Message = SsoConfigHelpers.SsoDisabledMessage;
                     return serviceResponse;
                 }

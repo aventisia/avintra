@@ -55,6 +55,9 @@ public class LoginWithPwdController : BaseApiController
             return ResultHelper(createVerificationCodeResult);
         }
 
+        if (authenticateUserResult.StatusCode != 200 || authenticateUserResult.Data == null)
+            return PlainTextError(authenticateUserResult.StatusCode, authenticateUserResult.Message);
+
         // Delete expired sessions
         var terminateUserExpiredSessionsResult = await _authService.TerminateUserSessionsAsync(
             authenticateUserResult.Data.Id,

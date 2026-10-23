@@ -206,51 +206,25 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Community deployments are limited to one space regardless of plan data.
-            var currentSpaceCount = _environmentConfig.IsCommunityDeployment
-                ? await _unitOfWork.SpaceRepo
-                    .GetByConditionAsync(s => s.TenantId == _tenantId)
-                    .CountAsync()
-                : 0;
-            if (_environmentConfig.IsCommunityDeployment && currentSpaceCount >= 1)
+            Space? newSpace = null;
+
+            // IMPORTANT NOTE: the community limit is a check-then-insert race, so the count and the
+            // insert share one transaction under a tenant-scoped advisory lock. Commercial and
+            // Enterprise deployments keep the plain path with no transaction or lock.
+            if (_environmentConfig.IsCommunityDeployment)
             {
-                _logger.LogWarning("Space creation blocked: community deployments support a single space.");
-                serviceResponse.Message = "Your community edition supports a single space. Upgrade to create more spaces.";
-                serviceResponse.StatusCode = 403;
-                return serviceResponse;
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
+                {
+                    await _unitOfWork.AcquireAdvisoryLockAsync($"space-create:{_tenantId}");
+                    newSpace = await InsertSpaceAsync(spaceDto, serviceResponse);
+                });
+            }
+            else
+            {
+                newSpace = await InsertSpaceAsync(spaceDto, serviceResponse);
             }
 
-            // Check if a space with the same name already exists within the tenant (case-insensitive)
-            var existingSpace = await _unitOfWork.SpaceRepo
-                .GetByConditionAsync(s => s.TenantId == _tenantId && s.Name.ToLower() == spaceDto.Name.ToLower())
-                .SingleOrDefaultAsync();
-
-            if (existingSpace != null)
-            {
-                _logger.LogWarning("Creation aborted: A space named '{SpaceName}' already exists.", spaceDto.Name);
-                serviceResponse.Message = $"A space with the name '{spaceDto.Name}' already exists.";
-                serviceResponse.StatusCode = 409;
-                return serviceResponse;
-            }
-
-            // Trim string properties in the Data Transfer Object (DTO)
-            spaceDto = TrimDtoStringPropsUtil.TrimDtoStringProps(spaceDto);
-
-            // Map DTO to entity and assign new ID
-            var newSpace = spaceDto.Adapt<Space>();
-            newSpace.TenantId = _tenantId;
-            newSpace.CreatedByUserId = _userId;
-            newSpace.LastModifiedByUserId = _userId;
-
-            // Add space to repository
-            await _unitOfWork.SpaceRepo.InsertAsync(newSpace);
-
-            // Persist changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save the newly created space: {SpaceName}", spaceDto.Name);
-                return serviceResponse;
-            }
+            if (newSpace == null) return serviceResponse;
 
             // Always include the creator as a member of the space so they show up
             // in the Tenant Admin Users table's Spaces column. Dedupe in case the
@@ -301,6 +275,59 @@ public class SpaceTableService : ISpaceTableService
         }
 
         return serviceResponse;
+    }
+
+    // Enforces the community single-space limit, rejects duplicate names, then persists the space.
+    // Returns null when the caller must stop with the message already set on the response.
+    private async Task<Space?> InsertSpaceAsync(SpaceDto spaceDto, ServiceResponse<SpaceTableDto> serviceResponse)
+    {
+        // Community deployments are limited to one space regardless of plan data.
+        var currentSpaceCount = _environmentConfig.IsCommunityDeployment
+            ? await _unitOfWork.SpaceRepo
+                .GetByConditionAsync(s => s.TenantId == _tenantId)
+                .CountAsync()
+            : 0;
+        if (_environmentConfig.IsCommunityDeployment && currentSpaceCount >= 1)
+        {
+            _logger.LogWarning("Space creation blocked: community deployments support a single space.");
+            serviceResponse.Message = "Your community edition supports a single space. Upgrade to create more spaces.";
+            serviceResponse.StatusCode = 403;
+            return null;
+        }
+
+        // Check if a space with the same name already exists within the tenant (case-insensitive)
+        var existingSpace = await _unitOfWork.SpaceRepo
+            .GetByConditionAsync(s => s.TenantId == _tenantId && s.Name.ToLower() == spaceDto.Name.ToLower())
+            .SingleOrDefaultAsync();
+
+        if (existingSpace != null)
+        {
+            _logger.LogWarning("Creation aborted: A space named '{SpaceName}' already exists.", spaceDto.Name);
+            serviceResponse.Message = $"A space with the name '{spaceDto.Name}' already exists.";
+            serviceResponse.StatusCode = 409;
+            return null;
+        }
+
+        // Trim string properties in the Data Transfer Object (DTO)
+        spaceDto = TrimDtoStringPropsUtil.TrimDtoStringProps(spaceDto);
+
+        // Map DTO to entity and assign new ID
+        var newSpace = spaceDto.Adapt<Space>();
+        newSpace.TenantId = _tenantId;
+        newSpace.CreatedByUserId = _userId;
+        newSpace.LastModifiedByUserId = _userId;
+
+        // Add space to repository
+        await _unitOfWork.SpaceRepo.InsertAsync(newSpace);
+
+        // Persist changes
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to save the newly created space: {SpaceName}", spaceDto.Name);
+            return null;
+        }
+
+        return newSpace;
     }
 
     // Update existing space
