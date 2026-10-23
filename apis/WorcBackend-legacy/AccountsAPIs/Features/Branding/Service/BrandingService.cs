@@ -16,8 +16,8 @@ public class BrandingService : IBrandingService
         var serviceResponse = ServiceResponse<BrandingDto>.Create("Failed to retrieve deployment branding.", 500);
 
         // Community deployments keep the built-in Avintra branding; customization applies to
-        // Enterprise and Commercial only.
-        if (_environmentConfig.IsCommunityDeployment)
+        // Enterprise and Commercial only unless GlobalAdmin explicitly allows it.
+        if (!_environmentConfig.IsBrandingAllowedForDeployment)
         {
             return Task.FromResult(serviceResponse.Update(null, 200, new BrandingDto()));
         }

@@ -35,6 +35,16 @@ public class EnvironmentConfig
     public bool MicrosoftSsoEnabled { get; set; }
 
     /// <summary>
+    /// Single sign-on allowed by GlobalAdmin for this deployment.
+    /// </summary>
+    public bool SsoAllowed { get; set; }
+
+    /// <summary>
+    /// Deployment branding allowed by GlobalAdmin for this deployment.
+    /// </summary>
+    public bool BrandingAllowed { get; set; }
+
+    /// <summary>
     /// Microsoft Entra client id used by the single sign-on flow.
     /// </summary>
     public string MicrosoftSsoClientId { get; set; } = string.Empty;
@@ -142,4 +152,14 @@ public class EnvironmentConfig
     /// </summary>
     public bool IsCommunityDeployment =>
         string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
+
+    /// <summary>
+    /// True when single sign-on may be offered for this deployment.
+    /// </summary>
+    public bool IsSsoAllowedForDeployment => !IsCommunityDeployment && SsoAllowed;
+
+    /// <summary>
+    /// True when deployment branding may be applied for this deployment.
+    /// </summary>
+    public bool IsBrandingAllowedForDeployment => !IsCommunityDeployment && BrandingAllowed;
 }
