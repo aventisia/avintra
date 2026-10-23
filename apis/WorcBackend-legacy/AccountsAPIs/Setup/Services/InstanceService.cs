@@ -198,6 +198,8 @@ public class InstanceService : IInstanceService
             _environmentConfig.OnPremExecutionDisabled = externalServiceResponse.Data.Enforcement.IsExecutionDisabled;
             _environmentConfig.OnPremLoginDisabled = externalServiceResponse.Data.Enforcement.IsLoginDisabled;
             _environmentConfig.OnPremExecutionTimeAllowed = externalServiceResponse.Data.Enforcement.ExecutionTimeAllowed;
+            _environmentConfig.SsoAllowed = externalServiceResponse.Data.Enforcement.IsSsoAllowed;
+            _environmentConfig.BrandingAllowed = externalServiceResponse.Data.Enforcement.IsBrandingAllowed;
             _environmentConfig.OnPremTenantType = externalServiceResponse.Data.Tenant.Type.ToString();
             _environmentConfig.OnPremTenantId = externalServiceResponse.Data.Tenant.TenantId.ToString();
             _environmentConfig.OnPremContractStart = externalServiceResponse.Data.Contract.ContractStartDate.Date;

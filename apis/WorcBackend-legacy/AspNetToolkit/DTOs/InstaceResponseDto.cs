@@ -84,6 +84,16 @@ public class InstanceEnforcementDto
     public bool IsLoginDisabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether single sign-on is allowed.
+    /// </summary>
+    public bool IsSsoAllowed { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether deployment branding is allowed.
+    /// </summary>
+    public bool IsBrandingAllowed { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the maximum allowed execution time (in milliseconds).
     /// </summary>
     public double ExecutionTimeAllowed { get; set; }

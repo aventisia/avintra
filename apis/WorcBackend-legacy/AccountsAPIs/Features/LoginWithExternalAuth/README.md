@@ -34,7 +34,10 @@ unimplemented on purpose.
 - **Credentials are platform-level.** Sign-in, consent and token exchange always use the deployment app
   configured through `MICROSOFT_SSO_CLIENT_ID` / `MICROSOFT_SSO_CLIENT_SECRET`, and the enable gate validates
   those same keys live. `MICROSOFT_SSO_ENABLED` is the single gate for this flow, and Community deployments
-  never offer it. `GOOGLE_SSO_CLIENT_ID` / `GOOGLE_SSO_CLIENT_SECRET` are loaded for future providers and are
+  never offer it. Community is a self-hosted open-source copy: `MICROSOFT_SSO_*` and `BRANDING_*` env values
+  are ignored at startup and only a valid GlobalAdmin tenant/instance with `SsoAllowed` may offer
+  single sign-on. Branding is served only when GlobalAdmin returns `BrandingAllowed=true`; an omitted flag
+  denies it. `GOOGLE_SSO_CLIENT_ID` / `GOOGLE_SSO_CLIENT_SECRET` are loaded for future providers and are
   not used yet. No tenant supplies or
   stores client credentials, there is no secret field in the stored document, and no response returns
   credential material. Super Admin tenant reads omit `SSOConfigJson` completely; raw SSO JSON is editable
