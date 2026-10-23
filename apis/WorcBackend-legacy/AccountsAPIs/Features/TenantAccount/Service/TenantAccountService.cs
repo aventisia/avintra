@@ -771,7 +771,7 @@ public class TenantAccountService : ITenantAccountService
 
     private (bool IsAvailable, int StatusCode, string Message) GetSsoAvailability()
     {
-        if (_environmentConfig.IsCommunityDeployment)
+        if (!_environmentConfig.IsSsoAllowedForDeployment)
         {
             return (false, 400, "Single sign-on is not available in the Community edition.");
         }
@@ -786,7 +786,7 @@ public class TenantAccountService : ITenantAccountService
 
     private void ApplySsoAvailability(TenantPreferenceDto dto)
     {
-        dto.IsSSOAvailable = _environmentConfig.MicrosoftSsoEnabled && !_environmentConfig.IsCommunityDeployment;
+        dto.IsSSOAvailable = _environmentConfig.MicrosoftSsoEnabled && _environmentConfig.IsSsoAllowedForDeployment;
     }
 
     private async Task<SsoDisableWarningDto?> BuildSsoDisableWarningAsync()

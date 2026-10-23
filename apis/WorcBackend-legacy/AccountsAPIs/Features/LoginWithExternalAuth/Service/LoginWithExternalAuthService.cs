@@ -44,7 +44,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
     private string? GetSsoUnavailableMessage()
     {
-        if (_environmentConfig.IsCommunityDeployment)
+        if (!_environmentConfig.IsSsoAllowedForDeployment)
         {
             return "Single sign-on is not available in the Community edition.";
         }

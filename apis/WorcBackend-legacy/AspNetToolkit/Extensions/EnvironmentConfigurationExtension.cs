@@ -130,6 +130,11 @@ public static class EnvironmentConfigurationExtension
         var BRANDING_ACCENT_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_COLOR"));
         var BRANDING_ACCENT_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_FOREGROUND_COLOR"));
 
+        // Community deployments are self-hosted open-source copies: env values alone must never
+        // enable SSO or branding. Only a valid GlobalAdmin tenant/instance (non-community) with
+        // explicit SsoAllowed/BrandingAllowed flags may offer them. Enforcement happens below
+        // after GlobalAdmin metadata is resolved.
+
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
         var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
@@ -160,8 +165,9 @@ public static class EnvironmentConfigurationExtension
         var OTP_IS_ALPHA_NUMERIC = Environment.GetEnvironmentVariable("OTP_IS_ALPHA_NUMERIC") ?? config["EnvironmentConfig:OtpIsAlphaNumeric"] ?? "false";
 
         // Fetch tenant and instance metadata from GlobalAdmin API (paid on-prem deployments only).
-        // Community deployments skip this entirely: the type is fixed locally and the enforcement
-        // flags default to permissive so login and execution stay enabled.
+        // Community deployments skip this entirely: the type is fixed locally and SSO/branding
+        // stay disabled. Self-hosted copies must register with GlobalAdmin to obtain a tenant
+        // key; env values alone never enable these features.
         string ON_PREM_TENANT_TYPE;
         string ON_PREM_TENANT_NAME;
         string ON_PREM_INSTANCE_TYPE;
@@ -170,6 +176,8 @@ public static class EnvironmentConfigurationExtension
         int ON_PREM_EXECUTION_TIME_ALLOWED;
         bool ON_PREM_EXECUTION_DISABLED;
         bool ON_PREM_LOGIN_DISABLED;
+        bool SSO_ALLOWED;
+        bool BRANDING_ALLOWED;
 
         if (isCommunityDeployment)
         {
@@ -181,6 +189,8 @@ public static class EnvironmentConfigurationExtension
             ON_PREM_EXECUTION_TIME_ALLOWED = 0;
             ON_PREM_EXECUTION_DISABLED = false;
             ON_PREM_LOGIN_DISABLED = false;
+            SSO_ALLOWED = false;
+            BRANDING_ALLOWED = false;
         }
         else
         {
@@ -194,6 +204,66 @@ public static class EnvironmentConfigurationExtension
             ON_PREM_EXECUTION_TIME_ALLOWED = tenantValidationInfo.ExecutionTimeAllowed;
             ON_PREM_EXECUTION_DISABLED = tenantValidationInfo.ExecutionDisabled;
             ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
+            SSO_ALLOWED = tenantValidationInfo.SsoAllowed;
+            BRANDING_ALLOWED = tenantValidationInfo.BrandingAllowed;
+        }
+
+        if (isCommunityDeployment)
+        {
+            if (MICROSOFT_SSO_ENABLED || !string.IsNullOrWhiteSpace(MICROSOFT_SSO_CLIENT_ID) || !string.IsNullOrWhiteSpace(MICROSOFT_SSO_CLIENT_SECRET))
+            {
+                Console.Error.WriteLine("Single sign-on is restricted for the Community edition; ignoring MICROSOFT_SSO_* values. Register with GlobalAdmin to enable it.");
+            }
+
+            MICROSOFT_SSO_ENABLED = false;
+            MICROSOFT_SSO_CLIENT_ID = string.Empty;
+            MICROSOFT_SSO_CLIENT_SECRET = string.Empty;
+
+            var configuredBrandingValues = new[]
+            {
+                BRANDING_APP_NAME,
+                BRANDING_COMPANY_NAME,
+                BRANDING_COMPANY_LOGO_URL_LIGHT,
+                BRANDING_COMPANY_LOGO_URL_DARK,
+                BRANDING_PRODUCT_LOGO_URL_LIGHT,
+                BRANDING_PRODUCT_LOGO_URL_DARK,
+                BRANDING_SHORT_LOGO_URL_LIGHT,
+                BRANDING_SHORT_LOGO_URL_DARK,
+                BRANDING_FAVICON_URL_LIGHT,
+                BRANDING_FAVICON_URL_DARK,
+                BRANDING_BACKGROUND_COLOR,
+                BRANDING_FOREGROUND_COLOR,
+                BRANDING_PRIMARY_COLOR,
+                BRANDING_PRIMARY_FOREGROUND_COLOR,
+                BRANDING_SECONDARY_COLOR,
+                BRANDING_SECONDARY_FOREGROUND_COLOR,
+                BRANDING_ACCENT_COLOR,
+                BRANDING_ACCENT_FOREGROUND_COLOR
+            };
+
+            if (configuredBrandingValues.Any(value => value != null))
+            {
+                Console.Error.WriteLine("Branding is restricted for the Community edition; ignoring BRANDING_* values. Register with GlobalAdmin to enable it.");
+            }
+
+            BRANDING_APP_NAME = null;
+            BRANDING_COMPANY_NAME = null;
+            BRANDING_COMPANY_LOGO_URL_LIGHT = null;
+            BRANDING_COMPANY_LOGO_URL_DARK = null;
+            BRANDING_PRODUCT_LOGO_URL_LIGHT = null;
+            BRANDING_PRODUCT_LOGO_URL_DARK = null;
+            BRANDING_SHORT_LOGO_URL_LIGHT = null;
+            BRANDING_SHORT_LOGO_URL_DARK = null;
+            BRANDING_FAVICON_URL_LIGHT = null;
+            BRANDING_FAVICON_URL_DARK = null;
+            BRANDING_BACKGROUND_COLOR = null;
+            BRANDING_FOREGROUND_COLOR = null;
+            BRANDING_PRIMARY_COLOR = null;
+            BRANDING_PRIMARY_FOREGROUND_COLOR = null;
+            BRANDING_SECONDARY_COLOR = null;
+            BRANDING_SECONDARY_FOREGROUND_COLOR = null;
+            BRANDING_ACCENT_COLOR = null;
+            BRANDING_ACCENT_FOREGROUND_COLOR = null;
         }
 
         // Rozorpay payment gateway environment variables (Only if enabled and tenant type is Commercial)
@@ -255,6 +325,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },
                     { "EnvironmentConfig:GoogleSsoClientId", GOOGLE_SSO_CLIENT_ID },
                     { "EnvironmentConfig:GoogleSsoClientSecret", GOOGLE_SSO_CLIENT_SECRET },
+                    { "EnvironmentConfig:SsoAllowed", SSO_ALLOWED.ToString() },
+                    { "EnvironmentConfig:BrandingAllowed", BRANDING_ALLOWED.ToString() },
 
                     { "EnvironmentConfig:JwtSecretKey", JWT_SECRET_KEY },
                     { "EnvironmentConfig:JwtValidityInMinutes", JWT_VALIDITY_IN_MINUTES },

@@ -48,11 +48,19 @@ sudo docker run -d --name accounts-apis -p 4000:4000 \
 
 ### Deployment branding (self-hosted white-label)
 
-Branding customization applies to **Enterprise** and **Commercial** deployments. **Community**
-deployments keep the built-in Avintra/Aventisia branding (the endpoint returns defaults).
+Branding values are environment-supplied and optional. Branding is served only when GlobalAdmin's
+live data allows it for the deployment: `BrandingAllowed=true` on a deployment that is not
+Community. The permission cannot be set through environment variables or `appsettings.json`, and an
+omitted flag denies branding (fail closed).
 
-All keys are optional; an unset key falls back to the built-in default on the client. Invalid
-values and oversized text (over 100 characters) are ignored at startup with a warning.
+**Community** deployments never serve branding, even when `BRANDING_*` values are set; those values
+are ignored at startup with a warning. **Enterprise** and **Commercial** deployments get the
+configured values only when GlobalAdmin allows branding; otherwise `GET /branding` returns all-null
+values and the web apps keep the built-in Avintra/Aventisia defaults.
+
+Unset keys fall back to the built-in default on the client. Invalid values and oversized text (over
+100 characters) are ignored at startup with a warning. WorkspaceAPIs reads the permission flag at
+startup, so restart it after GlobalAdmin changes the flag.
 
 | Variable                              | Description                                                                        |
 | ------------------------------------- | ---------------------------------------------------------------------------------- |
