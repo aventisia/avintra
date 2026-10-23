@@ -44,4 +44,14 @@ public class OnPremDeploymentMetaDataDto
     /// Gets or sets whether login is disabled for the tenant
     /// </summary>
     public bool LoginDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether single sign-on is allowed for the tenant.
+    /// </summary>
+    public bool SsoAllowed { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether deployment branding is allowed for the tenant.
+    /// </summary>
+    public bool BrandingAllowed { get; set; } = false;
 }
