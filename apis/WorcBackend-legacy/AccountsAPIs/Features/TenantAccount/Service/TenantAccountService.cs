@@ -10,6 +10,7 @@ public class TenantAccountService : ITenantAccountService
     private readonly Guid _tenantId;
     private readonly string _userEmail;
     private readonly ILoginWithExternalAuthService _loginWithExternalAuthService;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     public TenantAccountService(
         ILogger<TenantAccountService> logger,
@@ -17,7 +18,8 @@ public class TenantAccountService : ITenantAccountService
         IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
-        ILoginWithExternalAuthService loginWithExternalAuthService)
+        ILoginWithExternalAuthService loginWithExternalAuthService,
+        IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -31,6 +33,7 @@ public class TenantAccountService : ITenantAccountService
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _loginWithExternalAuthService = loginWithExternalAuthService;
+        _httpClientFactory = httpClientFactory;
     }
 
     // acccounts-api/tenant/user/
@@ -852,35 +855,6 @@ public class TenantAccountService : ITenantAccountService
         }
     }
 
-    private (bool IsValid, int StatusCode, string Message, TenantSsoConfigDto? Config) BuildStoredSsoConfigAsync(
-        Tenant tenant, TenantSsoConfigDto requestedConfig, TenantSsoConfigDto? existingConfig)
-    {
-        if (tenant.Type != TenantTypesEnum.Organization)
-        {
-            return (false, 400, "Single sign-on is available for organization tenants only.", null);
-        }
-
-        if (string.IsNullOrWhiteSpace(tenant.Domain))
-        {
-            return (false, 400, "Set the tenant's email domain before connecting single sign-on.", null);
-        }
-
-        var requestedDomain = string.IsNullOrWhiteSpace(requestedConfig.EmailDomain) ? tenant.Domain : requestedConfig.EmailDomain;
-
-        if (!string.Equals(requestedDomain.Trim(), tenant.Domain.Trim(), StringComparison.OrdinalIgnoreCase))
-        {
-            return (false, 400, "The single sign-on email domain must match the tenant's email domain.", null);
-        }
-
-        var config = SsoConfigHelpers.Clone(requestedConfig);
-        config.V = SsoConfigHelpers.SchemaVersion;
-        config.Provider = SsoConfigHelpers.MicrosoftEntraProvider;
-        config.EmailDomain = tenant.Domain.Trim().ToLowerInvariant();
-        config.ExternalTenantId = config.ExternalTenantId?.Trim() ?? string.Empty;
-
-        return (true, 200, "Single sign-on configuration validated.", config);
-    }
-
     private async Task<(bool IsValid, int StatusCode, string Message)> ValidateSsoEnablementAsync(
         Tenant tenant, TenantSsoConfigDto? storedConfig)
     {
@@ -941,7 +915,7 @@ public class TenantAccountService : ITenantAccountService
 
             var tokenEndpoint = $"https://login.microsoftonline.com/{tenantAuthority}/oauth2/v2.0/token";
 
-            using var httpClient = new HttpClient();
+            var httpClient = _httpClientFactory.CreateClient();
 
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
