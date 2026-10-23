@@ -1,91 +1,64 @@
-import { useHotkeys } from "react-hotkeys-hook";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
+import { useClipboardStore } from "../stores/useClipboardStore";
 import { useFlowOperations } from "./useFlowOperations";
 
 /**
  * Global keyboard shortcuts for Copy/Cut/Paste.
  */
 export const useCopyPasteShortcuts = () => {
-  const { copyNodes, cutNodes, pasteNodes } = useFlowOperations();
+  const { copyNodes, cutNodes, pasteNodes, nodes } = useFlowOperations();
   const { selectedNode } = useContextMenuActionsStore(
     useShallow((state) => ({ selectedNode: state.selectedNode })),
   );
-  //  Prevent intercepting shortcuts while typing in inputs or textarea
-  const activeElement = document.activeElement as HTMLElement;
 
-  const isInsideDialog = activeElement.closest('[role="dialog"]');
+  const hasNodeTargets = Boolean(selectedNode) || nodes.some((node) => node.selected);
 
-  const options = {
-    enableOnFormTags: false,
-    preventDefault: true,
-    enabled: !isInsideDialog,
-  };
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const ctrlOrCmd = event.ctrlKey || event.metaKey;
+      if (!ctrlOrCmd) return;
 
-  //  Copy
-  useHotkeys(
-    ["meta+c", "ctrl+c"],
-    () => {
-      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
-        return;
-      }
-      copyNodes();
-    },
-    options,
-    [copyNodes],
-  );
+      const key = event.key.toLowerCase();
+      if (!["c", "x", "v"].includes(key)) return;
 
-  //  Cut
-  useHotkeys(
-    ["meta+x", "ctrl+x"],
-    () => {
-      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
-        return;
-      }
-      cutNodes();
-    },
-    options,
-    [cutNodes],
-  );
+      const activeElement = document.activeElement as HTMLElement | null;
+      if (activeElement?.closest('[role="dialog"]')) return;
+      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) return;
+      if (activeElement?.isContentEditable) return;
 
-  //  Normal Paste (below / branch-after)
-  useHotkeys(
-    ["meta+v", "ctrl+v"],
-    () => {
-      if (!selectedNode) return;
-      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
+      const textSelection = window.getSelection();
+      if (textSelection && !textSelection.isCollapsed) return;
+
+      if (key === "c" || key === "x") {
+        if (!hasNodeTargets) return;
+
+        event.preventDefault();
+        if (key === "c") {
+          copyNodes();
+        } else {
+          cutNodes();
+        }
         return;
       }
 
-      // const selectedNode = selectedNodes[0];
+      const clipboard = useClipboardStore.getState().clipboard;
+      if (!selectedNode || !clipboard || clipboard.nodes.length === 0) return;
+
+      event.preventDefault();
       const isBranchNode = selectedNode.type === "branchNode1";
 
-      pasteNodes(selectedNode.id, isBranchNode ? "branch-below" : "after");
-    },
-    options,
-    [pasteNodes, selectedNode],
-  );
-
-  //  Special Paste (above / branch-before)
-  useHotkeys(
-    ["meta+shift+v", "ctrl+shift+v"],
-    () => {
-      if (!selectedNode) return;
-      if (
-        (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) ||
-        isInsideDialog
-      ) {
-        return;
+      if (event.shiftKey) {
+        pasteNodes(selectedNode.id, isBranchNode ? "branch-above" : "before");
+      } else {
+        pasteNodes(selectedNode.id, isBranchNode ? "branch-below" : "after");
       }
+    };
 
-      // const firstNode = selectedNodes[0];
-      const isBranchNode = selectedNode.type === "branchNode1";
-
-      pasteNodes(selectedNode.id, isBranchNode ? "branch-above" : "before");
-    },
-    options,
-    [pasteNodes, selectedNode],
-  );
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [copyNodes, cutNodes, pasteNodes, selectedNode, hasNodeTargets]);
 };

@@ -174,6 +174,11 @@ public class ResourceShareService : IResourceShareService
                 return prodShareBlock;
             }
 
+            if (resourceShareDto.UserId != Guid.Empty && resourceShareDto.UserId == _userId)
+            {
+                return serviceResponse.Update("You cannot share a resource with yourself.", 400);
+            }
+
             // Check if the user already has access to this resource.
             var existingResource = await _unitOfWork.ResourceShareRepo
                 .GetByConditionAsync(w =>
@@ -259,7 +264,20 @@ public class ResourceShareService : IResourceShareService
                 return prodShareBlock;
             }
 
-            var userIds = createResourceShareDto.Users
+            var selfUsers = createResourceShareDto.Users
+                .Where(s => s.UserId != Guid.Empty && s.UserId == _userId)
+                .ToList();
+
+            var shareableUsers = createResourceShareDto.Users
+                .Where(s => s.UserId == Guid.Empty || s.UserId != _userId)
+                .ToList();
+
+            if (selfUsers.Count > 0 && shareableUsers.Count == 0)
+            {
+                return serviceResponse.Update("You cannot share a resource with yourself.", 400);
+            }
+
+            var userIds = shareableUsers
                 .Select(s => s.UserId)
                 .Distinct()
                 .ToList();
@@ -285,7 +303,7 @@ public class ResourceShareService : IResourceShareService
             var validUserIds = validUsers.ToHashSet();
 
             // Build entities in memory.
-            var resourceShares = createResourceShareDto.Users
+            var resourceShares = shareableUsers
                 .Where(w => validUserIds.Contains(w.UserId) && !existingUserIds.Contains(w.UserId))
                 .Select(s => new ResourceShare
                 {
@@ -378,6 +396,13 @@ public class ResourceShareService : IResourceShareService
             if (prodShareBlock != null)
             {
                 return prodShareBlock;
+            }
+
+            if (resourceShareDto.UserId != Guid.Empty &&
+                resourceShareDto.UserId == _userId &&
+                resourceShare.UserId != _userId)
+            {
+                return serviceResponse.Update("You cannot share a resource with yourself.", 400);
             }
 
             // Map updated DTO values to the entity.
@@ -485,18 +510,18 @@ public class ResourceShareService : IResourceShareService
                         break;
                     }
 
-                case ResourceTypeEnum.AppSecret:
+                case ResourceTypeEnum.VaultCredential:
                     {
-                        // Retrieve the AppSecret resource.
-                        var appSecret = await _unitOfWork.AppSecretRepo
+                        // Retrieve the VaultCredential resource.
+                        var vaultCredential = await _unitOfWork.VaultCredentialRepo
                             .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
-                        if (appSecret == null)
+                        if (vaultCredential == null)
                             return serviceResponse;
 
-                        appSecret.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.AppSecretRepo.Update(appSecret);
+                        vaultCredential.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.VaultCredentialRepo.Update(vaultCredential);
                         break;
                     }
 

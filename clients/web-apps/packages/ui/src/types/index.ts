@@ -9,6 +9,7 @@ export * from "./key-value-lookup-type";
 export * from "./literal-types";
 export * from "./position-types";
 export * from "./select-option";
+export * from "./searched-user";
 export * from "./sidebar-types";
 export * from "./user-session-types";
 export * from "./vite-env-var-type";

@@ -24,10 +24,10 @@ public enum ResourceTypeEnum
     KeyStore,
 
     /// <summary>
-    /// Represents an application secret resource used for managing application credentials.
+    /// Represents a vault credential resource.
     /// </summary>
-    [Description("Represents an application secret resource used for managing application credentials.")]
-    AppSecret,
+    [Description("Represents a vault credential resource.")]
+    VaultCredential,
 
     /// <summary>
     /// Represents a knowledge base resource used for storing and retrieving knowledge assets.

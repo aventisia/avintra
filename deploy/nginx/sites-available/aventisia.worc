@@ -69,7 +69,7 @@ server
 	}
 
 	# ----------------- /workspace -----------------
-	location ~ ^/workspace/api/(app-secret) {
+	location ~ ^/workspace/api/(vault-credential) {
         gzip off;
 		rewrite ^/workspace/api/(.*)$ /api/$1 break; # Strip /workspace/ from the start of the URI
 		proxy_pass http://workspace-apis:4001;

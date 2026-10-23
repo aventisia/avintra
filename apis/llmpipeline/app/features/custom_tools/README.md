@@ -17,6 +17,6 @@ resolved addresses falls in a blocked range.
 ## Credential placement
 
 `ApiKeyQuery` credentials put the secret in the request query string, where it can reach upstream access logs
-and error strings. The .NET adapter and `credential_client.py` both implement it because providers that only
+and error strings. The .NET adapter and `vault_credential_client.py` both implement it because providers that only
 accept query keys exist; this is a known, accepted limitation pending a product decision, not a defect.
 Header-based types (`Bearer`, `Basic`, `ApiKeyHeader`) are preferred wherever the provider supports them.

@@ -53,6 +53,7 @@ public static class AppServicesExtension
         config.Apply(new UnreadNotificationMappingProfile());
         config.Apply(new AutoNotificationMappingProfile());
         config.Apply(new FlowsTableMappingProfile());
+        config.Apply(new UiBuilderMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new SupportTicketsTableMappingProfile());
         config.Apply(new SupportTicketRemarksMappingProfile());
@@ -71,7 +72,7 @@ public static class AppServicesExtension
         config.Apply(new JobsTableMappingProfile());
         config.Apply(new KeyStoreMappingProfile());
         config.Apply(new FlowUserMappingProfile());
-        config.Apply(new AppSecretMappingProfile());
+        config.Apply(new VaultCredentialMappingProfile());
         config.Apply(new TimeTriggerMappingProfile());
         config.Apply(new EmailTriggerMappingProfile());
         config.Apply(new MessageTriggerMappingProfile());
@@ -124,6 +125,8 @@ public static class AppServicesExtension
         services.AddScoped<INotificationEventService, NotificationEventService>();
         services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
+        services.AddScoped<IUiBuilderService, UiBuilderService>();
+        services.AddScoped<IUiBuilderProjectUserService, UiBuilderProjectUserService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
@@ -154,7 +157,7 @@ public static class AppServicesExtension
         services.AddScoped<IWebhookCallbackService, WebhookCallbackService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IFlowUserService, FlowUserService>();
-        services.AddScoped<IAppSecretService, AppSecretService>();
+        services.AddScoped<IVaultCredentialService, VaultCredentialService>();
         services.AddScoped<ICorsairSidecarService, CorsairSidecarService>();
         services.AddScoped<ICorsairInvokeService, CorsairInvokeService>();
         services.AddSingleton<CorsairConfigRepository>();
@@ -200,7 +203,7 @@ public static class AppServicesExtension
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
 
         // Cloud Connectors feature
-        services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
+        services.AddScoped<ICloudConnectorsVaultCredentialService, CloudConnectorsVaultCredentialService>();
         // Generic catalog-driven Camel connector service (all families): config
         // resolution, catalog client, unified seeding, startup seeding.
         services.AddSingleton<CamelConnectorsConfigRepository>();

@@ -16,6 +16,11 @@ import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTri
 import { FlowVersions } from "@/features/flow-versions/components";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
+import {
+  UiBuilderPublishButton,
+  UiBuilderVersions,
+  useIsUiBuilderRoute,
+} from "@/features/ui-builder";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -38,6 +43,7 @@ const AppHeader: React.FC = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+  const isUiBuilder = useIsUiBuilderRoute();
   const serverBranding = useBrandingStore((state) => state.branding);
   const headerLabel =
     serverBranding?.appName ||
@@ -87,10 +93,16 @@ const AppHeader: React.FC = () => {
           <span className="rotate-12 text-primary-foreground/50">/</span>
 
           {/* Agent name */}
-          <AgentName className={isViewTenant ? "max-w-56" : ""} />
+          {!isUiBuilder && <AgentName className={isViewTenant ? "max-w-56" : ""} />}
 
           {/* Version selector */}
-          {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
+          {isUiBuilder ? (
+            <UiBuilderVersions />
+          ) : !isAgentHistory && !isExecutionLog ? (
+            <FlowVersions />
+          ) : (
+            <ViewOnlyVersionSelector />
+          )}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex min-w-0 shrink-0 items-center justify-center">
@@ -98,24 +110,35 @@ const AppHeader: React.FC = () => {
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex min-w-0 items-center justify-end">
-            <div className="mx-4 flex min-w-0 items-center gap-1 text-primary-foreground">
+            {isUiBuilder ? (
+              <div className="flex min-w-0 items-center gap-2">
+                <StudioPreferences className="mt-0 mlg:mt-4" />
+                <UiBuilderPublishButton />
+              </div>
+            ) : (
+              <>
+                <div className="mx-4 flex min-w-0 items-center gap-1 text-primary-foreground">
               <PresenceAvatars />
 
-              <ExecuteFlow />
+                  <ExecuteFlow />
 
-              {!isChatAgent && <SearchCommandTrigger />}
+                  {!isChatAgent && <SearchCommandTrigger />}
 
-              <VersionHistoryTrigger />
+                  <VersionHistoryTrigger />
 
-              {!isChatAgent && import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
+                  {!isChatAgent && import.meta.env.MODE !== "production" ? (
+                    <SettingsTrigger />
+                  ) : null}
 
-              {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
-              <Chat className="mt-0 mlg:mt-4" />
-            </div>
-            <SaveFlow />
-            <div className="flex items-center">
-              <HeaderActionMenu />
-            </div>
+                  {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
+                  <Chat className="mt-0 mlg:mt-4" />
+                </div>
+                <SaveFlow />
+                <div className="flex items-center">
+                  <HeaderActionMenu />
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className="flex min-w-0 items-center justify-end gap-1">

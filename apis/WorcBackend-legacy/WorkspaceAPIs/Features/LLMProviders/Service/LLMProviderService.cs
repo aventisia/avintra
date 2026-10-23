@@ -4,15 +4,15 @@ public class LLMProviderService : ILLMProviderService
 {
     private readonly ILogger<LLMProviderService> _logger;
     private readonly Guid _userId;
-    private readonly IAppSecretService _appSecretService;
+    private readonly IVaultCredentialService _vaultCredentialService;
 
     public LLMProviderService(
         ILogger<LLMProviderService> logger,
         IHttpContextAccessor httpContextAccessor,
-        IAppSecretService appSecretService)
+        IVaultCredentialService vaultCredentialService)
     {
         _logger = logger;
-        _appSecretService = appSecretService;
+        _vaultCredentialService = vaultCredentialService;
 
         // Initialize the user ID by extracting it from the JWT claims in the HTTP context.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -36,7 +36,7 @@ public class LLMProviderService : ILLMProviderService
                 ? requestDto.CredentialId
                 : requestDto.CredentialName;
 
-            var credential = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName ?? string.Empty);
+            var credential = await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(credentialName ?? string.Empty);
 
             // If credentials are not valid, return the error message.
             if (credential.StatusCode != 200)

@@ -1,0 +1,26 @@
+meta {
+  name: Get enabled models by provider and capability
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider/enabled-models?providerType=OpenAI&capability=Embedding
+  body: none
+  auth: none
+}
+
+params:query {
+  providerType: OpenAI
+  capability: Embedding
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isArray
+}

@@ -1,21 +1,24 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { axiosInstance } from "@avplatform/ui/lib";
 
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
-import { TenantModelProviderDto } from "../dtos/tenant-model-provider-dto";
+import { TenantEnabledModelDto } from "../dtos/tenant-enabled-model.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;
 
 /**
- * Retrieves all model provider configurations for the current tenant.
- * Used by the Agent Builder (studio) to restrict BYOK provider/model options
- * to those enabled in the Tenant Admin "Model Providers" section.
+ * Retrieves the tenant's enabled models, optionally filtered by model capability.
  */
-export const getTenantModelProviders = () => {
+export const getEnabledModels = (capability?: ModelCapabilityEnum) => {
+  const params = new URLSearchParams();
+  if (capability) params.set("capability", capability);
+  const query = params.toString();
   return axiosInstance
-    .get<IHttpResponse<TenantModelProviderDto[]>>(`${baseAPIURL}/list`, {
-      headers: getStudioSpaceHeaders(),
-    })
+    .get<IHttpResponse<TenantEnabledModelDto[]>>(
+      `${baseAPIURL}/enabled-models${query ? `?${query}` : ""}`,
+      { headers: getStudioSpaceHeaders() },
+    )
     .then((res) => res.data);
 };

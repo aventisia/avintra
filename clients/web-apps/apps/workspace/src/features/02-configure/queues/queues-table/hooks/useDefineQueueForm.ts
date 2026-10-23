@@ -13,8 +13,8 @@ import { useShallow } from "zustand/react/shallow";
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
-import { getCredSelectOptions } from "../apis/app-secret-apis";
 import { isNameAvailable } from "../apis/queues-table-apis";
+import { getVaultCredentialSelectOptions } from "../apis/vault-credential-select.apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 import { useTableTab } from "./useTableTab";
@@ -112,6 +112,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof queueZodSchema>>({
     resolver: zodResolver(queueZodSchema),
+    mode: "onChange",
     defaultValues: {
       crudAction: CrudActionTypeConverter(crudAction),
       id: "",
@@ -123,7 +124,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       isStoredEncrypted: false,
       // shouldRetryFailedItems: false,
       // shouldRetryAbandonedItems: false,
-      // maximumRetryAttempts: 3,
+      maximumRetryAttempts: 3,
       inputSchema: "[]",
       statuses: defaultStatuses,
       routeToQueues: [],
@@ -141,7 +142,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
   // Destructor form values and methods
   const {
-    formState: { isDirty },
+    formState: { isDirty, isValid },
   } = form;
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
@@ -156,7 +157,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   useEffect(() => {
     setIsOptionsLoading(true);
 
-    getCredSelectOptions("M365")
+    getVaultCredentialSelectOptions("M365")
       .then((data) => {
         setSelectOptions(data?.data as ISelectOption[]);
         setIsOptionsLoading(false);
@@ -192,7 +193,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       isStoredEncrypted: queueData?.isStoredEncrypted,
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
       // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
-      // maximumRetryAttempts: queueData?.maximumRetryAttempts,
+      maximumRetryAttempts: queueData?.maximumRetryAttempts ?? 3,
       inputSchema:
         JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema, null, 2),
       statuses: JSON.stringify(queueData?.statuses, null, 2) ?? defaultStatuses,
@@ -259,6 +260,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   return {
     form,
     isDirty,
+    isValid,
     crudAction,
     refineFormData,
     isAvailable,

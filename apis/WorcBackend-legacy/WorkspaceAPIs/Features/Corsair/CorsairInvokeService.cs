@@ -15,7 +15,7 @@ namespace WorkspaceAPIs.Features.Corsair;
 /// Invokes Corsair plugin operations from workflow nodes.
 ///
 /// The caller is authenticated via the platform JWT. The credential is resolved
-/// by name through the Vault (AppSecret) service, which enforces tenant, space,
+/// by name through the Vault (VaultCredential) service, which enforces tenant, space,
 /// environment, disabled-state, and resource-share authorization. The dotted
 /// sidecar action is resolved from the generated <c>CorsairActionMap.json</c>
 /// file (never reconstructed from a display name), then the operation is invoked
@@ -71,7 +71,7 @@ public class CorsairInvokeService : ICorsairInvokeService
             }
 
             // Resolve the credential by name within the current tenant/space/environment.
-            var appSecret = await _unitOfWork.AppSecretRepo
+            var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == request.CredentialName &&
                     !w.IsDisabled &&
@@ -81,7 +81,7 @@ public class CorsairInvokeService : ICorsairInvokeService
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
 
-            if (appSecret == null)
+            if (vaultCredential == null)
             {
                 serviceResponse.Message = "Credential not found or is disabled.";
                 return serviceResponse;
@@ -90,10 +90,10 @@ public class CorsairInvokeService : ICorsairInvokeService
             // Enforce resource-share authorization (owner/view/edit).
             var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
-                appSecret.Id,
-                ResourceTypeEnum.AppSecret,
-                appSecret.CreatedByUserId,
-                appSecret.IsTenantWideAccess,
+                vaultCredential.Id,
+                ResourceTypeEnum.VaultCredential,
+                vaultCredential.CreatedByUserId,
+                vaultCredential.IsTenantWideAccess,
                 new[]
                 {
                     ResourceAccessTypeEnum.Owner,
@@ -109,8 +109,8 @@ public class CorsairInvokeService : ICorsairInvokeService
             }
 
             // Validate the requested plugin/action against the credential type.
-            var mappedPlugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
-            var supportedPlugins = _configRepository.GetPluginIdsForVaultType(appSecret.Type.ToString());
+            var mappedPlugin = MapVaultCredentialTypeToCorsairPlugin(vaultCredential.Type);
+            var supportedPlugins = _configRepository.GetPluginIdsForVaultCredentialType(vaultCredential.Type.ToString());
             if (string.IsNullOrWhiteSpace(mappedPlugin) ||
                 (supportedPlugins.Count > 0 && !supportedPlugins.Contains(request.Plugin, StringComparer.OrdinalIgnoreCase)) ||
                 (supportedPlugins.Count == 0 && !string.Equals(mappedPlugin, request.Plugin, StringComparison.OrdinalIgnoreCase)))
@@ -142,7 +142,7 @@ public class CorsairInvokeService : ICorsairInvokeService
             var payload = CorsairPayloadHelper.Refine(request.Payload, config);
 
             var result = await _corsairSidecarService.InvokeAsync(
-                appSecret.Id,
+                vaultCredential.Id,
                 plugin,
                 dottedAction,
                 payload);
@@ -154,7 +154,7 @@ public class CorsairInvokeService : ICorsairInvokeService
                     plugin,
                     request.Action,
                     request.CredentialName,
-                    appSecret.Id,
+                    vaultCredential.Id,
                     result.ErrorType,
                     result.Retryable,
                     result.RetryAfterMs,
@@ -192,10 +192,10 @@ public class CorsairInvokeService : ICorsairInvokeService
     }
 
     /// <summary>
-    /// Maps an <see cref="AppSecretTypesEnum"/> to the corresponding Corsair plugin identifier.
+    /// Maps an <see cref="VaultCredentialTypesEnum"/> to the corresponding Corsair plugin identifier.
     /// Returns <c>null</c> when the type does not correspond to a Corsair-supported plugin.
     /// </summary>
-    private string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
+    private string? MapVaultCredentialTypeToCorsairPlugin(VaultCredentialTypesEnum type)
     {
         return WorkspaceAPIs.Features.Corsair.CorsairPluginResolver.ResolveApiKeyPlugin(type, _configRepository);
     }

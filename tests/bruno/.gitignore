@@ -125,6 +125,9 @@ dist
 # TernJS port file
 .tern-port
 
+# Bruno CLI report output (npm run test:report, npm run test:ci)
+results/
+
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 

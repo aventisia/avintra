@@ -17,8 +17,8 @@ import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
 import { useUsableToolOperations, useUsableTools } from "../../hooks/useTools.hook";
 import { APPROVAL_OPTIONS } from "../../stores/platform-tools";
 import { normalizeToolOperations } from "../../utils/normalize-tool-operations.util";
-import { CredentialsSelectField } from "./CredentialsSelectField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
 interface ToolsConfigFieldProps {
   name: string;
@@ -264,7 +264,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           fallbackIcon={<Wrench className="h-4 w-4 shrink-0 text-muted-foreground" />}
         />
 
-        <CredentialsSelectField
+        <VaultCredentialSelectField
           name={fieldNames.credential_name}
           label="Select Credential"
           size="sm"

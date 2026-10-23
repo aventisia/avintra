@@ -10,7 +10,7 @@ from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, L
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from fastapi import HTTPException
 from app.utils.file_converter_utils import file_to_base64
@@ -27,11 +27,11 @@ class DeepInfraProvider(BaseLLMProvider):
 
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault_manager = VaultManager()
+            vault_credential_manager = VaultCredentialManager()
 
-            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(
+            # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
+            logger.info(f"Fetching credentials from vault credential for credential name: {llm_request.credential_name}")
+            credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
@@ -40,7 +40,7 @@ class DeepInfraProvider(BaseLLMProvider):
             )
 
             if credential:
-                # Update the API URL and key from the vault credentials
+                # Update the API URL and key from the vault credential
                 self.api_url = credential.get("data", {}).get("Url", self.api_url)
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
                 logger.info("BYOK credentials successfully applied.")
@@ -123,11 +123,11 @@ class DeepInfraProvider(BaseLLMProvider):
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
-            vault_manager = VaultManager()
+            vault_credential_manager = VaultCredentialManager()
 
-            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(
+            # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
+            logger.info(f"Fetching credentials from vault credential for credential name: {llm_request.credential_name}")
+            credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
@@ -136,7 +136,7 @@ class DeepInfraProvider(BaseLLMProvider):
             )
 
             if credential:
-                # Update the API URL and key from the vault credentials
+                # Update the API URL and key from the vault credential
                 self.api_url = credential.get("data", {}).get("Url", self.api_url)
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
                 logger.info("BYOK credentials successfully applied.")

@@ -1,5 +1,6 @@
 import { Separator, Switch } from "@avplatform/ui";
 import { Input } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import {
   DialogContent,
@@ -17,24 +18,30 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { toast } from "@avplatform/ui/sonner";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
+import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
 
-import {
-  getLlmModelsV2,
-  upsertModelProvider,
-} from "../apis/model-provider-apis";
+import { getLlmModelsV2, upsertModelProvider } from "../apis/model-provider-apis";
 import {
   getProviderIcon,
-  getVaultTypeForProvider,
+  getVaultCredentialTypeForProvider,
 } from "../constants/model-provider-definitions";
+import { EnabledModelDto } from "../dtos/enabled-model.dto";
 import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
+import {
+  canonicalizeEnabledModels,
+  canonicalizeModelIds,
+  canonicalizeProviderModels,
+} from "../utils/model-id.util";
+import { getSupportedModalities } from "../utils/supported-modalities.util";
 
 type Step = "credential" | "models";
 
@@ -53,9 +60,9 @@ export const ModelProviderSetupDialog = () => {
   const [isCredentialLoading, setIsCredentialLoading] = useState(false);
   const [selectedCredentialName, setSelectedCredentialName] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
+  const [enabledModels, setEnabledModels] = useState<EnabledModelDto[]>([]);
   const [isDisabled, setIsDisabled] = useState(false);
 
-  // v2 provider/model browsing state (credential-based providers)
   const [providerModels, setProviderModels] = useState<LlmModelInfoDto[]>([]);
   const [isProvidersLoading, setIsProvidersLoading] = useState(false);
   const [modelSearch, setModelSearch] = useState("");
@@ -64,34 +71,30 @@ export const ModelProviderSetupDialog = () => {
     setStep("credential");
     setSelectedCredentialName("");
     setEnabledModelIds([]);
+    setEnabledModels([]);
     setCredentialOptions([]);
     setIsDisabled(false);
     setProviderModels([]);
     setModelSearch("");
   };
 
-  // When the dialog opens for a provider, load the vault credentials and, if a
-  // saved configuration exists, pre-select the credential and pre-enable its models.
   useEffect(() => {
     if (!isOpen || !provider) return;
 
-    // Reset internal state for a fresh configuration flow.
     resetState();
 
     setIsCredentialLoading(true);
-    getCredSelectOptions(getVaultTypeForProvider(provider.value))
+    getVaultCredentialSelectOptions(getVaultCredentialTypeForProvider(provider.value))
       .then((res) => {
         const options = res?.data ?? [];
         setCredentialOptions(options);
 
-        // Pre-select the saved credential and its enabled models when re-configuring.
         if (config) {
           const savedCredential = config.credentialName ?? config.credentialId ?? "";
           setSelectedCredentialName(savedCredential);
-          setEnabledModelIds(config.enabledModelIds ?? []);
+          setEnabledModelIds(canonicalizeModelIds(provider.value, config.enabledModelIds ?? []));
+          setEnabledModels(canonicalizeEnabledModels(provider.value, config.enabledModels ?? []));
           setIsDisabled(Boolean(config.isDisabled));
-          // Skip straight to the models step so existing state is shown, and
-          // load the provider's models so the list is populated.
           setStep("models");
           void loadProviderModels(savedCredential);
         }
@@ -118,10 +121,8 @@ export const ModelProviderSetupDialog = () => {
     onError: () => toast.error("Failed to save provider configuration."),
   });
 
-  // Fetch the models for the selected provider from the LLM pipeline API
-  // (`/v2/llm/models?provider=X`). The provider name is sent in lowercase.
-  // For ollama providers the selected credential id is forwarded so the pipeline
-  // echoes it back on each returned model.
+  // IMPORTANT NOTE: The provider name is sent lowercase; for ollama providers the selected
+  // credential id is forwarded so the pipeline echoes it back on each returned model.
   const loadProviderModels = async (credentialName?: string) => {
     if (!provider) return;
     setIsProvidersLoading(true);
@@ -133,7 +134,7 @@ export const ModelProviderSetupDialog = () => {
         undefined,
         credentialName ?? selectedCredentialName,
       );
-      setProviderModels(modelsRes?.models ?? []);
+      setProviderModels(canonicalizeProviderModels(provider.value, modelsRes?.models ?? []));
     } catch (err) {
       console.error("Failed to fetch models", err);
       toast.error("Failed to load models.");
@@ -151,36 +152,49 @@ export const ModelProviderSetupDialog = () => {
   const handleSave = () => {
     if (!provider) return;
 
-    // When the credential dropdown was not re-selected (e.g. the stored credential
-    // is a GUID that doesn't match any name-based option after a provider was
-    // disabled), fall back to the previously saved credential so a disabled
-    // provider can still be re-enabled.
+    // IMPORTANT NOTE: When the credential dropdown was not re-selected (e.g. the stored
+    // credential is a GUID that does not match any name-based option after a provider was
+    // disabled), fall back to the previously saved credential so a disabled provider can be re-enabled.
     const credentialName = selectedCredentialName || config?.credentialName || "";
     const credentialId = config?.credentialId ?? null;
 
     if (!credentialName && !credentialId) return;
+
+    const sendEnabledModels = config?.enabledModels != null || enabledModels.length > 0;
 
     upsertMutation.mutate({
       providerType: provider.value,
       credentialName,
       credentialId,
       enabledModelIds,
+      enabledModels: sendEnabledModels ? enabledModels : undefined,
       isDisabled,
     });
   };
 
-  const toggleModel = (modelValue: string) => {
+  const toggleModel = (model: LlmModelInfoDto) => {
+    const isEnabled = enabledModelIds.includes(model.id);
     setEnabledModelIds((prev) =>
-      prev.includes(modelValue) ? prev.filter((m) => m !== modelValue) : [...prev, modelValue],
+      isEnabled ? prev.filter((m) => m !== model.id) : [...prev, model.id],
+    );
+    setEnabledModels((prev) =>
+      isEnabled
+        ? prev.filter((m) => m.modelId !== model.id)
+        : [...prev, { modelId: model.id, capability: toModelCapability(model.capability) }],
     );
   };
 
-  // Apply the model-name search to the selected provider's models.
   const filteredModels = useMemo(() => {
     const query = modelSearch.trim().toLowerCase();
     return providerModels.filter((m) => {
-      if (query && !m.id.toLowerCase().includes(query)) return false;
-      return true;
+      if (!query) return true;
+      const capability = m.capability?.toLowerCase() ?? "";
+      const capabilityLabel = formatCapabilityLabel(m.capability)?.toLowerCase() ?? "";
+      return (
+        m.id.toLowerCase().includes(query) ||
+        capability.includes(query) ||
+        capabilityLabel.includes(query)
+      );
     });
   }, [providerModels, modelSearch]);
 
@@ -252,7 +266,6 @@ export const ModelProviderSetupDialog = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Allow changing the selected credential */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Credential</label>
                 <Select
@@ -273,7 +286,6 @@ export const ModelProviderSetupDialog = () => {
                 </Select>
               </div>
 
-              {/* Disable/enable the provider */}
               <div className="flex items-center justify-between rounded-lg border px-3 py-2">
                 <div>
                   <p className="text-sm font-medium">Disable provider</p>
@@ -295,13 +307,12 @@ export const ModelProviderSetupDialog = () => {
                 </div>
               ) : (
                 <>
-                  {/* Model search */}
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       value={modelSearch}
                       onChange={(e) => setModelSearch(e.target.value)}
-                      placeholder="Search models..."
+                      placeholder="Search by model or capability..."
                       className="pl-8"
                     />
                   </div>
@@ -312,19 +323,39 @@ export const ModelProviderSetupDialog = () => {
                     </p>
                   ) : (
                     <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
-                      {filteredModels.map((model) => (
-                        <div
-                          key={model.id}
-                          className="flex items-center justify-between rounded-lg border px-3 py-2"
-                        >
-                          <span className="truncate pr-2 text-sm">{model.id}</span>
-                          <Switch
-                            checked={enabledModelIds.includes(model.id)}
-                            onCheckedChange={() => toggleModel(model.id)}
-                            size="sm"
-                          />
-                        </div>
-                      ))}
+                      {filteredModels.map((model) => {
+                        const capabilityLabel = formatCapabilityLabel(model.capability);
+                        const supportedModalities = getSupportedModalities(model);
+
+                        const capabilityBadge = capabilityLabel ? (
+                          <Badge className="bg-slate-200 text-slate-600">{capabilityLabel}</Badge>
+                        ) : null;
+
+                        return (
+                          <div
+                            key={model.id}
+                            className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2"
+                          >
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="truncate text-sm">{model.id}</span>
+                              {supportedModalities && capabilityBadge ? (
+                                <Tooltip
+                                  content={`Supported modalities: ${supportedModalities.join(", ")}`}
+                                >
+                                  <div className="inline-flex">{capabilityBadge}</div>
+                                </Tooltip>
+                              ) : (
+                                capabilityBadge
+                              )}
+                            </div>
+                            <Switch
+                              checked={enabledModelIds.includes(model.id)}
+                              onCheckedChange={() => toggleModel(model)}
+                              size="sm"
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </>
@@ -341,8 +372,7 @@ export const ModelProviderSetupDialog = () => {
                   <Button
                     onClick={handleSave}
                     disabled={
-                      upsertMutation.isPending ||
-                      (!selectedCredentialName && !config?.credentialId)
+                      upsertMutation.isPending || (!selectedCredentialName && !config?.credentialId)
                     }
                   >
                     {upsertMutation.isPending ? "Saving..." : "Save"}

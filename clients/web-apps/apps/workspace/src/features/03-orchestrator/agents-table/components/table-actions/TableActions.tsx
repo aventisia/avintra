@@ -1,6 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { DataTableRowActions } from "@avplatform/ui/data-table";
 
+import { UiBuilderRowActions } from "../published-ui/UiBuilderRowActions";
 import { AgentConfigRowAction } from "./AgentConfigRowAction";
 import { AgentDisableAction } from "./AgentDisableAction";
 import { AssignMachineRowAction } from "./AssignMachineRowAction";
@@ -24,6 +25,14 @@ export const TableActions = ({
   flowVersionNumber,
   supportedPlatform,
 }: TableActionsProps) => {
+  if (type === "UI") {
+    return (
+      <DataTableRowActions>
+        <UiBuilderRowActions rowId={rowId} isDisabled={isDisabled} projectName={flowName} />
+      </DataTableRowActions>
+    );
+  }
+
   return (
     <DataTableRowActions>
       {type == "ChatAgent" ? (

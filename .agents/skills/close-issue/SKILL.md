@@ -9,6 +9,8 @@ description: "Close an existing Gitea issue, optionally adding a user-provided c
 
 Close an existing Gitea issue, with an optional comment recorded before closing.
 
+This is a standalone, user-invoked lifecycle operation outside the coding loop. Require suitable permissions and explicit mutation authorization; QA success alone does not authorize closure.
+
 ## When to Use
 
 - The user says "close issue #42", "resolve this issue", or "mark #42 as done".
@@ -17,9 +19,11 @@ Close an existing Gitea issue, with an optional comment recorded before closing.
 
 ## Procedure
 
-1. **Collect the issue identifier.**
-   - Accept a plain number (`42`), `#42`, or a full issue URL.
-   - If no issue is specified, ask for it.
+1. **Resolve the issue and repository.**
+   - Accept a plain number (`42`), `#42`, or a full issue URL. If no issue is specified, ask for it.
+   - For a full URL, extract the issue index, host, and `owner/repo`; preserve them in every request. Use `--repo "$REPO"` and, for a non-default configured host, `--login "$LOGIN"`.
+   - For a bare number, confirm the current checkout is the intended repository and set `REPO` to `.`. Never silently close the same number in another repository.
+   - Confirm `tea --version` and `tea whoami`; for a non-default login, verify it with the read-only request `tea api --login "$LOGIN" /user`. If the host has no configured login, stop and ask for access.
 
 2. **Collect the optional comment.**
    - Use the comment supplied by the user verbatim.
@@ -28,17 +32,19 @@ Close an existing Gitea issue, with an optional comment recorded before closing.
 
 3. **Add the comment when provided.**
 
-   ```bash
-   tea comment "$ISSUE_ID" "$COMMENT"
-   ```
+    ```bash
+    tea comments add "$ISSUE_ID" "$COMMENT" --repo "$REPO"
+    ```
 
-   If the comment contains multiple lines or shell-sensitive characters, pass it using a safely quoted shell variable or another equivalent shell-safe method.
+    Add `--login "$LOGIN"` for a non-default login. If the comment contains multiple lines or shell-sensitive characters, pass it using a safely quoted shell variable or another equivalent shell-safe method. If adding the comment fails, stop; do not close the issue without the requested comment.
 
 4. **Close the issue.**
 
-   ```bash
-   tea issue close "$ISSUE_ID"
-   ```
+    ```bash
+    tea issues close "$ISSUE_ID" --repo "$REPO"
+    ```
+
+    Add `--login "$LOGIN"` for a non-default login. If closing fails after a comment was added, report that the comment succeeded but the issue remains open.
 
 5. **Report the result.**
    - Confirm the issue was closed and include the issue number or URL when available.
@@ -48,7 +54,7 @@ Close an existing Gitea issue, with an optional comment recorded before closing.
 
 ## Quality Criteria
 
-- An issue identifier is explicitly provided or requested before any command runs.
+- The issue and repository are resolved before any command runs; a full URL's host/repository are preserved.
 - A supplied comment is preserved verbatim and added before the close operation.
 - No comment is created when the user did not provide one.
 - The result accurately reflects whether the comment and close operations succeeded.

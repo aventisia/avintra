@@ -1,0 +1,23 @@
+meta {
+  name: Get UI builder templates
+  type: http
+  seq: 31
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/templates
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("the template project is listed without data connections", function() {
+    const template = res.getBody().data.find((entry) => entry.id === bru.getGlobalEnvVar("UIBUILDER_STUDIO_PROJECT_ID"));
+    expect(template).to.not.equal(undefined);
+    expect(template.dataConnections.length).to.equal(0);
+  });
+}

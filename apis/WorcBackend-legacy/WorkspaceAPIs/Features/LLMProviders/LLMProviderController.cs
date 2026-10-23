@@ -13,7 +13,7 @@ public class LLMProviderController : BaseApiController
 
     // Get models for a specific LLM provider
     [HttpGet("models/select-option")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetAllAppSecrets([FromQuery] LLMProviderModelRequestDto requestDto)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetAllVaultCredentials([FromQuery] LLMProviderModelRequestDto requestDto)
     {
         return ResultHelper(await _llmProviderService.GetAllModelsAsync(requestDto));
     }

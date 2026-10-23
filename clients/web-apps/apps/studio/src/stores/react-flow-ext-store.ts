@@ -169,6 +169,9 @@ type Actions = {
   /** Set Flow Variables */
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) => void;
 
+  /** Set Flow Variables and rebaseline the latest history entry and save snapshot */
+  syncFlowVariablesAndRebaseline: (variables: FlowVariablesObjectType[]) => void;
+
   /** Set Config Variables */
   setConfigVariables: (variables: string[]) => void;
 
@@ -308,6 +311,20 @@ export const useReactFlowExtStore = create<State & Actions>()(
     setFlowType: (flowType: FlowTypesEnum) => set({ flowType }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
       set({ flowVariablesObject: variables }),
+    syncFlowVariablesAndRebaseline: (variables) =>
+      set((state) => ({
+        flowVariablesObject: variables,
+        past:
+          state.past.length > 0
+            ? [
+                ...state.past.slice(0, -1),
+                { ...state.past[state.past.length - 1], flowVariablesObject: variables },
+              ]
+            : state.past,
+        savedSnapshot: state.savedSnapshot
+          ? { ...state.savedSnapshot, flowVariablesObject: variables }
+          : state.savedSnapshot,
+      })),
     setConfigVariables: (variables: string[]) => set({ configVariables: variables }),
     setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => set({ inputOutputObject }),
     togglePanOnDrag: (value) =>

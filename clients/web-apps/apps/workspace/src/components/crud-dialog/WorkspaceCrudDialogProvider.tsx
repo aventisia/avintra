@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 import { ROLE_OM } from "@/constants/roles";
 import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "@/features/01-build/flows-table/constants";
+import { getDialogHeadingDescription as getUiBuilderDialogHeadingDescription } from "@/features/01-build/ui-builder-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getKeystoreDialogHeadingDescription } from "@/features/02-configure/keystore-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
@@ -21,7 +22,7 @@ import { getDialogHeadingDescription as getEmailTriggerDialogHeadingDescription 
 import { getDialogHeadingDescription as getMessageTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/message-triggers-table/constants";
 import { getDialogHeadingDescription as getTimeTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/time-triggers-table/constants";
 import { getDialogHeadingDescription as getWebhookTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/webhook-triggers-table/constants";
-import { getDialogHeadingDescription as getVaultDialogHeadingDescription } from "@/features/02-configure/vault-table/constants";
+import { getDialogHeadingDescription as getVaultCredentialDialogHeadingDescription } from "@/features/02-configure/vault-credentials/constants";
 import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from "@/features/03-orchestrator/api-keys/constants";
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
@@ -55,6 +56,11 @@ const FlowCrudDialogContent = lazy(() =>
     (m) => ({ default: m.FlowCrudDialogContent }),
   ),
 );
+const UiBuilderCrudDialogContent = lazy(() =>
+  import("@/features/01-build/ui-builder-table/components/ui-builder-crud-dialog/UiBuilderCrudDialogContent").then(
+    (m) => ({ default: m.UiBuilderCrudDialogContent }),
+  ),
+);
 const QueueCrudDialogContent = lazy(() =>
   import("@/features/02-configure/queues/queues-table/components/queue-crud-dialog/QueueCrudDialogContent").then(
     (m) => ({ default: m.QueueCrudDialogContent }),
@@ -80,9 +86,9 @@ const ToolCrudDialogContent = lazy(() =>
     default: m.ToolCrudDialogContent,
   })),
 );
-const VaultCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/vault-table/components/vault-crud-dialog/VaultCrudDialogContent").then(
-    (m) => ({ default: m.VaultCrudDialogContent }),
+const VaultCredentialCrudDialogContent = lazy(() =>
+  import("@/features/02-configure/vault-credentials/components/vault-credential-crud-dialog/VaultCredentialCrudDialogContent").then(
+    (m) => ({ default: m.VaultCredentialCrudDialogContent }),
   ),
 );
 const EmailTriggerCrudDialogContent = lazy(() =>
@@ -192,6 +198,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     getHeader: getFlowDialogHeadingDescription,
     Content: FlowCrudDialogContent,
   },
+  uiBuilder: {
+    maxWidth: "!max-w-[32rem]",
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
+  },
   queue: {
     maxWidth: "!max-w-[36rem]",
     getHeader: getQueueDialogHeadingDescription,
@@ -219,8 +230,8 @@ const crudDialogRegistry: CrudDialogRegistry = {
   },
   vault: {
     maxWidth: "!max-w-[36rem]",
-    getHeader: getVaultDialogHeadingDescription,
-    Content: VaultCrudDialogContent,
+    getHeader: getVaultCredentialDialogHeadingDescription,
+    Content: VaultCredentialCrudDialogContent,
   },
   emailTrigger: {
     maxWidth: "!max-w-[40rem]",

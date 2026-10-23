@@ -12,7 +12,7 @@ from fastapi import HTTPException
 
 from app.core.config import settings
 from app.core.logger import logger
-from app.core.vault_manager import VaultManager
+from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.auth.authenticated_user import User
 
 
@@ -39,7 +39,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_name: str | Non
     Decide which credentials to use for a provider call.
 
     - BYOK enabled with a valid credential name: fetch those credentials
-      from the vault and use them exclusively — never the env. The request is
+      from the vault credential and use them exclusively — never the env. The request is
       a BYOK request, so no platform credits apply.
     - BYOK disabled (or null/default credential): return an empty kwargs dict
       so LiteLLM uses its own environment variables (e.g. OPENAI_API_KEY).
@@ -64,8 +64,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_name: str | Non
             status_code=400, detail="A valid credential is required when BYOK is enabled."
         )
 
-    vault = VaultManager()
-    credential = vault.get_vault_secret_by_name(
+    vault_credential = VaultCredentialManager()
+    credential = vault_credential.get_vault_credential_secret_by_name(
         credential=credential_name,
         jwt=user.access_token,
         env_type=user.env_type,
@@ -77,7 +77,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_name: str | Non
         raise HTTPException(status_code=400, detail="No valid credentials found.")
 
     credential_data = credential.get("data") or credential
-    # The vault secret carries a display Name at the top level; fall back to the
+    # The vault credential secret carries a display Name at the top level; fall back to the
     # credential name when it is not present so BYOK usage can still be attributed.
     resolved_name = credential.get("Name") or credential_data.get("Name") or credential_name
 
@@ -139,7 +139,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_name: str | Non
     # Key-based providers: api_key + optional api_base/api_version.
     kwargs = {
         "api_key": credential_data.get("ApiKey"),
-        "api_base": credential_data.get("Url") or credential_data.get("Host"),
+        "api_base": _normalize_api_base(provider, credential_data.get("Url") or credential_data.get("Host")),
         "api_version": credential_data.get("ApiVersion"),
     }
     return CredentialResolution(
@@ -182,8 +182,8 @@ def resolve_credential_name(
         return credential_name
 
     try:
-        vault = VaultManager()
-        credential = vault.get_vault_secret_by_name(
+        vault_credential = VaultCredentialManager()
+        credential = vault_credential.get_vault_credential_secret_by_name(
             credential=credential_name,
             jwt=access_token,
             env_type=env_type,
@@ -229,7 +229,7 @@ def _platform_credentials_kwargs(provider: str) -> dict:
     if provider == "anthropic":
         return _drop_empty(
             api_key=settings.CLAUDE_API_KEY,
-            api_base=settings.CLAUDE_API_URL,
+            api_base=_normalize_api_base(provider, settings.CLAUDE_API_URL),
         )
 
     if provider == "gemini":
@@ -265,6 +265,24 @@ def _platform_credentials_kwargs(provider: str) -> dict:
     # Unknown / unsupported provider: fall back to environment variables so we
     # don't break providers that rely on process-level env configuration.
     return {}
+
+
+def _normalize_api_base(provider: str, api_base: str | None) -> str | None:
+    """Adapt a platform-style base URL to what LiteLLM expects for the provider.
+
+    Platform credentials store Anthropic's URL as 'https://api.anthropic.com/v1'
+    (the legacy route appends '/messages'), while LiteLLM appends '/v1/messages'
+    to any base that does not already end with it, producing '/v1/v1/messages'.
+    """
+    if not api_base:
+        return api_base
+    base = api_base.strip().rstrip("/")
+    if provider.lower() == "anthropic":
+        if base.endswith("/v1/messages"):
+            return base
+        if base.endswith("/v1"):
+            return base[: -len("/v1")]
+    return base
 
 
 def _drop_empty(**kwargs) -> dict:

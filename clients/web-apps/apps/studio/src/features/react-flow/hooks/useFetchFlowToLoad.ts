@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
+import { applyFlowInputsToVariables } from "@/features/add-input-output/utils/sync-flow-inputs-to-variables.util";
 import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
@@ -174,6 +175,11 @@ export const useFetchFlowToLoad = () => {
         flowData.type === FlowTypesEnum.ChatAgent
           ? normalizeChatAgentGraph(flow.nodes, flow.edges)
           : { nodes: flow.nodes, edges: flow.edges, flowVariablesObject: flowVarObjs };
+
+      graph.flowVariablesObject = applyFlowInputsToVariables(
+        graph.flowVariablesObject,
+        inputOutputObj,
+      );
 
       setFlowVariablesObject(graph.flowVariablesObject);
       setInputOutputObject(inputOutputObj);

@@ -23,7 +23,7 @@ export const VariableSelectorContent = () => {
   const uniqueOutputs = [...new Set(allOutputs)];
 
   return (
-    <Command>
+    <Command className="h-full">
       {/* Search Box */}
       <div className="mx-3 rounded-lg bg-slate-100">
         <CommandInput className="h-9 text-xs" placeholder="Search variables..." autoFocus />
@@ -39,7 +39,7 @@ export const VariableSelectorContent = () => {
         />
       </CommandEmpty>
 
-      <ScrollArea>
+      <ScrollArea className="h-full w-full" viewportClassName="h-full">
         <CommandList className="px-4 py-2">
           {uniqueOutputs?.map((item, index) => (
             <VariableItem key={index} value={item} />

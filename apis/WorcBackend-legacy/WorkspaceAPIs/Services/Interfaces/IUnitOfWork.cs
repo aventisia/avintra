@@ -10,6 +10,10 @@ public interface IUnitOfWork
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
     IFlowLogRepo FlowLogRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
+    IUiBuilderProjectRepo UiBuilderProjectRepo { get; }
+    IUiBuilderVersionRepo UiBuilderVersionRepo { get; }
+    IUiBuilderAssetRepo UiBuilderAssetRepo { get; }
+    IUiBuilderProjectUserRepo UiBuilderProjectUserRepo { get; }
     IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IAgentRiskRegistryRepo AgentRiskRegistryRepo { get; }
@@ -30,7 +34,7 @@ public interface IUnitOfWork
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowVersionRepo TriggerFlowVersionRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
-    IAppSecretRepo AppSecretRepo { get; }
+    IVaultCredentialRepo VaultCredentialRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IPromptTemplateRepo PromptTemplateRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }

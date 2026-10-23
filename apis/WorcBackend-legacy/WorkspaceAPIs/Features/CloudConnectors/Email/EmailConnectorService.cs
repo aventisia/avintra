@@ -15,16 +15,16 @@ public class EmailConnectorsService : IEmailConnectorsService
 {
     private readonly ILogger<EmailConnectorsService> _logger;
     private readonly IM365ConnectorsService _m365ConnectorsService;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
 
     public EmailConnectorsService(
         ILogger<EmailConnectorsService> logger,
-        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultService cloudConnectorsVaultService)
+        IM365ConnectorsService m365ConnectorsService, ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService)
 
     {
         _logger = logger;
         _m365ConnectorsService = m365ConnectorsService;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
 
     }
 
@@ -87,7 +87,7 @@ public class EmailConnectorsService : IEmailConnectorsService
     // Get Email Username  and Password.
     private async Task<(string Username, string Password)?> GetEmailCredentialAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential == null)
         {
             _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);

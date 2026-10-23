@@ -1,18 +1,13 @@
----
-name: aspnet
-description: "Expert agent for ASP.NET Core Web API code review and CRUD generation in apis/WorcBackend-legacy. Use when reviewing ASP.NET Web API layers, generating CRUD endpoints, DTOs, mappings, service methods, and enforcing controller/service naming and sequencing conventions for AccountsAPIs, WorkspaceAPIs, and AspNetToolkit."
----
-
-You are an expert ASP.NET Core Web API reviewer and generator focused on strict CRUD and layering conventions.
+# Backend engineering conventions
 
 ## Scope
 
-- Use for controllers, services, DTOs, mapping profiles, and EF Core entities under `apis/WorcBackend-legacy` (AccountsAPIs, WorkspaceAPIs, AspNetToolkit).
-- Do **not** use for the Python API (`apis/llmpipeline`), the new platform solution, or the React frontends.
+- These conventions apply to ASP.NET controllers, services, DTOs, mappings, and EF Core entities beneath this `apis/` directory when those layers exist.
+- `apis/WorcBackend-legacy` (AccountsAPIs, WorkspaceAPIs, AspNetToolkit) and `apis/llmpipeline` are deployment references, absent in this configuration repository. Verify actual paths/contracts before use; do not apply ASP.NET rules to Python APIs, the new platform solution, or React frontends.
 
-## Role
+## Application boundaries
 
-- Review and generate ASP.NET Core Web API code for Controllers, Service Interfaces, and Service Implementations.
+- Apply these conventions within the assigned role and authorized scope; read-only reviewers report defects, never fix them.
 - Enforce naming, sequencing, DTO/entity alignment, validation attributes, service response patterns, and documentation consistency.
 - Prefer minimal, targeted edits that preserve existing architecture and style.
 
@@ -66,7 +61,7 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Do not add `[Required]` on DTO properties if the C# `required` keyword is already used.
 - Use `[RequiredGuid]` on non-optional Guid properties in DTOs.
 - Apply `[StringLength]` based on entity max length.
-- Include max length in the short XML `/// <summary>` docs for DTO properties to improve hover visibility.
+- For public DTO properties that need hover details, include the entity max length in a short XML summary; keep DTO documentation within the root public/complex-type boundary.
 - Use camelCase for DTO parameter names in all methods (example: `CreateMachineDto createMachineDto`).
 - For many-to-many entities, use `Entity1_Entity2` (singular nouns with underscore) and keep PascalCase for the join entity/table name.
 
@@ -77,13 +72,13 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
   - `var serviceResponse = ServiceResponse<bool>.Create("Failed to [action]", 500);`
 - `ServiceResponse<T>` provides `Create(message, statusCode, data)` and `Update(message, statusCode, data)`; use these for fluent initialization and mutation.
 - For `delete-multiple` operations, the service method and controller must always return the number of records deleted (e.g., `ServiceResponse<int>`) instead of a boolean.
-- Normalize DTO string properties (trim, apply standard casing such as lowercase for emails) before performing any database operations (create, update, delete, search, filter) to prevent case-sensitivity mismatches.
+- Normalize strings only according to verified field contracts before database operations. Trim or change casing only when that field permits it; preserve case-sensitive identifiers, tokens, passwords, and other exact values. Do not assume all email or search fields are case-insensitive.
 - Return responses using standardized methods:
   - Failure: `serviceResponse.Update("Machine not found", 404);`
   - Success: `serviceResponse.Update("Machine added/updated" or null, 201/200, dataObject);`
 - Keep the message in the `ServiceResponse` concise and relevant to the action performed. For example, use "Machine added" instead of "Machine added successfully" or "Machine added successfully to the database."
 - Split complex service logic into small isolated blocks.
-- Review each service method's logic for incorrect, incomplete, or inconsistent implementation; fix it when the intended behavior is clear, otherwise highlight the issue explicitly in the review output.
+- Review service logic for incorrect, incomplete, or inconsistent behavior. Only an authorized write-capable role may fix clear defects within approved scope; all other cases become explicit findings.
 - Make non-trivial service logic scannable through precise naming and small isolated blocks, not inline comments.
 
 ## Logging and Documentation
@@ -91,7 +86,7 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Keep server-side logging minimal.
 - Use `_logger` only for critical production-debugging or compliance-relevant events.
 - Follow the root `AGENTS.md` "Documentation and Code Style Boundaries": no implementation comments, self-documenting names, and documentation only on public boundaries.
-- Synchronize short `/// <summary>` XML documentation across public Controller, Service Interface, and Service Implementation methods. Keep each summary to one sentence.
+- Synchronize short `/// <summary>` XML documentation across public Controller methods and Service Interface contracts. Document a Service Implementation method only when it is itself an intentional public API or a project diagnostic requires it; do not duplicate interface documentation on internal implementation details. Keep each summary to one sentence.
 - Use these summary patterns for the public CRUD methods; do not duplicate them as inline `//` comments:
   - `Retrieves list of [entities].`
   - `Retrieves a [entity] by its ID.`
@@ -111,13 +106,17 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 7. Verify DTO parameter names use camelCase.
 8. Verify `ServiceResponse` initialization and standardized success/failure returns.
 9. Verify delete-multiple endpoints return the count of deleted records instead of a boolean.
-10. Verify DTOs are normalized prior to any database operations.
-11. Verify service method logic is correct; fix clear defects or highlight ambiguous/wrong implementations.
+10. Verify field-specific normalization follows established contracts and preserves case-sensitive values.
+11. Verify service logic is correct; report defects unless an authorized write-capable role may fix them within scope.
 12. Verify non-trivial logic is decomposed and self-documenting, with no implementation comments.
 13. Verify XML docs and minimal logging rules are respected.
 14. Verify the only inline comments are `IMPORTANT NOTE:` warnings about external constraints, race conditions, or required hacks.
 
-## Output Format
+15. Verify XML summaries are limited to public boundaries and complex public DTO contracts; implementation details remain undocumented.
+
+## Artifact contents
+
+- The root shared handoff controls agent returns; the following formats apply inside reports or explicitly requested standalone code output, not as additional role authority.
 
 - For code review:
   - Findings first, ordered by severity, each with file and line references.
@@ -126,4 +125,4 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - For code generation:
   - Produce complete, compilable snippets for all affected layers.
   - Keep naming and ordering synchronized across files.
-  - Include documentation only on public controller/service boundaries; never add implementation comments.
+  - Include documentation only on public controller/service-interface boundaries and complex public DTO contracts; document implementation methods only when they are themselves public APIs or required by diagnostics. Never add implementation comments.

@@ -11,8 +11,9 @@ import {
   ConfigPanelOuputField,
   DCPFieldSchemaType,
 } from "..";
+import { CloudExecutionSwitchField } from "./fields-for-form/CloudExecutionSwitchField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
-import { CredentialsSelectField } from "./fields-for-form/CredentialsSelectField";
+import { FlowSelectorField } from "./fields-for-form/FlowSelectorField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
@@ -22,6 +23,7 @@ import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
+import { VaultCredentialSelectField } from "./fields-for-form/VaultCredentialSelectField";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
@@ -72,7 +74,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "config-panel-output":
       return <ConfigPanelOuputField {...baseProps} />;
     case "credentials-select":
-      return <CredentialsSelectField {...baseProps} />;
+      return <VaultCredentialSelectField {...baseProps} />;
     case "config-panel-model-output":
       return <ConfigPanelModelOutputField {...baseProps} />;
     case "model-config-select":
@@ -123,6 +125,10 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <JsonEditorField {...baseProps} className={field.className} />;
     case "queue-select":
       return <QueueSelectorField {...baseProps} selectOptions={[]} size="sm" />;
+    case "flow-select":
+      return <FlowSelectorField {...baseProps} />;
+    case "cloud-execution-switch":
+      return <CloudExecutionSwitchField {...baseProps} dependsOn={field.dependsOn} />;
     case "queue-status-select":
       return <StatusSelectorField {...baseProps} size="sm" />;
     case "queue-conditional-group":

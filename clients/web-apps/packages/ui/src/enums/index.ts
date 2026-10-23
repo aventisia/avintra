@@ -14,6 +14,8 @@ export * from "./key-store-types-enum";
 export * from "./license-credit-status-enum";
 export * from "./machine-status-enum";
 export * from "./machine-task-types-enum";
+export * from "./model-capability-enum";
+export * from "./model-provider-enum";
 export * from "./months-enum";
 export * from "./notification-source-enum";
 export * from "./notification-status-enum";

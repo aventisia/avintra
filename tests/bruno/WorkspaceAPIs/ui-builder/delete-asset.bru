@@ -1,0 +1,17 @@
+meta {
+  name: Delete UI builder asset
+  type: http
+  seq: 37
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/assets/{{UIBUILDER_ASSET_ID}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

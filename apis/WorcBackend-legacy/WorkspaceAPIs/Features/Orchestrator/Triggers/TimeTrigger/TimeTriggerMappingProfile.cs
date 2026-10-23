@@ -9,18 +9,9 @@ public class TimeTriggerMappingProfile : IRegister
         config.NewConfig<Trigger, TimeTriggerDto>()
             .AfterMapping((src, dest) =>
             {
-                // Safely deserialize trigger metadata
-                var jsonOptions = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                };
-                jsonOptions.Converters.Add(new JsonStringEnumConverter());
-
                 var model = System.Text.Json.JsonSerializer.Deserialize<TimeTriggerModel>(
                     src.Metadata.RootElement.GetRawText(),
-                    jsonOptions
-                );
+                    TimeTriggerMetadataHelpers.JsonOptions);
 
                 if (model != null)
                 {

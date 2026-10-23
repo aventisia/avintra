@@ -1,0 +1,40 @@
+meta {
+  name: Re-publish UI builder project
+  type: http
+  seq: 22
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/publish
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_PUBLISHED_VERSION_NUMBER",
+          res.getBody().data.publishedVersionNumber
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("project stays published", function() {
+    expect(res.body.data.isPublished).to.equal(true);
+  });
+
+  test("re-publish pins the newest saved version", function() {
+    expect(res.body.data.publishedVersionNumber).to.equal(
+      Number(bru.getGlobalEnvVar("UIBUILDER_NEW_VERSION_NUMBER"))
+    );
+  });
+
+  test("re-publish advances the pin to the head", function() {
+    expect(res.body.data.publishedVersionNumber).to.equal(res.body.data.headVersionNumber);
+  });
+}

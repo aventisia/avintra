@@ -1,6 +1,7 @@
 using Serilog;
 using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
 
+EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
 
 /*---------appsettings and sharedsettings---------*/

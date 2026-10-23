@@ -201,8 +201,8 @@ pipeline {
                     steps {
                         dir('apis/corsair') {
                             echo 'Generating Corsair config artifacts...'
-                            // The small sibling artifacts (action map, integration catalog, vault-type
-                            // map) are written into the Workspace API codebase ConfigFiles folder and
+                            // The small sibling artifacts (action map, integration catalog, vault credential
+                            // type map) are written into the Workspace API codebase ConfigFiles folder and
                             // committed. The Corsair action-selector mapping file and the thousands of
                             // per-plugin configs are written to CORSAIR_CONFIG_DIR (a build-local dir)
                             // and are rsynced to the shared server files path in the Corsair Deploy

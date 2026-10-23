@@ -216,6 +216,7 @@ def get_credit_service_type(provider: str, model: str, kind: str) -> str | None:
     `kind` is one of "input" / "output" / "cache" for chat models, or "service"
     for embedding models. Returns None when no backend enum is defined.
     """
+    provider = normalize_provider(provider)
     model_map = (PROVIDER_MODEL_MAP.get(provider) or {}).get(model)
     if not model_map:
         return None
@@ -297,6 +298,10 @@ def validate_model(provider: str, model: str, is_byok: bool = False, credential_
         available = _litellm_models(provider)
         # Catalog-less providers (empty model set) are valid; don't reject them.
         if not available:
+            return
+        # LiteLLM keys some catalogs as 'provider/model' (e.g. gemini, groq);
+        # accept the bare id the tenant enabled as well as the prefixed form.
+        if model in available or build_litellm_model(provider, model) in available:
             return
     else:
         available = set(get_models_for_provider(provider))

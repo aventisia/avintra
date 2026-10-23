@@ -7,14 +7,14 @@ namespace WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 public class SendGridConnectorsService : ISendGridConnectorsService
 {
     private readonly ILogger<SendGridConnectorsService> _logger;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
 
     public SendGridConnectorsService(
         ILogger<SendGridConnectorsService> logger,
-        ICloudConnectorsVaultService cloudConnectorsVaultService)
+        ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService)
     {
         _logger = logger;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
     }
 
     public async Task<ServiceResponse<CloudConnectorResDto>> InvokeCloudConnectorAsync(CloudConnectorReqDto cloudConnectorReqDto)
@@ -96,7 +96,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
     // Get sendgrid apikey from the vault credential name.
     private async Task<string?> GetSendGridApiKeyAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential == null)
         {
             _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);

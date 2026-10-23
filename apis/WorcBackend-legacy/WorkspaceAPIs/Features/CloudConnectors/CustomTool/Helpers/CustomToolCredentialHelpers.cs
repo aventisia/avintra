@@ -9,10 +9,10 @@ public static class CustomToolCredentialHelpers
     /// Resolves the decrypted vault credential into HTTP auth headers and an optional API-key query parameter.
     /// </summary>
     public static async Task<CustomToolAuthResult> ResolveAuthenticationAsync(
-        ICloudConnectorsVaultService cloudConnectorsVaultService,
+        ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService,
         string credentialName)
     {
-        var vaultCredential = await cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+        var vaultCredential = await cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
         if (vaultCredential is null)
         {
             return CustomToolAuthResult.Failure($"Credential '{credentialName}' was not found or is disabled.");

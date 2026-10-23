@@ -23,8 +23,5 @@ public class TenantAccountMappingProfile : IRegister
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Country)
             .IgnoreNullValues(true);
-
-        // Maps AccountUser to AppUserBaseDto for tenant preference retrieval.
-        config.NewConfig<AccountUser, AppUserBaseDto>();
     }
 }
