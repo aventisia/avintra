@@ -76,25 +76,13 @@ public class UnitOfWork : IUnitOfWork
         return _workspaceDbContext.ChangeTracker.HasChanges();
     }
 
-    // Runs the supplied operation atomically: commit on success, roll back on any exception.
-    public async Task ExecuteInTransactionAsync(Func<Task> operation)
+    public Task ExecuteInTransactionAsync(Func<Task> operation)
     {
-        await using var transaction = await _workspaceDbContext.Database.BeginTransactionAsync();
-        try
-        {
-            await operation();
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        return _workspaceDbContext.Database.ExecuteInTransactionAsync(operation);
     }
 
     public Task AcquireAdvisoryLockAsync(string resourceKey)
     {
-        return _workspaceDbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"SELECT pg_advisory_xact_lock(hashtextextended({resourceKey}, 0))");
+        return _workspaceDbContext.Database.AcquireAdvisoryLockAsync(resourceKey);
     }
 }
