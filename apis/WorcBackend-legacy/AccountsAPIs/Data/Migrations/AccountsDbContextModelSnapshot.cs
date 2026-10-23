@@ -1173,6 +1173,11 @@ namespace AccountsAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
+                    b.HasIndex("TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Spaces_TenantId_IsDefault")
+                        .HasFilter("\"IsDefault\" = true");
+
                     b.ToTable("Spaces");
                 });
 
