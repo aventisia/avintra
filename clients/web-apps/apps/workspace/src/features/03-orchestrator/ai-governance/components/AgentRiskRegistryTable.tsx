@@ -13,8 +13,8 @@ import { HelpButton } from "@/components/help/HelpButton";
 
 import { AI_GOVERNANCE_TABLE_KEY } from "../constants";
 import { columnDisplayNames, columnVisibilityState } from "../constants/registry-columns";
-import { usePendingApprovals } from "../hooks/usePendingApprovals";
 import { useAgentRiskRegistryRows } from "../hooks/useAgentRiskRegistryRows";
+import { usePendingApprovals } from "../hooks/usePendingApprovals";
 import { createEmptyAssessment, useAiGovernanceStore } from "../stores/ai-governance-store";
 import { buildAgentRiskRegistryColumns } from "./AgentRiskRegistryColumns";
 
@@ -123,7 +123,12 @@ export const AgentRiskRegistryTable = () => {
             className="font-medium text-primary underline-offset-4 hover:underline"
             onClick={() => {
               const first = pendingApprovals[0];
-              if (first) handleOpen({ flowVersionId: first.flowVersionId, flowId: first.flowId, name: first.name });
+              if (first)
+                handleOpen({
+                  flowVersionId: first.flowVersionId,
+                  flowId: first.flowId,
+                  name: first.name,
+                });
             }}
           >
             Review

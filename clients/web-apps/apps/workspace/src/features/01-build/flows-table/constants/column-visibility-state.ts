@@ -1,9 +1,10 @@
 /** Column visibility initial state for the flows table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   name: true,
   type: true,
   supportedPlatform: true,
+  accessLevel: false,
   createdBy: true,
-  createdOn: true,
+  createdOn: false,
 };

@@ -44,12 +44,8 @@ export const UsageBreakdownCell = ({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-        {llmPct > 0 && (
-          <div style={{ width: `${llmPct}%`, backgroundColor: LLM_COLOR }} />
-        )}
-        {execPct > 0 && (
-          <div style={{ width: `${execPct}%`, backgroundColor: EXEC_COLOR }} />
-        )}
+        {llmPct > 0 && <div style={{ width: `${llmPct}%`, backgroundColor: LLM_COLOR }} />}
+        {execPct > 0 && <div style={{ width: `${execPct}%`, backgroundColor: EXEC_COLOR }} />}
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
         <Badge variant="outline" className="gap-1 text-2xs font-normal">

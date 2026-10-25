@@ -18,7 +18,7 @@ permissions:
 ## Inputs
 - Read the root `AGENTS.md` first, then the area `AGENTS.md` for each touched area; their conventions bind this role.
 - The task states one assignment type: **branch preparation**, **implementation** (including finalization after a debugger repair), or **verification context**.
-- Implementation requires, read from disk: the architect report with an `APPROVED` receipt for the exact proposal revision, or the recorded trivial authorization. Branch preparation never counts as a plan. Without one of the two, return `BLOCKED`.
+- Implementation requires, read from disk: the architect report with an `APPROVED` receipt for the exact proposal revision, or the recorded trivial authorization. Branch preparation never counts as a plan. Without one of the two, return `BLOCKED`. A post-QA mechanical remediation carries the prior approved proposal and the QA findings; the task record is its authorization.
 - Read every artifact listed in `Inputs` before acting.
 
 ## Coder report
@@ -40,7 +40,7 @@ Creating, reusing, and pushing the issue branch are standing-authorized by the u
 ## Implementation
 1. Read the plan, or the trivial authorization and the approved brief it cites, supplied scout/context reports, debugger reports when resuming, current source, and feature `README.md` files.
 2. Run `git status` and attribute existing changes before editing. Confirm you are on the prepared branch.
-3. Confirm every prior QA finding maps to an approved remediation task. Return `BLOCKED` on a terminal `CLEAR`, mismatched rounds, or an unaccounted-for finding.
+3. Confirm every prior QA finding maps to an approved remediation task or is listed in the task as a mechanical fix inside the approved proposal. Return `BLOCKED` on a terminal `CLEAR`, mismatched rounds, or an unaccounted-for finding.
 4. Create or resume the coder report before the first source edit.
 5. Slice by independently testable behavior, combining inseparable changes. Run all slices in one go unless the task asks for a pause per slice.
 6. For each slice:
@@ -50,7 +50,7 @@ Creating, reusing, and pushing the issue branch are standing-authorized by the u
    - Validate with the narrowest meaningful check before the next slice. There is no xUnit/NUnit suite; `AGENTS.md` lists the real checks (typecheck, lint, `dotnet build`, Bruno, console harnesses).
    - On a failed check, stop and return `FAIL` with the evidence for debugger. When the plan cannot hold without an architecture or scope change, stop and return `BLOCKED` for a revised plan.
 7. Final slice: create or update the feature `README.md` files named in the plan's documentation slice, in short plain language.
-8. Review the full diff for unintended edits, then set the lifecycle `FINAL`. Done when every slice has a recorded passing check or an explicit, recorded reason it remains unverified.
+8. Review the full diff for unintended edits. Record whether it touches a risky surface listed in root `AGENTS.md`, naming the triggering paths, and repeat that flag in the status summary. Then set the lifecycle `FINAL`. Done when every slice has a recorded passing check or an explicit, recorded reason it remains unverified.
 - **After a debugger repair:** rerun the original repro and the affected slice checks, reconcile the slice in the report, and finalize; no further source edit is needed when the checks pass.
 
 ## Verification contexts

@@ -1,11 +1,12 @@
 import { cn } from "@avplatform/ui/lib";
 import { Undo2, X } from "lucide-react";
 
+import { AgentAvatar } from "@/components/AgentAvatar";
+import { MetaLine } from "@/components/MetaLine";
+
 import type { ResourceFlowDraft } from "../../../hooks/useResourceFlowDraft.hook";
 import type { FlowAccessAgent, FlowAccessChange } from "../../../types/flow-access.type";
 import { getAgentKindLabel, getAgentMeta } from "../../../utils/agent-display.util";
-import { AgentAvatar } from "./AgentAvatar";
-import { MetaLine } from "./MetaLine";
 
 type AllowListRowProps = {
   agent: FlowAccessAgent;

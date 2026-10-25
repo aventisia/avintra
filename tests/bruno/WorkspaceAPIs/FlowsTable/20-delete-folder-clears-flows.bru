@@ -1,0 +1,21 @@
+meta {
+  name: Delete folder clears flows
+  type: http
+  seq: 20
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/folder/{{FOLDER_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("folder is deleted with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

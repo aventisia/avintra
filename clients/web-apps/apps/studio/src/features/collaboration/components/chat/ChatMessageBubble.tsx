@@ -2,9 +2,9 @@ import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { cn } from "@avplatform/ui/lib";
 
 import { ChatMessageDto } from "../../dtos/collaboration-dtos";
+import { useCollaborationStore } from "../../stores/collaboration-store";
 import { collaborationColorMapForPresence } from "../../utils/collaboration-color";
 import { getInitials } from "../../utils/get-initials";
-import { useCollaborationStore } from "../../stores/collaboration-store";
 
 interface ChatMessageBubbleProps {
   message: ChatMessageDto;

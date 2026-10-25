@@ -20,4 +20,3 @@ export const useNodeLockedByOther = (nodeId: string) => {
 
   return { nodeLock, lockedByOther };
 };
-

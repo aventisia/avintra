@@ -9,10 +9,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { HelpButton } from "@/components/help/HelpButton";
-import { QueryTabs } from "@/components/QueryTab";
-
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchArchivedFlows } from "../hooks/useFetchArchivedFlows";
@@ -23,15 +20,15 @@ import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
  *
  * @returns The rendered ArchivedFlowsTable component.
  */
-export const ArchivedFlowsTable = ({ isPersonal = false }: { isPersonal?: boolean }) => {
+export const ArchivedFlowsTable = () => {
   // Set the document title
-  useDocumentTitle(isPersonal ? "Agents" : TABLE_HEADING);
+  useDocumentTitle(TABLE_HEADING);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch Archived flows data
-  const { data } = useFetchArchivedFlows({ isPersonal });
+  const { data } = useFetchArchivedFlows();
 
   // Create a React table for Archived flows data
   const table = useDataTable(
@@ -49,15 +46,7 @@ export const ArchivedFlowsTable = ({ isPersonal = false }: { isPersonal?: boolea
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DTHeading heading={isPersonal ? "Agents" : TABLE_HEADING} />
-              {isPersonal && (
-                <>
-                  <HelpButton guideId="agents" />
-                  <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
-                </>
-              )}{" "}
-            </div>{" "}
+            <DTHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />

@@ -1,20 +1,20 @@
-import { DeliveryChannelEnum } from "@avplatform/ui/enums";
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@avplatform/ui/cards";
+import { DeliveryChannelEnum } from "@avplatform/ui/enums";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { ISelectOption } from "@avplatform/ui/types";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import {
+  agentRiskAssessmentApprovalProps,
   deliveryChannelProps,
   lowCreditThresholdProps,
   lowCreditsProps,
   publishAgentProps,
-  subscriptionRenewalReminderDaysProps,
   subscriptionProps,
-  agentRiskAssessmentApprovalProps,
+  subscriptionRenewalReminderDaysProps,
 } from "@/features/05-tenant-admin/tenant/constants/notification-settings-field-props";
 import { notificationSettingsSchema } from "@/features/05-tenant-admin/tenant/constants/notification-settings-zod-schema";
 import { useDefineNotificationSettingsForm } from "@/features/05-tenant-admin/tenant/hooks/useDefineNotificationSettingsForm";
@@ -69,8 +69,8 @@ const NotificationsForm = () => {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Notification Types</CardTitle>
           <CardDescription>
-            Enable or disable each automatic notification type for this tenant. All types are
-            turned on by default.
+            Enable or disable each automatic notification type for this tenant. All types are turned
+            on by default.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

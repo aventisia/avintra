@@ -47,6 +47,16 @@ export interface FlowsTableDto {
   isDisabled?: boolean;
 
   /**
+   * Whether the latest flow version is archived.
+   */
+  isArchived?: boolean;
+
+  /**
+   * Whether the latest flow version is published.
+   */
+  isPublished?: boolean;
+
+  /**
    * Gets or sets the username of the user who created the flow record. Max-254
    */
   createdBy?: string;
@@ -62,7 +72,7 @@ export interface FlowsTableDto {
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the flow record was last modified.
+   * Gets or sets the date and time when the flow record or its latest version was last modified.
    */
   lastModifiedOn?: Date;
 }

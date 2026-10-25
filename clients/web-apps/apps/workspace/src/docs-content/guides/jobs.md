@@ -1,4 +1,3 @@
-
 The **Jobs** page lets you track agent executions, their status, and retry or cancel them. A job is a single run of an agent.
 
 ## Purpose

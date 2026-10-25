@@ -1,9 +1,8 @@
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ViewportPortal } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 import { useCollaborationStore } from "../stores/collaboration-store";
 import { collaborationColorMapForPresence } from "../utils/collaboration-color";
@@ -26,12 +25,8 @@ const getInitials = (name?: string, email?: string) => {
  * avatar. Must be rendered as a child of <ReactFlow>.
  */
 export const RemoteCursors = () => {
-  const cursors = useCollaborationStore(
-    useShallow((state) => Object.values(state.cursors)),
-  );
-  const presence = useCollaborationStore(
-    useShallow((state) => state.presence),
-  );
+  const cursors = useCollaborationStore(useShallow((state) => Object.values(state.cursors)));
+  const presence = useCollaborationStore(useShallow((state) => state.presence));
 
   // Same per-user color map as the header avatars, so a user's cursor color always
   // matches their presence avatar ring color.
@@ -64,11 +59,7 @@ export const RemoteCursors = () => {
             <Tooltip content={displayName}>
               <div className="relative">
                 {/* Cursor arrow */}
-                <svg
-                  className={`h-4 w-4 ${fillClass}`}
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
+                <svg className={`h-4 w-4 ${fillClass}`} viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4 2l7 18 2.5-7.5L21 10 4 2z" />
                 </svg>
                 {/* Initials-only bubble (name kept in the tooltip) */}

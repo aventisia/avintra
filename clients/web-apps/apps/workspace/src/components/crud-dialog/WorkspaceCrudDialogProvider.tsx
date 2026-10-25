@@ -10,7 +10,6 @@ import { Suspense, lazy, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { ROLE_OM } from "@/constants/roles";
-import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "@/features/01-build/flows-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getConfigStoreDialogHeadingDescription } from "@/features/02-configure/config-store-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
@@ -50,9 +49,9 @@ const JobCrudDialogContent = lazy(() =>
     (m) => ({ default: m.JobCrudDialogContent }),
   ),
 );
-const FlowCrudDialogContent = lazy(() =>
-  import("@/features/01-build/flows-table/components/flow-crud-dialog/FlowCrudDialogContent").then(
-    (m) => ({ default: m.FlowCrudDialogContent }),
+const FlowFormDialog = lazy(() =>
+  import("@/features/01-build/flows-table/components/flow-crud-dialog/FlowFormDialog").then(
+    (m) => ({ default: m.FlowFormDialog }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -188,9 +187,7 @@ const crudDialogRegistry: CrudDialogRegistry = {
     Content: JobCrudDialogContent,
   },
   flow: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getFlowDialogHeadingDescription,
-    Content: FlowCrudDialogContent,
+    Dialog: FlowFormDialog,
   },
   queue: {
     maxWidth: "!max-w-[36rem]",

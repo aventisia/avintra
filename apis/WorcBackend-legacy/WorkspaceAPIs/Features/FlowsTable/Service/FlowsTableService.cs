@@ -34,7 +34,9 @@ public class FlowsTableService : IFlowsTableService
     }
 
     // Retrieves all flows created by the user.
-    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal)
+    public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(
+        bool isPersonal,
+        bool includeArchived = false)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FlowsTableDto>>
@@ -88,18 +90,18 @@ public class FlowsTableService : IFlowsTableService
                     .ToListAsync();
             }
 
-            // Exclude archived agents: a flow whose latest version is archived is shown
-            // only in the Archived tab, never in the active personal/shared lists.
-            flows = flows
-                .Where(flow =>
-                {
-                    var latestVersion = flow.FlowVersions?
-                        .OrderByDescending(version => version.VersionNumber)
-                        .FirstOrDefault();
+            var latestVersionByFlowId = flows.ToDictionary(
+                flow => flow.Id,
+                flow => flow.FlowVersions?
+                    .OrderByDescending(version => version.VersionNumber)
+                    .FirstOrDefault());
 
-                    return latestVersion == null || !latestVersion.IsArchived;
-                })
-                .ToList();
+            if (!includeArchived)
+            {
+                flows = flows
+                    .Where(flow => latestVersionByFlowId.GetValueOrDefault(flow.Id)?.IsArchived != true)
+                    .ToList();
+            }
 
             // Map the flow entities to DTOs
             var flowDtoList = flows.Adapt<List<FlowsTableDto>>();
@@ -115,19 +117,16 @@ public class FlowsTableService : IFlowsTableService
                     : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
-            // Enrich each flow with the AI models referenced by its latest workflow
-            // version (used by the Agents grid cards).
-            var flowById = flows.ToDictionary(flow => flow.Id);
-
             foreach (var flowDto in flowDtoList)
             {
-                if (!flowById.TryGetValue(flowDto.Id, out var flowEntity))
-                    continue;
+                var latestVersion = latestVersionByFlowId.GetValueOrDefault(flowDto.Id);
 
-                var latestVersion = flowEntity.FlowVersions?
-                    .OrderByDescending(version => version.VersionNumber)
-                    .FirstOrDefault();
-
+                flowDto.IsArchived = latestVersion?.IsArchived ?? false;
+                flowDto.IsPublished = latestVersion?.IsPublished ?? false;
+                if (latestVersion != null && latestVersion.LastModifiedOn > flowDto.LastModifiedOn)
+                {
+                    flowDto.LastModifiedOn = latestVersion.LastModifiedOn;
+                }
                 flowDto.AiModels = AiModelHelper.ExtractModelNames(latestVersion?.ReactFlowObject);
             }
 
@@ -247,11 +246,20 @@ public class FlowsTableService : IFlowsTableService
                 return serviceResponse;
             }
 
+            if (flowsTableDto.FolderId.HasValue &&
+                !await _unitOfWork.FolderRepo.GetByConditionAsync(w => w.Id == flowsTableDto.FolderId.Value).AnyAsync())
+            {
+                serviceResponse.StatusCode = 404;
+                serviceResponse.Message = "Folder not found";
+                return serviceResponse;
+            }
+
             // Trim dto' string props
             flowsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(flowsTableDto);
 
             // Default mapping
             var newFlow = flowsTableDto.Adapt<Flow>();
+            newFlow.FolderId = flowsTableDto.FolderId;
             newFlow.CreatedByUserId = _userId;
             newFlow.LastModifiedByUserId = _userId;
 
@@ -440,6 +448,57 @@ public class FlowsTableService : IFlowsTableService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateFlowFolderAsync(UpdateFlowFolderDto updateFlowFolderDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to move agent", 500);
+
+        try
+        {
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == updateFlowFolderDto.FlowId)
+                .FirstOrDefaultAsync();
+
+            if (flow == null)
+                return serviceResponse.Update("Agent not found", 404);
+
+            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flow.Id,
+                ResourceTypeEnum.Flow,
+                flow.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canEdit)
+                return serviceResponse.Update("You do not have access to move this agent.", 403);
+
+            if (updateFlowFolderDto.FolderId.HasValue &&
+                !await _unitOfWork.FolderRepo.GetByConditionAsync(w => w.Id == updateFlowFolderDto.FolderId.Value).AnyAsync())
+                return serviceResponse.Update("Folder not found", 404);
+
+            flow.FolderId = updateFlowFolderDto.FolderId;
+            flow.LastModifiedByUserId = _userId;
+            flow.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.FlowRepo.Update(flow);
+
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse;
+
+            return serviceResponse.Update("Agent moved", 200, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error moving flow {FlowId}.", updateFlowFolderDto.FlowId);
+            return serviceResponse;
+        }
     }
 
     // Deletes a flow by its ID.

@@ -6,10 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 import { useCollaborationStore } from "../../stores/collaboration-store";
 import { collaborationColorMapForPresence } from "../../utils/collaboration-color";
@@ -35,9 +34,7 @@ interface ChatRecipientSelectProps {
  * initials so the user can identify collaborators at a glance.
  */
 export const ChatRecipientSelect = ({ value, onChange }: ChatRecipientSelectProps) => {
-  const presence = useCollaborationStore(
-    useShallow((state) => state.presence),
-  );
+  const presence = useCollaborationStore(useShallow((state) => state.presence));
   const unreadByConversation = useCollaborationStore(
     useShallow((state) => state.unreadByConversation),
   );
@@ -77,7 +74,7 @@ export const ChatRecipientSelect = ({ value, onChange }: ChatRecipientSelectProp
           {recipients.map((r) => {
             const presenceUser = presence.find((p) => p.email === r.key);
             const ringColor = presenceUser
-              ? colorMap[presenceUser.userId]?.border ?? "border-gray-300"
+              ? (colorMap[presenceUser.userId]?.border ?? "border-gray-300")
               : "border-gray-300";
             const unread = unreadByConversation[r.key] ?? 0;
             return (

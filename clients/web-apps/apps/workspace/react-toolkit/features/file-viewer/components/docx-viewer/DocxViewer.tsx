@@ -1,6 +1,6 @@
 import { ScrollArea, ScrollBar } from "@avplatform/ui/scroll";
-import { useEffect, useRef } from "react";
 import { renderAsync } from "docx-preview";
+import { useEffect, useRef } from "react";
 
 interface DocxViewerProps {
   fileUrl: string;
@@ -52,10 +52,7 @@ const DocxViewer = ({ fileUrl }: DocxViewerProps) => {
 
   return (
     <ScrollArea className="h-full w-full">
-      <div
-        ref={containerRef}
-        className="docx-container mx-auto w-full max-w-3xl bg-white p-4"
-      />
+      <div ref={containerRef} className="docx-container mx-auto w-full max-w-3xl bg-white p-4" />
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );

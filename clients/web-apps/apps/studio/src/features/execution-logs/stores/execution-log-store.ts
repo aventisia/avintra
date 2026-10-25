@@ -30,8 +30,7 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
       const indices: Record<string, number> = {};
       Object.entries(data.loopRegistry).forEach(([id, { total }]) => {
         const previous = state.activeIteration[id];
-        indices[id] =
-          typeof previous === "number" ? Math.min(previous, Math.max(0, total - 1)) : 0;
+        indices[id] = typeof previous === "number" ? Math.min(previous, Math.max(0, total - 1)) : 0;
       });
 
       return { ...data, activeIteration: indices, nodeTypes };

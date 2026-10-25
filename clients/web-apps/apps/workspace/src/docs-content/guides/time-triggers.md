@@ -34,11 +34,11 @@ Each row has a **⋮** menu with actions such as:
 
 Click the **Create** button. Fill in:
 
-- **Unique Name** — *Required.* A unique name for the trigger.
-- **Frequency** — *Required.* How frequently the trigger runs or repeats.
-- **Effective Date & Time** — *Required.* When the trigger will begin.
-- **Ends on** — *Optional.* When the trigger should stop.
-- **Exception Hours** — *Optional.* Specific hours to skip.
-- **Exception Weekdays** — *Optional.* Weekdays to skip (e.g. weekends).
+- **Unique Name** — _Required._ A unique name for the trigger.
+- **Frequency** — _Required._ How frequently the trigger runs or repeats.
+- **Effective Date & Time** — _Required._ When the trigger will begin.
+- **Ends on** — _Optional._ When the trigger should stop.
+- **Exception Hours** — _Optional._ Specific hours to skip.
+- **Exception Weekdays** — _Optional._ Weekdays to skip (e.g. weekends).
 
 After creating, the trigger runs the configured agent on the schedule.

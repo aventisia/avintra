@@ -43,8 +43,7 @@ const ByokModelCharts = () => {
   const providers = useMemo(() => providersFromData(data ?? {}), [data]);
 
   // Keep the selected provider in sync with the data (e.g. after a date change).
-  const activeProvider =
-    providers.find((p) => p.provider === selectedProvider)?.provider ?? null;
+  const activeProvider = providers.find((p) => p.provider === selectedProvider)?.provider ?? null;
 
   const models = useMemo<IByokModelUsage[]>(() => {
     if (!activeProvider) return [];
@@ -54,9 +53,7 @@ const ByokModelCharts = () => {
   const totalPages = Math.ceil(models.length / itemsPerPage);
 
   const currentModels = useMemo(() => {
-    const sorted = [...models].sort(
-      (a, b) => b.totalConsumption - a.totalConsumption,
-    );
+    const sorted = [...models].sort((a, b) => b.totalConsumption - a.totalConsumption);
     const start = (currentPage - 1) * itemsPerPage;
     return sorted.slice(start, start + itemsPerPage);
   }, [currentPage, models, itemsPerPage]);
@@ -93,13 +90,10 @@ const ByokModelCharts = () => {
             <ModelChart
               key={model.model}
               title={model.model}
-              label={`Total consumption: ${model.totalConsumption.toLocaleString(
-                "en-US",
-                {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                },
-              )} ${model.unitType ?? ""}`.trim()}
+              label={`Total consumption: ${model.totalConsumption.toLocaleString("en-US", {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })} ${model.unitType ?? ""}`.trim()}
               data={(model.usageTimeline ?? []).map((point) => ({
                 date: point.date,
                 [SERIES_KEY]: point.totalCount,
@@ -166,9 +160,7 @@ const ByokModelCharts = () => {
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to next page</span>

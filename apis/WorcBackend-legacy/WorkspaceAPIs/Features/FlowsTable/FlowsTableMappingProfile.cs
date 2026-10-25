@@ -30,6 +30,7 @@ public class FlowsTableMappingProfile : IRegister
         // Mapping for inserting or updating a flow record.
         config.NewConfig<FlowsTableDto, Flow>()
             .Ignore(dest => dest.Id)
+            .Ignore(nameof(Flow.FolderId))
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);

@@ -46,8 +46,8 @@ const SubFlowNotice = () => {
     <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
       <p className="text-sm font-medium text-foreground">Viewing a sub-flow</p>
       <p className="text-xs text-muted-foreground">
-        Execution logs are listed for the main flow. Use the breadcrumb above the canvas to go
-        back to the main flow and switch between runs.
+        Execution logs are listed for the main flow. Use the breadcrumb above the canvas to go back
+        to the main flow and switch between runs.
       </p>
     </div>
   );

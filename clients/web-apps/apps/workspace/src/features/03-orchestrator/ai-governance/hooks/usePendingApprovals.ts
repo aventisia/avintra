@@ -25,8 +25,7 @@ export const usePendingApprovals = () => {
   });
 
   useEffect(() => {
-    if (query.isError)
-      toast.error(query.error?.toString() ?? "Failed to load pending approvals.");
+    if (query.isError) toast.error(query.error?.toString() ?? "Failed to load pending approvals.");
   }, [query.error, query.isError]);
 
   return {

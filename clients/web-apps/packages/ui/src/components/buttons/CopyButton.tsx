@@ -43,7 +43,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
         title={showTooltip ? undefined : isCopied ? "Copied" : "Copy"}
         className={cn(
           "h-[1.45em] min-h-0 w-[1.45em] min-w-0 shrink-0 p-0",
-          "text-muted-foreground/45 text-[1em]",
+          "text-[1em] text-muted-foreground",
           "opacity-35 transition-[opacity,color] duration-150",
           "hover:opacity-100 focus-visible:opacity-100",
           "hover:text-primary focus-visible:text-primary",

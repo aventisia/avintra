@@ -117,8 +117,12 @@ function parseEml(raw: string): EmlData {
   result.date = getHeader("Date");
 
   // Prefer the HTML part if present; otherwise use the plain-text part.
-  const htmlMatch = bodyBlock.match(/Content-Type:\s*text\/html[\s\S]*?\r?\n\r?\n([\s\S]*?)(?=\r?\n--|$)/i);
-  const textMatch = bodyBlock.match(/Content-Type:\s*text\/plain[\s\S]*?\r?\n\r?\n([\s\S]*?)(?=\r?\n--|$)/i);
+  const htmlMatch = bodyBlock.match(
+    /Content-Type:\s*text\/html[\s\S]*?\r?\n\r?\n([\s\S]*?)(?=\r?\n--|$)/i,
+  );
+  const textMatch = bodyBlock.match(
+    /Content-Type:\s*text\/plain[\s\S]*?\r?\n\r?\n([\s\S]*?)(?=\r?\n--|$)/i,
+  );
 
   if (htmlMatch?.[1]) {
     result.bodyHtml = htmlMatch[1].trim();

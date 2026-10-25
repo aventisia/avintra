@@ -6,6 +6,7 @@ export * from "./row-actions/DataTableRowActions";
 export * from "./row-actions/DTRowAction";
 export * from "./row-actions/DTRowActionStore";
 export * from "./toolbar/DTCreateButton";
+export * from "./toolbar/useCreateEntityAction.hook";
 export * from "./toolbar/DTHeading";
 export * from "./toolbar/DTSearchBox";
 export * from "./toolbar/DTViewOptions";

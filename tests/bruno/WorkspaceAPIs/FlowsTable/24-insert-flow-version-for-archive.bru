@@ -1,0 +1,30 @@
+meta {
+  name: Insert flow version for archive checks
+  type: http
+  seq: 24
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow-version/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowId": "{{ARCHIVED_FLOW_ID}}"
+  }
+}
+
+script:post-response {
+  test("flow version is created for the archive checks", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("ARCHIVED_FLOW_VERSION_ID", res.getBody().data.id);
+  }
+}

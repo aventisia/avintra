@@ -9,16 +9,26 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { UpdateFlowFolderDto } from "../dtos/update-flow-folder.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
 
 /**
- * Retrieves all flows created by user
+ * Retrieves all flows created by the user, optionally including archived agents.
  */
-const getFlows = ({ isPersonal = true }: { isPersonal: boolean }) => {
+const getFlows = ({
+  isPersonal = true,
+  includeArchived = false,
+}: {
+  isPersonal: boolean;
+  includeArchived?: boolean;
+}) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/${path}`, {
+      headers: getSpaceHeaders(),
+      params: { includeArchived },
+    })
     .then((res) => res.data);
 };
 
@@ -48,6 +58,17 @@ const insertFlow = (newFlow: FlowsTableDto) => {
 const updateFlow = (updatedFlow: FlowsTableDto) => {
   return axiosInstance
     .put<IHttpResponse<FlowsTableDto>>(`${baseAPIURL}`, updatedFlow, { headers: getSpaceHeaders() })
+    .then((res) => res.data);
+};
+
+/**
+ * Moves an existing flow into a folder, or to the top level when no folder is given.
+ */
+const updateFlowFolder = (updateFlowFolderDto: UpdateFlowFolderDto) => {
+  return axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/folder`, updateFlowFolderDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -101,6 +122,7 @@ export {
   isFlowNameAvailable,
   insertFlow,
   updateFlow,
+  updateFlowFolder,
   deleteFlow,
   deleteFlows,
   flowOptimisticMutationFn,

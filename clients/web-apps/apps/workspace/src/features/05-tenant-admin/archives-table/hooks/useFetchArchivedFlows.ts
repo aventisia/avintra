@@ -9,11 +9,11 @@ import { ARCHIVED_FLOWS_QUERY_KEY } from "../constants";
  * Custom hook to fetch Archived flows using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchArchivedFlows = ({ isPersonal }: { isPersonal: boolean }) => {
+export const useFetchArchivedFlows = () => {
   // Get Archived flows using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: isPersonal ? [ARCHIVED_FLOWS_QUERY_KEY, "PERSONAL"] : ARCHIVED_FLOWS_QUERY_KEY,
-    queryFn: () => getArchivedAgents({ isPersonal }),
+    queryKey: ARCHIVED_FLOWS_QUERY_KEY,
+    queryFn: getArchivedAgents,
   });
 
   // Show toast on fetch error

@@ -1,0 +1,32 @@
+meta {
+  name: Insert folder duplicate name rejected
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "placeholder"
+  }
+}
+
+script:pre-request {
+  req.setBody({ name: bru.getGlobalEnvVar("FOLDER_NAME").toUpperCase() });
+}
+
+script:post-response {
+  test("same name in another letter case is rejected with 409", function() {
+    expect(res.getStatus()).to.equal(409);
+    expect(String(res.getBody())).to.contain("already exists");
+  });
+}

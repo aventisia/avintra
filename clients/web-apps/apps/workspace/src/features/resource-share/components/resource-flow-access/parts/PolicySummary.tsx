@@ -1,10 +1,9 @@
-import { cn } from "@avplatform/ui/lib";
-import { TriangleAlert } from "lucide-react";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { ResourceTypeEnum } from "../../../enums/resource-type-enum";
 import type { ResourceFlowDraft } from "../../../hooks/useResourceFlowDraft.hook";
 import type { AccessMode } from "../../../types/flow-access.type";
-import { pluralize } from "../../../utils/pluralize.util";
 import { getResourceTypeLabel } from "../../../utils/resource-display.util";
 
 type PolicySummaryProps = {
@@ -22,12 +21,7 @@ export const PolicySummary = ({ draft, mode, resourceType }: PolicySummaryProps)
   if (draft.isLoading) return <span />;
 
   if (mode === "restricted" && count === 0) {
-    return (
-      <p className="flex min-w-0 items-center gap-2 text-[12.5px] font-medium text-amber-700">
-        <TriangleAlert className="size-4 shrink-0" />
-        <span className="truncate">Add at least one agent to restrict access</span>
-      </p>
-    );
+    return <StatusLine tone="warning">Add at least one agent to restrict access</StatusLine>;
   }
 
   const text = !draft.isDirty
@@ -46,24 +40,8 @@ export const PolicySummary = ({ draft, mode, resourceType }: PolicySummaryProps)
             .join(" · ");
 
   return (
-    <p
-      className={cn(
-        "flex min-w-0 items-center gap-2 text-[12.5px]",
-        draft.isDirty ? "font-medium text-slate-700" : "text-muted-foreground",
-      )}
-    >
-      <span className="relative grid size-2 shrink-0 place-items-center">
-        {draft.isDirty && (
-          <span className="absolute inset-0 animate-ping rounded-full bg-indigo-400 opacity-60" />
-        )}
-        <span
-          className={cn(
-            "relative size-2 rounded-full",
-            draft.isDirty ? "bg-primary" : draft.isOpenAccess ? "bg-emerald-500" : "bg-slate-400",
-          )}
-        />
-      </span>
-      <span className="truncate">{text}</span>
-    </p>
+    <StatusLine tone={draft.isDirty ? "pending" : draft.isOpenAccess ? "open" : "idle"}>
+      {text}
+    </StatusLine>
   );
 };

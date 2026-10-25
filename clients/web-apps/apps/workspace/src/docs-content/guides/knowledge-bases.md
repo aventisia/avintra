@@ -1,4 +1,3 @@
-
 The **Knowledge Bases** page lets you create and manage knowledge bases — corpora of documents your agents can search and retrieve from. Agents use knowledge bases to ground their answers in your content.
 
 ## Purpose

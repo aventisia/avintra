@@ -32,10 +32,7 @@ export const CreditsUsage = () => {
             >
               Platform Credits
             </TabsTrigger>
-            <TabsTrigger
-              value="byok"
-              className="rounded-none data-[state=active]:border-b-black"
-            >
+            <TabsTrigger value="byok" className="rounded-none data-[state=active]:border-b-black">
               BYOK Consumption
             </TabsTrigger>
           </TabsList>

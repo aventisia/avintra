@@ -11,13 +11,15 @@ post {
 }
 
 body:json {
-  "firstName": "{{$randomFirstName}}",
-  "lastName": "{{$randomLastName}}",
-  "email": "{{$randomEmail}}",
-  "twoFactorEnabled": false,
-  "userRoles": [
-      "Tenant user"
-    ]
+  {
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "email": "{{$randomEmail}}",
+    "twoFactorEnabled": false,
+    "userRoles": [
+        "Tenant user"
+      ]
+  }
 }
 
 script:post-response {

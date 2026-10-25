@@ -1,16 +1,22 @@
 import { Badge } from "@avplatform/ui/badge";
 import { Card, CardContent, CardHeader } from "@avplatform/ui/cards";
-import { Cpu, ListChecks, Monitor, Tag } from "lucide-react";
+import { Archive, Cpu, ListChecks, Monitor, Tag } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
+import { HighlightedText } from "@/components/HighlightedText";
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
+import { getAgentDragProps } from "../utils/agent-drag.util";
 import { getFlowTypeLabel } from "../utils/flow-type-label.util";
+import { FolderChip } from "./FolderChip";
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 
 type FlowCardProps = {
   flow: FlowsTableDto;
+  searchText: string;
+  folder?: FoldersTableRowDto;
 };
 
 /**
@@ -20,7 +26,7 @@ type FlowCardProps = {
  * name (opening the Agent Builder), type, platform and AI model badges, the queues
  * the agent is linked to, and the same row actions available in the table view.
  */
-export const FlowCard = ({ flow }: FlowCardProps) => {
+export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
   // Flows run on Windows only when the supported platform is restricted.
   const platform = flow.supportedPlatform === "windows" ? "Windows" : "Cloud & Windows";
   const aiModels = flow.aiModels ?? [];
@@ -41,18 +47,24 @@ export const FlowCard = ({ flow }: FlowCardProps) => {
   const studioHref = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${flow.id}`;
   const isExternalStudio = /^https?:\/\//i.test(studioHref) || studioHref.startsWith("/studio/");
 
+  const agentName = <HighlightedText text={flow.name ?? "NAME_NOT_FOUND"} query={searchText} />;
+
   const nameClassName =
     "min-w-0 flex-1 truncate text-base font-bold capitalize tracking-tight text-slate-900 transition-colors hover:text-primary";
 
   return (
-    <Card className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-slate-200 bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md">
+    <Card
+      {...getAgentDragProps(flow)}
+      className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-slate-200 bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md"
+    >
       <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
         {/* Agent icon tile */}
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary-50 to-accent text-primary ring-1 ring-primary-100 transition-transform duration-200 group-hover:scale-105">
           <NewAgentIcon className="h-4 w-4" />
         </div>
         {/* Supported platform and (shared) access level */}
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1">
+          {folder && <FolderChip folder={folder} />}
           <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-2xs font-medium text-slate-600">
             <Monitor className="h-3 w-3" />
             {platform}
@@ -72,18 +84,20 @@ export const FlowCard = ({ flow }: FlowCardProps) => {
           {isExternalStudio ? (
             <a
               href={studioHref}
+              draggable={false}
               title={`Open ${flow.name} v${flow.versionNumber} in Agent Builder`}
               className={nameClassName}
             >
-              {flow.name ?? "NAME_NOT_FOUND"}
+              {agentName}
             </a>
           ) : (
             <NavLink
               to={studioHref}
+              draggable={false}
               title={`Open ${flow.name} v${flow.versionNumber} in Agent Builder`}
               className={nameClassName}
             >
-              {flow.name ?? "NAME_NOT_FOUND"}
+              {agentName}
             </NavLink>
           )}
           <Badge
@@ -92,6 +106,15 @@ export const FlowCard = ({ flow }: FlowCardProps) => {
           >
             v{flow.versionNumber}
           </Badge>
+          {flow.isArchived && (
+            <Badge
+              variant="outline"
+              className="shrink-0 gap-1 whitespace-nowrap rounded-full border-amber-200 bg-amber-50 py-0.5 font-medium text-amber-700"
+            >
+              <Archive className="h-3 w-3" />
+              Archived
+            </Badge>
+          )}
         </div>
 
         {/* Agent description */}
@@ -144,6 +167,7 @@ export const FlowCard = ({ flow }: FlowCardProps) => {
                 <NavLink
                   key={queue.id}
                   to={getQueueUrl(queue.id, queue.name, queue.type)}
+                  draggable={false}
                   title={queue.name}
                   className="inline-flex max-w-32 items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-2xs font-medium text-slate-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary"
                 >
@@ -170,6 +194,7 @@ export const FlowCard = ({ flow }: FlowCardProps) => {
             name={flow.name}
             accessLevel={flow.accessLevel}
             isTenantWideAccess={flow.isTenantWideAccess || false}
+            folderId={flow.folderId}
           />
         </div>
       </div>

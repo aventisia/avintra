@@ -1,0 +1,24 @@
+meta {
+  name: Delete flow
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/{{FLOW_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

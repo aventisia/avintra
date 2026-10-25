@@ -51,9 +51,7 @@ export const useMyQueueData = (
           lastModifiedOn: item.lastModifiedOn
             ? new Date(item.lastModifiedOn).toISOString()
             : undefined,
-          closedOn: item.lastModifiedOn
-            ? new Date(item.lastModifiedOn).toISOString()
-            : undefined,
+          closedOn: item.lastModifiedOn ? new Date(item.lastModifiedOn).toISOString() : undefined,
           ...(item?.workItemData ? JSON.parse(item?.workItemData) : {}),
         })) ?? []
     );

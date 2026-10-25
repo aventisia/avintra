@@ -26,6 +26,7 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
       isPending,
       primaryText = "Submit",
       secondaryText = "Please wait",
+      disabled,
       ...props
     },
     ref,
@@ -33,10 +34,11 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
     return (
       <button
         type="submit"
-        className={cn("gap-2", buttonVariants({ variant, size, className }))}
+        className={cn("gap-2", buttonVariants({ variant, size }), className)}
         ref={ref}
         {...props}
-        disabled={isPending}
+        disabled={disabled || isPending}
+        aria-busy={isPending}
       >
         {isPending ? (
           <>
@@ -50,3 +52,4 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
     );
   },
 );
+SubmitButton.displayName = "SubmitButton";

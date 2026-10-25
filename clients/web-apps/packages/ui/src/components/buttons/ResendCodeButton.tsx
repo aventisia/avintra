@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { LoadingSpinner } from "@/ui/components";
 import { Button } from "@/ui/components/buttons";
 
+const RESEND_COOLDOWN_SECONDS = 120;
+
 interface ResendCodeButtonProps {
   /** Indicates whether the resend action is currently pending */
   isPending: boolean;
@@ -14,66 +16,61 @@ interface ResendCodeButtonProps {
   resendCodeFn: () => void;
 }
 
+const padTwoDigits = (value: number) => value.toString().padStart(2, "0");
+
 /**
- *
- * A React component that renders a button for resending a code with a countdown timer.
- * The button is disabled while the timer is active or when explicitly disabled.
- * It also displays a loading spinner when the resend action is pending.
- *
+ * Link-style button that resends a code, locked behind a countdown that restarts on every resend.
  */
 const ResendCodeButton = ({ isPending, disabled, resendCodeFn }: ResendCodeButtonProps) => {
-  const maxTime: number = 120; // Set initial timer
-  const [timer, setTimer] = useState(maxTime);
+  const [secondsLeft, setSecondsLeft] = useState(RESEND_COOLDOWN_SECONDS);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
-    }, 1000); // Update timer every second
+    if (isPending) {
+      setSecondsLeft(RESEND_COOLDOWN_SECONDS);
+    }
+  }, [isPending]);
 
-    // Cleanup function to clear the interval on unmount
-    return () => {
-      clearInterval(intervalId);
-      if (isPending) {
-        setTimer(maxTime); // Reset to initial value
-      }
-    };
-  }, [timer, isPending]);
+  useEffect(() => {
+    if (secondsLeft === 0) {
+      return;
+    }
+    const timeoutId = setTimeout(() => setSecondsLeft((seconds) => seconds - 1), 1000);
+    return () => clearTimeout(timeoutId);
+  }, [secondsLeft]);
 
-  const formattedMinutes = (seconds: number) =>
-    Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
-
-  const formattedSeconds = (seconds: number) => (seconds % 60).toString().padStart(2, "0");
-
-  return (
-    <Button
-      className="text-md h-0 gap-1 p-0 font-normal"
-      variant={"link"}
-      disabled={disabled || timer > 0}
-      onClick={resendCodeFn}
-    >
-      {isPending ? (
+  const renderLabel = () => {
+    if (isPending) {
+      return (
         <>
           <LoadingSpinner className="h-4 w-4" />
           Resending...
         </>
-      ) : (
-        <>
-          {timer > 0 ? (
-            <>
-              Resend in
-              <div className="text-md flex w-14 justify-center rounded-lg bg-accent font-medium">
-                <div className="w-[1.2rem]">{formattedMinutes(timer)}</div>
-                <div className="w-1">:</div>
-                <div className="w-[1.2rem]">{formattedSeconds(timer)}</div>
-              </div>
-            </>
-          ) : (
-            "Resend"
-          )}
-        </>
-      )}
+      );
+    }
+    if (secondsLeft === 0) {
+      return "Resend";
+    }
+    return (
+      <>
+        Resend in
+        <span className="text-md flex w-14 justify-center rounded-lg bg-accent font-medium tabular-nums">
+          <span className="w-[1.2rem]">{padTwoDigits(Math.floor(secondsLeft / 60))}</span>
+          <span className="w-1">:</span>
+          <span className="w-[1.2rem]">{padTwoDigits(secondsLeft % 60)}</span>
+        </span>
+      </>
+    );
+  };
+
+  return (
+    <Button
+      type="button"
+      className="text-md h-0 gap-1 p-0 font-normal"
+      variant="link"
+      disabled={disabled || isPending || secondsLeft > 0}
+      onClick={resendCodeFn}
+    >
+      {renderLabel()}
     </Button>
   );
 };

@@ -1,0 +1,33 @@
+meta {
+  name: Update folder duplicate name rejected
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{SECOND_FOLDER_ID}}",
+    "name": "placeholder"
+  }
+}
+
+script:pre-request {
+  req.setBody({ id: bru.getGlobalEnvVar("SECOND_FOLDER_ID"), name: bru.getGlobalEnvVar("FOLDER_NAME").toLowerCase() });
+}
+
+script:post-response {
+  test("renaming to another folder's name is rejected with 409", function() {
+    expect(res.getStatus()).to.equal(409);
+    expect(String(res.getBody())).to.contain("already exists");
+  });
+}

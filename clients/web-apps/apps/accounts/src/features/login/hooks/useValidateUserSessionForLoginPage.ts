@@ -5,8 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 import { getPostLoginDestination } from "@/constants/post-login-destination";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
 /**
  * Custom hook to validate the user session for the login page.

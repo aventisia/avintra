@@ -3,7 +3,10 @@ import { useShallow } from "zustand/react/shallow";
 
 import { LockDto } from "../dtos/collaboration-dtos";
 import { useCollaborationStore } from "../stores/collaboration-store";
-import { collaborationColorMapForPresence, collaborationTextColorFor } from "../utils/collaboration-color";
+import {
+  collaborationColorMapForPresence,
+  collaborationTextColorFor,
+} from "../utils/collaboration-color";
 import { getInitials } from "../utils/get-initials";
 
 interface LockHolderBadgeProps {
@@ -16,14 +19,13 @@ interface LockHolderBadgeProps {
  * their presence avatar. The full name is kept in the tooltip.
  */
 export const LockHolderBadge = ({ lock }: LockHolderBadgeProps) => {
-  const presence = useCollaborationStore(
-    useShallow((state) => state.presence),
-  );
+  const presence = useCollaborationStore(useShallow((state) => state.presence));
 
   // Prefer the collision-free color map (built from presence) so the badge matches
   // the holder's avatar ring; fall back to a deterministic per-user color.
   const colorMap = collaborationColorMapForPresence(presence);
-  const textColor = colorMap[lock.holderUserId]?.text ?? collaborationTextColorFor(lock.holderUserId);
+  const textColor =
+    colorMap[lock.holderUserId]?.text ?? collaborationTextColorFor(lock.holderUserId);
 
   const displayName = lock.holderDisplayName ?? "another user";
   const initials = getInitials(lock.holderDisplayName);

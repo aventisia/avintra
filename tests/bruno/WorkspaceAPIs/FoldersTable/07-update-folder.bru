@@ -1,0 +1,37 @@
+meta {
+  name: Update folder
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{FOLDER_ID}}",
+    "name": "Folder {{$randomInt}} Renamed",
+    "description": "Updated description",
+    "color": "rose"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  test("folder is updated with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(body.message).to.equal("Folder updated");
+    expect(body.data.description).to.equal("Updated description");
+    expect(body.data.color).to.equal("rose");
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("FOLDER_NAME", body.data.name);
+  }
+}

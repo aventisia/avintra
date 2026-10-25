@@ -4,10 +4,7 @@
   "description": "Creates a new work item in the specified queue.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": [
-    "cloud",
-    "windows"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

@@ -15,4 +15,3 @@ Agents are shown as **list items** (not a table). Each item shows:
 
 1. Find the agent you want to work with.
 2. Click the **Execute** button to run the agent.
-

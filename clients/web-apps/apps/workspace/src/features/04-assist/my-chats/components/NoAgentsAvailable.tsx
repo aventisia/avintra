@@ -12,8 +12,8 @@ export function NoAgentsAvailable({ includeChat = true }: { includeChat?: boolea
       <div className="space-y-1.5">
         <h3 className="text-lg font-medium text-foreground">No agents assigned</h3>
         <p className="text-sm text-muted-foreground max-w-96 leading-relaxed">
-          You don't have any {includeChat ? "chat " : ""}agents assigned to you. Please contact
-          your administrator to request access.
+          You don't have any {includeChat ? "chat " : ""}agents assigned to you. Please contact your
+          administrator to request access.
         </p>
       </div>
     </div>

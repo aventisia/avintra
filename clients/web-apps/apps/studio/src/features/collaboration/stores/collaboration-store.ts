@@ -124,8 +124,7 @@ export const useCollaborationStore = create<State & Actions>((set) => ({
 
   setCursors: (cursors) => set({ cursors }),
 
-  addMessage: (message) =>
-    set((state) => ({ messages: [...state.messages, message] })),
+  addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
 
   clearMessages: () => set({ messages: [] }),
 

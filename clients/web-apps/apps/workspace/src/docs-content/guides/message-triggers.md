@@ -34,13 +34,13 @@ Each row has a **⋮** menu with actions such as:
 
 Click the **Create** button. Fill in:
 
-- **Unique Name** — *Required.* A unique name for the trigger.
-- **Resource** — *Optional.* The message resource to watch (e.g. Teams).
-- **Resource ID(s)** — *Required.* The ID(s) based on the selected resource. For multiple IDs, use `/` in the same order as in the resource path. Example: `team-id/channel-id`.
-- **Expiry Date & Time** — *Required.* When the trigger expires.
-- **Resubscribe** — *Optional.* Maintains continuous connectivity.
-- **Subscription Period (in minutes)** — *Required.* Duration in minutes (1-4320).
-- **Credential Id** — *Required.* The credential used to access the message source.
-- **Provider** — *Required.* The message provider.
+- **Unique Name** — _Required._ A unique name for the trigger.
+- **Resource** — _Optional._ The message resource to watch (e.g. Teams).
+- **Resource ID(s)** — _Required._ The ID(s) based on the selected resource. For multiple IDs, use `/` in the same order as in the resource path. Example: `team-id/channel-id`.
+- **Expiry Date & Time** — _Required._ When the trigger expires.
+- **Resubscribe** — _Optional._ Maintains continuous connectivity.
+- **Subscription Period (in minutes)** — _Required._ Duration in minutes (1-4320).
+- **Credential Id** — _Required._ The credential used to access the message source.
+- **Provider** — _Required._ The message provider.
 
 After creating, the trigger starts the configured agent when a message is received.

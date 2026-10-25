@@ -1,4 +1,3 @@
-
 The **Users** page lets you invite, manage, and remove users, and assign roles and permissions.
 
 ## Purpose

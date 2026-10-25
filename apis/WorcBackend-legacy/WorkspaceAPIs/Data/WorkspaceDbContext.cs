@@ -55,6 +55,7 @@ public class WorkspaceDbContext : DbContext
         // These two conditions MUST be combined in a single HasQueryFilter call, because calling
         // HasQueryFilter twice on the same entity REPLACES the previous filter rather than ANDing it.
         modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Folder>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<ConfigStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -246,6 +247,9 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Flow and WorkspaceUser
         modelBuilder.Entity<Flow>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Flow>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Folder>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Folder>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Flow>().HasOne<Folder>().WithMany().HasForeignKey(f => f.FolderId).OnDelete(DeleteBehavior.SetNull);
 
         // Configure One-to-One relationship between SupportTicket and WorkspaceUser
         modelBuilder.Entity<SupportTicket>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -374,6 +378,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationUser> NotificationUsers { get; set; }
     public DbSet<Flow> Flows { get; set; }
+    public DbSet<Folder> Folders { get; set; }
     public DbSet<SupportTicket> SupportTickets { get; set; }
     public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
     public DbSet<FlowLog> FlowLog { get; set; }

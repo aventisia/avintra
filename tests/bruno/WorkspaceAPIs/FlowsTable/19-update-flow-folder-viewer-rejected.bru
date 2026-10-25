@@ -1,0 +1,35 @@
+meta {
+  name: Update flow folder viewer rejected
+  type: http
+  seq: 19
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TU_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowId": "{{FOLDER_FLOW_ID}}",
+    "folderId": "{{FOLDER_ID}}"
+  }
+}
+
+script:post-response {
+  test("moving an agent without edit access is rejected with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+    expect(String(res.getBody())).to.equal("You do not have access to move this agent.");
+  });
+}
+
+docs {
+  > Runs while the in-run flow and folder still exist. The move guard grants only
+  > Owner/Edit access, so `TU_ACCESS_TOKEN` (a user without either) exercises
+  > the same 403 branch. The rejected attempt mutates nothing.
+}

@@ -56,9 +56,7 @@ const Sidebar = ({ className }: SidebarProps) => {
       </Tooltip>
 
       <ScrollArea className="flex-1 py-1">
-        <nav className="h-auto">
-          {/* Sidebar menu intentionally left blank for now */}
-        </nav>
+        <nav className="h-auto">{/* Sidebar menu intentionally left blank for now */}</nav>
       </ScrollArea>
     </div>
   );

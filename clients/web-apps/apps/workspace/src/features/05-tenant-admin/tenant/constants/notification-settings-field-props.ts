@@ -11,7 +11,8 @@ const lowCreditsProps: SwitchFieldProps = {
 const lowCreditThresholdProps: InputFieldProps = {
   name: "lowCreditThreshold",
   label: "Low Credit Threshold",
-  description: "Credit balance below which the low-credit notification is sent. Must be greater than 0. Defaults to 1000.",
+  description:
+    "Credit balance below which the low-credit notification is sent. Must be greater than 0. Defaults to 1000.",
   type: "number",
 };
 
@@ -26,7 +27,8 @@ const subscriptionProps: SwitchFieldProps = {
 const subscriptionRenewalReminderDaysProps: InputFieldProps = {
   name: "subscriptionRenewalReminderDays",
   label: "Subscription Reminder Days",
-  description: "Days before renewal to start sending reminders. Must be greater than 0. Defaults to 7.",
+  description:
+    "Days before renewal to start sending reminders. Must be greater than 0. Defaults to 7.",
   type: "number",
 };
 
@@ -41,7 +43,8 @@ const publishAgentProps: SwitchFieldProps = {
 const agentRiskAssessmentApprovalProps: SwitchFieldProps = {
   name: "agentRiskAssessmentApproval",
   label: "Agent Risk Assessment Approval",
-  description: "Notify the designated approver when an agent risk assessment is submitted for approval",
+  description:
+    "Notify the designated approver when an agent risk assessment is submitted for approval",
 };
 
 // Delivery Channel

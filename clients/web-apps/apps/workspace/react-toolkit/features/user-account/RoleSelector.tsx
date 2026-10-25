@@ -15,8 +15,8 @@ import { CheckIcon, ChevronDownIcon, ShieldCheckIcon } from "@heroicons/react/24
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { getRoleLabel } from "@/constants/roles";
 import { SELECTED_ROLES_STORAGE_KEY } from "@/components/layout/AppLayout";
+import { getRoleLabel } from "@/constants/roles";
 
 interface RoleSelectorProps {
   /** Additional class name to override the nested popover content container style */
@@ -54,9 +54,7 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
     // Prevent deselecting the last remaining role.
     if (isSelected && selectedRoles.length === 1) return;
 
-    const next = isSelected
-      ? selectedRoles.filter((r) => r !== role)
-      : [...selectedRoles, role];
+    const next = isSelected ? selectedRoles.filter((r) => r !== role) : [...selectedRoles, role];
 
     setSelectedRoles(next);
     localStorage.setItem(SELECTED_ROLES_STORAGE_KEY, next.join(","));

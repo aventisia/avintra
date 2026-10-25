@@ -6,6 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
+import { Button } from "@avplatform/ui/buttons";
 import {
   DTHeading,
   DTPagination,
@@ -15,23 +16,22 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { Button } from "@avplatform/ui/buttons";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 import { HelpButton } from "@/components/help/HelpButton";
+import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 
 import { TABLE_HEADING } from "../../constants";
-import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
+import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
 import { useMyQueueData } from "../../hooks/useMyQueueData";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { TabValue } from "../../types/my-queue-types";
 import { buildTabs, generateColumnVisibility } from "../../utils/my-queue-utils";
-import { buildColumns, generateColumnsDisplayName } from "../my-queue-column";
 import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFilter";
+import { buildColumns, generateColumnsDisplayName } from "../my-queue-column";
 
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -67,10 +67,7 @@ export const MyQueueWokItemTable = () => {
 
   const tabs = useMemo(() => buildTabs(), []);
 
-  const currentQueue = useMemo(
-    () => queues.find((q) => q.id === queueId),
-    [queues, queueId],
-  );
+  const currentQueue = useMemo(() => queues.find((q) => q.id === queueId), [queues, queueId]);
   const isFifo = currentQueue?.processingMode === QueueProcessingModeEnum.Fifo;
 
   useEffect(() => {
@@ -141,11 +138,7 @@ export const MyQueueWokItemTable = () => {
             size="sm"
           />
           {isFifo && tabValue === "Current" && (
-            <Button
-              size="xs"
-              onClick={() => getNextItem()}
-              disabled={isClaiming || !queueId}
-            >
+            <Button size="xs" onClick={() => getNextItem()} disabled={isClaiming || !queueId}>
               {isClaiming ? "Claiming..." : "Get Next Item"}
             </Button>
           )}

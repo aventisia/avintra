@@ -70,9 +70,7 @@ export const QueryTabs = ({
 
   return (
     <Tabs value={tabValue} onValueChange={handleTabSelect} className={className}>
-      <TabsList
-        className={cn("h-fit w-full gap-1 rounded-lg px-1.5 py-1.5", listClassName)}
-      >
+      <TabsList className={cn("h-fit w-full gap-1 rounded-lg px-1.5 py-1.5", listClassName)}>
         {tabs.map((tab) => {
           const TabIcon = tab.icon;
           return (

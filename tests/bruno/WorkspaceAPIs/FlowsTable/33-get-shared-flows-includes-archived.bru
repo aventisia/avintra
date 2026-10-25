@@ -1,0 +1,24 @@
+meta {
+  name: Get shared flows includes archived on request
+  type: http
+  seq: 33
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/list/shared?includeArchived=true
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("archived shared flow is listed with its archive state", function() {
+    expect(res.getStatus()).to.equal(200);
+    const flow = res.getBody().data.find(item => item.id === bru.getGlobalEnvVar("SHARED_ARCHIVED_FLOW_ID"));
+    expect(flow).to.not.equal(undefined);
+    expect(flow.isArchived).to.equal(true);
+  });
+}

@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { HelpButton } from "@/components/help/HelpButton";
+
 import {
   DateRangeFilter,
   HISTORY_JOB_STATUSES,
@@ -120,9 +121,7 @@ export const JobsTable = () => {
                         key={tab.value}
                         className="inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                       >
-                        {TabIcon && (
-                          <TabIcon className="size-4 shrink-0" aria-hidden="true" />
-                        )}
+                        {TabIcon && <TabIcon className="size-4 shrink-0" aria-hidden="true" />}
                         <span>{tab.label}</span>
                       </TabsTrigger>
                     );

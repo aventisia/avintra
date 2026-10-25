@@ -11,9 +11,7 @@ import { useCollaborationStore } from "../stores/collaboration-store";
  */
 export const FlowActionLockBanner = () => {
   const flowVersionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
-  const flowActionLocks = useCollaborationStore(
-    useShallow((state) => state.flowActionLocks),
-  );
+  const flowActionLocks = useCollaborationStore(useShallow((state) => state.flowActionLocks));
 
   const lock = flowVersionId ? flowActionLocks[`${flowVersionId}:Publish`] : undefined;
   if (!lock) return null;

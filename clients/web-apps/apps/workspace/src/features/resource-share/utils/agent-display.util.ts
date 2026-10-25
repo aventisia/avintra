@@ -1,8 +1,9 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { format, formatDistanceToNow } from "date-fns";
 
+import { pluralize } from "@/utils/pluralize.util";
+
 import type { FlowAccessAgent } from "../types/flow-access.type";
-import { pluralize } from "./pluralize.util";
 
 /**
  * Display label for a flow type; null for types that are not agents.

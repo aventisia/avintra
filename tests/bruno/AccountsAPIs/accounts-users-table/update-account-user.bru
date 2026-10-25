@@ -11,12 +11,14 @@ put {
 }
 
 body:json {
-  "id": "{{ACCOUNT_USER_ID}}",
-  "firstName": "{{$randomFirstName}}",
-  "lastName": "{{$randomLastName}}",
-  "email": "{{$randomEmail}}",
-  "twoFactorEnabled": false,
-  "userRoles": [
-      "Tenant user"
-    ]
+  {
+    "id": "{{ACCOUNT_USER_ID}}",
+    "firstName": "{{$randomFirstName}}",
+    "lastName": "{{$randomLastName}}",
+    "email": "{{$randomEmail}}",
+    "twoFactorEnabled": false,
+    "userRoles": [
+        "Tenant user"
+      ]
+  }
 }

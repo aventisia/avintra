@@ -1,8 +1,7 @@
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { useShallow } from "zustand/react/shallow";
-import { useEffect, useMemo, useRef, useState } from "react";
-
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { broadcastChatEvent } from "../../hooks/useCollaboration";
 import { useCollaborationStore } from "../../stores/collaboration-store";

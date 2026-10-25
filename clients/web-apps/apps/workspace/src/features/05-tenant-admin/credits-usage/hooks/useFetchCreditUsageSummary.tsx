@@ -38,16 +38,8 @@ export const useFetchCreditUsageSummary = () => {
 
   // Get credit usage summary using react query
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [
-      "CREDIT_USAGE_SUMMARY",
-      from,
-      to,
-      filterBySpaces,
-      includeCentral,
-      spaceIds,
-    ],
-    queryFn: () =>
-      getCreditUsageSummary(from, to, filterBySpaces, spaceIds, includeCentral),
+    queryKey: ["CREDIT_USAGE_SUMMARY", from, to, filterBySpaces, includeCentral, spaceIds],
+    queryFn: () => getCreditUsageSummary(from, to, filterBySpaces, spaceIds, includeCentral),
   });
 
   // Show toast on fetch error

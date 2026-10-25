@@ -9,8 +9,9 @@ public interface IFlowsTableService
     /// Retrieves all flows created by the user.
     /// </summary>
     /// <param name="isPersonal"> If <c>true</c>, returns only personal flows. If <c>false</c>, returns only shared flows. </param>
+    /// <param name="includeArchived"> If <c>true</c>, includes flows whose latest version is archived. </param>
     /// <returns>The task result contains the service response with the list of flow details.</returns>
-    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal);
+    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal, bool includeArchived = false);
 
     /// <summary>
     /// Checks the availability of a flow name.
@@ -32,6 +33,13 @@ public interface IFlowsTableService
     /// <param name="flowsTableDto">The data required to update the flow.</param>
     /// <returns>The task result contains the service response with the updated flow details.</returns>
     Task<ServiceResponse<FlowsTableDto>> UpdateFlowAsync(FlowsTableDto flowsTableDto);
+
+    /// <summary>
+    /// Moves an existing flow into a folder, or to the top level when no folder is given.
+    /// </summary>
+    /// <param name="updateFlowFolderDto">The flow and its target folder.</param>
+    /// <returns>The task result contains the service response indicating whether the flow was moved.</returns>
+    Task<ServiceResponse<bool>> UpdateFlowFolderAsync(UpdateFlowFolderDto updateFlowFolderDto);
 
     /// <summary>
     /// Deletes a flow by its ID.

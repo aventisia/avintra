@@ -1,0 +1,24 @@
+meta {
+  name: Get flows folder cleared
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("flow list shows the flow without a folder", function() {
+    expect(res.getStatus()).to.equal(200);
+    const flow = res.getBody().data.find(item => item.id === bru.getGlobalEnvVar("FOLDER_FLOW_ID"));
+    expect(flow).to.not.equal(undefined);
+    expect(flow.folderId == null).to.equal(true);
+  });
+}

@@ -9,6 +9,7 @@ import { ConversationsTable } from "./features/03-orchestrator/conversations-tab
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
+import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
 import { ConfigStorePage } from "./pages/02-configure/ConfigStorePage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
@@ -71,6 +72,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/agents",
         element: <FlowsPage />,
+      },
+      {
+        path: "/agents/folders/:folderId",
+        element: <FolderFlowsPage />,
       },
       {
         path: "/library",

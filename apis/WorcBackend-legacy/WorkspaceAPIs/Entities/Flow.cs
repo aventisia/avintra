@@ -17,6 +17,11 @@ public class Flow : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the folder this flow is organized in. Null indicates the flow is at the top level.
+    /// </summary>
+    public Guid? FolderId { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the flow. Max-20 characters.
     /// </summary>
     [MaxLength(20)]

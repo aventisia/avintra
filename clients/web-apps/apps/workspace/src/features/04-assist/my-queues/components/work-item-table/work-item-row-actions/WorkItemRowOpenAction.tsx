@@ -11,7 +11,11 @@ interface WorkItemRowOpenActionProps {
   isFifo?: boolean;
 }
 
-export const WorkItemRowOpenAction = ({ rowId, status, isFifo = false }: WorkItemRowOpenActionProps) => {
+export const WorkItemRowOpenAction = ({
+  rowId,
+  status,
+  isFifo = false,
+}: WorkItemRowOpenActionProps) => {
   const navigate = useNavigate();
   const { getWorkItemUrl } = useOpenWorkItem();
 

@@ -1,0 +1,37 @@
+meta {
+  name: Get folders other space
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/folder/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+headers {
+  X-Space-Id: {{SECOND_SPACE_ID}}
+}
+
+script:pre-request {
+  if (!bru.getEnvVar("SECOND_SPACE_ID") && !bru.getGlobalEnvVar("SECOND_SPACE_ID")) {
+    bru.runner.skipRequest();
+  }
+}
+
+script:post-response {
+  test("folder of the central space is absent in another space", function() {
+    expect(res.getStatus()).to.equal(200);
+    const ids = res.getBody().data.map(folder => folder.id);
+    expect(ids).to.not.include(bru.getGlobalEnvVar("FOLDER_ID"));
+  });
+}
+
+docs {
+  Skipped unless SECOND_SPACE_ID is set to the id of a space other than the Central space.
+}

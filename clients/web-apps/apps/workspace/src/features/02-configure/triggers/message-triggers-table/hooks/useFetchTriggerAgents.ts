@@ -2,8 +2,9 @@ import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { geTriggerAgents } from "../apis/triggers-table-apis";
 import { useEnvironmentStore } from "@/stores/environment-store";
+
+import { geTriggerAgents } from "../apis/triggers-table-apis";
 
 /**
  * Custom hook to fetch agents using react query.

@@ -1,0 +1,37 @@
+meta {
+  name: Insert folder
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "Folder {{$randomInt}} Alpha",
+    "description": "{{$randomLoremSentence}}",
+    "color": "emerald"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  test("folder is added with 201", function() {
+    expect(res.getStatus()).to.equal(201);
+    expect(body.message).to.equal("Folder added");
+    expect(body.data.flowCount).to.equal(0);
+    expect(body.data.color).to.equal("emerald");
+  });
+  if (res.getStatus() == 201) {
+    bru.setGlobalEnvVar("FOLDER_ID", body.data.id);
+    bru.setGlobalEnvVar("FOLDER_NAME", body.data.name);
+  }
+}

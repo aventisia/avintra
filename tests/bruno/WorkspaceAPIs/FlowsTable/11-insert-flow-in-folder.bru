@@ -1,0 +1,35 @@
+meta {
+  name: Insert flow in folder
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "type": "Agent",
+    "name": "{{$randomProductName}} {{$randomInt}}",
+    "description": "{{$randomLoremSentence}}",
+    "folderId": "{{FOLDER_ID}}"
+  }
+}
+
+script:post-response {
+  test("flow is created inside the folder", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.folderId).to.equal(bru.getGlobalEnvVar("FOLDER_ID"));
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("FOLDER_FLOW_ID", res.getBody().data.id);
+    bru.setGlobalEnvVar("FOLDER_FLOW_NAME", res.getBody().data.name);
+  }
+}

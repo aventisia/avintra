@@ -1,0 +1,33 @@
+meta {
+  name: Delete multiple flows
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/delete-multiple
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  [
+    "{{FLOW_ID}}"
+  ]
+}
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "FLOW_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
+
+docs {
+  > TODO: Implement functionality to delete multiple flows only if the user provides an OTP or password, especially when the flows are linked to other sub-content.
+}

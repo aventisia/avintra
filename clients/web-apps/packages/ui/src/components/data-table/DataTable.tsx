@@ -1,4 +1,4 @@
-import { type Table, flexRender } from "@tanstack/react-table";
+import { type Row, type Table, flexRender } from "@tanstack/react-table";
 
 import { ScrollArea } from "@/ui/components/scroll";
 import {
@@ -13,9 +13,11 @@ import {
 interface DataTableProps<TData> {
   table: Table<TData>;
   columnsLength: number;
+  /** Extra props merged onto each body row. */
+  getRowProps?: (row: Row<TData>) => React.HTMLAttributes<HTMLTableRowElement>;
 }
 
-export function DataTable<TData>({ table, columnsLength }: DataTableProps<TData>) {
+export function DataTable<TData>({ table, columnsLength, getRowProps }: DataTableProps<TData>) {
   return (
     <ScrollArea
       className="w-full overflow-hidden rounded-lg border bg-background"
@@ -48,7 +50,11 @@ export function DataTable<TData>({ table, columnsLength }: DataTableProps<TData>
         <TableExtBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableExtRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+              <TableExtRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                {...getRowProps?.(row)}
+              >
                 {row.getVisibleCells().map((cell) => {
                   const cellClassName = cell.column.columnDef.meta?.cellClassName;
 

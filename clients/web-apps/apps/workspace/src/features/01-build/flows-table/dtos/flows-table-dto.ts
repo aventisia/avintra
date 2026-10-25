@@ -16,6 +16,13 @@ export interface FlowsTableDto {
   id?: string;
 
   /**
+   * Gets or sets the ID of the folder the flow is organized in. Null means the top level.
+   *
+   * Only honored on insert; use the dedicated folder update to move an existing flow.
+   */
+  folderId?: string | null;
+
+  /**
    * Gets or sets the type of the flow.
    */
   type: FlowTypesEnum; // TODO: Update enum values
@@ -29,6 +36,17 @@ export interface FlowsTableDto {
    * Gets the latest version of the flow.
    */
   versionNumber?: number;
+
+  /**
+   * Whether the latest flow version is archived.
+   */
+  isArchived?: boolean;
+
+  /**
+   * Whether the latest flow version is published.
+   */
+  isPublished?: boolean;
+
   /**
    * Gets or sets the thumbnail of the flow.
    */
@@ -79,7 +97,7 @@ export interface FlowsTableDto {
   lastModifiedBy?: string;
 
   /**
-   * Gets or sets the date and time when the flow record was last modified.
+   * Gets or sets the date and time when the flow record or its latest version was last modified.
    */
   lastModifiedOn?: Date;
 

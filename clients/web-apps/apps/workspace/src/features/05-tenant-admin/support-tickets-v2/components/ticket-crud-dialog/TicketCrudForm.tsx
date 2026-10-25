@@ -84,9 +84,10 @@ export const TicketCrudForm = ({ rowId, crudAction }: TicketCrudFormProps) => {
   // Only include the "Change Request" option when the tenant has it enabled. When
   // viewing/editing an existing Change Request ticket, keep the option so the current
   // value still displays correctly even if the tenant has since disabled the feature.
-  const requestTypeOptions = isChangeRequestEnabled || requestType === "ChangeRequest"
-    ? requestTypeProps.selectOptions
-    : requestTypeProps.selectOptions.filter((option) => option.value !== "ChangeRequest");
+  const requestTypeOptions =
+    isChangeRequestEnabled || requestType === "ChangeRequest"
+      ? requestTypeProps.selectOptions
+      : requestTypeProps.selectOptions.filter((option) => option.value !== "ChangeRequest");
 
   return (
     <Form
@@ -99,7 +100,11 @@ export const TicketCrudForm = ({ rowId, crudAction }: TicketCrudFormProps) => {
       {crudAction === "create" ? (
         <SelectField {...requestTypeProps} selectOptions={requestTypeOptions} />
       ) : (
-        <SelectField {...requestTypeProps} selectOptions={requestTypeOptions} disabled={isReadMode} />
+        <SelectField
+          {...requestTypeProps}
+          selectOptions={requestTypeOptions}
+          disabled={isReadMode}
+        />
       )}
       <InputField {...titleProps} autoFocus={crudAction === "create"} />
       <TextareaField {...descriptionProps} />

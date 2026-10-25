@@ -14,13 +14,7 @@ import React, { useMemo } from "react";
 
 // Note: Keep in sync with SUPPORTED_LANGUAGES in CodeEditorField.tsx
 export type SupportedLanguage =
-  | "javascript"
-  | "python"
-  | "csharp"
-  | "vb"
-  | "powershell"
-  | "cmd"
-  | "sql";
+  "javascript" | "python" | "csharp" | "vb" | "powershell" | "cmd" | "sql";
 
 interface CodeEditorProps {
   value?: string;

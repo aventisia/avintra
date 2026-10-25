@@ -37,13 +37,7 @@ interface ModelChartProps {
  * Renders a single stacked bar chart for one model, with each token type
  * (input / output / cached) shown as a different colored series.
  */
-export function ModelChart({
-  title,
-  label,
-  data,
-  series,
-  className,
-}: ModelChartProps) {
+export function ModelChart({ title, label, data, series, className }: ModelChartProps) {
   const chartConfig = Object.fromEntries(
     series.map((s) => [s.key, { label: s.label, color: s.color }]),
   ) satisfies ChartConfig;
@@ -95,18 +89,10 @@ export function ModelChart({
               }
             />
             {series.map((s) => (
-              <Bar
-                key={s.key}
-                dataKey={s.key}
-                stackId="model"
-                fill={s.color}
-                barSize={12}
-              />
+              <Bar key={s.key} dataKey={s.key} stackId="model" fill={s.color} barSize={12} />
             ))}
             {series.length > 1 && (
-              <ChartLegend
-                content={<ChartLegendContent className="flex-wrap" />}
-              />
+              <ChartLegend content={<ChartLegendContent className="flex-wrap" />} />
             )}
           </BarChart>
         </ChartContainer>

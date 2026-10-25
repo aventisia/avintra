@@ -30,9 +30,9 @@ Each row has a **⋮** menu with actions such as:
 
 Click the **Create** button. Fill in:
 
-- **Unique Name** — *Required.* A unique name for the trigger.
-- **Webhook Url** — *Read-only.* Auto-generated after the trigger is created.
-- **Callback Url** — *Optional.* URL the webhook calls back to after processing.
-- **Input Arguments Schema** — *Optional.* The expected input arguments schema.
+- **Unique Name** — _Required._ A unique name for the trigger.
+- **Webhook Url** — _Read-only._ Auto-generated after the trigger is created.
+- **Callback Url** — _Optional._ URL the webhook calls back to after processing.
+- **Input Arguments Schema** — _Optional._ The expected input arguments schema.
 
 After creating, the webhook URL is generated. External systems call it to start the configured agent.

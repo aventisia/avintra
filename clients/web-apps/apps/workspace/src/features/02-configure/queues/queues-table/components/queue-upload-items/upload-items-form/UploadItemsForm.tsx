@@ -4,8 +4,8 @@ import { Label } from "@avplatform/ui/label";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useState } from "react";
-import { useShallow } from "zustand/react/shallow";
 import * as XLSX from "xlsx";
+import { useShallow } from "zustand/react/shallow";
 
 import { useUploadItemMutation } from "../../../hooks/useUploadItemMutation";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
@@ -57,8 +57,7 @@ export const UploadItemsForm = ({
     const isExcel =
       file.name.endsWith(".xlsx") ||
       file.name.endsWith(".xls") ||
-      file.type ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
       file.type === "application/vnd.ms-excel";
 
     if (!isJson && !isCsv && !isExcel) {
@@ -167,11 +166,7 @@ export const UploadItemsForm = ({
         <Textarea value={remark} onChange={(e) => setRemark(e.target.value)} />
       </div>
       <div className="!mt-5 flex w-full justify-end">
-        <Button
-          disabled={isPending}
-          className={cn("min-w-[5rem] gap-2")}
-          onClick={onSubmit}
-        >
+        <Button disabled={isPending} className={cn("min-w-[5rem] gap-2")} onClick={onSubmit}>
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4" />
