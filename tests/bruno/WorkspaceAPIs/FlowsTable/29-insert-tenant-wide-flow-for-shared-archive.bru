@@ -1,0 +1,39 @@
+meta {
+  name: Insert tenant-wide flow for shared archive checks
+  type: http
+  seq: 29
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TU_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "type": "Agent",
+    "name": "Shared archived agent {{$randomProductName}} {{$randomInt}}",
+    "description": "Created to verify the shared archived filter.",
+    "isTenantWideAccess": true
+  }
+}
+
+script:post-response {
+  test("tenant-wide flow is created by the second user", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("SHARED_ARCHIVED_FLOW_ID", res.getBody().data.id);
+  }
+}
+
+docs {
+  > Runs as `TU_ACCESS_TOKEN` (see `00-tu-login.bru`), so the flow belongs to a
+  > different user in the same tenant. Tenant-wide access puts it in the primary
+  > user's shared list (`/flow/list/shared`) without an explicit share.
+}

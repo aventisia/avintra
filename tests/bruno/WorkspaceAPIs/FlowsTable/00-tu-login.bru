@@ -1,0 +1,30 @@
+meta {
+  name: TU login and obtain access token
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "email": "{{TU_EMAIL}}",
+      "pwd": "{{TU_PWD}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200 && res.getBody()?.data?.accessToken) {
+      bru.setGlobalEnvVar("TU_ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > This request must run first to populate `TU_ACCESS_TOKEN` for the 403 checks.
+  > The TU user must hold no resource shares/grants. Set `TU_EMAIL` and
+  > `TU_PWD` via a Bruno environment or collection secret. Do not commit real credentials.
+}

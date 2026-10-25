@@ -1,126 +1,117 @@
-import { Checkbox } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
-import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import {
+  TableCNColumnHeader,
+  getTableCNActionsColumn,
+  getTableCNSelectColumn,
+} from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { AGENT_PLATFORMS, AGENT_TYPES } from "../constants/agent-attributes.constant";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { getFlowTypeLabel } from "../utils/flow-type-label.util";
-import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
+import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
+import { AgentFilterOptions } from "../types/agent-filter-options.type";
+import { getAgentPlatform } from "../utils/agent-attributes.util";
+import {
+  AccessLevelCell,
+  AgentNameCell,
+  AgentPlatformCell,
+  AgentTypeCell,
+  CreatorCell,
+} from "./agent-cells/AgentTableCells";
+import { FlowRowActionItems } from "./flow-row-actions/FlowRowActionItems";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<FlowsTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
+const getLabelMeta = (columnKey: string) => ({ label: getColumnName(columnKey) });
+
+type FlowsTableColumnsOptions = {
+  filterOptions: AgentFilterOptions;
+  /** Folders by id; when given, agents in a folder show a chip linking to it. */
+  folderById?: ReadonlyMap<string, FoldersTableRowDto>;
+};
 
 /**
- * Array of table columns for the flows table.
- * Each column object contains an accessorKey, header component, and cell component.
+ * Columns of the agents table, with toolbar filters for type, platform, and access.
  */
-export const flowsTableColumns = (): ColumnDef<FlowsTableDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+export const flowsTableColumns = ({
+  filterOptions,
+  folderById,
+}: FlowsTableColumnsOptions): ColumnDef<FlowsTableDto>[] => [
+  getTableCNSelectColumn<FlowsTableDto>({ enableHiding: true, meta: getLabelMeta("select") }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3 ">
-        <FlowVersionNavLink
-          to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.id}`}
-          title={`Open ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
-          flowName={row.original.name ?? "NAME_NOT_FOUND"}
-          flowVersionNumber={`v${row.original.versionNumber}`}
-        />
-        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-        </p>
-      </div>
+    meta: getLabelMeta("name"),
+    header: renderHeader("name"),
+    cell: ({ row, table }) => (
+      <AgentNameCell
+        flow={row.original}
+        searchText={String(table.getState().globalFilter ?? "")}
+        folder={row.original.folderId ? folderById?.get(row.original.folderId) : undefined}
+      />
     ),
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
-    cell: ({ row }) => {
-      const typeValue = String(row.getValue("type"));
-      return <div className="w-auto truncate font-medium">{getFlowTypeLabel(typeValue)}</div>;
+    meta: {
+      ...getLabelMeta("type"),
+      variant: "multiSelect",
+      options: AGENT_TYPES.map(({ value, label, icon }) => ({ value, label, icon })),
     },
+    header: renderHeader("type"),
+    cell: ({ row }) => <AgentTypeCell type={String(row.original.type)} />,
   },
   {
-    accessorKey: "supportedPlatform",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("supportedPlatform")}
-      />
-    ),
-    cell: ({ row }) => {
-      const supportedPlatform = row.original?.supportedPlatform;
-      let platform = "Cloud & Windows";
-      if (supportedPlatform == "windows") {
-        platform = "Windows";
-      }
-      return (
-        <div className="w-auto truncate font-medium">
-          <Badge className="" variant={"outline"}>
-            {platform}
-          </Badge>
-        </div>
-      );
+    id: "supportedPlatform",
+    accessorFn: getAgentPlatform,
+    meta: {
+      ...getLabelMeta("supportedPlatform"),
+      variant: "multiSelect",
+      options: AGENT_PLATFORMS,
     },
+    header: renderHeader("supportedPlatform"),
+    cell: ({ row }) => <AgentPlatformCell platform={getAgentPlatform(row.original)} />,
+  },
+  {
+    accessorKey: "accessLevel",
+    meta: {
+      ...getLabelMeta("accessLevel"),
+      variant: "multiSelect",
+      options: filterOptions.accessLevel,
+    },
+    header: renderHeader("accessLevel"),
+    cell: ({ row }) => <AccessLevelCell accessLevel={row.original.accessLevel} />,
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
-    ),
+    meta: getLabelMeta("createdBy"),
+    header: renderHeader("createdBy"),
+    cell: ({ row }) => <CreatorCell name={row.original.createdBy} />,
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
-    ),
+    meta: getLabelMeta("createdOn"),
+    header: renderHeader("createdOn"),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <span className="tabular-nums text-slate-600">
+        {formatDate(row.original.createdOn, true)}
+      </span>
     ),
   },
-  createDTActionsColumn<FlowsTableDto>({
-    renderCell: (row) => (
-      <FlowRowActions
-        rowId={row.id || "rowId"}
-        name={row.name}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess || false}
+  getTableCNActionsColumn<FlowsTableDto>({
+    getAriaLabel: (row) => `Open actions for ${row.original.name}`,
+    menuClassName: "w-44 min-w-44",
+    actions: ({ row }) => (
+      <FlowRowActionItems
+        rowId={row.original.id || "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        folderId={row.original.folderId}
       />
     ),
   }),

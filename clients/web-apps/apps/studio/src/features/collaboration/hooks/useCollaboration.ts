@@ -1,10 +1,10 @@
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { useShallow } from "zustand/react/shallow";
 import { useCallback, useEffect, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 import {
   ChatMessageDto,
@@ -237,9 +237,7 @@ export const useCollaboration = () => {
       // sender's email for 1:1 messages (matching the dropdown key) or "group" for
       // group messages. Read from the store directly to avoid a stale closure.
       const store = useCollaborationStore.getState();
-      const conversationKey = message.recipientUserId
-        ? (message.senderUserId ?? "group")
-        : "group";
+      const conversationKey = message.recipientUserId ? (message.senderUserId ?? "group") : "group";
       const isViewing = store.isChatOpen && conversationKey === store.activeConversationKey;
       if (!isViewing) {
         incrementUnread(conversationKey);
@@ -641,7 +639,11 @@ const applyRemoteGraph = (edit: GraphEditDto) => {
     useReactFlowExtStore.setState({
       nodes: nodes as never[],
       edges: edges as never[],
-      savedSnapshot: { nodes: nodes as never[], edges: edges as never[], flowVariablesObject: store.flowVariablesObject },
+      savedSnapshot: {
+        nodes: nodes as never[],
+        edges: edges as never[],
+        flowVariablesObject: store.flowVariablesObject,
+      },
       isSavePending: false,
     });
   } finally {

@@ -1,4 +1,3 @@
-
 The **Skills** page lets you create and manage skills — reusable units of capability (instructions plus an optional model prompt) that agents can call. Skills let you package a behavior once and reuse it across many agents.
 
 ## Purpose

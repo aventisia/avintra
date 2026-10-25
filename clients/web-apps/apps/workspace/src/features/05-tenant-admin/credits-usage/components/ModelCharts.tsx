@@ -73,9 +73,7 @@ function parseModelLabel(label: string): { name: string; type: TokenType } | nul
  * Merges the per-token-type timelines for a model into a single array of
  * date-keyed objects, each holding one numeric value per token type.
  */
-function mergeTimelines(
-  series: ModelGroup["series"],
-): Record<string, Record<TokenType, number>> {
+function mergeTimelines(series: ModelGroup["series"]): Record<string, Record<TokenType, number>> {
   const byDate: Record<string, Record<TokenType, number>> = {};
   for (const s of series) {
     for (const point of s.timeline) {
@@ -97,16 +95,13 @@ const ModelCharts = () => {
   const { data } = useFetchCreditUsageSummary();
 
   const modelGroups = useMemo(() => {
-    const resources = (data?.data.resourceUsages ?? []).filter(
-      (item) => !item.isExecution,
-    );
+    const resources = (data?.data.resourceUsages ?? []).filter((item) => !item.isExecution);
 
     const groups = new Map<string, ModelGroup>();
 
     for (const item of resources) {
       const label =
-        ServiceTypeEnum[item.serviceType as keyof typeof ServiceTypeEnum] ??
-        item.serviceType;
+        ServiceTypeEnum[item.serviceType as keyof typeof ServiceTypeEnum] ?? item.serviceType;
       const parsed = parseModelLabel(label);
 
       if (parsed) {
@@ -141,9 +136,7 @@ const ModelCharts = () => {
   const totalPages = Math.ceil(modelGroups.length / itemsPerPage);
 
   const currentGroups = useMemo(() => {
-    const sorted = [...modelGroups].sort(
-      (a, b) => b.totalCredits - a.totalCredits,
-    );
+    const sorted = [...modelGroups].sort((a, b) => b.totalCredits - a.totalCredits);
     const start = (currentPage - 1) * itemsPerPage;
     return sorted.slice(start, start + itemsPerPage);
   }, [currentPage, modelGroups, itemsPerPage]);

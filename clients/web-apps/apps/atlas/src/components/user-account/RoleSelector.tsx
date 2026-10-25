@@ -53,9 +53,7 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
     // Prevent deselecting the last remaining role.
     if (isSelected && selectedRoles.length === 1) return;
 
-    const next = isSelected
-      ? selectedRoles.filter((r) => r !== role)
-      : [...selectedRoles, role];
+    const next = isSelected ? selectedRoles.filter((r) => r !== role) : [...selectedRoles, role];
 
     setSelectedRoles(next);
     localStorage.setItem("atlas_selected_roles", next.join(","));

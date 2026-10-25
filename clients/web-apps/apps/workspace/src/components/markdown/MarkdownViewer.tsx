@@ -141,12 +141,16 @@ const MarkdownViewer = ({
 
     // Lists
     ul: ({ children }) => (
-      <ul className={`list-disc ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}>
+      <ul
+        className={`list-disc ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+      >
         {children}
       </ul>
     ),
     ol: ({ children }) => (
-      <ol className={`list-decimal ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}>
+      <ol
+        className={`list-decimal ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+      >
         {children}
       </ol>
     ),

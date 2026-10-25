@@ -10,8 +10,7 @@ const AVENTISIA_EMAIL_DOMAIN = "@aventisia.com";
  * Tauri v2 injects the `__TAURI_INTERNALS__` global into the webview, so this is
  * the reliable signal (the older `"isTauri" in window` check is not set by Tauri v2).
  */
-const isTauri = (): boolean =>
-  typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+const isTauri = (): boolean => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 /**
  * Determines the post-login destination app path.

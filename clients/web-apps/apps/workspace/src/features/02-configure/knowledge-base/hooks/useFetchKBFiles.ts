@@ -2,9 +2,10 @@ import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
+import { useEnvironmentStore } from "@/stores/environment-store";
+
 import { getKnowledgeBaseFiles } from "../apis/knowledge-base-file-apis";
 import { DETAIL_DATA_QUERY_KEY } from "../constants";
-import { useEnvironmentStore } from "@/stores/environment-store";
 
 /**
  * Custom hook to fetch knowledgeBase using react query.

@@ -1,5 +1,5 @@
-import { Button } from "@avplatform/ui/buttons";
 import { Checkbox } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
 import { useState } from "react";
 
 import { useDebounce } from "../../../agents-table/hooks/useDebounce";
@@ -67,8 +67,8 @@ export const ValidationApprovalSection = () => {
             onCheckedChange={(checked) => updateApproval({ isInformationAccurate: !!checked })}
           />
           <span className="text-sm leading-relaxed text-muted-foreground">
-            I confirm that the information provided in this record is accurate to
-            the best of my knowledge.
+            I confirm that the information provided in this record is accurate to the best of my
+            knowledge.
           </span>
         </label>
 

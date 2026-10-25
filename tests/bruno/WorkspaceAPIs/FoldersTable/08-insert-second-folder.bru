@@ -1,0 +1,30 @@
+meta {
+  name: Insert second folder
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "Folder {{$randomInt}} Second"
+  }
+}
+
+script:post-response {
+  test("second folder is added with 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  if (res.getStatus() == 201) {
+    bru.setGlobalEnvVar("SECOND_FOLDER_ID", res.getBody().data.id);
+  }
+}

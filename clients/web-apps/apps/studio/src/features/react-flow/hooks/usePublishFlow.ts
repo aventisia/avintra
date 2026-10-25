@@ -36,7 +36,9 @@ export const usePublishFlowMutation = () => {
 
   // Collaboration guard: expose whether another user holds a publish lock.
   const flowActionLocks = useCollaborationStore((state) => state.flowActionLocks);
-  const publishLocked = versionId ? !!flowActionLocks[`${versionId}:${FlowActionType.Publish}`] : false;
+  const publishLocked = versionId
+    ? !!flowActionLocks[`${versionId}:${FlowActionType.Publish}`]
+    : false;
 
   return {
     isPending,

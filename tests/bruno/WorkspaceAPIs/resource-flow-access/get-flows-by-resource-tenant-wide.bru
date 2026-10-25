@@ -11,7 +11,7 @@ get {
 }
 
 auth:bearer {
-  token: {{VIEWER_ACCESS_TOKEN}}
+  token: {{TU_ACCESS_TOKEN}}
 }
 
 script:post-response {
@@ -21,7 +21,7 @@ script:post-response {
 }
 
 docs {
-  > A viewer with no share on a tenant-wide tool gets 200. Provide
-  > TENANT_WIDE_TOOL_ID and a VIEWER_ACCESS_TOKEN without a tool share
+  > A TU user with no share on a tenant-wide tool gets 200. Provide
+  > TENANT_WIDE_TOOL_ID and a TU_ACCESS_TOKEN without a tool share
   > through the environment.
 }

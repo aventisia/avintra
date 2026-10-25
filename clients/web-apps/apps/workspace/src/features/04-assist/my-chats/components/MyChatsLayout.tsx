@@ -3,8 +3,8 @@ import { cn } from "@avplatform/ui/lib";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { HelpButton } from "@/components/help/HelpButton";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { useFetchChatAgents } from "../hooks/useFetchChatAgents";
 import { NoAgentsAvailable } from "./NoAgentsAvailable";

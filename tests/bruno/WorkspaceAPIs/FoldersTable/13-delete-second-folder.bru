@@ -1,0 +1,21 @@
+meta {
+  name: Delete second folder
+  type: http
+  seq: 13
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/folder/{{SECOND_FOLDER_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("second folder is deleted with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

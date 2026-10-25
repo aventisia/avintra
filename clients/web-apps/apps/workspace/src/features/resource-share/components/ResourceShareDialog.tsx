@@ -1,97 +1,162 @@
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { ScrollArea } from "@avplatform/ui/scroll";
-import { useEffect } from "react";
+import { Info, RotateCw } from "lucide-react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import CustomCheckbox from "@/components/CustomCheckbox";
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { ResourceTypeEnum } from "../enums/resource-type-enum";
-import { useResourceShareTenantAccess } from "../hooks/useResourceShareTenantAccess";
+import { useResourceShareDraft } from "../hooks/useResourceShareDraft.hook";
 import { useResourceShareStore } from "../stores/resource-share-store";
-import { SearchUsers } from "./SearchUsers";
-import UsersList from "./UsersList";
+import { AccessMode } from "../types/flow-access.type";
+import { getResourceDisplayName, getResourceTypeLabel } from "../utils/resource-display.util";
+import { ModeCard } from "./resource-flow-access/parts/ModeCard";
+import { PolicySkeleton } from "./resource-flow-access/parts/PolicySkeleton";
+import { ShareMark } from "./share-dialog/ShareMark";
+import { SharePanels } from "./share-dialog/SharePanels";
+import { ShareSummary } from "./share-dialog/ShareSummary";
 
-interface ResourceShareDialogProps {
+type ResourceShareDialogProps = {
   queryKey: unknown[];
-}
+};
+
+const ResourceShareCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKey: unknown[] }) => {
+  const draft = useResourceShareDraft(isOpen, queryKey);
+  const spaceName = useCurrentSpaceStore((state) => state.currentSpace?.name ?? "Central");
+  const resourceName = getResourceDisplayName(draft.resourceName, draft.resourceType);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (draft.isLoading || bodyRef.current?.contains(document.activeElement)) return;
+    bodyRef.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+  }, [draft.isLoading]);
+
+  const handleModeKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+    event.preventDefault();
+    const next: AccessMode = draft.isOpenAccess ? "restricted" : "open";
+    draft.chooseMode(next);
+    event.currentTarget.querySelector<HTMLElement>(`[data-mode="${next}"]`)?.focus();
+  };
+
+  return (
+    <CardDialog
+      isOpen={isOpen}
+      onClose={draft.close}
+      isDismissLocked={draft.isSaving}
+      isOutsideClickLocked={draft.isDirty}
+      widthClassName="w-[min(35rem,calc(100vw-2rem))]"
+      mark={<ShareMark resourceType={draft.resourceType} />}
+      eyebrow={`Share ${getResourceTypeLabel(draft.resourceType)}`}
+      title={resourceName}
+      footer={
+        <>
+          <ShareSummary draft={draft} spaceName={spaceName} />
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={draft.close} disabled={draft.isSaving}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="primary"
+              disabled={!draft.canSave}
+              isBusy={draft.isSaving}
+              onClick={draft.save}
+            >
+              {draft.isSaving ? "Saving" : "Save changes"}
+            </CardDialogButton>
+          </div>
+        </>
+      }
+    >
+      <div ref={bodyRef} {...(draft.isSaving ? { inert: "" } : {})} aria-busy={draft.isSaving}>
+        {draft.isLoading ? (
+          <PolicySkeleton />
+        ) : draft.isError ? (
+          <div className="flex flex-col items-center rounded-xl border border-dashed border-rose-200 bg-rose-50/40 px-6 py-8 text-center">
+            <p className="text-[13.5px] font-semibold text-slate-800">
+              Couldn’t load who has access
+            </p>
+            <p className="mt-1 text-[12.5px] text-muted-foreground">
+              Check your connection and try again.
+            </p>
+            <CardDialogButton className="mt-3" onClick={draft.retry}>
+              <RotateCw className="size-3.5" />
+              Retry
+            </CardDialogButton>
+          </div>
+        ) : (
+          <>
+            {draft.canShareWithEveryone && (
+              <div
+                role="radiogroup"
+                aria-label={`Who can use ${resourceName}`}
+                onKeyDown={handleModeKeyDown}
+                className="grid grid-cols-2 gap-3"
+              >
+                <ModeCard
+                  mode="restricted"
+                  isChecked={!draft.isOpenAccess}
+                  title="Specific people"
+                  description="Only people you add can open it."
+                  onSelect={draft.chooseMode}
+                />
+                <ModeCard
+                  mode="open"
+                  isChecked={draft.isOpenAccess}
+                  title="Everyone"
+                  description={`Anyone in ${spaceName} can view it.`}
+                  onSelect={draft.chooseMode}
+                  autoFocusTarget={draft.isOpenAccess}
+                />
+              </div>
+            )}
+
+            <SharePanels draft={draft} spaceName={spaceName} />
+
+            {draft.resourceType === ResourceTypeEnum.Flow && (
+              <p className="mt-5 flex gap-2 text-[12px] leading-5 text-muted-foreground">
+                <Info className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
+                Sharing covers every version of this agent. Moving it to a folder doesn’t change who
+                has access.
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </CardDialog>
+  );
+};
 
 /**
- * Dialog component orchestrating resource sharing.
- * Integrates tenant-wide access toggling and specific user assignment workflows.
+ * Share dialog for the resource selected in the resource share store. Changes are kept as a
+ * draft and saved together; each opening starts from a fresh draft.
  */
 function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
   const isProd = useEnvironmentStore((state) => state.env === "prod");
-  const { showDialog, resourceName, resourceType, setShowDialog } = useResourceShareStore(
+  const { showDialog, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
-      resourceName: state.resourceName,
-      resourceType: state.resourceType,
       setShowDialog: state.setShowDialog,
     })),
   );
+  const isOpen = showDialog && !isProd;
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  const [openCount, setOpenCount] = useState(isOpen ? 1 : 0);
 
-  // Close an already-open share dialog if the user switches into PROD.
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) setOpenCount((count) => count + 1);
+  }
+
   useEffect(() => {
-    if (isProd && showDialog) {
-      setShowDialog(false);
-    }
+    if (isProd && showDialog) setShowDialog(false);
   }, [isProd, setShowDialog, showDialog]);
 
-  // Space resources don't support tenant-wide assignment, so hide the
-  // "Share to all team members" checkbox for them.
-  const isSpaceResource = resourceType === ResourceTypeEnum.Space;
+  if (openCount === 0) return null;
 
-  // Hook to handle tenant wide access, since this property exists in table list
-  const {
-    assignAllDraft,
-    setAssignAllDraft,
-    assignAllSaved,
-    isMutating,
-    handleCommitTenantAccess,
-  } = useResourceShareTenantAccess({ queryKey });
-
-  return (
-    <Dialog
-      open={showDialog && !isProd}
-      onOpenChange={(open) => setShowDialog(isProd ? false : open)}
-    >
-      <DialogContent className="flex max-h-[75vh] w-full max-w-xl flex-col gap-0 overflow-hidden p-0">
-        <DialogDefaultHeader
-          heading={`Share - ${resourceName ?? "Resource"}`}
-          description="Choose who can access this resource."
-        />
-        <ScrollArea className="flex-1">
-          {!isSpaceResource && (
-            <div className="px-5 pt-4">
-              <CustomCheckbox
-                checked={assignAllDraft}
-                label="Share to all team members"
-                description="All users in this tenant will be assigned automatically"
-                onCheckedChange={setAssignAllDraft}
-              />
-            </div>
-          )}
-
-          <div className="border-b bg-muted/40 px-5 py-4">
-            <SearchUsers
-              isTenantAccessDraft={assignAllDraft}
-              isTenantAccessSaved={assignAllSaved}
-              isMutating={isMutating}
-              onCommitTenantAccess={handleCommitTenantAccess}
-            />
-          </div>
-
-          {!assignAllSaved && (
-            <div className="px-5 py-4">
-              <h3 className="mb-2 text-sm font-semibold text-foreground">Shared users</h3>
-              <UsersList />
-            </div>
-          )}
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
-  );
+  return <ResourceShareCard key={openCount} isOpen={isOpen} queryKey={queryKey} />;
 }
 
 export default ResourceShareDialog;

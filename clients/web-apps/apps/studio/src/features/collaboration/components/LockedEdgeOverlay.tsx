@@ -10,9 +10,7 @@ interface LockedEdgeOverlayProps {
  */
 export const LockedEdgeOverlay = ({ edgeId }: LockedEdgeOverlayProps) => {
   const edgeLock = useCollaborationStore((state) =>
-    Object.values(state.locks).find(
-      (l) => l.targetId === edgeId && l.targetType === "Edge",
-    ),
+    Object.values(state.locks).find((l) => l.targetId === edgeId && l.targetType === "Edge"),
   );
 
   if (!edgeLock) return null;

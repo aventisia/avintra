@@ -1,45 +1,37 @@
-import { DialogCrudAction } from "@avplatform/ui/types";
-import { Archive } from "lucide-react";
-
-import { QueryTabItem } from "@/components/QueryTab";
-
 const FLOWS_QUERY_KEY = ["flows"];
+
+const FOLDERS_QUERY_KEY = ["folders"];
 
 const TABLE_HEADING = "Agents";
 
+const AGENTS_PAGE_PATH = "/agents";
+
+const SHOW_ARCHIVED_QUERY_PARAM = "archived";
+
+const SHOW_ARCHIVED_QUERY_VALUE = "1";
+
+const withShowArchived = (path: string, showArchived: boolean) =>
+  showArchived ? `${path}?${SHOW_ARCHIVED_QUERY_PARAM}=${SHOW_ARCHIVED_QUERY_VALUE}` : path;
+
+const getAgentsPagePath = (showArchived = false) =>
+  withShowArchived(AGENTS_PAGE_PATH, showArchived);
+
+const getFolderPagePath = (folderId: string, showArchived = false) =>
+  withShowArchived(`${AGENTS_PAGE_PATH}/folders/${folderId}`, showArchived);
+
+const FOLDER_PAGE_PATH_PATTERN = `${AGENTS_PAGE_PATH}/folders/:folderId`;
+
 const TABLE_KEY = "flows";
 
-/**
- * Key used for the tab in tables tab
- */
-const TABLE_TAB_QUERY_PARAM = "tab";
-
-/**
- * Tabs to be used in tables tab
- */
-const TABLE_VIEW_TABS = [
-  { label: "All", value: "all" },
-  { label: "Archived", value: "archived", icon: Archive },
-] as QueryTabItem[];
-
-const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
-  switch (crudAction) {
-    case "create":
-      return { heading: "Create Agent", description: "" };
-    case "read":
-      return { heading: "Agent", description: "" };
-    case "update":
-      return { heading: "Edit Agent", description: "" };
-    default:
-      return { heading: "", description: "" };
-  }
-};
-
 export {
+  AGENTS_PAGE_PATH,
   FLOWS_QUERY_KEY,
+  FOLDERS_QUERY_KEY,
+  FOLDER_PAGE_PATH_PATTERN,
+  getAgentsPagePath,
+  getFolderPagePath,
+  SHOW_ARCHIVED_QUERY_PARAM,
+  SHOW_ARCHIVED_QUERY_VALUE,
   TABLE_HEADING,
   TABLE_KEY,
-  getDialogHeadingDescription,
-  TABLE_TAB_QUERY_PARAM,
-  TABLE_VIEW_TABS,
 };

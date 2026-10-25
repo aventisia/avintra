@@ -31,21 +31,16 @@ export const SpaceFilterSelect = () => {
   const [open, setOpen] = useState(false);
   const { data } = useFetchSpaceOptions();
 
-  const {
-    allSpaceIds,
-    selectedSpaceIds,
-    setAllSpaceIds,
-    setCentralSpaceId,
-    setSelectedSpaceIds,
-  } = useSpaceFilterStore(
-    useShallow((s) => ({
-      allSpaceIds: s.allSpaceIds,
-      selectedSpaceIds: s.selectedSpaceIds,
-      setAllSpaceIds: s.setAllSpaceIds,
-      setCentralSpaceId: s.setCentralSpaceId,
-      setSelectedSpaceIds: s.setSelectedSpaceIds,
-    })),
-  );
+  const { allSpaceIds, selectedSpaceIds, setAllSpaceIds, setCentralSpaceId, setSelectedSpaceIds } =
+    useSpaceFilterStore(
+      useShallow((s) => ({
+        allSpaceIds: s.allSpaceIds,
+        selectedSpaceIds: s.selectedSpaceIds,
+        setAllSpaceIds: s.setAllSpaceIds,
+        setCentralSpaceId: s.setCentralSpaceId,
+        setSelectedSpaceIds: s.setSelectedSpaceIds,
+      })),
+    );
 
   const spaceOptions = data?.data || [];
 
@@ -70,9 +65,7 @@ export const SpaceFilterSelect = () => {
     // Prevent deselecting the last remaining space.
     if (isSelected && selectedSpaceIds.length === 1) return;
     setSelectedSpaceIds(
-      isSelected
-        ? selectedSpaceIds.filter((s) => s !== id)
-        : [...selectedSpaceIds, id],
+      isSelected ? selectedSpaceIds.filter((s) => s !== id) : [...selectedSpaceIds, id],
     );
   };
 
@@ -83,10 +76,7 @@ export const SpaceFilterSelect = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-9 gap-2 rounded-sm align-middle font-normal"
-        >
+        <Button variant="outline" className="h-9 gap-2 rounded-sm align-middle font-normal">
           <Squares2X2Icon className="h-4 w-4" />
           <span>{triggerLabel}</span>
           <ChevronDownIcon className="h-4 w-4" />

@@ -3,11 +3,11 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the TenantPublishedAgentsDialog component.
 const TenantPublishedAgentsDialog = lazy(() =>
-  import(
-    "@/features/06-super-admin/tenants-table/components/tenant-published-agents/TenantPublishedAgentsDialog"
-  ).then((module) => ({
-    default: module.TenantPublishedAgentsDialog,
-  })),
+  import("@/features/06-super-admin/tenants-table/components/tenant-published-agents/TenantPublishedAgentsDialog").then(
+    (module) => ({
+      default: module.TenantPublishedAgentsDialog,
+    }),
+  ),
 );
 
 /**

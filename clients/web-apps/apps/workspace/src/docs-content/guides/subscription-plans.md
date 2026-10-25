@@ -1,4 +1,3 @@
-
 The **Subscription Plans** page lets you define the plans available to tenants. Manage the pricing and features of each plan.
 
 ## Purpose

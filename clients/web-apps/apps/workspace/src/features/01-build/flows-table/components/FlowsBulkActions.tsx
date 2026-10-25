@@ -1,64 +1,89 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+  exportTableCNToCsv,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { Download } from "lucide-react";
 
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { useTableTab } from "../hooks/useTableTab";
+import { MoveSelectedAgentsMenu } from "./bulk-actions/MoveSelectedAgentsMenu";
 
-interface FlowsBulkActionsProps {
+type FlowsBulkActionsProps = {
   table: Table<FlowsTableDto>;
-}
+};
 
+/**
+ * Action bar for the selected agents: move them to a folder, export them as CSV, or delete them
+ * after confirmation.
+ */
 export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
-  // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
-  // queryKey already includes the current space id and tab segment
-  const { queryKey } = useTableTab();
-
-  // Get rowIds of selected rows
-  const selectedRowIds = table
-    .getFilteredSelectedRowModel()
-    .rows.map((row) => row.original.id)
+  const selectedAgents = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
+  const selectedRowIds = selectedAgents
+    .map((agent) => agent.id)
     .filter((id): id is string => id !== undefined);
 
-  // Get mutation function to delete the flows
   const { mutate: deleteFlows } = useListOptimisticMutation<
     string[],
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(selectedRowIds, flowOptimisticMutationFn, queryKey);
+  >(selectedRowIds, flowOptimisticMutationFn, FLOWS_QUERY_KEY);
 
   // TODO: Rollback selection if there is an error
 
-  return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected flows
-                  deleteFlows({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
+  const confirmDelete = () =>
+    showDefaultAlertDialog({
+      confirmActionFn: () => {
+        deleteFlows({
+          payload: selectedRowIds,
+          crudAction: "delete-multiple",
+        });
+        table.toggleAllRowsSelected(false);
+      },
+      alertType: "delete-multiple",
+      additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"}`,
+    });
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+  const exportSelected = () =>
+    exportTableCNToCsv(table, {
+      fileName: `agents-${format(new Date(), "yyyy-MM-dd")}`,
+      onlySelected: true,
+    });
+
+  return (
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <MoveSelectedAgentsMenu
+        agents={selectedAgents}
+        disabled={locked}
+        onMoved={() => table.resetRowSelection()}
+      />
+      <TableCNActionBarItem icon={Download} onClick={exportSelected}>
+        Export
+      </TableCNActionBarItem>
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={TrashIcon}
+          tone="destructive"
+          disabled={locked}
+          onClick={confirmDelete}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

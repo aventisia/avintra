@@ -1,8 +1,10 @@
 import { DialogPrimitive } from "@avplatform/ui/dialog";
+import { cn } from "@avplatform/ui/lib";
 import { Info, LoaderCircle, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 
+import { MARK_SHADOW } from "../../constants/resource-share.constant";
 import { useFlowAccessMode } from "../../hooks/useFlowAccessMode.hook";
 import type { ResourceFlowDraft } from "../../hooks/useResourceFlowDraft.hook";
 import { getResourceDisplayName } from "../../utils/resource-display.util";
@@ -35,7 +37,12 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
       className="relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] w-[min(35rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-[20px] bg-popover text-slate-900 shadow-[0_32px_80px_-16px_rgba(15,23,42,0.4)] ring-1 ring-slate-900/[0.06]"
     >
       <header className="flex items-start gap-4 px-6 pb-4 pt-6">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)]">
+        <span
+          className={cn(
+            "grid size-12 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50",
+            MARK_SHADOW,
+          )}
+        >
           <ResourceMark resourceType={draft.resourceType} className="size-6" />
         </span>
         <div className="min-w-0 flex-1 mt-1">
@@ -99,7 +106,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
           <button
             type="button"
             onClick={draft.close}
-            className="h-9 rounded-[10px] px-3.5 text-[13px] font-medium text-slate-600 outline-none transition hover:bg-border/60 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+            className="h-9 rounded-lg px-3.5 text-[13px] font-medium text-slate-600 outline-none transition hover:bg-border/60 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
           >
             Cancel
           </button>
@@ -107,7 +114,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
             type="button"
             onClick={draft.save}
             disabled={!canSave}
-            className="inline-flex h-9 items-center gap-2 rounded-[10px] bg-primary px-4 text-[13px] font-semibold text-white shadow-[0_1px_2px_rgba(67,56,202,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] outline-none transition hover:bg-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:bg-border disabled:text-slate-400 disabled:shadow-none"
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-[13px] font-semibold text-white shadow-[0_1px_2px_rgba(67,56,202,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] outline-none transition hover:bg-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:bg-border disabled:text-slate-400 disabled:shadow-none"
           >
             {draft.isSaving && <LoaderCircle className="size-4 animate-spin" />}
             {draft.isSaving ? "Saving" : "Save changes"}

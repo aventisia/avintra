@@ -6,8 +6,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 import { getPostLoginDestination } from "@/constants/post-login-destination";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 
 /**

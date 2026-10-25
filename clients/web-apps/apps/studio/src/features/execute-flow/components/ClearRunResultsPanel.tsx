@@ -46,7 +46,12 @@ export const ClearRunResultsPanel = () => {
   const handleClear = () => {
     resetLiveExecution();
     resetJob();
-    setCurrentFlow({ ...currentFlow, jobId: undefined, runVersionId: undefined, runFlowId: undefined });
+    setCurrentFlow({
+      ...currentFlow,
+      jobId: undefined,
+      runVersionId: undefined,
+      runFlowId: undefined,
+    });
     // Clear the whole run context atomically (job id, run version, run flow and
     // show-run-results flag) so no stale param is left behind in the URL.
     setRunContext({

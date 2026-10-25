@@ -123,10 +123,7 @@ export const buildColumns = (
               if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
               const formatted = new Date(value).toLocaleString();
               return (
-                <span
-                  className="inline-block w-40 truncate font-medium"
-                  title={formatted}
-                >
+                <span className="inline-block w-40 truncate font-medium" title={formatted}>
                   {formatted}
                 </span>
               );

@@ -6,8 +6,8 @@ import { useShallow } from "zustand/react/shallow";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMyAgentQueues, getMyQueues, getQueues } from "../apis/queues-table-apis";
-import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
 import { DATA_QUERY_KEY } from "../constants";
+import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
 
 /**
  * Custom hook to fetch projects using react query.

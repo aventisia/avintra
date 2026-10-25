@@ -112,8 +112,8 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 
 ## Environments vs Global Environment
 
-- `environments/*.bru` contain the API base URLs (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`, `GLOBALADMIN_API_BASE_URL`) plus `MY_EMAIL`/`MY_PWD` and the localhost ports (`*_API_PORT`) mapped from `.env`. No literal secrets, no IDs.
-- Login credentials (`MY_EMAIL`, `MY_PWD`) come from the gitignored `tests/bruno/.env`, not the Global Environment.
+- `environments/*.bru` contain the API base URLs (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`, `GLOBALADMIN_API_BASE_URL`) plus login credentials (`MY_EMAIL`/`MY_PWD`, per-role `SA/TA/OM/TD/TU_EMAIL`/`_PWD`) and the localhost ports (`*_API_PORT`) mapped from `.env`. No literal secrets, no IDs.
+- Login credentials (`MY_*`, `SA/TA/OM/TD/TU_*`) come from the gitignored `tests/bruno/.env`, not the Global Environment. The DB seed creates only the super user (random password) — create one user per role manually before using the role credentials.
 - Everything else lives in Bruno's **Global Environment** (per-tester, never committed):
   - **Seed these yourself:** credentials for the connectors you exercise (`SQL_CREDENTIAL_NAME`, `MAILBOX_ADDRESS`/`MAIL_USERNAME`/`MAIL_PASSWORD`, `FTP_HOST`/`FTP_USERNAME`/`FTP_PASSWORD`, `POSTGRES_*`, `KAFKA_*`, `JMS_*`, `IMAP_*/SMTP_*`, `CORSAIR_*`, `CUSTOM_API_KEY`, `API_KEY`, `FILE_PATH`, `tenant_id`, `workspace_session_cookie`).
   - **Auto-chained, do not set manually:** `ACCESS_TOKEN`, `TENANT_ID`, `FLOW_ID`, `FLOW_VERSION_ID`, `*_ID` resource ids, `SEARCH_KEY`, `VERIFICATION_CODE_ID` — populated by `script:post-response` blocks as you run the collection top-down.

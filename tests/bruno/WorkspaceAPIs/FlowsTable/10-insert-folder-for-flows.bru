@@ -1,0 +1,30 @@
+meta {
+  name: Insert folder for flows
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "Flow folder {{$randomInt}}"
+  }
+}
+
+script:post-response {
+  test("folder is added with 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  if (res.getStatus() == 201) {
+    bru.setGlobalEnvVar("FOLDER_ID", res.getBody().data.id);
+  }
+}

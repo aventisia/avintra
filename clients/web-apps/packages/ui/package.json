@@ -52,6 +52,7 @@
     "./select": "./src/components/select/index.ts",
     "./sonner": "./src/components/sonner/index.ts",
     "./table": "./src/components/table/index.ts",
+    "./table-cn": "./src/components/table-cn/index.ts",
     "./tabs": "./src/components/tabs/index.ts",
     "./toggle": "./src/components/toggle/index.ts",
     "./tooltip": "./src/components/tooltip/index.ts",

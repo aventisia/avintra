@@ -6,15 +6,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMatch } from "react-router-dom";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { isFlowNameAvailable } from "../apis/flows-table-apis";
+import { FLOWS_QUERY_KEY, FOLDER_PAGE_PATH_PATTERN } from "../constants";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { useTableTab } from "./useTableTab";
 
 interface UseDefineFlowFormOptions {
   rowId: string;
@@ -40,6 +41,10 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
   // Get query client
   const queryClient = useQueryClient();
 
+  // IMPORTANT NOTE: The crud dialog is mounted above the routed page, so the folder page's route param is only reachable through the route match.
+  const folderPageMatch = useMatch(FOLDER_PAGE_PATH_PATTERN);
+  const folderId = folderPageMatch?.params.folderId;
+
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof flowZodSchema>>({
@@ -58,8 +63,7 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
     },
   });
 
-  // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
-  const { queryKey } = useTableTab();
+  const queryKey = FLOWS_QUERY_KEY;
 
   // Destructor form values and methods
   const {
@@ -119,15 +123,18 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
     // Flow type is frozen after creation: always send the stored original on update
     // so a tampered/enabled select cannot change it.
     let type = formData.type;
+    let currentFolderId: string | null | undefined = folderId;
     if (crudAction === "update") {
       const flowsData = getMergedQueryData<FlowsTableDto>(queryClient, queryKey);
-      const originalType = flowsData?.data.find((item) => item.id === rowId)?.type;
-      if (originalType) type = originalType;
+      const originalFlow = flowsData?.data.find((item) => item.id === rowId);
+      if (originalFlow?.type) type = originalFlow.type;
+      currentFolderId = originalFlow?.folderId;
     }
 
     return {
       ...formData,
       type,
+      ...(currentFolderId && { folderId: currentFolderId }),
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
@@ -150,6 +157,7 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
     form,
     isDirty,
     crudAction,
+    folderId,
     refineFormData,
     isAvailable,
     availabilityMessage,

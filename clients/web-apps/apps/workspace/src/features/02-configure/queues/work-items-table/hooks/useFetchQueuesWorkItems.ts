@@ -3,9 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+import { useEnvironmentStore } from "@/stores/environment-store";
+
 import { getQueuesWorkItemsList } from "../apis/work-items-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
-import { useEnvironmentStore } from "@/stores/environment-store";
 
 /**
  * Custom hook to fetch projects using react query.

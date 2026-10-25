@@ -129,11 +129,7 @@ const GetStartedPage = () => {
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
             </div>
 
-            <Button
-              variant="outline"
-              className="mt-1 shrink-0"
-              onClick={() => navigate(route)}
-            >
+            <Button variant="outline" className="mt-1 shrink-0" onClick={() => navigate(route)}>
               Go to {title.split(" ")[0] || "page"}
               <ArrowRightIcon className="h-4 w-4" />
             </Button>

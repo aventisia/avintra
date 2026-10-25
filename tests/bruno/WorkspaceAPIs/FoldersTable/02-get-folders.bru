@@ -1,0 +1,23 @@
+meta {
+  name: Get folders
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/folder/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("folders list contains the inserted folder", function() {
+    expect(res.getStatus()).to.equal(200);
+    const ids = res.getBody().data.map(folder => folder.id);
+    expect(ids).to.include(bru.getGlobalEnvVar("FOLDER_ID"));
+  });
+}

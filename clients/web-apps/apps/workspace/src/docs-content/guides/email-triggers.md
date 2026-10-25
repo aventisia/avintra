@@ -34,13 +34,13 @@ Each row has a **⋮** menu with actions such as:
 
 Click the **Create** button. Fill in:
 
-- **Unique Name** — *Required.* A unique name for the trigger.
-- **Account Id** — *Required.* The email account/mailbox to watch.
-- **Folder** — *Optional.* The folder to monitor.
-- **Expiry Date & Time** — *Required.* When the trigger expires.
-- **Resubscribe** — *Optional.* Maintains continuous connectivity.
-- **Subscription Period (in minutes)** — *Required.* Duration in minutes (1-4320).
-- **Credential Id** — *Required.* The credential used to access the mailbox.
-- **Provider** — *Required.* The email provider.
+- **Unique Name** — _Required._ A unique name for the trigger.
+- **Account Id** — _Required._ The email account/mailbox to watch.
+- **Folder** — _Optional._ The folder to monitor.
+- **Expiry Date & Time** — _Required._ When the trigger expires.
+- **Resubscribe** — _Optional._ Maintains continuous connectivity.
+- **Subscription Period (in minutes)** — _Required._ Duration in minutes (1-4320).
+- **Credential Id** — _Required._ The credential used to access the mailbox.
+- **Provider** — _Required._ The email provider.
 
 After creating, the trigger starts the configured agent when an email is received.

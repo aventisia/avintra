@@ -11,9 +11,7 @@ const notificationSettingsSchema = z.object({
     .number()
     .int()
     .min(1, "Subscription renewal reminder days cannot be less than 1."),
-  lowCreditThreshold: z.coerce
-    .number()
-    .min(1, "Low credit threshold cannot be less than 1."),
+  lowCreditThreshold: z.coerce.number().min(1, "Low credit threshold cannot be less than 1."),
   // Optional delivery channel; defaults to Both when not specified.
   deliveryChannel: z.nativeEnum(DeliveryChannelEnum).default(DeliveryChannelEnum.Both),
 });

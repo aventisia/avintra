@@ -22,8 +22,8 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { TABLE_HEADING, TABLE_KEY } from "../constants/notifications-table.constant";
 import { useFetchNotifications } from "../hooks/useFetchNotifications.hook";
-import type { NotificationsMode } from "./NotificationsManagement";
 import { NotificationComposeForm } from "./NotificationComposeForm";
+import type { NotificationsMode } from "./NotificationsManagement";
 import { getNotificationsTableColumns } from "./NotificationsTableColumns";
 import { NotificationBulkActions } from "./notification-row-actions/NotificationBulkActions";
 
@@ -145,4 +145,3 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
     </div>
   );
 };
-

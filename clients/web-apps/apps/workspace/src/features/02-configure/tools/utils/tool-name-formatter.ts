@@ -8,7 +8,7 @@
  */
 export function formatToolName(name?: string): string {
   if (!name) return "";
-  
+
   // If already in PascalCase with spaces (like "Open Weather Map"), return as-is
   if (/^[A-Z][a-zA-Z\s]*$/.test(name)) {
     return name;

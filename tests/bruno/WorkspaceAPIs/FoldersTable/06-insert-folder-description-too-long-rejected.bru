@@ -1,0 +1,32 @@
+meta {
+  name: Insert folder description too long rejected
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "Folder {{$randomInt}} Long",
+    "description": "placeholder"
+  }
+}
+
+script:pre-request {
+  req.setBody({ name: "Folder " + Date.now(), description: "a".repeat(251) });
+}
+
+script:post-response {
+  test("description longer than 250 characters is rejected with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

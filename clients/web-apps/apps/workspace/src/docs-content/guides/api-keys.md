@@ -1,4 +1,3 @@
-
 The **API Keys** page lets you generate and manage API keys used to call agent endpoints programmatically. Integrations use these keys to authenticate when invoking your agents.
 
 ## Purpose

@@ -30,9 +30,7 @@ const HelpButton = ({ guideId, tooltip = "Help", className }: HelpButtonProps) =
           <button
             type="button"
             aria-label={tooltip}
-            className={
-              buttonVariants({ variant: "ghost", size: "icon8" }) + ` ${className ?? ""}`
-            }
+            className={buttonVariants({ variant: "ghost", size: "icon8" }) + ` ${className ?? ""}`}
           >
             <InformationCircleIcon className="h-5 w-5 text-[--icon-color]" />
           </button>

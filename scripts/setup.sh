@@ -149,8 +149,8 @@ write_env_file "apis/WorcBackend-legacy/AccountsAPIs/.env.local" <<'EOF'
 
 ASPNETCORE_URLS=http://localhost:4000
 
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
+ACCOUNTS_API_BASE_URL=http://localhost:4000
+WORKSPACE_API_BASE_URL=http://localhost:4001
 LLMPIPELINE_API_BASE_URL=http://localhost:4003
 CAMEL_API_BASE_URL=http://localhost:4005
 CORSAIR_API_BASE_URL=http://localhost:4006
@@ -163,8 +163,8 @@ write_env_file "apis/WorcBackend-legacy/WorkspaceAPIs/.env.local" <<'EOF'
 
 ASPNETCORE_URLS=http://localhost:4001
 
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
+ACCOUNTS_API_BASE_URL=http://localhost:4000
+WORKSPACE_API_BASE_URL=http://localhost:4001
 LLMPIPELINE_API_BASE_URL=http://localhost:4003
 CAMEL_API_BASE_URL=http://localhost:4005
 CORSAIR_API_BASE_URL=http://localhost:4006
@@ -186,8 +186,8 @@ POSTGRESQL_PORT=5432
 POSTGRESQL_USERNAME=env_var
 POSTGRESQL_PASSWORD=env_var
 
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
+ACCOUNTS_API_BASE_URL=http://localhost:4000
+WORKSPACE_API_BASE_URL=http://localhost:4001
 LLMPIPELINE_API_BASE_URL=http://localhost:4003
 CAMEL_API_BASE_URL=http://localhost:4005
 EOF
@@ -200,8 +200,8 @@ write_env_file "apis/llmpipeline/.env.local" <<'EOF'
 SSL_VERIFY=false
 UVICORN_PORT=4003
 
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
+ACCOUNTS_API_BASE_URL=http://localhost:4000
+WORKSPACE_API_BASE_URL=http://localhost:4001
 LLMPIPELINE_API_BASE_URL=http://localhost:4003
 CAMEL_API_BASE_URL=http://localhost:4005
 CORSAIR_API_BASE_URL=http://localhost:4006

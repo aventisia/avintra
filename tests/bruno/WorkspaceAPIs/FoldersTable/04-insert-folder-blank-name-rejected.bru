@@ -1,0 +1,28 @@
+meta {
+  name: Insert folder blank name rejected
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/folder
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "   "
+  }
+}
+
+script:post-response {
+  test("blank name is rejected with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+    expect(String(res.getBody())).to.equal("Folder name is required");
+  });
+}

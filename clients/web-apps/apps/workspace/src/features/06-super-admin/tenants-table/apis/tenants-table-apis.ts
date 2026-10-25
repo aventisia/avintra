@@ -9,8 +9,8 @@ import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { TenantPublishedAgentDto } from "../dtos/tenant-published-agent-dto";
+import { TenantsTableDto } from "../dtos/tenants-table-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant`;
 const saWorkspaceAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/sa`;

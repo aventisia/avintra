@@ -12,7 +12,7 @@ import { type CrudEntityKey, type DialogCrudAction } from "@/ui/types";
 import { CrudDialogFormContextProvider, useCrudDialogIsDirty } from "./CrudDialogContext";
 import { useCrudDialogUrlState } from "./useCrudDialogUrlState";
 
-export interface CrudDialogEntityConfig {
+interface CrudSheetEntityConfig {
   /** Tailwind class controlling the dialog max-width, e.g. "!max-w-[36rem]". */
   maxWidth: string;
   /** Returns the dialog heading/description for the current action. */
@@ -25,6 +25,21 @@ export interface CrudDialogEntityConfig {
     rowId: string;
   }>;
 }
+
+export interface CrudCustomDialogProps {
+  isOpen: boolean;
+  crudAction: DialogCrudAction;
+  rowId: string;
+  /** Closes the dialog, asking first when the form has unsaved changes. */
+  onClose: () => void;
+}
+
+interface CrudCustomDialogEntityConfig {
+  /** Renders the whole dialog in place of the default side sheet. */
+  Dialog: React.FC<CrudCustomDialogProps>;
+}
+
+export type CrudDialogEntityConfig = CrudSheetEntityConfig | CrudCustomDialogEntityConfig;
 
 export type CrudDialogRegistry = Record<CrudEntityKey, CrudDialogEntityConfig>;
 
@@ -161,6 +176,17 @@ function CrudDialog({
       onGoBack();
     }
   }, [isDirty, onGoBack, showDefaultAlertDialog]);
+
+  if ("Dialog" in config) {
+    return (
+      <config.Dialog
+        isOpen={isDialogOpen}
+        crudAction={crudAction}
+        rowId={rowId}
+        onClose={() => handleOpenChange(false)}
+      />
+    );
+  }
 
   const { maxWidth, getHeader, Content, headerExtras } = config;
   const { heading, description } = getHeader(crudAction);

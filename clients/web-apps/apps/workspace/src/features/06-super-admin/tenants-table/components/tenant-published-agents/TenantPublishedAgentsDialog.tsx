@@ -11,8 +11,8 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
 import { useFetchTenantPublishedAgents } from "../../hooks/useFetchTenantPublishedAgents";
-import { tenantPublishedAgentsColumns } from "./TenantPublishedAgentsColumns";
 import { SetFixedCreditsDialog } from "./SetFixedCreditsDialog";
+import { tenantPublishedAgentsColumns } from "./TenantPublishedAgentsColumns";
 
 export const TenantPublishedAgentsDialog = () => {
   const { tid } = useParams<{ tid: string }>();
@@ -23,13 +23,7 @@ export const TenantPublishedAgentsDialog = () => {
 
   const { data, isLoading } = useFetchTenantPublishedAgents(tid ?? "");
 
-  const table = useDataTable(
-    tenantPublishedAgentsColumns,
-    data?.data || [],
-    {},
-    [],
-    false,
-  );
+  const table = useDataTable(tenantPublishedAgentsColumns, data?.data || [], {}, [], false);
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">

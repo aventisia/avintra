@@ -1,4 +1,3 @@
-
 The **Machines** page lets you monitor the machines (runners) that execute your agents. A machine is a computer running the Avintra runner that picks up and executes jobs.
 
 ## Purpose

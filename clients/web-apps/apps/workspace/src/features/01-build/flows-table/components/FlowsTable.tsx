@@ -1,36 +1,110 @@
 import { NoContentMessage } from "@avplatform/ui";
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
+import { useMemo, useState } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
-import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
-import { ArchivedFlowsTable } from "@/features/05-tenant-admin/archives-table/components/ArchivedFlowsTable";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import { FLOWS_QUERY_KEY, TABLE_HEADING } from "../constants";
+import { useAgentsTable } from "../hooks/useAgentsTable.hook";
 import { useFetchFlows } from "../hooks/useFetchFlows";
+import { useFetchFolders } from "../hooks/useFetchFolders.hook";
 import { useFlowsView } from "../hooks/useFlowsView";
-import { useTableTab } from "../hooks/useTableTab";
-import { FlowCard } from "./FlowCard";
-import { FlowsBulkActions } from "./FlowsBulkActions";
+import { useShowArchived } from "../hooks/useShowArchived.hook";
+import { getAgentFilterOptions } from "../utils/agent-attributes.util";
+import {
+  buildFolderSummaries,
+  buildMainPageAgents,
+  filterArchivedAgents,
+  filterFolderSummaries,
+} from "../utils/agents-list-items.util";
+import { AgentsCreateButton } from "./AgentsCreateButton";
+import { AgentsListView } from "./AgentsListView";
+import { ArchivedToggle } from "./ArchivedToggle";
 import { FlowsGridSkeleton } from "./FlowsGridSkeleton";
 import { flowsTableColumns } from "./FlowsTableColumns";
 import { FlowsViewToggle } from "./FlowsViewToggle";
+import { FolderDialogs } from "./folder-dialogs/FolderDialogs";
+import { FolderShelf } from "./folder-shelf/FolderShelf";
+import { SectionHeading } from "./folder-shelf/SectionHeading";
+
+type AgentsEmptyStateOptions = {
+  isSearching: boolean;
+  isFiltered: boolean;
+  showArchived: boolean;
+  hasMatchingFolders: boolean;
+  hasAnyAgents: boolean;
+  hasArchivedAgents: boolean;
+};
+
+const getAgentsEmptyMessage = ({
+  isSearching,
+  isFiltered,
+  showArchived,
+  hasMatchingFolders,
+  hasAnyAgents,
+  hasArchivedAgents,
+}: AgentsEmptyStateOptions) => {
+  if (isFiltered) {
+    return {
+      primary: "No agents match these filters",
+      secondary: "Try changing or resetting them.",
+    };
+  }
+  if (isSearching) {
+    return hasMatchingFolders
+      ? { primary: "No agents found", secondary: "Only folders match your search." }
+      : { primary: "No agents or folders found", secondary: "Try adjusting your search." };
+  }
+  if (showArchived) {
+    return hasAnyAgents
+      ? {
+          primary: "Every archived agent is in a folder",
+          secondary: "Open a folder above, or turn off the Archived toggle.",
+        }
+      : {
+          primary: "No archived agents",
+          secondary: "Turn off the Archived toggle to see active agents.",
+        };
+  }
+  if (hasAnyAgents) {
+    return {
+      primary: "Every agent is in a folder",
+      secondary: "Open a folder above, or create an agent.",
+    };
+  }
+  if (hasArchivedAgents) {
+    return {
+      primary: "No active agents",
+      secondary: "Turn on the Archived toggle to see archived agents.",
+    };
+  }
+  return { primary: "No agents created", secondary: "Click on create agent to get started." };
+};
+
+type AgentsSectionHintOptions = {
+  isSearching: boolean;
+  isFiltered: boolean;
+  agentCount: number;
+};
+
+const getAgentsSectionHint = ({
+  isSearching,
+  isFiltered,
+  agentCount,
+}: AgentsSectionHintOptions) => {
+  const hints = [
+    isFiltered && `Filtered from ${agentCount}`,
+    isSearching && "Including agents in folders",
+  ].filter(Boolean);
+  return hints.length > 0 ? hints.join(" · ") : undefined;
+};
 
 /**
- * Renders a table of flows.
+ * Renders the Agents page: the folders shelf, then the agents that are not in a folder.
  *
  * @returns The rendered FlowsTable component.
  */
@@ -38,94 +112,126 @@ export const FlowsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
-  // Get the active tab and the query key used to invalidate the merged agents list
-  const { isArchived, queryKey } = useTableTab();
-
   // Grid/table view preference (persisted in localStorage)
   const { view, setView } = useFlowsView();
 
-  // Fetch flows data
-  const { data } = useFetchFlows();
+  const { data, isLoading: isFlowsLoading } = useFetchFlows();
+  const { folders, isSuccess: isFoldersLoaded, isError: isFoldersFailed } = useFetchFolders();
 
-  const flowsTableColumnsArray = flowsTableColumns();
+  const [searchText, setSearchText] = useState("");
+  const isSearching = searchText.trim() !== "";
 
-  // Create a React table for flows data
-  const table = useDataTable(
-    flowsTableColumnsArray,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
+  const { showArchived, setShowArchived } = useShowArchived();
+  const allFlows = data?.data;
+  const flows = useMemo(
+    () => filterArchivedAgents(allFlows, showArchived),
+    [allFlows, showArchived],
+  );
+  const isListReady = Boolean(flows) && !isFlowsLoading && (isFoldersLoaded || isFoldersFailed);
+
+  const folderSummaries = useMemo(
+    () => buildFolderSummaries(flows ?? [], folders ?? []),
+    [flows, folders],
   );
 
-  if (isArchived) return <ArchivedFlowsTable isPersonal />;
+  const agents = useMemo(
+    () =>
+      isListReady
+        ? buildMainPageAgents({ flows: flows ?? [], folders: folders ?? [], isSearching })
+        : [],
+    [isListReady, flows, folders, isSearching],
+  );
+  const archivedCount = useMemo(
+    () => (allFlows ?? []).filter((flow) => flow.isArchived).length,
+    [allFlows],
+  );
 
-  // Distinguish "no agents created at all" from "no matches for the current search/tab".
-  const hasNoAgents = (data?.data?.length ?? 0) === 0;
+  const folderById = useMemo(
+    () => new Map((folders ?? []).map((folder) => [folder.id, folder])),
+    [folders],
+  );
+  const chipFolderById = isSearching ? folderById : undefined;
 
-  // Return the rendered DataTable component.
+  const filterOptions = useMemo(() => getAgentFilterOptions(agents), [agents]);
+
+  const flowsTableColumnsArray = useMemo(
+    () => flowsTableColumns({ filterOptions, folderById: chipFolderById }),
+    [filterOptions, chipFolderById],
+  );
+
+  const { table } = useAgentsTable({
+    agents,
+    columns: flowsTableColumnsArray,
+    searchText,
+    onSearchTextChange: setSearchText,
+  });
+
+  const shelfSummaries = filterFolderSummaries(folderSummaries, searchText);
+  const isFiltered = table.getState().columnFilters.length > 0;
+  const emptyMessage = getAgentsEmptyMessage({
+    isSearching,
+    isFiltered,
+    showArchived,
+    hasMatchingFolders: shelfSummaries.length > 0,
+    hasAnyAgents: (flows ?? []).length > 0,
+    hasArchivedAgents: archivedCount > 0,
+  });
+
   return (
     <>
-      {data ? (
-        <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="agents" />
-              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+      {isListReady ? (
+        <div className="space-y-6 pb-4 pt-[17px]">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <HelpButton guideId="agents" />
+              </div>
+              <div className="flex items-center gap-2">
+                <FlowsViewToggle view={view} onChange={setView} />
+                {!showArchived && <AgentsCreateButton />}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
-              <FlowsViewToggle view={view} onChange={setView} />
-              {view === "table" && (
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              )}
-              <DTCreateButton entity="flow" />{" "}
-            </div>
+            <TableCNToolbar
+              table={table}
+              searchPlaceholder="Search agents and folders..."
+              withViewOptions={view === "table"}
+            >
+              <ArchivedToggle
+                count={archivedCount}
+                pressed={showArchived}
+                onPressedChange={setShowArchived}
+              />
+              <TableCNSortMenu table={table} />
+            </TableCNToolbar>
           </div>
-          {/* Grid or table view of the flows data */}
-          {view === "grid" ? (
-            <>
-              {table.getRowModel().rows.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
-                  {table.getRowModel().rows.map((row) => (
-                    <FlowCard key={row.id} flow={row.original} />
-                  ))}
-                </div>
-              ) : hasNoAgents ? (
+          {!isFoldersFailed && <FolderShelf summaries={shelfSummaries} searchText={searchText} />}
+          <section aria-labelledby="agents-section-heading" className="space-y-2.5">
+            {(folderSummaries.length > 0 || isSearching || isFiltered) && (
+              <SectionHeading
+                id="agents-section-heading"
+                title={TABLE_HEADING}
+                count={table.getFilteredRowModel().rows.length}
+                hint={getAgentsSectionHint({ isSearching, isFiltered, agentCount: agents.length })}
+              />
+            )}
+            <AgentsListView
+              table={table}
+              view={view}
+              folderById={chipFolderById}
+              emptyState={
                 <NoContentMessage
                   Icon={NewAgentIcon}
-                  primaryMessage="No agents created"
-                  secondaryMessage="Click on create agent to get started."
-                  className="h-64"
+                  primaryMessage={emptyMessage.primary}
+                  secondaryMessage={emptyMessage.secondary}
+                  className="h-52"
                 />
-              ) : (
-                <NoContentMessage
-                  Icon={NewAgentIcon}
-                  primaryMessage="No agents found"
-                  secondaryMessage="Try adjusting your search."
-                  className="h-64"
-                />
-              )}
-              {/* Data table Pagination component */}
-              <DTPagination table={table} singularLabel="agent" pluralLabel="agents" />
-            </>
-          ) : (
-            <>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={flowsTableColumnsArray.length} />
-              {/* Data table Pagination component */}
-              <DTPagination table={table} />
-            </>
-          )}
+              }
+            />
+          </section>
           {/* Resource Share Dialog */}
-          <ResourceShareDialog queryKey={queryKey} />
-          {/* Bulk actions for data table */}
-          {view === "table" && <FlowsBulkActions table={table} />}{" "}
+          <ResourceShareDialog queryKey={FLOWS_QUERY_KEY} />
+          <FolderDialogs summaries={folderSummaries} />
         </div>
       ) : view === "grid" ? (
         // Show grid skeleton while fetching the flows data
@@ -134,7 +240,7 @@ export const FlowsTable = () => {
         </div>
       ) : (
         // Show data table skeleton while fetching the flows data
-        <DataTableSkeleton />
+        <TableCNSkeleton columnCount={6} filterCount={6} withSearch className="py-5" />
       )}
     </>
   );

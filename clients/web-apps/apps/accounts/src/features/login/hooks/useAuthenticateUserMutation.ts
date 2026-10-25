@@ -4,13 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
   TWO_FA_ENABLED,
 } from "@/constants/variables";
-import { getPostLoginDestination } from "@/constants/post-login-destination";
 
 import { authenticateUser } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";

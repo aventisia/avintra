@@ -6,6 +6,7 @@ public interface IUnitOfWork
     INotificationRepo NotificationRepo { get; }
     INotificationUserRepo NotificationUserRepo { get; }
     IFlowRepo FlowRepo { get; }
+    IFolderRepo FolderRepo { get; }
     ISupportTicketRepo SupportTicketRepo { get; }
     ISupportTicketRemarkRepo SupportTicketRemarkRepo { get; }
     IFlowLogRepo FlowLogRepo { get; }

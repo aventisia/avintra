@@ -11,6 +11,7 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
+
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -35,8 +36,7 @@ export const TenantsTable = () => {
 
   // Default to sorting by Plan ascending (Pro customers at the top) unless the
   // user has previously saved an explicit sort preference.
-  const initialSort =
-    sortState.length > 0 ? sortState : [{ id: "activePlan", desc: false }];
+  const initialSort = sortState.length > 0 ? sortState : [{ id: "activePlan", desc: false }];
 
   // Fetch tenants data
   const { data } = useFetchTenants();

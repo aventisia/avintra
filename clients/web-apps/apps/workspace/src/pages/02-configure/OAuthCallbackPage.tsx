@@ -60,9 +60,7 @@ export const OAuthCallbackPage = () => {
           </h1>
           <p className="text-muted-foreground text-sm">{message}</p>
           {credentialId && (
-            <p className="text-muted-foreground text-xs">
-              Credential: {credentialId}
-            </p>
+            <p className="text-muted-foreground text-xs">Credential: {credentialId}</p>
           )}
           <Button onClick={handleClose} className="mt-2 w-full">
             Close window

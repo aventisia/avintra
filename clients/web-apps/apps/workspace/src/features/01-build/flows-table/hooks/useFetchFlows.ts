@@ -7,11 +7,10 @@ import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getFlows } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants";
-import { useTableTab } from "./useTableTab";
 
 /**
  * Fetches the current-space (personal) and shared-with-user agents concurrently and
- * exposes them as a single merged list. Disabled while the archived tab is active.
+ * exposes them as a single merged list, including archived agents.
  * @returns An object containing the merged data, isFetching flag, and isLoading flag.
  */
 export const useFetchFlows = () => {
@@ -22,19 +21,15 @@ export const useFetchFlows = () => {
   );
   const space = currentSpace?.id ?? "";
 
-  const { isArchived } = useTableTab();
-
   const results = useQueries({
     queries: [
       {
         queryKey: [...FLOWS_QUERY_KEY, space],
-        queryFn: () => getFlows({ isPersonal: true }),
-        enabled: !isArchived,
+        queryFn: () => getFlows({ isPersonal: true, includeArchived: true }),
       },
       {
         queryKey: [...FLOWS_QUERY_KEY, "SHARED", space],
-        queryFn: () => getFlows({ isPersonal: false }),
-        enabled: !isArchived,
+        queryFn: () => getFlows({ isPersonal: false, includeArchived: true }),
       },
     ],
   });

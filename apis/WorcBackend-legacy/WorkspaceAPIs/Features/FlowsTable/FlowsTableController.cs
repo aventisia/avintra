@@ -14,16 +14,18 @@ public class FlowsTableController : BaseApiController
 
     // Retrieves all flows created by the user.
     [HttpGet("list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetPersonalFlows()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetPersonalFlows(
+        [FromQuery] bool includeArchived = false)
     {
-        return ResultHelper(await _flowsTableService.GetFlowsAsync(true));
+        return ResultHelper(await _flowsTableService.GetFlowsAsync(true, includeArchived));
     }
 
     // Retrieves all shared flows.
     [HttpGet("list/shared")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetSharedFlows()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowsTableDto>>>> GetSharedFlows(
+        [FromQuery] bool includeArchived = false)
     {
-        return ResultHelper(await _flowsTableService.GetFlowsAsync(false));
+        return ResultHelper(await _flowsTableService.GetFlowsAsync(false, includeArchived));
     }
 
     // Checks the availability of a flow name.
@@ -45,6 +47,15 @@ public class FlowsTableController : BaseApiController
     public async Task<ActionResult<ServiceResponse<FlowsTableDto>>> UpdateFlow([FromBody] FlowsTableDto flowsTableDto)
     {
         return ResultHelper(await _flowsTableService.UpdateFlowAsync(flowsTableDto));
+    }
+
+    /// <summary>
+    /// Moves an existing flow into a folder, or to the top level when no folder is given.
+    /// </summary>
+    [HttpPut("folder")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateFlowFolder([FromBody] UpdateFlowFolderDto updateFlowFolderDto)
+    {
+        return ResultHelper(await _flowsTableService.UpdateFlowFolderAsync(updateFlowFolderDto));
     }
 
     // Deletes a flow by its ID.

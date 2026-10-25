@@ -8,8 +8,8 @@ import { useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { TenantPublishedAgentDto } from "../../dtos/tenant-published-agent-dto";
-import { useSetFixedCreditsMutation } from "../../hooks/useSetFixedCreditsMutation";
 import { TENANT_PUBLISHED_AGENTS_QUERY_KEY } from "../../hooks/useFetchTenantPublishedAgents";
+import { useSetFixedCreditsMutation } from "../../hooks/useSetFixedCreditsMutation";
 import { useTenantPublishedAgentsStore } from "../../stores/tenant-published-agents-store";
 
 export const SetFixedCreditsDialog = () => {
@@ -81,8 +81,8 @@ export const SetFixedCreditsDialog = () => {
             onChange={(e) => setValue(e.target.value)}
           />
           <p className="text-sm text-muted-foreground">
-            Sets a fixed credit amount deducted for every run of this agent, replacing the
-            default credit mechanism. Leave empty to clear the override and use the default.
+            Sets a fixed credit amount deducted for every run of this agent, replacing the default
+            credit mechanism. Leave empty to clear the override and use the default.
           </p>
         </div>
 

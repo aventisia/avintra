@@ -1,14 +1,17 @@
 import { cn } from "@avplatform/ui/lib";
-import type { AnchorHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { NavLink, type NavLinkProps } from "react-router-dom";
 
 interface FlowVersionNavLinkProps extends Omit<NavLinkProps, "children"> {
-  flowName: string;
+  flowName: ReactNode;
   flowVersionNumber: string;
 }
 
 /** Props that are valid on a native anchor element. */
-type AnchorProps = Pick<AnchorHTMLAttributes<HTMLAnchorElement>, "target" | "rel" | "title">;
+type AnchorProps = Pick<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  "target" | "rel" | "title" | "draggable"
+>;
 
 /**
  * Detects whether the target is an external (absolute/cross-origin) URL.
@@ -37,6 +40,7 @@ export const FlowVersionNavLink = ({
   target,
   rel,
   title,
+  draggable,
   ..._navProps
 }: FlowVersionNavLinkProps) => {
   const external = isExternalUrl(to);
@@ -62,6 +66,7 @@ export const FlowVersionNavLink = ({
     ...(target !== undefined && { target }),
     ...(rel !== undefined && { rel }),
     ...(title !== undefined && { title }),
+    ...(draggable !== undefined && { draggable }),
   };
 
   if (external) {
@@ -86,6 +91,7 @@ export const FlowVersionNavLink = ({
       target={target}
       rel={rel}
       title={title}
+      draggable={draggable}
       {..._navProps}
     >
       {content}

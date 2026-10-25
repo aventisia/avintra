@@ -14,6 +14,14 @@ public class FlowsTableDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the folder the flow is organized in. Null means the top level.
+    /// </summary>
+    /// <remarks>
+    /// Note: Only honored on insert; use the dedicated folder update to move an existing flow.
+    /// </remarks>
+    public Guid? FolderId { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the flow.
     /// </summary>
     public required FlowTypesEnum Type { get; set; } // TODO: Update enum values
@@ -40,6 +48,16 @@ public class FlowsTableDto
     /// Gets or sets the version number of a last flow version record
     /// </summary>
     public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the latest flow version is archived.
+    /// </summary>
+    public bool IsArchived { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the latest flow version is published.
+    /// </summary>
+    public bool IsPublished { get; set; }
 
     /// <summary>
     /// Gets or sets the supported platforms for the last flow version as a comma-separated string.
@@ -83,7 +101,7 @@ public class FlowsTableDto
     public string? LastModifiedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the user record was last modified. 
+    /// Gets or sets the date and time when the flow record or its latest version was last modified.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }

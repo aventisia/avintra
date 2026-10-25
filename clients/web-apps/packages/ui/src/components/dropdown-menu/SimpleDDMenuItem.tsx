@@ -17,8 +17,9 @@ export const SimpleDDMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       buttonVariants({ variant: "dropdownItem" }),
+      "focus:bg-muted focus:text-slate-900 data-[highlighted]:bg-muted data-[highlighted]:text-slate-900",
       size === "sm" && "h-7 !px-[0.3rem] text-xs",
-      size === "md" && "h-8",
+      size === "md" && "h-auto gap-2.5 border-0 !px-2.5 py-2 text-[13px] font-normal",
       className,
     )}
     {...props}

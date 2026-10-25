@@ -54,8 +54,7 @@ export function PlanFilter<TData>({ table, data, columnId }: PlanFilterProps<TDa
     if (planOptions?.length > 0) {
       // Default to both Pro and Starter so all tenants are visible by default.
       const availablePlans = planOptions.filter((p) => ["Pro", "Starter"].includes(p));
-      const defaultPlan =
-        availablePlans.length > 0 ? availablePlans : [planOptions[0]];
+      const defaultPlan = availablePlans.length > 0 ? availablePlans : [planOptions[0]];
       column?.setFilterValue(defaultPlan);
 
       //  Read live URL for query params

@@ -35,16 +35,8 @@ export const useFetchByokUsageSummary = () => {
   const includeCentral = selectedSpaceIds.includes(centralSpaceId ?? "");
 
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [
-      "BYOK_USAGE_SUMMARY",
-      from,
-      to,
-      filterBySpaces,
-      includeCentral,
-      spaceIds,
-    ],
-    queryFn: () =>
-      getByokUsageSummary(from, to, filterBySpaces, spaceIds, includeCentral),
+    queryKey: ["BYOK_USAGE_SUMMARY", from, to, filterBySpaces, includeCentral, spaceIds],
+    queryFn: () => getByokUsageSummary(from, to, filterBySpaces, spaceIds, includeCentral),
   });
 
   useEffect(() => {

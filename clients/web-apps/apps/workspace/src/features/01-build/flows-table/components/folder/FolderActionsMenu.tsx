@@ -1,0 +1,45 @@
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { FolderOpen, MoreHorizontal } from "lucide-react";
+import { DropdownMenu } from "radix-ui";
+import { useNavigate } from "react-router-dom";
+
+import { MenuContent, MenuItem, MenuSeparator } from "@/components/MenuParts";
+
+import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
+import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";
+import { useFolderDialogStore } from "../../stores/folder-dialog.store";
+
+/**
+ * Open, edit and delete menu of a folder tile.
+ */
+export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) => {
+  const navigate = useNavigate();
+  const openDialog = useFolderDialogStore((state) => state.openDialog);
+  const { getFolderPagePath } = useAgentsPagePaths();
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        aria-label={`Actions for folder ${folder.name}`}
+        className="grid size-8 place-items-center rounded-lg text-slate-400 outline-none transition hover:bg-muted hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[state=open]:bg-muted data-[state=open]:text-slate-700"
+      >
+        <MoreHorizontal className="size-4" />
+      </DropdownMenu.Trigger>
+      <MenuContent align="end">
+        <MenuItem onSelect={() => navigate(getFolderPagePath(folder.id))}>
+          <FolderOpen />
+          Open
+        </MenuItem>
+        <MenuItem onSelect={() => openDialog({ kind: "edit", folder })}>
+          <PencilSquareIcon />
+          Edit details
+        </MenuItem>
+        <MenuSeparator />
+        <MenuItem isDestructive onSelect={() => openDialog({ kind: "delete", folder })}>
+          <TrashIcon />
+          Delete folder
+        </MenuItem>
+      </MenuContent>
+    </DropdownMenu.Root>
+  );
+};

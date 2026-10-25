@@ -12,8 +12,13 @@ export const useSetFixedCreditsMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ flowVersionId, fixedCredits }: { flowVersionId: string; fixedCredits: number | null }) =>
-      setFixedCredits(flowVersionId, fixedCredits),
+    mutationFn: ({
+      flowVersionId,
+      fixedCredits,
+    }: {
+      flowVersionId: string;
+      fixedCredits: number | null;
+    }) => setFixedCredits(flowVersionId, fixedCredits),
 
     onSuccess: (httpResponse) => {
       toast.success(httpResponse?.message, {

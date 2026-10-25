@@ -59,7 +59,10 @@ export const useListOptimisticMutation = <
         case "update":
           updatedQueryData = previousData?.data?.map((item) => {
             if (item.id === id[0]) {
-              return mutateObj.payload as unknown as TQueryData;
+              return {
+                ...item,
+                ...(mutateObj.payload as unknown as Partial<TQueryData>),
+              } as TQueryData;
             }
             return item;
           });
