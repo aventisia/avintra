@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a file resource linked to a project template, such as configuration or setup files.
 /// </summary>
-[Table("worc_TemplateResources")]
+[Table("agent_FlowTemplateResources")]
 public class TemplateResource : BaseEntity
 {
     /// <summary>

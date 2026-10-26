@@ -230,7 +230,7 @@ For PostgreSQL, credentials can be supplied per request with a `db` block. Do no
 
 ```json
 {
-  "targetUri": "sql:select * from \"ws_VaultCredentials\"",
+  "targetUri": "sql:select * from \"vault_Credentials\"",
   "headers": {},
   "body": null,
   "db": {

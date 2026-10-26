@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Entities;
 /// such as SKILL.md and execution scripts. Skills can be global (platform-provided)
 /// or tenant/user-created, and may be shared across users within a tenant.
 /// </summary>
-[Table("worc_Skills")]
+[Table("ai_Skills")]
 public class Skill : BaseEntity, IMustHaveTenant
 {
     /// <summary>

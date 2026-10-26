@@ -8,10 +8,13 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useShallow } from "zustand/react/shallow";
 
 import { HelpButton } from "@/components/help/HelpButton";
+import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
-import { TABLE_KEY } from "../constants";
+import { DATA_QUERY_KEY, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchAgents } from "../hooks/useFetchAgents";
@@ -19,7 +22,6 @@ import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
-import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 import DisableAgentDialog from "./table-actions/DisableAgentDialog";
 
@@ -37,6 +39,11 @@ export const AgentsTable = () => {
 
   // Fetch agents data
   const { data } = useFetchAgents();
+
+  // Match the agents query key so sharing mutations refresh the table
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({ currentSpace: state.currentSpace })),
+  );
 
   // Create a React table for agents data
   const table = useDataTable(
@@ -83,7 +90,7 @@ export const AgentsTable = () => {
         <DataTableSkeleton />
       )}
       <AssignMachinesDialog />
-      <AssignUsersDialog />
+      <ResourceShareDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />
       <DisableAgentDialog />
       <AgentConfigDialog />
     </>

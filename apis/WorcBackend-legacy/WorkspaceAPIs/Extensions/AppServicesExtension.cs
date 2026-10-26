@@ -55,9 +55,6 @@ public static class AppServicesExtension
         config.Apply(new FlowsTableMappingProfile());
         config.Apply(new FoldersTableMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
-        config.Apply(new SupportTicketsTableMappingProfile());
-        config.Apply(new SupportTicketRemarksMappingProfile());
-        config.Apply(new FlowLogMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
         config.Apply(new FlowVersionHistoryMappingProfile());
@@ -76,10 +73,8 @@ public static class AppServicesExtension
         config.Apply(new EmailTriggerMappingProfile());
         config.Apply(new MessageTriggerMappingProfile());
         config.Apply(new WebhookTriggerMappingProfile());
-        config.Apply(new PromptTemplateMappingProfile());
         config.Apply(new OnPremModelMappingProfile());
         config.Apply(new QueueWorkItemMappingProfile());
-        config.Apply(new FlowVersionUserMappingProfile());
         config.Apply(new AssistChatMappingProfile());
         config.Apply(new ConversationMappingProfile());
         config.Apply(new ConversationMessageMappingProfile());
@@ -127,9 +122,6 @@ public static class AppServicesExtension
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFoldersTableService, FoldersTableService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
-        services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
-        services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
-        services.AddScoped<IFlowLogService, FlowLogService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
@@ -165,7 +157,6 @@ public static class AppServicesExtension
         services.AddScoped<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
         services.AddScoped<ICloudJobExecutionService, CloudJobExecutionService>();
-        services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
         services.AddScoped<ITenantModelProviderService, TenantModelProviderService>();
@@ -178,7 +169,6 @@ public static class AppServicesExtension
         // Collaboration state (presence + locks) must be shared across requests and
         // SignalR connections, so it is registered as a singleton.
         services.AddSingleton<ICollaborationStore, CollaborationStore>();
-        services.AddScoped<IFlowVersionUserService, FlowVersionUserService>();
         services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IConversationMessageService, ConversationMessageService>();

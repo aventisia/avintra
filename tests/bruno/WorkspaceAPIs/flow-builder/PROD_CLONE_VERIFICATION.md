@@ -38,8 +38,8 @@ SELECT d."Name",
        p."Id"   AS prod_id,
        p."EnvType" AS prod_env,
        p."SpaceId" AS prod_space
-FROM "ws_VaultCredentials" d
-LEFT JOIN "ws_VaultCredentials" p
+FROM "vault_Credentials" d
+LEFT JOIN "vault_Credentials" p
        ON p."TenantId" = d."TenantId"
       AND p."Name" = d."Name"
       AND p."EnvType" = 'Prod'
@@ -55,11 +55,11 @@ WHERE d."TenantId" = :tenant_id
 SELECT d."Name",
        count(dkv."Id") AS dev_kv,
        count(pkv."Id") AS prod_kv
-FROM "ws_VaultCredentials" d
-LEFT JOIN "ws_EncryptedKeyValues" dkv ON dkv."VaultCredentialId" = d."Id"
-JOIN "ws_VaultCredentials" p
+FROM "vault_Credentials" d
+LEFT JOIN "vault_EncryptedKeyValues" dkv ON dkv."VaultCredentialId" = d."Id"
+JOIN "vault_Credentials" p
      ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
-LEFT JOIN "ws_EncryptedKeyValues" pkv ON pkv."VaultCredentialId" = p."Id"
+LEFT JOIN "vault_EncryptedKeyValues" pkv ON pkv."VaultCredentialId" = p."Id"
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
   AND d."Name" IN (:credential_names)
@@ -72,8 +72,8 @@ GROUP BY d."Name";
 
 ```sql
 SELECT d."Name", d."SpaceId" AS dev_space, p."Id" AS prod_id, p."SpaceId" AS prod_space
-FROM "Queues" d
-LEFT JOIN "Queues" p
+FROM "run_Queues" d
+LEFT JOIN "run_Queues" p
        ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
@@ -81,22 +81,22 @@ WHERE d."TenantId" = :tenant_id
 -- Expect a Prod row per queue with the inherited SpaceId.
 
 SELECT count(*) FROM "worc_QueueUsers" qu
-JOIN "Queues" q ON q."Id" = qu."QueueId"
+JOIN "run_Queues" q ON q."Id" = qu."QueueId"
 WHERE q."TenantId" = :tenant_id AND q."EnvType" = 'Prod' AND q."Name" IN (:queue_names);
 -- Expect: matches the Dev queue's worc_QueueUsers count (mirrored, no duplicates).
 
-SELECT count(*) FROM "ws_ResourceFlowAccess" rfa
-JOIN "Queues" q ON q."Id" = rfa."ResourceId"
+SELECT count(*) FROM "agent_ResourceFlowAccess" rfa
+JOIN "run_Queues" q ON q."Id" = rfa."ResourceId"
 WHERE rfa."ResourceType" = 'Queue'
   AND q."TenantId" = :tenant_id AND q."EnvType" = 'Prod' AND q."Name" IN (:queue_names);
--- Expect: matches the Dev queue's ws_ResourceFlowAccess grant count (mirrored per-flow, no duplicates).
+-- Expect: matches the Dev queue's agent_ResourceFlowAccess grant count (mirrored per-flow, no duplicates).
 ```
 
 ### 2.3 Tools
 
 ```sql
 SELECT "Name", "SpaceId", "EnvType", "IsDisabled"
-FROM "ws_Tools"
+FROM "ai_Tools"
 WHERE "TenantId" = :tenant_id
   AND "Name" IN (:tool_names)
 ORDER BY "Name", "EnvType";
@@ -109,8 +109,8 @@ ORDER BY "Name", "EnvType";
 ```sql
 SELECT d."Name", d."SpaceId" AS dev_space, p."Id" AS prod_id,
        p."SpaceId" AS prod_space, p."VectorStore"
-FROM "worc_KBs" d
-LEFT JOIN "worc_KBs" p
+FROM "ai_KnowledgeBases" d
+LEFT JOIN "ai_KnowledgeBases" p
        ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
@@ -119,11 +119,11 @@ WHERE d."TenantId" = :tenant_id
 
 -- File metadata mirrored onto the Prod KB, skipping names already present.
 SELECT d."FileName",
-       (SELECT count(*) FROM "worc_KBFiles" f
+       (SELECT count(*) FROM "ai_KnowledgeBaseFiles" f
          WHERE f."KnowledgeBaseId" = p."Id" AND f."FileName" = d."FileName") AS prod_matches
-FROM "worc_KBFiles" d
-JOIN "worc_KBs"  dev ON dev."Id" = d."KnowledgeBaseId"
-JOIN "worc_KBs"  p   ON p."TenantId" = dev."TenantId"
+FROM "ai_KnowledgeBaseFiles" d
+JOIN "ai_KnowledgeBases"  dev ON dev."Id" = d."KnowledgeBaseId"
+JOIN "ai_KnowledgeBases"  p   ON p."TenantId" = dev."TenantId"
                     AND p."Name" = dev."Name" AND p."EnvType" = 'Prod'
 WHERE dev."TenantId" = :tenant_id AND dev."EnvType" = 'Dev'
   AND dev."Name" IN (:kb_names)
@@ -132,19 +132,19 @@ WHERE dev."TenantId" = :tenant_id AND dev."EnvType" = 'Dev'
 
 -- Vectors are physically copied with Metadata.env_type rewritten to 'prod'.
 SELECT
-  (SELECT count(*) FROM "worc_VectorStore" v
+  (SELECT count(*) FROM "ai_VectorStore" v
     WHERE v."TenantId" = :tenant_id
       AND (v."Metadata" ->> 'kb_name') = :kb_name
       AND COALESCE(v."Metadata" ->> 'env_type', 'dev') = 'dev')  AS dev_vectors,
-  (SELECT count(*) FROM "worc_VectorStore" v
+  (SELECT count(*) FROM "ai_VectorStore" v
     WHERE v."TenantId" = :tenant_id
       AND (v."Metadata" ->> 'kb_name') = :kb_name
       AND COALESCE(v."Metadata" ->> 'env_type', 'dev') = 'prod') AS prod_vectors;
 -- Expect: prod_vectors = dev_vectors for each referenced KB.
 
 -- Prod vectors must not be shared with Dev (distinct Ids, no Dev ids present).
-SELECT count(*) FROM "worc_VectorStore" v
-JOIN "worc_VectorStore" d ON d."Id" = v."Id"
+SELECT count(*) FROM "ai_VectorStore" v
+JOIN "ai_VectorStore" d ON d."Id" = v."Id"
 WHERE v."TenantId" = :tenant_id
   AND COALESCE(v."Metadata" ->> 'env_type', 'dev') = 'prod';
 -- Expect: 0 (a Prod vector Id can never equal a Dev vector Id).
@@ -154,8 +154,8 @@ WHERE v."TenantId" = :tenant_id
 
 ```sql
 SELECT d."Name", d."SpaceId" AS dev_space, p."Id" AS prod_id, p."SpaceId" AS prod_space
-FROM "worc_Skills" d
-LEFT JOIN "worc_Skills" p
+FROM "ai_Skills" d
+LEFT JOIN "ai_Skills" p
        ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
@@ -165,11 +165,11 @@ WHERE d."TenantId" = :tenant_id
 -- must never get a Prod clone (see §2.7).
 
 SELECT d."FileName",
-       (SELECT count(*) FROM "worc_SkillFiles" f
+       (SELECT count(*) FROM "ai_SkillFiles" f
          WHERE f."SkillId" = p."Id" AND f."FileName" = d."FileName") AS prod_matches
-FROM "worc_SkillFiles" d
-JOIN "worc_Skills" dev ON dev."Id" = d."SkillId"
-JOIN "worc_Skills" p   ON p."TenantId" = dev."TenantId"
+FROM "ai_SkillFiles" d
+JOIN "ai_Skills" dev ON dev."Id" = d."SkillId"
+JOIN "ai_Skills" p   ON p."TenantId" = dev."TenantId"
                       AND p."Name" = dev."Name" AND p."EnvType" = 'Prod'
 WHERE dev."TenantId" = :tenant_id AND dev."EnvType" = 'Dev'
   AND dev."Name" IN (:skill_names);
@@ -180,8 +180,8 @@ WHERE dev."TenantId" = :tenant_id AND dev."EnvType" = 'Dev'
 
 ```sql
 SELECT d."Name", d."SpaceId" AS dev_space, p."Id" AS prod_id, p."SpaceId" AS prod_space
-FROM "ConfigStores" d
-LEFT JOIN "ConfigStores" p
+FROM "run_ConfigStore" d
+LEFT JOIN "run_ConfigStore" p
        ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
 WHERE d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
@@ -198,7 +198,7 @@ create Prod clones and must **not** fail the publish.
 ```sql
 -- Platform tools are seeded with TenantId = guid-empty, SpaceId = null.
 SELECT "Name", "Type", "TenantId", "SpaceId", "EnvType"
-FROM "ws_Tools"
+FROM "ai_Tools"
 WHERE "Name" IN (:platform_tool_names)
   AND "Type" = 'Platform';
 -- Expect: exactly one row per platform tool, TenantId = '00000000-0000-0000-0000-000000000000',
@@ -206,7 +206,7 @@ WHERE "Name" IN (:platform_tool_names)
 
 -- Platform skills are seeded Type = 'Platform', SpaceId = null.
 SELECT "Name", "Type", "SpaceId", "EnvType"
-FROM "worc_Skills"
+FROM "ai_Skills"
 WHERE "Name" IN (:platform_skill_names)
   AND "Type" = 'Platform';
 -- Expect: the seeded platform skill only (usually EnvType = 'Dev'); no 'Prod' clone.
@@ -254,7 +254,7 @@ failed partway must be repairable by re-running it.
 - Requests carry `X-Env-Type: prod`; `resolve_and_inject_skill_context`,
   the tool/skill selector and the chat custom-tool loader must resolve only
   Prod resources.
-- Custom tools load by configured root name (`ws_Tools.Name`) for the request
+- Custom tools load by configured root name (`ai_Tools.Name`) for the request
   env.
 - pgvector retrieval/delete filters vectors with
   `COALESCE("Metadata" ->> 'env_type', 'dev') = :env_type`, so legacy rows count

@@ -1,10 +1,12 @@
 import { Separator } from "@avplatform/ui";
 import { DataTableRowActions } from "@avplatform/ui/data-table";
 
+import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
+import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+
 import { AgentConfigRowAction } from "./AgentConfigRowAction";
 import { AgentDisableAction } from "./AgentDisableAction";
 import { AssignMachineRowAction } from "./AssignMachineRowAction";
-import { AssignUserRowAction } from "./AssignUserRowAction";
 import { EnableAgentRowAction } from "./EnableAgentRowAction";
 
 type TableActionsProps = {
@@ -15,6 +17,7 @@ type TableActionsProps = {
   flowName?: string | null;
   flowVersionNumber?: number;
   supportedPlatform?: string;
+  isTenantWideAccess: boolean;
 };
 export const TableActions = ({
   rowId,
@@ -23,11 +26,18 @@ export const TableActions = ({
   flowName,
   flowVersionNumber,
   supportedPlatform,
+  isTenantWideAccess,
 }: TableActionsProps) => {
   return (
     <DataTableRowActions>
       {type == "ChatAgent" ? (
-        <AssignUserRowAction rowId={rowId} isDisabled={isDisabled} />
+        <ResourceShareRowAction
+          rowId={rowId}
+          resourceName={flowName ?? ""}
+          isTenantWideAccess={isTenantWideAccess}
+          resourceType={ResourceTypeEnum.FlowVersion}
+          disabled={isDisabled}
+        />
       ) : (
         <AssignMachineRowAction
           rowId={rowId}

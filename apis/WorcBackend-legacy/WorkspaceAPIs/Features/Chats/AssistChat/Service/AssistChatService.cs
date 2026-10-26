@@ -5,13 +5,15 @@ public class AssistChatService : IAssistChatService
     private readonly ILogger<AssistChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public AssistChatService(
         ILogger<AssistChatService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceFlowAccessService resourceFlowAccessService)
+        IResourceFlowAccessService resourceFlowAccessService,
+        IResourceShareService resourceShareService)
     {
         // Extract and initialize current userId from JWT claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -19,6 +21,7 @@ public class AssistChatService : IAssistChatService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceFlowAccessService = resourceFlowAccessService;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves all assigned (published) flow versions.
@@ -33,16 +36,23 @@ public class AssistChatService : IAssistChatService
 
         try
         {
+            var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                _userId,
+                ResourceTypeEnum.FlowVersion,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.View);
+
             // Fetch flow versions based on the following criteria:
             // - Flow type must be ChatAgent
             // - Only published and non-archived flow versions are included
-            // - Flow version must be assigned to the current user
+            // - Flow version must be owned by or shared with the current user
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                     (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId))
+                    (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id))
                 )
                 .Select(s => new AssistChatDto
                 {
@@ -143,10 +153,17 @@ public class AssistChatService : IAssistChatService
 
         try
         {
+            var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                _userId,
+                ResourceTypeEnum.FlowVersion,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.View);
+
             // Fetch flow versions based on the following criteria:
             // - Flow must be of type ChatAgent
             // - Flow version must be published and not archived
-            // - Flow version must be assigned to the current user
+            // - Flow version must be owned by or shared with the current user
             // - Must contain at least one non-archived conversation
             // - Each conversation can have messages (used to determine title and timestamp)
             // - Includes only non-archived conversations with their latest message details
@@ -155,7 +172,7 @@ public class AssistChatService : IAssistChatService
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished &&
                     !w.IsArchived &&
-                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId)) &&
+                    (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id)) &&
                     w.Conversations.Any(a =>
                         a.Status == ConversationStatusEnum.Archived &&
                         a.UserId == _userId &&

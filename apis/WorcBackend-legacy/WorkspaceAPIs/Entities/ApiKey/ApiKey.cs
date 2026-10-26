@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an API key associated with a tenant. Only the SHA256 hash of the key is persisted; the plain key is returned once on creation or regeneration.
 /// </summary>
-[Table("ws_ApiKeys")]
+[Table("run_ApiKeys")]
 public class ApiKey : IMustHaveTenant
 {
     /// <summary>

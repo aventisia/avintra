@@ -135,7 +135,7 @@ class TestConfiguredToolRoots:
             {"tool": "outlook", "actions": [{"action": "list"}]},
         ]
         assert configured_tool_roots(config) == ["outlook", "github"]
-        # The roots are what ws_Tools.Name stores; expand_tool_config builds the
+        # The roots are what ai_Tools.Name stores; expand_tool_config builds the
         # bindable langchain names from the same field.
         assert expand_tool_config(config) == [
             "outlook_send_email",

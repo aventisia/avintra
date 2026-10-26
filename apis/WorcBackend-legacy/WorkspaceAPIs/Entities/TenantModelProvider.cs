@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Entities;
 /// Each row stores the selected credential and the list of enabled model identifiers
 /// for a single provider, scoped to a tenant via <see cref="IMustHaveTenant"/>.
 /// </summary>
-[Table("worc_TenantModelProviders")]
+[Table("ai_ModelProviders")]
 public class TenantModelProvider : BaseEntity, IMustHaveTenant
 {
     /// <summary>

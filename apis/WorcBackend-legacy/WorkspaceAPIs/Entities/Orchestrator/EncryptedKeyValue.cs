@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an encrypted key-value pair (e.g., credentials, API tokens) associated with a specific tenant.
 /// </summary>
-[Table("ws_EncryptedKeyValues")]
+[Table("vault_EncryptedKeyValues")]
 public class EncryptedKeyValue
 {
     /// <summary>

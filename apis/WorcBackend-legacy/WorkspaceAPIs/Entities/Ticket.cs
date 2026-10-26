@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Entity to store a support ticket (service or change request).
 /// </summary>
-[Table("ws_Ticket")]
+[Table("support_Tickets")]
 public class Ticket : BaseEntity, IMustHaveTenant
 {
     /// <summary>

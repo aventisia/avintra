@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an entity that stores flow data.
 /// </summary>
+[Table("agent_Flows")]
 public class Flow : BaseEntity, IMustHaveTenant
 {
     /// <summary>
@@ -51,12 +52,6 @@ public class Flow : BaseEntity, IMustHaveTenant
     /// </summary>
     public bool IsTenantWideAccess { get; set; }
 
-    /// <summary>
-    /// Gets or sets the list of FlowLog to manage the one-to-many relation.
-    /// </summary>
-
-    public virtual ICollection<FlowLog>? FlowLog { get; set; }
-    
     /// <summary>
     /// Gets or sets the list of FlowVersions to manage the one-to-many relation.
     /// </summary>

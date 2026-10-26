@@ -1,6 +1,6 @@
 """Workspace DB models for persisted LangGraph conversations and messages.
 
-These models mirror the C# ``worc_Conversations`` / ``worc_ConversationMessages``
+These models mirror the C# ``run_Conversations`` / ``run_ConversationMessages``
 schema so chat threads can be stored in the Workspace database alongside the
 rest of the workspace data.
 
@@ -58,7 +58,7 @@ class _BaseEntityMixin:
 class Conversation(WorkspaceBase, _BaseEntityMixin):
     """A chat conversation linked to a flow version and a user in a tenant."""
 
-    __tablename__ = "worc_Conversations"
+    __tablename__ = "run_Conversations"
 
     id: Mapped[uuid.UUID] = mapped_column(
         "Id",
@@ -107,7 +107,7 @@ class Conversation(WorkspaceBase, _BaseEntityMixin):
 class ConversationMessage(WorkspaceBase):
     """A single message inside a persisted conversation."""
 
-    __tablename__ = "worc_ConversationMessages"
+    __tablename__ = "run_ConversationMessages"
 
     id: Mapped[uuid.UUID] = mapped_column(
         "Id",
@@ -124,7 +124,7 @@ class ConversationMessage(WorkspaceBase):
     conversation_id: Mapped[uuid.UUID] = mapped_column(
         "ConversationId",
         UUID(as_uuid=True),
-        ForeignKey("worc_Conversations.Id"),
+        ForeignKey("run_Conversations.Id"),
         nullable=False,
         index=True,
     )

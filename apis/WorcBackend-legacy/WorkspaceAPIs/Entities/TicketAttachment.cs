@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Entity to store file attachments uploaded against a support ticket.
 /// </summary>
-[Table("ws_TicketAttachment")]
+[Table("support_TicketAttachments")]
 public class TicketAttachment : IMustHaveTenant
 {
     /// <summary>

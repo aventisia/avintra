@@ -1,46 +1,56 @@
-# Support Tickets Dashboard
+# Support Tickets
 
-This page manages and tracks user support tickets.
+The Support page lets tenant users raise service requests and change requests, and track their progress.
 
-- Centralized space to access help resources, including documentation, user guides, and FAQs.
-- Allows users to raise and track support tickets for faster issue resolution.
-- Designed to help users troubleshoot problems and get the most out of Avintra's features.
+## The ticket list
 
-## Main Features:
+The table shows:
 
-- **Ticket Status Filters**:
-  - Open
-  - Closed
-  - All (default selected)
-- **Search Bar**: Search across all support tickets.
-- **New Ticket**: Button (`+ New ticket`) for creating a new support ticket.
+- **Ticket** — the ticket's title, number, who opened it, and when.
+- **Type** — whether it is a Service Request or a Change Request.
+- **Status** — the ticket's current state, such as New, In Progress, or Closed.
+- **Created By** — who raised the ticket.
+- **Created On** — when the ticket was raised.
+- **Total Comments** — how many comments the ticket has.
+- **Total Attachments** — how many files are attached.
 
----
+Use the search box to find a ticket by title or ticket number. Select one or more rows to delete tickets in bulk.
 
-# Create Support Ticket
+## Row actions
 
-This form allows users to report issues, ask questions, or request support from the Avintra team. It's a central way to communicate with the support system to resolve platform-related problems.
+Each row has a **⋮** menu with:
 
----
+- **Open** — view the ticket, its comments, attachments, and details.
+- **Edit** — update the ticket.
+- **Delete** — remove the ticket.
 
-## Field Descriptions
+## Creating a ticket
 
-| **Field**       | **Description**                                                                                                                                                                     |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Subject**     | A short, clear summary of the issue or request. This helps the support team quickly understand the nature of the problem (e.g., "Agent not responding", "Issue with model upload"). |
-| **Description** | A detailed explanation of the issue.                                                                                                                                                |
+Click **Create Support Ticket** and fill in:
 
----
+- **Request Type** — Service Request or Change Request. The Change Request option appears only when your tenant has it enabled.
+- **Title** — a short summary of the request.
+- **Description** — the full details of the request.
+- **Required By** — the date the service request is needed by (Service Request only).
 
-## Button
+For a Change Request, also fill in:
 
-- **Create support ticket**: Submits the ticket to the support team.
-- After submission, a tracking system typically follows up on the status and resolution progress.
+- **Agent** — the agent the change applies to.
+- **Change Summary** — what should change.
+- **Change Reason** — why the change is needed.
+- **Expected Behavior** — how the agent should behave after the change.
+- **Requested Timeline** — when the change is needed.
 
----
+## Ticket details
 
-## Best Practices
+The detail page shows the ticket's metadata, description, and change-request details. From here you can:
 
-- Be specific and detailed in your description.
-- Use bullet points or numbering for step-by-step issues.
-- Attach images or relevant data when possible to help the support team replicate the issue quickly.
+- **Mark as In Progress** or **Close Ticket**.
+- Add, download, and delete attachments.
+- Read comments and add a new comment.
+
+Closed tickets cannot receive new comments or attachments.
+
+## Super admin triage
+
+Super admins manage tickets from **Support → Tickets** in the super-admin area. Change Requests also show a **Triage Panel** for setting status, complexity, estimated effort hours, estimated completion date, billable status, customer approval, risk level, dependencies, and triage remarks.

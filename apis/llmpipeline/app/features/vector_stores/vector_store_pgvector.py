@@ -28,7 +28,7 @@ from app.features.vector_stores.vector_store_utils import (
 
 
 class PgVectorStore(BaseVectorStore):
-    """Store chunked document embeddings in the existing worc_VectorStore table (pgvector)."""
+    """Store chunked document embeddings in the existing ai_VectorStore table (pgvector)."""
 
     def __init__(self, db: TenantDB):
         if db.session is None:
@@ -87,7 +87,7 @@ class PgVectorStore(BaseVectorStore):
             # Create parameterized SQL statement for inserting chunks and embeddings into pgvector column
             insert_sql = text(
                 """
-                INSERT INTO "worc_VectorStore" ("Id", "TenantId", "Content", "Metadata", "Embedding")
+                INSERT INTO "ai_VectorStore" ("Id", "TenantId", "Content", "Metadata", "Embedding")
                 VALUES (:id, :tenant_id, :content, CAST(:metadata AS jsonb), CAST(:embedding AS vector))
                 """
             )
@@ -221,7 +221,7 @@ class PgVectorStore(BaseVectorStore):
                     "Content" AS content,
                     "Metadata" AS metadata,
                     (1 - ("Embedding" <=> CAST(:query_embedding AS vector))) AS similarity_score
-                FROM "worc_VectorStore"
+                FROM "ai_VectorStore"
                 WHERE "TenantId" = :tenant_id
                 {filter_sql}
                 ORDER BY "Embedding" <=> CAST(:query_embedding AS vector)
@@ -351,7 +351,7 @@ class PgVectorStore(BaseVectorStore):
             # Create parameterized SQL statement to delete chunks from pgvector
             delete_sql = text(
                 f"""
-                DELETE FROM "worc_VectorStore"
+                DELETE FROM "ai_VectorStore"
                 WHERE "TenantId" = :tenant_id
                   AND {filter_sql}
                 """

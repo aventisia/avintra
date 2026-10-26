@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents the M2M relationship between users and notifications.
 /// </summary>
-[Table("NotificationUsers")]
+[Table("support_NotificationUsers")]
 public class NotificationUser : IMustHaveTenant
 {
     /// <summary>

@@ -38,7 +38,6 @@ type CrudEntityKey =
   | "creditPlan"
   | "subscriptionPlan"
   | "tenant"
-  | "supportTicket"
   | "ticket"
   | "saSupportTicket"
   | "onPremTenant"

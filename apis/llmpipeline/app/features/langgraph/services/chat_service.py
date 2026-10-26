@@ -923,7 +923,7 @@ class ChatService:
         Only tools explicitly configured on the agent are loaded, scoped to the
         active environment. The previous ``FlowVersionId`` join could never match
         (the link table is dormant), so tools are resolved by their root name
-        (``ws_Tools.Name``) instead.
+        (``ai_Tools.Name``) instead.
         """
 
         tool_names = configured_tool_roots(request.tool_config or [])

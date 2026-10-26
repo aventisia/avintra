@@ -272,7 +272,7 @@ async function main() {
       "Gmail selector mapping did not apply the node description override",
     );
 
-    // The same mapping enriches the generated tool OpenAPI specs (seeded into ws_Tools).
+    // The same mapping enriches the generated tool OpenAPI specs (seeded into ai_Tools).
     const gmailSpec = JSON.parse(
       fs.readFileSync(path.join(configRoot, "openapi", "gmail.openapi.json"), "utf8"),
     );
