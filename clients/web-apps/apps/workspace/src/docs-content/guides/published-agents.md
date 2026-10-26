@@ -2,7 +2,7 @@ The **Published Agents** page shows the agents that are live in production. Once
 
 ## Purpose
 
-This page is the command center for your live agents. From here you can see which agents are published, assign them to machines and users, configure them, and monitor their status.
+This page is the command center for your live agents. From here you can see which agents are published, assign them to machines and share them with users, configure them, and monitor their status.
 
 ## The table
 
@@ -20,7 +20,7 @@ The page shows a table of published agents with columns such as:
 
 Each row has a **⋮** menu with actions such as:
 
-- **Assign Machine** — choose which machines can run the agent (or **Assign User** for chat agents).
+- **Assign Machine** — choose which machines can run the agent (or **Share** for chat agents).
 - **Config** — open the agent's configuration.
 - **Enable / Disable** — start or stop the agent.
 

@@ -12,6 +12,38 @@ namespace WorkspaceAPIs.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // IMPORTANT NOTE: The KeyStore -> ConfigStore entity rename (14a52b361) shipped without a
+            // migration. Rename the legacy table, its constraints and indexes here; the guards keep
+            // databases that were renamed by hand unaffected.
+            migrationBuilder.Sql(
+                """
+                DO $$
+                BEGIN
+                    IF to_regclass('"KeyStores"') IS NOT NULL AND to_regclass('"ConfigStores"') IS NULL THEN
+                        ALTER TABLE "KeyStores" RENAME TO "ConfigStores";
+                    END IF;
+                END $$;
+
+                ALTER INDEX IF EXISTS "IX_KeyStores_CreatedByUserId" RENAME TO "IX_ConfigStores_CreatedByUserId";
+                ALTER INDEX IF EXISTS "IX_KeyStores_LastModifiedByUserId" RENAME TO "IX_ConfigStores_LastModifiedByUserId";
+                ALTER INDEX IF EXISTS "IX_KeyStores_TenantId_SpaceId_EnvType_Name" RENAME TO "IX_ConfigStores_TenantId_SpaceId_EnvType_Name";
+
+                DO $$
+                BEGIN
+                    IF to_regclass('"ConfigStores"') IS NOT NULL THEN
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'PK_KeyStores') THEN
+                            ALTER TABLE "ConfigStores" RENAME CONSTRAINT "PK_KeyStores" TO "PK_ConfigStores";
+                        END IF;
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'FK_KeyStores_WorkspaceUsers_CreatedByUserId') THEN
+                            ALTER TABLE "ConfigStores" RENAME CONSTRAINT "FK_KeyStores_WorkspaceUsers_CreatedByUserId" TO "FK_ConfigStores_WorkspaceUsers_CreatedByUserId";
+                        END IF;
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'FK_KeyStores_WorkspaceUsers_LastModifiedByUserId') THEN
+                            ALTER TABLE "ConfigStores" RENAME CONSTRAINT "FK_KeyStores_WorkspaceUsers_LastModifiedByUserId" TO "FK_ConfigStores_WorkspaceUsers_LastModifiedByUserId";
+                        END IF;
+                    END IF;
+                END $$;
+                """);
+
             migrationBuilder.DropTable(
                 name: "FlowLog");
 
@@ -383,6 +415,36 @@ namespace WorkspaceAPIs.Data.Migrations
                 name: "IX_worc_TimeTriggers_LastModifiedByUserId",
                 table: "worc_TimeTriggers",
                 column: "LastModifiedByUserId");
+
+            // IMPORTANT NOTE: Reverse the KeyStores -> ConfigStores rename applied in Up().
+            migrationBuilder.Sql(
+                """
+                DO $$
+                BEGIN
+                    IF to_regclass('"ConfigStores"') IS NOT NULL AND to_regclass('"KeyStores"') IS NULL THEN
+                        ALTER TABLE "ConfigStores" RENAME TO "KeyStores";
+                    END IF;
+                END $$;
+
+                ALTER INDEX IF EXISTS "IX_ConfigStores_CreatedByUserId" RENAME TO "IX_KeyStores_CreatedByUserId";
+                ALTER INDEX IF EXISTS "IX_ConfigStores_LastModifiedByUserId" RENAME TO "IX_KeyStores_LastModifiedByUserId";
+                ALTER INDEX IF EXISTS "IX_ConfigStores_TenantId_SpaceId_EnvType_Name" RENAME TO "IX_KeyStores_TenantId_SpaceId_EnvType_Name";
+
+                DO $$
+                BEGIN
+                    IF to_regclass('"KeyStores"') IS NOT NULL THEN
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'PK_ConfigStores') THEN
+                            ALTER TABLE "KeyStores" RENAME CONSTRAINT "PK_ConfigStores" TO "PK_KeyStores";
+                        END IF;
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'FK_ConfigStores_WorkspaceUsers_CreatedByUserId') THEN
+                            ALTER TABLE "KeyStores" RENAME CONSTRAINT "FK_ConfigStores_WorkspaceUsers_CreatedByUserId" TO "FK_KeyStores_WorkspaceUsers_CreatedByUserId";
+                        END IF;
+                        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'FK_ConfigStores_WorkspaceUsers_LastModifiedByUserId') THEN
+                            ALTER TABLE "KeyStores" RENAME CONSTRAINT "FK_ConfigStores_WorkspaceUsers_LastModifiedByUserId" TO "FK_KeyStores_WorkspaceUsers_LastModifiedByUserId";
+                        END IF;
+                    END IF;
+                END $$;
+                """);
         }
     }
 }
