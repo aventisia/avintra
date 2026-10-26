@@ -14,8 +14,6 @@ public class UnitOfWork : IUnitOfWork
     public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext);
     public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext);
     public IFolderRepo FolderRepo => new FolderRepo(_workspaceDbContext);
-    public ISupportTicketRepo SupportTicketRepo => new SupportTicketRepo(_workspaceDbContext);
-    public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
     public IFlowLogRepo FlowLogRepo => new FlowLogRepo(_workspaceDbContext);
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
