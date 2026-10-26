@@ -50,11 +50,6 @@ public class WorkspaceUser : IMustHaveTenant
     public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }
 
     /// <summary>
-    /// Gets or sets the list of SupportTicketRemarks to manage the one-to-many relation.
-    /// </summary>
-    public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
-
-    /// <summary>
     /// Gets or sets the list of Machines to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<Machine>? Machines { get; set; }

@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Entities;
 /// </summary>
 [Table("worc_ResourceShares")]
 // TODO: Remove this temporary migration code after all legacy user mapping data
-// (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
+// (FlowUser and QueueUser) has been successfully migrated
 // to ResourceShare in all environments.
 // public class ResourceShare : IMustHaveTenant
 

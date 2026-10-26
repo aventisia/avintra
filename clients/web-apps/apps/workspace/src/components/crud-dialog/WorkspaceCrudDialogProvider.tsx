@@ -26,7 +26,6 @@ import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
 import { getDialogHeadingDescription as getSpaceDialogHeadingDescription } from "@/features/05-tenant-admin/spaces/constants";
-import { getDialogHeadingDescription as getSupportTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-table/constants/constants";
 import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-v2/constants";
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
@@ -118,11 +117,6 @@ const SubPlansCrudDialogContent = lazy(() =>
 const TenantCrudDialogContent = lazy(() =>
   import("@/features/06-super-admin/tenants-table/components/tenant-crud-dialog/TenantCrudDialogContent").then(
     (m) => ({ default: m.TenantCrudDialogContent }),
-  ),
-);
-const SupportTicketCrudDialogContent = lazy(() =>
-  import("@/features/05-tenant-admin/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketCrudDialogContent").then(
-    (m) => ({ default: m.SupportTicketCrudDialogContent }),
   ),
 );
 const TicketCrudDialogContent = lazy(() =>
@@ -256,11 +250,6 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[36rem]",
     getHeader: getTenantDialogHeadingDescription,
     Content: TenantCrudDialogContent,
-  },
-  supportTicket: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getSupportTicketDialogHeadingDescription,
-    Content: SupportTicketCrudDialogContent,
   },
   ticket: {
     maxWidth: "!max-w-[36rem]",

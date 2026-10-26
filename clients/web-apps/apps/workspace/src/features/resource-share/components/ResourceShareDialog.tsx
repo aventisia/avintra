@@ -14,14 +14,16 @@ import UsersList from "./UsersList";
 
 interface ResourceShareDialogProps {
   queryKey: unknown[];
+  /** Environment-agnostic resources (FlowVersion) can still be shared in PROD. */
+  allowInProd?: boolean;
 }
 
 /**
  * Dialog component orchestrating resource sharing.
  * Integrates tenant-wide access toggling and specific user assignment workflows.
  */
-function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
-  const isProd = useEnvironmentStore((state) => state.env === "prod");
+function ResourceShareDialog({ queryKey, allowInProd = false }: ResourceShareDialogProps) {
+  const isProdBlocked = useEnvironmentStore((state) => state.env === "prod") && !allowInProd;
   const { showDialog, resourceName, resourceType, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
@@ -33,10 +35,10 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
 
   // Close an already-open share dialog if the user switches into PROD.
   useEffect(() => {
-    if (isProd && showDialog) {
+    if (isProdBlocked && showDialog) {
       setShowDialog(false);
     }
-  }, [isProd, setShowDialog, showDialog]);
+  }, [isProdBlocked, setShowDialog, showDialog]);
 
   // Space resources don't support tenant-wide assignment, so hide the
   // "Share to all team members" checkbox for them.
@@ -53,8 +55,8 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
 
   return (
     <Dialog
-      open={showDialog && !isProd}
-      onOpenChange={(open) => setShowDialog(isProd ? false : open)}
+      open={showDialog && !isProdBlocked}
+      onOpenChange={(open) => setShowDialog(isProdBlocked ? false : open)}
     >
       <DialogContent className="flex max-h-[75vh] w-full max-w-xl flex-col gap-0 overflow-hidden p-0">
         <DialogDefaultHeader
