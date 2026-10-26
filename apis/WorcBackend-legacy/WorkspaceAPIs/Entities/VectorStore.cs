@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Entities;
 /// Each record contains the original content, its vector embedding,
 /// optional metadata, and is associated with a specific tenant.
 /// </summary>
-[Table("worc_VectorStore")]
+[Table("ai_VectorStore")]
 public class VectorStore : IMustHaveTenant
 {
     /// <summary>

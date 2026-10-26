@@ -1,7 +1,7 @@
 /// <summary>
 /// Represents an event that occurred during the lifecycle of a queue transaction.
 /// </summary>
-[Table("worc_QueueTransactionEvents")]
+[Table("run_QueueWorkItemEvents")]
 public class QueueTransactionEvent : BaseEntity, IMustHaveTenant
 {
     /// <summary>

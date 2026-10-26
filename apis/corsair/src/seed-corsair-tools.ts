@@ -1,7 +1,7 @@
 /**
  * Corsair tools seeding script — sidecar-owned artifact seeding.
  *
- * This script seeds Corsair-provided tools into the Workspace database (ws_Tools table)
+ * This script seeds Corsair-provided tools into the Workspace database (ai_Tools table)
  * as part of the Corsair deployment pipeline. It uses the shared generateToolMetadata()
  * function to build tool specs directly from the Corsair plugin registry (no file dependency).
  *
@@ -17,7 +17,7 @@
  *
  * Platform (library) tools are seeded with empty (Guid.Empty) tenant and user
  * ids so they are free from both tenant and user constraints and available to
- * every tenant. Because ws_Tools has a foreign key on
+ * every tenant. Because ai_Tools has a foreign key on
  * CreatedByUserId/LastModifiedByUserId, a dedicated system WorkspaceUser with
  * Guid.Empty id is ensured to exist and referenced as the owner.
  */
@@ -90,18 +90,18 @@ function toPascalCase(value: string): string {
 
 /**
  * Ensure a dedicated system WorkspaceUser (Guid.Empty id/tenant) exists.
- * ws_Tools has a foreign key on CreatedByUserId/LastModifiedByUserId, so the
+ * ai_Tools has a foreign key on CreatedByUserId/LastModifiedByUserId, so the
  * library tools must reference a real WorkspaceUser row. Idempotent.
  */
 async function ensureSystemUser(): Promise<void> {
   const existing = await workspacePool.query(
-    `SELECT "Id" FROM "WorkspaceUsers" WHERE "Id" = $1`,
+    `SELECT "Id" FROM "user_WorkspaceUsers" WHERE "Id" = $1`,
     [PLATFORM_USER_ID]
   );
   if (existing.rows.length > 0) return;
 
   await workspacePool.query(
-    `INSERT INTO "WorkspaceUsers" ("Id", "TenantId", "UserName", "FirstName", "LastName")
+    `INSERT INTO "user_WorkspaceUsers" ("Id", "TenantId", "UserName", "FirstName", "LastName")
      VALUES ($1, $2, $3, $4, $5)
      ON CONFLICT ("Id") DO NOTHING`,
     [PLATFORM_USER_ID, PLATFORM_TENANT_ID, PLATFORM_USER_NAME, "System", "User"]
@@ -109,7 +109,7 @@ async function ensureSystemUser(): Promise<void> {
   console.log("[corsair:seed] Ensured system WorkspaceUser for platform tools.");
 }
 
-/** Seed Corsair tools generated from the plugin registry into ws_Tools. */
+/** Seed Corsair tools generated from the plugin registry into ai_Tools. */
 async function seedCorsairTools(): Promise<void> {
   try {
     // Create a self-contained corsair instance for schema introspection.
@@ -165,7 +165,7 @@ async function seedCorsairTools(): Promise<void> {
           Description: tool.description,
           Type: TOOL_TYPE_PLATFORM,
           // Corsair tools are platform tools executed via the sidecar, so they
-          // have no provider base URL. ws_Tools expects a non-null value, so
+          // have no provider base URL. ai_Tools expects a non-null value, so
           // seed an empty string rather than null.
           BaseUrl: "",
           OpenApiSpec: tool.openApiSpec,
@@ -183,13 +183,13 @@ async function seedCorsairTools(): Promise<void> {
 
         // Check if tool already exists (by toolId).
         const existingResult = await workspacePool.query(
-          `SELECT "Id" FROM "ws_Tools" WHERE "Id" = $1`,
+          `SELECT "Id" FROM "ai_Tools" WHERE "Id" = $1`,
           [toolId]
         );
 
         if (existingResult.rows.length === 0) {
           await workspacePool.query(
-            `INSERT INTO "ws_Tools" ("Id", "TenantId", "SpaceId", "EnvType", "Name", "Description", "Type", "BaseUrl", "OpenApiSpec", "ParsedSchema", "AuthenticationType", "IsTenantWideAccess", "IsActive", "IsVerified", "IsDisabled", "CreatedByUserId", "LastModifiedByUserId", "CreatedOn", "LastModifiedOn")
+            `INSERT INTO "ai_Tools" ("Id", "TenantId", "SpaceId", "EnvType", "Name", "Description", "Type", "BaseUrl", "OpenApiSpec", "ParsedSchema", "AuthenticationType", "IsTenantWideAccess", "IsActive", "IsVerified", "IsDisabled", "CreatedByUserId", "LastModifiedByUserId", "CreatedOn", "LastModifiedOn")
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`,
             [
               toolRow.Id,
@@ -216,7 +216,7 @@ async function seedCorsairTools(): Promise<void> {
           console.log(`[corsair:seed] Seeded new tool ${toolName} (${toolId}).`);
         } else {
           await workspacePool.query(
-            `UPDATE "ws_Tools" SET
+            `UPDATE "ai_Tools" SET
                "Name" = $1,
                "Description" = $2,
                "BaseUrl" = $3,
@@ -255,7 +255,7 @@ async function seedCorsairTools(): Promise<void> {
       }
     }
 
-    console.log(`[corsair:seed] Seeded ${seedCount} Corsair tool(s) into ws_Tools.`);
+    console.log(`[corsair:seed] Seeded ${seedCount} Corsair tool(s) into ai_Tools.`);
   } catch (err) {
     console.error("[corsair:seed] Error generating tool metadata:", err);
     throw err;

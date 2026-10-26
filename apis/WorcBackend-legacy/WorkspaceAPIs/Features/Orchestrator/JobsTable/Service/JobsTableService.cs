@@ -1048,7 +1048,7 @@ public class JobsTableService : IJobsTableService
         await using var command = dbConnection.CreateCommand();
         command.Transaction = _workspaceDbContext.Database.CurrentTransaction?.GetDbTransaction();
         command.CommandText =
-            "SELECT \"Id\" FROM \"ws_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR ((\"MachineId\" IS NULL OR \"MachineId\" = @emptyMachineId) AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" = @triggerType))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
+            "SELECT \"Id\" FROM \"run_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR ((\"MachineId\" IS NULL OR \"MachineId\" = @emptyMachineId) AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" = @triggerType))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
 
         var tenantParam = command.CreateParameter();
         tenantParam.ParameterName = "tenantId";

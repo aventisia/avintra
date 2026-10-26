@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an execution instance of a flow/agent, tracking its execution details, status, and associated logs. This class provides information about the job's lifecycle.
 /// </summary>
-[Table("ws_Jobs")]
+[Table("run_Jobs")]
 public class Job
 {
     /// <summary>

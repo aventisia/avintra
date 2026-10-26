@@ -94,11 +94,11 @@ async def _resolve_kb_embedding_configs(
                 "CreatedOn" AS created_on,
                 (
                     SELECT COUNT(*)
-                    FROM "worc_KBFiles" AS files
-                    WHERE files."KnowledgeBaseId" = "worc_KBs"."Id"
+                    FROM "ai_KnowledgeBaseFiles" AS files
+                    WHERE files."KnowledgeBaseId" = "ai_KnowledgeBases"."Id"
                       AND files."IsDisabled" = false
                 ) AS file_count
-            FROM "worc_KBs"
+            FROM "ai_KnowledgeBases"
             WHERE "TenantId" = :tenant_id
               AND lower("EnvType"::text) = :env_type
               AND "Name"::text IN :kb_names

@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a configuration item in the system that stores settings or values associated with a tenant.
 /// </summary>
-[Table("ConfigStores")]
+[Table("run_ConfigStore")]
 public class ConfigStore : BaseEntity, IMustHaveTenant
 {
     /// <summary>

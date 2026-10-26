@@ -75,7 +75,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("QueueTransactionId");
 
-                    b.ToTable("worc_QueueTransactionEvents");
+                    b.ToTable("run_QueueWorkItemEvents");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.AgentRiskRegistry", b =>
@@ -197,7 +197,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("worc_AgentRiskRegistry");
+                    b.ToTable("agent_RiskRegistry");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ApiKey", b =>
@@ -259,7 +259,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("ws_ApiKeys");
+                    b.ToTable("run_ApiKeys");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ConfigStore", b =>
@@ -340,7 +340,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("ConfigStores");
+                    b.ToTable("run_ConfigStore");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Conversation", b =>
@@ -396,7 +396,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("worc_Conversations");
+                    b.ToTable("run_Conversations");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ConversationMessage", b =>
@@ -429,7 +429,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("worc_ConversationMessages");
+                    b.ToTable("run_ConversationMessages");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.EncryptedKeyValue", b =>
@@ -453,7 +453,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("VaultCredentialId");
 
-                    b.ToTable("ws_EncryptedKeyValues");
+                    b.ToTable("vault_EncryptedKeyValues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
@@ -524,7 +524,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Flows");
+                    b.ToTable("agent_Flows");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowUser", b =>
@@ -663,7 +663,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("FlowVersions");
+                    b.ToTable("agent_FlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersionHistory", b =>
@@ -716,9 +716,8 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("worc_FlowVersionHistory");
+                    b.ToTable("agent_FlowVersionHistory");
                 });
-
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Folder", b =>
                 {
@@ -772,7 +771,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("Folders");
+                    b.ToTable("agent_Folders");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
@@ -855,7 +854,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("MachineId");
 
-                    b.ToTable("ws_Jobs");
+                    b.ToTable("run_Jobs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.JobNodeExecutionLog", b =>
@@ -927,7 +926,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("TenantId", "JobId", "NodeId", "NodeExecutionId", "RetryAttempt");
 
-                    b.ToTable("ws_JobNodeExecutionLogs");
+                    b.ToTable("run_JobNodeExecutionLogs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KnowledgeBase", b =>
@@ -1020,7 +1019,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("worc_KBs");
+                    b.ToTable("ai_KnowledgeBases");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KnowledgeBaseFile", b =>
@@ -1094,7 +1093,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("KnowledgeBaseId", "FileName")
                         .IsUnique();
 
-                    b.ToTable("worc_KBFiles");
+                    b.ToTable("ai_KnowledgeBaseFiles");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
@@ -1155,7 +1154,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Machines");
+                    b.ToTable("run_Machines");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine_FlowVersion", b =>
@@ -1173,7 +1172,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("FlowVersionId");
 
-                    b.ToTable("Machine_FlowVersion");
+                    b.ToTable("run_MachineFlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Notification", b =>
@@ -1282,7 +1281,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("support_Notifications");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.NotificationUser", b =>
@@ -1318,7 +1317,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("NotificationUsers");
+                    b.ToTable("support_NotificationUsers");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.OnPremModel", b =>
@@ -1382,7 +1381,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("worc_OnPremModels");
+                    b.ToTable("ai_OnPremModels");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ProjectTemplate", b =>
@@ -1473,7 +1472,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("worc_ProjectTemplates");
+                    b.ToTable("agent_FlowTemplates");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Queue", b =>
@@ -1578,7 +1577,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("Queues");
+                    b.ToTable("run_Queues");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.QueueTransaction", b =>
@@ -1644,7 +1643,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("SourceWorkItemId", "RetryCount")
                         .IsUnique();
 
-                    b.ToTable("QueueTransactions");
+                    b.ToTable("run_QueueWorkItems");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.QueueUser", b =>
@@ -1740,7 +1739,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "ResourceType", "ResourceId", "FlowId")
                         .IsUnique();
 
-                    b.ToTable("ws_ResourceFlowAccess");
+                    b.ToTable("agent_ResourceFlowAccess");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
@@ -1773,7 +1772,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("ResourceId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("worc_ResourceShares");
+                    b.ToTable("user_ResourceUserAccess");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Skill", b =>
@@ -1848,7 +1847,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("worc_Skills");
+                    b.ToTable("ai_Skills");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.SkillFile", b =>
@@ -1909,7 +1908,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("SkillId", "FileName")
                         .IsUnique();
 
-                    b.ToTable("worc_SkillFiles");
+                    b.ToTable("ai_SkillFiles");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TemplateResource", b =>
@@ -1972,7 +1971,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("ProjectTemplateId");
 
-                    b.ToTable("worc_TemplateResources");
+                    b.ToTable("agent_FlowTemplateResources");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TenantModelProvider", b =>
@@ -2031,7 +2030,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.ToTable("worc_TenantModelProviders");
+                    b.ToTable("ai_ModelProviders");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Ticket", b =>
@@ -2147,7 +2146,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TicketNumber")
                         .IsUnique();
 
-                    b.ToTable("ws_Ticket");
+                    b.ToTable("support_Tickets");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TicketAttachment", b =>
@@ -2189,7 +2188,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("ws_TicketAttachment");
+                    b.ToTable("support_TicketAttachments");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TicketComment", b =>
@@ -2241,7 +2240,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("ws_TicketComment");
+                    b.ToTable("support_TicketComments");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TicketHistory", b =>
@@ -2285,7 +2284,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("ws_TicketHistory");
+                    b.ToTable("support_TicketHistory");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Tool", b =>
@@ -2383,7 +2382,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("ws_Tools");
+                    b.ToTable("ai_Tools");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Trigger", b =>
@@ -2453,7 +2452,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("worc_Triggers");
+                    b.ToTable("run_Triggers");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.TriggerFlowVersion", b =>
@@ -2502,7 +2501,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("TriggerId");
 
-                    b.ToTable("worc_TriggerFlowVersions");
+                    b.ToTable("run_TriggerFlowVersions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
@@ -2577,7 +2576,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
-                    b.ToTable("ws_VaultCredentials");
+                    b.ToTable("vault_Credentials");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.VectorStore", b =>
@@ -2602,7 +2601,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("worc_VectorStore");
+                    b.ToTable("ai_VectorStore");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>
@@ -2644,7 +2643,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.ToTable("WorkspaceUsers");
+                    b.ToTable("user_WorkspaceUsers");
                 });
 
             modelBuilder.Entity("QueueTransactionEvent", b =>
@@ -2726,7 +2725,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                             b1.HasKey("ApiKeyId");
 
-                            b1.ToTable("ws_ApiKeys");
+                            b1.ToTable("run_ApiKeys");
 
                             b1.ToJson("Permissions");
 
@@ -2929,7 +2928,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Navigation("LastModifiedByUser");
                 });
-
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Folder", b =>
                 {

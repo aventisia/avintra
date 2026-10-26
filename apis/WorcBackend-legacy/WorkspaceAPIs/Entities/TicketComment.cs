@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Entity to store individual comments within a support ticket conversation.
 /// </summary>
-[Table("ws_TicketComment")]
+[Table("support_TicketComments")]
 public class TicketComment : BaseEntity, IMustHaveTenant
 {
     /// <summary>

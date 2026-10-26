@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a project template used within the workspace environment.
 /// </summary>
-[Table("worc_ProjectTemplates")]
+[Table("agent_FlowTemplates")]
 public class ProjectTemplate : BaseEntity
 {
     /// <summary>

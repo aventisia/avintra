@@ -47,7 +47,7 @@ This sidecar follows this sequence:
 
 1. **generate:configs** — introspect plugins and generate static metadata artifacts
 2. **migrate** — create Corsair database schema (CorsairDb)
-3. **seed:tools** — seed generated Corsair tools into the Workspace database (ws_Tools table)
+3. **seed:tools** — seed generated Corsair tools into the Workspace database (ai_Tools table)
 4. **start** — run the sidecar runtime for OAuth and invocation
 
 This preserves a clean split:
@@ -190,7 +190,7 @@ When deploying the Corsair sidecar, follow this order:
 `prestart`.** Config generation is an explicit CI/CD step (Jenkins `Generate -
 Corsair Configs` stage) because the per-plugin configs are deployed to the shared
 server files path, not generated at runtime. `seed:tools` is also explicit
-because it writes into the **Workspace database** (`ws_Tools`), which is owned by
+because it writes into the **Workspace database** (`ai_Tools`), which is owned by
 the Workspace API — not the sidecar. The sidecar's runtime (OAuth,
 `/api/corsair/invoke`) does not depend on either, so coupling them to startup
 would block the sidecar if the Workspace DB is temporarily unavailable.
@@ -249,14 +249,14 @@ separate scripts you run explicitly afterwards:
 
 ```sh
 npm run generate:configs   # regenerate action configs, mapping, action map, catalog, OpenAPI
-npm run seed:tools         # seed the tools into the Workspace ws_Tools database
+npm run seed:tools         # seed the tools into the Workspace ai_Tools database
 ```
 
 ### After onboarding
 
 1. **Run `npm install`** (with `--legacy-peer-deps`) if new deps were added.
 2. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
-3. **Run `npm run seed:tools`** to seed the tools into `ws_Tools`.
+3. **Run `npm run seed:tools`** to seed the tools into `ai_Tools`.
 4. **Commit** the generated artifacts + the new plugin registration.
 
 ## Verification

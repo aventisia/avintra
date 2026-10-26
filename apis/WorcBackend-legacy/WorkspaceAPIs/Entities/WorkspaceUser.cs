@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Entities;
 /// <remarks>
 /// This entity should not include common or authentication details, as those will be handled in the AccountUser class in the AccountsAPIs project.
 /// </remarks>
-[Table("WorkspaceUsers")]
+[Table("user_WorkspaceUsers")]
 public class WorkspaceUser : IMustHaveTenant
 {
     /// <summary>

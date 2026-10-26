@@ -1,17 +1,17 @@
 
 """Workspace DB models for the custom skill registry.
 
-These models mirror the C# ``worc_Skills`` / ``worc_SkillFiles`` schema so the
+These models mirror the C# ``ai_Skills`` / ``ai_SkillFiles`` schema so the
 Python API can read custom skills created through the .NET API. They are stored
 in the Workspace database alongside other tenant-scoped orchestrator data.
 
 The C# tables use PascalCase column names with ``TenantId`` etc., so each
-column is explicitly named. ``worc_Skills`` and ``worc_SkillFiles`` are
+column is explicitly named. ``ai_Skills`` and ``ai_SkillFiles`` are
 tenant-scoped and support the tenant filtering infrastructure through
 ``TenantScopedMixin``.
 
 Note:
-    ``worc_SkillFiles.Content`` is stored as PostgreSQL ``text`` because the
+    ``ai_SkillFiles.Content`` is stored as PostgreSQL ``text`` because the
     C# entity declares ``string Content``. The Python model maps the same
     column as ``Text`` and exposes it directly as a ``str``.
 """
@@ -64,7 +64,7 @@ class _BaseEntityMixin:
 class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
     """A custom or platform skill definition stored in the Workspace DB."""
 
-    __tablename__ = "worc_Skills"
+    __tablename__ = "ai_Skills"
 
     id: Mapped[uuid.UUID] = mapped_column(
         "Id",
@@ -138,7 +138,7 @@ class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
             "SpaceId",
             "EnvType",
             "Name",
-            name="UQ_worc_Skills_TenantId_SpaceId_EnvType_Name",
+            name="UQ_ai_Skills_TenantId_SpaceId_EnvType_Name",
         ),
     )
 
@@ -146,7 +146,7 @@ class Skill(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
 class SkillFile(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
     """A file attached to a skill (SKILL.md, scripts, README, etc.)."""
 
-    __tablename__ = "worc_SkillFiles"
+    __tablename__ = "ai_SkillFiles"
 
     id: Mapped[uuid.UUID] = mapped_column(
         "Id",
@@ -163,7 +163,7 @@ class SkillFile(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
     skill_id: Mapped[uuid.UUID] = mapped_column(
         "SkillId",
         UUID(as_uuid=True),
-        ForeignKey("worc_Skills.Id", ondelete="CASCADE"),
+        ForeignKey("ai_Skills.Id", ondelete="CASCADE"),
         nullable=False,
     )
     file_name: Mapped[str] = mapped_column(

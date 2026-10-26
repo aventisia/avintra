@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a credential (e.g., API keys, secrets) stored in the vault for a specific tenant.
 /// </summary>
-[Table("ws_VaultCredentials")]
+[Table("vault_Credentials")]
 public class VaultCredential : BaseEntity, IMustHaveTenant
 {
     /// <summary>

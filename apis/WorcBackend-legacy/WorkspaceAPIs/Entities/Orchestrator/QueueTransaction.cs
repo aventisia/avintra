@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an individual transaction for a work item within a queue.
 /// </summary>
-[Table("QueueTransactions")]
+[Table("run_QueueWorkItems")]
 public class QueueTransaction : IMustHaveTenant
 {
     /// <summary>

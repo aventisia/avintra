@@ -1,5 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
+[Table("agent_FlowVersions")]
 public class FlowVersion : BaseEntity, IMustHaveTenant
 {
     /// <summary>
