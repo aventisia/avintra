@@ -27,18 +27,14 @@ public class WorkspaceDbContext : DbContext
         // Global TenantId filters
         modelBuilder.Entity<Notification>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<NotificationUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<SupportTicket>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<SupportTicketRemark>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Ticket>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TicketComment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TicketAttachment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TicketHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<FlowLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Machine_FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersionHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<AgentRiskRegistry>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TriggerFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ResourceFlowAccess>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -72,17 +68,15 @@ public class WorkspaceDbContext : DbContext
         // API keys are tenant-global credentials (not scoped by space): authorization is
         // permission-based, and key-authenticated callers (RunnerApp, webhooks) send no space context.
         modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Trigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
-        // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
+        // (FlowUser and QueueUser) has been successfully migrated
         // to ResourceShare in all environments.
         // Apply global query filters to ensure users only see data elonging to the current tenant in a multi-tenant environment.
         if (CurrentTenantId != Guid.Empty)
         {
             modelBuilder.Entity<FlowUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-            modelBuilder.Entity<FlowVersionUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<QueueUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<ResourceShare>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         }
@@ -91,7 +85,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
-        modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
@@ -121,7 +114,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Notification>().Property(e => e.Status).HasConversion(new EnumToStringConverter<NotificationStatusEnum>());
         modelBuilder.Entity<Notification>().Property(e => e.RecurrenceFrequency).HasConversion(new EnumToStringConverter<NotificationRecurrenceEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
-        modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTemplateTypesEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ProjectTemplateStatusesEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<TemplateAccessTypesEnum>());
@@ -133,7 +125,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ConfigStore>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ConfigStoreTypesEnum>());
         modelBuilder.Entity<ConfigStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
         modelBuilder.Entity<ConfigStore>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
-        modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         modelBuilder.Entity<Trigger>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Queue>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
@@ -172,7 +163,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<KnowledgeBaseFile>().Property(e => e.Status).HasConversion(new EnumToStringConverter<VectorizationStatusEnum>());
-        modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<ResourceFlowAccess>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
@@ -206,7 +196,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().HasOne(one => one.User).WithMany(many => many.Machines).HasForeignKey(fKey => fKey.UserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-Many relationship
-        modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Flow>().HasMany(f => f.FlowVersions).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).IsRequired();
         modelBuilder.Entity<Queue>().HasMany(many => many.QueueTransactions).WithOne(one => one.Queue).HasForeignKey(fKey => fKey.QueueId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.Jobs).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
@@ -214,10 +203,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<QueueTransactionEvent>().HasOne(one => one.QueueTransaction).WithMany(many => many.QueueTransactionEvents).HasForeignKey(fKey => fKey.QueueTransactionId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QueueUser>().HasOne(one => one.Queue).WithMany(many => many.QueueUsers).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasOne(one => one.Flow).WithMany(many => many.FlowVersions).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<FlowLog>().HasOne(one => one.Flow).WithMany(many => many.FlowLog).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowUser>().HasOne(one => one.Flow).WithMany(many => many.FlowUsers).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TemplateResource>().HasOne(one => one.ProjectTemplate).WithMany(many => many.TemplateResources).HasForeignKey(fKey => fKey.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<SupportTicketRemark>().HasOne(one => one.SupportTicket).WithMany(many => many.SupportTicketRemarks).HasForeignKey(fKey => fKey.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.Ticket).WithMany(many => many.Comments).HasForeignKey(fKey => fKey.TicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -247,22 +234,12 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Flow>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Flow>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
-        // Configure One-to-One relationship between SupportTicket and WorkspaceUser
-        modelBuilder.Entity<SupportTicket>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<SupportTicket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-
         // Configure One-to-One relationship between Ticket and WorkspaceUser
         modelBuilder.Entity<Ticket>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Ticket>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
-        // Configure One-to-Many relationship between FlowVersion and TriggerFlowVersions (@rahmat, Validate)
-        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade); ;
-
-        // Configure One-to-Many relationship between TimeTriggersFlowVersion and Trigger (@rahmat, Validate)
-        modelBuilder.Entity<TimeTriggersFlowVersion>().HasOne(one => one.Trigger).WithMany(many => many.TimeTriggerFlowVersions).HasForeignKey(fKey => fKey.TriggerId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersionHistory>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionHistories).HasForeignKey(fKey => fKey.FlowVersionId).OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<FlowVersionUser>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionUsers).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
@@ -374,14 +351,10 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationUser> NotificationUsers { get; set; }
     public DbSet<Flow> Flows { get; set; }
-    public DbSet<SupportTicket> SupportTickets { get; set; }
-    public DbSet<SupportTicketRemark> SupportTicketRemarks { get; set; }
-    public DbSet<FlowLog> FlowLog { get; set; }
     public DbSet<Machine> Machines { get; set; }
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
-    public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }
     public DbSet<Queue> Queues { get; set; }
@@ -392,13 +365,10 @@ public class WorkspaceDbContext : DbContext
     public DbSet<JobNodeExecutionLog> JobNodeExecutionLogs { get; set; }
     public DbSet<ConfigStore> ConfigStores { get; set; }
     public DbSet<FlowUser> FlowUsers { get; set; }
-    public DbSet<TimeTrigger> TimeTriggers { get; set; }
-    public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
     public DbSet<Trigger> Triggers { get; set; }
     public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
     public DbSet<VaultCredential> VaultCredentials { get; set; }
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
-    public DbSet<PromptTemplate> PromptTemplates { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }
     public DbSet<TenantModelProvider> TenantModelProviders { get; set; }
     public DbSet<VectorStore> VectorStores { get; set; }
