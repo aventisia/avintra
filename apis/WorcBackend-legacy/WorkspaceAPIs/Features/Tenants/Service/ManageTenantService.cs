@@ -102,10 +102,10 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.FlowRepo, f => f.TenantId == tenantIdToBeDeleted, nameof(Flow), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete SupportTicketRemark - DeleteBehavior.Cascade set with SupportTicket
+            // Delete TicketComment/TicketAttachment/TicketHistory - DeleteBehavior.Cascade set with Ticket
 
-            // Delete SupportTicket
-            if (!await DeleteEntitiesAsync(_unitOfWork.SupportTicketRepo, s => s.TenantId == tenantIdToBeDeleted, nameof(SupportTicket), tenantIdToBeDeleted))
+            // Delete Ticket
+            if (!await DeleteEntitiesAsync(_unitOfWork.TicketRepo, t => t.TenantId == tenantIdToBeDeleted, nameof(Ticket), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete NotificationUser - DeleteBehavior.Cascade set with Notification

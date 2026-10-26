@@ -55,8 +55,6 @@ public static class AppServicesExtension
         config.Apply(new FlowsTableMappingProfile());
         config.Apply(new FoldersTableMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
-        config.Apply(new SupportTicketsTableMappingProfile());
-        config.Apply(new SupportTicketRemarksMappingProfile());
         config.Apply(new FlowLogMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
@@ -127,8 +125,6 @@ public static class AppServicesExtension
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFoldersTableService, FoldersTableService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
-        services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
-        services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();
         services.AddScoped<IFlowLogService, FlowLogService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
