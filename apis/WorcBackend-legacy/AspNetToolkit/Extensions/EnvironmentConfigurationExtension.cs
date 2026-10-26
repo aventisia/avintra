@@ -2,6 +2,26 @@ namespace AspNetToolkit.Extensions;
 
 public static class EnvironmentConfigurationExtension
 {
+    // Maximum length accepted for branding text values (app/company name).
+    private const int BrandingNameMaxLength = 100;
+
+    // IMPORTANT NOTE: the web apps mirror this color grammar in `isSafeBrandColor`
+    // (`packages/ui/src/utils/branding-color-util.ts`); change both sides together.
+    private const string BrandingColorChannel = @"(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])";
+    private const string BrandingColorAlpha = @"(?:[01](?:\.[0-9]+)?|\.[0-9]+)";
+
+    private static readonly Regex BrandingHexColorRegex = new(
+        @"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+        RegexOptions.Compiled);
+
+    private static readonly Regex BrandingRgbColorRegex = new(
+        $@"^rgb\(\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*\)$",
+        RegexOptions.Compiled);
+
+    private static readonly Regex BrandingRgbaColorRegex = new(
+        $@"^rgba\(\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorAlpha}\s*\)$",
+        RegexOptions.Compiled);
+
     /// <summary>
     /// Loads .env.local into process environment before Kestrel binds ports.
     /// </summary>
@@ -29,9 +49,16 @@ public static class EnvironmentConfigurationExtension
 
         // Basic environment variables
         var APP_BASE_URL = GetRequiredEnvVar("APP_BASE_URL");
-        var ON_PREM_TENANT_ID = GetRequiredEnvVar("ON_PREM_TENANT_ID");
-        var ON_PREM_INSTANCE_KEY = GetRequiredEnvVar("ON_PREM_INSTANCE_KEY");
+
+        // On-prem tenant credentials are optional only for an explicit Community edition. The admin
+        // email is always required so the default platform user can be seeded.
+        var ON_PREM_TENANT_ID = Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID") ?? string.Empty;
+        var ON_PREM_INSTANCE_KEY = Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY") ?? string.Empty;
         var ON_PREM_ADMIN_EMAIL = GetRequiredEnvVar("ON_PREM_ADMIN_EMAIL");
+
+        // Community deployments never synchronize with GlobalAdmin. This rule mirrors
+        // EnvironmentConfig.IsCommunityDeployment so the decision is made once here.
+        var isCommunityDeployment = ResolveIsCommunityDeployment(ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY);
 
         // Database and storage environment variables
         var POSTGRESQL_HOST = GetRequiredEnvVar("POSTGRESQL_HOST");
@@ -61,6 +88,12 @@ public static class EnvironmentConfigurationExtension
             AZURE_ENTRA_ID_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_CLIENT_SECRET") ?? string.Empty;
         }
 
+        var MICROSOFT_SSO_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("MICROSOFT_SSO_ENABLED") ?? config["EnvironmentConfig:MicrosoftSsoEnabled"] ?? "false");
+        var MICROSOFT_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_ID") ?? string.Empty;
+        var MICROSOFT_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_SECRET") ?? string.Empty;
+        var GOOGLE_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_ID") ?? string.Empty;
+        var GOOGLE_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_SECRET") ?? string.Empty;
+
         // SMTP environment variables
         var SMTP_HOST = Environment.GetEnvironmentVariable("SMTP_HOST") ?? string.Empty;
         var SMTP_PORT = Environment.GetEnvironmentVariable("SMTP_PORT") ?? "0";
@@ -76,6 +109,33 @@ public static class EnvironmentConfigurationExtension
         var OPENROUTER_API_KEY = Environment.GetEnvironmentVariable("OPENROUTER_API_KEY") ?? string.Empty;
 
         var CUSTOM_API_KEY = Environment.GetEnvironmentVariable("CUSTOM_API_KEY") ?? string.Empty;
+
+        // Deployment branding (self-hosted white-label). All values are optional; any value left
+        // unset falls back to the built-in Avintra/Aventisia defaults on the client. Invalid
+        // colors/URLs/oversized text are dropped with a warning so a bad value cannot break the UI.
+        var BRANDING_APP_NAME = NormalizeOptional("BRANDING_APP_NAME", Environment.GetEnvironmentVariable("BRANDING_APP_NAME"), BrandingNameMaxLength);
+        var BRANDING_COMPANY_NAME = NormalizeOptional("BRANDING_COMPANY_NAME", Environment.GetEnvironmentVariable("BRANDING_COMPANY_NAME"), BrandingNameMaxLength);
+        var BRANDING_COMPANY_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_COMPANY_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_COMPANY_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_COMPANY_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_COMPANY_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_COMPANY_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_PRODUCT_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_PRODUCT_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_PRODUCT_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_PRODUCT_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_PRODUCT_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_PRODUCT_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_SHORT_LOGO_URL_LIGHT = SanitizeBrandingUrl("BRANDING_SHORT_LOGO_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_SHORT_LOGO_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_SHORT_LOGO_URL_DARK = SanitizeBrandingUrl("BRANDING_SHORT_LOGO_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_SHORT_LOGO_URL_DARK"), APP_BASE_URL);
+        var BRANDING_FAVICON_URL_LIGHT = SanitizeBrandingUrl("BRANDING_FAVICON_URL_LIGHT", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL_LIGHT"), APP_BASE_URL);
+        var BRANDING_FAVICON_URL_DARK = SanitizeBrandingUrl("BRANDING_FAVICON_URL_DARK", Environment.GetEnvironmentVariable("BRANDING_FAVICON_URL_DARK"), APP_BASE_URL);
+        var BRANDING_BACKGROUND_COLOR = SanitizeBrandingColor("BRANDING_BACKGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_BACKGROUND_COLOR"));
+        var BRANDING_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_FOREGROUND_COLOR"));
+        var BRANDING_PRIMARY_COLOR = SanitizeBrandingColor("BRANDING_PRIMARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_PRIMARY_COLOR"));
+        var BRANDING_PRIMARY_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_PRIMARY_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_PRIMARY_FOREGROUND_COLOR"));
+        var BRANDING_SECONDARY_COLOR = SanitizeBrandingColor("BRANDING_SECONDARY_COLOR", Environment.GetEnvironmentVariable("BRANDING_SECONDARY_COLOR"));
+        var BRANDING_SECONDARY_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_SECONDARY_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_SECONDARY_FOREGROUND_COLOR"));
+        var BRANDING_ACCENT_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_COLOR"));
+        var BRANDING_ACCENT_FOREGROUND_COLOR = SanitizeBrandingColor("BRANDING_ACCENT_FOREGROUND_COLOR", Environment.GetEnvironmentVariable("BRANDING_ACCENT_FOREGROUND_COLOR"));
+
+        // Community deployments are self-hosted open-source copies: env values alone must never
+        // enable SSO or branding. Only a valid GlobalAdmin tenant/instance (non-community) with
+        // explicit SsoAllowed/BrandingAllowed flags may offer them. Enforcement happens below
+        // after GlobalAdmin metadata is resolved.
 
         // Internal service URLs environment variables
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
@@ -106,17 +166,109 @@ public static class EnvironmentConfigurationExtension
         var OTP_NUMBER_OF_CHARACTERS = Environment.GetEnvironmentVariable("OTP_NUMBER_OF_CHARACTERS") ?? config["EnvironmentConfig:OtpNumberOfCharacters"] ?? "6";
         var OTP_IS_ALPHA_NUMERIC = Environment.GetEnvironmentVariable("OTP_IS_ALPHA_NUMERIC") ?? config["EnvironmentConfig:OtpIsAlphaNumeric"] ?? "false";
 
-        // Fetch tenant and instance metadata from GlobalAdmin API
-        var globalAdminApiBaseUrl = Guard.Against.NullOrWhiteSpace(config["AppDefaultConfig:GlobalAdminApiBaseUrl"], message: "GlobalAdminApiUrl configuration cannot be null or empty");
-        var tenantValidationInfo = FetchOnPremTenantMetaDataAsync(globalAdminApiBaseUrl, ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY).GetAwaiter().GetResult();
-        var ON_PREM_TENANT_TYPE = tenantValidationInfo.TenantType;
-        var ON_PREM_TENANT_NAME = tenantValidationInfo.TenantName;
-        var ON_PREM_INSTANCE_TYPE = tenantValidationInfo.InstanceType;
-        var ON_PREM_CONTRACT_START = tenantValidationInfo.ContractStart;
-        var ON_PREM_CONTRACT_END = tenantValidationInfo.ContractEnd;
-        var ON_PREM_EXECUTION_TIME_ALLOWED = tenantValidationInfo.ExecutionTimeAllowed;
-        var ON_PREM_EXECUTION_DISABLED = tenantValidationInfo.ExecutionDisabled;
-        var ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
+        // Fetch tenant and instance metadata from GlobalAdmin API (paid on-prem deployments only).
+        // Community deployments skip this entirely: the type is fixed locally and SSO/branding
+        // stay disabled. Self-hosted copies must register with GlobalAdmin to obtain a tenant
+        // key; env values alone never enable these features.
+        string ON_PREM_TENANT_TYPE;
+        string ON_PREM_TENANT_NAME;
+        string ON_PREM_INSTANCE_TYPE;
+        DateTime ON_PREM_CONTRACT_START;
+        DateTime ON_PREM_CONTRACT_END;
+        int ON_PREM_EXECUTION_TIME_ALLOWED;
+        bool ON_PREM_EXECUTION_DISABLED;
+        bool ON_PREM_LOGIN_DISABLED;
+        bool SSO_ALLOWED;
+        bool BRANDING_ALLOWED;
+
+        if (isCommunityDeployment)
+        {
+            ON_PREM_TENANT_TYPE = OnPremTenantTypesEnum.Community.ToString();
+            ON_PREM_TENANT_NAME = string.Empty;
+            ON_PREM_INSTANCE_TYPE = string.Empty;
+            ON_PREM_CONTRACT_START = DateTime.MinValue;
+            ON_PREM_CONTRACT_END = DateTime.MinValue;
+            ON_PREM_EXECUTION_TIME_ALLOWED = 0;
+            ON_PREM_EXECUTION_DISABLED = false;
+            ON_PREM_LOGIN_DISABLED = false;
+            SSO_ALLOWED = false;
+            BRANDING_ALLOWED = false;
+        }
+        else
+        {
+            var globalAdminApiBaseUrl = Guard.Against.NullOrWhiteSpace(config["AppDefaultConfig:GlobalAdminApiBaseUrl"], message: "GlobalAdminApiUrl configuration cannot be null or empty");
+            var tenantValidationInfo = FetchOnPremTenantMetaDataAsync(globalAdminApiBaseUrl, ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY).GetAwaiter().GetResult();
+            ON_PREM_TENANT_TYPE = tenantValidationInfo.TenantType;
+            ON_PREM_TENANT_NAME = tenantValidationInfo.TenantName;
+            ON_PREM_INSTANCE_TYPE = tenantValidationInfo.InstanceType;
+            ON_PREM_CONTRACT_START = tenantValidationInfo.ContractStart;
+            ON_PREM_CONTRACT_END = tenantValidationInfo.ContractEnd;
+            ON_PREM_EXECUTION_TIME_ALLOWED = tenantValidationInfo.ExecutionTimeAllowed;
+            ON_PREM_EXECUTION_DISABLED = tenantValidationInfo.ExecutionDisabled;
+            ON_PREM_LOGIN_DISABLED = tenantValidationInfo.LoginDisabled;
+            SSO_ALLOWED = tenantValidationInfo.SsoAllowed;
+            BRANDING_ALLOWED = tenantValidationInfo.BrandingAllowed;
+        }
+
+        Console.WriteLine($"On-prem edition detected: {ON_PREM_TENANT_TYPE}.");
+
+        if (isCommunityDeployment)
+        {
+            if (MICROSOFT_SSO_ENABLED || !string.IsNullOrWhiteSpace(MICROSOFT_SSO_CLIENT_ID) || !string.IsNullOrWhiteSpace(MICROSOFT_SSO_CLIENT_SECRET))
+            {
+                Console.Error.WriteLine("Single sign-on is restricted for the Community edition; ignoring MICROSOFT_SSO_* values. Register with GlobalAdmin to enable it.");
+            }
+
+            MICROSOFT_SSO_ENABLED = false;
+            MICROSOFT_SSO_CLIENT_ID = string.Empty;
+            MICROSOFT_SSO_CLIENT_SECRET = string.Empty;
+
+            var configuredBrandingValues = new[]
+            {
+                BRANDING_APP_NAME,
+                BRANDING_COMPANY_NAME,
+                BRANDING_COMPANY_LOGO_URL_LIGHT,
+                BRANDING_COMPANY_LOGO_URL_DARK,
+                BRANDING_PRODUCT_LOGO_URL_LIGHT,
+                BRANDING_PRODUCT_LOGO_URL_DARK,
+                BRANDING_SHORT_LOGO_URL_LIGHT,
+                BRANDING_SHORT_LOGO_URL_DARK,
+                BRANDING_FAVICON_URL_LIGHT,
+                BRANDING_FAVICON_URL_DARK,
+                BRANDING_BACKGROUND_COLOR,
+                BRANDING_FOREGROUND_COLOR,
+                BRANDING_PRIMARY_COLOR,
+                BRANDING_PRIMARY_FOREGROUND_COLOR,
+                BRANDING_SECONDARY_COLOR,
+                BRANDING_SECONDARY_FOREGROUND_COLOR,
+                BRANDING_ACCENT_COLOR,
+                BRANDING_ACCENT_FOREGROUND_COLOR
+            };
+
+            if (configuredBrandingValues.Any(value => value != null))
+            {
+                Console.Error.WriteLine("Branding is restricted for the Community edition; ignoring BRANDING_* values. Register with GlobalAdmin to enable it.");
+            }
+
+            BRANDING_APP_NAME = null;
+            BRANDING_COMPANY_NAME = null;
+            BRANDING_COMPANY_LOGO_URL_LIGHT = null;
+            BRANDING_COMPANY_LOGO_URL_DARK = null;
+            BRANDING_PRODUCT_LOGO_URL_LIGHT = null;
+            BRANDING_PRODUCT_LOGO_URL_DARK = null;
+            BRANDING_SHORT_LOGO_URL_LIGHT = null;
+            BRANDING_SHORT_LOGO_URL_DARK = null;
+            BRANDING_FAVICON_URL_LIGHT = null;
+            BRANDING_FAVICON_URL_DARK = null;
+            BRANDING_BACKGROUND_COLOR = null;
+            BRANDING_FOREGROUND_COLOR = null;
+            BRANDING_PRIMARY_COLOR = null;
+            BRANDING_PRIMARY_FOREGROUND_COLOR = null;
+            BRANDING_SECONDARY_COLOR = null;
+            BRANDING_SECONDARY_FOREGROUND_COLOR = null;
+            BRANDING_ACCENT_COLOR = null;
+            BRANDING_ACCENT_FOREGROUND_COLOR = null;
+        }
 
         // Rozorpay payment gateway environment variables (Only if enabled and tenant type is Commercial)
         var RAZORPAY_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("RAZORPAY_ENABLED") ?? config["EnvironmentConfig:RazorpayEnabled"] ?? "false");
@@ -172,6 +324,13 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:AzureTenantId", AZURE_TENANT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientId", AZURE_ENTRA_ID_CLIENT_ID },
                     { "EnvironmentConfig:AzureEntraIdClientSecret", AZURE_ENTRA_ID_CLIENT_SECRET },
+                    { "EnvironmentConfig:MicrosoftSsoEnabled", MICROSOFT_SSO_ENABLED.ToString() },
+                    { "EnvironmentConfig:MicrosoftSsoClientId", MICROSOFT_SSO_CLIENT_ID },
+                    { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },
+                    { "EnvironmentConfig:GoogleSsoClientId", GOOGLE_SSO_CLIENT_ID },
+                    { "EnvironmentConfig:GoogleSsoClientSecret", GOOGLE_SSO_CLIENT_SECRET },
+                    { "EnvironmentConfig:SsoAllowed", SSO_ALLOWED.ToString() },
+                    { "EnvironmentConfig:BrandingAllowed", BRANDING_ALLOWED.ToString() },
 
                     { "EnvironmentConfig:JwtSecretKey", JWT_SECRET_KEY },
                     { "EnvironmentConfig:JwtValidityInMinutes", JWT_VALIDITY_IN_MINUTES },
@@ -199,6 +358,25 @@ public static class EnvironmentConfigurationExtension
 
                     { "EnvironmentConfig:CUSTOM_API_KEY", CUSTOM_API_KEY },
 
+                    { "EnvironmentConfig:BrandingAppName", BRANDING_APP_NAME },
+                    { "EnvironmentConfig:BrandingCompanyName", BRANDING_COMPANY_NAME },
+                    { "EnvironmentConfig:BrandingCompanyLogoUrlLight", BRANDING_COMPANY_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingCompanyLogoUrlDark", BRANDING_COMPANY_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingProductLogoUrlLight", BRANDING_PRODUCT_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingProductLogoUrlDark", BRANDING_PRODUCT_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingShortLogoUrlLight", BRANDING_SHORT_LOGO_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingShortLogoUrlDark", BRANDING_SHORT_LOGO_URL_DARK },
+                    { "EnvironmentConfig:BrandingFaviconUrlLight", BRANDING_FAVICON_URL_LIGHT },
+                    { "EnvironmentConfig:BrandingFaviconUrlDark", BRANDING_FAVICON_URL_DARK },
+                    { "EnvironmentConfig:BrandingBackgroundColor", BRANDING_BACKGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingForegroundColor", BRANDING_FOREGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingPrimaryColor", BRANDING_PRIMARY_COLOR },
+                    { "EnvironmentConfig:BrandingPrimaryForegroundColor", BRANDING_PRIMARY_FOREGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingSecondaryColor", BRANDING_SECONDARY_COLOR },
+                    { "EnvironmentConfig:BrandingSecondaryForegroundColor", BRANDING_SECONDARY_FOREGROUND_COLOR },
+                    { "EnvironmentConfig:BrandingAccentColor", BRANDING_ACCENT_COLOR },
+                    { "EnvironmentConfig:BrandingAccentForegroundColor", BRANDING_ACCENT_FOREGROUND_COLOR },
+
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
@@ -223,6 +401,191 @@ public static class EnvironmentConfigurationExtension
                 }
             )
             .Build();
+    }
+
+    /// <summary>
+    /// Normalizes an optional string value: trims it, treats blank as null, and drops values
+    /// longer than <paramref name="maxLength"/> with a warning.
+    /// </summary>
+    private static string? NormalizeOptional(string key, string? value, int maxLength = int.MaxValue)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var normalizedValue = value.Trim();
+        if (normalizedValue.Length > maxLength)
+        {
+            Console.Error.WriteLine(
+                $"{key} exceeds {maxLength} characters; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        return normalizedValue;
+    }
+
+    /// <summary>
+    /// Validates an optional branding URL: absolute HTTPS, served from the <c>APP_BASE_URL</c> host,
+    /// one of its subdomains, or a host listed in <c>EXTRA_BRANDING_HOSTS</c>. Anything else is
+    /// dropped with a warning so the client falls back to defaults.
+    /// </summary>
+    private static string? SanitizeBrandingUrl(string key, string? value, string appBaseUrl)
+    {
+        var normalizedValue = NormalizeOptional(key, value);
+        if (normalizedValue == null)
+        {
+            return null;
+        }
+
+        // Branding assets must be served over HTTPS.
+        if (!Uri.TryCreate(normalizedValue, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
+        {
+            Console.Error.WriteLine(
+                $"{key} must be an absolute https URL; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        // ...and from the deployment's domain (subdomains and allowlisted hosts allowed).
+        if (!IsDeploymentHost(uri.Host, appBaseUrl))
+        {
+            Console.Error.WriteLine(
+                $"{key} must be an absolute https URL hosted on {appBaseUrl}, a subdomain of it, or a host listed in EXTRA_BRANDING_HOSTS; ignoring the value and using the default branding."
+            );
+            return null;
+        }
+
+        return normalizedValue;
+    }
+
+    /// <summary>
+    /// True when the candidate host is the deployment host, a subdomain of it, or a host (or its
+    /// subdomain) listed in <c>EXTRA_BRANDING_HOSTS</c>.
+    /// </summary>
+    private static bool IsDeploymentHost(string candidateHost, string appBaseUrl)
+    {
+        var baseHost = GetHostFromValue(appBaseUrl).TrimEnd('.');
+        var normalizedCandidate = candidateHost.ToLowerInvariant().TrimEnd('.');
+        if (string.IsNullOrWhiteSpace(normalizedCandidate))
+        {
+            return false;
+        }
+
+        if (IsHostOrSubdomain(normalizedCandidate, baseHost))
+        {
+            return true;
+        }
+
+        return GetExtraBrandingHosts()
+            .Any(extraHost => IsHostOrSubdomain(normalizedCandidate, extraHost));
+    }
+
+    /// <summary>
+    /// True when the candidate host is the base host itself or a subdomain of it.
+    /// </summary>
+    private static bool IsHostOrSubdomain(string candidateHost, string baseHost)
+    {
+        return !string.IsNullOrWhiteSpace(baseHost)
+            && (string.Equals(candidateHost, baseHost, StringComparison.OrdinalIgnoreCase)
+                || candidateHost.EndsWith("." + baseHost, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// The opted-in extra branding hosts from <c>EXTRA_BRANDING_HOSTS</c>, or an empty list.
+    /// </summary>
+    private static string[] GetExtraBrandingHosts()
+    {
+        var configuredHosts = Environment.GetEnvironmentVariable("EXTRA_BRANDING_HOSTS");
+        if (string.IsNullOrWhiteSpace(configuredHosts))
+        {
+            return Array.Empty<string>();
+        }
+
+        return configuredHosts
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(host => host.ToLowerInvariant())
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Extracts the bare host from a deployment base URL value, which may be a bare host,
+    /// a host:port, or a full URL.
+    /// </summary>
+    private static string GetHostFromValue(string value)
+    {
+        var candidate = value.Trim();
+
+        // Accept full URLs as well as bare hosts.
+        if (Uri.TryCreate(candidate, UriKind.Absolute, out var uri) && !string.IsNullOrWhiteSpace(uri.Host))
+        {
+            return uri.Host;
+        }
+
+        var hostPart = candidate.Split('/')[0];
+        return hostPart.Split(':')[0].ToLowerInvariant();
+    }
+
+    /// <summary>
+    /// Validates an optional branding CSS color (hex, rgb() or rgba()). An invalid value is
+    /// dropped with a warning so the client falls back to defaults.
+    /// </summary>
+    private static string? SanitizeBrandingColor(string key, string? value)
+    {
+        var normalizedValue = NormalizeOptional(key, value);
+        if (normalizedValue == null)
+        {
+            return null;
+        }
+
+        if (BrandingHexColorRegex.IsMatch(normalizedValue) ||
+            BrandingRgbColorRegex.IsMatch(normalizedValue) ||
+            BrandingRgbaColorRegex.IsMatch(normalizedValue))
+        {
+            return normalizedValue;
+        }
+
+        Console.Error.WriteLine(
+            $"{key} is not a valid hex, rgb() or rgba() color; ignoring the value and using the default branding."
+        );
+        return null;
+    }
+
+    /// <summary>
+    /// Resolves the deployment edition from the identity settings and the explicit
+    /// <c>ON_PREM_EDITION=Community</c> opt-in. Ambiguous configuration refuses to start.
+    /// </summary>
+    private static bool ResolveIsCommunityDeployment(string onPremTenantId, string onPremInstanceKey)
+    {
+        var hasTenantId = !string.IsNullOrWhiteSpace(onPremTenantId);
+        var hasInstanceKey = !string.IsNullOrWhiteSpace(onPremInstanceKey);
+
+        if (hasTenantId && hasInstanceKey)
+        {
+            return false;
+        }
+
+        if (hasTenantId || hasInstanceKey)
+        {
+            var presentVariable = hasTenantId ? "ON_PREM_TENANT_ID" : "ON_PREM_INSTANCE_KEY";
+            var missingVariable = hasTenantId ? "ON_PREM_INSTANCE_KEY" : "ON_PREM_TENANT_ID";
+
+            throw new InvalidOperationException(
+                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+        }
+
+        var edition = Environment.GetEnvironmentVariable("ON_PREM_EDITION");
+        var hasCommunityOptIn = string.Equals(
+            edition?.Trim(), OnPremTenantTypesEnum.Community.ToString(), StringComparison.OrdinalIgnoreCase);
+
+        if (!hasCommunityOptIn)
+        {
+            throw new InvalidOperationException(
+                "Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -263,7 +626,7 @@ public static class EnvironmentConfigurationExtension
             var request = new HttpRequestMessage(HttpMethod.Get, $"{globalAdminApiBaseUrl}/api/onprem/instance/metadata")
             {
                 Version = HttpVersion.Version20,
-                VersionPolicy = HttpVersionPolicy.RequestVersionExact
+                VersionPolicy = HttpVersionPolicy.RequestVersionOrLower
             };
 
             // Get tenant metadata

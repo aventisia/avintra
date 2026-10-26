@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { updateTenantPreferences } from "../apis/tenant-info-apis";
 import { preferencesSchema } from "../constants/tenant-preferences-zod-schema";
+import { buildPreferencesFormValues } from "../utils/tenant-preferences-form-values.util";
 import { useFetchTenantPreferences } from "./useFetchTenantPreferences";
 
 export const useDefinePreferencesForm = () => {
@@ -21,7 +22,6 @@ export const useDefinePreferencesForm = () => {
     defaultValues: {
       id: "",
       tenantName: "",
-      isSSOEnabled: false,
       isPwdEnabled: false,
       isPwdNeverExpiresEnabled: false,
       isTwoFAEnabled: false,
@@ -33,15 +33,16 @@ export const useDefinePreferencesForm = () => {
 
   // Populate form when data is available
   useEffect(() => {
-    if (data?.data) {
-      form.reset(data.data);
-    }
+    if (!data?.data) return;
+    // IMPORTANT NOTE: a background refetch must not discard an unsaved edit.
+    if (!form.formState.isDirty) form.reset(buildPreferencesFormValues(data.data));
   }, [data?.data]);
 
   // Handle form submission
-  const { mutate, isPending } = useMutation({
+  const { mutate: updatePreferences, isPending } = useMutation({
     mutationFn: updateTenantPreferences,
-    onSuccess: () => {
+    onSuccess: (response) => {
+      form.reset(buildPreferencesFormValues(response.data));
       queryClient.invalidateQueries({ queryKey: ["TENANT_PREFERENCES"] });
       toast.success("Preferences updated successfully.");
     },
@@ -49,6 +50,10 @@ export const useDefinePreferencesForm = () => {
       toast.error(error.toString());
     },
   });
+
+  const mutate = (formData: z.infer<typeof preferencesSchema>) => {
+    updatePreferences(formData);
+  };
 
   // Form state helpers
   const {

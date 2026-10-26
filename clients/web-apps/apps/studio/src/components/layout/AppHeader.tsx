@@ -1,6 +1,6 @@
 import { Header, HeaderContainer } from "@avplatform/layout";
 import { Button } from "@avplatform/ui/buttons";
-import { useAlertDialogStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { useAlertDialogStore, useBrandingStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
@@ -36,11 +36,14 @@ const AppHeader: React.FC = () => {
     })),
   );
 
-  // const isIndividualUser =
-  //   userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
-
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+  const serverBranding = useBrandingStore((state) => state.branding);
+  const headerLabel =
+    serverBranding?.appName ||
+    (serverBranding && Object.values(serverBranding).some((value) => !!value)
+      ? "Agent Builder"
+      : undefined);
 
   // ChatAgent flows hide search, flow settings, and studio preferences.
   const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
@@ -64,24 +67,24 @@ const AppHeader: React.FC = () => {
   return (
     <HeaderContainer className="bg-slate-200">
       <Header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-0">
-        <div className="flex min-w-0 items-center gap-3 text-white">
+        <div className="flex min-w-0 items-center gap-3 text-primary-foreground">
           {/* Back Button */}
           <Tooltip content="Back to Workspace">
             <Button
               size="icon8"
               variant="ghost"
-              className="shrink-0 hover:bg-white/10"
+              className="shrink-0 hover:bg-primary-foreground/10"
               onClick={() => goBack()}
             >
-              <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+              <ArrowLeftIcon className="h-4 w-4 text-primary-foreground/80" />
             </Button>
           </Tooltip>
 
           {/* App Logo */}
-          <AppLogo />
+          <AppLogo label={headerLabel} />
 
           {/* separator */}
-          <span className="rotate-12 text-white/50">/</span>
+          <span className="rotate-12 text-primary-foreground/50">/</span>
 
           {/* Agent name */}
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
@@ -95,16 +98,7 @@ const AppHeader: React.FC = () => {
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex min-w-0 items-center justify-end">
-            {/* <div>
-              {isIndividualUser ? (
-                <Avatar className={cn("flex h-7 w-7")}>
-                  <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary">
-                    {userSession ? userSession?.userInitials : "--"}
-                  </AvatarFallback>
-                </Avatar>
-              ) : null}
-            </div> */}
-            <div className="mx-4 flex min-w-0 items-center gap-1 text-white">
+            <div className="mx-4 flex min-w-0 items-center gap-1 text-primary-foreground">
               <PresenceAvatars />
 
               <ExecuteFlow />
@@ -130,7 +124,7 @@ const AppHeader: React.FC = () => {
               variant={"ghost"}
               size={"xs"}
               className={
-                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
+                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-primary-foreground/10 pl-3 pr-2.5 font-bold text-primary-foreground/80 hover:bg-primary-foreground/20 hover:text-primary-foreground/80"
               }
             >
               View Only

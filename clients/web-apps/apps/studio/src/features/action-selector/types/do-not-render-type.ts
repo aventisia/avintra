@@ -1,1 +1,1 @@
-export type DoNotRenderIfType = ("production" | "commercial" | "enterprise")[];
+export type DoNotRenderIfType = ("production" | "commercial" | "enterprise" | "community")[];

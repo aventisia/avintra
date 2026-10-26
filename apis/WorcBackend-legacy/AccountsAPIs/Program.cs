@@ -55,6 +55,9 @@ builder.Services.AddRazorpayClient(config);
 // ASP.NET & App services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddHttpClient();
+
 builder.Services.AddEmailService();
 builder.Services.AddSharedDependencies(config);
 builder.Services.AddAppDependencies(config);

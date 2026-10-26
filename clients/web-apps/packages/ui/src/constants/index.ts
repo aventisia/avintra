@@ -53,6 +53,13 @@ const USER_NAME_LS_KEY = "userName";
 const REQUEST_TIMEOUT = 30000;
 
 /**
+ * The maximum time, in milliseconds, the apps wait for the deployment branding response before
+ * rendering with the build-time defaults. A response that arrives after this bound is still
+ * applied (the app re-themes), so a slow deployment ends up branded without delaying first paint.
+ */
+const BRANDING_BOOT_TIMEOUT = 1000;
+
+/**
  * A constant string representing an error message for invalid credentials.
  * Basis this message flag we don't route user to login page on 401 error
  * Any change to the backend error message should be reflected here.
@@ -92,6 +99,7 @@ export {
   SESSION_EXPIRED_LS_KEY,
   USER_NAME_LS_KEY,
   REQUEST_TIMEOUT,
+  BRANDING_BOOT_TIMEOUT,
   INVALID_CREDS,
   COPYRIGHT_TEXT,
   CrudActionTypeLong,

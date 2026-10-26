@@ -1,10 +1,11 @@
+import { useBrandLogo } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 
 interface AppLogoProps {
-  /** Set to true, if want to show aventisia logo */
+  /** Set to true to show the full company logo instead of the compact product logo. */
   showFullLogo?: boolean;
 
-  /** Set to true, if want to show light logo */
+  /** Set to true to use the light built-in asset. */
   lightLogo?: boolean;
 
   /** (Optional): To pass css classes to override style
@@ -14,21 +15,18 @@ interface AppLogoProps {
   className?: string;
 }
 
-/** Component to render logo without app name or with app name */
+/** Component to render the deployment logo, falling back to the built-in asset. */
 const AppLogo = ({
   showFullLogo = false,
   lightLogo = true,
   className = "h-6 text-xl",
 }: AppLogoProps) => {
-  // Logo file
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product", lightLogo);
+
   const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
+  const logoSrc =
+    brandingLogoUrl ?? import.meta.env.BASE_URL + (showFullLogo ? "logo.svg" : logoFile);
 
-  // Logo path
-  const logoSrc = showFullLogo
-    ? import.meta.env.BASE_URL + "logo.svg"
-    : import.meta.env.BASE_URL + logoFile;
-
-  // Return logo with app name
   return (
     <a
       href={import.meta.env.BASE_URL}

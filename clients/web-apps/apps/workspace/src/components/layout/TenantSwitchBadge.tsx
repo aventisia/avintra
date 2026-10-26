@@ -11,9 +11,9 @@ const TenantSwitchBadge = () => {
   return (
     <Badge
       variant="outline"
-      className="ml-3 border border-indigo-400/30 bg-indigo-500/10 px-4 py-2 backdrop-blur"
+      className="ml-3 border border-primary/30 bg-primary/10 px-4 py-2 backdrop-blur"
     >
-      <p className="flex items-center gap-2 text-xs font-semibold text-white">
+      <p className="flex items-center gap-2 text-xs font-semibold text-primary-foreground">
         <span className="text-orange-400">Viewing</span>
         <span className="opacity-50">•</span>
         <span className="font-medium">{userSession?.tenantName}</span>

@@ -1,3 +1,5 @@
+import type { SsoDisableWarningDto } from "./sso-disable-warning-dto";
+
 /**
  * Represents a data transfer object (DTO) for Tenant Preferences.
  */
@@ -46,4 +48,19 @@ export interface TenantPreferencesDto {
    * Gets or sets a flag indicating whether two-factor authentication (2FA) is enabled.
    */
   isTwoFAEnabled: boolean;
+
+  /**
+   * Gets or sets the versioned single sign-on configuration document.
+   */
+  ssoConfigJson?: string;
+
+  /**
+   * Gets or sets the non-blocking warning produced when single sign-on is disabled with passwordless users present.
+   */
+  ssoDisableWarning?: SsoDisableWarningDto;
+
+  /**
+   * Gets or sets a flag indicating whether single sign-on is available in this deployment.
+   */
+  isSSOAvailable: boolean;
 }

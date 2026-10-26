@@ -7,6 +7,8 @@ import { CurrentPlanDto } from "../dtos/current-plan-dto";
 import { NotificationSettingsDto } from "../dtos/notification-settings-dto";
 import { PaymentMethodDTO } from "../dtos/payment-methods-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
+import { TenantSsoStateDto } from "../dtos/tenant-sso-state.dto";
+import { TenantPreferencesUpdatePayload } from "../types/tenant-preferences-update-payload.type";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
@@ -25,9 +27,20 @@ const getTenantPreferences = () =>
     .get<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`)
     .then((res) => res.data);
 
-const updateTenantPreferences = (pref: TenantPreferencesDto) =>
+const updateTenantPreferences = (pref: TenantPreferencesUpdatePayload) =>
   axiosInstance
     .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`, pref)
+    .then((res) => res.data);
+
+/** Enables or disables single sign-on for the tenant. */
+const updateTenantSsoState = (ssoState: TenantSsoStateDto) =>
+  axiosInstance
+    .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/sso/enabled`, ssoState)
+    .then((res) => res.data);
+
+const getSsoAdminConsentUrl = () =>
+  axiosInstance
+    .get<IHttpResponse<string>>(`${baseAPIURL}/sso/admin-consent-url`)
     .then((res) => res.data);
 
 const getNotificationSettings = () =>
@@ -64,6 +77,8 @@ export {
   getCompanyDetails,
   getTenantPreferences,
   updateTenantPreferences,
+  updateTenantSsoState,
+  getSsoAdminConsentUrl,
   getNotificationSettings,
   updateNotificationSettings,
   updateCompanyDetails,

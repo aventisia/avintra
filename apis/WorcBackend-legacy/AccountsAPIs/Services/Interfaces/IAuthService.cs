@@ -20,6 +20,13 @@ public interface IAuthService
     Task<ServiceResponse<TenantInfoDto>> GetTenantInfoAsync(EmailDto emailDto);
 
     /// <summary>
+    /// Resolves the single sign-on tenant for an email address without requiring the user to exist.
+    /// </summary>
+    /// <param name="emailDto">The data transfer object containing the email property.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the home realm discovery result.</returns>
+    Task<ServiceResponse<SsoDiscoverDto>> DiscoverTenantAsync(EmailDto emailDto);
+
+    /// <summary>
     /// Creates an active user session.
     /// </summary>
     /// <param name="user">The account user.</param>
