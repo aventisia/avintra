@@ -27,11 +27,6 @@ public static class AccountsDbInitialSeed
             // Try to seed data
             try
             {
-                // Ensure every tenant has a default "Central" space.
-                // This runs unconditionally (idempotently) so existing tenants also get it,
-                // even when the rest of the seed is skipped by IsSeedingRequired.
-                await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext, logger);
-
                 // Seed any missing fixed roles.
                 // This runs unconditionally (idempotently) so existing databases also pick up
                 // newly added roles (e.g. the CRM placeholders), even when the rest of the seed
@@ -351,28 +346,6 @@ public static class AccountsDbInitialSeed
         {
             logger.LogError(ex, "An error occurred while seeding the default tenant.");
             return null;
-        }
-    }
-
-    // Ensure every tenant has a default "Central" space.
-    // Runs unconditionally (idempotently) so existing tenants also get it,
-    // even when the rest of the seed is skipped by IsSeedingRequired.
-    private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext, ILogger logger)
-    {
-        try
-        {
-            // Fetch all tenants
-            var tenants = await accountsDbContext.Tenants.ToListAsync();
-
-            foreach (var tenant in tenants)
-            {
-                await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
-                    accountsDbContext, tenant.Id, tenant.CreatedByUserId, tenant.LastModifiedByUserId, logger);
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while seeding the default spaces.");
         }
     }
 

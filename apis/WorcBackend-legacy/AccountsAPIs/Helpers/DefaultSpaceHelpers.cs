@@ -1,7 +1,5 @@
 namespace AccountsAPIs.Helpers;
 
-using Npgsql;
-
 /// <summary>
 /// Helper for creating the default "Central" space that every tenant owns.
 /// </summary>
@@ -32,17 +30,12 @@ public static class DefaultSpaceHelpers
             var centralSpaceId = Guid.NewGuid();
             var now = DateTimeOffset.UtcNow;
 
-            // IMPORTANT NOTE: a single INSERT ... SELECT makes the existence check and the insert
-            // atomic, so two replicas booting together no longer both pass a separate check.
+            // IMPORTANT NOTE: single statement for check-and-insert; SaveChanges cannot be used here
+            // (no request context, see remarks above).
             await accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
                 $@"INSERT INTO ""Spaces"" (""Id"", ""TenantId"", ""Name"", ""Description"", ""IsDefault"", ""CreatedByUserId"", ""CreatedOn"", ""LastModifiedByUserId"", ""LastModifiedOn"", ""IsDisabled"")
                    SELECT {centralSpaceId}, {tenantId}, {CentralName}, {CentralDescription}, {true}, {createdByUserId}, {now}, {lastModifiedByUserId}, {now}, {false}
                    WHERE NOT EXISTS (SELECT 1 FROM ""Spaces"" WHERE ""TenantId"" = {tenantId} AND ""IsDefault"" = true)");
-        }
-        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
-        {
-            // IMPORTANT NOTE: the unique filtered index rejected the row, so another replica won the race.
-            logger.LogDebug("Default Central space already exists for tenant {TenantId}.", tenantId);
         }
         catch (Exception ex)
         {

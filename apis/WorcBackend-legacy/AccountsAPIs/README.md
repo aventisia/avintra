@@ -116,16 +116,3 @@ On error `net::ERR_CERT_AUTHORITY_INVALID`
 
 - Ensure that your local development environment is set up to trust the self-signed SSL certificate.
 - Open `https://localhost:4000` in your browser and accept the risk to add the certificate exception.
-
-On migration `AddUniqueDefaultSpacePerTenant` (index `IX_Spaces_TenantId_IsDefault`) failing at startup
-
-- The migration must be applied before the service runs, because startup applies pending
-  migrations; a failure blocks the deployment.
-- A database holding more than one default space per tenant (from the old check-then-insert race)
-  aborts the unique index. De-duplicate first — keep one `IsDefault` space per tenant and unset or
-  merge the rest; do not delete spaces blindly.
-- Detect the affected tenants:
-
-  ```sql
-  SELECT "TenantId", count(*) FROM "Spaces" WHERE "IsDefault" GROUP BY 1 HAVING count(*) > 1;
-  ```
