@@ -278,7 +278,6 @@ public class StreamingChatService : IStreamingChatService
                 w.Flow.Type == FlowTypesEnum.ChatAgent)
             .Include(w => w.Flow)
                 .ThenInclude(f => f!.FlowUsers)
-            .Include(w => w.FlowVersionUsers)
             .IgnoreQueryFilters()
             .AsNoTracking()
             .SingleOrDefaultAsync(cancellationToken);
@@ -302,9 +301,8 @@ public class StreamingChatService : IStreamingChatService
             return (null, null);
         }
 
-        // Verify the caller has access. For temp chats we only need view access
-        // to the parent flow; for persisted chats we keep the published access
-        // gate (owner / shared / tenant-wide) already implied by the query above.
+        // Verify the caller has access to the parent flow. Persisted chats are
+        // additionally gated on the version being published and non-archived above.
         var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
             _userId,
             flowVersion.FlowId,

@@ -7,9 +7,7 @@ public interface IUnitOfWork
     INotificationUserRepo NotificationUserRepo { get; }
     IFlowRepo FlowRepo { get; }
     IFolderRepo FolderRepo { get; }
-    IFlowLogRepo FlowLogRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
-    IFlowVersionUserRepo FlowVersionUserRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IAgentRiskRegistryRepo AgentRiskRegistryRepo { get; }
     IMachineRepo MachineRepo { get; }
@@ -23,14 +21,11 @@ public interface IUnitOfWork
     IJobRepo JobRepo { get; }
     IJobNodeExecutionLogRepo JobNodeExecutionLogRepo { get; }
     IConfigStoreRepo ConfigStoreRepo { get; }
-    ITimeTriggerRepo TimeTriggerRepo { get; }
-    ITimeTriggerFlowRepo TimeTriggerFlowRepo { get; }
     ITriggerRepo TriggerRepo { get; }
     ITriggerFlowVersionRepo TriggerFlowVersionRepo { get; }
     IFlowUserRepo FlowUserRepo { get; }
     IVaultCredentialRepo VaultCredentialRepo { get; }
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
-    IPromptTemplateRepo PromptTemplateRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }
     ITenantModelProviderRepo TenantModelProviderRepo { get; }
     IConversationRepo ConversationRepo { get; }

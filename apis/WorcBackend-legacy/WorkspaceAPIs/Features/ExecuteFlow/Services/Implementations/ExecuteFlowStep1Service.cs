@@ -265,10 +265,17 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             return true;
 
         // Final check: explicit user assignment on the published version
-        return await _unitOfWork.FlowVersionUserRepo
-            .DoesDependentEntitiesExistAsync(x =>
-                x.FlowVersionId == flowVersion.Id &&
-                x.UserId == _userId
-            );
+        var (hasVersionAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            _userId,
+            flowVersion.Id,
+            ResourceTypeEnum.FlowVersion,
+            flowVersion.CreatedByUserId,
+            flowVersion.IsTenantWideAccess,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.Edit,
+            ResourceAccessTypeEnum.View
+        );
+
+        return hasVersionAccess;
     }
 }

@@ -117,14 +117,6 @@ public class FlowBuilderService : IFlowBuilderService
             // -----------------------------
             // // Fetch the ConfigStore ResourceIds for the current user
             // var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
-            // var accessToPublishedFlowVersionIds = await _unitOfWork.FlowVersionUserRepo
-            //     .GetByConditionAsync(w => w.UserId == _userId)
-            //     .Select(s => s.FlowVersionId)
-            //     .ToListAsync();
-
-            // // Merge the accessible resource IDs with the published flow version IDs
-            // accessibleResourceIds.AddRange(accessToPublishedFlowVersionIds);
-
             // // Fetch the reactFlowObject for the specified subFlowIds that the user has access to
             // var subFlows = await _unitOfWork.FlowVersionRepo
             //     .GetByConditionAsync(w => subFlowIds.Contains(w.Id) && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))

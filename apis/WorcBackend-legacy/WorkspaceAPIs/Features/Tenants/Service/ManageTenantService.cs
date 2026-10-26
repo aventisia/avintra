@@ -67,10 +67,8 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.JobRepo, j => j.TenantId == tenantIdToBeDeleted, nameof(Job), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete TimeTriggerFlowVersion - DeleteBehavior.Cascade set with TimeTrigger
-
-            // Delete TimeTrigger
-            if (!await DeleteEntitiesAsync(_unitOfWork.TriggerRepo, t => t.TenantId == tenantIdToBeDeleted, nameof(TimeTrigger), tenantIdToBeDeleted))
+            // Delete Trigger - DeleteBehavior.Cascade set with TriggerFlowVersion
+            if (!await DeleteEntitiesAsync(_unitOfWork.TriggerRepo, t => t.TenantId == tenantIdToBeDeleted, nameof(Trigger), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete WorkItemEvent - DeleteBehavior.Cascade set with QueueTransaction
@@ -78,6 +76,10 @@ public class ManageTenantService : IManageTenantService
             // Delete QueueUser - DeleteBehavior.Cascade set with Queue
 
             if (!await DeleteEntitiesAsync(_unitOfWork.ResourceFlowAccessRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceFlowAccess), tenantIdToBeDeleted))
+                return serviceResponse;
+
+            // Delete ResourceShare
+            if (!await DeleteEntitiesAsync(_unitOfWork.ResourceShareRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceShare), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete Queue
@@ -94,7 +96,6 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.FlowVersionRepo, f => f.TenantId == tenantIdToBeDeleted, nameof(FlowVersion), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete FlowLog - DeleteBehavior.Cascade set with FlowVersion (TODO: should be with FlowVersion currently its with Flow)
             // Delete FlowVersion - DeleteBehavior.Cascade set with Flow
             // Delete FlowUser - DeleteBehavior.Cascade set with Flow
 

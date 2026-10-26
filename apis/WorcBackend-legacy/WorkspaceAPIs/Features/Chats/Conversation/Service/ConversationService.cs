@@ -4,18 +4,21 @@ public class ConversationService : IConversationService
 {
     private readonly ILogger<ConversationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public ConversationService(
         ILogger<ConversationService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceShareService resourceShareService)
     {
         // Extract current user id from http context (Fallback to empty guid if not available)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceShareService = resourceShareService;
     }
 
     // Retrieves active conversations for a specific flow version.
@@ -155,13 +158,12 @@ public class ConversationService : IConversationService
             // Validate FlowVersion exists and is accessible.
             // A flow version ID is globally unique within a tenant, so the lookup
             // is intentionally NOT scoped to the current space query filter. Access
-            // is enforced separately below via IsPublished + FlowVersionUsers.
+            // is enforced separately below via IsPublished + ResourceShare.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationDto.FlowVersionId &&
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished)
-                .Include(w => w.FlowVersionUsers)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
@@ -177,24 +179,27 @@ public class ConversationService : IConversationService
                 return serviceResponse;
             }
 
-            // If the flow version is not tenant-wide, validate that the current user has been explicitly granted access through FlowVersionUsers.
-            if (!flowVersion.IsTenantWideAccess)
+            // Validate that the current user owns the flow version, has tenant-wide access,
+            // or has been explicitly granted access through ResourceShare.
+            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Id,
+                ResourceTypeEnum.FlowVersion,
+                flowVersion.CreatedByUserId,
+                flowVersion.IsTenantWideAccess,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.View);
+
+            if (!hasAccess)
             {
-                // Look up the current user's access record for this flow version.
-                var flowVersionUser = flowVersion.FlowVersionUsers?
-                    .FirstOrDefault(u => u.UserId == _userId);
+                _logger.LogWarning(
+                    "[CreateConversation] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
+                    conversationDto.FlowVersionId,
+                    _userId);
 
-                // Deny access when no matching user record exists.
-                if (flowVersionUser == null)
-                {
-                    _logger.LogWarning(
-                        "[CreateConversation] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
-                        conversationDto.FlowVersionId,
-                        _userId);
-
-                    serviceResponse.Message = "You do not have access to this agent.";
-                    return serviceResponse;
-                }
+                serviceResponse.Message = "You do not have access to this agent.";
+                return serviceResponse;
             }
 
             // Trim dto' string props
