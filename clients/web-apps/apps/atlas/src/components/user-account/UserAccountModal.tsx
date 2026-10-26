@@ -60,11 +60,11 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon10" }),
-          "rounded-full border-[4px] border-secondary hover:border-primary",
+          "rounded-full border-[4px] border-[#363082] hover:border-primary",
         )}
       >
         <Avatar className={cn("flex", sizeClassName)}>
-          <AvatarFallback className="border-none bg-primary-200 font-bold capitalize tracking-wider text-primary-900">
+          <AvatarFallback className="border-none bg-primary-200 font-bold capitalize tracking-wider text-secondary">
             {userSession ? userSession?.userInitials : "--"}
           </AvatarFallback>
         </Avatar>
