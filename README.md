@@ -189,10 +189,13 @@ These changes affect an existing deployment the next time it boots.
     `Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.`
   - One identity variable set:
     `Refusing to start: <variable> is set but <other variable> is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.`
-- **Startup seeding never rewrites existing rows.** A fresh Enterprise seed keeps a 365-day history
-  retention; existing plans and subscriptions keep their stored retention, so an upgrade never shortens
-  it. Commercial keeps its unlimited retention, and the history-cleanup job now skips those rows instead
-  of failing.
+- **Startup seeding corrects the default plan to the running edition.** On every boot the seeded
+  `Default` plan and the default tenant's active subscription are brought in line with the edition:
+  Community gets 1 space and 1 day of history retention, Enterprise 365 days, Commercial stays unlimited
+  (`int.MaxValue`, never a date), and the history-cleanup job keeps skipping unlimited retention instead
+  of purging. Rows that already match are not written, so a second boot of the same deployment changes
+  nothing. No other tenant's subscription is touched; those keep their stored values, and on Community the
+  code caps spaces and history at 1 regardless of what a stored row says.
 - **Branding colours accept only hex, `rgb()` and `rgba()`.** `hsl()`/`hsla()` values are now invalid: a
   `BRANDING_*_COLOR` using hsl is ignored at startup with a warning and that property keeps its built-in
   default colour (the other colours still apply). Convert existing hsl values to hex or rgb before

@@ -143,11 +143,12 @@ public class AuthService : IAuthService
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
 
-            // Generate Azure login URL only for an SSO-enabled tenant with a bound identity provider and a domain
-            var storedSsoConfig = SsoConfigHelpers.Parse(user.Tenant.SSOConfigJson);
-            var isSsoLoginOffered = user.Tenant.IsSSOEnabled
-                    && !string.IsNullOrWhiteSpace(storedSsoConfig?.ExternalTenantId)
-                    && !string.IsNullOrWhiteSpace(user.Tenant.Domain);
+            // Offer the Azure login URL only when the deployment allows single sign-on, the tenant
+            // switch is on and the connection is bound
+            var isSsoLoginOffered = SsoConfigHelpers.IsSsoOfferedForTenant(
+                    user.Tenant,
+                    _environmentConfig.IsSsoAllowedForDeployment,
+                    _environmentConfig.MicrosoftSsoEnabled);
 
             var azureLoginUrl = isSsoLoginOffered
                     ? _loginWithExternalAuthService.GenerateLoginUrlAsync(
@@ -239,9 +240,10 @@ public class AuthService : IAuthService
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            var ssoConfig = SsoConfigHelpers.Parse(tenant?.SSOConfigJson);
-
-            if (tenant == null || ssoConfig == null)
+            if (tenant == null || !SsoConfigHelpers.IsSsoOfferedForTenant(
+                    tenant,
+                    _environmentConfig.IsSsoAllowedForDeployment,
+                    _environmentConfig.MicrosoftSsoEnabled))
             {
                 serviceResponse.Data = noMatch;
                 serviceResponse.StatusCode = 200;
