@@ -264,7 +264,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         if (flowVersion.IsTenantWideAccess)
             return true;
 
-        // Final check: explicit user assignment on the published version
+        // Final check: explicit access through a resource share on the published version
         var (hasVersionAccess, _) = await _resourceShareService.GetResourceAccessAsync(
             _userId,
             flowVersion.Id,
