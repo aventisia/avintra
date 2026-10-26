@@ -58,7 +58,7 @@ pipeline {
                         env.BUILD_APACHECAMEL_API = reposToBuild.contains('apachecamel_api') ? 'true' : 'false'
                         env.BUILD_CORSAIR_API = reposToBuild.contains('corsair_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
-                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio') || reposToBuild.contains('atlas')) ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
@@ -438,7 +438,7 @@ pipeline {
                             steps {
                                 dir('clients/web-apps') {
                                     echo 'Building web-apps...'
-                                    sh "npx turbo run build --filter=accounts --filter=workspace --filter=studio --filter=atlas -- --mode=${getBuildMode(env.BRANCH_NAME)}"
+                                    sh "npx turbo run build --filter=accounts --filter=workspace --filter=studio -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }
@@ -482,21 +482,6 @@ pipeline {
                                         targetServers.each { server ->
                                             sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
                                             echo "Successfully deployed Studio App to ${server}"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        stage('Deploy - Atlas App') {
-                            steps {
-                                script {
-                                    sshagent(credentials: ['aventisia_vps_ssh']) {
-                                        def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Atlas App to ${targetServers.size()} server(s)..."
-                                        
-                                        targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/atlas/dist/* admin@${server}:/var/www/aventisia.com/clients/atlas/"
-                                            echo "Successfully deployed Atlas App to ${server}"
                                         }
                                     }
                                 }
