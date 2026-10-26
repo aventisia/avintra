@@ -26,6 +26,7 @@ import {
   dbPortProps,
   dbPwdProps,
   dbUserIdProps,
+  domainProps,
   effectiveOnProps,
   idProps,
   idleSessionTimeoutMinutesProps,
@@ -102,6 +103,9 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
   // Is form in read mode
   const isReadMode = crudAction === "read";
 
+  // Single sign-on can only be turned on after a Tenant Admin has bound the identity provider
+  const isSsoSwitchDisabled = crudAction === "create" || !isSSOEnabled;
+
   // Return the form
   return (
     <Form
@@ -119,6 +123,9 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
+      {/* Domain */}
+      <InputField {...domainProps} />
 
       {form.getValues("type") || crudAction === "create" ? <SelectField {...typeProps} /> : null}
 
@@ -141,7 +148,15 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
       <SwitchField {...isPwdEnabledProps} />
 
       {/* Is SSO Enabled */}
-      <SwitchField {...isSSOEnabledProps} />
+      <SwitchField
+        {...isSSOEnabledProps}
+        disabled={isSsoSwitchDisabled}
+        description={
+          isSsoSwitchDisabled
+            ? `${isSSOEnabledProps.description}. A Tenant Admin must connect the identity provider first.`
+            : isSSOEnabledProps.description
+        }
+      />
 
       {/* SSO Config JSON */}
       {isSSOEnabled && (

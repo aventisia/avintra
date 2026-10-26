@@ -37,6 +37,12 @@ public static class SsoConfigHelpers
         "protonmail.com"
     };
 
+    private const int TenantDomainMaxLength = 100;
+
+    private static readonly Regex TenantDomainRegex = new(
+        @"^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+        RegexOptions.Compiled);
+
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -51,6 +57,29 @@ public static class SsoConfigHelpers
         if (string.IsNullOrWhiteSpace(emailDomain)) return false;
 
         return ConsumerEmailDomains.Contains(emailDomain.Trim().ToLowerInvariant());
+    }
+
+    /// <summary>
+    /// True when the value is blank or a valid tenant email domain of at most 100 characters.
+    /// </summary>
+    public static bool IsValidTenantDomain(string? domain)
+    {
+        var normalizedDomain = domain?.Trim() ?? string.Empty;
+        if (normalizedDomain.Length == 0) return true;
+        if (normalizedDomain.Length > TenantDomainMaxLength) return false;
+
+        return TenantDomainRegex.IsMatch(normalizedDomain);
+    }
+
+    /// <summary>
+    /// True when the signed-in administrator's email belongs to the tenant's email domain.
+    /// </summary>
+    public static bool DoesAdminEmailMatchTenantDomain(string? adminEmail, string? tenantDomain)
+    {
+        var adminEmailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(adminEmail ?? string.Empty).Trim();
+
+        return adminEmailDomain.Length > 0
+            && string.Equals(adminEmailDomain, tenantDomain?.Trim() ?? string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -104,20 +133,6 @@ public static class SsoConfigHelpers
             Provider = MicrosoftEntraProvider,
             ExternalTenantId = externalTenantId?.Trim() ?? string.Empty,
             EmailDomain = emailDomain?.Trim().ToLowerInvariant() ?? string.Empty
-        };
-    }
-
-    /// <summary>
-    /// Copies the mutable configuration fields so callers can mutate without touching the source document.
-    /// </summary>
-    public static TenantSsoConfigDto Clone(TenantSsoConfigDto config)
-    {
-        return new TenantSsoConfigDto
-        {
-            V = config.V,
-            Provider = config.Provider,
-            ExternalTenantId = config.ExternalTenantId,
-            EmailDomain = config.EmailDomain
         };
     }
 

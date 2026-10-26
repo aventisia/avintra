@@ -1,7 +1,6 @@
 import { getBranding } from "@/ui/apis/branding-apis";
 import { BRANDING_BOOT_TIMEOUT } from "@/ui/constants";
 import { resolveBranding, useBrandingStore } from "@/ui/stores";
-import { sleep } from "@/ui/utils";
 
 import { applyBrandingToDocument } from "./apply-branding";
 
@@ -30,22 +29,23 @@ const applyBranding = (response: BrandingResponse): void => {
 const bootstrapBranding = async (): Promise<void> => {
   const request = getBranding();
 
-  // Set by the boot timeout so a late response can be re-applied after the app has rendered.
   let timedOut = false;
-  const timeout = sleep(BRANDING_BOOT_TIMEOUT).then(() => {
-    timedOut = true;
-    return null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      timedOut = true;
+      resolve(null);
+    }, BRANDING_BOOT_TIMEOUT);
   });
 
-  // Boot with whatever the endpoint returns within the timeout; otherwise fall back to defaults.
-  applyBranding(await Promise.race([request, timeout]));
+  const response = await Promise.race([request, timeout]);
+  clearTimeout(timer);
+  applyBranding(response);
 
   if (!timedOut) {
     return;
   }
 
-  // Late arrival: re-apply after boot so a slow deployment still ends up branded. Detached on
-  // purpose — awaiting the request here would delay the first render until it finally settles.
   void request.then(applyBranding);
 };
 

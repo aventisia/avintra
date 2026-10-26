@@ -121,30 +121,16 @@ public class LoginWithPwdService : ILoginWithPwdService
                     .SingleOrDefaultAsync();
 
 
-            // Account is disabled
-            if (user.IsDisabled)
+            // Account is disabled, deleted, or linked to a disabled/expired tenant
+            var signInBlockMessage = _authHelperService.GetSignInBlockMessage(user);
+            if (signInBlockMessage != null)
             {
-                serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
+                serviceResponse.Message = signInBlockMessage;
                 return serviceResponse;
             }
 
-            // Account is disabled
-            if (user.DeactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime())
-            {
-                serviceResponse.Message = "Your account is deleted. Please contact support adminstrator";
-                return serviceResponse;
-            }
-
-            // Check if the user is linked to a valid tenant
             if (user.TenantId != null)
             {
-                // Tenant is null/disabled/expired
-                if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
-                {
-                    serviceResponse.Message = "Unable to retrieve your tenant's details. Please contact your support administrator.";
-                    return serviceResponse;
-                }
-
                 // Password has expired
                 if (user?.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user?.Tenant.DaysBeforePwdExpires)
                 {

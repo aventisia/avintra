@@ -8,6 +8,7 @@ public class TenantsTableService : ITenantsTableService
     private readonly IAzureBlobStorageService _azureBlobStorageService;
     private readonly AccountsDbContext _accountsDbContext;
     private readonly Guid _userId;
+    private readonly string _userEmail;
     private readonly string _jwt;
     private readonly EnvironmentConfig _environmentConfig;
 
@@ -23,6 +24,7 @@ public class TenantsTableService : ITenantsTableService
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email") ?? string.Empty;
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
 
         _logger = logger;
@@ -412,6 +414,21 @@ public class TenantsTableService : ITenantsTableService
             // Trim dto' string props
             tenantsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantsTableDto);
 
+            if (!SsoConfigHelpers.IsValidTenantDomain(tenantsTableDto.Domain))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Enter a valid email domain (for example, company.com).";
+                return serviceResponse;
+            }
+
+            // Single sign-on is bound to a tenant only through the Tenant Admin consent flow
+            if (tenantsTableDto.IsSSOEnabled == true)
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Connect the identity provider from the tenant admin settings before enabling single sign-on.";
+                return serviceResponse;
+            }
+
             // Default mapping
             var newTenant = tenantsTableDto.Adapt<Tenant>();
             newTenant.ContainerName = TenantContainerUtil.GenerateName(newTenant.Name);
@@ -502,6 +519,26 @@ public class TenantsTableService : ITenantsTableService
             // Trim dto' string props
             tenantsTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantsTableDto);
 
+            if (!SsoConfigHelpers.IsValidTenantDomain(tenantsTableDto.Domain))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "Enter a valid email domain (for example, company.com).";
+                return serviceResponse;
+            }
+
+            if (tenantsTableDto.IsSSOEnabled == true && !tenant.IsSSOEnabled)
+            {
+                var ssoEnableRejectionReason = GetSsoEnableRejectionReason(tenantsTableDto.Domain, tenant);
+
+                if (ssoEnableRejectionReason != null)
+                {
+                    serviceResponse.StatusCode = 400;
+                    serviceResponse.Message = ssoEnableRejectionReason;
+                    _logger.LogWarning("Single sign-on enablement blocked for TenantId {TenantId}: {Reason}", tenant.Id, ssoEnableRejectionReason);
+                    return serviceResponse;
+                }
+            }
+
             // Default mapping 
             tenantsTableDto.Adapt(tenant);
             tenant.LastModifiedByUserId = _userId;
@@ -536,6 +573,23 @@ public class TenantsTableService : ITenantsTableService
         }
 
         return serviceResponse;
+    }
+
+    private string? GetSsoEnableRejectionReason(string tenantDomain, Tenant tenant)
+    {
+        var storedConfig = SsoConfigHelpers.Parse(tenant.SSOConfigJson);
+
+        if (storedConfig == null || string.IsNullOrWhiteSpace(storedConfig.ExternalTenantId))
+        {
+            return "Connect the identity provider from the tenant admin settings before enabling single sign-on.";
+        }
+
+        if (!SsoConfigHelpers.DoesAdminEmailMatchTenantDomain(_userEmail, tenantDomain))
+        {
+            return "The tenant's email domain must match your signed-in email domain before enabling single sign-on.";
+        }
+
+        return null;
     }
 
     // Disable multiple tenants by their IDs.

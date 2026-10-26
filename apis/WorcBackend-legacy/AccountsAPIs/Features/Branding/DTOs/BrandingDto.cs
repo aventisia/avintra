@@ -11,13 +11,11 @@ public class BrandingDto
     /// Gets or sets the custom application/product name shown in the UI and document title.
     /// Maximum length 100 characters.
     /// </summary>
-    [StringLength(100)]
     public string? AppName { get; set; }
 
     /// <summary>
     /// Gets or sets the custom company name. Maximum length 100 characters.
     /// </summary>
-    [StringLength(100)]
     public string? CompanyName { get; set; }
 
     /// <summary>
@@ -61,7 +59,7 @@ public class BrandingDto
     public string? FaviconUrlDark { get; set; }
 
     /// <summary>
-    /// Gets or sets the background brand color as a valid CSS color value (hex, rgb()/rgba() or hsl()/hsla()).
+    /// Gets or sets the background brand color as a valid CSS color value (hex, rgb() or rgba()).
     /// </summary>
     public string? BackgroundColor { get; set; }
 

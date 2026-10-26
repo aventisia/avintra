@@ -26,6 +26,7 @@ The accounts app runs on port `3001` by default.
 | `build`     | Type-check and build for production   |
 | `typecheck` | Run TypeScript compiler in build mode |
 | `lint`      | Run ESLint                            |
+| `test`      | Run the Vitest suite (once)           |
 | `format`    | Format files with Prettier            |
 | `preview`   | Preview the production build          |
 

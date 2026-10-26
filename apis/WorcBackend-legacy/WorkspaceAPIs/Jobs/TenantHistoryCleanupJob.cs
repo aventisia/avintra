@@ -72,6 +72,14 @@ namespace WorkspaceAPIs.Jobs
                     var historyRetentionDays = _environmentConfig.IsCommunityDeployment
                         ? 1
                         : tenantSubscription.HistoryRetentionDays;
+
+                    // IMPORTANT NOTE: an unlimited plan stores int.MaxValue, which overflows AddDays;
+                    // unlimited retention means "no cleanup", never a purge.
+                    if (historyRetentionDays == int.MaxValue)
+                    {
+                        continue;
+                    }
+
                     var retentionDate = currentDateTime.AddDays(-historyRetentionDays).Date;
 
                     // Retrieve tenant history records older than the retention date

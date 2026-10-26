@@ -61,8 +61,9 @@ configured values only when GlobalAdmin allows branding; otherwise `GET /brandin
 values and the web apps keep the built-in Avintra/Aventisia defaults.
 
 Unset keys fall back to the built-in default on the client. Invalid values and oversized text (over
-100 characters) are ignored at startup with a warning. WorkspaceAPIs reads the permission flag at
-startup, so restart it after GlobalAdmin changes the flag.
+100 characters) are ignored at startup with a warning. AccountsAPIs reads the permission flag at
+startup and refreshes it whenever it validates the instance, so restart it to apply a GlobalAdmin
+change immediately.
 
 | Variable                              | Description                                                                        |
 | ------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -76,7 +77,7 @@ startup, so restart it after GlobalAdmin changes the flag.
 | `BRANDING_SHORT_LOGO_URL_DARK`        | Dark short logo (same rules). Used as the light variant's fallback.                |
 | `BRANDING_FAVICON_URL_LIGHT`          | Light favicon (same rules).                                                        |
 | `BRANDING_FAVICON_URL_DARK`           | Dark favicon (same rules). Used as the light variant's fallback.                   |
-| `BRANDING_BACKGROUND_COLOR`           | `--background` brand color — hex, `rgb()`/`rgba()` or `hsl()`/`hsla()`.            |
+| `BRANDING_BACKGROUND_COLOR`           | `--background` brand color — hex, `rgb()` or `rgba()`.                             |
 | `BRANDING_FOREGROUND_COLOR`           | `--foreground` brand color (same formats).                                         |
 | `BRANDING_PRIMARY_COLOR`              | `--primary` brand color (same formats).                                            |
 | `BRANDING_PRIMARY_FOREGROUND_COLOR`   | `--primary-foreground` brand color; derived for contrast when unset (same formats).|
@@ -92,8 +93,12 @@ in `EXTRA_BRANDING_HOSTS` (comma-separated, trimmed, case-insensitive), which ac
 host and its subdomains — use it for multi-environment setups that serve assets from a sibling
 host. With `APP_BASE_URL=uat-avintra.aventisia.com`, `cdn.uat-avintra.aventisia.com` is accepted
 but the parent `aventisia.com` and siblings such as `evil.aventisia.com` are not.
-Absolute-URL `http`, relative paths and any other domain are rejected. Colors must use one of the
-listed formats, with every channel a number.
+Absolute-URL `http`, relative paths and any other domain are rejected. A color must be hex
+(`#RGB`, `#RGBA`, `#RRGGBB` or `#RRGGBBAA`), `rgb()` or `rgba()` with comma-separated integer
+channels (0-255, alpha 0-1). Anything else, `hsl()`/`hsla()` included, is rejected at startup with a
+warning and the client keeps its built-in default for that property. The web apps validate colors
+with the same grammar (`isSafeBrandColor` in `packages/ui`), so the two copies are kept in sync by
+convention; change both when the grammar changes.
 
 `--accent` falls back to a tint of the primary color when unset and the focus `--ring` is always
 derived from the primary color; readable `*-foreground` tokens are derived for contrast when unset.
