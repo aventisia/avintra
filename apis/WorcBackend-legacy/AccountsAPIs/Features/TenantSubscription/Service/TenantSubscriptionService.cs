@@ -684,6 +684,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             if (currentPlan != null)
             {
+                var effectiveMaxSpaces = _environmentConfig.IsCommunityDeployment ? 1 : currentPlan.MaxSpaces;
+                var effectiveHistoryRetentionDays = _environmentConfig.IsCommunityDeployment ? 1 : currentPlan.HistoryRetentionDays;
+
                 // Populate the subscription plan details for the dashboard
                 subscriptionDashboardDto.CurrentPlan = new CurrentSubscriptionPlanDto()
                 {
@@ -702,10 +705,10 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     Feature = new CurrentSubscriptionPlanDetailDto()
                     {
                         StorageLimitMB = currentPlan.StorageLimitMB,
-                        MaxSpaces = currentPlan.MaxSpaces,
+                        MaxSpaces = effectiveMaxSpaces,
                         MaxUsers = currentPlan.MaxUsers,
                         MaxCredits = currentPlan.MaxCredits,
-                        HistoryRetentionDays = currentPlan.HistoryRetentionDays,
+                        HistoryRetentionDays = effectiveHistoryRetentionDays,
                         MaxPublishedItems = currentPlan.MaxPublishedItems
                     },
                     // TODO: Calculate the resource usage dynamically based on actual usage data
@@ -723,7 +726,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                         {
                             ResourceName = "Spaces",
                             Used = await _unitOfWork.SpaceRepo.GetByConditionAsync(w=>w.TenantId == _tenantId).CountAsync(),
-                            Limit = currentPlan.MaxSpaces,
+                            Limit = effectiveMaxSpaces,
                             Unit = "number"
                         },
                         new ResourceUsageDto()

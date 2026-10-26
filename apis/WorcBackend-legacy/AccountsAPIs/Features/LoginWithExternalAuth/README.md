@@ -6,18 +6,25 @@ unimplemented on purpose.
 ## Flow
 
 1. A user types their email on the login screen.
-2. The app asks `POST /auth/discover`. When the email domain belongs to an `Organization` tenant with SSO
-   enabled, the answer is an Entra authorize URL containing `login_hint`, `state` and `nonce`. Otherwise the
-   answer is empty and the user continues with a password.
+2. The app asks `POST /auth/discover`. When the email domain belongs to an `Organization` tenant that is
+   offered single sign-on (see Invariants), the answer is an Entra authorize URL containing `login_hint`,
+   `state` and `nonce`. Otherwise the answer is empty and the user continues with a password.
 3. Entra sends the user back to `https://{AppBaseUrl}/accounts/sso-redirect` with `code` and `state`.
 4. The app calls `GET /auth/entra/token?code=...&state=...`. AccountsAPIs verifies the `id_token`, signs the
    user in (creating them when they are new) and sets the normal session cookies.
 
-`POST /auth/tenant-info` is kept for existing clients. It returns an Entra URL only for a tenant with SSO
-enabled, a bound connection and a non-blank domain, and `null` otherwise.
+`POST /auth/tenant-info` is kept for existing clients. It returns an Entra URL only when the deployment
+allows single sign-on, the tenant switch is on and the connection is bound, and `null` otherwise.
 
 ## Invariants
 
+- **SSO is offered only when all three conditions hold.** The deployment must allow single sign-on, the
+  tenant's SSO switch must be on, and the stored connection must be bound to an external tenant id for a
+  non-blank tenant domain. `POST /auth/discover` and `POST /auth/tenant-info` apply that one rule before
+  they build a login URL, so a tenant missing any leg goes to the password step instead of an SSO login
+  that would then fail. The switch is read from the tenant row on every login attempt: a Super Admin who
+  turns it off hides the offer from the next attempt, with no extra step and no wait. Community deployments
+  fail the first condition, because the deployment-level allow is always off there.
 - **Every sign-in is verified.** The `id_token` is validated against Microsoft's JWKS (RS256 only), its
   audience, and its lifetime. No code path accepts an unverified token.
 - **`tid` binds the tenant.** The token's `tid` must equal the `externalTenantId` stored for the tenant, and

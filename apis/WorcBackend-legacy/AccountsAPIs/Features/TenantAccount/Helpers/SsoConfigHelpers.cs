@@ -83,6 +83,20 @@ public static class SsoConfigHelpers
     }
 
     /// <summary>
+    /// True when single sign-on is offered for the tenant: the deployment allows it, the tenant switch is on,
+    /// and the stored connection is bound to an external tenant id for a non-blank domain.
+    /// </summary>
+    public static bool IsSsoOfferedForTenant(Tenant? tenant, bool isSsoAllowedForDeployment, bool microsoftSsoEnabled)
+    {
+        if (tenant == null || !isSsoAllowedForDeployment || !microsoftSsoEnabled) return false;
+        if (!tenant.IsSSOEnabled || string.IsNullOrWhiteSpace(tenant.Domain)) return false;
+
+        var storedConfig = Parse(tenant.SSOConfigJson);
+
+        return !string.IsNullOrWhiteSpace(storedConfig?.ExternalTenantId);
+    }
+
+    /// <summary>
     /// Parses the stored or submitted single sign-on document. Returns null for empty, malformed,
     /// unsupported-version or unsupported-provider content.
     /// </summary>
