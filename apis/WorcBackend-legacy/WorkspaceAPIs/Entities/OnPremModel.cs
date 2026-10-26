@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a model record in the OnPrem system, facilitating operations such as installation, retrieval, and deletion through the API.
 /// </summary>
-[Table("worc_OnPremModels")]
+[Table("ai_OnPremModels")]
 public class OnPremModel : BaseEntity, IMustHaveTenant
 {
     /// <summary>

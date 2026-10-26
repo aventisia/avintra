@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a Knowledge Base entity for storing metadata about knowledge bases.
 /// Each knowledge base is associated with a vector store and embedding model for semantic search capability.
 /// </summary>
-[Table("worc_KBs")]
+[Table("ai_KnowledgeBases")]
 public class KnowledgeBase : BaseEntity, IMustHaveTenant
 {
     /// <summary>

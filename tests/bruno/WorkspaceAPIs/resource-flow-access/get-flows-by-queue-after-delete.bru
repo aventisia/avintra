@@ -29,6 +29,6 @@ script:post-response {
 
 docs {
   > Run after "Delete queue with flow access". A 404 confirms the queue is gone and
-  > that its ws_ResourceFlowAccess rows were staged for deletion with it instead of
+  > that its agent_ResourceFlowAccess rows were staged for deletion with it instead of
   > being left behind. A 200 with an empty list would mean the queue row survived.
 }

@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a flow granted access to a resource within a tenant.
 /// </summary>
-[Table("ws_ResourceFlowAccess")]
+[Table("agent_ResourceFlowAccess")]
 public class ResourceFlowAccess : IMustHaveTenant
 {
     /// <summary>

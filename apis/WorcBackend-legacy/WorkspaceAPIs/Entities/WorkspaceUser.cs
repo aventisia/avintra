@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Entities;
 /// <remarks>
 /// This entity should not include common or authentication details, as those will be handled in the AccountUser class in the AccountsAPIs project.
 /// </remarks>
-[Table("WorkspaceUsers")]
+[Table("user_WorkspaceUsers")]
 public class WorkspaceUser : IMustHaveTenant
 {
     /// <summary>
@@ -48,11 +48,6 @@ public class WorkspaceUser : IMustHaveTenant
     /// Gets or sets the list of NotificationUsers to manage the many-to-many relation.
     /// </summary>
     public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of SupportTicketRemarks to manage the one-to-many relation.
-    /// </summary>
-    public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
 
     /// <summary>
     /// Gets or sets the list of Machines to manage the one-to-many relation.

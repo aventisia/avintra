@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a single message within a conversation.
 /// </summary>
-[Table("worc_ConversationMessages")]
+[Table("run_ConversationMessages")]
 public class ConversationMessage : IMustHaveTenant
 {
     /// <summary>

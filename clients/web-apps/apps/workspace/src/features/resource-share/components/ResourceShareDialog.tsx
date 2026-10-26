@@ -20,6 +20,8 @@ import { ShareSummary } from "./share-dialog/ShareSummary";
 
 type ResourceShareDialogProps = {
   queryKey: unknown[];
+  /** Environment-agnostic resources (FlowVersion) can still be shared in PROD. */
+  allowInProd?: boolean;
 };
 
 const ResourceShareCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKey: unknown[] }) => {
@@ -133,15 +135,16 @@ const ResourceShareCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKey: un
  * Share dialog for the resource selected in the resource share store. Changes are kept as a
  * draft and saved together; each opening starts from a fresh draft.
  */
-function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
+function ResourceShareDialog({ queryKey, allowInProd = false }: ResourceShareDialogProps) {
   const isProd = useEnvironmentStore((state) => state.env === "prod");
+  const isProdBlocked = isProd && !allowInProd;
   const { showDialog, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
       setShowDialog: state.setShowDialog,
     })),
   );
-  const isOpen = showDialog && !isProd;
+  const isOpen = showDialog && !isProdBlocked;
   const [wasOpen, setWasOpen] = useState(isOpen);
   const [openCount, setOpenCount] = useState(isOpen ? 1 : 0);
 
@@ -151,8 +154,8 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
   }
 
   useEffect(() => {
-    if (isProd && showDialog) setShowDialog(false);
-  }, [isProd, setShowDialog, showDialog]);
+    if (isProdBlocked && showDialog) setShowDialog(false);
+  }, [isProdBlocked, setShowDialog, showDialog]);
 
   if (openCount === 0) return null;
 

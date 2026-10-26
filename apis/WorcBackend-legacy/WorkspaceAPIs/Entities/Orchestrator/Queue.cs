@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an entity that holds data related to a queue.
 /// </summary>
-[Table("Queues")]
+[Table("run_Queues")]
 public class Queue : BaseEntity, IMustHaveTenant
 {
     /// <summary>

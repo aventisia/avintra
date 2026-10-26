@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a single node execution log entry for a job.
 /// Stores per-node execution metadata and compressed input/output JSON payloads in isolation from the main job record.
 /// </summary>
-[Table("ws_JobNodeExecutionLogs")]
+[Table("run_JobNodeExecutionLogs")]
 public class JobNodeExecutionLog
 {
     /// <summary>

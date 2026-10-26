@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
-[Table("worc_TriggerFlowVersions")]
+[Table("run_TriggerFlowVersions")]
 public class TriggerFlowVersion : BaseEntity, IMustHaveTenant
 {
     public Guid TenantId { get; set; }

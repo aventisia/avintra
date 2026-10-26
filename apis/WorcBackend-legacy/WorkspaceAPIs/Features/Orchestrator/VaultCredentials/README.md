@@ -54,7 +54,7 @@ controlled through `ResourceShare` rows keyed by `ResourceTypeEnum.VaultCredenti
 `IResourceShareService.GetResourceAccessAsync`. Delete operations also remove the
 credential's `ResourceShare` rows.
 
-Agent access uses the shared flow-access list (`ws_ResourceFlowAccess`, keyed by
+Agent access uses the shared flow-access list (`agent_ResourceFlowAccess`, keyed by
 `ResourceTypeEnum.VaultCredential`). Saving a non-empty agent list restricts the credential
 (`IsResourceAccessRestricted`) to exactly those agents; saving an empty list is the only way
 to open it again. Publishing an agent that references a restricted credential it is not

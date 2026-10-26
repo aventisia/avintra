@@ -1316,13 +1316,6 @@
       <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\Enums\FlowExecutionLogStatusEnum.cs" Offset="134-160" Line="6" Message="Enum 'FlowExecutionLogStatusEnum' is never used" />
       <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowExecutionLogStatusEnum.cs" Offset="167-176" Line="8" Message="Enum member 'Succeeded' is never used" />
       <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowExecutionLogStatusEnum.cs" Offset="182-188" Line="9" Message="Enum member 'Failed' is never used" />
-      <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="253-270" Line="9" Message="Enum 'FlowLogStatusEnum' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="277-284" Line="11" Message="Enum member 'Failed1' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="290-304" Line="12" Message="Enum member 'LimitExceeded2' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="310-324" Line="13" Message="Enum member 'InternalError3' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="330-337" Line="14" Message="Enum member 'Paused4' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="343-351" Line="15" Message="Enum member 'Running5' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowLogStatusEnum.cs" Offset="357-367" Line="16" Message="Enum member 'Succeeded6' is never used" />
       <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\Enums\FlowTypesEnum.cs" Offset="339-352" Line="10" Message="Enum 'FlowTypesEnum' is never used" />
       <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\Enums\FlowTypesEnum.cs" Offset="359-374" Line="12" Message="Enum member 'AutomationAgent' is never used" />
       <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\Enums\LLMEnum.cs" Offset="241-248" Line="9" Message="Enum 'LLMEnum' is never used" />

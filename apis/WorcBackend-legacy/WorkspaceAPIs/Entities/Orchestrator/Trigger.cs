@@ -5,7 +5,7 @@ namespace WorkspaceAPIs.Entities;
 /// This class stores information about the trigger’s name, operating timezone, 
 /// metadata (e.g., email or subscription details), and associated flow versions.
 /// </summary>
-[Table("worc_Triggers")]
+[Table("run_Triggers")]
 public class Trigger : BaseEntity, IMustHaveTenant
 {
     /// <summary>

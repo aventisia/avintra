@@ -3,9 +3,9 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents sharing permissions granted to a user for a resource within a tenant.
 /// </summary>
-[Table("worc_ResourceShares")]
+[Table("user_ResourceUserAccess")]
 // TODO: Remove this temporary migration code after all legacy user mapping data
-// (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
+// (FlowUser and QueueUser) has been successfully migrated
 // to ResourceShare in all environments.
 // public class ResourceShare : IMustHaveTenant
 

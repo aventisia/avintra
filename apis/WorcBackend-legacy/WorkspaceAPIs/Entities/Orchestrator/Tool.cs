@@ -7,7 +7,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a tenant-scoped tool definition.
 /// </summary>
-[Table("ws_Tools")]
+[Table("ai_Tools")]
 public class Tool : IMustHaveTenant
 {
     /// <summary>

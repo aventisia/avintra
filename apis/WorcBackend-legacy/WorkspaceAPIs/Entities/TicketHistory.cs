@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Entity to store the audit history of a support ticket.
 /// </summary>
-[Table("ws_TicketHistory")]
+[Table("support_TicketHistory")]
 public class TicketHistory : IMustHaveTenant
 {
     /// <summary>

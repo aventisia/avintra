@@ -8,7 +8,7 @@ namespace WorkspaceAPIs.Entities;
 /// This is to avoid storage bloat and potential PII issues. The file content is processed,
 /// converted into vectors, and then discarded immediately after processing.
 /// </summary>
-[Table("worc_KBFiles")]
+[Table("ai_KnowledgeBaseFiles")]
 public class KnowledgeBaseFile : BaseEntity, IMustHaveTenant
 {
     /// <summary>
