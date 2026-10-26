@@ -31,7 +31,6 @@ namespace WorkspaceAPIs.Data
             // Enum configurations to store enums as strings in the database for easy readability
             modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
             modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
-            modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
             modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
             modelBuilder.Entity<Trigger>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
             modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusEnum>());
@@ -50,8 +49,6 @@ namespace WorkspaceAPIs.Data
         public DbSet<Machine> Machine { get; set; }
         public DbSet<Machine_FlowVersion> MachineFlowVersions { get; set; }
         public DbSet<Job> Jobs { get; set; }
-        public DbSet<TimeTrigger> TimeTriggers { get; set; }
-        public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }

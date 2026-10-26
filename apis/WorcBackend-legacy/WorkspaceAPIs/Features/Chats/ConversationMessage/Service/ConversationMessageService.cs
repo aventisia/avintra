@@ -4,12 +4,14 @@ public class ConversationMessageService : IConversationMessageService
 {
     private readonly ILogger<ConversationMessageService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
 
     public ConversationMessageService(
         ILogger<ConversationMessageService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IResourceShareService resourceShareService)
     {
         // Extract current user ID from HTTP context claims
         // Fallback to empty GUID if not available (prevents null issues)
@@ -20,6 +22,7 @@ public class ConversationMessageService : IConversationMessageService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _resourceShareService = resourceShareService;
     }
 
     // Sends a message in an existing conversation.
@@ -60,10 +63,8 @@ public class ConversationMessageService : IConversationMessageService
                 .GetByConditionAsync(w =>
                     w.Id == conversationMessageDto.FlowVersionId &&
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
-                    w.IsPublished &&
-                    (w.IsTenantWideAccess || w.FlowVersionUsers!.Any(a => a.UserId == _userId))
+                    w.IsPublished
                 )
-                .Include(w => w.FlowVersionUsers)
                 .SingleOrDefaultAsync();
 
             // Validate FlowVersion existence
@@ -71,6 +72,29 @@ public class ConversationMessageService : IConversationMessageService
             {
                 _logger.LogWarning(
                     "[CreateConversation] FlowVersion not found or not valid. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
+                    conversationMessageDto.FlowVersionId,
+                    _userId);
+
+                serviceResponse.Message = "Invalid or inaccessible flow version.";
+                return serviceResponse;
+            }
+
+            // Validate that the current user owns the flow version, has tenant-wide access,
+            // or has been explicitly granted access through ResourceShare.
+            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Id,
+                ResourceTypeEnum.FlowVersion,
+                flowVersion.CreatedByUserId,
+                flowVersion.IsTenantWideAccess,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.Edit,
+                ResourceAccessTypeEnum.View);
+
+            if (!hasAccess)
+            {
+                _logger.LogWarning(
+                    "[SendMessage] Unauthorized access attempt. FlowVersionId: {FlowVersionId}, UserId: {UserId}",
                     conversationMessageDto.FlowVersionId,
                     _userId);
 

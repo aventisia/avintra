@@ -170,6 +170,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         flowName={row.name}
         flowVersionNumber={row.versionNumber}
         supportedPlatform={row.supportedPlatform}
+        isTenantWideAccess={row.isAssignedToAllUsers ?? false}
       />
     ),
   }),

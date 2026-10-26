@@ -830,8 +830,7 @@ public class AgentTableService : IAgentTableService
         // stops the trigger handlers from scheduling the archived version.
         await DeleteLinksAsync(_unitOfWork.TriggerFlowVersionRepo, w => w.FlowVersionId == flowVersionId);
 
-        // Revoke per-user access and the tenant-wide access shortcut
-        await DeleteLinksAsync(_unitOfWork.FlowVersionUserRepo, w => w.FlowVersionId == flowVersionId);
+        // Revoke the tenant-wide access shortcut
         flowVersion.IsTenantWideAccess = false;
 
         // Remove the agent risk registry row. Registry rows are created without a space,

@@ -3,8 +3,8 @@ import { Button } from "@avplatform/ui/buttons";
 import { useState } from "react";
 
 import { useDebounce } from "../../../agents-table/hooks/useDebounce";
-import { useSearchUsersList } from "../../../agents-table/hooks/user/useSearchUsersList";
 import { ApprovalStateDto } from "../../dtos/approval-state-dto";
+import { useSearchUsersList } from "../../hooks/useSearchUsersList";
 import { useAiGovernanceStore, useSelectedAssessment } from "../../stores/ai-governance-store";
 import { Field } from "./Field";
 import { SectionLayout } from "./SectionLayout";
