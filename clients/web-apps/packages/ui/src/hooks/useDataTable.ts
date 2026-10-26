@@ -23,6 +23,7 @@ import {
   clampPageIndex,
   resetPageIndex,
   resolveUpdater,
+  stableRows,
 } from "./data-table-state.util";
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -98,9 +99,12 @@ export const useDataTable = <TData, TValue>(
     }
   };
 
+  // IMPORTANT NOTE: TanStack Table resets the page whenever the data reference changes, so a
+  // fresh empty fallback on every render (`data?.data || []` while a query loads) would reset
+  // and re-render forever, freezing the page. `stableRows` keeps that fallback's identity.
   // Create a new instance of the React table.
   const table = useReactTable({
-    data: data,
+    data: stableRows(data),
     columns,
     initialState: {
       pagination: {

@@ -13,6 +13,15 @@ export const resetPageIndex = (pagination: PaginationState): PaginationState => 
   pageIndex: 0,
 });
 
+const EMPTY_ROWS: never[] = [];
+
+/**
+ * Reuses a single empty array so an inline fallback such as `data?.data || []` keeps the
+ * same identity across renders while its query is loading.
+ */
+export const stableRows = <TData>(rows: TData[]): TData[] =>
+  rows.length === 0 ? EMPTY_ROWS : rows;
+
 export const clampPageIndex = (pagination: PaginationState, pageCount: number): PaginationState => {
   const lastPageIndex = Math.max(pageCount - 1, 0);
   return pagination.pageIndex > lastPageIndex

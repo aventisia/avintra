@@ -5,6 +5,7 @@ import {
   clampPageIndex,
   resetPageIndex,
   resolveUpdater,
+  stableRows,
 } from "../data-table-state.util";
 
 describe("resolveUpdater", () => {
@@ -58,5 +59,17 @@ describe("clampPageIndex", () => {
       pageSize: 50,
     });
     expect(clampPageIndex({ pageIndex: 2, pageSize: 50 }, 0).pageIndex).toBe(0);
+  });
+});
+
+describe("stableRows", () => {
+  it("gives every empty inline fallback the same identity", () => {
+    expect(stableRows([])).toBe(stableRows([]));
+  });
+
+  it("returns non-empty rows unchanged", () => {
+    const rows = [{ id: "a1" }];
+
+    expect(stableRows(rows)).toBe(rows);
   });
 });
