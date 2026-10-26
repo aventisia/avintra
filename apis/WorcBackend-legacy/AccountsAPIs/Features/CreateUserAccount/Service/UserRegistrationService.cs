@@ -8,6 +8,7 @@ public class UserRegistrationService : IUserRegistrationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthHelperService _authHelperService;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly AccountsDbContext _accountsDbContext;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string _username;
@@ -19,6 +20,7 @@ public class UserRegistrationService : IUserRegistrationService
         IUnitOfWork unitOfWork,
         IAuthHelperService authHelperService,
         EnvironmentConfig environmentConfig,
+        AccountsDbContext accountsDbContext,
         IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
@@ -27,6 +29,7 @@ public class UserRegistrationService : IUserRegistrationService
         _unitOfWork = unitOfWork;
         _authHelperService = authHelperService;
         _environmentConfig = environmentConfig;
+        _accountsDbContext = accountsDbContext;
 
         // Extract user ID from the claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -183,6 +186,11 @@ public class UserRegistrationService : IUserRegistrationService
                     _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
                     return serviceResponse;
                 }
+
+                await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                    _accountsDbContext, userTenant.Id, userTenant.CreatedByUserId, userTenant.LastModifiedByUserId, _logger);
+
+                await CreateDefaultTenantSubscriptionAsync(userTenant.Id, newUser.Id);
 
                 tenantId = userTenant.Id;
                 userRoles = Enum.GetValues(typeof(CustomRolesEnum))
@@ -376,5 +384,43 @@ public class UserRegistrationService : IUserRegistrationService
         }
 
         return serviceResponse;
+    }
+
+    private async Task CreateDefaultTenantSubscriptionAsync(Guid tenantId, Guid userId)
+    {
+        var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
+            .GetByConditionAsync(w => w.Name == "Default" && w.IsDefault)
+            .SingleOrDefaultAsync();
+
+        if (subscriptionPlan == null)
+        {
+            _logger.LogError("Default subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
+            return;
+        }
+
+        var tenantSubscription = new TenantSubscription
+        {
+            TenantId = tenantId,
+            PlanId = subscriptionPlan.Id,
+            Frequency = SubscriptionFrequenciesEnum.Yearly,
+            IsActive = true,
+            Status = SubscriptionStatusTypesEnum.Active,
+            NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
+            MaxCredits = ulong.MaxValue,
+            MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
+            MaxSpaces = subscriptionPlan.MaxSpaces,
+            MaxUsers = subscriptionPlan.MaxUsers,
+            StorageLimitMB = subscriptionPlan.StorageLimitMB,
+            HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays,
+            CreatedByUserId = userId,
+            LastModifiedByUserId = userId
+        };
+
+        await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogWarning("Failed to save the default tenant subscription for TenantId: {TenantId}.", tenantId);
+        }
     }
 }

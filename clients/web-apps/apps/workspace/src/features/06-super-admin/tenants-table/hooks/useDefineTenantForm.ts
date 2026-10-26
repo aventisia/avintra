@@ -56,6 +56,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
     defaultValues: {
       id: "",
       name: "",
+      domain: "",
       type: "",
       currency: "",
       effectiveDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -108,6 +109,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Single fields
       id: rowId,
       name: tenantData?.name ?? "",
+      domain: tenantData?.domain ?? "",
       type: tenantData?.type ?? "",
       currency: tenantData?.currency ?? "",
       effectiveDate: tenantData?.effectiveDate

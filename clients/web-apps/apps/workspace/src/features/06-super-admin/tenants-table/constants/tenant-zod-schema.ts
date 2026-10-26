@@ -23,6 +23,12 @@ export const tenantNameSchema = z
   });
 
 /**
+ * Hostname grammar accepted for a tenant email domain; matches the backend rule.
+ */
+export const tenantDomainRegex =
+  /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+/**
  * Represents the Zod schema for a tenant.
  */
 export const tenantZodSchema = z
@@ -35,6 +41,12 @@ export const tenantZodSchema = z
       .max(100, { message: maxLenError("Tenant name", 100) })
       .regex(alphaNumericRegex, {
         message: alphaNumericError("Tenant name"),
+      }),
+    domain: z
+      .string()
+      .max(100, { message: maxLenError("Domain", 100) })
+      .refine((value) => value === "" || tenantDomainRegex.test(value), {
+        message: "Enter a valid email domain (for example, company.com).",
       }),
     type: z
       .string({ required_error: reqError("Deployment type") })

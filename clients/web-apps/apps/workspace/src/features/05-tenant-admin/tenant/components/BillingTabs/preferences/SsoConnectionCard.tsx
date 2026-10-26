@@ -51,7 +51,7 @@ const SsoConnectionCard = () => {
   const ssoToggleTooltip = isSSOEnabled ? ssoEnabledTooltip : ssoDisabledTooltip;
 
   if (isLoading) return <TabLoader />;
-  if (!isSSOAvailable) return null;
+  if (!isSSOAvailable && !persistedSsoEnabled) return null;
 
   if (!isTenantAdmin) {
     return (
@@ -170,16 +170,18 @@ const SsoConnectionCard = () => {
           </div>
         </div>
 
-        <Button
-          type="button"
-          onClick={connectHandler}
-          disabled={isConnectPending}
-          variant={isConnected ? "outline" : "default"}
-          size="sm"
-          className="shrink-0"
-        >
-          {isConnected ? ssoReconnectLabel : ssoConnectLabel}
-        </Button>
+        {isSSOAvailable && (
+          <Button
+            type="button"
+            onClick={connectHandler}
+            disabled={isConnectPending}
+            variant={isConnected ? "outline" : "default"}
+            size="sm"
+            className="shrink-0"
+          >
+            {isConnected ? ssoReconnectLabel : ssoConnectLabel}
+          </Button>
+        )}
       </div>
     </Card>
   );

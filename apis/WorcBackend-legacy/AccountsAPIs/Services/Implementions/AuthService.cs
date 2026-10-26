@@ -143,8 +143,13 @@ public class AuthService : IAuthService
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
 
-            // Generate Azure login URL only if SSO is enabled
-            var azureLoginUrl = user.Tenant.IsSSOEnabled
+            // Generate Azure login URL only for an SSO-enabled tenant with a bound identity provider and a domain
+            var storedSsoConfig = SsoConfigHelpers.Parse(user.Tenant.SSOConfigJson);
+            var isSsoLoginOffered = user.Tenant.IsSSOEnabled
+                    && !string.IsNullOrWhiteSpace(storedSsoConfig?.ExternalTenantId)
+                    && !string.IsNullOrWhiteSpace(user.Tenant.Domain);
+
+            var azureLoginUrl = isSsoLoginOffered
                     ? _loginWithExternalAuthService.GenerateLoginUrlAsync(
                         ExternalAuthProviderEnum.Azure, user.UserName, user.Tenant.Id).Data
                     : null;

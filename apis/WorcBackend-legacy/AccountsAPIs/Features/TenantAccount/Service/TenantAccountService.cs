@@ -370,14 +370,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            var availability = GetSsoAvailability();
-            if (!availability.IsAvailable)
-            {
-                serviceResponse.StatusCode = availability.StatusCode;
-                serviceResponse.Message = availability.Message;
-                return serviceResponse;
-            }
-
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t => t.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -586,6 +578,14 @@ public class TenantAccountService : ITenantAccountService
             {
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = "Single sign-on is available for organization tenants only.";
+                return serviceResponse;
+            }
+
+            if (!SsoConfigHelpers.DoesAdminEmailMatchTenantDomain(_userEmail, tenant.Domain))
+            {
+                serviceResponse.StatusCode = 400;
+                serviceResponse.Message = "The tenant's email domain must match your signed-in email domain before connecting single sign-on.";
+                _logger.LogWarning("Admin consent callback rejected for TenantId {TenantId}: sign-in domain does not match the tenant domain.", _tenantId);
                 return serviceResponse;
             }
 
@@ -882,6 +882,11 @@ public class TenantAccountService : ITenantAccountService
         if (!string.Equals(storedConfig.EmailDomain, tenant.Domain.Trim(), StringComparison.OrdinalIgnoreCase))
         {
             return (false, 400, "The single sign-on email domain must match the tenant's email domain.");
+        }
+
+        if (!SsoConfigHelpers.DoesAdminEmailMatchTenantDomain(_userEmail, tenant.Domain))
+        {
+            return (false, 400, "The tenant's email domain must match your signed-in email domain before enabling single sign-on.");
         }
 
         var isPlatformConfigured =

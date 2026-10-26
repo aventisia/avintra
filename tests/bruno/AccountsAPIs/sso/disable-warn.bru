@@ -42,10 +42,9 @@ docs {
   > itself is always allowed and never returns a blocking status.
   >
   > Reading a failure: 401 means no tenant admin session, 400 means the body could not be bound (usually a
-  > missing `TENANT_ID`) or single sign-on is unavailable in this deployment, and a failed warning assertion
-  > means the tenant fixture above is absent. All three
-  > are environment gaps, not regressions - the assertions stay unconditional and must never be softened
-  > into a conditional pass.
+  > missing `TENANT_ID`), and a failed warning assertion means the tenant fixture above is absent. Both are
+  > environment gaps, not regressions - the assertions stay unconditional and must never be softened into a
+  > conditional pass.
   >
   > Requires: `MY_EMAIL`, `MY_PWD`, `TENANT_ID`.
 }

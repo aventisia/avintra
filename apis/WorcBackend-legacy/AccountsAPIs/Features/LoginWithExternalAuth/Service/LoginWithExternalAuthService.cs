@@ -12,6 +12,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     private const string EntraLoginScope = "openid profile email offline_access";
     private const string MicrosoftConsumerTenantId = "9188040d-6c67-4c5b-b112-36a304b66dad";
     private static readonly TimeSpan AuthStateTtl = TimeSpan.FromMinutes(10);
+    private static readonly object AuthStateConsumeLock = new();
 
     private static readonly ConfigurationManager<OpenIdConnectConfiguration> EntraConfigurationManager =
         new(EntraOrganizationsDiscovery, new OpenIdConnectConfigurationRetriever(), new HttpDocumentRetriever());
@@ -21,8 +22,10 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly UserManager<AccountUser> _userManager;
     private readonly IEmailService _emailService;
+    private readonly IAuthHelperService _authHelperService;
     private readonly IDistributedCache _authStateCache;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly AccountsDbContext _accountsDbContext;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
@@ -30,16 +33,20 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         EnvironmentConfig environmentConfig,
         UserManager<AccountUser> userManager,
         IEmailService emailService,
+        IAuthHelperService authHelperService,
         IDistributedCache authStateCache,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        AccountsDbContext accountsDbContext)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _environmentConfig = environmentConfig;
         _userManager = userManager;
         _emailService = emailService;
+        _authHelperService = authHelperService;
         _authStateCache = authStateCache;
         _httpClientFactory = httpClientFactory;
+        _accountsDbContext = accountsDbContext;
     }
 
     private string? GetSsoUnavailableMessage()
@@ -171,10 +178,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         if (string.IsNullOrWhiteSpace(state)) return null;
 
         var cacheKey = BuildAuthStateCacheKey(state);
-        var stored = _authStateCache.GetString(cacheKey);
-        if (stored == null) return null;
 
-        _authStateCache.Remove(cacheKey);
+        string? stored;
+        // IMPORTANT NOTE: the cache is process memory, so read-and-delete is only single use on a single replica or with sticky sessions.
+        lock (AuthStateConsumeLock)
+        {
+            stored = _authStateCache.GetString(cacheKey);
+            if (stored == null) return null;
+
+            _authStateCache.Remove(cacheKey);
+        }
 
         try
         {
@@ -555,6 +568,16 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         return (true, 200, "Identity token verified.", (JwtSecurityToken)validatedToken);
     }
 
+    private Guid? ResolveJitTargetTenantId(ValidateTokenRequestDto validateTokenRequestDto)
+    {
+        if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
+        {
+            return Guid.Parse(_environmentConfig.OnPremTenantId);
+        }
+
+        return validateTokenRequestDto.SsoTenantId;
+    }
+
     // Validates the external authentication token and creates or retrieves the user
     public async Task<ServiceResponse<AccountUser>> ValidateTokenAndCreateUserAsync(ValidateTokenRequestDto validateTokenRequestDto)
     {
@@ -673,9 +696,44 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 .GetByConditionAsync(w => w.Email.ToLower() == email.ToLower())
                 .FirstOrDefaultAsync();
 
+            if (existingUser != null)
+            {
+                var existingUserBlockMessage = _authHelperService.GetSignInBlockMessage(existingUser);
+                if (existingUserBlockMessage != null)
+                {
+                    _logger.LogWarning(
+                        "Single sign-on sign-in rejected for a disabled, deleted or tenant-invalid account. UserId={UserId}",
+                        existingUser.Id);
+
+                    serviceResponse.Message = existingUserBlockMessage;
+                    serviceResponse.StatusCode = 401;
+                    return serviceResponse;
+                }
+            }
+
             // Condition: create user only if not already present
             if (existingUser == null)
             {
+                var jitTargetTenantId = ResolveJitTargetTenantId(validateTokenRequestDto);
+                if (jitTargetTenantId.HasValue)
+                {
+                    var jitTargetTenant = await _unitOfWork.TenantRepo
+                        .GetByConditionAsync(t => t.Id == jitTargetTenantId.Value)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
+
+                    if (jitTargetTenant == null || !_authHelperService.IsUserTenantValid(jitTargetTenant, email))
+                    {
+                        _logger.LogWarning(
+                            "Single sign-on sign-up rejected because the target tenant is missing, disabled or expired. TenantId={TenantId}",
+                            jitTargetTenantId.Value);
+
+                        serviceResponse.Message = "Unable to retrieve your tenant's details. Please contact your support administrator.";
+                        serviceResponse.StatusCode = 401;
+                        return serviceResponse;
+                    }
+                }
+
                 _logger.LogInformation(
                     "User does not exist. Proceeding with new user creation. Email={Email}",
                     email);
@@ -769,6 +827,9 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
                     tenantId = userTenant.Id;
 
+                    await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                        _accountsDbContext, userTenant.Id, userTenant.CreatedByUserId, userTenant.LastModifiedByUserId, _logger);
+
                     // Assign all roles except Super Admin
                     userRoles = Enum.GetValues(typeof(CustomRolesEnum))
                         .Cast<CustomRolesEnum>()
@@ -860,7 +921,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 "Token validation failed for provider {Provider}",
                 validateTokenRequestDto.Type);
 
-            serviceResponse.Message = $"Token validation failed: {ex.Message}";
+            serviceResponse.Message = "Token validation failed.";
             return serviceResponse;
         }
     }

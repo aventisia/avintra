@@ -57,7 +57,7 @@ const REQUEST_TIMEOUT = 30000;
  * rendering with the build-time defaults. A response that arrives after this bound is still
  * applied (the app re-themes), so a slow deployment ends up branded without delaying first paint.
  */
-const BRANDING_BOOT_TIMEOUT = 10000;
+const BRANDING_BOOT_TIMEOUT = 1000;
 
 /**
  * A constant string representing an error message for invalid credentials.

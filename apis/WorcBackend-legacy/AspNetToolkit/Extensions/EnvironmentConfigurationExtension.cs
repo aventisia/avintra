@@ -5,18 +5,21 @@ public static class EnvironmentConfigurationExtension
     // Maximum length accepted for branding text values (app/company name).
     private const int BrandingNameMaxLength = 100;
 
-    // Accepted CSS color formats for branding. Each channel must be a number so a malformed value
-    // (e.g. "rgb(,,,)") cannot be served and silently reset the client theme.
+    // IMPORTANT NOTE: the web apps mirror this color grammar in `isSafeBrandColor`
+    // (`packages/ui/src/utils/branding-color-util.ts`); change both sides together.
+    private const string BrandingColorChannel = @"(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])";
+    private const string BrandingColorAlpha = @"(?:[01](?:\.[0-9]+)?|\.[0-9]+)";
+
     private static readonly Regex BrandingHexColorRegex = new(
-        @"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+        @"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
         RegexOptions.Compiled);
 
     private static readonly Regex BrandingRgbColorRegex = new(
-        @"^rgba?\(\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*(?:[,/]\s*[0-9.]+%?\s*)?\)$",
+        $@"^rgb\(\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*\)$",
         RegexOptions.Compiled);
 
-    private static readonly Regex BrandingHslColorRegex = new(
-        @"^hsla?\(\s*[0-9.]+(?:deg|grad|rad|turn)?\s*[,\s]\s*[0-9.]+%?\s*[,\s]\s*[0-9.]+%?\s*(?:[,/]\s*[0-9.]+%?\s*)?\)$",
+    private static readonly Regex BrandingRgbaColorRegex = new(
+        $@"^rgba\(\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorChannel}\s*,\s*{BrandingColorAlpha}\s*\)$",
         RegexOptions.Compiled);
 
     /// <summary>
@@ -47,16 +50,15 @@ public static class EnvironmentConfigurationExtension
         // Basic environment variables
         var APP_BASE_URL = GetRequiredEnvVar("APP_BASE_URL");
 
-        // On-prem tenant credentials are optional: either being blank marks the deployment as
-        // community. The admin email is always required so the default platform user can be seeded.
+        // On-prem tenant credentials are optional only for an explicit Community edition. The admin
+        // email is always required so the default platform user can be seeded.
         var ON_PREM_TENANT_ID = Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID") ?? string.Empty;
         var ON_PREM_INSTANCE_KEY = Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY") ?? string.Empty;
         var ON_PREM_ADMIN_EMAIL = GetRequiredEnvVar("ON_PREM_ADMIN_EMAIL");
 
         // Community deployments never synchronize with GlobalAdmin. This rule mirrors
         // EnvironmentConfig.IsCommunityDeployment so the decision is made once here.
-        var isCommunityDeployment = string.IsNullOrWhiteSpace(ON_PREM_TENANT_ID)
-            || string.IsNullOrWhiteSpace(ON_PREM_INSTANCE_KEY);
+        var isCommunityDeployment = ResolveIsCommunityDeployment(ON_PREM_TENANT_ID, ON_PREM_INSTANCE_KEY);
 
         // Database and storage environment variables
         var POSTGRESQL_HOST = GetRequiredEnvVar("POSTGRESQL_HOST");
@@ -207,6 +209,8 @@ public static class EnvironmentConfigurationExtension
             SSO_ALLOWED = tenantValidationInfo.SsoAllowed;
             BRANDING_ALLOWED = tenantValidationInfo.BrandingAllowed;
         }
+
+        Console.WriteLine($"On-prem edition detected: {ON_PREM_TENANT_TYPE}.");
 
         if (isCommunityDeployment)
         {
@@ -524,7 +528,7 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// Validates an optional branding CSS color (hex, rgb/rgba or hsl/hsla). An invalid value is
+    /// Validates an optional branding CSS color (hex, rgb() or rgba()). An invalid value is
     /// dropped with a warning so the client falls back to defaults.
     /// </summary>
     private static string? SanitizeBrandingColor(string key, string? value)
@@ -537,15 +541,51 @@ public static class EnvironmentConfigurationExtension
 
         if (BrandingHexColorRegex.IsMatch(normalizedValue) ||
             BrandingRgbColorRegex.IsMatch(normalizedValue) ||
-            BrandingHslColorRegex.IsMatch(normalizedValue))
+            BrandingRgbaColorRegex.IsMatch(normalizedValue))
         {
             return normalizedValue;
         }
 
         Console.Error.WriteLine(
-            $"{key} is not a valid hex, rgb() or hsl() color; ignoring the value and using the default branding."
+            $"{key} is not a valid hex, rgb() or rgba() color; ignoring the value and using the default branding."
         );
         return null;
+    }
+
+    /// <summary>
+    /// Resolves the deployment edition from the identity settings and the explicit
+    /// <c>ON_PREM_EDITION=Community</c> opt-in. Ambiguous configuration refuses to start.
+    /// </summary>
+    private static bool ResolveIsCommunityDeployment(string onPremTenantId, string onPremInstanceKey)
+    {
+        var hasTenantId = !string.IsNullOrWhiteSpace(onPremTenantId);
+        var hasInstanceKey = !string.IsNullOrWhiteSpace(onPremInstanceKey);
+
+        if (hasTenantId && hasInstanceKey)
+        {
+            return false;
+        }
+
+        if (hasTenantId || hasInstanceKey)
+        {
+            var presentVariable = hasTenantId ? "ON_PREM_TENANT_ID" : "ON_PREM_INSTANCE_KEY";
+            var missingVariable = hasTenantId ? "ON_PREM_INSTANCE_KEY" : "ON_PREM_TENANT_ID";
+
+            throw new InvalidOperationException(
+                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+        }
+
+        var edition = Environment.GetEnvironmentVariable("ON_PREM_EDITION");
+        var hasCommunityOptIn = string.Equals(
+            edition?.Trim(), OnPremTenantTypesEnum.Community.ToString(), StringComparison.OrdinalIgnoreCase);
+
+        if (!hasCommunityOptIn)
+        {
+            throw new InvalidOperationException(
+                "Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+        }
+
+        return true;
     }
 
     /// <summary>

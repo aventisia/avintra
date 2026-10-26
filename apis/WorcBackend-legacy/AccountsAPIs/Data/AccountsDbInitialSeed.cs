@@ -33,7 +33,8 @@ public static class AccountsDbInitialSeed
                 // is skipped by IsSeedingRequired.
                 if (!await SeedDefaultRolesAsync(_roleManager, environmentConfig, logger)) return app;
 
-                // Keep the default subscription data aligned with the deployment edition on existing databases.
+                // Keep the default seed idempotent on existing databases: missing plan, subscription
+                // or credit rows are created, existing rows are never rewritten.
                 if (!await IsSeedingRequired(_accountsDbContext, logger))
                 {
                     var existingSuperUser = await _accountsDbContext.Users
@@ -482,39 +483,25 @@ public static class AccountsDbInitialSeed
         {
             // Define the name of the subscription plan to seed
             var subscriptionPlanName = "Default";
-            var historyRetentionDays = environmentConfig.IsCommunityDeployment
-                ? 1
-                : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
-                    ? 365
-                    : int.MaxValue;
-            var maxSpaces = environmentConfig.IsCommunityDeployment ? 1 : 0;
 
             // Check if the default subscription plan already exists in the database
             var existingPlan = await accountsDbContext.SubscriptionPlans
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
                 .SingleOrDefaultAsync();
 
-            // If the subscription plan already exists, skip seeding and return true
+            // Existing plans keep their stored limits; seeding only fills fresh databases
             if (existingPlan != null)
             {
-                if (existingPlan.MaxPublishedItems != 0 ||
-                    existingPlan.MaxSpaces != maxSpaces ||
-                    existingPlan.MaxUsers != 0 ||
-                    existingPlan.StorageLimitMB != 0 ||
-                    existingPlan.HistoryRetentionDays != historyRetentionDays)
-                {
-                    existingPlan.MaxPublishedItems = 0;
-                    existingPlan.MaxSpaces = maxSpaces;
-                    existingPlan.MaxUsers = 0;
-                    existingPlan.StorageLimitMB = 0;
-                    existingPlan.HistoryRetentionDays = historyRetentionDays;
-                    existingPlan.LastModifiedByUserId = superUser.Id;
-                    await accountsDbContext.SaveChangesAsync();
-                }
-
                 logger.LogDebug("Subscription plan {PlanName} already exists.", subscriptionPlanName);
                 return true;
             }
+
+            var historyRetentionDays = environmentConfig.IsCommunityDeployment
+                ? 1
+                : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
+                    ? 365
+                    : int.MaxValue;
+            var maxSpaces = environmentConfig.IsCommunityDeployment ? 1 : 0;
 
             // Prepare plan type based on tenant type: Commercial gets Pro; Enterprise and
             // Community (single-tenant deployments) get None (effectively unlimited, unpaid).
@@ -593,17 +580,6 @@ public static class AccountsDbInitialSeed
 
             if (existingSubscription != null)
             {
-                if (existingSubscription.PlanId == subscriptionPlan.Id)
-                {
-                    existingSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
-                    existingSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
-                    existingSubscription.MaxUsers = subscriptionPlan.MaxUsers;
-                    existingSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
-                    existingSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
-                    existingSubscription.LastModifiedByUserId = superUser.Id;
-                    await accountsDbContext.SaveChangesAsync();
-                }
-
                 logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
                 return true;
             }

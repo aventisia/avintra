@@ -177,6 +177,32 @@ sudo docker push aventisiaacr.azurecr.io/avplatform/llmpipeline-apis:0.1.0
 sudo docker network create avplatform-net
 ```
 
+## Deployment notes (upgrade behaviour)
+
+These changes affect an existing deployment the next time it boots.
+
+- **Community edition is an explicit opt-in.** Set `ON_PREM_EDITION=Community` on a Community install
+  before the next boot. An existing Community install that leaves it unset will refuse to start, and so
+  will a deployment that sets only one of the two identity variables. A paid deployment sets both
+  `ON_PREM_TENANT_ID` and `ON_PREM_INSTANCE_KEY` and leaves `ON_PREM_EDITION` unset.
+  - Both identity variables blank and no opt-in:
+    `Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.`
+  - One identity variable set:
+    `Refusing to start: <variable> is set but <other variable> is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.`
+- **Startup seeding never rewrites existing rows.** A fresh Enterprise seed keeps a 365-day history
+  retention; existing plans and subscriptions keep their stored retention, so an upgrade never shortens
+  it. Commercial keeps its unlimited retention, and the history-cleanup job now skips those rows instead
+  of failing.
+- **Branding colours accept only hex, `rgb()` and `rgba()`.** `hsl()`/`hsla()` values are now invalid: a
+  `BRANDING_*_COLOR` using hsl is ignored at startup with a warning and that property keeps its built-in
+  default colour (the other colours still apply). Convert existing hsl values to hex or rgb before
+  upgrading. Accepted: `#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`, `rgb(r,g,b)` and `rgba(r,g,b,a)` with
+  comma-separated integer channels 0-255 and alpha 0-1.
+- **SSO login state is per-process.** The Microsoft Entra login `state` lives 10 minutes in the
+  AccountsAPIs process memory, so a deployment running more than one AccountsAPIs replica needs sticky
+  sessions. A callback that lands on another replica is rejected as unknown state and the user must sign
+  in again.
+
 ## Documentation
 
 - Project overview and per-service instructions are available in each directory's `README.md`.

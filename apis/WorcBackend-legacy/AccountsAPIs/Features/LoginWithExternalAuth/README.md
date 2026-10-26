@@ -13,7 +13,8 @@ unimplemented on purpose.
 4. The app calls `GET /auth/entra/token?code=...&state=...`. AccountsAPIs verifies the `id_token`, signs the
    user in (creating them when they are new) and sets the normal session cookies.
 
-`POST /auth/tenant-info` behaves exactly as before and is kept for existing clients.
+`POST /auth/tenant-info` is kept for existing clients. It returns an Entra URL only for a tenant with SSO
+enabled, a bound connection and a non-blank domain, and `null` otherwise.
 
 ## Invariants
 
@@ -22,8 +23,11 @@ unimplemented on purpose.
 - **`tid` binds the tenant.** The token's `tid` must equal the `externalTenantId` stored for the tenant, and
   the issuer must be `https://login.microsoftonline.com/{tid}/v2.0`. The Microsoft consumer tenant
   `9188040d-6c67-4c5b-b112-36a304b66dad` is always rejected, as are public mail domains.
-- **`state` is single use.** It is created with the authorize URL, lives 10 minutes in memory, and is removed
-  the moment the callback consumes it. A missing, replayed or tampered state is rejected with `400`.
+- **`state` is single use.** It is created with the authorize URL, lives 10 minutes in the AccountsAPIs
+  process's memory, and is read-and-deleted atomically when the callback consumes it, so two concurrent
+  callbacks cannot both pass. The store is per-process, not shared: the supported topology is one
+  AccountsAPIs replica or sticky sessions, because a callback that lands on another replica is rejected as
+  unknown state. A missing, replayed or tampered state is rejected with `400`.
 - **Home realm discovery needs no user.** Discovery works on the email domain alone, so it also works before a
   user is provisioned. Consumer mail domains never match a tenant.
 - **Where the data lives.** `Tenants.SSOConfigJson` holds a versioned JSON document (version 1,
@@ -40,11 +44,12 @@ unimplemented on purpose.
   denies it. `GOOGLE_SSO_CLIENT_ID` / `GOOGLE_SSO_CLIENT_SECRET` are loaded for future providers and are
   not used yet. No tenant supplies or
   stores client credentials, there is no secret field in the stored document, and no response returns
-  credential material. Super Admin tenant reads omit `SSOConfigJson` completely; raw SSO JSON is editable
+  credential material. Super Admin tenant reads return `SSOConfigJson` as `null`; raw SSO JSON is editable
   nowhere in the UI. `AZURE_TENANT_ID`, `AZURE_ENTRA_ID_CLIENT_ID` and `AZURE_ENTRA_ID_CLIENT_SECRET` remain
   loaded only for the legacy credential-validation path, and `AZURE_ENTRA_ID_ENABLED` is still loaded but no
   longer gates anything; dropping them is future work.
-- **Disabling SSO only warns.** Turning SSO off never blocks. When users without a password are affected, the
+- **Disabling SSO only warns.** Turning SSO off never blocks, even when SSO availability is revoked for the
+  deployment; only turning it on is gated. When users without a password are affected, the
   response carries a warning that names the affected admins and explains how they set a password, an
   `SSO_DISABLED_WARN_ONLY` audit entry is written, and the login screen tells those users to set a password
   instead of showing "Invalid credentials". The admin can therefore still lock users out - that is a deliberate,

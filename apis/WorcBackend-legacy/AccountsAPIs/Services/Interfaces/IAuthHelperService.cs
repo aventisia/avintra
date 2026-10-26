@@ -14,6 +14,13 @@ public interface IAuthHelperService
     bool IsUserTenantValid(Tenant tenant, string userName);
 
     /// <summary>
+    /// Returns the sign-in rejection message for a disabled, deactivated or tenant-invalid account, or null when the account may sign in.
+    /// </summary>
+    /// <param name="user">The user account to validate.</param>
+    /// <returns>The rejection message, or null when the account may sign in.</returns>
+    string? GetSignInBlockMessage(AccountUser user);
+
+    /// <summary>
     /// Checks if the new password passes the obsolete password policy.
     /// </summary>
     /// <param name="newPwd">The new password to check.</param>

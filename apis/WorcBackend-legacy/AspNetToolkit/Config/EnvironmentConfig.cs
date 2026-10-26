@@ -145,10 +145,9 @@ public class EnvironmentConfig
     public string? BrandingAccentForegroundColor { get; set; }
 
     /// <summary>
-    /// True when no on-prem tenant credentials are configured. A community deployment is
-    /// a single-tenant, self-hosted edition that does not synchronize with GlobalAdmin.
-    /// This is the single source of truth for the community detection rule: either the
-    /// tenant id or the instance key being blank marks the deployment as community.
+    /// True when the deployment runs as the explicit Community edition. Startup configuration
+    /// refuses to start on ambiguous identity settings (exactly one of the tenant id / instance
+    /// key present) and on both blank unless <c>ON_PREM_EDITION=Community</c> is set.
     /// </summary>
     public bool IsCommunityDeployment =>
         string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
