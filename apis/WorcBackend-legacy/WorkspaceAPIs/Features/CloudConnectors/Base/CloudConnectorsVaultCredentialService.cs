@@ -6,20 +6,20 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
     private readonly ILogger<CloudConnectorsVaultCredentialService> _logger;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
 
     public CloudConnectorsVaultCredentialService(
         IUnitOfWork unitOfWork,
         ILogger<CloudConnectorsVaultCredentialService> logger,
         IStringEncryptionService stringEncryptionService,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _stringEncryptionService = stringEncryptionService;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     public async Task<VaultCredentialObj?> GetVaultCredentialAsync(string credentialName)
@@ -109,7 +109,7 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
             return true;
         }
 
-        var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+        var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
             currentUserId,
             credential.Id,
             ResourceTypeEnum.VaultCredential,

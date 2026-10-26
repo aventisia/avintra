@@ -11,7 +11,7 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -74,7 +74,7 @@ export const SpacesTable = () => {
           <DTPagination table={table} />
 
           {/* Resource Share Dialog component */}
-          <ResourceShareDialog queryKey={DATA_QUERY_KEY} />
+          <ResourceUserAccessDialog queryKey={DATA_QUERY_KEY} />
         </div>
       ) : (
         // Show data table skeleton while fetching the spaces data

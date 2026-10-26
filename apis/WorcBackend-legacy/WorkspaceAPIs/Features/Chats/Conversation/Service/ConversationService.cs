@@ -4,21 +4,21 @@ public class ConversationService : IConversationService
 {
     private readonly ILogger<ConversationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly Guid _userId;
 
     public ConversationService(
         ILogger<ConversationService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         // Extract current user id from http context (Fallback to empty guid if not available)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     // Retrieves active conversations for a specific flow version.
@@ -158,7 +158,7 @@ public class ConversationService : IConversationService
             // Validate FlowVersion exists and is accessible.
             // A flow version ID is globally unique within a tenant, so the lookup
             // is intentionally NOT scoped to the current space query filter. Access
-            // is enforced separately below via IsPublished + ResourceShare.
+            // is enforced separately below via IsPublished + ResourceUserAccess.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationDto.FlowVersionId &&
@@ -180,8 +180,8 @@ public class ConversationService : IConversationService
             }
 
             // Validate that the current user owns the flow version, has tenant-wide access,
-            // or has been explicitly granted access through ResourceShare.
-            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            // or has been explicitly granted access through ResourceUserAccess.
+            var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flowVersion.Id,
                 ResourceTypeEnum.FlowVersion,

@@ -13,7 +13,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
 
     public CustomToolConnectorService(
         ILogger<CustomToolConnectorService> logger,
@@ -21,14 +21,14 @@ public class CustomToolConnectorService : ICustomToolConnectorService
         IHttpClientFactory httpClientFactory,
         ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _httpClientFactory = httpClientFactory;
         _cloudConnectorsVaultCredentialService = cloudConnectorsVaultCredentialService;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     public async Task<ServiceResponse<CustomToolInvokeResDto>> InvokeAsync(
@@ -62,7 +62,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
                 return serviceResponse.Update($"Custom tool '{tool.Name}' is not active.", 400);
             }
 
-            if (!await CustomToolAccessHelpers.CanUseToolAsync(_resourceShareService, currentUserId, tool))
+            if (!await CustomToolAccessHelpers.CanUseToolAsync(_resourceUserAccessService, currentUserId, tool))
             {
                 return serviceResponse.Update(
                     $"You do not have permission to use custom tool '{tool.Name}'.",

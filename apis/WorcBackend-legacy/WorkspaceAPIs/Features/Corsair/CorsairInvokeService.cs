@@ -32,7 +32,7 @@ public class CorsairInvokeService : ICorsairInvokeService
     private readonly ILogger<CorsairInvokeService> _logger;
     private readonly ICorsairSidecarService _corsairSidecarService;
     private readonly CorsairConfigRepository _configRepository;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
@@ -40,14 +40,14 @@ public class CorsairInvokeService : ICorsairInvokeService
         IUnitOfWork unitOfWork,
         ILogger<CorsairInvokeService> logger,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         ICorsairSidecarService corsairSidecarService,
         CorsairConfigRepository configRepository)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
         _corsairSidecarService = corsairSidecarService;
         _configRepository = configRepository;
@@ -88,7 +88,7 @@ public class CorsairInvokeService : ICorsairInvokeService
             }
 
             // Enforce resource-share authorization (owner/view/edit).
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,

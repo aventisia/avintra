@@ -4,11 +4,11 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
-import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
-import { ResourceFlowAccessRowAction } from "@/features/resource-share/components/common-row-actions/ResourceFlowAccessRowAction";
-import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
-import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+import { ResourceFlowAccessRowAction } from "@/features/resource-flow-access/components/common-row-actions/ResourceFlowAccessRowAction";
+import { RemoveResourceRowAction } from "@/features/resource-user-access/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { TABLE_TAB_QUERY_PARAM } from "../../constants";
 import { useTableTab } from "../../hooks/useTableTab.hook";
@@ -72,7 +72,7 @@ export const SkillRowActions = ({
       )}
       {/* Share Access (not available for platform default skills) */}
       {!readOnly && resourceActions.share && (
-        <ResourceShareRowAction
+        <ResourceUserAccessRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Skill}

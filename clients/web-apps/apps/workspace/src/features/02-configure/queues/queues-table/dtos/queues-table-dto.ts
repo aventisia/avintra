@@ -1,4 +1,4 @@
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
 import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";

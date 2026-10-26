@@ -11,8 +11,8 @@ import { formatDate } from "@avplatform/ui/utils";
 import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
+import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { Tooltip } from "@/ui/components/tooltip";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -170,7 +170,7 @@ export const VaultCredentialTable = () => {
           )}
           <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
 
-          <ResourceShareDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} />
           <ResourceFlowAccessDialog queryKey={queryKey} />
 
           <VaultCredentialBulkActions table={table} />

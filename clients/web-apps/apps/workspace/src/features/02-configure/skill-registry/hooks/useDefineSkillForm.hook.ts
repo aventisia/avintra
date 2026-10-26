@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { isSkillNameAvailable } from "../apis/skill-registry.apis";
 import { skillNameSchema, skillZodSchema } from "../constants/skill-zod-schema.constant";

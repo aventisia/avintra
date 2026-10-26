@@ -10,7 +10,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
 
@@ -19,7 +19,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -29,7 +29,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -64,7 +64,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             else
             {
                 // Retrieve accessible knowledge base IDs with permissions
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.KnowledgeBase,
                     new[]
@@ -134,7 +134,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         try
         {
             // Retrieve knowledge base IDs accessible to current user
-            var accessibleKnowledgeBaseIds = await _resourceShareService
+            var accessibleKnowledgeBaseIds = await _resourceUserAccessService
                 .GetAccessibleResourceIdsAsync(
                     _userId,
                     ResourceTypeEnum.KnowledgeBase,
@@ -264,7 +264,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Verify that the current user has permission to view the knowledge base.
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 knowledgeBase.Id,
                 ResourceTypeEnum.KnowledgeBase,
@@ -394,7 +394,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             await _unitOfWork.SaveAsync();
 
             // Assign creator as resource owner. Ensures creator receives full management permissions
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newKB.Id, ResourceTypeEnum.KnowledgeBase))
             {
                 _logger.LogWarning("Failed assigning owner access for KnowledgeBase {KnowledgeBaseId}", newKB.Id);
                 return serviceResponse;
@@ -501,7 +501,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Validate update permission
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 existingKB.Id,
                 ResourceTypeEnum.KnowledgeBase,
@@ -649,7 +649,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Validate delete permission
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 kb.Id,
                 ResourceTypeEnum.KnowledgeBase,
@@ -687,7 +687,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Remove all resource sharing mappings. Prevent orphan permission records
-            await _resourceShareService.DeleteResourceSharesAsync(kb.Id, ResourceTypeEnum.KnowledgeBase);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(kb.Id, ResourceTypeEnum.KnowledgeBase);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, kb.Id);
 
             // Delete the knowledge base
@@ -753,7 +753,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             var blockedNames = new List<string>();
             foreach (var kb in kbs)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     kb.Id,
                     ResourceTypeEnum.KnowledgeBase,
@@ -823,7 +823,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             var kbIds = kbs.Select(kb => kb.Id).ToList();
-            await _resourceShareService.DeleteResourceSharesAsync(kbIds, ResourceTypeEnum.KnowledgeBase);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(kbIds, ResourceTypeEnum.KnowledgeBase);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, kbIds);
 
             await _unitOfWork.SaveAsync();

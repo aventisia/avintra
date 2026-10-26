@@ -1,4 +1,4 @@
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { ComponentTypeEnum } from "../enums/component-type.enum";
 

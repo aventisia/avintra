@@ -1,0 +1,11 @@
+meta {
+  name: Get resource share by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{RESOURCE_USER_ACCESS_ID}}
+  body: none
+  auth: none
+}

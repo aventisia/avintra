@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { getToolById, isToolNameAvailable } from "../apis/tools.apis";

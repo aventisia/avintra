@@ -3,7 +3,7 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names.constant";

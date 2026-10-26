@@ -1,7 +1,7 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { Cloud, MessagesSquare, Monitor, Workflow } from "lucide-react";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { AgentPlatform } from "../types/agent-platform.type";
 

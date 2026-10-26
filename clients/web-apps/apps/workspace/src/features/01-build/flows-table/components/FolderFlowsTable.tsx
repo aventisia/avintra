@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { FLOWS_QUERY_KEY } from "../constants";
 import { useAgentsPagePaths } from "../hooks/useAgentsPagePaths.hook";
@@ -153,7 +153,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
               )
             }
           />
-          <ResourceShareDialog queryKey={FLOWS_QUERY_KEY} />
+          <ResourceUserAccessDialog queryKey={FLOWS_QUERY_KEY} />
           <FolderDialogs summaries={folderSummaries} />
         </div>
       ) : view === "grid" ? (

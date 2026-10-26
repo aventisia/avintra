@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { FLOWS_QUERY_KEY, TABLE_HEADING } from "../constants";
 import { useAgentsTable } from "../hooks/useAgentsTable.hook";
@@ -230,7 +230,7 @@ export const FlowsTable = () => {
             />
           </section>
           {/* Resource Share Dialog */}
-          <ResourceShareDialog queryKey={FLOWS_QUERY_KEY} />
+          <ResourceUserAccessDialog queryKey={FLOWS_QUERY_KEY} />
           <FolderDialogs summaries={folderSummaries} />
         </div>
       ) : view === "grid" ? (

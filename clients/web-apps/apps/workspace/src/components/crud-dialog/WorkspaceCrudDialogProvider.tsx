@@ -302,7 +302,7 @@ const crudDialogRegistry: CrudDialogRegistry = {
 
 /**
  * IMPORTANT NOTE: Keep this entity list aligned with the environment-scoped resource cases in
- * `apis/WorcBackend-legacy/WorkspaceAPIs/Helpers/ProdResourceShareGuard.cs`.
+ * `apis/WorcBackend-legacy/WorkspaceAPIs/Helpers/ProdResourceUserAccessGuard.cs`.
  * Configure entities whose create dialogs are blocked in the Prod environment.
  * Create/delete are disabled for these resources when env = prod.
  */

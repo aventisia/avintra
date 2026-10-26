@@ -78,8 +78,8 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.ResourceFlowAccessRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceFlowAccess), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete ResourceShare
-            if (!await DeleteEntitiesAsync(_unitOfWork.ResourceShareRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceShare), tenantIdToBeDeleted))
+            // Delete ResourceUserAccess
+            if (!await DeleteEntitiesAsync(_unitOfWork.ResourceUserAccessRepo, r => r.TenantId == tenantIdToBeDeleted, nameof(ResourceUserAccess), tenantIdToBeDeleted))
                 return serviceResponse;
 
             // Delete Queue

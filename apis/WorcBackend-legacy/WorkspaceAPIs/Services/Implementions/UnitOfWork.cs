@@ -41,7 +41,7 @@ public class UnitOfWork : IUnitOfWork
     public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);
     public IApiKeyRepo ApiKeyRepo => new ApiKeyRepo(_workspaceDbContext);
-    public IResourceShareRepo ResourceShareRepo => new ResourceShareRepo(_workspaceDbContext);
+    public IResourceUserAccessRepo ResourceUserAccessRepo => new ResourceUserAccessRepo(_workspaceDbContext);
     public IResourceFlowAccessRepo ResourceFlowAccessRepo => new ResourceFlowAccessRepo(_workspaceDbContext);
     public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
     public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);

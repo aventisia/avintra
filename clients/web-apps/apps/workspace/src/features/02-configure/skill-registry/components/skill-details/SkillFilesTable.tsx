@@ -12,7 +12,7 @@ import { DownloadIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { downloadSkillZip } from "../../apis/skill-registry-file.apis";
 import { DETAIL_TABLE_KEY } from "../../constants";

@@ -1,11 +1,11 @@
 import { DTRowAction } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
-import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
-import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
-import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+import { RemoveResourceRowAction } from "@/features/resource-user-access/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
+import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 
 import { FLOWS_QUERY_KEY } from "../../constants";
 import { FlowRowDeleteAction } from "./FlowRowDeleteAction";
@@ -43,7 +43,7 @@ export const FlowRowActionItems = ({
       )}
       {actions?.update && folderId && <FlowRowRemoveFromFolderAction rowId={rowId} name={name} />}
       {actions?.share && (
-        <ResourceShareRowAction
+        <ResourceUserAccessRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Flow}

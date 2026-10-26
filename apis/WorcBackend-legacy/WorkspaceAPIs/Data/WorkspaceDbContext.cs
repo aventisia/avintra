@@ -73,13 +73,13 @@ public class WorkspaceDbContext : DbContext
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
         // (FlowUser and QueueUser) has been successfully migrated
-        // to ResourceShare in all environments.
+        // to ResourceUserAccess in all environments.
         // Apply global query filters to ensure users only see data elonging to the current tenant in a multi-tenant environment.
         if (CurrentTenantId != Guid.Empty)
         {
             modelBuilder.Entity<FlowUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             modelBuilder.Entity<QueueUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-            modelBuilder.Entity<ResourceShare>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            modelBuilder.Entity<ResourceUserAccess>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         }
 
         // Unique property
@@ -89,7 +89,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
-        modelBuilder.Entity<ResourceShare>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
+        modelBuilder.Entity<ResourceUserAccess>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
         modelBuilder.Entity<ApiKey>().HasIndex(index => index.KeyHash).IsUnique();
         modelBuilder.Entity<ApiKey>().OwnsOne(e => e.Permissions, permissions =>
         {
@@ -164,8 +164,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<KnowledgeBaseFile>().Property(e => e.Status).HasConversion(new EnumToStringConverter<VectorizationStatusEnum>());
-        modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
-        modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
+        modelBuilder.Entity<ResourceUserAccess>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
+        modelBuilder.Entity<ResourceUserAccess>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<ResourceFlowAccess>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
@@ -380,7 +380,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<KnowledgeBase> KnowledgeBases { get; set; }
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
     public DbSet<ApiKey> ApiKeys { get; set; }
-    public DbSet<ResourceShare> ResourceShares { get; set; }
+    public DbSet<ResourceUserAccess> ResourceUserAccesses { get; set; }
     public DbSet<ResourceFlowAccess> ResourceFlowAccesses { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }

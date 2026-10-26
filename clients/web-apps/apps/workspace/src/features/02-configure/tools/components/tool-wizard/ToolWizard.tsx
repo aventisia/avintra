@@ -5,7 +5,7 @@ import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useEffect, useState } from "react";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { createTool, getToolById, testTool, updateTool } from "../../apis/tools.apis";

@@ -34,7 +34,7 @@ public class StreamingChatService : IStreamingChatService
 {
     private readonly ILogger<StreamingChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Guid _userId;
@@ -43,13 +43,13 @@ public class StreamingChatService : IStreamingChatService
     public StreamingChatService(
         ILogger<StreamingChatService> logger,
         IUnitOfWork unitOfWork,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         EnvironmentConfig environmentConfig,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _environmentConfig = environmentConfig;
         _httpContextAccessor = httpContextAccessor;
 
@@ -303,7 +303,7 @@ public class StreamingChatService : IStreamingChatService
 
         // Verify the caller has access to the parent flow. Persisted chats are
         // additionally gated on the version being published and non-archived above.
-        var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+        var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
             _userId,
             flowVersion.FlowId,
             ResourceTypeEnum.Flow,

@@ -6,14 +6,14 @@ namespace WorkspaceAPIs.Services;
 public class TimeTriggerService(
     ILogger<TimeTriggerService> logger,
     IUnitOfWork unitOfWork,
-    IResourceShareService resourceShareService,
+    IResourceUserAccessService resourceUserAccessService,
     IUserManagementGuardService userManagementGuardService,
     IHttpContextAccessor httpContextAccessor,
     ICurrentTenantService currentTenantService) : ITimeTriggerService
 {
     private readonly ILogger<TimeTriggerService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly IResourceShareService _resourceShareService = resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService = resourceUserAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService = userManagementGuardService;
     private readonly ICurrentTenantService _currentTenantService = currentTenantService;
     private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -55,7 +55,7 @@ public class TimeTriggerService(
             else
             {
                 // Retrieve accessible trigger IDs for the current user
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -144,7 +144,7 @@ public class TimeTriggerService(
             }
 
             // Verify current user has permission to view this trigger
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 timeTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -221,7 +221,7 @@ public class TimeTriggerService(
             }
 
             // Verify current user has permission to view this trigger
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 timeTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -408,7 +408,7 @@ public class TimeTriggerService(
             }
 
             // Assign ownership of the newly created trigger to current user
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newTimeTrigger.Id, ResourceTypeEnum.Trigger))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newTimeTrigger.Id, ResourceTypeEnum.Trigger))
             {
                 _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newTimeTrigger.Id);
                 serviceResponse.Message = "Failed assigning ownership.";
@@ -519,7 +519,7 @@ public class TimeTriggerService(
                 return prodUpdateBlock;
             }
 
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 timeTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -829,7 +829,7 @@ public class TimeTriggerService(
             }
 
             // Validate current user has permission to delete this trigger
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 trigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -849,7 +849,7 @@ public class TimeTriggerService(
             }
 
             // Remove resource share mappings before deleting trigger
-            await _resourceShareService.DeleteResourceSharesAsync(trigger.Id, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(trigger.Id, ResourceTypeEnum.Trigger);
 
             // Delete time trigger
             _unitOfWork.TriggerRepo.Delete(trigger);
@@ -903,7 +903,7 @@ public class TimeTriggerService(
             var blockedNames = new List<string>();
             foreach (var trigger in timeTriggers)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -947,7 +947,7 @@ public class TimeTriggerService(
             }
 
             // Remove all resource share mappings before deleting triggers
-            await _resourceShareService.DeleteResourceSharesAsync(timeTriggerIds, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(timeTriggerIds, ResourceTypeEnum.Trigger);
 
             // TODO: Check trigger relationship with other entities
 

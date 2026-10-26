@@ -5,7 +5,7 @@ public class FlowVersionService : IFlowVersionService
     private readonly ILogger<FlowVersionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly Guid _userId;
 
     public FlowVersionService(
@@ -13,7 +13,7 @@ public class FlowVersionService : IFlowVersionService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IUserManagementGuardService userManagementGuardService,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -21,7 +21,7 @@ public class FlowVersionService : IFlowVersionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     // Get a list of flow versions of a single flow using flow identifier
@@ -52,7 +52,7 @@ public class FlowVersionService : IFlowVersionService
             }
 
             // Validate user's access permissions for viewing the flow
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -143,7 +143,7 @@ public class FlowVersionService : IFlowVersionService
             // }
             
             // Validate update permission
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -397,7 +397,7 @@ public class FlowVersionService : IFlowVersionService
                 serviceResponse.Message = "Published versions cannot be deleted.";
                 return serviceResponse;
             }
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flowVersion.Flow.Id,
                 ResourceTypeEnum.Flow,

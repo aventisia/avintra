@@ -12,9 +12,9 @@ import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state.constant";
@@ -127,7 +127,7 @@ export const SkillTable = () => {
           <DTPagination table={table} singularLabel="Skill" pluralLabel="Skills" />
 
           {/* Resource Share Dialog component */}
-          <ResourceShareDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} />
 
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>

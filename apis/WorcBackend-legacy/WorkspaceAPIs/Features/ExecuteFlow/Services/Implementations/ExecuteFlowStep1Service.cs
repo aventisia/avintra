@@ -12,7 +12,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
     private readonly ICurrentTenantService _currentTenantService;
     private readonly INotificationHelperService _notificationHelperService;
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICreditGateService _creditGateService;
     private readonly Guid _userId;
     private readonly string _accessToken;
@@ -24,7 +24,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         INotificationHelperService notificationHelperService,
         IExecuteFlowStep2Service executeFlowStep2Service,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICreditGateService creditGateService)
     {
         _logger = logger;
@@ -36,7 +36,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             ? userId
             : Guid.Empty;
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _creditGateService = creditGateService;
     }
 
@@ -237,7 +237,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             if (flow.IsTenantWideAccess)
                 return true;
 
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -265,7 +265,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             return true;
 
         // Final check: explicit access through a resource share on the published version
-        var (hasVersionAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+        var (hasVersionAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
             _userId,
             flowVersion.Id,
             ResourceTypeEnum.FlowVersion,

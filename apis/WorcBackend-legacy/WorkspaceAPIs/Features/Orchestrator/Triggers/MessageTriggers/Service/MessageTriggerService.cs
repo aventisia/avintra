@@ -9,7 +9,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private const int MESSAGE_EXPIRY_MINUTES = 4320;
@@ -22,7 +22,7 @@ public class MessageTriggerService : IMessageTriggerService
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -35,7 +35,7 @@ public class MessageTriggerService : IMessageTriggerService
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -75,7 +75,7 @@ public class MessageTriggerService : IMessageTriggerService
             else
             {
                 // Retrieve accessible trigger IDs with permissions
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -162,7 +162,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse; // Return early if not found
             }
 
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -296,7 +296,7 @@ public class MessageTriggerService : IMessageTriggerService
             }
 
             // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newMessageTrigger.Id, ResourceTypeEnum.Trigger))
             {
                 serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
@@ -394,7 +394,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -649,7 +649,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return guardBlock;
             }
 
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 messageTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -693,7 +693,7 @@ public class MessageTriggerService : IMessageTriggerService
                 return serviceResponse;
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(messageTrigger.Id, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(messageTrigger.Id, ResourceTypeEnum.Trigger);
 
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(messageTrigger);
@@ -800,7 +800,7 @@ public class MessageTriggerService : IMessageTriggerService
 
             foreach (var trigger in messageTriggers)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -819,7 +819,7 @@ public class MessageTriggerService : IMessageTriggerService
                 }
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(messageTriggerIds, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(messageTriggerIds, ResourceTypeEnum.Trigger);
 
             // Delete triggers
             _unitOfWork.TriggerRepo.Delete(messageTriggers);

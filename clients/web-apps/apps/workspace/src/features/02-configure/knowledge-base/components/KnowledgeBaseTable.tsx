@@ -10,8 +10,8 @@ import { formatDate } from "@avplatform/ui/utils";
 import { NavLink } from "react-router-dom";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
-import ResourceFlowAccessDialog from "@/features/resource-share/components/resource-flow-access/ResourceFlowAccessDialog";
+import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -122,7 +122,7 @@ export const KnowledgeBaseTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="KB" pluralLabel="KBs" />
 
-          <ResourceShareDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} />
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       ) : (

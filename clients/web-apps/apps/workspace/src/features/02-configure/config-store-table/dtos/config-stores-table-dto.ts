@@ -1,6 +1,6 @@
 import type { ConfigStoreTypesEnum } from "@avplatform/ui/enums/config-store-types-enum";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for a config store.

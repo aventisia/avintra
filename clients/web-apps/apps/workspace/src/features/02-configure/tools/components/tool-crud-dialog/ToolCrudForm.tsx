@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { toolOptimisticMutationFn } from "../../apis/tools.apis";
 import { toolZodSchema } from "../../constants/tools-zod-schema";

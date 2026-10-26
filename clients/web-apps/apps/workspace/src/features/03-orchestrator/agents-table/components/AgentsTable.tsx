@@ -11,7 +11,7 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { DATA_QUERY_KEY, TABLE_KEY } from "../constants";
@@ -90,7 +90,7 @@ export const AgentsTable = () => {
         <DataTableSkeleton />
       )}
       <AssignMachinesDialog />
-      <ResourceShareDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />
+      <ResourceUserAccessDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />
       <DisableAgentDialog />
       <AgentConfigDialog />
     </>

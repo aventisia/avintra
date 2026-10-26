@@ -8,7 +8,7 @@ public class FlowsTableService : IFlowsTableService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IFlowVersionService _flowVersionService;
     private readonly IFlowUserService _flowUserService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
 
     public FlowsTableService(
@@ -18,7 +18,7 @@ public class FlowsTableService : IFlowsTableService
         ICurrentTenantService currentTenantService,
         IFlowVersionService flowVersionService,
         IFlowUserService flowUserService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService)
     {
         // Set _userId
@@ -29,7 +29,7 @@ public class FlowsTableService : IFlowsTableService
         _currentTenantService = currentTenantService;
         _flowVersionService = flowVersionService;
         _flowUserService = flowUserService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
     }
 
@@ -64,7 +64,7 @@ public class FlowsTableService : IFlowsTableService
             else
             {
                 // Retrieve accessible resource ids with access levels
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Flow,
                     new[]
@@ -273,7 +273,7 @@ public class FlowsTableService : IFlowsTableService
             }
 
             // Assign creator ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newFlow.Id, ResourceTypeEnum.Flow))
             {
                 serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
@@ -366,7 +366,7 @@ public class FlowsTableService : IFlowsTableService
             }
 
             // Validate update permission
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -463,7 +463,7 @@ public class FlowsTableService : IFlowsTableService
             if (flow == null)
                 return serviceResponse.Update("Agent not found", 404);
 
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -558,7 +558,7 @@ public class FlowsTableService : IFlowsTableService
             //     return serviceResponse;
             // }
 
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -578,7 +578,7 @@ public class FlowsTableService : IFlowsTableService
 
             // TODO: Check flow relationship with other entities
 
-            await _resourceShareService.DeleteResourceSharesAsync(flow.Id, ResourceTypeEnum.Flow);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(flow.Id, ResourceTypeEnum.Flow);
 
             // Delete flow
             _unitOfWork.FlowRepo.Delete(flow);
@@ -633,7 +633,7 @@ public class FlowsTableService : IFlowsTableService
             // Check if the user is the creator or has required access (Owner/Edit)
             foreach (var flow in flows)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     flow.Id,
                     ResourceTypeEnum.Flow,
