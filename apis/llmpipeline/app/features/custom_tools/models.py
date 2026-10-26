@@ -14,9 +14,9 @@ class CustomToolsBase(DeclarativeBase):
 
 
 class Tool(TenantScopedMixin, CustomToolsBase):
-    """A custom tool definition stored in the Workspace DB (ws_Tools table)."""
+    """A custom tool definition stored in the Workspace DB (ai_Tools table)."""
 
-    __tablename__ = "ws_Tools"
+    __tablename__ = "ai_Tools"
 
     id: Mapped[uuid.UUID] = mapped_column(
         "Id",

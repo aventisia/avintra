@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a folder that groups agents within a space.
 /// </summary>
+[Table("agent_Folders")]
 public class Folder : BaseEntity, IMustHaveTenant
 {
     /// <summary>

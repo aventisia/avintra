@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a Conversation, linking a user to a specific Flow Version in the context of a tenant.
 /// </summary>
-[Table("worc_Conversations")]
+[Table("run_Conversations")]
 public class Conversation : BaseEntity, IMustHaveTenant
 {
     /// <summary>

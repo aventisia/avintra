@@ -1,5 +1,5 @@
 /**
- * Builds deterministic OpenAPI specs per plugin (used to seed ws_Tools,
+ * Builds deterministic OpenAPI specs per plugin (used to seed ai_Tools,
  * mirroring the Camel connector specs).
  *
  * Field labels/descriptions come from the same per-plugin node field mapping

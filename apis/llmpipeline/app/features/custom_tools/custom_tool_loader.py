@@ -24,7 +24,7 @@ async def load_custom_tools(
     """
     Load the tenant's active custom tools for an environment.
 
-    Tools are resolved by root name (``ws_Tools.Name``) so only the actions
+    Tools are resolved by root name (``ai_Tools.Name``) so only the actions
     explicitly configured on the agent are loaded. An empty/omitted
     ``tool_names`` loads nothing: custom tools are never bound unless the agent
     configures them.

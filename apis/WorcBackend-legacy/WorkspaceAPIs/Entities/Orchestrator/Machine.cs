@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
-[Table("Machines")]
+[Table("run_Machines")]
 public class Machine : IMustHaveTenant
 {
     /// <summary>

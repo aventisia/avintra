@@ -2,7 +2,7 @@
 
 - Temporary chats use the in-memory ``graph_memory`` saver only.
 - Non-temporary chats are persisted to the Workspace DB using the
-  ``worc_Conversations`` / ``worc_ConversationMessages`` tables.
+  ``run_Conversations`` / ``run_ConversationMessages`` tables.
 """
 
 import json

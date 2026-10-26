@@ -55,7 +55,7 @@ export const createHistoryAdapter = (
       //
       // Message persistence is owned by the llmpipeline /chat/completions
       // streaming path (it writes the user + assistant + tool messages to
-      // worc_ConversationMessages as it streams). Writing again here would
+      // run_ConversationMessages as it streams). Writing again here would
       // create duplicate rows, so append is intentionally a no-op.
       return;
     },

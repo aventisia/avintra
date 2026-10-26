@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an entity that stores flow data.
 /// </summary>
+[Table("agent_Flows")]
 public class Flow : BaseEntity, IMustHaveTenant
 {
     /// <summary>

@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a historical snapshot of a flow version, including its structure, variables,
 /// and input/output configuration, with support for multi-tenancy.
 /// </summary>
-[Table("worc_FlowVersionHistory")]
+[Table("agent_FlowVersionHistory")]
 public class FlowVersionHistory : BaseEntity, IMustHaveTenant
 {
     /// <summary>

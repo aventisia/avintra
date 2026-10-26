@@ -161,7 +161,7 @@ public class CamelSeedingService : ICamelSeedingService
         await mappingRegenerator.RegenerateAsync(localCatalog, harnessOperations);
 
         _logger.LogInformation(
-            "Seeded {Seeded} Camel connectors ({GeneratedFiles} config files) into ws_Tools.",
+            "Seeded {Seeded} Camel connectors ({GeneratedFiles} config files) into ai_Tools.",
             seeded, generatedFiles);
 
         return seeded;

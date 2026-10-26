@@ -4,7 +4,7 @@
  * Reads the Corsair sidecar's `/api/corsair/tools` output and generates:
  *   1. Per-action Cloud Connector config JSON files (Studio DCP format)
  *   2. Action-selector metadata merged into the Cloud Connector mapping
- *   3. Deterministic OpenAPI specs (used to seed ws_Tools, mirroring Camel)
+ *   3. Deterministic OpenAPI specs (used to seed ai_Tools, mirroring Camel)
  *
  * The generator supports all registered plugins and emits only the standard
  * Cloud Connector config shape (no extra properties, no dedicated node type).

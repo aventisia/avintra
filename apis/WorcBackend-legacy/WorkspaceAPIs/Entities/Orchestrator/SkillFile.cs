@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Entities;
 /// Represents a file associated with a skill, such as SKILL.md or supporting scripts.
 /// File content is stored directly in the database as text for easy retrieval and sync.
 /// </summary>
-[Table("worc_SkillFiles")]
+[Table("ai_SkillFiles")]
 public class SkillFile : BaseEntity, IMustHaveTenant
 {
     /// <summary>

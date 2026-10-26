@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Entities;
 /// third-party tools the agent depends on. This is standalone — it does not
 /// gate or block agent publishing.
 /// </summary>
-[Table("worc_AgentRiskRegistry")]
+[Table("agent_RiskRegistry")]
 public class AgentRiskRegistry : BaseEntity, IMustHaveTenant
 {
     /// <summary>

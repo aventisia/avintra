@@ -7,10 +7,10 @@ only; it does not carry a space.
 
 ## What the list is
 
-- A single table, `ws_ResourceFlowAccess`, keyed by tenant, resource type, resource id,
+- A single table, `agent_ResourceFlowAccess`, keyed by tenant, resource type, resource id,
   and flow id, with a unique index over all four.
 - The resource id is a loose id (no foreign key) because the resource is polymorphic; only
-  the flow side carries a foreign key to `Flows`.
+  the flow side carries a foreign key to `agent_Flows`.
 - Access is granted per flow, so every version of that flow inherits the grant.
 - Rows are tenant-scoped only. They do not carry a space; the resource side keeps its own
   space scoping. New assignment picks are scoped to the current space (Central sees only
