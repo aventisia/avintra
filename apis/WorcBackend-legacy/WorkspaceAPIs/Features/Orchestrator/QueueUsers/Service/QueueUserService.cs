@@ -38,12 +38,12 @@ public class QueueUserService : IQueueUserService
             // A user can be associated with a queue in two ways:
             //   1. A legacy QueueUser record (created when the queue is created or
             //      via the older "assign users" flow).
-            //   2. A ResourceShare record (created by the "Share" feature).
+            //   2. A ResourceUserAccess record (created by the "Share" feature).
             // The Assist > Queues screen must show queues from BOTH sources, otherwise
             // users assigned via Share won't see the queue. The Queue entity's global
             // space query filter still applies, so only queues in the currently
             // selected space are returned.
-            var sharedQueueIds = await _unitOfWork.ResourceShareRepo
+            var sharedQueueIds = await _unitOfWork.ResourceUserAccessRepo
                 .GetByConditionAsync(w =>
                     w.UserId == _userId &&
                     w.ResourceType == ResourceTypeEnum.Queue)
@@ -118,7 +118,7 @@ public class QueueUserService : IQueueUserService
 
     // Retrieves the Agent-type queues that the user has access to.
     // A user can access an agent queue via a legacy QueueUser record or a
-    // ResourceShare record, mirroring GetMyQueuesAsync but for Agent queues.
+    // ResourceUserAccess record, mirroring GetMyQueuesAsync but for Agent queues.
     public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyAgentQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null)
     {
         // Initialize the response with a default failure message
@@ -131,8 +131,8 @@ public class QueueUserService : IQueueUserService
         try
         {
             // A user can be associated with an agent queue in the same two ways
-            // as user queues: a legacy QueueUser record or a ResourceShare record.
-            var sharedQueueIds = await _unitOfWork.ResourceShareRepo
+            // as user queues: a legacy QueueUser record or a ResourceUserAccess record.
+            var sharedQueueIds = await _unitOfWork.ResourceUserAccessRepo
                 .GetByConditionAsync(w =>
                     w.UserId == _userId &&
                     w.ResourceType == ResourceTypeEnum.Queue)

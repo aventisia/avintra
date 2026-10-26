@@ -272,7 +272,7 @@ public class SpaceTableService : ISpaceTableService
                 }
             }
 
-            // Grant the creator Owner access in the WorkspaceAPIs ResourceShare table so
+            // Grant the creator Owner access in the WorkspaceAPIs ResourceUserAccess table so
             // the creator's name appears in the Share dialog's "Shared User(s)" list.
             await AssignSpaceOwnerAsync(newSpace.Id);
 
@@ -543,7 +543,7 @@ public class SpaceTableService : ISpaceTableService
         }
     }
 
-    // Grants the space creator Owner access in the WorkspaceAPIs ResourceShare table
+    // Grants the space creator Owner access in the WorkspaceAPIs ResourceUserAccess table
     // so the creator's name appears in the Share dialog's "Shared User(s)" list.
     private async Task AssignSpaceOwnerAsync(Guid spaceId)
     {
@@ -558,7 +558,7 @@ public class SpaceTableService : ISpaceTableService
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
             }
 
-            // POST to the WorkspaceAPIs resource-share endpoint. The WorkspaceAPIs
+            // POST to the WorkspaceAPIs resource-user-access endpoint. The WorkspaceAPIs
             // derives the tenant from the forwarded JWT's "tntid" claim and returns
             // 409 if the creator already has access (idempotent), so no special
             // handling is required here.
@@ -571,7 +571,7 @@ public class SpaceTableService : ISpaceTableService
             };
 
             var response = await httpClient.PostAsJsonAsync(
-                $"{_environmentConfig.WorkspaceApiBaseUrl}/api/resource-share",
+                $"{_environmentConfig.WorkspaceApiBaseUrl}/api/resource-user-access",
                 payload);
 
             if (!response.IsSuccessStatusCode)

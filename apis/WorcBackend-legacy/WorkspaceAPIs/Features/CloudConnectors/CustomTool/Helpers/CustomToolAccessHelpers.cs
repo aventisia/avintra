@@ -9,7 +9,7 @@ public static class CustomToolAccessHelpers
     /// Indicates whether a user may use a resolved custom tool.
     /// </summary>
     public static async Task<bool> CanUseToolAsync(
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         Guid userId,
         Tool tool)
     {
@@ -18,7 +18,7 @@ public static class CustomToolAccessHelpers
             return true;
         }
 
-        var (hasAccess, _) = await resourceShareService.GetResourceAccessAsync(
+        var (hasAccess, _) = await resourceUserAccessService.GetResourceAccessAsync(
             userId,
             tool.Id,
             ResourceTypeEnum.Tool,

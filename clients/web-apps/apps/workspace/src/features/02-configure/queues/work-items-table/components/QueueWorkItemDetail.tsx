@@ -13,7 +13,7 @@ import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import FileWorkItem from "@/features/04-assist/my-queues/components/work-item-details/file-type-work-item/FileWorkItem";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
 import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";

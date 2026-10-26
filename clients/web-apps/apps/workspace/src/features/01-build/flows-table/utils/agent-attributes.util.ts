@@ -1,6 +1,6 @@
 import { TableCNFilterOption } from "@avplatform/ui/table-cn";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { ACCESS_LEVELS } from "../constants/agent-attributes.constant";
 import { FlowsTableDto } from "../dtos/flows-table-dto";

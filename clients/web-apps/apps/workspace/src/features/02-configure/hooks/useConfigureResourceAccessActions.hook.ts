@@ -2,8 +2,8 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
 import { ROLE_OM } from "@/constants/roles";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
+import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
 /** Caps PROD edit actions while retaining base permissions for visible, disabled share/delete actions. */

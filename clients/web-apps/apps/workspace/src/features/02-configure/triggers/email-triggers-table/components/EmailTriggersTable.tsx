@@ -11,7 +11,7 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -78,7 +78,7 @@ export const EmailTriggersTable = () => {
           <DTPagination table={table} />
 
           {/* Resource Share Dialog component */}
-          <ResourceShareDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} />
 
           {/* Bulk actions for data table */}
           {/* <TriggerBulkActions table={table} /> */}

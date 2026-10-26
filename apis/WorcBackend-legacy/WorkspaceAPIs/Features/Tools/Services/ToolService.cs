@@ -6,7 +6,7 @@ public class ToolService : IToolService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolService> _logger;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
@@ -16,14 +16,14 @@ public class ToolService : IToolService
         IUnitOfWork unitOfWork,
         ILogger<ToolService> logger,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -50,7 +50,7 @@ public class ToolService : IToolService
             }
             else
             {
-                resourceAccessMap = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccessMap = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _currentUserId,
                     ResourceTypeEnum.Tool,
                     new[]
@@ -161,7 +161,7 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
@@ -232,7 +232,7 @@ public class ToolService : IToolService
                 return serviceResponse.Update("Tool not found.", 404);
             }
 
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
@@ -359,7 +359,7 @@ public class ToolService : IToolService
                         throw new InvalidOperationException("The new tool was not persisted.");
                     }
 
-                    if (!await _resourceShareService.AssignOwnerAsync(_currentUserId, toolToCreate.Id, ResourceTypeEnum.Tool))
+                    if (!await _resourceUserAccessService.AssignOwnerAsync(_currentUserId, toolToCreate.Id, ResourceTypeEnum.Tool))
                     {
                         throw new InvalidOperationException("Tool ownership assignment failed.");
                     }
@@ -415,7 +415,7 @@ public class ToolService : IToolService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _currentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
@@ -589,7 +589,7 @@ public class ToolService : IToolService
                 return guardBlock;
             }
 
-            var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _currentUserId,
                 toolToDelete.Id,
                 ResourceTypeEnum.Tool,
@@ -602,7 +602,7 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to delete this tool.", 403);
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(toolToDelete.Id, ResourceTypeEnum.Tool);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(toolToDelete.Id, ResourceTypeEnum.Tool);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, toolToDelete.Id);
             _unitOfWork.ToolRepo.Delete(toolToDelete);
 
@@ -640,7 +640,7 @@ public class ToolService : IToolService
             var blockedNames = new List<string>();
             foreach (var tool in toolsToDelete)
             {
-                var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _currentUserId,
                     tool.Id,
                     ResourceTypeEnum.Tool,
@@ -678,7 +678,7 @@ public class ToolService : IToolService
             }
 
             var deletedToolIds = toolsToDelete.Select(tool => tool.Id).ToList();
-            await _resourceShareService.DeleteResourceSharesAsync(deletedToolIds, ResourceTypeEnum.Tool);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(deletedToolIds, ResourceTypeEnum.Tool);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, deletedToolIds);
             _unitOfWork.ToolRepo.Delete(toolsToDelete);
 
@@ -727,7 +727,7 @@ public class ToolService : IToolService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _currentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,

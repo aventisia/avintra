@@ -9,7 +9,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly IFlowVersionHistoryService _flowVersionHistoryService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly INotificationEventService _notificationEventService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly ICollaborationStore _collaborationStore;
@@ -24,7 +24,7 @@ public class FlowBuilderService : IFlowBuilderService
         IHttpContextAccessor httpContextAccessor,
         IUserManagementGuardService userManagementGuardService,
         IFlowVersionHistoryService flowVersionHistoryService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         INotificationEventService notificationEventService,
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
@@ -43,7 +43,7 @@ public class FlowBuilderService : IFlowBuilderService
         _unitOfWork = unitOfWork;
         _userManagementGuardService = userManagementGuardService;
         _flowVersionHistoryService = flowVersionHistoryService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _notificationEventService = notificationEventService;
         _currentTenantService = currentTenantService;
         _collaborationStore = collaborationStore;
@@ -116,7 +116,7 @@ public class FlowBuilderService : IFlowBuilderService
             // TODO: Implement access control logic to ensure the user has permission to access the specified subFlowIds.
             // -----------------------------
             // // Fetch the ConfigStore ResourceIds for the current user
-            // var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
+            // var accessibleResourceIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.FlowVersion);
             // // Fetch the reactFlowObject for the specified subFlowIds that the user has access to
             // var subFlows = await _unitOfWork.FlowVersionRepo
             //     .GetByConditionAsync(w => subFlowIds.Contains(w.Id) && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
@@ -181,7 +181,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             // Validate user's access permissions for viewing the flow
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -291,7 +291,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             // Verify the user has any access to the flow (owner, edit, or view).
-            var (canAccess, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canAccess, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flowVersion.Flow.Id,
                 ResourceTypeEnum.Flow,
@@ -467,7 +467,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             // Validate user's access permissions for update the flow
-            var (canEidt, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEidt, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flow.Id,
                 ResourceTypeEnum.Flow,
@@ -2077,7 +2077,7 @@ public class FlowBuilderService : IFlowBuilderService
     /// </summary>
     private async Task AssignOwnerOrThrowAsync(Guid resourceId, ResourceTypeEnum resourceType)
     {
-        if (!await _resourceShareService.AssignOwnerAsync(_userId, resourceId, resourceType))
+        if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, resourceId, resourceType))
         {
             throw new InvalidOperationException(
                 $"Cannot publish: failed to assign ownership for the cloned {resourceType} '{resourceId}'.");

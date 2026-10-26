@@ -48,11 +48,11 @@ in any space of the same tenant and environment. Create/update therefore query w
 ## Access and sharing
 
 `IsTenantWideAccess` exposes a credential to all users in the tenant. Otherwise access is
-controlled through `ResourceShare` rows keyed by `ResourceTypeEnum.VaultCredential`, with
+controlled through `ResourceUserAccess` rows keyed by `ResourceTypeEnum.VaultCredential`, with
 `ResourceAccessTypeEnum` levels (`Owner`, `FullAccess`, `View`, `Create`, `Edit`,
 `Delete`). Personal lists mark owned rows `Owner`; shared lists resolve the grant through
-`IResourceShareService.GetResourceAccessAsync`. Delete operations also remove the
-credential's `ResourceShare` rows.
+`IResourceUserAccessService.GetResourceAccessAsync`. Delete operations also remove the
+credential's `ResourceUserAccess` rows.
 
 Agent access uses the shared flow-access list (`agent_ResourceFlowAccess`, keyed by
 `ResourceTypeEnum.VaultCredential`). Saving a non-empty agent list restricts the credential

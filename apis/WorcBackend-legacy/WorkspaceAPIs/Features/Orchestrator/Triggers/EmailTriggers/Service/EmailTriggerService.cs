@@ -9,12 +9,12 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private const int OUTLOOK_EXPIRY_MINUTES = 10080;
 
-    public IResourceShareService ResourceShareService => _resourceShareService;
+    public IResourceUserAccessService ResourceUserAccessService => _resourceUserAccessService;
 
     public EmailTriggerService(
         ILogger<EmailTriggerService> logger,
@@ -24,7 +24,7 @@ public class EmailTriggerService : IEmailTriggerService
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -37,7 +37,7 @@ public class EmailTriggerService : IEmailTriggerService
         _environmentConfig = environmentConfig;
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -78,7 +78,7 @@ public class EmailTriggerService : IEmailTriggerService
             else
             {
                 // Retrieve accessible trigger IDs with permissions
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Trigger,
                     new[]
@@ -166,7 +166,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Verify current user has permission to view this trigger
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -300,7 +300,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Assign ownership of the newly created trigger to current user
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newEmailTrigger.Id, ResourceTypeEnum.Trigger))
             {
                 _logger.LogError("Failed assigning owner permissions for email trigger {TriggerId}.", newEmailTrigger.Id);
                 serviceResponse.Message = "Failed assigning ownership.";
@@ -400,7 +400,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Validate current user has permission to update this trigger
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -684,7 +684,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Validate current user has permission to delete this trigger
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 emailTrigger.Id,
                 ResourceTypeEnum.Trigger,
@@ -704,7 +704,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Remove resource share mappings before deleting trigger
-            await _resourceShareService.DeleteResourceSharesAsync(emailTrigger.Id, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(emailTrigger.Id, ResourceTypeEnum.Trigger);
 
             // Delete entity
             _unitOfWork.TriggerRepo.Delete(emailTrigger);
@@ -813,7 +813,7 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate delete access for all triggers
             foreach (var trigger in emailTriggers)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     trigger.Id,
                     ResourceTypeEnum.Trigger,
@@ -834,7 +834,7 @@ public class EmailTriggerService : IEmailTriggerService
             }
 
             // Remove all resource share mappings before deleting triggers
-            await _resourceShareService.DeleteResourceSharesAsync(emailTriggerIds, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(emailTriggerIds, ResourceTypeEnum.Trigger);
 
             // Delete triggers
             _unitOfWork.TriggerRepo.Delete(emailTriggers);

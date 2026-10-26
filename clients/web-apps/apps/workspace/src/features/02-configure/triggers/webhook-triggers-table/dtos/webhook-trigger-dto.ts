@@ -1,4 +1,4 @@
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for an webhook trigger configuration.

@@ -1,6 +1,6 @@
 import { Library } from "lucide-react";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 export type ToolTableColumnKey =
   | "id"

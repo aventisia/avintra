@@ -1,0 +1,28 @@
+meta {
+  name: Insert resource share
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "resourceType": "VaultCredential",
+    "resourceId": "{{VAULT_CREDENTIAL_ID}}",
+    "accessLevel": "View",
+    "userId": "{{USER_ID}}"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "RESOURCE_USER_ACCESS_ID", res.getBody().data.id
+      );
+  }
+}

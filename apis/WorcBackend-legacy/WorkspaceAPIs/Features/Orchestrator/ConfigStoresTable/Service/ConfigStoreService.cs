@@ -6,7 +6,7 @@ public class ConfigStoreService : IConfigStoreService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
@@ -16,7 +16,7 @@ public class ConfigStoreService : IConfigStoreService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
@@ -27,7 +27,7 @@ public class ConfigStoreService : IConfigStoreService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -112,7 +112,7 @@ public class ConfigStoreService : IConfigStoreService
             else
             {
                 // Retrieve config store resources the user can access along with their permissions
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.ConfigStore,
                     new[]
@@ -191,7 +191,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate view access
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     configStore.Id,
                     ResourceTypeEnum.ConfigStore,
@@ -250,7 +250,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate whether the current user has permission to view the config store
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 configStore.Id,
                 ResourceTypeEnum.ConfigStore,
@@ -296,7 +296,7 @@ public class ConfigStoreService : IConfigStoreService
         try
         {
             // Fetch the ConfigStore ResourceIds for the current user
-            var accessibleResourceIds = await _resourceShareService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.ConfigStore);
+            var accessibleResourceIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(_userId, ResourceTypeEnum.ConfigStore);
 
             var normalizedKeys = keys?
                 .Where(w => !string.IsNullOrWhiteSpace(w))
@@ -402,7 +402,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Assign ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newConfigStore.Id, ResourceTypeEnum.ConfigStore))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newConfigStore.Id, ResourceTypeEnum.ConfigStore))
             {
                 serviceResponse.Message = "Failed assigning ownership.";
                 return serviceResponse;
@@ -464,7 +464,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate update access
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 configStore.Id,
                 ResourceTypeEnum.ConfigStore,
@@ -601,7 +601,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate delete permission
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 configStore.Id,
                 ResourceTypeEnum.ConfigStore,
@@ -620,7 +620,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Remove resource shares
-            await _resourceShareService.DeleteResourceSharesAsync(configStoreId, ResourceTypeEnum.ConfigStore);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(configStoreId, ResourceTypeEnum.ConfigStore);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStoreId);
 
             // Delete the config store from the repository
@@ -672,7 +672,7 @@ public class ConfigStoreService : IConfigStoreService
             var blockedNames = new List<string>();
             foreach (var configStore in configStores)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     configStore.Id,
                     ResourceTypeEnum.ConfigStore,
@@ -715,7 +715,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Remove resource shares
-            await _resourceShareService.DeleteResourceSharesAsync(configStoreIds, ResourceTypeEnum.ConfigStore);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(configStoreIds, ResourceTypeEnum.ConfigStore);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStoreIds);
 
             // Delete the config stores from the repository
@@ -765,7 +765,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate decrypt/view access
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 configStore.Id,
                 ResourceTypeEnum.ConfigStore,
@@ -845,7 +845,7 @@ public class ConfigStoreService : IConfigStoreService
             }
 
             // Validate decrypt/view access
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 configStore.Id,
                 ResourceTypeEnum.ConfigStore,

@@ -1,6 +1,6 @@
 import type { DragEvent } from "react";
 
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 
 import { AGENT_DRAG_PREVIEW_ID } from "../constants/folder-motion.constant";
 import { FlowsTableDto } from "../dtos/flows-table-dto";

@@ -1,7 +1,7 @@
 # Resource Flow Access
 
 This feature stores which flows may use a given resource. It is the flow-side sibling of the
-people-sharing table (`ResourceShare`): one row links a resource to one flow, one flow can have
+people-sharing table (`ResourceUserAccess`): one row links a resource to one flow, one flow can have
 many linked resources, and one resource can have many linked flows. The list is tenant-scoped
 only; it does not carry a space.
 

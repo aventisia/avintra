@@ -1,6 +1,6 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { AccessTypeEnum } from "../constants/access-type-enum";
 

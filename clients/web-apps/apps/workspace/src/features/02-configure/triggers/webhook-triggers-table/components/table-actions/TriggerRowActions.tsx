@@ -2,10 +2,10 @@ import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
-import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";
-import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
-import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+import { RemoveResourceRowAction } from "@/features/resource-user-access/components/common-row-actions/RemoveResourceRowAction";
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { useTableTab } from "../../hooks/useTableTab";
 import { TriggerRowDeleteAction } from "./TriggerRowDeleteAction";
@@ -37,7 +37,7 @@ export const TriggerRowActions = ({
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="webhookTrigger" />}
       {/* Share Access */}
       {resourceActions.share && (
-        <ResourceShareRowAction
+        <ResourceUserAccessRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Trigger}

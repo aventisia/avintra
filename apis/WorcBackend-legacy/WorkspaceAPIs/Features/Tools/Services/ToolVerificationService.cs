@@ -9,7 +9,7 @@ public class ToolVerificationService : IToolVerificationService
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolVerificationService> _logger;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
@@ -17,14 +17,14 @@ public class ToolVerificationService : IToolVerificationService
     public ToolVerificationService(
         IUnitOfWork unitOfWork,
         ILogger<ToolVerificationService> logger,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IHttpClientFactory httpClientFactory,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _httpClientFactory = httpClientFactory;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -59,7 +59,7 @@ public class ToolVerificationService : IToolVerificationService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,

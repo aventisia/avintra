@@ -4,7 +4,7 @@ public class QueueTableService : IQueueTableService
 {
     private readonly ILogger<QueueTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
@@ -15,7 +15,7 @@ public class QueueTableService : IQueueTableService
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
@@ -26,7 +26,7 @@ public class QueueTableService : IQueueTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -106,7 +106,7 @@ public class QueueTableService : IQueueTableService
             else
             {
                 // Get accessible queue IDs with their access levels
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.Queue,
                     new[]
@@ -119,7 +119,7 @@ public class QueueTableService : IQueueTableService
 
                 // Retrieve all accessible queues.
                 // A queue is considered shared/accessible when the current user:
-                //   - has a ResourceShare record granting access, OR
+                //   - has a ResourceUserAccess record granting access, OR
                 //   - is tenant-wide accessible, OR
                 //   - has a legacy QueueUser record (kept in sync with the Assist
                 //     "my queues" screen so both sections show the same queues).
@@ -260,7 +260,7 @@ public class QueueTableService : IQueueTableService
             else
             {
                 // Retrieve queue IDs accessible by current user
-                var accessibleQueueIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+                var accessibleQueueIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
                     _userId,
                     ResourceTypeEnum.Queue,
                     new[]
@@ -330,7 +330,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate view permission
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -403,7 +403,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Verify that the user has permission to view the queue.
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -419,7 +419,7 @@ public class QueueTableService : IQueueTableService
 
             // A user can also be associated with a queue through a legacy QueueUser
             // record (used by the Assist "my queues" screen and agent queues), which
-            // is not represented as a ResourceShare. Mirror the list endpoints so
+            // is not represented as a ResourceUserAccess. Mirror the list endpoints so
             // those users can resolve the queue's full schema.
             var hasQueueUserAccess = queue.QueueUsers?.Any(a => a.UserId == _userId) == true;
 
@@ -512,7 +512,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Assign creator ownership
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newQueue.Id, ResourceTypeEnum.Queue))
             {
                 _logger.LogWarning("Failed assigning queue ownership. Queue {QueueId}", newQueue.Id);
                 serviceResponse.Message = "Failed assigning ownership.";
@@ -591,7 +591,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate edit permission
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -793,7 +793,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Validate delete permission
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -812,7 +812,7 @@ public class QueueTableService : IQueueTableService
             }
 
             // Remove access mappings
-            await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(queue.Id, ResourceTypeEnum.Queue);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queue.Id);
 
             // Delete queue
@@ -868,7 +868,7 @@ public class QueueTableService : IQueueTableService
             var blockedNames = new List<string>();
             foreach (var queue in queues)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     queue.Id,
                     ResourceTypeEnum.Queue,
@@ -915,7 +915,7 @@ public class QueueTableService : IQueueTableService
             // TODO: Check queues relationship with other entities
 
             // Remove access mappings
-            await _resourceShareService.DeleteResourceSharesAsync(queueIds, ResourceTypeEnum.Queue);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(queueIds, ResourceTypeEnum.Queue);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queueIds);
 
             // Delete queues

@@ -1,8 +1,8 @@
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
-import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
-import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { SpacesTableDto } from "../../dtos/spaces-table-dto";
 import { SpaceRowDeleteAction } from "./SpaceRowDeleteAction";
@@ -26,7 +26,7 @@ export const SpaceRowActions = ({ rowId, row }: SpaceRowActionsProps) => {
       <DTRowAction rowId={rowId} crudAction="update" entity="space" disabled={isDefault} />
 
       {/* Share Space access */}
-      <ResourceShareRowAction
+      <ResourceUserAccessRowAction
         rowId={rowId}
         resourceName={row.name}
         isTenantWideAccess={false}

@@ -10,7 +10,7 @@ public class SkillRegistryService : ISkillRegistryService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly IUserManagementGuardService _userManagementGuardService;
 
@@ -25,7 +25,7 @@ public class SkillRegistryService : ISkillRegistryService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -34,7 +34,7 @@ public class SkillRegistryService : ISkillRegistryService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -50,7 +50,7 @@ public class SkillRegistryService : ISkillRegistryService
         try
         {
             // Retrieve IDs and access levels for skills explicitly shared with the current user.
-            var resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+            var resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                 _userId,
                 ResourceTypeEnum.Skill,
                 new[]
@@ -204,7 +204,7 @@ public class SkillRegistryService : ISkillRegistryService
             var accessLevel = ResourceAccessTypeEnum.View;
             if (skill.Type != ComponentTypeEnum.Platform)
             {
-                var (canView, resolvedAccessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canView, resolvedAccessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
@@ -291,7 +291,7 @@ public class SkillRegistryService : ISkillRegistryService
             var accessLevel = ResourceAccessTypeEnum.View;
             if (skill.Type != ComponentTypeEnum.Platform)
             {
-                var (canView, resolvedAccessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canView, resolvedAccessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
@@ -400,7 +400,7 @@ public class SkillRegistryService : ISkillRegistryService
             await _unitOfWork.SaveAsync();
 
             // Assign creator as resource owner.
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newSkill.Id, ResourceTypeEnum.Skill))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newSkill.Id, ResourceTypeEnum.Skill))
             {
                 _logger.LogWarning("Failed assigning owner access for skill {SkillId}", newSkill.Id);
                 return serviceResponse;
@@ -478,7 +478,7 @@ public class SkillRegistryService : ISkillRegistryService
             }
 
             // Verify user has edit or owner permission.
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 existingSkill.Id,
                 ResourceTypeEnum.Skill,
@@ -603,7 +603,7 @@ public class SkillRegistryService : ISkillRegistryService
             }
 
             // Verify owner permission for deletion.
-            var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 skill.Id,
                 ResourceTypeEnum.Skill,
@@ -624,7 +624,7 @@ public class SkillRegistryService : ISkillRegistryService
             }
 
             // Remove resource shares before deleting the skill.
-            await _resourceShareService.DeleteResourceSharesAsync(skill.Id, ResourceTypeEnum.Skill);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(skill.Id, ResourceTypeEnum.Skill);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, skill.Id);
 
             // Delete skill and save changes.
@@ -687,7 +687,7 @@ public class SkillRegistryService : ISkillRegistryService
             var blockedNames = new List<string>();
             foreach (var skill in allMatchedSkills)
             {
-                var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
@@ -732,7 +732,7 @@ public class SkillRegistryService : ISkillRegistryService
             }
 
             // Remove all associated resource shares for the skills.
-            await _resourceShareService.DeleteResourceSharesAsync(requestedIds, ResourceTypeEnum.Skill);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(requestedIds, ResourceTypeEnum.Skill);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, requestedIds);
 
             // Delete each skill from the repository.
@@ -779,7 +779,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Shares granted to the target user, folded into the skill query as an EXISTS
             // subquery so personal + shared skills are read in a single database round trip.
-            var sharedShares = _unitOfWork.ResourceShareRepo.GetByConditionAsync(rs =>
+            var sharedShares = _unitOfWork.ResourceUserAccessRepo.GetByConditionAsync(rs =>
                 rs.UserId == _currentTenantService.CurrentUserId &&
                 rs.ResourceType == ResourceTypeEnum.Skill &&
                 (
@@ -886,7 +886,7 @@ public class SkillRegistryService : ISkillRegistryService
         {
             // Shares granted to the current user, folded into the skill query as an EXISTS
             // subquery so personal + shared skills are read in a single database round trip.
-            var sharedShares = _unitOfWork.ResourceShareRepo.GetByConditionAsync(rs =>
+            var sharedShares = _unitOfWork.ResourceUserAccessRepo.GetByConditionAsync(rs =>
                 rs.UserId == _userId &&
                 rs.ResourceType == ResourceTypeEnum.Skill &&
                 (

@@ -11,7 +11,7 @@ public class VaultCredentialService : IVaultCredentialService
     private readonly CorsairConfigRepository _corsairConfigRepository;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
@@ -20,7 +20,7 @@ public class VaultCredentialService : IVaultCredentialService
         ILogger<VaultCredentialService> logger, IHttpContextAccessor
         httpContextAccessor,
         IStringEncryptionService encryptionService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService,
@@ -37,7 +37,7 @@ public class VaultCredentialService : IVaultCredentialService
         _corsairConfigRepository = corsairConfigRepository;
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
@@ -66,7 +66,7 @@ public class VaultCredentialService : IVaultCredentialService
             }
             else
             {
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.VaultCredential,
                     new[]
@@ -193,7 +193,7 @@ public class VaultCredentialService : IVaultCredentialService
 
         try
         {
-            var accessibleSecretIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+            var accessibleSecretIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
                 _userId,
                 ResourceTypeEnum.VaultCredential,
                 new[]
@@ -246,7 +246,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -303,7 +303,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -423,7 +423,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            if (!await _resourceShareService.AssignOwnerAsync(_userId, newVaultCredential.Id, ResourceTypeEnum.VaultCredential))
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newVaultCredential.Id, ResourceTypeEnum.VaultCredential))
             {
                 serviceResponse.Message = "Failed assigning ownership.";
                 _logger.LogError("Failed to assign owner access for Credential ID: {VaultCredentialId}", vaultCredentialDto.Id);
@@ -491,7 +491,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 existingVaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -715,7 +715,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return guardBlock;
             }
 
-            var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -734,7 +734,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(vaultCredential.Id, ResourceTypeEnum.VaultCredential);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(vaultCredential.Id, ResourceTypeEnum.VaultCredential);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, vaultCredential.Id);
 
             _unitOfWork.VaultCredentialRepo.Delete(vaultCredential);
@@ -782,7 +782,7 @@ public class VaultCredentialService : IVaultCredentialService
             var blockedNames = new List<string>();
             foreach (var vaultCredential in vaultCredentials)
             {
-                var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     vaultCredential.Id,
                     ResourceTypeEnum.VaultCredential,
@@ -822,7 +822,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            await _resourceShareService.DeleteResourceSharesAsync(vaultCredentialIds, ResourceTypeEnum.VaultCredential);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(vaultCredentialIds, ResourceTypeEnum.VaultCredential);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, vaultCredentialIds);
 
             _unitOfWork.VaultCredentialRepo.Delete(vaultCredentials);
@@ -873,7 +873,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -960,7 +960,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,

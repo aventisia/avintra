@@ -5,7 +5,7 @@ public class AssistChatService : IAssistChatService
     private readonly ILogger<AssistChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly Guid _userId;
 
     public AssistChatService(
@@ -13,7 +13,7 @@ public class AssistChatService : IAssistChatService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IResourceFlowAccessService resourceFlowAccessService,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         // Extract and initialize current userId from JWT claims
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -21,7 +21,7 @@ public class AssistChatService : IAssistChatService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceFlowAccessService = resourceFlowAccessService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     // Retrieves all assigned (published) flow versions.
@@ -36,7 +36,7 @@ public class AssistChatService : IAssistChatService
 
         try
         {
-            var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+            var accessibleFlowVersionIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
                 _userId,
                 ResourceTypeEnum.FlowVersion,
                 ResourceAccessTypeEnum.Owner,
@@ -153,7 +153,7 @@ public class AssistChatService : IAssistChatService
 
         try
         {
-            var accessibleFlowVersionIds = await _resourceShareService.GetAccessibleResourceIdsAsync(
+            var accessibleFlowVersionIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
                 _userId,
                 ResourceTypeEnum.FlowVersion,
                 ResourceAccessTypeEnum.Owner,

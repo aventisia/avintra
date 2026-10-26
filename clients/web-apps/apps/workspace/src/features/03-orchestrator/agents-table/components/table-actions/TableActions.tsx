@@ -1,8 +1,8 @@
 import { Separator } from "@avplatform/ui";
 import { DataTableRowActions } from "@avplatform/ui/data-table";
 
-import { ResourceShareRowAction } from "@/features/resource-share/components/common-row-actions/ResourceShareRowAction";
-import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { AgentConfigRowAction } from "./AgentConfigRowAction";
 import { AgentDisableAction } from "./AgentDisableAction";
@@ -31,7 +31,7 @@ export const TableActions = ({
   return (
     <DataTableRowActions>
       {type == "ChatAgent" ? (
-        <ResourceShareRowAction
+        <ResourceUserAccessRowAction
           rowId={rowId}
           resourceName={flowName ?? ""}
           isTenantWideAccess={isTenantWideAccess}

@@ -29,10 +29,10 @@ for PROD resources.
 ## Access and sharing
 
 Each row shows its `accessLevel` (`Owner`, `FullAccess`, `View`, `Edit`, `Delete`).
-Owned rows expose the full row actions menu, including `ResourceShareDialog` to grant or
+Owned rows expose the full row actions menu, including `ResourceUserAccessDialog` to grant or
 revoke access and toggle tenant-wide access. Rows that are shared with the user expose
 remove-from-shared-list and reconnect actions. Actions post
-`ResourceTypeEnum.VaultCredential` to the resource-share flow.
+`ResourceTypeEnum.VaultCredential` to the resource-user-access flow.
 
 Rows also expose `Assign Agents`, which opens the shared flow-assignment dialog. A non-empty
 list restricts the credential to those agents and an empty list opens it again; the action is

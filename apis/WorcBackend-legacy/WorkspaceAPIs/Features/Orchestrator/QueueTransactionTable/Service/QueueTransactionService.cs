@@ -8,7 +8,7 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly string _username;
     private readonly string _displayName;
     private readonly IStringEncryptionService _stringEncryptionService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
@@ -16,7 +16,7 @@ public class QueueTransactionService : IQueueTransactionService
         ILogger<QueueTransactionService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor, IStringEncryptionService stringEncryptionService,
-        IResourceShareService resourceShareService, ICurrentTenantService currentTenantService)
+        IResourceUserAccessService resourceUserAccessService, ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -26,7 +26,7 @@ public class QueueTransactionService : IQueueTransactionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
     }
 
@@ -56,7 +56,7 @@ public class QueueTransactionService : IQueueTransactionService
         {
             // Resolve the queue with tenant/space filters bypassed, then authorize the caller.
             // The user must either own the queue (personal) or have access to it as a shared
-            // resource (ResourceShare record, tenant-wide access, or a legacy QueueUser
+            // resource (ResourceUserAccess record, tenant-wide access, or a legacy QueueUser
             // assignment) before any of its work items are returned.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
@@ -75,7 +75,7 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
-            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 queue.Id,
                 ResourceTypeEnum.Queue,
@@ -87,7 +87,7 @@ public class QueueTransactionService : IQueueTransactionService
                 ResourceAccessTypeEnum.Create);
 
             // Legacy QueueUser assignments (Assist "my queues") also grant visibility
-            // even when no ResourceShare record exists.
+            // even when no ResourceUserAccess record exists.
             if (!hasAccess)
             {
                 hasAccess = await _unitOfWork.QueueUserRepo

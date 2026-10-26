@@ -8,7 +8,7 @@ public class ToolCatalogService : IToolCatalogService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ToolCatalogService> _logger;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly CorsairConfigRepository _corsairConfigRepository;
     private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
@@ -17,7 +17,7 @@ public class ToolCatalogService : IToolCatalogService
     public ToolCatalogService(
         IUnitOfWork unitOfWork,
         ILogger<ToolCatalogService> logger,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         CorsairConfigRepository corsairConfigRepository,
         CamelConnectorCatalogRepository camelConnectorCatalogRepository,
@@ -25,7 +25,7 @@ public class ToolCatalogService : IToolCatalogService
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
         _corsairConfigRepository = corsairConfigRepository;
         _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
@@ -207,7 +207,7 @@ public class ToolCatalogService : IToolCatalogService
     }
 
     private Task<Dictionary<Guid, ResourceAccessTypeEnum>> GetUsableToolsResourceAccessAsync() =>
-        _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+        _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
             _currentTenantService.CurrentUserId,
             ResourceTypeEnum.Tool,
             new[]

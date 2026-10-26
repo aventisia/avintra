@@ -6,7 +6,7 @@ public class AgentTableService : IAgentTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
 
@@ -16,7 +16,7 @@ public class AgentTableService : IAgentTableService
         IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
@@ -26,7 +26,7 @@ public class AgentTableService : IAgentTableService
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
     }
 
@@ -111,7 +111,7 @@ public class AgentTableService : IAgentTableService
             else
             {
                 // Retrieve all flow version resources the current user has access to
-                resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
                     _userId,
                     ResourceTypeEnum.FlowVersion,
                     new[]
@@ -845,7 +845,7 @@ public class AgentTableService : IAgentTableService
         }
 
         // Revoke the resource shares for the archived version
-        await _resourceShareService.DeleteResourceSharesAsync(flowVersionId, ResourceTypeEnum.FlowVersion);
+        await _resourceUserAccessService.DeleteResourceUserAccessesAsync(flowVersionId, ResourceTypeEnum.FlowVersion);
 
         // Cancel pending/running jobs; completed runs are retained as history.
         // The space filter is bypassed so jobs are cancelled regardless of the space
@@ -1004,7 +1004,7 @@ public class AgentTableService : IAgentTableService
 
             // Owned key-value pairs go with the credential.
             await DeleteLinksAsync(_unitOfWork.EncryptedKeyValueRepo, kv => kv.VaultCredentialId == credential.Id);
-            await _resourceShareService.DeleteResourceSharesAsync(credential.Id, ResourceTypeEnum.VaultCredential);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(credential.Id, ResourceTypeEnum.VaultCredential);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, credential.Id);
             _unitOfWork.VaultCredentialRepo.Delete(credential);
         }
@@ -1072,7 +1072,7 @@ public class AgentTableService : IAgentTableService
             if (await IsQueueRoutedToByOtherQueueAsync(queue))
                 continue;
 
-            await _resourceShareService.DeleteResourceSharesAsync(queue.Id, ResourceTypeEnum.Queue);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(queue.Id, ResourceTypeEnum.Queue);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Queue, queue.Id);
             _unitOfWork.QueueRepo.Delete(queue);
         }
@@ -1114,7 +1114,7 @@ public class AgentTableService : IAgentTableService
                 _unitOfWork.VectorStoreRepo.Delete(vectorStore);
 
             await DeleteLinksAsync(_unitOfWork.KnowledgeBaseFileRepo, f => f.KnowledgeBaseId == knowledgeBase.Id);
-            await _resourceShareService.DeleteResourceSharesAsync(knowledgeBase.Id, ResourceTypeEnum.KnowledgeBase);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(knowledgeBase.Id, ResourceTypeEnum.KnowledgeBase);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.KnowledgeBase, knowledgeBase.Id);
             _unitOfWork.KnowledgeBaseRepo.Delete(knowledgeBase);
         }
@@ -1150,7 +1150,7 @@ public class AgentTableService : IAgentTableService
             if (tool == null || tool.IsTenantWideAccess || tool.Type == ComponentTypeEnum.Platform)
                 continue;
 
-            await _resourceShareService.DeleteResourceSharesAsync(tool.Id, ResourceTypeEnum.Tool);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(tool.Id, ResourceTypeEnum.Tool);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Tool, tool.Id);
             _unitOfWork.ToolRepo.Delete(tool);
         }
@@ -1173,7 +1173,7 @@ public class AgentTableService : IAgentTableService
 
             // Owned files go with the skill.
             await DeleteLinksAsync(_unitOfWork.SkillFileRepo, f => f.SkillId == skill.Id);
-            await _resourceShareService.DeleteResourceSharesAsync(skill.Id, ResourceTypeEnum.Skill);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(skill.Id, ResourceTypeEnum.Skill);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.Skill, skill.Id);
             _unitOfWork.SkillRepo.Delete(skill);
         }
@@ -1200,7 +1200,7 @@ public class AgentTableService : IAgentTableService
             if (assignedToOtherFlow)
                 continue;
 
-            await _resourceShareService.DeleteResourceSharesAsync(configStore.Id, ResourceTypeEnum.ConfigStore);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(configStore.Id, ResourceTypeEnum.ConfigStore);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStore.Id);
             _unitOfWork.ConfigStoreRepo.Delete(configStore);
         }
@@ -1225,7 +1225,7 @@ public class AgentTableService : IAgentTableService
             if (linkedToOtherAgent)
                 continue;
 
-            await _resourceShareService.DeleteResourceSharesAsync(trigger.Id, ResourceTypeEnum.Trigger);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(trigger.Id, ResourceTypeEnum.Trigger);
             _unitOfWork.TriggerRepo.Delete(trigger);
         }
     }

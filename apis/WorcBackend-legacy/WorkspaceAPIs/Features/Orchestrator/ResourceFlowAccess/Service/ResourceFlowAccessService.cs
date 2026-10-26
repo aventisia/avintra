@@ -4,7 +4,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ResourceFlowAccessService> _logger;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
@@ -16,7 +16,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
         IUnitOfWork unitOfWork,
         ILogger<ResourceFlowAccessService> logger,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService,
+        IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         IUserManagementGuardService userManagementGuardService)
     {
@@ -25,7 +25,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
 
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
     }
@@ -168,7 +168,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 return prodUpdateBlock;
             }
 
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 resourceId,
                 resourceType,
@@ -449,7 +449,7 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
                 isTenantWideAccess = vaultCredential.IsTenantWideAccess;
             }
 
-            var (canAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 resourceId,
                 resourceType,

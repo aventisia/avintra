@@ -4,14 +4,14 @@ public class ConversationMessageService : IConversationMessageService
 {
     private readonly ILogger<ConversationMessageService> _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly Guid _userId;
 
     public ConversationMessageService(
         ILogger<ConversationMessageService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         // Extract current user ID from HTTP context claims
         // Fallback to empty GUID if not available (prevents null issues)
@@ -22,7 +22,7 @@ public class ConversationMessageService : IConversationMessageService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     // Sends a message in an existing conversation.
@@ -80,8 +80,8 @@ public class ConversationMessageService : IConversationMessageService
             }
 
             // Validate that the current user owns the flow version, has tenant-wide access,
-            // or has been explicitly granted access through ResourceShare.
-            var (hasAccess, _) = await _resourceShareService.GetResourceAccessAsync(
+            // or has been explicitly granted access through ResourceUserAccess.
+            var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flowVersion.Id,
                 ResourceTypeEnum.FlowVersion,

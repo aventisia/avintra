@@ -1742,7 +1742,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("agent_ResourceFlowAccess");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceUserAccess", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -3222,7 +3222,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Flow");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceShare", b =>
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ResourceUserAccess", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
                         .WithMany()

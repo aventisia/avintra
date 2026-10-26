@@ -9,21 +9,21 @@ public class SkillRegistryFileService : ISkillRegistryFileService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly IResourceShareService _resourceShareService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
 
     public SkillRegistryFileService(
         ILogger<SkillRegistryFileService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IResourceShareService resourceShareService)
+        IResourceUserAccessService resourceUserAccessService)
     {
         // Extract current user ID from JWT claim; fallback to empty Guid when missing.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
-        _resourceShareService = resourceShareService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             // For other skill types, verify the current user has view access.
             if (skill.Type != ComponentTypeEnum.Platform)
             {
-                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
@@ -146,7 +146,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             // For other skill types, verify the current user has view access.
             if (skill.Type != ComponentTypeEnum.Platform)
             {
-                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
@@ -262,7 +262,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             }
 
             // Verify the current user has edit access to the skill.
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 skill.Id,
                 ResourceTypeEnum.Skill,
@@ -377,7 +377,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             }
 
             // Verify the current user has edit access to the skill.
-            var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
+            var (canEdit, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 skill.Id,
                 ResourceTypeEnum.Skill,
@@ -462,7 +462,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
             // For other skill types, verify the current user has view access.
             if (skill.Type != ComponentTypeEnum.Platform)
             {
-                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
                     skill.Id,
                     ResourceTypeEnum.Skill,
