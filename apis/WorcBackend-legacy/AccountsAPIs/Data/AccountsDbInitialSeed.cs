@@ -27,19 +27,33 @@ public static class AccountsDbInitialSeed
             // Try to seed data
             try
             {
-                // Ensure every tenant has a default "Central" space.
-                // This runs unconditionally (idempotently) so existing tenants also get it,
-                // even when the rest of the seed is skipped by IsSeedingRequired.
-                await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext, logger);
-
                 // Seed any missing fixed roles.
                 // This runs unconditionally (idempotently) so existing databases also pick up
                 // newly added roles (e.g. the CRM placeholders), even when the rest of the seed
                 // is skipped by IsSeedingRequired.
-                if (!await SeedDefaultRolesAsync(_roleManager, logger)) return app;
+                if (!await SeedDefaultRolesAsync(_roleManager, environmentConfig, logger)) return app;
 
-                // Seeding is not required
-                if (!await IsSeedingRequired(_accountsDbContext, logger)) return app;
+                // Keep the default seed idempotent on existing databases: missing plan, subscription
+                // or credit rows are created, and the default plan and default tenant subscription are
+                // corrected to the running edition's limits.
+                if (!await IsSeedingRequired(_accountsDbContext, logger))
+                {
+                    var existingSuperUser = await _accountsDbContext.Users
+                        .Where(w => w.IsDefault)
+                        .SingleOrDefaultAsync();
+
+                    if (existingSuperUser != null)
+                    {
+                        if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, existingSuperUser, logger) ||
+                            !await SeedTenantSubscriptionAsync(_accountsDbContext, existingSuperUser, logger) ||
+                            !await SeedTenantCreditsAsync(_accountsDbContext, existingSuperUser, logger))
+                        {
+                            return app;
+                        }
+                    }
+
+                    return app;
+                }
 
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, environmentConfig, logger);
@@ -59,8 +73,8 @@ public static class AccountsDbInitialSeed
                 // Update Super user tenant Id
                 if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id, logger)) return app;
 
-                // Seed Permissions
-                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser, logger)) return app;
+                // Seed Credit Plans
+                if (!await SeedCreditPlansAsync(_accountsDbContext, environmentConfig, superUser, logger)) return app;
 
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
                 if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser, logger))
@@ -147,12 +161,21 @@ public static class AccountsDbInitialSeed
 
     // Seed roles. Idempotent: for each fixed role, add it only when it does not exist yet,
     // so existing databases pick up newly added roles without touching the ones already present.
-    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, ILogger logger)
+    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, EnvironmentConfig environmentConfig, ILogger logger)
     {
         try
         {
             foreach (var role in Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>())
             {
+                // Community deployments are single-tenant, workspace-only editions.
+                // Do not seed SA (platform admin is scoped to commercial deployments) or any
+                // CRM role (the CRM app is not part of the community edition) into AspNetRoles.
+                if (environmentConfig.IsCommunityDeployment &&
+                    (role == CustomRolesEnum.SA || role.ToPlatformApp() == PlatformAppsEnum.CRM))
+                {
+                    continue;
+                }
+
                 // Role already exists. Do not add it again.
                 if (await roleManager.RoleExistsAsync(role.ToString())) continue;
 
@@ -218,6 +241,9 @@ public static class AccountsDbInitialSeed
                                 .Select(r => r.ToString())
                                 .ToList();
 
+            // SA is granted only to Commercial deployments. Community and Enterprise are
+            // single-tenant self-hosted deployments whose platform admin must NOT hold SA
+            // (SA is already excluded from the base workspace role set above).
             // Check if the tenant type is 'Commercial' (case-insensitive comparison)
             if (environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase))
             {
@@ -259,9 +285,23 @@ public static class AccountsDbInitialSeed
     {
         try
         {
-            // Attempt to parse the TenantId as a Guid
+            // Community deployments have no on-prem tenant id to parse, so generate a fresh id for
+            // the single default tenant. Paid deployments keep the id supplied by GlobalAdmin.
             Guid tenantGuid;
-            bool isValidTenantId = Guid.TryParse(environmentConfig.OnPremTenantId, out tenantGuid);
+            if (environmentConfig.IsCommunityDeployment)
+            {
+                tenantGuid = Guid.NewGuid();
+            }
+            else
+            {
+                Guid.TryParse(environmentConfig.OnPremTenantId, out tenantGuid);
+            }
+
+            // Community deployments receive no tenant metadata from GlobalAdmin; fall back to a
+            // fixed display name so the tenant and its container are still named deterministically.
+            var tenantName = environmentConfig.IsCommunityDeployment && string.IsNullOrWhiteSpace(environmentConfig.OnPremTenantName)
+                ? OnPremTenantTypesEnum.Community.ToString()
+                : environmentConfig.OnPremTenantName;
 
             // Initialize default tenant
             var newTenant = new Tenant()
@@ -269,10 +309,11 @@ public static class AccountsDbInitialSeed
                 Id = tenantGuid,
                 ResourceType = TenantResourceTypesEnum.Dedicated,
                 Type = TenantTypesEnum.Organization,
-                Currency = CurrencyTypesEnum.USD,
-                Name = environmentConfig.OnPremTenantName,
+                Currency = CurrencyTypesEnum.INR,
+                Name = tenantName,
                 Domain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(environmentConfig.AccountsApiBaseUrl),
-                ContainerName = TenantContainerUtil.GenerateName(environmentConfig.OnPremTenantName),
+                ContainerName = TenantContainerUtil.GenerateName(tenantName),
+                Country = CountriesEnum.India,
                 ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it
                 IsSSOEnabled = false,
                 IsPwdEnabled = true,
@@ -295,6 +336,11 @@ public static class AccountsDbInitialSeed
             // Save changes
             await accountsDbContext.SaveChangesAsync();
 
+            // Seed the tenant's default "Central" space immediately so a newly installed
+            // database has it without waiting for the next startup (all deployment types).
+            await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
+                accountsDbContext, newTenant.Id, newTenant.CreatedByUserId, newTenant.LastModifiedByUserId, logger);
+
             // Tenants seeded successfully
             return newTenant;
         }
@@ -302,46 +348,6 @@ public static class AccountsDbInitialSeed
         {
             logger.LogError(ex, "An error occurred while seeding the default tenant.");
             return null;
-        }
-    }
-
-    // Ensure every tenant has a default "Central" space.
-    // Runs unconditionally (idempotently) so existing tenants also get it,
-    // even when the rest of the seed is skipped by IsSeedingRequired.
-    //
-    // NOTE: Uses raw SQL insert to bypass the DbContext SaveChanges override,
-    // which would otherwise overwrite TenantId with Guid.Empty during startup
-    // (no request context is available at seed time).
-    private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext, ILogger logger)
-    {
-        try
-        {
-            // Fetch all tenants
-            var tenants = await accountsDbContext.Tenants.ToListAsync();
-
-            foreach (var tenant in tenants)
-            {
-                // Check if a default space already exists for the tenant
-                var existingDefaultSpace = await accountsDbContext.Spaces
-                    .Where(w => w.TenantId == tenant.Id && w.IsDefault)
-                    .SingleOrDefaultAsync();
-
-                // Default space already exists for this tenant
-                if (existingDefaultSpace != null) continue;
-
-                // Insert the default "Central" space directly via raw SQL
-                var centralSpaceId = Guid.NewGuid();
-                var now = DateTimeOffset.UtcNow;
-                var centralName = "Central";
-                var centralDescription = "The default space for shared resources, workflows, agents, and content accessible across the organization.";
-                await accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
-                    $@"INSERT INTO ""Spaces"" (""Id"", ""TenantId"", ""Name"", ""Description"", ""IsDefault"", ""CreatedByUserId"", ""CreatedOn"", ""LastModifiedByUserId"", ""LastModifiedOn"", ""IsDisabled"")
-                      VALUES ({centralSpaceId}, {tenant.Id}, {centralName}, {centralDescription}, {true}, {tenant.CreatedByUserId}, {now}, {tenant.LastModifiedByUserId}, {now}, {false})");
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while seeding the default spaces.");
         }
     }
 
@@ -424,10 +430,18 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed CreditPlans based on CreditServicesEnum
-    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser, ILogger logger)
+    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
     {
         try
         {
+            // Credit plans are only billed on Commercial deployments. Community and Enterprise
+            // are self-hosted editions with no usage billing, so skip seeding entirely.
+            if (!environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                logger.LogDebug("Non-commercial deployment, skipping credit plan seed.");
+                return true;
+            }
+
             // Create a list to hold CreditPlan objects to be inserted in bulk
             var creditPlans = new List<CreditPlan>();
 
@@ -470,20 +484,47 @@ public static class AccountsDbInitialSeed
         {
             // Define the name of the subscription plan to seed
             var subscriptionPlanName = "Default";
+            var historyRetentionDays = environmentConfig.IsCommunityDeployment
+                ? 1
+                : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
+                    ? 365
+                    : int.MaxValue;
+            var maxSpaces = environmentConfig.IsCommunityDeployment ? 1 : 0;
 
             // Check if the default subscription plan already exists in the database
             var existingPlan = await accountsDbContext.SubscriptionPlans
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
                 .SingleOrDefaultAsync();
 
-            // If the subscription plan already exists, skip seeding and return true
+            // Bring an existing plan in line with the running edition's own limits
             if (existingPlan != null)
             {
-                logger.LogDebug("Subscription plan {PlanName} already exists.", subscriptionPlanName);
+                if (existingPlan.MaxPublishedItems != 0 ||
+                    existingPlan.MaxSpaces != maxSpaces ||
+                    existingPlan.MaxUsers != 0 ||
+                    existingPlan.StorageLimitMB != 0 ||
+                    existingPlan.HistoryRetentionDays != historyRetentionDays)
+                {
+                    existingPlan.MaxPublishedItems = 0;
+                    existingPlan.MaxSpaces = maxSpaces;
+                    existingPlan.MaxUsers = 0;
+                    existingPlan.StorageLimitMB = 0;
+                    existingPlan.HistoryRetentionDays = historyRetentionDays;
+                    existingPlan.LastModifiedByUserId = superUser.Id;
+                    await accountsDbContext.SaveChangesAsync();
+                    logger.LogWarning("Corrected subscription plan {PlanName} to the {TenantType} limits. MaxSpaces={MaxSpaces}, HistoryRetentionDays={HistoryRetentionDays}",
+                        subscriptionPlanName, environmentConfig.OnPremTenantType, maxSpaces, historyRetentionDays);
+                }
+                else
+                {
+                    logger.LogDebug("Subscription plan {PlanName} already exists with the current limits.", subscriptionPlanName);
+                }
+
                 return true;
             }
 
-            // Prepare plan type based on tenant type
+            // Prepare plan type based on tenant type: Commercial gets Pro; Enterprise and
+            // Community (single-tenant deployments) get None (effectively unlimited, unpaid).
             SubscriptionPlanTypeEnum planType = environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
                 SubscriptionPlanTypeEnum.Pro :
                 SubscriptionPlanTypeEnum.None;
@@ -497,11 +538,11 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 Status = PlanStatusTypesEnum.Custom,
                 UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
-                MaxPublishedItems = int.MaxValue,
-                MaxSpaces = int.MaxValue,
-                MaxUsers = int.MaxValue,
-                StorageLimitMB = int.MaxValue,
-                HistoryRetentionDays = int.MaxValue,
+                MaxPublishedItems = 0,
+                MaxSpaces = maxSpaces,
+                MaxUsers = 0,
+                StorageLimitMB = 0,
+                HistoryRetentionDays = historyRetentionDays,
                 Price = 0,
                 IsDefault = true,
                 CreatedByUserId = superUser.Id,
@@ -541,18 +582,6 @@ public static class AccountsDbInitialSeed
             // Define the subscription plan name (could also be retrieved from config)
             var subscriptionPlanName = "Default";
 
-            // Check if a subscription plan already exists for the super user's tenant
-            var existingSubscription = await accountsDbContext.TenantSubscriptions
-                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
-                .SingleOrDefaultAsync();
-
-            // If a subscription plan already exists, skip seeding and return true
-            if (existingSubscription != null)
-            {
-                logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
-                return true;
-            }
-
             // Get the default subscription plan to be associated with the tenant
             var subscriptionPlan = await accountsDbContext.SubscriptionPlans
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
@@ -562,6 +591,39 @@ public static class AccountsDbInitialSeed
             {
                 logger.LogError("Subscription plan {PlanName} not found.", subscriptionPlanName);
                 return false;
+            }
+
+            // Check if a subscription plan already exists for the super user's tenant
+            var existingSubscription = await accountsDbContext.TenantSubscriptions
+                .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
+                .SingleOrDefaultAsync();
+
+            if (existingSubscription != null)
+            {
+                // Bring the default tenant's subscription in line with the corrected plan limits
+                if (existingSubscription.PlanId == subscriptionPlan.Id &&
+                    (existingSubscription.MaxPublishedItems != subscriptionPlan.MaxPublishedItems ||
+                     existingSubscription.MaxSpaces != subscriptionPlan.MaxSpaces ||
+                     existingSubscription.MaxUsers != subscriptionPlan.MaxUsers ||
+                     existingSubscription.StorageLimitMB != subscriptionPlan.StorageLimitMB ||
+                     existingSubscription.HistoryRetentionDays != subscriptionPlan.HistoryRetentionDays))
+                {
+                    existingSubscription.MaxPublishedItems = subscriptionPlan.MaxPublishedItems;
+                    existingSubscription.MaxSpaces = subscriptionPlan.MaxSpaces;
+                    existingSubscription.MaxUsers = subscriptionPlan.MaxUsers;
+                    existingSubscription.StorageLimitMB = subscriptionPlan.StorageLimitMB;
+                    existingSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
+                    existingSubscription.LastModifiedByUserId = superUser.Id;
+                    await accountsDbContext.SaveChangesAsync();
+                    logger.LogWarning("Corrected the default tenant subscription {SubscriptionId} to the {PlanName} plan limits.",
+                        existingSubscription.Id, subscriptionPlanName);
+                }
+                else
+                {
+                    logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
+                }
+
+                return true;
             }
 
             // Create the new TenantSubscription with necessary details
@@ -574,11 +636,11 @@ public static class AccountsDbInitialSeed
                 Status = SubscriptionStatusTypesEnum.Active,
                 NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
                 MaxCredits = ulong.MaxValue,
-                MaxPublishedItems = int.MaxValue,
-                MaxSpaces = int.MaxValue,
-                MaxUsers = int.MaxValue,
-                StorageLimitMB = int.MaxValue,
-                HistoryRetentionDays = int.MaxValue,
+                MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
+                MaxSpaces = subscriptionPlan.MaxSpaces,
+                MaxUsers = subscriptionPlan.MaxUsers,
+                StorageLimitMB = subscriptionPlan.StorageLimitMB,
+                HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays,
                 CreatedByUserId = superUser.Id,
                 LastModifiedByUserId = superUser.Id
             };

@@ -56,6 +56,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
     defaultValues: {
       id: "",
       name: "",
+      domain: "",
       type: "",
       currency: "",
       effectiveDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
@@ -108,6 +109,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Single fields
       id: rowId,
       name: tenantData?.name ?? "",
+      domain: tenantData?.domain ?? "",
       type: tenantData?.type ?? "",
       currency: tenantData?.currency ?? "",
       effectiveDate: tenantData?.effectiveDate
@@ -124,7 +126,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,
-      ssoConfigJson: tenantData?.ssoConfigJson ?? undefined,
+      ssoConfigJson: undefined,
       // Group
       isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
       daysBeforePwdExpires: tenantData?.daysBeforePwdExpires?.toString() ?? "730",
@@ -170,8 +172,11 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
+    const refinedFormData = { ...formData };
+    delete refinedFormData.ssoConfigJson;
+
     return {
-      ...formData,
+      ...refinedFormData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

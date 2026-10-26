@@ -9,6 +9,9 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
@@ -17,7 +20,8 @@ import { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSpaces } from "../hooks/useFetchSpaces";
-import { spacesTableColumns } from "./SpacesTableColumns";
+import { getSpacesTableColumns } from "./SpacesTableColumns";
+import { UpgradeSpaceButton } from "./upgrade-space-dialog/UpgradeSpaceButton";
 
 /**
  * Renders a table of spaces.
@@ -28,20 +32,30 @@ export const SpacesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  // Get the deployment type to gate space creation for community editions
+  const { deploymentType } = useUserSessionStore(
+    useShallow((state) => ({
+      deploymentType: state.userSession?.deploymentType,
+    })),
+  );
+
+  // Community deployments are limited to the single seeded Central space
+  const isCommunityDeployment = deploymentType === "Community";
+
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch spaces data
   const { data } = useFetchSpaces();
 
-  // Create a React table for spaces data
-  const table = useDataTable(
-    spacesTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
+  // Build the table columns, omitting row actions for the read-only community space
+  const columns = useMemo(
+    () => getSpacesTableColumns(!isCommunityDeployment),
+    [isCommunityDeployment],
   );
+
+  // Create a React table for spaces data
+  const table = useDataTable(columns, data?.data || [], columnVisibility, sortState, true);
 
   // Return the rendered DataTable component.
   return (
@@ -64,12 +78,16 @@ export const SpacesTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search spaces..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Create Space" entity="space" />
+              {isCommunityDeployment ? (
+                <UpgradeSpaceButton />
+              ) : (
+                <DTCreateButton buttonText="Create Space" entity="space" />
+              )}
             </div>
           </div>
 
           {/* Data table to render data */}
-          <DataTable table={table} columnsLength={spacesTableColumns.length} />
+          <DataTable table={table} columnsLength={columns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

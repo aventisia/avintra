@@ -1,18 +1,23 @@
 import { toast } from "@avplatform/ui/sonner";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { DATA_QUERY_KEY, getJobs, useDateRangePickerStore } from "..";
+import { paramsToRange } from "../utils/date-range-selector-utils";
 
 /**
  * Custom hook to fetch jobs using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchJobsList = () => {
+  const [searchParams] = useSearchParams();
+
   // Get the currently selected space so the query refetches when the space changes
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({
@@ -24,8 +29,16 @@ export const useFetchJobsList = () => {
     useShallow((state) => ({ dateRange: state.dateRange })),
   );
 
-  const from = format(dateRange!.from!, "yyyy-MM-dd");
-  const to = format(dateRange!.to!, "yyyy-MM-dd");
+  const isCommunityDeployment = useUserSessionStore(
+    (state) => state.userSession?.deploymentType === "Community",
+  );
+  const urlRange = paramsToRange(searchParams.get("from"), searchParams.get("to"));
+  const today = new Date();
+  const effectiveDateRange =
+    urlRange ?? (isCommunityDeployment ? { from: today, to: today } : dateRange);
+
+  const from = format(effectiveDateRange!.from!, "yyyy-MM-dd");
+  const to = format(effectiveDateRange!.to!, "yyyy-MM-dd");
 
   // Get jobs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({

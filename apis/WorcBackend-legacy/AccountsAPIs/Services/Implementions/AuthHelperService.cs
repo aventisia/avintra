@@ -53,6 +53,34 @@ public class AuthHelperService : IAuthHelperService
         }
     }
 
+    // Returns the sign-in rejection message for an account that may not sign in, or null when it may.
+    public string? GetSignInBlockMessage(AccountUser user)
+    {
+        if (user.IsDisabled)
+        {
+            return "Your account is disabled. Please contact support adminstrator";
+        }
+
+        if (IsDeactivated(user.DeactivatedOn))
+        {
+            return "Your account is deleted. Please contact support adminstrator";
+        }
+
+        if (user.TenantId != null && !IsUserTenantValid(user.Tenant, user.UserName))
+        {
+            return "Unable to retrieve your tenant's details. Please contact your support administrator.";
+        }
+
+        return null;
+    }
+
+    private static bool IsDeactivated(DateTime deactivatedOn)
+    {
+        return deactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime()
+            && deactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime()
+            && deactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime();
+    }
+
     // Checks if the new password passes the obsolete password policy.
     public async Task<bool> DoesNewPwdPassObsoletePwdPolicy(string newPwd, AccountUser user)
     {

@@ -22,21 +22,24 @@ export const GetTenantInfoForm = () => {
 
   // Return form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      disabled={isSubmitting || isInfoPending}
-      checkDirtyForm={false}
-    >
-      {/* Email */}
-      <InputField {...emailProps} />
+    <>
+      <Form
+        methods={form}
+        onSubmit={form.handleSubmit(onSubmit)}
+        disabled={isSubmitting || isInfoPending}
+        checkDirtyForm={false}
+      >
+        {/* Email */}
+        <InputField {...emailProps} />
 
-      {/* Submit form */}
-      <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
-        primaryText="Continue"
-        isPending={isSubmitting || isInfoPending}
-      />
-    </Form>
+        {/* Submit form */}
+        <SubmitButton
+          className="text-md !mt-5 h-11 w-full"
+          primaryText="Continue"
+          isPending={isSubmitting || isInfoPending}
+        />
+      </Form>
+
+    </>
   );
 };

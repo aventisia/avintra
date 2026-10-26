@@ -27,6 +27,15 @@ export const nameProps: InputFieldProps = {
     "The tenant's name.\n\n- **Max length:** 100 characters.\n- **Allowed characters:** letters and numbers, with a single space between words.\n- **Can be changed** after creation.",
 };
 
+// Domain
+export const domainProps: InputFieldProps = {
+  name: "domain",
+  label: "Domain",
+  placeholder: "company.com",
+  description:
+    "The tenant's email domain, matched against the signed-in admin's email domain for single sign-on.\n\n- **Max length:** 100 characters.",
+};
+
 export const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
@@ -96,7 +105,8 @@ export const isSSOEnabledProps: SwitchFieldProps = {
 export const ssoConfigJsonProps: TextareaFieldProps = {
   name: "ssoConfigJson",
   label: "Single Sign-On (SSO) Configuration",
-  description: "The JSON configuration for the Single Sign-On (SSO) provider",
+  description:
+    "Read-only. The Single Sign-On configuration is managed by the Tenant Admin and is hidden from the Super Admin view.",
   className: "min-h-[12.5rem]",
 };
 

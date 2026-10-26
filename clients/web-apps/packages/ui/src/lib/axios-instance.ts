@@ -33,6 +33,13 @@ const SKIP_REFRESH_URLS = [
 
 const shouldSkipRefresh = (url: string) => SKIP_REFRESH_URLS.some((path) => url.endsWith(path));
 
+// Boot-time requests that handle their own failures and must not raise global notifications
+// (e.g. the optional branding endpoint falls back to defaults silently).
+const SKIP_ERROR_NOTIFICATION_URLS = ["/branding"];
+
+const shouldSkipErrorNotification = (url: string) =>
+  SKIP_ERROR_NOTIFICATION_URLS.some((path) => url.endsWith(path));
+
 // Shared state for managing token refresh
 let isRefreshing = false;
 let failedRequestsQueue: Array<{
@@ -76,6 +83,11 @@ axiosInstance.interceptors.response.use(
 
     // If response null
     if (!error.response) return Promise.reject(error);
+
+    // Requests that resolve their own failures (branding) must not toast or redirect.
+    if (originalRequest?.url && shouldSkipErrorNotification(originalRequest.url)) {
+      return Promise.reject(error);
+    }
 
     // If response status is 401 and request is not login, verify-2fa-code, refresh-session, my-session, logoff
     if (

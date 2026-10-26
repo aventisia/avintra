@@ -31,6 +31,39 @@ public class EnvironmentConfig
     public string AzureEntraIdClientId { get; set; } = string.Empty;
     public string AzureEntraIdClientSecret { get; set; } = string.Empty;
 
+    // Single sign-on
+    public bool MicrosoftSsoEnabled { get; set; }
+
+    /// <summary>
+    /// Single sign-on allowed by GlobalAdmin for this deployment.
+    /// </summary>
+    public bool SsoAllowed { get; set; }
+
+    /// <summary>
+    /// Deployment branding allowed by GlobalAdmin for this deployment.
+    /// </summary>
+    public bool BrandingAllowed { get; set; }
+
+    /// <summary>
+    /// Microsoft Entra client id used by the single sign-on flow.
+    /// </summary>
+    public string MicrosoftSsoClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Microsoft Entra client secret used by the single sign-on flow.
+    /// </summary>
+    public string MicrosoftSsoClientSecret { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Google client id reserved for the single sign-on flow.
+    /// </summary>
+    public string GoogleSsoClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Google client secret reserved for the single sign-on flow.
+    /// </summary>
+    public string GoogleSsoClientSecret { get; set; } = string.Empty;
+
     // JWT
     public string JwtSecretKey { get; set; } = string.Empty;
     public int JwtValidityInMinutes { get; set; }
@@ -89,4 +122,43 @@ public class EnvironmentConfig
 
     // Custom API Key Config
     public string CustomApiKey { get; set; } = string.Empty;
+
+    // Deployment branding (self-hosted white-label). All values are optional; any value left
+    // unset falls back to the built-in Avintra/Aventisia defaults on the client.
+    public string? BrandingAppName { get; set; }
+    public string? BrandingCompanyName { get; set; }
+    public string? BrandingCompanyLogoUrlLight { get; set; }
+    public string? BrandingCompanyLogoUrlDark { get; set; }
+    public string? BrandingProductLogoUrlLight { get; set; }
+    public string? BrandingProductLogoUrlDark { get; set; }
+    public string? BrandingShortLogoUrlLight { get; set; }
+    public string? BrandingShortLogoUrlDark { get; set; }
+    public string? BrandingFaviconUrlLight { get; set; }
+    public string? BrandingFaviconUrlDark { get; set; }
+    public string? BrandingBackgroundColor { get; set; }
+    public string? BrandingForegroundColor { get; set; }
+    public string? BrandingPrimaryColor { get; set; }
+    public string? BrandingPrimaryForegroundColor { get; set; }
+    public string? BrandingSecondaryColor { get; set; }
+    public string? BrandingSecondaryForegroundColor { get; set; }
+    public string? BrandingAccentColor { get; set; }
+    public string? BrandingAccentForegroundColor { get; set; }
+
+    /// <summary>
+    /// True when the deployment runs as the explicit Community edition. Startup configuration
+    /// refuses to start on ambiguous identity settings (exactly one of the tenant id / instance
+    /// key present) and on both blank unless <c>ON_PREM_EDITION=Community</c> is set.
+    /// </summary>
+    public bool IsCommunityDeployment =>
+        string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
+
+    /// <summary>
+    /// True when single sign-on may be offered for this deployment.
+    /// </summary>
+    public bool IsSsoAllowedForDeployment => !IsCommunityDeployment && SsoAllowed;
+
+    /// <summary>
+    /// True when deployment branding may be applied for this deployment.
+    /// </summary>
+    public bool IsBrandingAllowedForDeployment => !IsCommunityDeployment && BrandingAllowed;
 }

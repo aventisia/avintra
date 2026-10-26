@@ -100,6 +100,7 @@ public static class AppServicesExtension
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
         services.AddScoped<ISingleSignOnService, SingleSignOnService>();
+        services.AddScoped<IBrandingService, BrandingService>();
         services.AddScoped<IMyAccountService, MyAccountService>();
         services.AddScoped<ITenantAccountService, TenantAccountService>();
         services.AddScoped<ITenantsTableService, TenantsTableService>();

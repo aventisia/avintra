@@ -8,11 +8,16 @@ namespace WorkspaceAPIs.Jobs
     {
         private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
         private readonly ILogger<TenantHistoryCleanupJob> _logger;
+        private readonly EnvironmentConfig _environmentConfig;
 
-        public TenantHistoryCleanupJob(WorkspaceInternalDbContext workspaceInternalDbContext, ILogger<TenantHistoryCleanupJob> logger)
+        public TenantHistoryCleanupJob(
+            WorkspaceInternalDbContext workspaceInternalDbContext,
+            ILogger<TenantHistoryCleanupJob> logger,
+            EnvironmentConfig environmentConfig)
         {
             _workspaceInternalDbContext = workspaceInternalDbContext;
             _logger = logger;
+            _environmentConfig = environmentConfig;
         }
 
         // The main method that Quartz calls to execute the job. It processes tenant history cleanup.
@@ -64,7 +69,18 @@ namespace WorkspaceAPIs.Jobs
                 // Process each tenant's subscription and cleanup their history records
                 foreach (var tenantSubscription in tenantSubscriptions.Data)
                 {
-                    var retentionDate = currentDateTime.AddDays(-tenantSubscription.HistoryRetentionDays).Date;
+                    var historyRetentionDays = _environmentConfig.IsCommunityDeployment
+                        ? 1
+                        : tenantSubscription.HistoryRetentionDays;
+
+                    // IMPORTANT NOTE: an unlimited plan stores int.MaxValue, which overflows AddDays;
+                    // unlimited retention means "no cleanup", never a purge.
+                    if (historyRetentionDays == int.MaxValue)
+                    {
+                        continue;
+                    }
+
+                    var retentionDate = currentDateTime.AddDays(-historyRetentionDays).Date;
 
                     // Retrieve tenant history records older than the retention date
                     var jobs = await _workspaceInternalDbContext.Jobs

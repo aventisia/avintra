@@ -9,7 +9,6 @@ import {
   isIdleSessionTimeoutEnabledProps,
   isPwdEnabledProps,
   isPwdNeverExpiresEnabledProps,
-  isSSOEnabledProps,
   isTwoFAEnabledProps,
 } from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-field-props";
 import { preferencesSchema } from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-zod-schema";
@@ -45,9 +44,9 @@ const PreferencesForm = () => {
       checkDirtyForm={false}
     >
       <SwitchField {...isTwoFAEnabledProps} />
+
       <div className="hidden">
         <SwitchField {...isPwdEnabledProps} />
-        <SwitchField {...isSSOEnabledProps} />
       </div>
       <SwitchField {...isPwdNeverExpiresEnabledProps} />
       {!isPwdNeverExpiresEnabled && <InputField {...daysBeforePwdExpiresProps} />}

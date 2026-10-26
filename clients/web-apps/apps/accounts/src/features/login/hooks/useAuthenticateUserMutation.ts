@@ -9,6 +9,7 @@ import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
+  SSO_DISABLED,
   TWO_FA_ENABLED,
 } from "@/constants/variables";
 
@@ -82,8 +83,17 @@ export const useAuthenticateUserMutation = () => {
         navigate("/redirect?msg=Logging in...&url=" + destination);
       }
     },
-    onError: (error) => {
-      toast.error(error.toString());
+    onError: (error: unknown) => {
+      if (typeof error === "string" && error.includes(SSO_DISABLED)) {
+        toast.warning("Single sign-on disabled", {
+          description: `${error}. Set a password with Forgot password to sign in.`,
+        });
+
+        resetLoginProcess();
+        return;
+      }
+
+      toast.error(String(error));
       resetLoginProcess();
     },
   });

@@ -1,12 +1,16 @@
-import { Calendar } from "@avplatform/ui";
+import { Calendar, UpgradeDialog } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
 import { CalendarDays } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { DateRange, paramsToRange, rangeToParams, useDateRangePickerStore } from "..";
+
+const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
+const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefined;
 
 export const DateRangeFilter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,9 +18,19 @@ export const DateRangeFilter = () => {
 
   const [showRangePicker, setShowRangePicker] = useState(false);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const isCommunityDeployment = useUserSessionStore(
+    (state) => state.userSession?.deploymentType === "Community",
+  );
 
   const hydratedRef = useRef(false);
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
+
+  const exceedsCommunityHistory = useCallback(
+    (range?: DateRange) =>
+      !!isCommunityDeployment && !!range?.from && !isSameDay(range.from, today),
+    [isCommunityDeployment, today],
+  );
 
   const isCurrentTab = searchParams.get("t") == "Current";
 
@@ -24,10 +38,13 @@ export const DateRangeFilter = () => {
      Default last 7 days
   -------------------------------- */
 
-  const defaultRange: DateRange = {
-    from: subDays(today, 6),
-    to: today,
-  };
+  const defaultRange = useMemo<DateRange>(
+    () => ({
+      from: subDays(today, isCommunityDeployment ? 0 : 6),
+      to: today,
+    }),
+    [isCommunityDeployment, today],
+  );
 
   // Sync date range selection with URL param on mount
   useEffect(() => {
@@ -35,21 +52,22 @@ export const DateRangeFilter = () => {
 
     const urlRange = paramsToRange(searchParams.get("from"), searchParams.get("to"));
 
-    const finalRange = urlRange ?? defaultRange;
+    const outOfRange = !!urlRange && exceedsCommunityHistory(urlRange);
+    const finalRange = outOfRange ? defaultRange : (urlRange ?? defaultRange);
 
     // Set store + local picker state
     setDateRange(finalRange);
     setSelectedRange(finalRange);
 
-    // If URL missing, push default to URL
-    if (!urlRange) {
+    // If URL missing or out of reach, push the applied range to URL
+    if (!urlRange || outOfRange) {
       const params = Object.fromEntries(searchParams.entries());
       Object.assign(params, rangeToParams(finalRange));
       setSearchParams(params);
     }
 
     hydratedRef.current = true;
-  }, [searchParams, setSearchParams, setDateRange]);
+  }, [defaultRange, exceedsCommunityHistory, searchParams, setSearchParams, setDateRange]);
 
   const applyRange = useCallback(
     (range?: DateRange) => {
@@ -69,7 +87,10 @@ export const DateRangeFilter = () => {
     { label: "Today", value: "today" },
     { label: "Week to Date", value: "week" },
     { label: "Month to Date", value: "month" },
-    { label: "Last 7 days", value: 7 },
+    {
+      label: isCommunityDeployment ? "Last 1 day" : "Last 7 days",
+      value: isCommunityDeployment ? 1 : 7,
+    },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
   ];
@@ -94,68 +115,85 @@ export const DateRangeFilter = () => {
   if (!selectedRange) return null;
 
   return (
-    <Popover open={showRangePicker} onOpenChange={setShowRangePicker}>
-      <PopoverTrigger disabled={isCurrentTab}>
-        <Button disabled={isCurrentTab} size="xs" variant="outline">
-          <CalendarDays className="mr-2 h-3.5 w-3.5" />
-          {format(selectedRange.from!, "MMM d, yyyy")} - {format(selectedRange.to!, "MMM d, yyyy")}
-        </Button>
-      </PopoverTrigger>
+    <>
+      <Popover
+        open={showRangePicker}
+        onOpenChange={(open) => {
+          if (open && isCommunityDeployment) {
+            setShowUpgrade(true);
+            return;
+          }
+          setShowRangePicker(open);
+        }}
+      >
+        <PopoverTrigger disabled={isCurrentTab}>
+          <Button disabled={isCurrentTab} size="xs" variant="outline">
+            <CalendarDays className="mr-2 h-3.5 w-3.5" />
+            {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
+            {format(selectedRange.to!, "MMM d, yyyy")}
+          </Button>
+        </PopoverTrigger>
 
-      <PopoverContent className="mr-4 px-4">
-        <div className="grid grid-cols-[auto_1fr] gap-6">
-          {/* Presets */}
-          <div className="flex flex-col gap-2 border-r pr-4 pt-4">
-            {presets.map((preset) => {
-              const range = getPresetRange(preset);
-              const isSelected = isSameRange(selectedRange, range);
+        <PopoverContent className="mr-4 px-4">
+          <div className="grid grid-cols-[auto_1fr] gap-6">
+            {/* Presets */}
+            <div className="flex flex-col gap-2 border-r pr-4 pt-4">
+              {presets.map((preset) => {
+                const range = getPresetRange(preset);
+                const isSelected = isSameRange(selectedRange, range);
 
-              return (
+                return (
+                  <Button
+                    key={preset.label}
+                    size="sm"
+                    variant={isSelected ? "default" : "outline"}
+                    onClick={() => setSelectedRange(range)}
+                    className={`justify-start border-none shadow-none ${
+                      isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                    }`}
+                  >
+                    {preset.label}
+                  </Button>
+                );
+              })}
+            </div>
+
+            <div>
+              <Calendar
+                mode="range"
+                numberOfMonths={2}
+                selected={selectedRange}
+                onSelect={setSelectedRange}
+              />
+
+              <div className="flex justify-end gap-2 pb-4 pt-4">
                 <Button
-                  key={preset.label}
-                  size="sm"
-                  variant={isSelected ? "default" : "outline"}
-                  onClick={() => setSelectedRange(range)}
-                  className={`justify-start border-none shadow-none ${
-                    isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
-                  }`}
+                  variant="ghost"
+                  onClick={() => {
+                    setShowRangePicker(false);
+                    setSelectedRange(dateRange);
+                  }}
                 >
-                  {preset.label}
+                  Cancel
                 </Button>
-              );
-            })}
-          </div>
-
-          <div>
-            <Calendar
-              mode="range"
-              numberOfMonths={2}
-              selected={selectedRange}
-              onSelect={setSelectedRange}
-            />
-
-            <div className="flex justify-end gap-2 pb-4 pt-4">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setShowRangePicker(false);
-                  setSelectedRange(dateRange);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowRangePicker(false);
-                  applyRange(selectedRange);
-                }}
-              >
-                Update
-              </Button>
+                <Button
+                  onClick={() => {
+                    setShowRangePicker(false);
+                    applyRange(selectedRange);
+                  }}
+                >
+                  Update
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+      <UpgradeDialog
+        open={showUpgrade}
+        onOpenChange={setShowUpgrade}
+        pricingUrl={UPGRADE_PRICING_URL}
+      />
+    </>
   );
 };
