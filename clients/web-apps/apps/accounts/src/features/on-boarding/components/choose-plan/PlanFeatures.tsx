@@ -103,7 +103,7 @@ export const PlanFeatures = ({
       <ul className="mt-2 space-y-2 text-sm">
         {featuresList.map((feature, index) => (
           <li key={index} className="flex items-center gap-2">
-            <CheckCircleIcon className="h-4 w-4 text-green-500" /> {feature}
+            <CheckCircleIcon className="h-4 w-4 text-ok" /> {feature}
           </li>
         ))}
       </ul>

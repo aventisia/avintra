@@ -1,8 +1,17 @@
 import { AppLogo } from "@avplatform/layout/logo";
 import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import { HeaderContainer } from "@/components/layout/HeaderContainer";
+import { ContentContainer } from "@/components/ui/ContentContainer";
+import { ContentHeader } from "@/components/ui/ContentHeader";
+import { LeftContainer } from "@/components/ui/LeftContainer";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { RightContainer } from "@/components/ui/RightContainer";
 
 import { useCompleteSsoAdminConsentMutation } from "./useCompleteSsoAdminConsentMutation";
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
@@ -51,32 +60,39 @@ export const SsoRedirectMain = () => {
     : import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview";
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-between p-3 pb-3 lg:w-[100%]">
-      <div className="flex w-full items-center justify-between p-5 xs:p-6">
-        <AppLogo showFullLogo={true} className="h-7" />
-      </div>
-      {isFailed ? (
-        <div className="-mt-4 flex flex-col items-center gap-3 text-center text-md">
-          <p className="font-medium text-destructive">
-            {consentErrorMessage
-              ? "We could not connect single sign-on."
-              : "We could not sign you in."}
-          </p>
-          <p className="max-w-md text-sm text-muted-foreground">{failureMessage}</p>
-          <a
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-            href={backHref}
-          >
-            {consentErrorMessage ? "Back to preferences" : "Back to login"}
-          </a>
-        </div>
-      ) : (
-        <div className="-mt-4 flex items-center gap-4 text-md">
-          <LoadingSpinner className="size-7 text-primary" />
-          Logging you in...
-        </div>
-      )}
-      <MinimalFooter />
-    </div>
+    <PageContainer>
+      <LeftContainer>
+        <HeaderContainer>
+          <AppLogo showFullLogo={true} className="h-7" />
+        </HeaderContainer>
+        <ContentContainer>
+          {isFailed ? (
+            <>
+              <ContentHeader
+                biggerHeading={
+                  consentErrorMessage
+                    ? "We couldn't connect single sign-on"
+                    : "We couldn't sign you in"
+                }
+                smallerHeading={failureMessage ?? ""}
+              />
+              <a
+                className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
+                href={backHref}
+              >
+                {consentErrorMessage ? "Back to preferences" : "Back to sign in"}
+              </a>
+            </>
+          ) : (
+            <div role="status" className="flex items-center gap-3 text-body text-ink-2">
+              <LoadingSpinner className="size-5 text-live" />
+              Signing you in…
+            </div>
+          )}
+        </ContentContainer>
+        <MinimalFooter />
+      </LeftContainer>
+      <RightContainer />
+    </PageContainer>
   );
 };
