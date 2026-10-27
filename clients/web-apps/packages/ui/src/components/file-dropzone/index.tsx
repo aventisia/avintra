@@ -18,27 +18,22 @@ export const FileUploadDropzone = ({ description, ...props }: FileUploadDropzone
         <label
           htmlFor="dropzone-file"
           className={cn(
-            "dark:hover:bg-bray-800 flex h-64 w-full cursor-pointer",
-            "flex-col items-center justify-center rounded-lg border-2 border-dashed",
-            "border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600",
-            "dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600",
-            isDragActive && "bg-primary-50",
-            isDragAccept && "bg-green-50",
-            isDragReject && "bg-red-50",
+            "flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg",
+            "border-[1.5px] border-dashed border-line-strong bg-sunken transition-colors duration-[120ms] ease-out hover:bg-hover",
+            isDragActive && "border-indicator bg-selected",
+            isDragAccept && "border-ok bg-ok/10",
+            isDragReject && "border-bad bg-bad/10",
           )}
         >
           <div className="flex flex-col items-center justify-center pb-2 pt-5">
-            {isDragReject ? <p className="text-destructive">This file type not allowed</p> : null}
+            {isDragReject ? <p className="text-bad">This file type not allowed</p> : null}
             <UploadCloud
-              className={cn(
-                "h-10 w-10 text-muted-foreground",
-                isDragReject && "stroke-destructive",
-              )}
+              className={cn("h-10 w-10 text-muted-foreground", isDragReject && "text-bad")}
             />
-            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-semibold">Click to upload</span> or drag and drop
+            <p className="mb-2 text-body-sm text-muted-foreground">
+              <span className="font-semibold text-ink">Click to upload</span> or drag and drop
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
+            <p className="text-hint text-muted-foreground">{description}</p>
           </div>
           <input {...getInputProps()} />
         </label>
@@ -50,7 +45,7 @@ export const FileUploadDropzone = ({ description, ...props }: FileUploadDropzone
           <ul>
             {acceptedFiles?.map((file, i) => (
               <li key={file.name}>
-                <section className="flex items-center justify-start rounded-lg border p-2 shadow-sm">
+                <section className="flex items-center justify-start rounded-md border border-line bg-surface p-2 text-body-sm">
                   <span className="me-2 p-2">{i + 1}.</span>
                   {"  "}
                   <span>
@@ -58,8 +53,10 @@ export const FileUploadDropzone = ({ description, ...props }: FileUploadDropzone
                     <p className="text-xs text-muted-foreground">{file.relativePath}</p>
                   </span>
                   <span className="group ms-auto flex items-center gap-4">
-                    <p>({(file.size / 1024).toFixed(2)} KB)</p>
-                    <CrossCircledIcon className="h-5 w-5 stroke-destructive hover:cursor-pointer" />
+                    <p className="font-mono text-hint tabular-nums text-muted-foreground">
+                      ({(file.size / 1024).toFixed(2)} KB)
+                    </p>
+                    <CrossCircledIcon className="h-5 w-5 text-bad hover:cursor-pointer" />
                   </span>
                 </section>
               </li>

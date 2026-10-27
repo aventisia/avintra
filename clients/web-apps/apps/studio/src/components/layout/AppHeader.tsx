@@ -65,18 +65,18 @@ const AppHeader: React.FC = () => {
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
-    <HeaderContainer className="bg-slate-200">
+    <HeaderContainer>
       <Header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-0">
-        <div className="flex min-w-0 items-center gap-3 text-primary-foreground">
+        <div className="flex min-w-0 items-center gap-3 text-ink">
           {/* Back Button */}
           <Tooltip content="Back to Workspace">
             <Button
               size="icon8"
               variant="ghost"
-              className="shrink-0 hover:bg-primary-foreground/10"
+              className="shrink-0 hover:bg-hover"
               onClick={() => goBack()}
             >
-              <ArrowLeftIcon className="h-4 w-4 text-primary-foreground/80" />
+              <ArrowLeftIcon className="h-4 w-4 text-ink-2" />
             </Button>
           </Tooltip>
 
@@ -84,7 +84,7 @@ const AppHeader: React.FC = () => {
           <AppLogo label={headerLabel} />
 
           {/* separator */}
-          <span className="rotate-12 text-primary-foreground/50">/</span>
+          <span className="rotate-12 text-line-strong">/</span>
 
           {/* Agent name */}
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
@@ -98,7 +98,7 @@ const AppHeader: React.FC = () => {
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex min-w-0 items-center justify-end">
-            <div className="mx-4 flex min-w-0 items-center gap-1 text-primary-foreground">
+            <div className="mx-4 flex min-w-0 items-center gap-1 text-ink">
               <PresenceAvatars />
 
               <ExecuteFlow />
@@ -124,7 +124,7 @@ const AppHeader: React.FC = () => {
               variant={"ghost"}
               size={"xs"}
               className={
-                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-primary-foreground/10 pl-3 pr-2.5 font-bold text-primary-foreground/80 hover:bg-primary-foreground/20 hover:text-primary-foreground/80"
+                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-fill pl-3 pr-2.5 font-bold text-ink-2 hover:bg-hover hover:text-ink"
               }
             >
               View Only

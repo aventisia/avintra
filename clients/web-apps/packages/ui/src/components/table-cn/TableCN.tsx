@@ -57,10 +57,10 @@ const TableCNBody = <TData,>({ table, emptyMessage, getRowProps }: TableCNBodyPr
   if (rows.length === 0) {
     return (
       <tbody>
-        <TableCNRowElement className="hover:bg-background">
+        <TableCNRowElement className="hover:bg-surface">
           <TableCNCellElement
             colSpan={table.getVisibleLeafColumns().length || 1}
-            className="h-24 whitespace-normal text-center text-sm text-muted-foreground"
+            className="h-24 whitespace-normal text-center text-body-sm text-muted-foreground"
           >
             {emptyMessage}
           </TableCNCellElement>
@@ -134,10 +134,7 @@ export const TableCN = <TData,>({
       <TableCNPagination
         table={table}
         {...paginationProps}
-        className={cn(
-          "border-t border-border bg-slate-50/60 px-4 py-1.5",
-          paginationProps?.className,
-        )}
+        className={cn("border-t border-line bg-surface px-3 py-2", paginationProps?.className)}
       />
     </TableCNFrame>
     {actionBar}

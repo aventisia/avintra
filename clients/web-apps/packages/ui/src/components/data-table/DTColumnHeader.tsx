@@ -51,14 +51,18 @@ export const DTColumnHeader = <TData, TValue>({
     <div className={cn("flex items-center space-x-2", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-2 h-6 gap-1 px-2 font-mono text-[10.5px]/[14px] font-medium uppercase tracking-[0.07em] text-current data-[state=open]:bg-hover"
+          >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ml-2 h-4 w-4" />
+              <ArrowDownIcon className="h-3 w-3" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ml-2 h-4 w-4" />
+              <ArrowUpIcon className="h-3 w-3" />
             ) : (
-              <ChevronUpDownIcon className="ml-2 h-4 w-4" />
+              <ChevronUpDownIcon className="h-3 w-3" />
             )}
           </Button>
         </DropdownMenuTrigger>

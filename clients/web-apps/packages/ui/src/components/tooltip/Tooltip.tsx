@@ -25,7 +25,7 @@ interface TooltipProps extends React.PropsWithChildren {
   /**
    * (Optional): This property controls the time delay (in milliseconds) before the
    * tooltip appears after hovering over the target element.
-   * Default value is 500 milliseconds
+   * Default value is 400 milliseconds
    */
   delayDuration?: number;
 
@@ -46,7 +46,7 @@ const Tooltip = ({
   children,
   content,
   shortcut,
-  delayDuration = 500,
+  delayDuration = 400,
   side = "bottom",
   className,
   ...props
@@ -59,7 +59,7 @@ const Tooltip = ({
           side={side}
           sideOffset={4}
           className={cn(
-            "z-50 max-w-[22rem] overflow-hidden rounded-md border border-secondary bg-secondary px-2.5 py-1 text-2xs text-secondary-foreground shadow-md backdrop-blur animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "z-50 max-w-[240px] overflow-hidden rounded-md bg-secondary px-2 py-[5px] text-hint font-medium text-secondary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 motion-reduce:animate-none",
             className,
           )}
           {...props}
@@ -68,8 +68,8 @@ const Tooltip = ({
           {shortcut && (
             <span
               className={cn(
-                typeof content === "string" && content.length > 0 ? "ml-2.5" : "",
-                "font-mono font-semibold text-secondary-foreground/60",
+                typeof content === "string" && content.length > 0 ? "ml-2" : "",
+                "font-mono text-secondary-foreground/60",
               )}
             >
               {shortcut}
