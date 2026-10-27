@@ -50,8 +50,8 @@ public static class EnvironmentConfigurationExtension
         // Basic environment variables
         var APP_BASE_URL = GetRequiredEnvVar("APP_BASE_URL");
 
-        // On-prem tenant credentials are optional only for an explicit Community edition. The admin
-        // email is always required so the default platform user can be seeded.
+        // On-prem tenant credentials identify a paid deployment; a deployment with neither runs as
+        // Community. The admin email is always required so the default platform user can be seeded.
         var ON_PREM_TENANT_ID = Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID") ?? string.Empty;
         var ON_PREM_INSTANCE_KEY = Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY") ?? string.Empty;
         var ON_PREM_ADMIN_EMAIL = GetRequiredEnvVar("ON_PREM_ADMIN_EMAIL");
@@ -553,8 +553,9 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// Resolves the deployment edition from the identity settings and the explicit
-    /// <c>ON_PREM_EDITION=Community</c> opt-in. Ambiguous configuration refuses to start.
+    /// Resolves the deployment edition from the on-prem identity settings. Both values present
+    /// means a paid deployment validated by GlobalAdmin; both absent means Community. Exactly one
+    /// present refuses to start as a likely misconfiguration.
     /// </summary>
     private static bool ResolveIsCommunityDeployment(string onPremTenantId, string onPremInstanceKey)
     {
@@ -572,19 +573,11 @@ public static class EnvironmentConfigurationExtension
             var missingVariable = hasTenantId ? "ON_PREM_INSTANCE_KEY" : "ON_PREM_TENANT_ID";
 
             throw new InvalidOperationException(
-                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both identity variables for a paid deployment, or unset both to run the Community edition.");
         }
 
-        var edition = Environment.GetEnvironmentVariable("ON_PREM_EDITION");
-        var hasCommunityOptIn = string.Equals(
-            edition?.Trim(), OnPremTenantTypesEnum.Community.ToString(), StringComparison.OrdinalIgnoreCase);
-
-        if (!hasCommunityOptIn)
-        {
-            throw new InvalidOperationException(
-                "Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.");
-        }
-
+        Console.Error.WriteLine(
+            "No on-prem tenant identity configured; running the Community edition. Set ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY for a paid deployment.");
         return true;
     }
 

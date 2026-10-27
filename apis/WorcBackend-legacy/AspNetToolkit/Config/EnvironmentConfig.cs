@@ -145,9 +145,8 @@ public class EnvironmentConfig
     public string? BrandingAccentForegroundColor { get; set; }
 
     /// <summary>
-    /// True when the deployment runs as the explicit Community edition. Startup configuration
-    /// refuses to start on ambiguous identity settings (exactly one of the tenant id / instance
-    /// key present) and on both blank unless <c>ON_PREM_EDITION=Community</c> is set.
+    /// True when the deployment runs as the Community edition: no on-prem tenant identity is
+    /// configured. Startup refuses to run with only one of the two identity values.
     /// </summary>
     public bool IsCommunityDeployment =>
         string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);
