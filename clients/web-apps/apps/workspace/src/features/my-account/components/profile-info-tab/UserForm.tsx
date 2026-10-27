@@ -37,7 +37,7 @@ export const UserForm = () => {
       className="box flex flex-col p-5"
     >
       <div>
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-xl font-medium">
           Profile Info
         </div> */}
 
@@ -46,21 +46,21 @@ export const UserForm = () => {
           <InputDivElement
             headingForInput="Full Name"
             isRequired={true}
-            messageForInput="Enter your full legel name as it appears on your official documentation."
+            messageForInput="Enter your full legal name as it appears on your official documentation."
             showSkelaton={isLoading}
           >
             <div className="flex w-auto flex-col items-center gap-2 md:flex-row">
               <InputField
                 type="text"
                 name="firstName"
-                className="border-slate-300/60 shadow-sm"
+                className="border-input"
                 size={50}
                 placeholder="First Name"
               />
               <InputField
                 name="lastName"
                 type="text"
-                className="border-slate-300/60 shadow-sm"
+                className="border-input"
                 size={50}
                 placeholder="Last Name"
               />
@@ -96,26 +96,26 @@ export const UserForm = () => {
               name="addressLine1"
               type="text"
               placeholder="Address Line 1"
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
             <InputField
               name="addressLine2"
               type="text"
               placeholder="Address Line 2"
-              className="mt-3 border-slate-300/60 shadow-sm"
+              className="mt-3 border-input"
             />
           </InputDivElement> */}
 
           <InputDivElement
             headingForInput="Country"
-            messageForInput="Please Specify the country you are currently residing in."
+            messageForInput="Please specify the country you are currently residing in."
             showSkelaton={isLoading}
           >
             {
               <SelectField
                 name="country"
                 selectOptions={enumToArray(CountriesEnum)}
-                className="border-slate-300/60 shadow-sm"
+                className="border-input"
               />
             }
           </InputDivElement>
@@ -129,7 +129,7 @@ export const UserForm = () => {
               name="stateOrProvince"
               type="text"
               placeholder=""
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement> */}
 
@@ -142,7 +142,7 @@ export const UserForm = () => {
               name="city"
               type="text"
               placeholder=""
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement> */}
 
@@ -155,7 +155,7 @@ export const UserForm = () => {
               name="zipOrPostalCode"
               type="text"
               placeholder="548462"
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement> */}
         </div>

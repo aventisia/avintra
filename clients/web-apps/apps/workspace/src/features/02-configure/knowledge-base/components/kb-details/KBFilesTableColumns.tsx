@@ -49,7 +49,11 @@ export const getKBFilesTableColumns = (
         className="max-w-16"
       />
     ),
-    cell: ({ row }) => <div className="w-16 font-medium">{row.original.chunksCount || "—"}</div>,
+    cell: ({ row }) => (
+      <div className="w-16 font-medium font-mono tabular-nums">
+        {row.original.chunksCount || "—"}
+      </div>
+    ),
   },
   {
     accessorKey: "status",
@@ -94,7 +98,11 @@ export const getKBFilesTableColumns = (
         enableHiding={false}
       />
     ),
-    cell: ({ row }) => <div className="w-24 font-medium">{formatDate(row.original.createdOn)}</div>,
+    cell: ({ row }) => (
+      <div className="w-24 font-medium font-mono tabular-nums">
+        {formatDate(row.original.createdOn)}
+      </div>
+    ),
   },
   createDTActionsColumn<KnowledgeBaseFileDto>({
     size: 48,

@@ -126,7 +126,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold">{agentMeta.name}</span>
 
-              <Badge className="px-2 py-0 rounded-full text-2xs bg-slate-200 text-secondary font-medium">
+              <Badge variant="outline" className="tabular-nums">
                 v{agentMeta.version}
               </Badge>
             </div>

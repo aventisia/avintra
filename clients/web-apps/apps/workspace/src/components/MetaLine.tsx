@@ -18,7 +18,7 @@ export const MetaLine = ({ items, className, dotClassName }: MetaLineProps) => (
           <span
             aria-hidden="true"
             className={cn(
-              "mx-1.5 inline-block size-[3px] rounded-full bg-slate-300 align-middle",
+              "mx-1.5 inline-block size-[3px] rounded-full bg-fill align-middle",
               dotClassName,
             )}
           />

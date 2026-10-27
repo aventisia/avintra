@@ -59,7 +59,7 @@ export const MachinesTable = () => {
               <DTSearchBox
                 table={table}
                 searchColumns={["name", "status", "username", "operatingSystem"]}
-                placeholder="Search by name, status, username, or OS..."
+                placeholder="Search name, status, user or OS..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
             </div>

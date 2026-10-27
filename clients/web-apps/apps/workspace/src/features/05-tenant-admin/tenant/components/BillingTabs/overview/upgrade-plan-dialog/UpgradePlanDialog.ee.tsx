@@ -30,16 +30,16 @@ const UpgradePlanDialog = () => {
       <DialogContent className="!max-w-[60rem] space-y-2 px-1">
         <DialogHeader className="border-b px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">
+            <span className="text-heading">
               {chosenPlan == "Credits"
                 ? "Credits Top-up"
                 : chosenPlan == "FrequencyChange"
                   ? "Change Billing Frequency"
                   : "Upgrade"}
-            </h2>
+            </span>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
               <X className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Upgrade</span>
+              <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
           </DialogTitle>
         </DialogHeader>

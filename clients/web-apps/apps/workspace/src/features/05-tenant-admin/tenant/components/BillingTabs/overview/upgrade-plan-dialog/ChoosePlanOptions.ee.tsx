@@ -28,7 +28,7 @@ const ChoosePlanOptions = () => {
 
   return (
     <div className="space-y-5 px-8 py-10 pt-3">
-      <h2 className="text-lg font-semibold">Our Deployment Options</h2>
+      <h2 className="text-heading">Our Deployment Options</h2>
 
       <div className="grid grid-cols-2 gap-4">
         {/* Enterprise Self hosted Plan */}
@@ -159,8 +159,8 @@ export default ChoosePlanOptions;
 
 export const CheckMark = () => {
   return (
-    <div className="mt-1 rounded-full bg-green-500 p-[2px]">
-      <Check className="h-3 w-3 text-white" />
+    <div className="mt-1 rounded-full bg-ok p-[2px]">
+      <Check className="h-3 w-3 text-bg" />
     </div>
   );
 };

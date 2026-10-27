@@ -29,7 +29,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   return (
     <Card
       key={template.id}
-      className="flex cursor-pointer flex-col justify-between rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 hover:bg-slate-50"
+      className="flex cursor-pointer flex-col justify-between rounded-lg border-line shadow-none transition-colors hover:border-line-strong hover:bg-hover"
       onClick={() => handleViewTemplate(template.id)}
     >
       <CardHeader className="pb-4">
@@ -72,7 +72,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
             {template.name}
           </CardTitle>
           {/* Type badge */}
-          <Badge variant="outline" className="flex w-fit items-center gap-1 bg-slate-100 py-1">
+          <Badge variant="outline" className="flex w-fit items-center gap-1 bg-sunken py-1">
             <Tag className="h-3 w-3" />
             <span className="leading-3">{transformTemplateType(template?.type)}</span>
           </Badge>
@@ -83,7 +83,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {/* Creator badge and name */}
           <div className="flex items-center gap-2">
             <Avatar className="flex h-7 w-7 items-center justify-center">
-              <AvatarFallback className="flex items-center justify-center border border-primary-100 bg-accent text-2xs font-medium">
+              <AvatarFallback className="flex items-center justify-center border border-line bg-accent text-2xs font-medium">
                 {template?.createdBy
                   ? template?.createdBy
                       ?.split(" ")

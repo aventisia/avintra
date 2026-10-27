@@ -7,7 +7,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
-import { DotPattern } from "@/components/layout/DotPattern";
 import { ROLE_TA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
@@ -231,11 +230,6 @@ export const AppLayout = () => {
         <AppRedirectPage />
       ) : (
         <div className="relative min-h-screen overflow-hidden">
-          <DotPattern
-            className={cn(
-              "z-[-10] mt-2 [mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]",
-            )}
-          />
           <AppHeader />
           <Sidebar />
           <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">

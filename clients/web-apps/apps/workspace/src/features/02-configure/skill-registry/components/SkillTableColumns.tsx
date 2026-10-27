@@ -45,7 +45,7 @@ export const SkillTableColumns = (isPlatformTab: boolean = false): ColumnDef<Ski
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
         {row.original.accessLevel !== ResourceAccessTypeEnum.Personal && (
-          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-ink-2 rounded-sm">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>
         )}
@@ -81,7 +81,9 @@ export const SkillTableColumns = (isPlatformTab: boolean = false): ColumnDef<Ski
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   {
@@ -90,7 +92,9 @@ export const SkillTableColumns = (isPlatformTab: boolean = false): ColumnDef<Ski
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("fileCount")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("fileCount") ?? 0}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {row.getValue("fileCount") ?? 0}
+      </div>
     ),
   },
   createDTActionsColumn<SkillTableDto>({

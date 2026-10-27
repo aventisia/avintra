@@ -1,11 +1,10 @@
 import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { TABLE_KEY } from "../constants";
-import { getColumnName, statusColor } from "../constants/column-display-names";
+import { getColumnName, statusVariant } from "../constants/column-display-names";
 import { AdminConversationDto } from "../dtos/conversations-table-dto";
 import { ConversationsTableCellLink } from "./ConversationsTableCellLink";
 
@@ -32,9 +31,7 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
     cell: ({ row }) => (
       <div className="flex  items-center gap-2 ">
         <div className="max-w-48  truncate font-medium">{`${row.getValue("flowName")} `}</div>
-        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-          v{row.original.versionNumber ?? 0}
-        </p>
+        <Badge variant="outline">v{row.original.versionNumber ?? 0}</Badge>
       </div>
     ),
   },
@@ -44,7 +41,7 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalExchange")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("totalExchange")}</div>
+      <div className="w-auto truncate font-mono tabular-nums">{row.getValue("totalExchange")}</div>
     ),
   },
   {
@@ -53,7 +50,7 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
     ),
     cell: ({ row }) => (
-      <Badge className={cn(statusColor[row.original.status])}>{row.getValue("status")}</Badge>
+      <Badge variant={statusVariant[row.original.status]}>{row.getValue("status")}</Badge>
     ),
   },
   {
@@ -67,7 +64,7 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-mono tabular-nums">
         {row.getValue("timestamp")
           ? format(row.getValue("timestamp"), "dd MMM yyyy h:mm:ss a")
           : "NA"}

@@ -21,7 +21,7 @@ export const DTCreateButton: React.FC<DTCreateButtonProps> = ({
 
   const button = (
     <Button
-      size={"xs"}
+      size="default"
       className={cn("gap-2 text-sm tracking-wide")}
       onClick={() => openCreateDialog(entity)}
       disabled={locked}

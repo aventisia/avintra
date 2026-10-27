@@ -92,11 +92,13 @@ export const DCPForm = () => {
           {showOuputFields ? (
             <>
               <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-                <span className="rounded-full bg-accent px-1.5 text-indigo-600">Outputs</span>
-                <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
+                <span className="font-mono text-label uppercase text-muted-foreground">
+                  Outputs
+                </span>
+                <span className="h-px flex-grow bg-line"></span>
               </h3>
 
-              <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+              <div className="space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                 {nodeConfig.map((field) => {
                   // Check if the field should be rendered based on direction and renderIf conditions
                   if (!shouldRenderField("Output", field, watchedValues)) {
