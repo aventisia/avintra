@@ -30,9 +30,9 @@ const AppLogo = ({
   return (
     <a
       href={import.meta.env.BASE_URL}
-      className={cn("flex items-center justify-center gap-2 font-medium", className)}
+      className={cn("flex items-center gap-2.5 font-semibold tracking-[-0.02em]", className)}
     >
-      <img className={cn(className)} src={logoSrc} alt="Logo" />
+      <img className={cn("w-auto shrink-0", className)} src={logoSrc} alt="Logo" />
     </a>
   );
 };

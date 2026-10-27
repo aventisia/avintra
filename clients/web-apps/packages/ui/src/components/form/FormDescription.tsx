@@ -19,9 +19,9 @@ const FormDescription = React.forwardRef<
       id={formDescriptionId}
       className={cn(
         "text-muted-foreground",
-        size === "xs" && "text-3xs",
-        size === "sm" && "text-2xs",
-        size === "base" && "text-xs",
+        size === "xs" && "text-2xs",
+        size === "sm" && "text-[12px]/4",
+        size === "base" && "text-hint",
         className,
       )}
       {...props}

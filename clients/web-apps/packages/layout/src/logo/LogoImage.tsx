@@ -18,7 +18,7 @@ import React from "react";
  */
 const LogoImage = React.forwardRef<HTMLImageElement, React.ImgHTMLAttributes<HTMLImageElement>>(
   ({ className, ...props }, ref) => {
-    return <img ref={ref} alt="Logo" className={cn("h-6", className)} {...props} />;
+    return <img ref={ref} alt="Logo" className={cn("h-6 w-auto shrink-0", className)} {...props} />;
   },
 );
 
