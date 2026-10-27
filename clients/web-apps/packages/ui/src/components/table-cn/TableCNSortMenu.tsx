@@ -50,14 +50,14 @@ const SortRule = <TData,>({
 
   return (
     <li className="flex items-center gap-2">
-      <span className="w-12 shrink-0 text-xs text-slate-400">
+      <span className="w-12 shrink-0 text-xs text-muted-foreground">
         {index === 0 ? "Sort by" : "then"}
       </span>
       <Select value={sort.id} onValueChange={(id) => onChange({ ...sort, id })}>
         <SelectTrigger
           aria-label={`Sort field ${index + 1}`}
           size="sm"
-          className="w-40 rounded-lg font-medium text-slate-700"
+          className="w-40 rounded-lg font-medium text-ink-2"
         >
           <SelectValue />
         </SelectTrigger>
@@ -76,7 +76,7 @@ const SortRule = <TData,>({
         <SelectTrigger
           aria-label={`${label} sort direction`}
           size="sm"
-          className="w-[7.5rem] rounded-lg text-slate-700"
+          className="w-[7.5rem] rounded-lg text-ink-2"
         >
           <SelectValue />
         </SelectTrigger>
@@ -92,7 +92,7 @@ const SortRule = <TData,>({
         aria-label={`Remove ${label} sort`}
         variant="ghost"
         size="icon8"
-        className="shrink-0 text-slate-400 hover:text-rose-600"
+        className="shrink-0 text-muted-foreground hover:text-bad"
         onClick={onRemove}
       >
         <Trash2 className="size-3.5" />
@@ -132,12 +132,12 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
         <Button
           variant="outline"
           size="xs"
-          className={cn(TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME, sorting.length > 0 && "text-slate-900")}
+          className={cn(TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME, sorting.length > 0 && "text-ink")}
         >
           <ArrowDownUp />
           Sort
           {sorting.length > 0 && (
-            <span className="grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-md bg-indigo-50 px-1 text-2xs font-semibold tabular-nums text-indigo-700">
+            <span className="grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-full bg-fill px-1 font-mono text-2xs font-medium tabular-nums text-ink-2">
               {sorting.length}
             </span>
           )}
@@ -150,11 +150,11 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
         className={cn(TABLE_CN_PANEL_CLASS_NAME, "flex w-auto min-w-[22rem] flex-col gap-3 p-3")}
       >
         <div className="px-0.5">
-          <h4 id={titleId} className="text-[13px] font-semibold text-slate-900">
+          <h4 id={titleId} className="text-body-sm font-semibold text-ink">
             {sorting.length > 0 ? "Sorting" : "No sorting applied"}
           </h4>
           {sorting.length === 0 && (
-            <p className="mt-0.5 text-[13px] text-slate-500">Add a rule to order the rows.</p>
+            <p className="mt-0.5 text-hint text-muted-foreground">Add a rule to order the rows.</p>
           )}
         </div>
         {sorting.length > 0 && (
@@ -172,11 +172,11 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
             ))}
           </ol>
         )}
-        <div className="flex items-center justify-between gap-2 border-t border-slate-100 pt-3">
+        <div className="flex items-center justify-between gap-2 border-t border-line pt-3">
           <Button
             variant="ghost"
             size="xs"
-            className="gap-1.5 text-[13px] text-slate-700"
+            className="gap-1.5 text-body-sm text-ink-2"
             onClick={onAddSort}
             disabled={!nextColumn}
           >
@@ -187,7 +187,7 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
             <Button
               variant="ghost"
               size="xs"
-              className="text-[13px] text-slate-500"
+              className="text-body-sm text-muted-foreground"
               onClick={() => table.resetSorting(true)}
             >
               Clear sorting

@@ -49,7 +49,7 @@ const SwitchField = ({
         <FormItem
           className={cn(
             "flex flex-row items-center justify-between gap-8 rounded-lg",
-            showBorder && "border",
+            showBorder && "border border-line",
             size === "xs" && "p-2.5 pt-1.5",
             size === "sm" && "p-2.5 pt-1.5",
             size === "base" && "p-4 pt-3.5",
@@ -64,9 +64,10 @@ const SwitchField = ({
           >
             <FormLabel
               className={cn(
-                size === "xs" && "text-2xs",
-                size === "sm" && "text-xs",
-                size === "base" && "text-sm",
+                "font-medium",
+                size === "xs" && "text-hint",
+                size === "sm" && "text-[13px]/[18px]",
+                size === "base" && "text-body-sm",
               )}
             >
               {label}

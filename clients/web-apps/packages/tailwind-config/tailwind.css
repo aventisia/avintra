@@ -65,9 +65,9 @@
 
     --banner-height: 3.5rem;
     --header-padding: 0.375rem;
-    --header-height: 3.5rem;
+    --header-height: 3rem;
     --sidebar-max-width: 14rem;
-    --sidebar-min-width: 4.296rem;
+    --sidebar-min-width: 3.5rem;
     --icon-color: var(--ink-2);
     --popover-height: 70vh;
   }

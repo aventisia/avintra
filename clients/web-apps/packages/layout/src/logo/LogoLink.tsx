@@ -41,7 +41,7 @@ const LogoLink = React.forwardRef<HTMLAnchorElement, React.AnchorHTMLAttributes<
       <a
         ref={ref}
         href={viteEnvVars.BASE_URL}
-        className={cn("flex items-center justify-center gap-2 font-medium", className)}
+        className={cn("flex items-center gap-2.5 font-semibold tracking-[-0.02em]", className)}
         {...props}
       />
     );

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
+import { MenuIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UpgradeCard } from "./UpgradeCard";
@@ -56,17 +56,17 @@ const SidebarOnDialog = ({ appLogo, className }: SidebarOnDialogProps) => {
           variant="outline"
           size="icon8"
           className={cn(
-            "mr-3.5 flex h-8 w-8 rounded-lg border-none bg-transparent text-white/70 shadow-none hover:bg-white/10 hover:text-white/70 md:hidden",
+            "mr-2 flex size-control-md rounded-md border-none bg-transparent text-ink-2 shadow-none hover:bg-hover hover:text-ink md:hidden",
             className,
           )}
           onClick={() => setSidebarExpand(true)}
         >
-          <Bars3BottomLeftIcon className="h-7 w-7" />
+          <MenuIcon className="size-4" strokeWidth={1.75} />
         </Button>
       </DialogTrigger>
-      <DialogContent side="left" className="w-[--sidebar-max-width]">
+      <DialogContent side="left" className="w-[--sidebar-max-width] bg-bg">
         <ScrollArea className="my-2 h-[calc(100vh-1.1rem)]">
-          <div className="flex h-[--header-height] items-center px-[1.1rem]">{appLogo}</div>
+          <div className="flex h-[--header-height] items-center px-4">{appLogo}</div>
           <nav className="h-auto">
             <SidebarMenuItems />
             <UpgradeCard />

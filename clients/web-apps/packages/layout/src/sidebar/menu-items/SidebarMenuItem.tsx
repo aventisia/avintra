@@ -58,46 +58,25 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
     }
   }
 
-  // Return the sidebar menu item component
   return (
-    <div className={`${sidebarExpand ? "mx-3" : "mx-4"}`}>
-      <NavLink
-        to={route}
-        className={({ isActive }) => {
-          return isActive ? "active group rounded-lg" : "group rounded-lg";
-        }}
-        onClick={closeSidebarOnDialog}
-      >
-        <li className="group relative my-1.5 flex h-9 cursor-pointer items-center justify-between overflow-hidden rounded-lg border-0 pr-3.5 transition-[width] duration-500 hover:bg-accent hover:text-primary group-[.active]:bg-accent group-[.active]:text-primary">
-          <span className="absolute block h-[45%] w-[0.18rem] rounded-full opacity-80 group-[.active]:bg-secondary" />
-          <div className="flex items-center justify-center">
-            <div
-              className={`mr-1 flex h-9 items-center justify-center ${
-                sidebarExpand ? "w-[2.5rem]" : "w-9"
-              }`}
-            >
-              <Icon className="h-5 w-5 text-[--icon-color] group-hover:text-primary group-[.active]:text-primary" />
-            </div>
-            <span
-              className={`whitespace-nowrap text-sm font-medium capitalize tracking-wide ${
-                sidebarExpand ? "block" : "hidden"
-              }`}
-            >
-              {name}
-            </span>
-          </div>
-          {badge && (
-            <span
-              className={`rounded-xl bg-slate-200 px-2.5 py-0.5 text-sm ${
-                sidebarExpand ? "block" : "hidden"
-              }`}
-            >
-              {badge}
-            </span>
-          )}
-        </li>
-      </NavLink>
-    </div>
+    <NavLink
+      to={route}
+      onClick={closeSidebarOnDialog}
+      className="group relative flex h-control-sm items-center gap-2.5 rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-selected aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
+    >
+      <span className="absolute -left-2 bottom-1.5 top-1.5 hidden w-0.5 rounded-r-sm bg-indicator group-aria-[current=page]:block" />
+      <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground group-aria-[current=page]:text-primary-text" />
+      <span className={`truncate capitalize ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
+      {badge && (
+        <span
+          className={`ml-auto font-mono text-2xs leading-none text-muted-foreground ${
+            sidebarExpand ? "block" : "hidden"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
+    </NavLink>
   );
 };
 

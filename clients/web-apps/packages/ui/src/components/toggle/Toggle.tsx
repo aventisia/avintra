@@ -11,10 +11,7 @@ const Toggle = React.forwardRef<
 >(({ className, variant, size, ...props }, ref) => (
   <TogglePrimitive.Root
     ref={ref}
-    className={cn(
-      toggleVariants({ variant, size, className }),
-      `${props.pressed ? "border-spacing-1 border-primary" : ""}`,
-    )}
+    className={cn(toggleVariants({ variant, size, className }))}
     {...props}
   />
 ));

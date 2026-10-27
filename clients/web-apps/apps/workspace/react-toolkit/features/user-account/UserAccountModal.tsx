@@ -1,3 +1,4 @@
+import { ThemeSwitcher } from "@avplatform/layout";
 import { Separator } from "@avplatform/ui";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Button } from "@avplatform/ui/buttons";
@@ -102,6 +103,8 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           <Lucide icon="User" className="h-4 w-4" />
           My Account
         </Button>
+        <Separator className="my-1 h-[0.5px]" />
+        <ThemeSwitcher className="h-9" />
         <Separator className="my-1 h-[0.5px]" />
         {/* Role selector for filtering the sidebar menu */}
         <RoleSelector />

@@ -33,14 +33,15 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
         ref={ref}
         id={formMessageId}
         className={cn(
-          "flex items-center gap-1 px-1 font-medium text-destructive transition-all duration-300 ease-in-out",
-          size === "xs" && "pt-0 text-3xs",
-          size === "sm" && "pt-0 text-2xs",
-          size === "base" && "pt-1 text-2xs",
-          messageType === "Gray" && "animate-pulse text-muted-foreground duration-1000",
-          messageType === "Yellow" && "text-yellow-600",
-          messageType === "Red" && "text-destructive",
-          messageType === "Green" && "text-green-600",
+          "flex items-center gap-1.5 font-medium text-bad",
+          size === "xs" && "pt-0 text-2xs",
+          size === "sm" && "pt-0 text-[12px]/4",
+          size === "base" && "pt-0.5 text-hint",
+          messageType === "Gray" &&
+            "animate-pulse text-muted-foreground duration-1000 motion-reduce:animate-none",
+          messageType === "Yellow" && "text-warn",
+          messageType === "Red" && "text-bad",
+          messageType === "Green" && "text-ok",
           className,
         )}
         {...props}

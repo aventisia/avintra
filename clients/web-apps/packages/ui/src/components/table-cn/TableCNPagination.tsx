@@ -37,9 +37,9 @@ const PageButton = ({ label, icon: Icon, className, ...props }: PageButtonProps)
     type="button"
     aria-label={label}
     className={cn(
-      "grid size-7 place-items-center rounded-lg text-slate-600 outline-none transition-colors",
-      "hover:bg-slate-200/60 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500/50",
-      "disabled:pointer-events-none disabled:text-slate-300",
+      "grid size-7 place-items-center rounded-md text-ink-2 outline-none transition-colors duration-[120ms] ease-out",
+      "hover:bg-hover hover:text-ink focus-visible:shadow-focus",
+      "disabled:pointer-events-none disabled:text-muted-foreground/50",
       className,
     )}
     {...props}
@@ -49,7 +49,7 @@ const PageButton = ({ label, icon: Icon, className, ...props }: PageButtonProps)
 );
 
 const Strong = ({ children }: React.PropsWithChildren) => (
-  <span className="font-medium tabular-nums text-slate-900">{children}</span>
+  <span className="font-mono font-medium tabular-nums text-ink">{children}</span>
 );
 
 export type TableCNPaginationProps<TData> = React.ComponentProps<"div"> & {
@@ -89,7 +89,7 @@ export const TableCNPagination = <TData,>({
       )}
       {...props}
     >
-      <div role="status" className="flex-1 whitespace-nowrap text-sm text-slate-500">
+      <div role="status" className="flex-1 whitespace-nowrap text-hint text-muted-foreground">
         {selectedRowCount > 0 ? (
           <>
             <Strong>{selectedRowCount}</Strong> of <Strong>{rowCount}</Strong> {rowLabel} selected
@@ -108,7 +108,7 @@ export const TableCNPagination = <TData,>({
       </div>
       <div className="flex items-center gap-4 sm:gap-5">
         <div className="flex items-center gap-2">
-          <p id={pageSizeLabelId} className="whitespace-nowrap text-sm text-slate-500">
+          <p id={pageSizeLabelId} className="whitespace-nowrap text-hint text-muted-foreground">
             <span className="capitalize">{rowLabels.plural}</span> per page
           </p>
           <Select
@@ -118,7 +118,7 @@ export const TableCNPagination = <TData,>({
             <SelectTrigger
               aria-labelledby={pageSizeLabelId}
               size="sm"
-              className="h-7 w-[4.25rem] rounded-lg bg-background font-medium text-slate-700"
+              className="h-7 w-[4.25rem] rounded-md bg-surface font-medium text-ink-2"
             >
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
@@ -131,7 +131,7 @@ export const TableCNPagination = <TData,>({
             </SelectContent>
           </Select>
         </div>
-        <div role="status" className="whitespace-nowrap text-sm text-slate-500">
+        <div role="status" className="whitespace-nowrap text-hint text-muted-foreground">
           Page <Strong>{currentPage}</Strong> of <Strong>{pageCount}</Strong>
         </div>
         <div className="flex items-center gap-0.5">

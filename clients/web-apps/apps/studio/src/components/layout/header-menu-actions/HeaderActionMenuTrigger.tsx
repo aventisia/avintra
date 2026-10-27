@@ -8,9 +8,9 @@ export const HeaderActionMenuTrigger = () => {
   return (
     <Tooltip content="More">
       <DropdownMenuTrigger
-        className={cn(buttonVariants({ variant: "ghost", size: "icon8" }), "hover:bg-white/10")}
+        className={cn(buttonVariants({ variant: "ghost", size: "icon8" }), "hover:bg-hover")}
       >
-        <EllipsisVerticalIcon className="h-5 w-5 text-white/80" />
+        <EllipsisVerticalIcon className="h-5 w-5 text-ink-2" />
         <span className="sr-only">Open menu</span>
       </DropdownMenuTrigger>
     </Tooltip>

@@ -1,21 +1,20 @@
 import { LogoImage, LogoLink } from "@avplatform/layout";
 import { useBrandLogo } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
+import { useThemeStore } from "@avplatform/ui/stores";
 
 interface AppLogoProps {
-  logoSrc?: string;
   showFullLogo?: boolean;
   className?: string;
 }
 
-const AppLogo = ({ logoSrc, showFullLogo = false, className }: AppLogoProps) => {
-  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product");
+const AppLogo = ({ showFullLogo = false, className }: AppLogoProps) => {
+  const isDark = useThemeStore((state) => state.isDark);
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product", !isDark);
 
   const logoSrcWithBaseUrl =
     brandingLogoUrl ??
-    (logoSrc
-      ? `${import.meta.env.BASE_URL}${logoSrc.toLowerCase()}`
-      : `${import.meta.env.BASE_URL}${showFullLogo ? "logo.svg" : "app_logo_light.svg"}`);
+    `${import.meta.env.BASE_URL}${showFullLogo ? "logo.svg" : isDark ? "app_logo_light.svg" : "app_logo_dark.svg"}`;
 
   return (
     <LogoLink className="gap-1.5">

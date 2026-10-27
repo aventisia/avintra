@@ -20,10 +20,10 @@ export const SettingsTrigger = () => {
         <Button
           size="icon8"
           variant="ghost"
-          className="hover:bg-white/10 hidden md:flex"
+          className="hover:bg-hover hidden md:flex"
           onClick={() => openPanel(PANEL_ID, "right")}
         >
-          <Settings className="h-[1.1rem] w-[1.1rem] text-white/80" />
+          <Settings className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         </Button>
       </Tooltip>
     </>

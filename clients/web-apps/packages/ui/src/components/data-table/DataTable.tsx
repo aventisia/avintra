@@ -20,12 +20,12 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({ table, columnsLength, getRowProps }: DataTableProps<TData>) {
   return (
     <ScrollArea
-      className="w-full overflow-hidden rounded-lg border bg-background"
+      className="w-full overflow-hidden rounded-lg border border-line bg-surface"
       showHorizontalScrollbar
       showVerticalScrollbar={false}
     >
-      <TableExt className="bg-background">
-        <TableExtHeader className="bg-background">
+      <TableExt className="bg-surface">
+        <TableExtHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableExtRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header) => {
@@ -70,7 +70,7 @@ export function DataTable<TData>({ table, columnsLength, getRowProps }: DataTabl
             <TableExtRow className="hover:bg-transparent">
               <TableExtCell
                 colSpan={columnsLength}
-                className="h-24 text-center text-sm text-muted-foreground"
+                className="h-24 text-center text-body-sm text-muted-foreground"
               >
                 No results.
               </TableExtCell>

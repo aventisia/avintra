@@ -20,16 +20,16 @@ export const DeleteDDMenuItem = React.forwardRef<
       disabled={disabled || locked}
       className={cn(
         buttonVariants({ variant: "dropdownCautionItem" }),
-        "focus:bg-rose-50 focus:text-rose-600 data-[highlighted]:bg-rose-50 data-[highlighted]:text-rose-600",
+        "text-bad focus:bg-hover focus:text-bad data-[highlighted]:bg-hover data-[highlighted]:text-bad",
         size === "sm" && "group h-7 !px-[0.3rem] text-xs",
-        size === "md" && "group h-auto gap-2.5 border-0 !px-2.5 py-2 text-[13px] font-normal",
+        size === "md" && "group h-auto min-h-[30px] gap-2 border-0 py-[5px]",
         className,
       )}
       {...props}
     >
       <TrashIcon
         className={cn(
-          "mb-[2px] text-rose-500",
+          "shrink-0 text-bad",
           size === "sm" && "h-3.5 w-3.5",
           size === "md" && "h-4 w-4",
         )}

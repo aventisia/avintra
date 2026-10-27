@@ -22,6 +22,6 @@ export const TableCNFilterInput = <TData, TValue>({
     {...props}
     value={toInputValue(column.getFilterValue())}
     onChange={(event) => column.setFilterValue(event.target.value || undefined)}
-    className={cn("h-8 rounded-lg text-sm shadow-[0_1px_2px_rgba(15,23,42,0.05)]", className)}
+    className={cn("h-8 rounded-md text-body-sm", className)}
   />
 );

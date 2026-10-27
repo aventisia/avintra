@@ -25,10 +25,10 @@ export const DownloadDialogTrigger: React.FC<DownloadDialogTriggerProps> = ({
     <Tooltip content="Download Desktop App">
       <button
         type="button"
-        className={cn(buttonVariants({ variant: "ghost", size: triggerSize }), "hover:bg-white/10")}
+        className={cn(buttonVariants({ variant: "ghost", size: triggerSize }), "hover:bg-hover")}
         onClick={() => toggleOpen()}
       >
-        <DownloadIcon className="h-[1.2rem] w-[1.2rem] text-white/80" />
+        <DownloadIcon className="h-[1.2rem] w-[1.2rem] text-ink-2" />
       </button>
     </Tooltip>
   );

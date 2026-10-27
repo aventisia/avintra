@@ -27,12 +27,12 @@ export const ChatTrigger = () => {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
-          "relative hover:bg-white/10",
-          isChatOpen && "hidden bg-white/10 md:flex",
+          "relative hover:bg-hover",
+          isChatOpen && "hidden bg-fill md:flex",
         )}
         onClick={() => setChatOpen(!isChatOpen)}
       >
-        <ChatBubbleLeftRightIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
+        <ChatBubbleLeftRightIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         {unreadCount > 0 && !isChatOpen ? (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-white">
             {unreadCount > 99 ? "99+" : unreadCount}

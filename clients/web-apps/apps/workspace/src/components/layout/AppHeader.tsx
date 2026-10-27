@@ -24,10 +24,7 @@ const AppHeader: React.FC = () => {
     <HeaderContainer>
       <Header>
         <div className="flex flex-grow items-center">
-          <SidebarOnDialog
-            appLogo={<AppLogo logoSrc="/app_logo_dark.svg" />}
-            className="flex md:hidden"
-          />
+          <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
           <AppLogo />
           <SpaceSelector />
           {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==

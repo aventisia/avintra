@@ -17,7 +17,10 @@ type ViewDefaultCardProps = ComponentPropsWithoutRef<"div">;
  */
 export const ViewDefaultCard = ({ children, className, ...props }: ViewDefaultCardProps) => {
   return (
-    <div className={cn("rounded-lg space-y-4 border bg-card px-4 pt-4 pb-4", className)} {...props}>
+    <div
+      className={cn("space-y-4 rounded-lg border border-line bg-surface p-4", className)}
+      {...props}
+    >
       {children}
     </div>
   );

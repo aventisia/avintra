@@ -16,17 +16,17 @@ export const VersionHistoryTrigger = () => {
       <Tooltip content="Change History">
         {data?.data && data.data?.length > 0 ? (
           <Button
-            className={"hover:bg-white/10 hidden md:flex"}
+            className={"hover:bg-hover hidden md:flex"}
             variant={"ghost"}
             size={"icon8"}
             onClick={() => navigate(withQueryParams("/agent-history"))}
           >
-            <HistoryIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
+            <HistoryIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
           </Button>
         ) : (
-          <Button className="hover:bg-white/10 hidden md:flex" variant={"ghost"} size={"icon8"}>
+          <Button className="hover:bg-hover hidden md:flex" variant={"ghost"} size={"icon8"}>
             <HistoryIcon
-              className="h-[1.1rem] w-[1.1rem] text-white/80"
+              className="h-[1.1rem] w-[1.1rem] text-ink-2"
               onClick={() => {
                 toast.info("No change history present");
               }}

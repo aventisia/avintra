@@ -25,7 +25,7 @@ const FieldHelpPopover = ({ content, className }: FieldHelpPopoverProps) => {
           type="button"
           aria-label="Field help"
           className={cn(
-            "rounded p-0.5 text-muted-foreground transition-colors hover:bg-slate-100 hover:text-primary",
+            "rounded-sm p-0.5 text-muted-foreground transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:shadow-focus",
             className,
           )}
         >

@@ -27,9 +27,9 @@ export const TableCNRowActionsMenu = ({
     <DropdownMenuTrigger
       aria-label={ariaLabel}
       className={cn(
-        "inline-grid size-7 place-items-center rounded-lg text-slate-400 outline-none transition-colors",
-        "hover:bg-slate-200/70 hover:text-slate-800 focus-visible:ring-2 focus-visible:ring-indigo-500/50 group-hover/row:text-slate-600",
-        "data-[state=open]:bg-slate-200/70 data-[state=open]:text-slate-800",
+        "inline-grid size-7 place-items-center rounded-lg text-muted-foreground outline-none transition-colors",
+        "hover:bg-hover hover:text-ink focus-visible:shadow-focus group-hover/row:text-ink-2",
+        "data-[state=open]:bg-hover data-[state=open]:text-ink",
       )}
     >
       <MoreHorizontal className="size-4" />

@@ -2,8 +2,8 @@ import { cn } from "@avplatform/ui/lib";
 import React from "react";
 
 /**
- * A React functional component that renders a header container with a sticky position,
- * backdrop blur effect, and customizable styles. It uses `React.forwardRef` to forward
+ * A React functional component that renders a header container with a sticky position
+ * and customizable styles. It uses `React.forwardRef` to forward
  * the `ref` to the underlying `<div>` element.
  *
  * @typeParam HTMLDivElement - The type of the DOM element the ref will point to.
@@ -20,10 +20,7 @@ const HeaderContainer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
     return (
       <div
         ref={ref}
-        className={cn(
-          "sticky top-0 z-10 w-full bg-white p-[var(--header-padding)] pb-0 backdrop-blur-md",
-          className,
-        )}
+        className={cn("sticky top-0 z-10 w-full bg-bg p-[var(--header-padding)] pb-0", className)}
         {...props}
       />
     );

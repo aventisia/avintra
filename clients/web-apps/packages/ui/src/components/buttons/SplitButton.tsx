@@ -12,7 +12,7 @@ const SIZE_CLASS_NAMES = {
   default: { action: "gap-2", chevron: "size-4" },
 } as const;
 
-const HALF_CLASS_NAME = "relative focus-visible:z-10 active:scale-100";
+const HALF_CLASS_NAME = "relative focus-visible:z-10 active:translate-y-0";
 
 /** Props of {@link SplitButton}; native button props apply to the main action. */
 export interface SplitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -81,8 +81,8 @@ export const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
               className={cn(
                 buttonVariants({ size }),
                 HALF_CLASS_NAME,
-                "group rounded-l-none px-2 data-[state=open]:bg-indigo-500",
-                "before:absolute before:inset-y-2 before:left-0 before:w-px before:bg-white/30",
+                "group rounded-l-none px-2 data-[state=open]:bg-primary-hover",
+                "before:absolute before:inset-y-2 before:left-0 before:w-px before:bg-primary-foreground/30",
               )}
             >
               <ChevronDown

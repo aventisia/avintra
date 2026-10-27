@@ -30,15 +30,22 @@ const NoContentMessage = ({
   className,
 }: NoContentMessageProps) => {
   return (
-    <div className={cn("flex h-full w-full flex-col items-center justify-center", className)}>
-      {/* (Optional): Relevant icon or image of no content */}
-      {Icon && <Icon className="mb-4 h-10 w-10 stroke-1 text-muted-foreground" />}
-      {/* Primary message (Required) */}
-      <p className="text-sm font-medium">{primaryMessage}</p>
-      {/* (Optional): Secondary message */}
-      <p className="mt-1 w-[80%] text-center text-2xs text-muted-foreground">{secondaryMessage}</p>
-      {/* (Optional): Action JSX */}
-      {action}
+    <div
+      className={cn(
+        "flex h-full w-full flex-col items-center justify-center gap-2 px-6 py-12 text-center",
+        className,
+      )}
+    >
+      {Icon && (
+        <div className="mb-3 grid size-8 place-items-center rounded-md border border-line bg-sunken text-ink-2">
+          <Icon className="size-4" />
+        </div>
+      )}
+      <p className="text-[16px]/5 font-semibold tracking-[-0.01em] text-ink">{primaryMessage}</p>
+      {secondaryMessage && (
+        <p className="max-w-[380px] text-body-sm text-muted-foreground">{secondaryMessage}</p>
+      )}
+      {action && <div className="mt-3 flex gap-2">{action}</div>}
     </div>
   );
 };

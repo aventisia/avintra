@@ -20,7 +20,7 @@ const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
       <div
         className={
           "relative w-auto max-w-full min-w-0 flex-none overflow-hidden rounded border border-transparent px-1.5 py-1 transition-colors " +
-          "focus-within:border-white/40 focus-within:bg-white/10"
+          "focus-within:border-line-strong focus-within:bg-surface"
         }
       >
         {/* Hidden span to measure text width */}

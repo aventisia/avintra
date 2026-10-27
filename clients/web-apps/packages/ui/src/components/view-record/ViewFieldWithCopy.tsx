@@ -31,8 +31,10 @@ export const ViewFieldWithCopy = ({
   ...props
 }: ViewFieldWithCopyProps) => {
   return (
-    <div className="rounded-lg border border-border/70 bg-muted/20 px-3 py-2.5">
-      <p className="text-2xs text-muted-foreground">{label}</p>
+    <div className="rounded-md border border-line bg-sunken px-3 py-2.5">
+      <p className="font-mono text-[10.5px]/[14px] font-medium uppercase tracking-[0.07em] text-muted-foreground">
+        {label}
+      </p>
       <CopyableText
         className={cn("mt-0.5 w-full", className)}
         textClassName={cn("text-sm font-medium", textClassName)}

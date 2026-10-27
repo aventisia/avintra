@@ -37,7 +37,10 @@ export const ViewInfoRowsCard = ({
   ...props
 }: ViewInfoRowsCardProps) => {
   return (
-    <div className={cn("rounded-lg border bg-card px-4 pb-2 pt-4", className)} {...props}>
+    <div
+      className={cn("rounded-lg border border-line bg-surface px-4 pb-2 pt-4", className)}
+      {...props}
+    >
       <div
         className={cn(
           "flex items-center justify-between gap-2 text-2xs font-medium uppercase tracking-wider text-foreground",

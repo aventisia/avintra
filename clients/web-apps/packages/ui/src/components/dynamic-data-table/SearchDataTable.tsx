@@ -26,7 +26,7 @@ export const SearchDataTable = ({ globalFilter, setGlobalFilter }: SearchInputPr
           size="sm"
           variant="link"
           onClick={() => setGlobalFilter("")} // Clear the input
-          className="absolute right-2 top-1/2 -translate-y-1/2 transform cursor-pointer border-none bg-transparent text-gray-400 hover:text-red-500"
+          className="absolute right-2 top-1/2 -translate-y-1/2 transform cursor-pointer border-none bg-transparent text-muted-foreground hover:text-bad"
         >
           {/* Use the Lucide "X" icon */}
           <X size={20} />

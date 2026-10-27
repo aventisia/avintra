@@ -26,7 +26,7 @@ type ViewBadgeProps = Omit<ComponentProps<typeof Badge>, "children"> & {
  *
  * @example
  * <ViewBadge Icon={HardDriveIcon} text="Production" />
- * <ViewBadge text="Enabled" className="border-primary-100 bg-primary-50 text-primary-500" />
+ * <ViewBadge text="Enabled" className="border-primary-text/35 text-primary-text" />
  */
 export const ViewBadge = ({
   text,
@@ -43,9 +43,9 @@ export const ViewBadge = ({
       variant={variant}
       title={title ?? text}
       className={cn(
-        "flex items-center max-w-[16rem] gap-1.5 border-slate-300 px-[0.55rem] py-[0.23rem]",
-        viewStyle === "enabled" && "border-primary-100 bg-primary-50 text-primary-500",
-        viewStyle === "disabled" && "border-red-200 bg-red-100 text-red-500",
+        "flex max-w-[16rem] items-center gap-1.5",
+        viewStyle === "enabled" && "border-primary-text/35 text-primary-text",
+        viewStyle === "disabled" && "border-bad/35 text-bad",
         className,
       )}
       {...props}
@@ -53,9 +53,9 @@ export const ViewBadge = ({
       {Icon && (
         <Icon
           className={cn(
-            "size-3.5 min-h-3.5 min-w-3.5 stroke-[2px] text-muted-foreground",
-            viewStyle === "enabled" && "text-primary-500",
-            viewStyle === "disabled" && "text-red-500",
+            "size-3 min-h-3 min-w-3 stroke-[2px] text-current",
+            viewStyle === "enabled" && "text-primary-text",
+            viewStyle === "disabled" && "text-bad",
             iconClassName,
           )}
         />

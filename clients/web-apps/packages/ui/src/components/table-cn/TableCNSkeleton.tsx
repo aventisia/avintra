@@ -74,7 +74,7 @@ export const TableCNSkeleton = ({
           </thead>
           <tbody>
             {Array.from({ length: rowCount }, (_, rowIndex) => (
-              <TableCNRowElement key={rowIndex} className="hover:bg-background">
+              <TableCNRowElement key={rowIndex} className="hover:bg-surface">
                 {columnWidths.map((_, index) => (
                   <TableCNCellElement key={index} style={getCellStyle(index)}>
                     <Skeleton className="h-4 w-full" />
@@ -85,7 +85,7 @@ export const TableCNSkeleton = ({
           </tbody>
         </TableCNTableElement>
         {withPagination && (
-          <div className="flex w-full items-center justify-between gap-4 border-t border-border bg-slate-50/60 px-4 py-1.5">
+          <div className="flex w-full items-center justify-between gap-4 border-t border-line bg-surface px-3 py-2">
             <Skeleton className="h-4 w-40 shrink-0" />
             <div className="flex items-center gap-4 sm:gap-5">
               <Skeleton className="hidden h-7 w-36 rounded-lg sm:block" />

@@ -12,10 +12,10 @@ const Switch = React.forwardRef<
 >(({ className, size = "base", ...props }, ref) => (
   <SwitchPrimitives.Root
     className={cn(
-      "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-80 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
-      size === "xs" && "h-[1.1rem] w-[2.24rem]",
-      size === "sm" && "h-[1.22rem] w-[2.42rem]",
-      size === "base" && "h-[1.5rem] w-[2.69rem]",
+      "group peer inline-flex shrink-0 cursor-pointer items-center rounded-full border border-line-strong bg-fill p-0.5 transition-colors duration-[120ms] ease-out focus-visible:outline-none focus-visible:shadow-focus data-[state=checked]:border-indicator data-[state=checked]:bg-indicator disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken disabled:data-[state=checked]:border-line disabled:data-[state=checked]:bg-sunken motion-reduce:transition-none",
+      size === "xs" && "h-3.5 w-6",
+      size === "sm" && "h-4 w-7",
+      size === "base" && "h-[18px] w-8",
       className,
     )}
     {...props}
@@ -23,10 +23,10 @@ const Switch = React.forwardRef<
   >
     <SwitchPrimitives.Thumb
       className={cn(
-        "pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
-        size === "xs" && "h-3.5 w-3.5",
-        size === "sm" && "h-4 w-4",
-        size === "base" && "h-5 w-5",
+        "pointer-events-none block rounded-full bg-ink-2 ring-0 transition-transform duration-[120ms] ease-out data-[state=checked]:bg-primary-foreground data-[state=unchecked]:translate-x-0 group-disabled:bg-line-strong group-disabled:data-[state=checked]:bg-line-strong motion-reduce:transition-none",
+        size === "xs" && "h-2 w-2 data-[state=checked]:translate-x-2.5",
+        size === "sm" && "h-2.5 w-2.5 data-[state=checked]:translate-x-3",
+        size === "base" && "h-3 w-3 data-[state=checked]:translate-x-3.5",
       )}
     />
   </SwitchPrimitives.Root>

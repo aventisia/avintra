@@ -31,7 +31,7 @@ const MinimalFooterLink = React.forwardRef<
   return (
     <a
       ref={ref}
-      className={cn("underline-offset-4 hover:text-primary hover:underline", className)}
+      className={cn("underline-offset-4 hover:text-ink hover:underline", className)}
       {...props}
     />
   );

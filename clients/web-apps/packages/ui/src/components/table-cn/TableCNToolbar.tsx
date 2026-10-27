@@ -32,7 +32,7 @@ const TableCNToolbarFilter = <TData,>({ column }: { column: Column<TData, unknow
             className={cn("w-32", meta.unit && "pr-8")}
           />
           {meta.unit && (
-            <span className="absolute bottom-0 right-0 top-0 flex items-center rounded-r-lg bg-slate-50 px-2 text-sm text-slate-500">
+            <span className="absolute bottom-0 right-0 top-0 flex items-center rounded-r-md bg-sunken px-2 text-sm text-muted-foreground">
               {meta.unit}
             </span>
           )}
@@ -96,7 +96,7 @@ export const TableCNToolbar = <TData,>({
             aria-label="Reset filters"
             variant="ghost"
             size="xs"
-            className="h-8 gap-1.5 px-2.5 text-sm text-slate-500"
+            className="h-8 gap-1.5 px-2.5 text-sm text-muted-foreground"
             onClick={() => table.resetColumnFilters(true)}
           >
             Reset

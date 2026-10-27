@@ -23,7 +23,7 @@ export const CopyJsonAction = ({ json }: CopyJsonActionProps) => {
       showTooltip
       aria-label={isCopied ? "Copied" : "Copy JSON"}
       onClick={() => void copy(json)}
-      className="text-muted-foreground/60 size-6 hover:text-primary opacity-60 hover:opacity-100"
+      className="text-muted-foreground/60 size-6 hover:text-primary-text opacity-60 hover:opacity-100"
       iconClassName="size-3.5"
     />
   );
