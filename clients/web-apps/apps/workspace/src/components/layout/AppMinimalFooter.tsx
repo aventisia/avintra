@@ -25,7 +25,7 @@ const AppMinimalFooter = () => {
         Terms of Service
       </MinimalFooterLink>
       <DotSeparator />
-      {/* <span className="mx-2 -mt-3.5 text-[1.5rem] text-slate-500">.</span> */}
+      {/* <span className="mx-2 -mt-3.5 text-[1.5rem] text-muted-foreground">.</span> */}
       <MinimalFooterLink href={`${import.meta.env.VITE_MARKETING_URL}/privacy-policy`}>
         Privacy Policy
       </MinimalFooterLink>

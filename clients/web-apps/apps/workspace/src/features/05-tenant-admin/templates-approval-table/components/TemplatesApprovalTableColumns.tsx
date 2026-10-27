@@ -60,7 +60,9 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("schemaVersion")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("schemaVersion")}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {row.getValue("schemaVersion")}
+      </div>
     ),
   },
   {
@@ -83,7 +85,9 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<TemplatesApprovalDto>({

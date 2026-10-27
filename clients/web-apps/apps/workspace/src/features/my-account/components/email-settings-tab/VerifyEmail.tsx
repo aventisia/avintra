@@ -46,7 +46,7 @@ export const VerifyEmail = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
           Email Settings
         </div> */}
         <div>

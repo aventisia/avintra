@@ -24,11 +24,7 @@ export function FileNameCell({ fileName }: { fileName: string }) {
         className="invisible shrink-0 rounded p-0.5 text-muted-foreground opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 hover:text-foreground"
         title={copied ? "Copied!" : "Copy file name"}
       >
-        {copied ? (
-          <Check className="h-3.5 w-3.5 text-green-500" />
-        ) : (
-          <Copy className="h-3.5 w-3.5" />
-        )}
+        {copied ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
     </div>
   );

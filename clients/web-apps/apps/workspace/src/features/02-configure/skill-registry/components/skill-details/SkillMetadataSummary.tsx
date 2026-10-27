@@ -27,7 +27,7 @@ export const SkillMetadataSummary = ({ skill }: { skill?: SkillTableDto }) => {
   const rows = metadataRows(skill);
 
   return (
-    <div className="rounded-lg border bg-background px-5 py-3.5">
+    <div className="rounded-lg border bg-surface px-5 py-3.5">
       <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((row) => (
           <div key={row.label} className="flex flex-col gap-0.5 rounded-md">

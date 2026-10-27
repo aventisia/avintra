@@ -1,4 +1,4 @@
-import { DotSeparator } from "@avplatform/ui";
+import { DotSeparator, NoContentMessage } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -68,11 +68,11 @@ export const VaultCredentialTable = () => {
             </div>
           </div>
           {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 rounded-lg border bg-white px-2.5 py-3">
+            <div className="grid grid-cols-2 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
                 <div
                   key={row.id}
-                  className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200"
+                  className="flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3.5 py-2.5 transition-colors hover:border-line-strong"
                 >
                   <div className="flex items-center space-x-4">
                     <div>
@@ -99,7 +99,7 @@ export const VaultCredentialTable = () => {
                         {row.original.corsairStatus === "Connected" && (
                           <Tooltip content="OAuth connected">
                             <CheckCircleIcon
-                              className="h-3.5 w-3.5 text-green-600"
+                              className="h-3.5 w-3.5 text-ok"
                               aria-label="OAuth connected"
                             />
                           </Tooltip>
@@ -110,7 +110,7 @@ export const VaultCredentialTable = () => {
                             content={row.original.corsairStatusReason ?? "Connection failed"}
                           >
                             <AlertCircleIcon
-                              className="h-3.5 w-3.5 text-red-600"
+                              className="h-3.5 w-3.5 text-bad"
                               aria-label="Connection failed"
                             />
                           </Tooltip>
@@ -119,7 +119,7 @@ export const VaultCredentialTable = () => {
                         {row.original.corsairStatus === "Expired" && (
                           <Tooltip content="Connection expired; reconnect required">
                             <AlertCircleIcon
-                              className="h-3.5 w-3.5 text-red-600"
+                              className="h-3.5 w-3.5 text-bad"
                               aria-label="Connection expired"
                             />
                           </Tooltip>
@@ -128,13 +128,13 @@ export const VaultCredentialTable = () => {
                         {row.original.corsairStatus === "Pending" && (
                           <Tooltip content="Connection pending">
                             <Clock3Icon
-                              className="h-3.5 w-3.5 text-amber-600"
+                              className="h-3.5 w-3.5 text-warn"
                               aria-label="Connection pending"
                             />
                           </Tooltip>
                         )}
 
-                        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
+                        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2  rounded-sm">
                           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                         </span>
                       </div>{" "}
@@ -162,11 +162,11 @@ export const VaultCredentialTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">
-                No credentials found. Please add new credentials.
-              </p>
-            </div>
+            <NoContentMessage
+              className="rounded-lg border bg-surface py-8"
+              primaryMessage="No credentials found"
+              secondaryMessage="Please add new credentials."
+            />
           )}
           <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
 

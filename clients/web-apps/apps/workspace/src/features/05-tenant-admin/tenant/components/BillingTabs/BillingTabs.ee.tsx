@@ -11,31 +11,19 @@ const BillingTabs = () => {
     <div className="py-2">
       <Tabs defaultValue="overview">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent text-muted-foreground">
-          <TabsTrigger value="overview" className="rounded-none data-[state=active]:border-b-black">
+          <TabsTrigger value="overview" className="rounded-none">
             Overview
           </TabsTrigger>
-          <TabsTrigger
-            value="paymentMethods"
-            className="rounded-none data-[state=active]:border-b-black"
-          >
+          <TabsTrigger value="paymentMethods" className="rounded-none">
             Payment Methods
           </TabsTrigger>
-          <TabsTrigger
-            value="billingHistory"
-            className="rounded-none data-[state=active]:border-b-black"
-          >
+          <TabsTrigger value="billingHistory" className="rounded-none">
             Billing History
           </TabsTrigger>
-          <TabsTrigger
-            value="companyDetails"
-            className="rounded-none data-[state=active]:border-b-black"
-          >
+          <TabsTrigger value="companyDetails" className="rounded-none">
             Billing Details
           </TabsTrigger>
-          <TabsTrigger
-            value="preferences"
-            className="rounded-none data-[state=active]:border-b-black"
-          >
+          <TabsTrigger value="preferences" className="rounded-none">
             Preferences
           </TabsTrigger>
         </TabsList>

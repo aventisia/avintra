@@ -12,9 +12,9 @@ export default function ConversationMeta({ data }: { data: AdminConversationDto 
           <p className="text-xs text-muted-foreground">Conversation</p>
 
           <div className="space-y-1">
-            <p className="truncate text-xs ">{data.id}</p>
+            <p className="truncate font-mono text-xs">{data.id}</p>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="font-mono text-xs text-muted-foreground">
               {format(new Date(data.timestamp), "dd MMM yyyy, hh:mm a")}
             </p>
           </div>
@@ -48,7 +48,8 @@ export default function ConversationMeta({ data }: { data: AdminConversationDto 
 
           <div className="space-y-1">
             <p>
-              Exchanges: <span className="font-medium">{data.totalExchange ?? 0}</span>
+              Exchanges:{" "}
+              <span className="font-mono font-medium tabular-nums">{data.totalExchange ?? 0}</span>
             </p>
           </div>
         </div>

@@ -1,5 +1,4 @@
 import {
-  DTHeading,
   DTPagination,
   DTSearchBox,
   DTViewOptions,
@@ -47,7 +46,7 @@ export const BillingHistoryTable = () => {
           {/* Crud ops dialog */}
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <h2 className="text-heading text-ink">{TABLE_HEADING}</h2>
 
             <div className="flex items-center gap-2">
               <DTSearchBox

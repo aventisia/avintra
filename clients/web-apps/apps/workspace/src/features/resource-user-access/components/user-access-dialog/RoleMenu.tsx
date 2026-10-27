@@ -22,10 +22,10 @@ export const RoleMenu = ({ role, personName, onChange }: RoleMenuProps) => (
       <button
         type="button"
         aria-label={`Role of ${personName}: ${getShareRoleLabel(role)}`}
-        className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg px-2 text-[12.5px] font-medium text-slate-600 outline-none transition hover:bg-muted hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[state=open]:bg-muted data-[state=open]:text-slate-900"
+        className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-[12.5px] font-medium text-ink-2 outline-none transition hover:bg-hover hover:text-ink focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink"
       >
         {getShareRoleLabel(role)}
-        <ChevronDown className="size-3.5 text-slate-400" />
+        <ChevronDown className="size-3.5 text-muted-foreground" />
       </button>
     </DropdownMenu.Trigger>
     <MenuContent align="end" className="w-56">
@@ -36,7 +36,7 @@ export const RoleMenu = ({ role, personName, onChange }: RoleMenuProps) => (
           className="items-start whitespace-normal"
         >
           <span className="min-w-0 flex-1">
-            <span className="block font-medium text-slate-800">{option.label}</span>
+            <span className="block font-medium text-ink">{option.label}</span>
             <span className="mt-0.5 block text-[12px] text-muted-foreground">
               {option.description}
             </span>

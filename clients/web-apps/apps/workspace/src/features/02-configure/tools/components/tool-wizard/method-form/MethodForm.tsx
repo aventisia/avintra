@@ -88,7 +88,7 @@ export const MethodForm = ({
   };
 
   return (
-    <div className="rounded-lg border bg-background p-4 shadow-sm">
+    <div className="rounded-lg border bg-surface p-4">
       <div className="space-y-3">
         <div className="space-y-1.5">
           <FieldLabel label="Name" isRequired />

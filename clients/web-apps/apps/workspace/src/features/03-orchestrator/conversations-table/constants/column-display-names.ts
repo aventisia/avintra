@@ -1,3 +1,4 @@
+import type { BadgeProps } from "@avplatform/ui/badge";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
 import { ConversationStatusEnum } from "../enums/conversation-status-enum";
@@ -20,10 +21,10 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-export const statusColor: { [key in ConversationStatusEnum]: string } = {
-  [ConversationStatusEnum.Active]: "bg-green-200 text-green-700",
-  [ConversationStatusEnum.Archived]: "bg-slate-200 text-slate-600",
-  [ConversationStatusEnum.Completed]: "bg-orange-200 text-orange-600",
-  [ConversationStatusEnum.AccessRevoked]: "bg-slate-200 text-slate-600",
-  [ConversationStatusEnum.Failed]: "bg-red-200 text-red-600",
+export const statusVariant: { [key in ConversationStatusEnum]: BadgeProps["variant"] } = {
+  [ConversationStatusEnum.Active]: "running",
+  [ConversationStatusEnum.Archived]: "secondary",
+  [ConversationStatusEnum.Completed]: "completed",
+  [ConversationStatusEnum.AccessRevoked]: "secondary",
+  [ConversationStatusEnum.Failed]: "failed",
 };

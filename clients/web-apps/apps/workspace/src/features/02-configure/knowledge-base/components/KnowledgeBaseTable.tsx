@@ -1,3 +1,4 @@
+import { NoContentMessage } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -66,24 +67,24 @@ export const KnowledgeBaseTable = () => {
           </div>
           {/* DT with only rows and custom design */}
           {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
+            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
                   to={`/configure/knowledge-base/${row.original.id}?kb=${row.getValue("name")}`}
                 >
-                  <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                  <div className="flex flex-col cursor-pointer h-36  justify-between rounded-lg border bg-surface p-2.5 transition-colors hover:border-line-strong">
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between items-center">
                         <div className="flex max-w-80 items-center gap-3 ">
                           <div className="w-auto truncate text-sm font-medium">
                             {row.getValue("name")}
                           </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary    rounded-full">
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2    rounded-sm">
                             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                           </span>
                           {row.original.isResourceAccessRestricted && (
-                            <span className="border border-amber-500/40 bg-amber-500/15 px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-amber-700 rounded-full">
+                            <span className="border border-warn/35 bg-warn/10 px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-warn rounded-sm">
                               Restricted
                             </span>
                           )}
@@ -113,11 +114,11 @@ export const KnowledgeBaseTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">
-                No knowledge base found. Please add new knowledge base.
-              </p>
-            </div>
+            <NoContentMessage
+              className="rounded-lg border bg-surface py-8"
+              primaryMessage="No knowledge base found"
+              secondaryMessage="Please add new knowledge base."
+            />
           )}
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="KB" pluralLabel="KBs" />

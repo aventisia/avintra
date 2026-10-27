@@ -97,9 +97,7 @@ export const flowsTableColumns = ({
     meta: getLabelMeta("createdOn"),
     header: renderHeader("createdOn"),
     cell: ({ row }) => (
-      <span className="tabular-nums text-slate-600">
-        {formatDate(row.original.createdOn, true)}
-      </span>
+      <span className="tabular-nums text-ink-2">{formatDate(row.original.createdOn, true)}</span>
     ),
   },
   getTableCNActionsColumn<FlowsTableDto>({

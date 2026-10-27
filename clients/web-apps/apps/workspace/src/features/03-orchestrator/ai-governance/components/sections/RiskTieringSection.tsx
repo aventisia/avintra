@@ -14,9 +14,9 @@ import { Field } from "./Field";
 import { SectionLayout } from "./SectionLayout";
 
 const tierColor: Record<AgentRiskTier, string> = {
-  [AgentRiskTier.Low]: "text-emerald-500",
-  [AgentRiskTier.Medium]: "text-amber-500",
-  [AgentRiskTier.High]: "text-red-500",
+  [AgentRiskTier.Low]: "text-ok",
+  [AgentRiskTier.Medium]: "text-warn",
+  [AgentRiskTier.High]: "text-bad",
 };
 
 const scoreToValue = (score: number): string => (score === 0 ? "" : String(score));
@@ -107,8 +107,8 @@ export const RiskTieringSection = () => {
         </Field>
 
         {/* Composite tier panel */}
-        <div className="rounded-lg border border-primary bg-gradient-to-br from-primary/15 to-primary/5 p-5">
-          <div className="mb-2.5 text-xs font-bold uppercase tracking-wider text-primary">
+        <div className="rounded-lg border border-line bg-surface p-5">
+          <div className="mb-2.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Composite Risk Tier
           </div>
           <div className="flex items-center gap-4">

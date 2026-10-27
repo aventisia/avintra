@@ -113,8 +113,8 @@ export const AgentRiskRegistryTable = () => {
       </div>
 
       {pendingApprovals.length > 0 && (
-        <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm">
-          <span className="font-semibold text-amber-700">
+        <div className="flex items-center gap-2 rounded-lg border border-warn/35 bg-warn/10 px-4 py-2.5 text-sm">
+          <span className="font-semibold text-warn">
             {pendingApprovals.length} assessment{pendingApprovals.length > 1 ? "s" : ""} awaiting
             your approval
           </span>

@@ -1,3 +1,4 @@
+import { NoContentMessage } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -70,7 +71,7 @@ export const SkillTable = () => {
           </div>
           {/* DT with only rows and custom design */}
           {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
+            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
@@ -78,7 +79,7 @@ export const SkillTable = () => {
                     isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=platform` : ""
                   }`}
                 >
-                  <div className="flex flex-col cursor-pointer h-36 justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                  <div className="flex flex-col cursor-pointer h-36 justify-between rounded-lg border bg-surface p-2.5 transition-colors hover:border-line-strong">
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between items-center">
                         <div className="flex max-w-80 items-center gap-3">
@@ -86,7 +87,7 @@ export const SkillTable = () => {
                             {row.getValue("name")}
                           </div>
                           {row.original.accessLevel !== ResourceAccessTypeEnum.Personal && (
-                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
                               {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                             </span>
                           )}
@@ -117,11 +118,11 @@ export const SkillTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">
-                No skill found. {isReadOnly ? "" : "Please add a new skill."}
-              </p>
-            </div>
+            <NoContentMessage
+              className="rounded-lg border bg-surface py-8"
+              primaryMessage="No skill found"
+              secondaryMessage={isReadOnly ? undefined : "Please add a new skill."}
+            />
           )}
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="Skill" pluralLabel="Skills" />

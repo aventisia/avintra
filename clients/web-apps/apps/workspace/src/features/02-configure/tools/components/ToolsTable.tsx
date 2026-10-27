@@ -1,3 +1,4 @@
+import { NoContentMessage } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -68,7 +69,7 @@ export const ToolsTable = () => {
           </div>
 
           {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
+            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
@@ -76,7 +77,7 @@ export const ToolsTable = () => {
                     row.getValue("name"),
                   )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
                 >
-                  <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                  <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3.5 py-2.5 transition-colors hover:border-line-strong">
                     {/* Left: Icon with centered content */}
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
@@ -93,7 +94,7 @@ export const ToolsTable = () => {
                           <div className="text-sm font-medium">
                             {getToolDisplayName(row.getValue("name") as string)}
                           </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
                             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                           </span>
                         </div>
@@ -117,11 +118,11 @@ export const ToolsTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">
-                No tools found. {isReadOnlyTab ? "" : "Please add a new tool."}
-              </p>
-            </div>
+            <NoContentMessage
+              className="rounded-lg border bg-surface py-8"
+              primaryMessage="No tools found"
+              secondaryMessage={isReadOnlyTab ? undefined : "Please add a new tool."}
+            />
           )}
 
           <DTPagination table={table} singularLabel="Tool" pluralLabel="Tools" />

@@ -22,13 +22,9 @@ const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
 export const QueueTypeSwitch: React.FC<QueueTypeSwitchProps> = ({ value, onChange }) => {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as QueueTypesEnum)}>
-      <TabsList className="grid grid-cols-2 rounded-none border-b bg-white px-3 text-base">
+      <TabsList>
         {OPTIONS.map((option) => (
-          <TabsTrigger
-            key={option.value}
-            value={option.value}
-            className="rounded-none data-[state=active]:border-b-black"
-          >
+          <TabsTrigger key={option.value} value={option.value}>
             {option.label}
           </TabsTrigger>
         ))}

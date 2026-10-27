@@ -6,7 +6,7 @@ import { formatDate } from "@avplatform/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
-import { getColumnName, statusColor } from "../constants/column-display-names";
+import { getColumnName, statusVariant } from "../constants/column-display-names";
 import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
@@ -52,7 +52,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
     ),
     cell: ({ row }) => (
-      <Badge className={statusColor[row.original.status]}>{row.getValue("status")}</Badge>
+      <Badge variant={statusVariant[row.original.status]}>{row.getValue("status")}</Badge>
     ),
   },
   {
@@ -64,7 +64,9 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         title={getColumnName("flowVersionCount")}
       />
     ),
-    cell: ({ row }) => row.getValue("flowVersionCount"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{row.getValue("flowVersionCount")}</span>
+    ),
   },
   {
     accessorKey: "lastCheckedIn",
@@ -80,7 +82,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       const formattedDate = formatDate(row.getValue("lastCheckedIn"), true);
       if (!formattedDate || formattedDate === "01 Jan 0001") return FALLBACK_VALUE;
       return (
-        <span className="inline-block w-28 truncate" title={formattedDate}>
+        <span className="inline-block w-28 truncate font-mono tabular-nums" title={formattedDate}>
           {formattedDate}
         </span>
       );
@@ -168,7 +170,9 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         title={getColumnName("createdAt")}
       />
     ),
-    cell: ({ row }) => formatDate(row.getValue("createdAt")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{formatDate(row.getValue("createdAt"))}</span>
+    ),
   },
   {
     accessorKey: "id",

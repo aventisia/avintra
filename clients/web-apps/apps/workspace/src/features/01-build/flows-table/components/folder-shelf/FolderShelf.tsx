@@ -23,10 +23,10 @@ const DragHint = ({ agentName }: { agentName: string }) => (
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: 4 }}
     transition={PANEL_TRANSITION}
-    className="flex max-w-[22rem] items-center gap-2 rounded-full bg-indigo-50 px-2.5 py-1 text-[12px] font-medium text-indigo-700 ring-1 ring-indigo-600/15"
+    className="flex max-w-[22rem] items-center gap-2 rounded-full bg-selected px-2.5 py-1 text-[12px] font-medium text-primary-text ring-1 ring-primary/30"
   >
     <span className="relative grid size-2 shrink-0 place-items-center">
-      <span className="absolute inset-0 animate-ping rounded-full bg-indigo-400 opacity-60" />
+      <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />
       <span className="relative size-2 rounded-full bg-primary" />
     </span>
     <span className="truncate">Drop {agentName} on a folder</span>
@@ -70,7 +70,7 @@ export const FolderShelf = ({ summaries, searchText }: FolderShelfProps) => {
               onClick={toggleCollapsed}
               aria-expanded={isExpanded}
               aria-controls="folders-shelf-grid"
-              className="inline-flex h-7 items-center gap-1 rounded-lg px-2 text-[12px] font-medium text-muted-foreground outline-none transition hover:bg-muted hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+              className="inline-flex h-7 items-center gap-1 rounded-lg px-2 text-[12px] font-medium text-muted-foreground outline-none transition hover:bg-muted hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
             >
               {isCollapsed ? "Show" : "Hide"}
               <ChevronDown
