@@ -324,6 +324,22 @@ public class JobsTableService : IJobsTableService
                 newJob.RefId = userRecord.Id;
             }
 
+            if (newJob.TriggerType == TriggerTypesEnum.Flow)
+            {
+                var parentAgent = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == newJob.RefId && w.TenantId == tenantId)
+                    .Include(s => s.Flow)
+                    .FirstOrDefaultAsync();
+
+                newJob.ExecutedBy = parentAgent != null
+                    ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
+                    : "flow_Unknown";
+
+                newJob.ExecutedOn = newJob.Machine != null
+                    ? $"machine_{newJob.Machine.Name}"
+                    : "Web Server";
+            }
+
             // Manual mapping: Set the ExecutionLocation for unpublished flow
             if (!flowVersion.IsFlowVersionPublished)
             {
@@ -331,7 +347,7 @@ public class JobsTableService : IJobsTableService
                 newJob.ExecutedOn = _clientContextResolver.GetUnpublishedExecutionLocation();
             }
 
-            // TODO: Mannual mapping till the time JobInputData is stored as JsonDocument in the database
+            // TODO: Manual mapping till the time JobInputData is stored as JsonDocument in the database
             newJob.InputArgumentsJson = jobInsertDto.JobInputData != null ? jobInsertDto.JobInputData.RootElement.GetRawText() : null;
 
             // Insert job
@@ -617,7 +633,7 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-             // CANNOT DELETE THE JOB: Job is not in 'Created' status
+            // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (job.Status != JobStatusEnum.Created)
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);
 
@@ -654,7 +670,7 @@ public class JobsTableService : IJobsTableService
             // If records not found, log and return
             if (jobs.Count == 0)
                 return serviceResponse.Update("Jobs not found.", 404);
-            
+
             // CANNOT DELETE THE JOB: Job is not in 'Created' status
             if (jobs.Any(j => j.Status != JobStatusEnum.Created))
                 return serviceResponse.Update("Only jobs in created status can be deleted.", 400);

@@ -35,6 +35,7 @@ const FlowSelectorField = ({
   const selectedFlowVersion = useSelectedFlowVersion(value);
   const currentFlowVersionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
   const currentFlowId = useCurrentFlowStore((state) => state.currentFlow.id);
+  const currentSpaceId = useCurrentFlowStore((state) => state.currentFlow.spaceId);
   const [pickedFlow, setPickedFlow] = useState<SearchFlowVersionResDto | null>(null);
 
   const selectedFlow = value
@@ -49,9 +50,9 @@ const FlowSelectorField = ({
       label={label}
       description={description}
       placeholder={placeholder ?? "Search agent"}
-      queryKeyBase={["flow-select-versions", "search"]}
+      queryKeyBase={["flow-select-versions", "search", currentSpaceId ?? "central"]}
       fetcher={(query) =>
-        searchAgentFlowVersions(query).then((flows) =>
+        searchAgentFlowVersions(query, currentSpaceId).then((flows) =>
           flows.filter((flow) => flow.id !== currentFlowVersionId && flow.flowId !== currentFlowId),
         )
       }
