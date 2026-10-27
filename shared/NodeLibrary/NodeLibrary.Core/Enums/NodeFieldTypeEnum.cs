@@ -25,5 +25,6 @@ public enum NodeFieldTypeEnum
     CloudExecutionSwitch,
     JsonEditor,
     CodeEditor,
-    ConfigPanelModelOutput
+    ConfigPanelModelOutput,
+    MachineSelect
 }

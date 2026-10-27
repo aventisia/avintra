@@ -26,7 +26,8 @@ public class CreateJobNode : BaseNode
     [DisplayName("Machine")]
     [Description("Unique name of the registered machine that runs the created job. Required when cloud execution is off.")]
     [RenderIfCondition(nameof(ExecuteOnCloud), false)]
-    [NodeFieldType(NodeFieldTypeEnum.Text)]
+    [DependsOn(nameof(TargetFlowVersionId))]
+    [NodeFieldType(NodeFieldTypeEnum.MachineSelect)]
     public InArgument<string> Machine { get; set; } = new InArgument<string>();
 
     [DisplayName("Job Input Data")]
