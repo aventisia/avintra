@@ -36,7 +36,7 @@ const searchFlowVersions = (
  * @returns A promise that resolves to the matching agent flow versions.
  */
 const searchAgentFlowVersions = (query: string = "") =>
-  searchFlowVersions(query, "Agent", false).then((response) => response.data ?? []);
+  searchFlowVersions(query, "Agent", true).then((response) => response.data ?? []);
 
 /**
  * Fetch a flow version by its id.
