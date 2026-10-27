@@ -123,15 +123,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 }
                 else if (job.TriggerType == TriggerTypesEnum.Flow)
                 {
-                    var parentFlowName = job.RefId.HasValue
-                        ? await unitOfWork.JobRepo
-                            .GetByConditionAsync(w => w.Id == job.RefId.Value)
-                            .Select(s => s.FlowVersion.Flow.Name)
-                            .FirstOrDefaultAsync()
-                        : null;
+                    var parentAgent = await unitOfWork.FlowVersionRepo
+                        .GetByConditionAsync(w => w.Id == job.RefId)
+                        .Include(s => s.Flow)
+                        .FirstOrDefaultAsync();
 
-                    job.ExecutedBy = parentFlowName != null
-                        ? $"flow_{parentFlowName}"
+                    job.ExecutedBy = parentAgent != null
+                        ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
                         : "flow_Unknown";
 
                     job.ExecutedOn = job.Machine != null
