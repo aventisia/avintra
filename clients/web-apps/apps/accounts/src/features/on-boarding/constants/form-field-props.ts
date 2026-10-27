@@ -28,6 +28,7 @@ const organizationNameProps: InputFieldProps = {
 
 // Pin Code
 const pinCodeProps: InputFieldProps = {
+  className: "h-control-lg",
   label: "Pin Code",
   name: "postalCode",
   isRequired: true,
@@ -35,6 +36,7 @@ const pinCodeProps: InputFieldProps = {
 
 // Address Line 1
 const addressLine1Props: InputFieldProps = {
+  className: "h-control-lg",
   name: "addressLine1",
   label: "Address Line 1",
   type: "text",
@@ -43,6 +45,7 @@ const addressLine1Props: InputFieldProps = {
 
 // Address Line 2
 const addressLine2Props: InputFieldProps = {
+  className: "h-control-lg",
   name: "addressLine2",
   label: "Address Line 2",
   type: "text",
@@ -51,6 +54,7 @@ const addressLine2Props: InputFieldProps = {
 
 // State
 const stateProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "state",
   label: "State/Province",
   isRequired: true,
@@ -58,6 +62,7 @@ const stateProps: InputFieldProps = {
 
 // City
 const cityProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "city",
   label: "City",
   type: "text",
@@ -66,6 +71,7 @@ const cityProps: InputFieldProps = {
 
 // Gst Number
 const gstNumberProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "gstNumber",
   label: "GST Number",
   type: "text",
@@ -80,6 +86,7 @@ const gstRegistrationProps: SwitchFieldProps = {
 
 // Country
 const countryProps: SelectFieldProps = {
+  className: "h-control-lg",
   name: "country",
   label: "Country",
   selectOptions: enumToArray(CountriesEnum),

@@ -49,11 +49,7 @@ export const CreateAccountMain = () => {
         <MinimalFooter />
       </LeftContainer>
 
-      <RightContainer
-        heading="Discover Scalable AI-Powered Workflows"
-        subHeading="Sign up to build intuitive, AI-powered workflows tailored to your needs."
-        imgSrc="agentbuilder.svg"
-      />
+      <RightContainer variant="create-account" />
     </PageContainer>
   );
 };

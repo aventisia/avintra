@@ -24,9 +24,9 @@ export const PwdLoginHeader = () => {
         >
           <ArrowLeftIcon className="h-4 w-4" />
         </Button>
-        <h2 className="text-md ml-3 w-full truncate">{loginData?.email}</h2>
+        <h2 className="ml-3 w-full truncate text-body text-ink-2">{loginData?.email}</h2>
       </div>
-      <h1 className="text-3xl font-medium">Enter password</h1>
+      <h1 className="text-title text-ink">Enter password</h1>
     </div>
   );
 };
