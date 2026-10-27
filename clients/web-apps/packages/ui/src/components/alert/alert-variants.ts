@@ -1,16 +1,15 @@
 import { cva } from "class-variance-authority";
 
 export const alertVariants = cva(
-  "relative w-full rounded-lg border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current",
+  "relative w-full rounded-lg border border-line px-4 py-3 text-body-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current",
   {
     variants: {
       variant: {
-        default: "bg-card text-card-foreground",
+        default: "bg-surface text-ink",
         destructive:
-          "text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90",
-        success: "border-green-500/50 text-green-700 dark:text-green-400 [&>svg]:text-green-600",
-        warning:
-          "border-yellow-500/50 text-yellow-700 dark:text-yellow-400 [&>svg]:text-yellow-600",
+          "border-bad/35 bg-surface text-bad [&>svg]:text-current *:data-[slot=alert-description]:text-bad",
+        success: "border-ok/35 bg-surface text-ok [&>svg]:text-ok",
+        warning: "border-warn/35 bg-surface text-warn [&>svg]:text-warn",
       },
     },
     defaultVariants: {

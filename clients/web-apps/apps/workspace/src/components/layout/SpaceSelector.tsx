@@ -84,7 +84,7 @@ export const SpaceSelector = () => {
       >
         <SelectTrigger
           size="sm"
-          className="h-[2.1rem] w-[10rem] border-transparent bg-white/10 text-white shadow-none transition-all duration-300 hover:bg-white/20 focus:border-transparent focus:ring-white/30 [&>span]:text-white/80"
+          className="h-[2.1rem] w-[10rem] border-transparent bg-fill text-ink shadow-none hover:bg-hover focus:border-transparent [&>span]:text-ink-2"
         >
           <SelectValue placeholder="Select Space" />
         </SelectTrigger>

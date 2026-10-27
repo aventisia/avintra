@@ -46,7 +46,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
           "text-[1em] text-muted-foreground",
           "opacity-35 transition-[opacity,color] duration-150",
           "hover:opacity-100 focus-visible:opacity-100",
-          "hover:text-primary focus-visible:text-primary",
+          "hover:text-primary-text focus-visible:text-primary-text",
           "disabled:pointer-events-none disabled:opacity-20",
           className,
         )}

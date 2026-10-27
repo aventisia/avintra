@@ -4,7 +4,11 @@ import { cn } from "@/ui/lib";
 
 const TableExt = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <table ref={ref} className={cn("min-w-full caption-bottom text-sm", className)} {...props} />
+    <table
+      ref={ref}
+      className={cn("min-w-full caption-bottom text-body-sm tabular-nums text-ink-2", className)}
+      {...props}
+    />
   ),
 );
 TableExt.displayName = "TableExt";
@@ -13,7 +17,11 @@ const TableExtHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn("bg-sunken [&_tr]:border-b [&_tr]:border-line", className)}
+    {...props}
+  />
 ));
 TableExtHeader.displayName = "TableExtHeader";
 
@@ -31,7 +39,7 @@ const TableExtFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    className={cn("bg-muted/50 border-t font-medium [&>tr]:last:border-b-0", className)}
+    className={cn("border-t border-line bg-sunken font-medium [&>tr]:last:border-b-0", className)}
     {...props}
   />
 ));
@@ -45,7 +53,7 @@ const TableExtRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "group border-b transition-colors hover:bg-muted data-[state=selected]:bg-muted",
+      "group border-b border-line transition-colors duration-[120ms] ease-out hover:bg-hover data-[state=selected]:bg-selected data-[state=selected]:[&>td:first-child]:shadow-[inset_2px_0_0_var(--indicator)]",
       className,
     )}
     {...props}
@@ -60,7 +68,7 @@ const TableExtHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 pl-6 pr-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      "h-8 whitespace-nowrap px-3 text-left align-middle font-mono text-label uppercase text-muted-foreground first:pl-4 aria-[sort]:text-ink-2 [&:has([role=checkbox])]:pr-0",
       className,
     )}
     {...props}
@@ -74,7 +82,10 @@ const TableExtCell = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("py-2 pl-6 pr-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn(
+      "h-row px-3 py-1 align-middle first:pl-4 [&:has([role=checkbox])]:pr-0",
+      className,
+    )}
     {...props}
   />
 ));
@@ -84,7 +95,11 @@ const TableExtCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption ref={ref} className={cn("mt-4 text-sm text-muted-foreground", className)} {...props} />
+  <caption
+    ref={ref}
+    className={cn("mt-4 text-body-sm text-muted-foreground", className)}
+    {...props}
+  />
 ));
 TableExtCaption.displayName = "TableExtCaption";
 

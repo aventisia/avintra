@@ -1,6 +1,7 @@
 import { AlertDialogWrapper } from "@avplatform/ui/alert-dialog";
 import { bootstrapBranding } from "@avplatform/ui/branding";
 import { SonnerToaster } from "@avplatform/ui/sonner";
+import { initTheme } from "@avplatform/ui/stores";
 import "@avplatform/ui/styles/sonner.css";
 import { TooltipProvider } from "@avplatform/ui/tooltip";
 import React from "react";
@@ -8,6 +9,8 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import "./index.css";
+
+initTheme();
 
 const renderApp = () => {
   ReactDOM.createRoot(document.getElementById("root")!).render(

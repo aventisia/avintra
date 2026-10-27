@@ -27,11 +27,11 @@ export const AuditTrailCard = ({
       icon={<Clock3Icon className="size-3.5 text-muted-foreground" />}
     >
       <ViewInfoRow label="Added By" value={createdBy} />
-      <Separator className="h-[0.5px]" />
+      <Separator />
       <ViewInfoRow label="Added On" value={formatDate(createdOn, true)} />
-      <Separator className="h-[0.5px]" />
+      <Separator />
       <ViewInfoRow label="Last Modified By" value={lastModifiedBy} />
-      <Separator className="h-[0.5px]" />
+      <Separator />
       <ViewInfoRow label="Last Modified On" value={formatDate(lastModifiedOn, true)} />
     </ViewInfoRowsCard>
   );

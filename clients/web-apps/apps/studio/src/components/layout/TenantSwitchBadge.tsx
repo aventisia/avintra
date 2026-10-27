@@ -16,8 +16,8 @@ const TenantSwitchBadge = () => {
       className="ml-2 border border-primary/30 bg-primary/10 px-3 py-1 backdrop-blur"
     >
       <Tooltip content={userSession?.tenantName}>
-        <p className="flex items-center  text-xs font-semibold text-primary-foreground">
-          <span className="text-orange-400">Viewing</span>
+        <p className="flex items-center  text-xs font-semibold text-primary-text">
+          <span className="text-warn">Viewing</span>
           <span className="h-0.5 w-0.5 bg-slate-500 rounded-full mx-2" />
           <span className="truncate text-2xs max-w-28">{userSession?.tenantName}</span>
         </p>
