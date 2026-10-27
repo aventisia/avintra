@@ -3,7 +3,7 @@ interface HeaderContainerProps {
 }
 
 const HeaderContainer = ({ children }: HeaderContainerProps) => {
-  return <div className="flex w-full items-center justify-between p-5 xs:p-6">{children}</div>;
+  return <div className="flex w-full items-center justify-between">{children}</div>;
 };
 
 export { HeaderContainer };

@@ -1,12 +1,10 @@
 import { useBrandLogo } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
+import { useThemeStore } from "@avplatform/ui/stores";
 
 interface AppLogoProps {
   /** Set to true to show the full company logo instead of the compact product logo. */
   showFullLogo?: boolean;
-
-  /** Set to true to use the light built-in asset. */
-  lightLogo?: boolean;
 
   /** (Optional): To pass css classes to override style
    *
@@ -16,16 +14,14 @@ interface AppLogoProps {
 }
 
 /** Component to render the deployment logo, falling back to the built-in asset. */
-const AppLogo = ({
-  showFullLogo = false,
-  lightLogo = true,
-  className = "h-6 text-xl",
-}: AppLogoProps) => {
-  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product", lightLogo);
+const AppLogo = ({ showFullLogo = false, className = "h-6 text-xl" }: AppLogoProps) => {
+  const isDark = useThemeStore((state) => state.isDark);
+  const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "product", !isDark);
 
-  const logoFile = lightLogo ? "app_logo_light.svg" : "app_logo_dark.svg";
+  const fullLogoFile = isDark ? "logo_light.svg" : "logo.svg";
+  const logoFile = isDark ? "app_logo_light.svg" : "app_logo_dark.svg";
   const logoSrc =
-    brandingLogoUrl ?? import.meta.env.BASE_URL + (showFullLogo ? "logo.svg" : logoFile);
+    brandingLogoUrl ?? import.meta.env.BASE_URL + (showFullLogo ? fullLogoFile : logoFile);
 
   return (
     <a

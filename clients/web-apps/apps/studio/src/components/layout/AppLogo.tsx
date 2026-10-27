@@ -15,7 +15,7 @@ const AppLogo = ({ showFullLogo = false, className, label }: AppLogoProps) => {
 
   const logoSrcWithBaseUrl =
     brandingLogoUrl ??
-    `${import.meta.env.BASE_URL}${showFullLogo ? "logo.svg" : isDark ? "app_logo_light.svg" : "app_logo_dark.svg"}`;
+    `${import.meta.env.BASE_URL}${showFullLogo ? (isDark ? "logo_light.svg" : "logo.svg") : isDark ? "app_logo_light.svg" : "app_logo_dark.svg"}`;
 
   return (
     <LogoLink className="shrink-0 gap-1.5">
