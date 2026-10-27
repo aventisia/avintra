@@ -20,7 +20,7 @@ export const SimpleCMItem = React.forwardRef<
       buttonVariants({ variant: "dropdownItem" }),
       "gap-2",
       size === "sm" && "h-8 !px-[0.5rem] text-xs",
-      size === "md" && "h-8",
+      size === "md" && "h-[30px]",
       className,
     )}
     {...props}
@@ -28,7 +28,7 @@ export const SimpleCMItem = React.forwardRef<
     {Icon && (
       <Icon
         className={cn(
-          "text-[--icon-color]",
+          "shrink-0 text-muted-foreground",
           size === "sm" && "h-3.5 w-3.5",
           size === "md" && "h-4 w-4",
         )}

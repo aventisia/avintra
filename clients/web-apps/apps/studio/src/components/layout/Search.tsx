@@ -18,10 +18,10 @@ const SearchCommandTrigger = () => {
         <Button
           size="icon8"
           variant="ghost"
-          className="hover:bg-white/10"
+          className="hover:bg-hover"
           onClick={() => setOpen(true)}
         >
-          <MagnifyingGlassIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
+          <MagnifyingGlassIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         </Button>
       </Tooltip>
     </div>

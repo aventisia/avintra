@@ -67,8 +67,8 @@ const RedirectPage = ({ appLogo, minimalFooter, className }: RedirectPageProps) 
           Help?
         </a>
       </div>
-      <div className="text-md -mt-4 flex items-center gap-3">
-        <LoadingSpinner className="h-10 w-10 text-primary" />
+      <div className="-mt-4 flex items-center gap-3 text-body text-ink-2">
+        <LoadingSpinner className="size-6 text-primary-text" />
         {message}
       </div>
       {minimalFooter}

@@ -14,7 +14,7 @@ function ViewOnlyVersionSelector() {
       variant={"ghost"}
       size={"xs"}
       className={
-        "group h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
+        "group h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-fill pl-3 pr-2.5 font-bold text-ink-2 hover:bg-hover hover:text-ink"
       }
       disabled
     >

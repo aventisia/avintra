@@ -17,8 +17,9 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
       role="group"
       data-slot="input-group"
       className={cn(
-        "flex w-full items-center rounded-lg border border-input bg-background shadow-sm shadow-black/5 transition-all",
-        "focus-within:border-primary focus-within:ring-[3px] focus-within:ring-ring",
+        "flex w-full items-center rounded-md border border-line-strong bg-surface text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out motion-reduce:transition-none",
+        "focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28]",
+        "has-[[aria-invalid=true]]:border-bad has-[:disabled]:border-line has-[:disabled]:bg-sunken",
         "has-[textarea]:items-stretch",
         "disabled:opacity-80",
         className,
@@ -32,7 +33,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
  * Addon
  * ---------------------------------------------------------------------------*/
 
-const addonVariants = cva("flex items-center text-muted-foreground text-sm", {
+const addonVariants = cva("flex items-center text-muted-foreground text-body-sm [&_svg]:size-4", {
   variants: {
     align: {
       start: "pl-2",
@@ -82,7 +83,7 @@ function InputGroupInput({
       fieldSize={fieldSize}
       className={cn(
         "border-0 shadow-none focus-visible:ring-0 flex-1",
-        "rounded-none bg-transparent",
+        "rounded-none bg-transparent disabled:bg-transparent",
         className,
       )}
       {...props}
@@ -100,7 +101,7 @@ function InputGroupTextarea({ className, size = "base", ...props }: TextareaProp
       size={size}
       className={cn(
         "border-0 shadow-none focus-visible:ring-0 flex-1 resize-none",
-        "rounded-none bg-transparent",
+        "rounded-none bg-transparent disabled:bg-transparent",
         className,
       )}
       {...props}
@@ -123,7 +124,7 @@ function InputGroupButton({ className, size = "sm", ...props }: ButtonProps) {
 function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
-      className={cn("text-muted-foreground text-sm flex items-center gap-2", className)}
+      className={cn("text-muted-foreground text-body-sm flex items-center gap-2", className)}
       {...props}
     />
   );

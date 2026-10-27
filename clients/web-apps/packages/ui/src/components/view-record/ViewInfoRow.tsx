@@ -38,10 +38,10 @@ export const ViewInfoRow = ({
       className={cn("grid grid-cols-[7.2rem_1fr] items-center gap-3 px-0.5 py-1.5", className)}
       {...props}
     >
-      <p className="text-muted-foreground text-xs">{label}</p>
+      <p className="text-hint text-muted-foreground">{label}</p>
       <div
         className={cn(
-          "min-w-0 text-right text-xs font-medium",
+          "min-w-0 text-right text-hint font-medium text-ink",
           mono ? "break-all font-mono" : "truncate",
           valueClassName,
         )}

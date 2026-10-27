@@ -22,7 +22,7 @@ export const FormLabelExt = ({
     <div className="flex items-center gap-0.5">
       <FormLabel size={size} className="ml-1 flex items-center gap-0.5">
         <span>{label}</span>
-        {isRequired && !disabled ? <span className="text-destructive">*</span> : null}
+        {isRequired && !disabled ? <span className="text-bad">*</span> : null}
       </FormLabel>
       {typeof description === "string" && description.length > 0 ? (
         <FieldHelpPopover content={description} />

@@ -43,7 +43,7 @@ export function DTPagination<TData>({
 
   return (
     <div className="flex items-center justify-end px-2 sm:justify-between">
-      <div className="hidden flex-1 text-sm text-muted-foreground sm:flex">
+      <div className="hidden flex-1 font-mono text-hint tabular-nums text-muted-foreground sm:flex">
         {isRowSelectionEnabled ? (
           <>
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -55,7 +55,7 @@ export function DTPagination<TData>({
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden items-center space-x-2 xs:flex">
-          <p className="text-sm font-medium">
+          <p className="text-body-sm text-muted-foreground">
             <span className="capitalize">{pluralLabel}</span> per page
           </p>
           <Select
@@ -76,7 +76,7 @@ export function DTPagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-[100px] items-center justify-center font-mono text-hint tabular-nums text-ink-2">
           Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">

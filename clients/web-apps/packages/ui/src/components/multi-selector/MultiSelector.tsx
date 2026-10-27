@@ -164,12 +164,12 @@ const MultiSelectorTrigger = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "!mt-0 flex flex-wrap items-center gap-1.5 rounded-lg border border-input bg-background ring-offset-background focus-within:border-primary focus-within:ring-1 focus-within:ring-ring",
-        size === "xs" && "min-h-7 py-1.5 pl-[0.425rem] pr-[0.3rem] text-2xs",
-        size === "sm" && "min-h-8 py-1.5 pl-[0.425rem] pr-[0.3rem] text-xs",
-        size === "base" && "min-h-10 py-1.5 pl-1.5 pr-1 text-sm",
+        "!mt-0 flex flex-wrap items-center gap-1.5 rounded-md border border-line-strong bg-surface text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28] motion-reduce:transition-none",
+        size === "xs" && "min-h-6 py-0.5 pl-1 pr-1 text-hint",
+        size === "sm" && "min-h-7 py-0.5 pl-1 pr-1 text-body-sm",
+        size === "base" && "min-h-8 py-1 pl-1 pr-1 text-body",
         className,
-        disabled ? "cursor-not-allowed opacity-80" : "cursor-auto opacity-100",
+        disabled ? "cursor-not-allowed border-line bg-sunken text-muted-foreground" : "cursor-auto",
       )}
       {...props}
     >
@@ -178,8 +178,9 @@ const MultiSelectorTrigger = forwardRef<
             <Badge
               key={index}
               className={cn(
-                "flex h-6 cursor-default items-center gap-1 rounded-xl py-0 pl-2 pr-1.5",
-                activeIndex === index && "ring-2 ring-muted-foreground",
+                "flex h-5 cursor-default items-center gap-1 rounded-sm py-0 pl-1.5 pr-1",
+                size === "xs" && "h-4",
+                activeIndex === index && "ring-2 ring-focus",
                 disabled ? "cursor-not-allowed" : "cursor-auto",
               )}
               variant={"secondary"}
@@ -208,7 +209,7 @@ const MultiSelectorTrigger = forwardRef<
                     size === "xs" && "h-3 w-3 stroke-[2.5]",
                     size === "sm" && "h-3.5 w-3.5",
                     size === "base" && "h-4 w-4",
-                    disabled ? "cursor-not-allowed" : "cursor-auto hover:stroke-destructive",
+                    disabled ? "cursor-not-allowed" : "cursor-auto hover:stroke-bad",
                   )}
                 />
               </button>
@@ -240,9 +241,9 @@ const MultiSelectorInput = forwardRef<
       onClick={() => setActiveIndex(-1)}
       className={cn(
         "flex-1 bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed",
-        fieldSize === "xs" && "ml-0.5 text-2xs",
-        fieldSize === "sm" && "ml-0.5 text-xs",
-        fieldSize === "base" && "ml-1.5 text-sm",
+        fieldSize === "xs" && "ml-1 text-hint",
+        fieldSize === "sm" && "ml-1 text-body-sm",
+        fieldSize === "base" && "ml-1.5 text-body",
         className,
         activeIndex !== -1 && "caret-transparent",
       )}
@@ -277,7 +278,7 @@ const MultiSelectorList = forwardRef<
     <CommandList
       ref={ref}
       className={cn(
-        "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg absolute top-0 z-10 flex w-full flex-col gap-2 rounded-md border border-muted bg-background p-1 shadow-md transition-colors",
+        "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground dark:scrollbar-thumb-muted scrollbar-thumb-rounded-lg absolute top-0 z-10 flex w-full flex-col gap-2 rounded-lg bg-surface p-1 text-ink shadow-pop transition-colors",
         className,
       )}
     >
@@ -314,13 +315,13 @@ const MultiSelectorItem = forwardRef<
         setInputValue("");
       }}
       className={cn(
-        "flex cursor-pointer justify-between gap-2 rounded-sm px-2 py-1 transition-colors",
+        "flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1 transition-colors data-[selected=true]:bg-hover [&>svg]:text-primary-text",
         size === "xs" && "px-1 py-1 text-2xs",
         size === "sm" && "px-1.5 py-1 text-xs",
-        size === "base" && "px-2 py-1.5 text-sm",
+        size === "base" && "min-h-[30px] px-2 py-1 text-body-sm",
         className,
         isIncluded && "cursor-default",
-        props.disabled && "cursor-not-allowed opacity-50",
+        props.disabled && "cursor-not-allowed text-muted-foreground",
       )}
       onMouseDown={mousePreventDefault}
     >

@@ -3,7 +3,7 @@ import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UpgradeCard } from "./UpgradeCard";
@@ -46,7 +46,7 @@ const Sidebar = ({ className }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "fixed left-0 z-10 hidden border-r py-1 transition-[width] duration-500 md:block",
+        "fixed left-0 z-10 hidden border-r border-line bg-bg py-3 transition-[width] duration-[120ms] ease-out motion-reduce:transition-none md:block",
         appBanner
           ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height))] h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
           : "top-[calc(var(--header-height)+var(--header-padding))] h-[calc(100vh-var(--header-height)-var(--header-padding))]",
@@ -54,25 +54,25 @@ const Sidebar = ({ className }: SidebarProps) => {
         sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
       )}
     >
-      <Tooltip content={sidebarExpand ? "Collapse" : "Expand "} side="right">
+      <Tooltip content={sidebarExpand ? "Collapse" : "Expand"} side="right">
         <Button
           variant="ghost"
           size="icon5"
-          className="absolute -right-2.5 top-2 z-10 rounded-full border-none bg-white text-indigo-100 shadow-none hover:text-primary"
+          className="absolute -right-2.5 top-3 z-10 rounded-full border border-line bg-surface text-muted-foreground shadow-none hover:bg-hover hover:text-ink"
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
-            <ArrowLeftCircleIcon className="h-5 w-5" />
+            <ChevronLeftIcon className="size-3.5" strokeWidth={1.75} />
           ) : (
-            <ArrowRightCircleIcon className="h-5 w-5" />
+            <ChevronRightIcon className="size-3.5" strokeWidth={1.75} />
           )}
         </Button>
       </Tooltip>
       <ScrollArea
         className={cn(
           appBanner
-            ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height)-0.6rem)]"
-            : "h-[calc(100vh-var(--header-height)-var(--header-padding)-0.6rem)]",
+            ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height)-1.5rem)]"
+            : "h-[calc(100vh-var(--header-height)-var(--header-padding)-1.5rem)]",
         )}
       >
         <nav className="h-auto">

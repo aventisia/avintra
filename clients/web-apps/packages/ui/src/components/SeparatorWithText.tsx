@@ -11,9 +11,11 @@ const SeparatorWithText = ({ width = "100%", overlayText }: SeparatorWithTextPro
   return (
     <div className="flex w-full justify-center">
       <div style={{ width: width }} className="flex items-center">
-        <span className="h-[0.5px] flex-grow rounded bg-border"></span>
-        {overlayText ? <span className="mx-3 rounded text-xs">{overlayText}</span> : null}
-        <span className="h-[0.5px] flex-grow rounded bg-border"></span>
+        <span className="h-px flex-grow bg-line"></span>
+        {overlayText ? (
+          <span className="mx-3 text-hint text-muted-foreground">{overlayText}</span>
+        ) : null}
+        <span className="h-px flex-grow bg-line"></span>
       </div>
     </div>
   );

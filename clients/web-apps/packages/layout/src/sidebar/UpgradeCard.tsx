@@ -24,16 +24,16 @@ const UpgradeCard = () => {
 
   return (
     <div
-      className={`mb-3 mt-6 hidden items-center justify-center overflow-hidden rounded-lg bg-slate-100 shadow-sm ${
-        sidebarExpand ? "mx-4 flex" : "mx-3 hidden"
+      className={`mb-3 mt-6 hidden overflow-hidden rounded-lg border border-line bg-surface ${
+        sidebarExpand ? "mx-2 flex" : "mx-2 hidden"
       }`}
     >
-      <div className="flex flex-col items-center justify-center space-y-3 px-6 py-6">
-        <div className="w-[10rem] text-center text-base font-medium">Upgrade to PRO</div>
-        <p className="w-[10rem] overflow-hidden text-center text-2xs">
+      <div className="flex w-full flex-col gap-1 p-4">
+        <div className="text-body font-semibold text-ink">Upgrade to PRO</div>
+        <p className="text-hint text-muted-foreground">
           Ready to go beyond this free plan? Upgrade for premium features.
         </p>
-        <Button className="mt-3 h-9 rounded-lg">Upgrade</Button>
+        <Button className="mt-3 h-control-md w-full">Upgrade</Button>
       </div>
     </div>
   );

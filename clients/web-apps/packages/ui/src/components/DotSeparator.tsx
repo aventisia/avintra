@@ -5,7 +5,9 @@ interface DotSeparatorProps {
 }
 
 const DotSeparator = ({ className }: DotSeparatorProps) => {
-  return <span className={cn("mx-2 -mt-3.5 text-[1.5rem] text-slate-500", className)}>.</span>;
+  return (
+    <span className={cn("mx-2 -mt-3.5 text-[1.5rem] text-muted-foreground", className)}>.</span>
+  );
 };
 
 export { DotSeparator };

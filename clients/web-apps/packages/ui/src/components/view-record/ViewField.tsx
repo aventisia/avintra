@@ -30,11 +30,13 @@ export const ViewField = ({ label, value, className, ...props }: ViewFieldProps)
   const valueTitle = typeof value === "string" ? value : undefined;
 
   return (
-    <div className="rounded-lg border border-border/70 bg-muted/20 px-3 py-2.5">
-      <p className="text-2xs text-muted-foreground">{label}</p>
+    <div className="rounded-md border border-line bg-sunken px-3 py-2.5">
+      <p className="font-mono text-[10.5px]/[14px] font-medium uppercase tracking-[0.07em] text-muted-foreground">
+        {label}
+      </p>
       <div
         title={valueTitle ?? undefined}
-        className={cn("mt-0.5 truncate max-w-[15rem] text-sm font-medium", className)}
+        className={cn("mt-0.5 max-w-[15rem] truncate text-body-sm font-medium text-ink", className)}
         {...props}
       >
         {value ?? FALLBACK_VALUE}

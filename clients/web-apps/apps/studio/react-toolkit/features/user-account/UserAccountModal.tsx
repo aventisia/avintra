@@ -1,3 +1,4 @@
+import { ThemeSwitcher } from "@avplatform/layout";
 import { Separator } from "@avplatform/ui";
 import { logOffFromCurrentSession } from "@avplatform/ui/apis";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
@@ -98,6 +99,8 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           <UserIcon className="h-4 w-4" />
           My Account
         </Button>
+        <Separator className="my-1 h-[0.5px]" />
+        <ThemeSwitcher className="h-9" />
         <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
