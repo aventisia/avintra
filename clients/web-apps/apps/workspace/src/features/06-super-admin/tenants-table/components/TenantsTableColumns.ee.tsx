@@ -101,7 +101,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("renewalDate")} />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("renewalDate")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("renewalDate"))}
+      </span>
+    ),
   },
   {
     accessorKey: "currency",
@@ -126,14 +130,20 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("effectiveDate")} />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("effectiveDate")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("effectiveDate"))}
+      </span>
+    ),
   },
   {
     accessorKey: "expiresOn",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("expiresOn")} />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("expiresOn")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{formatDate(row.getValue<Date>("expiresOn"))}</span>
+    ),
   },
 
   // BUSINESS
@@ -160,7 +170,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("numberOfEmployees")}
       />
     ),
-    cell: ({ row }) => row.getValue("numberOfEmployees") ?? FALLBACK_VALUE,
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("numberOfEmployees") ?? FALLBACK_VALUE}
+      </span>
+    ),
   },
   {
     accessorKey: "industry",
@@ -176,21 +190,31 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("publishAgent")} />
     ),
-    cell: ({ row }) => row.getValue("publishAgent") || FALLBACK_VALUE,
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("publishAgent") || FALLBACK_VALUE}
+      </span>
+    ),
   },
   {
     accessorKey: "totalJobs",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalJobs")} />
     ),
-    cell: ({ row }) => row.getValue("totalJobs") ?? FALLBACK_VALUE,
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("totalJobs") ?? FALLBACK_VALUE}
+      </span>
+    ),
   },
   {
     accessorKey: "totalUsers",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
     ),
-    cell: ({ row }) => row.getValue("totalUsers"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{row.getValue<number>("totalUsers")}</span>
+    ),
   },
   {
     accessorKey: "availableCredits",
@@ -201,7 +225,9 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("availableCredits")}
       />
     ),
-    cell: ({ row }) => round2(row.getValue("availableCredits")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{round2(row.getValue("availableCredits"))}</span>
+    ),
   },
   {
     accessorKey: "consumedCredits",
@@ -212,7 +238,9 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("consumedCredits")}
       />
     ),
-    cell: ({ row }) => round2(row.getValue("consumedCredits")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{round2(row.getValue("consumedCredits"))}</span>
+    ),
   },
   {
     accessorKey: "totalExecutionTime",
@@ -223,21 +251,33 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("totalExecutionTime")}
       />
     ),
-    cell: ({ row }) => formatSecondsToCompactDuration(row.getValue("totalExecutionTime")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatSecondsToCompactDuration(row.getValue("totalExecutionTime"))}
+      </span>
+    ),
   },
   {
     accessorKey: "storageSize",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("storageSize")} />
     ),
-    cell: ({ row }) => formatBytes(row.getValue("storageSize") || 0),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatBytes(row.getValue("storageSize") || 0)}
+      </span>
+    ),
   },
   {
     accessorKey: "lastLoginDate",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("lastLoginDate")} />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("lastLoginDate")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("lastLoginDate"))}
+      </span>
+    ),
   },
 
   // FLAGS
@@ -262,7 +302,9 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
     ),
-    cell: ({ row }) => formatDate(row.getValue("createdOn")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{formatDate(row.getValue("createdOn"))}</span>
+    ),
   },
   {
     accessorKey: "lastModifiedBy",
@@ -284,7 +326,11 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("lastModifiedOn")}
       />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("lastModifiedOn")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("lastModifiedOn"))}
+      </span>
+    ),
   },
 
   createDTActionsColumn<TenantsTableDto>({

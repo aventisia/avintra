@@ -66,7 +66,7 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
           >
             {row.getValue<string>("name")}
           </NavLink>
-          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-ink-2 rounded-sm">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>
         </div>
@@ -134,7 +134,7 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.getValue("lastModifiedOn")
           ? format(row.getValue("lastModifiedOn"), "dd MMM yyyy, h:mm a")
           : "--"}
@@ -161,7 +161,9 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<QueuesTableDto>({

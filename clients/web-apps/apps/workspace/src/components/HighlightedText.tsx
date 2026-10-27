@@ -14,7 +14,7 @@ export const HighlightedText = ({ text, query }: HighlightedTextProps) => {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-[3px] bg-amber-100 text-amber-950 [box-decoration-break:clone]">
+      <mark className="rounded-[3px] bg-selected text-ink [box-decoration-break:clone]">
         {text.slice(index, index + term.length)}
       </mark>
       {text.slice(index + term.length)}

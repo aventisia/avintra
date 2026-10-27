@@ -7,15 +7,15 @@ import { MethodForm } from "./method-form/MethodForm";
 const methodBadgeClass = (method: string): string => {
   switch (method) {
     case "GET":
-      return "bg-emerald-500/15 text-emerald-600";
+      return "bg-ok/10 text-ok";
     case "POST":
-      return "bg-blue-500/15 text-blue-600";
+      return "bg-selected text-primary-text";
     case "PUT":
-      return "bg-amber-500/15 text-amber-600";
+      return "bg-warn/10 text-warn";
     case "PATCH":
-      return "bg-violet-500/15 text-violet-600";
+      return "bg-selected text-primary-text";
     case "DELETE":
-      return "bg-red-500/15 text-red-600";
+      return "bg-bad/10 text-bad";
     default:
       return "bg-primary/10 text-primary";
   }

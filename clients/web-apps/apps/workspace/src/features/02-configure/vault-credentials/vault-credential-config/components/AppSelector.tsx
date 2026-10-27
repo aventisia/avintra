@@ -165,7 +165,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-surface shadow">
           <div className="p-2">
             {inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">

@@ -44,7 +44,7 @@ export const byokUsageUsersColumns = (tableKey: string): ColumnDef<IByokUsers>[]
       <DTColumnHeader tableKey={tableKey} column={column} title="Total Consumption" />
     ),
     cell: ({ row }) => (
-      <span className="font-medium tabular-nums">
+      <span className="font-mono font-medium tabular-nums">
         {row.original.totalConsumption.toLocaleString("en-US", { maximumFractionDigits: 2 })}
       </span>
     ),

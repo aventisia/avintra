@@ -25,7 +25,7 @@ export const FileQueueList = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <h4 className="text-sm ml-1 font-medium text-slate-700">Files ({files.length})</h4>
+      <h4 className="text-sm ml-1 font-medium text-ink-2">Files ({files.length})</h4>
       <div className="flex flex-col gap-2">
         {files.map((fileItem) => (
           <FileQueueRow
@@ -64,13 +64,13 @@ const FileQueueRow = ({
 
   return (
     <div
-      className={`flex items-center justify-between rounded-xl p-2 px-2.5 ${
-        isActive ? "bg-primary-50 border border-primary-200" : "bg-muted"
+      className={`flex items-center justify-between rounded-lg p-2 px-2.5 ${
+        isActive ? "bg-selected border border-primary/35" : "bg-muted"
       }`}
     >
       <div className="flex items-center gap-3 flex-1">
         {/* Status icon */}
-        <div className="bg-white rounded-full flex items-center justify-center size-9 shadow-sm border border-indigo-100">
+        <div className="bg-surface rounded-md flex items-center justify-center size-9 border border-line">
           {getStatusIcon(fileItem.status)}
         </div>
 
@@ -82,18 +82,20 @@ const FileQueueRow = ({
               {fileItem.stageMessage}
             </p>
             {fileItem.status === "failed" && (
-              <p className="text-2xs text-red-600">({fileItem.errorMessage})</p>
+              <p className="text-2xs text-bad">({fileItem.errorMessage})</p>
             )}
             {fileItem.status === "queued" && (
-              <p className="text-2xs text-muted-foreground">{formatFileSize(fileItem.file.size)}</p>
+              <p className="font-mono text-2xs tabular-nums text-muted-foreground">
+                {formatFileSize(fileItem.file.size)}
+              </p>
             )}
           </div>
 
           {/* Upload progress bar */}
           {fileItem.status === "uploading" && (
-            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-fill">
               <div
-                className="h-full rounded-full bg-primary transition-all duration-200"
+                className="h-full rounded-full bg-live transition-all duration-200"
                 style={{ width: `${fileItem.progress}%` }}
               />
             </div>

@@ -94,7 +94,7 @@ export const CommentThread = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Comments</h2>
+      <h2 className="text-heading">Comments</h2>
 
       <div className="space-y-4">
         {comments.map((comment) => (
@@ -130,7 +130,7 @@ export const CommentThread = ({
                       Edit
                     </button>
                     <button
-                      className="text-xs text-destructive hover:text-destructive/80"
+                      className="text-xs text-bad hover:text-bad/80"
                       onClick={() => deleteMutation.mutate(comment.id || "")}
                     >
                       Delete

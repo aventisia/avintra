@@ -36,16 +36,16 @@ export const EnvironmentToggle = ({ className }: EnvironmentToggleProps) => {
       onValueChange={(value) => setEnv(value as ConfigureEnvironment)}
       className={cn("inline-flex items-center", className)}
     >
-      <TabsList className="gap-0.5 rounded-full border border-slate-300/70 bg-slate-100/80 p-0.5 h-6">
+      <TabsList className="gap-0.5 rounded-md border border-line-strong bg-hover p-0.5 h-6">
         {ENV_OPTIONS.map((option) => (
           <TabsTrigger
             key={option.value}
             value={option.value}
             className={cn(
-              "h-full rounded-full px-1.5 py-0 font-medium text-3xs uppercase tracking-widest transition-colors",
+              "h-full rounded-sm px-1.5 py-0 font-medium text-3xs uppercase tracking-widest transition-colors data-[state=active]:after:hidden",
               option.value === "prod"
-                ? "data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-sm"
-                : "data-[state=active]:bg-white data-[state=active]:text-slate-700 data-[state=active]:shadow-sm",
+                ? "data-[state=active]:bg-warn data-[state=active]:text-bg"
+                : "data-[state=active]:bg-surface data-[state=active]:text-ink-2",
             )}
           >
             {option.label}

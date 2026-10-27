@@ -23,7 +23,7 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
       return (
         <div className="inline-flex items-center gap-1" title={name ?? ""}>
           <span className="truncate max-w-72 font-medium">{name ?? "—"}</span>
-          <span className="bg-slate-100 border text-2xs rounded-xl h-[1.1rem] px-1.5 text-muted-foreground">
+          <span className="h-[1.1rem] rounded-sm border border-line bg-sunken px-1.5 font-mono text-2xs tabular-nums text-muted-foreground">
             v{versionNumber}
           </span>
         </div>
@@ -37,7 +37,11 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Published on" />
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("publishedOn")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("publishedOn"))}
+      </span>
+    ),
   },
 
   // DAILY AVERAGE CREDITS (LAST 30 DAYS)
@@ -46,7 +50,9 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily Average Credits" />
     ),
-    cell: ({ row }) => round2(row.getValue("dailyAverageCredits")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{round2(row.getValue("dailyAverageCredits"))}</span>
+    ),
   },
 
   // DAILY AVERAGE RUNTIME (LAST 30 DAYS)
@@ -55,7 +61,11 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily Avg Runtime" />
     ),
-    cell: ({ row }) => formatSecondsToCompactDuration(row.getValue("dailyAverageRuntime")),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatSecondsToCompactDuration(row.getValue("dailyAverageRuntime"))}
+      </span>
+    ),
   },
 
   // FIXED CREDIT VALUE
@@ -66,7 +76,11 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
     ),
     cell: ({ row }) => {
       const fixedCredits = row.getValue<number | null>("fixedCredits");
-      return fixedCredits != null ? String(fixedCredits) : "Not Applicable";
+      return fixedCredits != null ? (
+        <span className="font-mono tabular-nums">{fixedCredits}</span>
+      ) : (
+        "Not Applicable"
+      );
     },
   },
 

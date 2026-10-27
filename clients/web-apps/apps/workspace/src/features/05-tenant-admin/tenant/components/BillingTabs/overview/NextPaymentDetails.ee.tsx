@@ -1,12 +1,11 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { formatDate } from "@avplatform/ui/utils";
+import { CalendarIcon } from "lucide-react";
 
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";
 import { CurrentPlanDto } from "@/features/05-tenant-admin/tenant/dtos/current-plan-dto.ee";
 import { useCreditTopUpMutation } from "@/features/05-tenant-admin/tenant/hooks/useCreditTopUpMutation.ee";
-
-import CalendarOutlineIcon from "../../../assets/calendar-outline-icon.svg";
 
 interface NextPaymentDetailsProps {
   plan: CurrentPlanDto | undefined;
@@ -30,16 +29,18 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
   return (
     <div className="flex flex-col rounded-lg border pb-6">
       <div className="p-4">
-        <p className="text-base font-medium">Next Payment</p>
+        <p className="text-heading text-ink">Next Payment</p>
       </div>
       <Separator />
 
       <div className="flex-col p-4">
         <div className="flex items-center gap-2 rounded-lg border p-2">
-          <img src={CalendarOutlineIcon} alt="" />
+          <span className="grid size-9 place-items-center rounded-md border border-line bg-sunken text-ink-2">
+            <CalendarIcon className="size-4" />
+          </span>
           <div className="text-sm">
             <p className="text-muted-foreground">Due/Renewal Date</p>
-            <p className="font-medium">{formatDate(plan?.nextPayment?.dueDate)}</p>
+            <p className="font-mono font-medium">{formatDate(plan?.nextPayment?.dueDate)}</p>
           </div>
         </div>
 
@@ -48,7 +49,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <p>Subscription Fee</p>
-              <p>
+              <p className="font-mono">
                 {formatCurrency(
                   plan?.nextPayment?.subscriptionFee ?? 0,
                   plan?.currentPlan.currency || "USD",
@@ -58,7 +59,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
 
             <div className="flex items-center justify-between text-sm">
               <p>Tax</p>
-              <p>
+              <p className="font-mono">
                 {formatCurrency(plan?.nextPayment?.tax ?? 0, plan?.currentPlan.currency || "USD")}
               </p>
             </div>
@@ -67,7 +68,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
 
             <div className="flex items-center justify-between text-sm">
               <p>Total Amount</p>
-              <p>
+              <p className="font-mono">
                 {formatCurrency(
                   plan?.nextPayment?.totalAmount ?? 0,
                   plan?.currentPlan.currency || "USD",

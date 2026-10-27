@@ -48,7 +48,7 @@ export const DTSearchBox = <TData,>({
       placeholder={placeholder}
       value={(table.getState().globalFilter as string) ?? ""}
       onChange={(event) => table.setGlobalFilter(event.target.value)}
-      className="h-8 w-full text-sm tracking-wide mmd:w-[150px] lg:w-[250px]"
+      className="h-control-md w-full text-sm tracking-wide mmd:w-[150px] lg:w-[250px]"
     />
   );
 };

@@ -33,12 +33,10 @@ const TemplateLibrary = () => {
           <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="mx-auto mb-6 max-w-3xl text-center">
               <div className="flex items-center justify-center gap-2">
-                <h2 className="text-[4rem] font-semibold tracking-wide">
-                  Avintra <span className="text-primary">Library</span>
-                </h2>
+                <h2 className="text-title text-ink">Avintra Library</h2>
                 <HelpButton guideId="library" />
               </div>
-              <p className="text-base text-muted-foreground">
+              <p className="mt-2 text-body text-muted-foreground">
                 The Avintra Library brings together a rich catalog of ready-to-use automations and
                 AI blueprints, empowering teams to build faster, work smarter, and scale without
                 starting from scratch.
@@ -48,7 +46,7 @@ const TemplateLibrary = () => {
             {/* Search Bar for filtering templates */}
             <div className="relative mx-auto mb-8 max-w-2xl">
               <Input
-                className="rounded-lg pe-9 ps-3.5 text-[0.86rem]"
+                className="rounded-md pe-9 ps-3.5 text-[0.86rem]"
                 placeholder="Search..."
                 type="text"
                 // Uncomment and implement search functionality as needed
@@ -58,7 +56,7 @@ const TemplateLibrary = () => {
               <Button
                 variant="ghost"
                 size="icon10"
-                className="absolute inset-y-0 end-0 rounded-none rounded-e-lg focus-visible:ring-[3px]"
+                className="absolute inset-y-0 end-0 rounded-none rounded-e-md focus-visible:ring-[3px]"
                 aria-label="Search"
               >
                 <SearchIcon size={18} aria-hidden="true" />
@@ -66,14 +64,14 @@ const TemplateLibrary = () => {
             </div>
 
             {/* Category Filters to select templates by category */}
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-2">
               {categories.map((category) => (
                 <Button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   variant="outline"
-                  className={cn("rounded-full px-4 py-2 text-sm font-medium ring-1 ring-white", {
-                    "border-primary text-primary ring-primary": selectedCategory === category,
+                  className={cn("rounded-md border-line text-ink-2", {
+                    "border-primary bg-selected text-primary-text": selectedCategory === category,
                   })}
                 >
                   {category}

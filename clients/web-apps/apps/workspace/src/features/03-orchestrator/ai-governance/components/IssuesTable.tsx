@@ -36,10 +36,10 @@ const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
 ];
 
 const severityBadgeClass: Record<string, string> = {
-  low: "bg-emerald-500/15 text-emerald-600",
-  medium: "bg-amber-500/15 text-amber-600",
-  high: "bg-red-500/15 text-red-600",
-  critical: "bg-red-600/20 text-red-700",
+  low: "border-ok/35 text-ok",
+  medium: "border-warn/35 text-warn",
+  high: "border-bad/35 text-bad",
+  critical: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (

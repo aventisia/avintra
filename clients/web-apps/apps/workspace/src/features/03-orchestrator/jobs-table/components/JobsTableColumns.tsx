@@ -2,7 +2,6 @@ import { Checkbox, CopyableText } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { DTColumnHeader, DTOpenViewCell, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -12,7 +11,7 @@ import {
   TABLE_KEY,
   formatSecondsToCompactDuration,
   getColumnName,
-  statusColor,
+  statusVariant,
 } from "..";
 
 export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
@@ -56,7 +55,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
     ),
     cell: ({ row }) => (
-      <Badge className={cn(statusColor[row.original.status])}>{row.getValue("status")}</Badge>
+      <Badge variant={statusVariant[row.original.status]}>{row.getValue("status")}</Badge>
     ),
     filterFn: (row, columnId, filterValue) => {
       const status = row.getValue(columnId);
@@ -85,7 +84,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-mono tabular-nums">
         {row.getValue("startTimeStamp")
           ? format(new Date(row.getValue("startTimeStamp")), "dd MMM yyyy h:mm:ss a")
           : FALLBACK_VALUE}
@@ -103,7 +102,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-mono tabular-nums">
         {row.getValue("endTimeStamp")
           ? format(new Date(row.getValue("endTimeStamp")), "dd MMM yyyy h:mm:ss a")
           : FALLBACK_VALUE}
@@ -118,7 +117,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     cell: ({ row }) => {
       const duration = Number(row.getValue("duration"));
       return (
-        <div className="w-auto truncate font-medium">
+        <div className="w-auto truncate font-mono tabular-nums">
           {duration > 0 ? formatSecondsToCompactDuration(duration) : FALLBACK_VALUE}
         </div>
       );
@@ -136,7 +135,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     cell: ({ row }) => {
       const value = row.getValue("creditsConsumed");
       return (
-        <div className="w-auto truncate font-medium">
+        <div className="w-auto truncate font-mono tabular-nums">
           {typeof value === "number"
             ? value.toLocaleString(undefined, { maximumFractionDigits: 2 })
             : FALLBACK_VALUE}
@@ -196,7 +195,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-mono tabular-nums">
         {row.getValue("createdAt")
           ? format(new Date(row.getValue("createdAt")), "dd MMM yyyy h:mm:ss a")
           : FALLBACK_VALUE}
@@ -244,7 +243,9 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("retryCount")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("retryCount") ?? 0}</div>
+      <div className="w-auto truncate font-mono tabular-nums">
+        {row.getValue("retryCount") ?? 0}
+      </div>
     ),
   },
   {

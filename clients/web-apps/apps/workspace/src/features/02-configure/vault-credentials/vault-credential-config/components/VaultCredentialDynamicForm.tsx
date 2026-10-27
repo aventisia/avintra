@@ -220,11 +220,13 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
                 {showOutputFields ? (
                   <>
                     <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-                      <span className="rounded-full bg-accent px-1.5 text-indigo-600">Outputs</span>
+                      <span className="rounded-sm bg-selected px-1.5 text-primary-text">
+                        Outputs
+                      </span>
                       <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
                     </h3>
 
-                    <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                    <div className="space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                       {vaultCredentialConfig.map((field) => {
                         if (!shouldRenderField("Output", field, watchedValues)) {
                           if (outputKeys.includes(field.name))
@@ -252,7 +254,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
         ) : null}
 
         {isType && !isReadOnly && isOAuthCredential && (
-          <div className="flex items-start gap-2 rounded-lg border bg-blue-50 px-3 py-2 text-sm text-blue-900">
+          <div className="flex items-start gap-2 rounded-lg border bg-selected px-3 py-2 text-sm text-ink">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
               After saving, a browser window will open where you can sign in and grant access to
@@ -265,7 +267,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
         {isType && isOAuthCredential && (
           <div className="mt-1 space-y-1.5">
             <label className="text-sm font-medium">OAuth Redirect URL</label>
-            <div className="flex items-center gap-2 rounded-lg border bg-slate-50 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-lg border bg-sunken px-3 py-2">
               <CopyableText
                 value={`${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/integration/oauth-callback`}
                 textClassName="text-sm text-muted-foreground"

@@ -1,6 +1,8 @@
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import {
   ArrowRightIcon,
   CheckCircle2Icon,
@@ -93,30 +95,26 @@ const GetStartedPage = () => {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-3xl font-semibold tracking-wide">Get Started</h2>
+          <h2 className="text-title text-ink">Get Started</h2>
           <HelpButton guideId="get-started" />
         </div>
-        {isComplete ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <CheckCircle2Icon className="h-4 w-4" />
-            Setup complete
-          </span>
-        ) : null}
+        {isComplete ? <Badge variant="completed">Setup complete</Badge> : null}
       </div>
 
       <p className="mb-8 max-w-3xl text-base text-muted-foreground">
         Complete these five steps to set up your workspace and build your first agent. Each step
-        opens the relevant page — use the <span className="font-medium">ⓘ</span> information button
-        on any page to learn what a feature does and how to set it up.
+        opens the relevant page — use the{" "}
+        <InformationCircleIcon className="inline size-5 align-text-bottom" aria-label="info" />{" "}
+        information button on any page to learn what a feature does and how to set it up.
       </p>
 
       <ol className="space-y-4">
         {ONBOARDING_STEPS.map(({ step, title, description, route, guideId, Icon }) => (
           <li
             key={step}
-            className="group flex items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="group flex items-start gap-4 rounded-lg border border-line bg-surface p-5"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-2">
               <Icon className="h-6 w-6" />
             </div>
 
@@ -125,7 +123,7 @@ const GetStartedPage = () => {
                 <span className="text-sm font-semibold text-muted-foreground">Step {step}</span>
                 <HelpButton guideId={guideId} tooltip={`Help: ${title}`} />
               </div>
-              <h3 className="mt-0.5 text-lg font-semibold text-foreground">{title}</h3>
+              <h3 className="mt-0.5 text-heading text-ink">{title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
             </div>
 
@@ -137,10 +135,10 @@ const GetStartedPage = () => {
         ))}
       </ol>
 
-      <div className="mt-8 flex items-center justify-between rounded-xl border border-border bg-muted/30 p-5">
+      <div className="mt-8 flex items-center justify-between rounded-lg border border-line bg-sunken p-5">
         <div className="flex items-center gap-3">
           {isComplete ? (
-            <CheckCircle2Icon className="h-6 w-6 text-primary" />
+            <CheckCircle2Icon className="h-6 w-6 text-ok" />
           ) : (
             <CircleIcon className="h-6 w-6 text-muted-foreground" />
           )}

@@ -31,10 +31,10 @@ const InfoLabel = ({ children, info }: { children: React.ReactNode; info?: strin
 );
 
 const severityBadgeClass: Record<RiskSeverity, string> = {
-  [RiskSeverity.Low]: "bg-emerald-500/15 text-emerald-600",
-  [RiskSeverity.Medium]: "bg-amber-500/15 text-amber-600",
-  [RiskSeverity.High]: "bg-red-500/15 text-red-600",
-  [RiskSeverity.Critical]: "bg-red-600/20 text-red-700",
+  [RiskSeverity.Low]: "border-ok/35 text-ok",
+  [RiskSeverity.Medium]: "border-warn/35 text-warn",
+  [RiskSeverity.High]: "border-bad/35 text-bad",
+  [RiskSeverity.Critical]: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
@@ -161,7 +161,7 @@ export const RisksMitigationsSection = () => {
                 </label>
                 <span
                   className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-xs font-bold",
+                    "inline-flex rounded-sm border px-2.5 py-1 text-xs font-bold",
                     severityBadgeClass[row.severity],
                   )}
                 >

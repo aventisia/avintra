@@ -13,7 +13,6 @@ import {
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -22,14 +21,13 @@ import {
   CircleGaugeIcon,
   ExternalLinkIcon,
   FileJsonIcon,
-  FlagIcon,
   LogsIcon,
   MessageSquareTextIcon,
   ZapIcon,
 } from "lucide-react";
 
 import { getJob } from "../../apis/jobs-table-apis";
-import { statusColor } from "../../constants/column-display-names";
+import { statusVariant } from "../../constants/column-display-names";
 import type { JobRecordDto } from "../../dtos/job-record-dto";
 import { JobStatusEnum } from "../../enums/job-status-enum";
 import { formatSecondsToCompactDuration } from "../../utils/format-time-utils";
@@ -157,19 +155,13 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {/* Execution section - primary accent only here */}
       <ViewInfoRowsCard
         title="Execution"
-        className="border-primary-100"
+        className="border-line"
         icon={<ActivityIcon className="size-3.5 text-primary" />}
       >
         <ViewInfoRow
           label="Status"
           value={
-            <Badge
-              className={cn(
-                "inline-flex items-center gap-1.5",
-                statusColor[job.status as JobStatusEnum],
-              )}
-            >
-              <FlagIcon className="size-3" />
+            <Badge variant={statusVariant[job.status as JobStatusEnum]}>
               <span className="truncate">{job.status}</span>
             </Badge>
           }

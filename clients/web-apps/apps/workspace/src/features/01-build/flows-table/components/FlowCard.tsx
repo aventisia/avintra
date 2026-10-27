@@ -50,28 +50,28 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
   const agentName = <HighlightedText text={flow.name ?? "NAME_NOT_FOUND"} query={searchText} />;
 
   const nameClassName =
-    "min-w-0 flex-1 truncate text-base font-bold capitalize tracking-tight text-slate-900 transition-colors hover:text-primary";
+    "min-w-0 flex-1 truncate text-base font-semibold capitalize tracking-tight text-ink transition-colors hover:text-primary";
 
   return (
     <Card
       {...getAgentDragProps(flow)}
-      className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-slate-200 bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md"
+      className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-line bg-surface transition-colors duration-200 hover:border-line-strong"
     >
       <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
         {/* Agent icon tile */}
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary-50 to-accent text-primary ring-1 ring-primary-100 transition-transform duration-200 group-hover:scale-105">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sunken text-ink-2 ring-1 ring-line transition-transform duration-200 group-hover:scale-105">
           <NewAgentIcon className="h-4 w-4" />
         </div>
         {/* Supported platform and (shared) access level */}
         <div className="flex min-w-0 items-center gap-1">
           {folder && <FolderChip folder={folder} />}
-          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-2xs font-medium text-slate-600">
+          <span className="inline-flex items-center gap-1 rounded-full border border-line bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-2">
             <Monitor className="h-3 w-3" />
             {platform}
           </span>
           <Badge
             variant="outline"
-            className="whitespace-nowrap rounded-full border-slate-200 bg-muted px-2 py-0.5 text-primary"
+            className="whitespace-nowrap rounded-full border-line bg-muted px-2 py-0.5 text-primary"
           >
             {flow.accessLevel?.replace(/([A-Z])/g, " $1").trim()}
           </Badge>
@@ -102,14 +102,14 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
           )}
           <Badge
             variant="outline"
-            className="shrink-0 whitespace-nowrap rounded-full border-slate-200 bg-slate-100 py-0.5 font-medium text-slate-600"
+            className="shrink-0 whitespace-nowrap rounded-sm border-line bg-sunken py-0.5 font-mono font-medium text-ink-2"
           >
             v{flow.versionNumber}
           </Badge>
           {flow.isArchived && (
             <Badge
               variant="outline"
-              className="shrink-0 gap-1 whitespace-nowrap rounded-full border-amber-200 bg-amber-50 py-0.5 font-medium text-amber-700"
+              className="shrink-0 gap-1 whitespace-nowrap rounded-sm border-line bg-sunken py-0.5 font-medium text-ink-2"
             >
               <Archive className="h-3 w-3" />
               Archived
@@ -128,7 +128,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
         <div className="flex flex-nowrap items-center gap-1.5 overflow-hidden">
           <Badge
             variant="outline"
-            className="shrink-0 gap-1 rounded-full border-primary-100 bg-primary-50 py-0.5 text-primary"
+            className="shrink-0 gap-1 rounded-sm border-line bg-selected py-0.5 text-primary-text"
           >
             <Tag className="h-3 w-3" />
             <span className="leading-3">{getFlowTypeLabel(String(flow.type))}</span>
@@ -137,7 +137,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
             <Badge
               key={model}
               variant="outline"
-              className="min-w-0 gap-1 rounded-full border-violet-100 bg-violet-50 py-0.5 text-violet-600"
+              className="min-w-0 gap-1 rounded-sm border-line bg-sunken py-0.5 text-ink-2"
             >
               <Cpu className="h-3 w-3 shrink-0" />
               <span className="truncate leading-3">{model}</span>
@@ -146,7 +146,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
           {hiddenModelCount > 0 && (
             <Badge
               variant="outline"
-              className="shrink-0 rounded-full border-slate-200 bg-slate-100 py-0.5 font-medium text-slate-600"
+              className="shrink-0 rounded-sm border-line bg-sunken py-0.5 font-mono font-medium text-ink-2"
             >
               +{hiddenModelCount}
             </Badge>
@@ -169,14 +169,14 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
                   to={getQueueUrl(queue.id, queue.name, queue.type)}
                   draggable={false}
                   title={queue.name}
-                  className="inline-flex max-w-32 items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-2xs font-medium text-slate-600 transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary"
+                  className="inline-flex max-w-32 items-center rounded-full border border-line bg-surface px-2 py-0.5 text-2xs font-medium text-ink-2 transition-colors hover:border-line-strong hover:bg-hover hover:text-ink"
                 >
                   <span className="truncate">{queue.name}</span>
                 </NavLink>
               ))}
               {hiddenQueueCount > 0 && (
                 <span
-                  className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-500"
+                  className="inline-flex items-center rounded-full border border-line bg-sunken px-2 py-0.5 text-2xs font-medium text-muted-foreground"
                   title={`${hiddenQueueCount} more queue(s)`}
                 >
                   +{hiddenQueueCount}

@@ -1,3 +1,4 @@
+import type { BadgeProps } from "@avplatform/ui/badge";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
@@ -24,10 +25,10 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-export const statusColor: { [key in MachineStatusEnum]: string } = {
-  [MachineStatusEnum.Online]: "bg-green-200 text-green-700",
-  [MachineStatusEnum.Offline]: "bg-slate-200 text-slate-600",
-  [MachineStatusEnum.Idle]: "bg-orange-200 text-orange-600",
-  [MachineStatusEnum.Running]: "bg-primary",
-  [MachineStatusEnum.Stopped]: "bg-red-200 text-red-600",
+export const statusVariant: { [key in MachineStatusEnum]: BadgeProps["variant"] } = {
+  [MachineStatusEnum.Online]: "completed",
+  [MachineStatusEnum.Offline]: "secondary",
+  [MachineStatusEnum.Idle]: "queued",
+  [MachineStatusEnum.Running]: "running",
+  [MachineStatusEnum.Stopped]: "failed",
 };

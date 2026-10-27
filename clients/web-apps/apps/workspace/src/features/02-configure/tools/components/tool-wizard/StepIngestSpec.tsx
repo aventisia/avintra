@@ -148,7 +148,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
         ) : !isNameAvailable && isCreate ? (
           <p className="text-xs text-destructive">{nameAvailabilityMessage}</p>
         ) : isNameAvailable && isCreate && nameAvailabilityMessage ? (
-          <p className="text-xs text-emerald-600">{nameAvailabilityMessage}</p>
+          <p className="text-xs text-ok">{nameAvailabilityMessage}</p>
         ) : null}
         {getError("name") && <p className="text-xs text-destructive">{getError("name")}</p>}
       </div>

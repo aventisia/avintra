@@ -46,7 +46,7 @@ export const vaultCredentialTableColumns = (): ColumnDef<VaultCredentialDto>[] =
           {row.getValue("name")}
         </div>
 
-        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </p>
       </div>
@@ -79,7 +79,9 @@ export const vaultCredentialTableColumns = (): ColumnDef<VaultCredentialDto>[] =
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<VaultCredentialDto>({

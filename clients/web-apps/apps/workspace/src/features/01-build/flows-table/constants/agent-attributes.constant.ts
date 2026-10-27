@@ -11,13 +11,13 @@ export const AGENT_TYPES = [
     value: FlowTypesEnum.Agent,
     label: "Automation Agent",
     icon: Workflow,
-    tint: "bg-sky-50 text-sky-600 ring-sky-100",
+    tint: "bg-sunken text-ink-2 ring-line",
   },
   {
     value: FlowTypesEnum.ChatAgent,
     label: "Chat Agent",
     icon: MessagesSquare,
-    tint: "bg-violet-50 text-violet-600 ring-violet-100",
+    tint: "bg-sunken text-ink-2 ring-line",
   },
 ];
 
@@ -29,11 +29,11 @@ export const AGENT_PLATFORMS: { value: AgentPlatform; label: string; icon: typeo
 
 /** Label and dot color of each access level. */
 export const ACCESS_LEVELS: Record<ResourceAccessTypeEnum, { label: string; dot: string }> = {
-  [ResourceAccessTypeEnum.Owner]: { label: "Owner", dot: "bg-indigo-500" },
-  [ResourceAccessTypeEnum.FullAccess]: { label: "Full access", dot: "bg-emerald-500" },
-  [ResourceAccessTypeEnum.Edit]: { label: "Edit", dot: "bg-amber-500" },
-  [ResourceAccessTypeEnum.View]: { label: "View", dot: "bg-slate-400" },
-  [ResourceAccessTypeEnum.Delete]: { label: "Delete", dot: "bg-rose-500" },
-  [ResourceAccessTypeEnum.Create]: { label: "Create", dot: "bg-sky-500" },
-  [ResourceAccessTypeEnum.Personal]: { label: "Personal", dot: "bg-indigo-500" },
+  [ResourceAccessTypeEnum.Owner]: { label: "Owner", dot: "bg-primary" },
+  [ResourceAccessTypeEnum.FullAccess]: { label: "Full access", dot: "bg-muted-foreground" },
+  [ResourceAccessTypeEnum.Edit]: { label: "Edit", dot: "bg-muted-foreground" },
+  [ResourceAccessTypeEnum.View]: { label: "View", dot: "bg-muted-foreground" },
+  [ResourceAccessTypeEnum.Delete]: { label: "Delete", dot: "bg-muted-foreground" },
+  [ResourceAccessTypeEnum.Create]: { label: "Create", dot: "bg-muted-foreground" },
+  [ResourceAccessTypeEnum.Personal]: { label: "Personal", dot: "bg-primary" },
 };

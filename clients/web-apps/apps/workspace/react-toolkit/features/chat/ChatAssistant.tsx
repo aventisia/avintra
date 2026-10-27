@@ -14,7 +14,7 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
     <Popover>
       <PopoverTrigger
         className={cn(
-          "fixed bottom-4 z-50 right-4 hidden h-[3.1rem] w-[3.1rem] items-center justify-center rounded-full text-white shadow msm:flex xs:bg-primary",
+          "fixed bottom-4 z-50 right-4 hidden h-[3.1rem] w-[3.1rem] items-center justify-center rounded-full text-primary-foreground shadow-pop msm:flex xs:bg-primary",
           className,
         )}
       >

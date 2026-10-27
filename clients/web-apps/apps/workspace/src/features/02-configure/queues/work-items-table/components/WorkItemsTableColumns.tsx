@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { NavLink } from "react-router-dom";
 
 import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
-import { getStatusColor } from "../constants/column-display-names";
+import { getStatusBadgeVariant } from "../constants/column-display-names";
 import {
   WorkItemsTableRow,
   customColumnId,
@@ -95,7 +95,7 @@ export const workItemsTableColumns = (
         <NavLink
           to={`wid/${id}?name=${encodeURIComponent(queueName)}`}
           title="View work item"
-          className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
+          className="w-auto truncate font-mono tabular-nums text-foreground underline-offset-4 hover:text-primary-text hover:underline"
         >
           {id}
         </NavLink>
@@ -106,7 +106,7 @@ export const workItemsTableColumns = (
     accessorKey: "status",
     header: ({ column }) => <DTColumnHeader tableKey={tableKey} column={column} title={"Status"} />,
     cell: ({ row }) => (
-      <Badge className={getStatusColor(row.original.status)}>
+      <Badge variant={getStatusBadgeVariant(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),
@@ -127,7 +127,9 @@ export const workItemsTableColumns = (
       <DTColumnHeader tableKey={tableKey} column={column} title={"Created On"} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   // Optional columns — hidden by default, users can toggle them on via the
@@ -142,7 +144,9 @@ export const workItemsTableColumns = (
       // Unrouted items carry Guid.Empty (all zeros) — treat as no source item.
       const isEmptyGuid = !sourceWorkItemId || sourceWorkItemId.startsWith("00000000-");
       return (
-        <div className="w-auto truncate font-medium">{isEmptyGuid ? "--" : sourceWorkItemId}</div>
+        <div className="w-auto truncate font-mono tabular-nums">
+          {isEmptyGuid ? "--" : sourceWorkItemId}
+        </div>
       );
     },
     enableSorting: false,
@@ -155,7 +159,7 @@ export const workItemsTableColumns = (
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
       return (
-        <div className="w-auto truncate font-medium">
+        <div className="w-auto truncate font-medium font-mono tabular-nums">
           {retryTime ? formatDate(retryTime as string, true) : "--"}
         </div>
       );
@@ -167,7 +171,9 @@ export const workItemsTableColumns = (
       <DTColumnHeader tableKey={tableKey} column={column} title={"Retry Count"} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.original.retryCount ?? 0}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {row.original.retryCount ?? 0}
+      </div>
     ),
   },
   createDTActionsColumn<WorkItemsTableRow>({

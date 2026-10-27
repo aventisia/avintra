@@ -123,7 +123,7 @@ export const DateRangeFilter = () => {
                   variant={isSelected ? "default" : "outline"}
                   onClick={() => setSelectedRange(range)}
                   className={`justify-start border-none shadow-none ${
-                    isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                    isSelected ? "bg-selected text-primary-text" : ""
                   }`}
                 >
                   {preset.label}

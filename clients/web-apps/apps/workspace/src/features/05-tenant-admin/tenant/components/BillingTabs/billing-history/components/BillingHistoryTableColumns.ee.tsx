@@ -66,7 +66,7 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
     cell: ({ row }) => {
       const paidOnValue = row.getValue("paidOn") as Date;
       return (
-        <div className="w-auto font-medium">
+        <div className="font-mono tabular-nums w-auto font-medium">
           {paidOnValue ? format(paidOnValue, "dd MMM yyyy, hh:mm a") : "N/A"}
         </div>
       );
@@ -81,7 +81,11 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
     cell: ({ row }) => {
       const amount = (row.getValue("amount") || 0) as number;
       const currency = row.original?.currency || "USD";
-      return <div className="w-auto font-medium">{formatCurrency(amount, currency) || "N/A"}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto font-medium">
+          {formatCurrency(amount, currency) || "N/A"}
+        </div>
+      );
     },
   },
   // Status

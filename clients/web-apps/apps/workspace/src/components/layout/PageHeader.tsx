@@ -28,7 +28,7 @@ const PageHeader = ({
         </>
       ) : (
         <>
-          <h2 className="flex items-center text-lg font-medium text-foreground">{pageHeading}</h2>
+          <h2 className="flex items-center text-title text-ink">{pageHeading}</h2>
           <div className="flex items-center gap-2">
             {helpGuideId ? <HelpButton guideId={helpGuideId} /> : null}
             {children}
