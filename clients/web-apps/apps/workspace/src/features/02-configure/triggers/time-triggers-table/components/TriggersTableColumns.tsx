@@ -79,7 +79,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
           {row.getValue("name")}
         </div>
 
-        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </p>
       </div>
@@ -107,7 +107,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.getValue("lastTriggeredTime")
           ? format(row.getValue("lastTriggeredTime"), "dd MMM yyyy, h:mm a")
           : "NA"}
@@ -124,7 +124,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatNextTriggerTime(row.original.nextTriggerTime, row.original.timezone)}
       </div>
     ),
@@ -166,7 +166,9 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("effectiveDate")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("effectiveDate"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("effectiveDate"))}
+      </div>
     ),
   },
   {
@@ -189,7 +191,9 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   {
@@ -216,7 +220,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),

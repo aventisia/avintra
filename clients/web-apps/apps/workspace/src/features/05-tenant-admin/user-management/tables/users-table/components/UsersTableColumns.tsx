@@ -104,7 +104,9 @@ export const usersTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-mono font-medium tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<UsersTableDto>({

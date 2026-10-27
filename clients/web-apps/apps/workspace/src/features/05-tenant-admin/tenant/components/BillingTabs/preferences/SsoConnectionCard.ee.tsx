@@ -1,3 +1,4 @@
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { Card } from "@avplatform/ui/cards";
 import { cn } from "@avplatform/ui/lib";
@@ -62,9 +63,9 @@ const SsoConnectionCard = () => {
   }
 
   return (
-    <Card className="mb-6 overflow-hidden hover:shadow-md">
+    <Card className="mb-6 overflow-hidden">
       <div className="flex items-start gap-3.5 p-5">
-        <div className="shrink-0 rounded-[10px] border border-amber-200 bg-amber-50 p-2.5">
+        <div className="shrink-0 rounded-md border border-line bg-sunken p-2.5">
           <img src={azureLogoUrl} alt="" className="h-6 w-6" />
         </div>
 
@@ -81,12 +82,7 @@ const SsoConnectionCard = () => {
                 ⓘ
               </span>
             </Tooltip>
-            {isConnected && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-2xs font-medium text-green-700">
-                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                {ssoStatusConnectedLabel}
-              </span>
-            )}
+            {isConnected && <Badge variant="completed">{ssoStatusConnectedLabel}</Badge>}
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Let members of your company domain sign in with your organization account.
@@ -106,7 +102,7 @@ const SsoConnectionCard = () => {
           )}
 
           {ssoDisableWarning && (
-            <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+            <div className="mt-3 rounded-md border border-warn/35 bg-warn/10 p-3 text-sm text-ink">
               <p className="font-medium">{ssoDisableWarningTitle}</p>
               <p>
                 {ssoDisableWarning.affectedUserCount} user(s) have no password and cannot sign in
@@ -136,15 +132,15 @@ const SsoConnectionCard = () => {
               className={cn(
                 "relative h-5 w-[34px] shrink-0 rounded-full transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                isSSOEnabled ? "bg-emerald-600" : "bg-slate-200 dark:bg-slate-700",
+                isSSOEnabled ? "bg-indicator" : "bg-fill",
                 isToggleDisabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
               )}
             >
               <span
                 aria-hidden="true"
                 className={cn(
-                  "absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-[left] duration-150",
-                  isSSOEnabled ? "left-[16px]" : "left-0.5",
+                  "absolute top-0.5 h-4 w-4 rounded-full transition-[left] duration-150",
+                  isSSOEnabled ? "left-[16px] bg-primary-foreground" : "left-0.5 bg-ink-2",
                 )}
               />
             </button>

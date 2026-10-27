@@ -32,7 +32,7 @@ const CancelPlanDialog = () => {
       <DialogContent className="!max-w-[45rem] px-1">
         <DialogHeader className="border-b px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">Cancel Plan</h2>
+            <h2 className="text-heading">Cancel Plan</h2>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
               <X className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Cancel Plan</span>
@@ -40,8 +40,8 @@ const CancelPlanDialog = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-red-100 px-3 py-2 text-[0.85rem] text-red-800">
-          <AlertTriangleIcon className="h-5 w-5 text-red-500" />
+        <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-bad/10 px-3 py-2 text-[0.85rem] text-bad">
+          <AlertTriangleIcon className="h-5 w-5 text-bad" />
           Warning: This action will permanently delete your account
         </div>
         <div className="mt-2 space-y-4 px-6 pb-4 pt-1.5 text-md">

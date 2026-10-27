@@ -26,7 +26,7 @@ export const StatsCard = ({ icon, title, content, footer }: StatsCardProps) => {
         <div className="font-mono text-[28px] font-medium leading-8 tracking-[-0.02em] tabular-nums text-ink">
           {content}
         </div>
-        {footer && <div className="font-mono text-hint text-muted-foreground">{footer}</div>}
+        {footer && <div className="text-hint text-muted-foreground">{footer}</div>}
       </div>
     </div>
   );

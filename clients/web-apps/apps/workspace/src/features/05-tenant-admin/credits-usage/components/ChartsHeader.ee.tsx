@@ -15,7 +15,7 @@ const ChartsHeader = () => {
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <p className="text-lg font-medium">Usage</p>
+          <p className="text-title text-ink">Usage</p>
           <HelpButton guideId="usage" />
         </div>
         <AvailableCredits />

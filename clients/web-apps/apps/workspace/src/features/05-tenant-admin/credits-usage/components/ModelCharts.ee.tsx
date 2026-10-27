@@ -143,7 +143,7 @@ const ModelCharts = () => {
 
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
-      <div className="grid grid-cols-2 gap-4 rounded-lg bg-white px-6 py-6">
+      <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
         {currentGroups.map((group) => {
           const merged = mergeTimelines(group.series);
           const chartData = Object.entries(merged)

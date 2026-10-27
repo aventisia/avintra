@@ -1,7 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -74,7 +73,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatSecondsToCompactDuration(row.getValue("executionTimeAllowed"))}
       </div>
     ),
@@ -89,7 +88,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatSecondsToCompactDuration(row.getValue("consumedExecutionTime"))}
       </div>
     ),
@@ -104,7 +103,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatDate(row.getValue("contractStartDate"))}
       </div>
     ),
@@ -119,7 +118,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatDate(row.getValue("contractRenewalDate"))}
       </div>
     ),
@@ -137,11 +136,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       const isFailed = row.getValue("isAnyInstanceFailed");
 
       return (
-        <Badge
-          className={cn(
-            isFailed == true ? "bg-red-200 text-red-600" : "bg-green-200 text-green-700",
-          )}
-        >
+        <Badge variant={isFailed == true ? "failed" : "completed"}>
           {isFailed == true ? "Failed" : "Success"}
         </Badge>
       );
@@ -163,7 +158,9 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<OnPremTenantDto>({

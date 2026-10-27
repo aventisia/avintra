@@ -1,4 +1,5 @@
 import { Input } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import {
   Card,
@@ -57,7 +58,7 @@ export const ModelProviders = () => {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-lg font-medium">Models</p>
+            <p className="text-title text-ink">Models</p>
             <HelpButton guideId="models" />
           </div>
           <p className="text-sm text-muted-foreground">
@@ -90,22 +91,14 @@ export const ModelProviders = () => {
             const isDisabled = Boolean(config?.isDisabled);
 
             return (
-              <Card key={provider.value} className="flex flex-col p-4 hover:shadow-md">
+              <Card key={provider.value} className="flex flex-col p-4 hover:border-line-strong">
                 <CardHeader className="flex-row items-center gap-3 p-0">
-                  <div className={`rounded-lg bg-accent p-2 ${isDisabled ? "opacity-60" : ""}`}>
+                  <div className={`rounded-lg bg-sunken p-2 ${isDisabled ? "opacity-60" : ""}`}>
                     <img src={getProviderIcon(provider)} alt={provider.label} className="h-6 w-6" />
                   </div>
                   <CardTitle className="!mt-0 text-base capitalize">{provider.label}</CardTitle>
-                  {config && !config.isDisabled ? (
-                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                      Enabled
-                    </span>
-                  ) : null}
-                  {config?.isDisabled ? (
-                    <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
-                      Disabled
-                    </span>
-                  ) : null}
+                  {config && !config.isDisabled ? <Badge variant="completed">Enabled</Badge> : null}
+                  {config?.isDisabled ? <Badge variant="secondary">Disabled</Badge> : null}
                 </CardHeader>
 
                 <CardDescription className="mt-3 line-clamp-2">

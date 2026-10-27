@@ -50,7 +50,7 @@ export const AttachmentSection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Attachments ({attachments.length})</h2>
+        <h2 className="text-heading">Attachments ({attachments.length})</h2>
         {!isClosed && (
           <Button
             type="button"
@@ -107,7 +107,7 @@ export const AttachmentSection = ({
                     onClick={() => deleteMutation.mutate(attachment.id || "")}
                     disabled={deleteMutation.isPending}
                   >
-                    <Trash2Icon className="h-4 w-4 text-destructive" />
+                    <Trash2Icon className="h-4 w-4 text-bad" />
                   </Button>
                 )}
               </div>

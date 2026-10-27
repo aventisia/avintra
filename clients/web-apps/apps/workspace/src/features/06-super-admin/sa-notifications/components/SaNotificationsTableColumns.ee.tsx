@@ -82,7 +82,11 @@ export const getSaNotificationsTableColumns = (): ColumnDef<SaNotificationDto>[]
     ),
     cell: ({ row }) => {
       const tenantCount = row.getValue<number>("tenantCount");
-      return <div className="w-auto truncate font-medium">{tenantCount ?? FALLBACK_VALUE}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {tenantCount ?? FALLBACK_VALUE}
+        </div>
+      );
     },
   },
   {
@@ -92,7 +96,11 @@ export const getSaNotificationsTableColumns = (): ColumnDef<SaNotificationDto>[]
     ),
     cell: ({ row }) => {
       const recipientCount = row.getValue<number>("recipientCount");
-      return <div className="w-auto truncate font-medium">{recipientCount ?? FALLBACK_VALUE}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {recipientCount ?? FALLBACK_VALUE}
+        </div>
+      );
     },
   },
   {
@@ -104,9 +112,9 @@ export const getSaNotificationsTableColumns = (): ColumnDef<SaNotificationDto>[]
       const createdOn = row.getValue<string | null>("createdOn");
       const formattedDate = formatDate(createdOn, true);
       if (!formattedDate || formattedDate === "01 Jan 0001") {
-        return <div className="truncate font-medium">{FALLBACK_VALUE}</div>;
+        return <div className="font-mono tabular-nums truncate font-medium">{FALLBACK_VALUE}</div>;
       }
-      return <div className="truncate font-medium">{formattedDate}</div>;
+      return <div className="font-mono tabular-nums truncate font-medium">{formattedDate}</div>;
     },
   },
   createDTActionsColumn<SaNotificationDto>({

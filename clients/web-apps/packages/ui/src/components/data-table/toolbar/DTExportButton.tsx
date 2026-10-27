@@ -89,7 +89,7 @@ export const DTExportButton = <TData,>({
     <Button
       onClick={handleExport}
       variant="outline"
-      size="xs"
+      size="default"
       className={cn("gap-2 text-sm tracking-wide")}
     >
       <Download className="h-4 w-4" />

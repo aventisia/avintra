@@ -1,7 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { THEME_MODES, type ThemeMode, useThemeStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import { MonitorIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 const THEME_MODE_OPTIONS: Record<ThemeMode, { label: string; Icon: typeof SunIcon }> = {
@@ -24,8 +24,11 @@ const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   );
 
   return (
-    <div className={cn("flex items-center justify-between gap-3 px-2", className)}>
-      <span className="text-body-sm text-ink-2">Theme</span>
+    <div className={cn("flex items-center justify-between gap-3 px-3.5", className)}>
+      <span className="flex items-center gap-2 text-body-sm text-ink-2">
+        <SunMoonIcon className="size-4" strokeWidth={1.75} aria-hidden="true" />
+        Theme
+      </span>
       <div
         role="radiogroup"
         aria-label="Theme"

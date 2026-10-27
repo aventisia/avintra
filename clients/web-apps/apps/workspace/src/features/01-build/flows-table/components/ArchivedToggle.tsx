@@ -18,10 +18,10 @@ export const ArchivedToggle = ({ count, pressed, onPressedChange }: ArchivedTogg
     title={pressed ? "Show active agents" : "Show archived agents"}
     onClick={() => onPressedChange(!pressed)}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-dashed bg-background px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50",
+      "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed bg-background px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50",
       pressed
-        ? "border-solid border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
-        : "border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900",
+        ? "border-solid border-primary bg-selected text-primary-text"
+        : "border-line text-ink-2 hover:border-line-strong hover:bg-sunken hover:text-ink",
     )}
   >
     <Archive className="size-3.5" />
@@ -29,7 +29,9 @@ export const ArchivedToggle = ({ count, pressed, onPressedChange }: ArchivedTogg
     <span
       className={cn(
         "rounded px-1 text-2xs tabular-nums",
-        pressed ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500",
+        pressed
+          ? "bg-primary/15 text-primary-text font-mono"
+          : "bg-sunken font-mono text-muted-foreground",
       )}
     >
       {count}

@@ -71,11 +71,7 @@ export const ApiKeyView = ({ rowId }: ApiKeyViewProps) => {
         <div className="flex flex-wrap items-center gap-2.5">
           {(() => {
             const status = getApiKeyStatus(apiKey.expiresAt, apiKey.isRevoked);
-            return (
-              <Badge className={status.className} variant={status.variant}>
-                {status.label}
-              </Badge>
-            );
+            return <Badge variant={status.variant}>{status.label}</Badge>;
           })()}
         </div>
 

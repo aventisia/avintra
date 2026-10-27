@@ -44,7 +44,7 @@ const ResourceFlowAccessDialog = ({ queryKey }: ResourceFlowAccessDialogProps) =
   return (
     <Dialog open={showDialog && !isProd} onOpenChange={setShowDialog}>
       <DialogPortal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-[3px] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-scrim data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
           className="fixed inset-0 z-50 flex items-start justify-center px-4 pb-4 pt-[max(4.5rem,12vh)] outline-none data-[state=closed]:duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"

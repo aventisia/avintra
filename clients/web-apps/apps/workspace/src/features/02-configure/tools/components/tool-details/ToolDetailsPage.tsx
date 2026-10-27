@@ -40,7 +40,7 @@ export const ToolDetailsPage = () => {
   if (!tool) {
     return (
       <div className="space-y-4 p-6">
-        <h1 className="text-xl font-semibold">{toolName}</h1>
+        <h1 className="text-title">{toolName}</h1>
         <p className="text-sm text-muted-foreground">Tool not found.</p>
       </div>
     );
@@ -68,7 +68,7 @@ export const ToolDetailsPage = () => {
 
       <div className="grid h-[calc(100vh-2.7*var(--header-height))] grid-cols-1 gap-3">
         <div className="space-y-4">
-          <div className="rounded-lg border bg-background px-5 py-3.5">
+          <div className="rounded-lg border bg-surface px-5 py-3.5">
             <div className="flex items-center  gap-4">
               <ToolIcon
                 name={tool.name}
@@ -76,7 +76,7 @@ export const ToolDetailsPage = () => {
                 className="h-12 w-12 flex-shrink-0 object-contain"
               />
               <div className="flex flex-col gap-2">
-                <h1 className="text-xl font-semibold">{getToolDisplayName(tool.name)}</h1>
+                <h1 className="text-heading">{getToolDisplayName(tool.name)}</h1>
                 {tool.description && (
                   <p className="text-sm text-muted-foreground">{tool.description}</p>
                 )}
@@ -84,7 +84,7 @@ export const ToolDetailsPage = () => {
             </div>
           </div>
 
-          <div className="rounded-lg border bg-background px-5 py-3.5">
+          <div className="rounded-lg border bg-surface px-5 py-3.5">
             <OperationList tool={tool} showTitle />
           </div>
         </div>

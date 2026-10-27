@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@avplatform/ui/accordion";
 import { Button, CopyButton } from "@avplatform/ui/buttons";
+import { DialogTitle } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
@@ -92,21 +93,17 @@ const OneLinerBlock = ({ command, label = "PowerShell" }: { command: string; lab
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-sm">
-      <div className="flex items-center justify-between bg-slate-900 pl-3 pr-2 py-1">
-        <div className="flex items-center gap-2 text-slate-500">
+    <div className="overflow-hidden rounded-lg border border-line bg-sunken">
+      <div className="flex items-center justify-between border-b border-line pl-3 pr-2 py-1">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Terminal className="h-3.5 w-3.5" />
           <span className="text-xs">{label}</span>
         </div>
-        <CopyButton
-          isCopied={isCopied}
-          onClick={handleCopy}
-          className="border opacity-80 border-slate-900 bg-slate-900 text-white hover:bg-slate-700 hover:text-white"
-        />
+        <CopyButton isCopied={isCopied} onClick={handleCopy} className="hover:bg-hover" />
       </div>
 
       <div className="px-4 py-3">
-        <pre className="overflow-x-auto whitespace-pre-wrap break-all font-mono text-sm text-slate-100">
+        <pre className="overflow-x-auto whitespace-pre-wrap break-all font-mono text-code text-ink">
           <code>{command}</code>
         </pre>
       </div>
@@ -144,8 +141,8 @@ const DownloadRow = ({
   return (
     <div
       className={cn(
-        "group flex w-full items-center justify-between gap-6 rounded-xl border border-slate-200 bg-slate-50 px-6 py-5 text-left transition-colors",
-        hasDownload ? hoverClass : "border-slate-200 bg-slate-50",
+        "group flex w-full items-center justify-between gap-6 rounded-lg border border-line bg-surface px-6 py-5 text-left transition-colors",
+        hasDownload && hoverClass,
       )}
     >
       <div className="flex min-w-0 flex-1 gap-4">
@@ -160,7 +157,9 @@ const DownloadRow = ({
         <div className="min-w-0 flex flex-col gap-1">
           <p className="font-bold text-foreground">{title}</p>
           <p className="text-sm leading-4 text-muted-foreground">{description}</p>
-          {metadata ? <p className="text-2xs text-muted-foreground">{metadata}</p> : null}
+          {metadata ? (
+            <p className="font-mono text-2xs tabular-nums text-muted-foreground">{metadata}</p>
+          ) : null}
         </div>
       </div>
       <div className="flex shrink-0 items-center pl-2">
@@ -188,8 +187,8 @@ const FAQItem = ({
   answer: React.ReactNode;
 }) => (
   <AccordionItem value={value}>
-    <AccordionTrigger className="text-sm font-semibold text-slate-800">{question}</AccordionTrigger>
-    <AccordionContent className="text-sm text-slate-500">{answer}</AccordionContent>
+    <AccordionTrigger className="text-sm font-semibold text-ink">{question}</AccordionTrigger>
+    <AccordionContent className="text-sm text-muted-foreground">{answer}</AccordionContent>
   </AccordionItem>
 );
 
@@ -223,11 +222,11 @@ const RunnerInstallRow = ({
   const hasInstall = !!artifact?.url;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+    <div className="overflow-hidden rounded-lg border border-line bg-surface">
       <div
         className={cn(
           "group flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition-colors",
-          hasInstall ? hoverClass : "border-slate-200 bg-slate-50",
+          hasInstall && hoverClass,
         )}
       >
         <div className="flex min-w-0 flex-1 gap-4">
@@ -242,7 +241,9 @@ const RunnerInstallRow = ({
           <div className="min-w-0 flex flex-col gap-1">
             <p className="font-bold text-foreground">{title}</p>
             <p className="text-sm leading-4 text-muted-foreground">{description}</p>
-            {metadata ? <p className="text-2xs text-muted-foreground">{metadata}</p> : null}
+            {metadata ? (
+              <p className="font-mono text-2xs tabular-nums text-muted-foreground">{metadata}</p>
+            ) : null}
           </div>
         </div>
         <div className="flex shrink-0 items-center pl-2">
@@ -260,80 +261,80 @@ const RunnerInstallRow = ({
       </div>
 
       {isOpen ? (
-        <div className="border-t border-slate-200 bg-white px-6 py-5">
+        <div className="border-t border-line bg-surface px-6 py-5">
           <ol className="space-y-5">
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
+              <p className="mb-2 text-sm font-semibold text-ink-2">
                 Step 1: Open PowerShell as Administrator
               </p>
-              <p className="mb-2 text-sm text-slate-500">
-                Press <span className="font-semibold text-slate-600">Windows key</span>, type{" "}
-                <span className="font-semibold text-slate-600">PowerShell</span>, right-click{" "}
-                <span className="font-semibold text-slate-600">Windows PowerShell</span>, and choose{" "}
-                <span className="font-semibold text-slate-600">Run as administrator</span>. This
-                works on Windows 10, 11, and Server.
+              <p className="mb-2 text-sm text-muted-foreground">
+                Press <span className="font-semibold text-ink-2">Windows key</span>, type{" "}
+                <span className="font-semibold text-ink-2">PowerShell</span>, right-click{" "}
+                <span className="font-semibold text-ink-2">Windows PowerShell</span>, and choose{" "}
+                <span className="font-semibold text-ink-2">Run as administrator</span>. This works
+                on Windows 10, 11, and Server.
               </p>
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
+              <p className="mb-2 text-sm font-semibold text-ink-2">
                 Step 2: Allow local scripts to run
               </p>
-              <p className="mb-2 text-sm text-slate-500">
+              <p className="mb-2 text-sm text-muted-foreground">
                 PowerShell blocks unsigned scripts by default. Run the command below once in the
                 same Administrator session so the downloaded provisioning script can execute.
               </p>
               <OneLinerBlock command="Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
+              <p className="mb-2 text-sm font-semibold text-ink-2">
                 Step 3: Run the provisioning one-liner
               </p>
-              <p className="mb-2 text-sm text-slate-500">
+              <p className="mb-2 text-sm text-muted-foreground">
                 Paste and run the block below. It sets your environment variables, downloads the
                 provisioning script, and runs it. The script downloads the runner, registers it as a
                 Windows service, and starts it. No additional runtime is required. Replace{" "}
-                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">&lt;API_KEY&gt;</code>{" "}
+                <code className="rounded-sm bg-sunken px-1 py-0.5 font-mono text-code">
+                  &lt;API_KEY&gt;
+                </code>{" "}
                 with your tenant API key (see FAQ).
               </p>
               <OneLinerBlock command={powershellOneLiner} />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
+              <p className="mb-2 text-sm font-semibold text-ink-2">
                 Step 4: Verify the service was created
               </p>
               <OneLinerBlock command="sc.exe qc AvintraRunnerService" />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 5: Check service status
-              </p>
+              <p className="mb-2 text-sm font-semibold text-ink-2">Step 5: Check service status</p>
               <OneLinerBlock command="sc.exe query AvintraRunnerService" />
             </li>
           </ol>
 
           {/* Separator: install steps above, maintenance commands below */}
           <div className="mt-8 mb-6 flex items-center gap-3" aria-hidden="true">
-            <span className="h-px flex-1 bg-slate-200" />
-            <span className="text-2xs font-normal text-muted-foreground uppercase tracking-wider text-s">
+            <span className="h-px flex-1 bg-line" />
+            <span className="font-mono text-label uppercase text-muted-foreground">
               Other useful commands
             </span>
-            <span className="h-px flex-1 bg-slate-200" />
+            <span className="h-px flex-1 bg-line" />
           </div>
 
           <ul className="space-y-5">
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Restart the service</p>
+              <p className="mb-2 text-sm font-semibold text-ink-2">Restart the service</p>
               <OneLinerBlock
                 command={`net stop AvintraRunnerService\nnet start AvintraRunnerService`}
               />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Stop the service</p>
+              <p className="mb-2 text-sm font-semibold text-ink-2">Stop the service</p>
               <OneLinerBlock command="net stop AvintraRunnerService" />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Uninstall the service</p>
-              <p className="mb-2 text-sm text-slate-500">
+              <p className="mb-2 text-sm font-semibold text-ink-2">Uninstall the service</p>
+              <p className="mb-2 text-sm text-muted-foreground">
                 If you ever need to remove the runner from your machine, run the below commands from
                 an Administrator PowerShell:
               </p>
@@ -349,14 +350,14 @@ const RunnerInstallRow = ({
 };
 
 const ComingSoonPanel: React.FC<{ platform: Platform }> = ({ platform }) => (
-  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-line bg-sunken px-6 py-14 text-center">
+    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-md border border-line bg-surface text-ink-2">
       <PlatformIcon platform={platform} className="h-7 w-7" />
     </div>
-    <h3 className="mb-2 text-lg font-bold text-slate-800">
+    <h3 className="mb-2 text-heading text-ink">
       {PLATFORM_LABELS[platform]} support is on the way
     </h3>
-    <p className="max-w-sm text-sm text-slate-500">
+    <p className="max-w-sm text-sm text-muted-foreground">
       We are actively working on {PLATFORM_LABELS[platform]} support. Please check back soon for
       updates.
     </p>
@@ -426,7 +427,7 @@ const DownloadContent: React.FC<{
   const runnerAppVersion = useMemo(() => getLatestVersion(runner), [runner]);
 
   return (
-    <div className="flex items-center justify-center bg-white p-8 text-slate-800">
+    <div className="flex items-center justify-center bg-surface p-8 text-ink">
       <main className="w-full max-w-2xl text-left">
         {/* OS tabs */}
         <div className="mb-5 flex items-center justify-start gap-4">
@@ -435,25 +436,16 @@ const DownloadContent: React.FC<{
             onValueChange={(v) => setActivePlatform(v as Platform)}
             className="shrink-0"
           >
-            <TabsList className="h-9 bg-slate-100 p-1">
-              <TabsTrigger
-                value="windows"
-                className="flex h-7 items-center font-semibold gap-1.5 px-2.5 text-2xs data-[state=active]:bg-white"
-              >
+            <TabsList>
+              <TabsTrigger value="windows">
                 <PlatformIcon platform="windows" className="h-3.5 w-3.5" />
                 Windows
               </TabsTrigger>
-              <TabsTrigger
-                value="macos"
-                className="flex h-7 items-center font-semibold gap-1.5 px-2.5 text-2xs data-[state=active]:bg-white"
-              >
+              <TabsTrigger value="macos">
                 <FaApple className="h-3.5 w-3.5" />
                 macOS
               </TabsTrigger>
-              <TabsTrigger
-                value="linux"
-                className="flex h-7 items-center font-semibold gap-1.5 px-2.5 text-2xs data-[state=active]:bg-white"
-              >
+              <TabsTrigger value="linux">
                 <PlatformIcon platform="linux" className="h-3.5 w-3.5" />
                 Linux
               </TabsTrigger>
@@ -463,10 +455,10 @@ const DownloadContent: React.FC<{
 
         {/* Title + subheading — full width, left aligned */}
         <div className="mb-8">
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+          <DialogTitle className="text-title text-ink">
             Bring the builder to your desktop
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          </DialogTitle>
+          <p className="mt-2 text-sm text-muted-foreground">
             {isWindows
               ? "Download the app and runner for Windows."
               : `Download the app for ${PLATFORM_LABELS[activePlatform]}.`}
@@ -482,8 +474,8 @@ const DownloadContent: React.FC<{
                 description="The builder app for creating, editing, and testing agents on your local machine."
                 metadata={buildArtifactMetadata(desktopAppArtifact, desktopAppVersion)}
                 icon={<Monitor className="h-5 w-5" />}
-                iconClass="bg-primary-50 text-primary-500"
-                hoverClass="hover:border-primary/40 hover:bg-primary/5"
+                iconClass="bg-sunken text-ink-2"
+                hoverClass="hover:border-line-strong hover:bg-hover"
               />
               <RunnerInstallRow
                 artifact={runnerAppArtifact}
@@ -491,30 +483,30 @@ const DownloadContent: React.FC<{
                 description="Headless Windows service that runs published agents in the background on your machine."
                 metadata={buildArtifactMetadata(runnerAppArtifact, runnerAppVersion)}
                 icon={<Terminal className="h-5 w-5" />}
-                iconClass="bg-slate-100 text-slate-600"
-                hoverClass="hover:border-slate-300 hover:bg-slate-100"
+                iconClass="bg-sunken text-ink-2"
+                hoverClass="hover:bg-hover"
                 powershellOneLiner={powershellOneLiner}
               />
             </div>
             {/* TODO: Unhide the release notes once repo is hosted in github and release notes are there */}
-            <p className="hidden mt-6 text-sm text-slate-400">
+            <p className="hidden mt-6 text-sm text-muted-foreground">
               Release notes &middot;{" "}
               <a
                 href={RELEASE_NOTES_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="text-primary hover:underline"
+                className="text-primary-text hover:underline"
               >
                 View on GitHub
               </a>
             </p>
 
-            <h2 className="mt-8 text-sm font-bold text-slate-700">FAQs</h2>
+            <h2 className="mt-8 text-heading text-ink">FAQs</h2>
 
             <Accordion
               type="single"
               collapsible
-              className="mt-3 divide-y divide-slate-200 border-b border-t border-slate-200"
+              className="mt-3 divide-y divide-line border-b border-t border-line"
             >
               <FAQItem
                 value="what-is-runner"
@@ -529,7 +521,7 @@ const DownloadContent: React.FC<{
                     User with Orchestrator manager access can create an API key with Machine
                     Authentication permission. You'll need it when running the install command -
                     replace the{" "}
-                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                    <code className="rounded-sm bg-sunken px-1 py-0.5 font-mono text-code">
                       &lt;API_KEY&gt;
                     </code>{" "}
                     placeholder with it.
@@ -547,11 +539,11 @@ const DownloadContent: React.FC<{
                 answer={
                   <>
                     Run{" "}
-                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                    <code className="rounded-sm bg-sunken px-1 py-0.5 font-mono text-code">
                       AvintraRunnerService.exe --uninstall
                     </code>{" "}
                     from an Administrator PowerShell in the install directory (default:{" "}
-                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                    <code className="rounded-sm bg-sunken px-1 py-0.5 font-mono text-code">
                       C:\Program Files\AvintraRunnerService
                     </code>
                     ). The exe stops the Windows service and removes its registration in one step.

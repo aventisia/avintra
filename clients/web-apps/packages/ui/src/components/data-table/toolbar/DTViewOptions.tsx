@@ -34,7 +34,7 @@ export function DTViewOptions<TData>({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          buttonVariants({ variant: "outline", size: "xs" }),
+          buttonVariants({ variant: "outline", size: "default" }),
           "hidden gap-2 lg:flex",
           "data-[state=open]:border-primary data-[state=open]:ring-[3px] data-[state=open]:ring-ring",
         )}

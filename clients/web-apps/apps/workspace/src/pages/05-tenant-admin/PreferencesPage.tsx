@@ -24,7 +24,7 @@ export const PreferencesPage = () => {
       <div className="space-y-4 py-4">
         <p className="text-lg font-medium">Preferences</p>
 
-        <div className="min-h-[82vh] p-4 rounded-lg border bg-white">
+        <div className="min-h-[82vh] p-4 rounded-lg border bg-surface">
           <Preferences />
         </div>
       </div>

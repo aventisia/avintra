@@ -55,16 +55,15 @@ export const EnterEmail = () => {
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isCodePending}
-      className="px-2.5 pb-5"
     >
       <div className="box flex flex-col p-5">
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
           Email Settings
         </div> */}
         <div>
-          <div className="inline-flex gap-1 text-md text-slate-500">
+          <div className="inline-flex gap-1 text-body text-muted-foreground">
             Your current email address is
-            <p className="font-medium">{userSession?.email}</p>
+            <p className="font-medium text-ink">{userSession?.email}</p>
           </div>
           <InputDivElement
             headingForInput={"Email"}
@@ -76,7 +75,7 @@ export const EnterEmail = () => {
             <InputField
               name="email"
               type="email"
-              className="border-slate-300/60 text-sm shadow-sm"
+              className="border-input text-sm"
               {...{
                 onChangeCapture: (e) => handleInputChange(e.currentTarget.value),
                 nonErrorMessage: availabilityMessage,

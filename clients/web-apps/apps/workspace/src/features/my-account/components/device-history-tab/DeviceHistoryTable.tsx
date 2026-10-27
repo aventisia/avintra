@@ -43,11 +43,7 @@ function DeviceHistoryTable({
       }}
     >
       <table
-        className={twMerge([
-          "w-full text-left",
-          dark && "bg-dark text-white dark:bg-black/30",
-          className,
-        ])}
+        className={twMerge(["w-full text-left", dark && "bg-ink text-bg", className])}
         {...props}
       >
         {props.children}
@@ -75,8 +71,8 @@ const Thead = ({ className, ...props }: DeviceHistoryTableTheadProps) => {
     >
       <thead
         className={twMerge([
-          props.variant === "light" && "bg-slate-200/60 dark:bg-slate-200",
-          props.variant === "dark" && "bg-dark text-white dark:bg-black/30",
+          props.variant === "light" && "bg-fill",
+          props.variant === "dark" && "bg-ink text-bg",
           className,
         ])}
         {...props}
@@ -102,10 +98,8 @@ const Tr = ({ className, ...props }: DeviceHistoryTableTrProps) => {
   return (
     <tr
       className={twMerge([
-        table.hover &&
-          "[&:hover_td]:dark:bg-darkmode-300 [&:hover_td]:bg-slate-100 [&:hover_td]:dark:bg-opacity-50",
-        table.striped &&
-          "[&:nth-of-type(odd)_td]:dark:bg-darkmode-300 [&:nth-of-type(odd)_td]:bg-slate-100 [&:nth-of-type(odd)_td]:dark:bg-opacity-50",
+        table.hover && "[&:hover_td]:bg-hover",
+        table.striped && "[&:nth-of-type(odd)_td]:bg-sunken",
         className,
       ])}
       {...props}
@@ -123,10 +117,10 @@ const Th = ({ className, ...props }: DeviceHistoryTableThProps) => {
   return (
     <th
       className={twMerge([
-        "dark:border-darkmode-300 border-b-2 px-5 py-3 font-medium",
-        thead.variant === "light" && "border-b-0 text-slate-700",
+        "border-b-2 px-5 py-3 font-medium",
+        thead.variant === "light" && "border-b-0 text-ink-2",
         thead.variant === "dark" && "border-b-0",
-        table.dark && "dark:border-darkmode-300 border-slate-600",
+        table.dark && "border-line-strong",
         table.bordered && "border-l border-r border-t",
         table.sm && "px-4 py-2",
         className,
@@ -145,8 +139,8 @@ const Td = ({ className, ...props }: DeviceHistoryTableTdProps) => {
   return (
     <td
       className={twMerge([
-        "dark:border-darkmode-300 border-b px-5 py-3",
-        table.dark && "dark:border-darkmode-300 border-slate-600",
+        "border-b px-5 py-3",
+        table.dark && "border-line-strong",
         table.bordered && "border-l border-r border-t",
         table.sm && "px-4 py-2",
         className,

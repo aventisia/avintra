@@ -91,9 +91,9 @@ export const PickerShell = ({
       <Popover.Anchor asChild>
         <div
           ref={anchorRef}
-          className="relative flex h-11 items-center rounded-xl bg-popover shadow-[0_1px_2px_rgba(15,23,42,0.04)] ring-1 ring-border transition-shadow focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.12)] focus-within:ring-indigo-500"
+          className="relative flex h-11 items-center rounded-md bg-surface ring-1 ring-line-strong transition-shadow focus-within:shadow-focus focus-within:ring-focus"
         >
-          <Search className="pointer-events-none absolute left-3.5 size-4 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
           <input
             data-autofocus
             role="combobox"
@@ -111,9 +111,9 @@ export const PickerShell = ({
             onClick={() => onOpenChange(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="h-full w-full bg-transparent pl-10 pr-12 text-[13.5px] text-slate-900 outline-none placeholder:text-slate-400"
+            className="h-full w-full bg-transparent pl-10 pr-12 text-[13.5px] text-ink outline-none placeholder:text-muted-foreground"
           />
-          <span className="pointer-events-none absolute right-3 flex items-center text-slate-400">
+          <span className="pointer-events-none absolute right-3 flex items-center text-muted-foreground">
             {isOpen && isFetching ? <LoaderCircle className="size-4 animate-spin" /> : <Kbd>↓</Kbd>}
           </span>
         </div>
@@ -131,7 +131,7 @@ export const PickerShell = ({
           onInteractOutside={(event) => {
             if (anchorRef.current?.contains(event.target as Node)) event.preventDefault();
           }}
-          className="z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-xl bg-popover shadow-[0_20px_50px_-12px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/[0.08] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-1"
+          className="z-50 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-lg bg-popover shadow-pop ring-1 ring-line data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-1"
         >
           {header}
 
@@ -155,8 +155,8 @@ export const PickerShell = ({
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => pick(option)}
                     className={cn(
-                      "flex cursor-pointer select-none items-center gap-3 rounded-lg px-2 py-2 transition-colors",
-                      index === safeIndex && "bg-muted",
+                      "flex cursor-pointer select-none items-center gap-3 rounded-md px-2 py-2 transition-colors",
+                      index === safeIndex && "bg-hover",
                       option.isDisabled && "cursor-default",
                       option.className,
                     )}
@@ -166,7 +166,7 @@ export const PickerShell = ({
                 ))}
           </ul>
 
-          <div className="flex items-center gap-3 border-t border-slate-100 bg-slate-50/70 px-3.5 py-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-3 border-t border-line bg-sunken px-3.5 py-2 text-[11px] text-muted-foreground">
             {footer}
           </div>
         </Popover.Content>

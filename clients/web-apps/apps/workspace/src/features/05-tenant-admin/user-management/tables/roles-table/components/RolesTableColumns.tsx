@@ -63,7 +63,11 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("users")} />
     ),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("users")}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {row.getValue("users")}
+      </div>
+    ),
   },
   {
     accessorKey: "totalPermission",
@@ -75,7 +79,9 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("totalPermission")}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {row.getValue("totalPermission")}
+      </div>
     ),
   },
   {
@@ -98,7 +104,9 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   {
@@ -121,7 +129,9 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("lastUpdatedOn"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatDate(row.getValue("lastUpdatedOn"))}
+      </div>
     ),
   },
   {

@@ -65,7 +65,10 @@ export const UNDialogContent = () => {
           </div>
         ) : historyItems.length === 0 ? (
           <div className="h-[calc(100vh-12rem)]">
-            <UNNoContentMessage />
+            <UNNoContentMessage
+              primaryMessage="No notifications"
+              secondaryMessage="Notifications matching these filters will appear here"
+            />
           </div>
         ) : (
           <ScrollArea className="h-[calc(100vh-12rem)]">

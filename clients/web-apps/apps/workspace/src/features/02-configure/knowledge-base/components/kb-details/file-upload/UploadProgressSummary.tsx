@@ -12,12 +12,12 @@ export const UploadProgressSummary = ({
   activeFileName,
   activeStageMessage,
 }: UploadProgressSummaryProps) => (
-  <div className="rounded-lg bg-primary-50 p-3 border border-primary-200">
-    <p className="text-xs font-medium text-primary">
+  <div className="rounded-lg bg-selected p-3 border border-line">
+    <p className="text-xs font-medium text-primary-text">
       Progress: {completedCount}/{totalCount} completed
     </p>
     {activeFileName && (
-      <p className="text-xs text-primary mt-1">
+      <p className="text-xs text-primary-text mt-1">
         {activeFileName} - {activeStageMessage}
       </p>
     )}

@@ -1,4 +1,5 @@
 import { Separator } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { CircleAlert, Link } from "lucide-react";
 
@@ -10,7 +11,7 @@ const ConnectedIntegrationDialogContent = () => {
     <>
       <div className="space-y-3 px-6 py-4">
         {/* Warning */}
-        <div className="flex hidden items-center gap-2 rounded-md bg-red-100 px-2 py-1.5 text-xs text-destructive">
+        <div className="flex hidden items-center gap-2 rounded-md bg-bad/10 px-2 py-1.5 text-xs text-bad">
           <CircleAlert className="h-6 w-6" />
           <p>
             Oops! It seems segment is currently not syncing. Please check your connection settings
@@ -20,7 +21,7 @@ const ConnectedIntegrationDialogContent = () => {
         {/* Connection Status */}
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Connection Status:</span>
-          <span className="rounded-md bg-green-200 px-2 py-1 text-green-600">Connected</span>
+          <Badge variant="completed">Connected</Badge>
         </div>
 
         {/* Last Sync */}

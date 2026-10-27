@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
+import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
@@ -79,7 +79,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("machineCount")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-mono tabular-nums">
         {row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent
           ? row.getValue("machineCount")
           : "NA"}
@@ -118,14 +118,14 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     cell: ({ row }) => {
       const { isDisabled, machineCount } = row.original;
 
-      const statusColor: {
-        Deployed: string;
-        Disabled: string;
-        Published: string;
+      const statusVariant: {
+        Deployed: BadgeProps["variant"];
+        Disabled: BadgeProps["variant"];
+        Published: BadgeProps["variant"];
       } = {
-        Deployed: "bg-green-200 text-green-700",
-        Disabled: "bg-muted text-muted-foreground",
-        Published: "bg-blue-200 text-blue-700",
+        Deployed: "completed",
+        Disabled: "secondary",
+        Published: "default",
       };
 
       let status: "Disabled" | "Deployed" | "Published" = "Published";
@@ -139,7 +139,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         status = "Published";
       }
 
-      return <Badge className={statusColor[status]}>{status}</Badge>;
+      return <Badge variant={statusVariant[status]}>{status}</Badge>;
     },
   },
   {
@@ -157,7 +157,9 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<AgentsTableDto>({

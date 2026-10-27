@@ -85,7 +85,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),

@@ -58,7 +58,7 @@ export const DeactivationVerifyEmailForm = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
           Email Settings
         </div> */}
         <div>
@@ -74,12 +74,7 @@ export const DeactivationVerifyEmailForm = () => {
             isRequired={true}
             messageForInput="Please enter your password to continue."
           >
-            <InputField
-              name="password"
-              type="password"
-              className="border-slate-300/60 shadow-sm"
-              size={80}
-            />
+            <InputField name="password" type="password" className="border-input" size={80} />
           </InputDivElement>
         </div>
         <div className="flex flex-wrap pt-5 md:justify-end">

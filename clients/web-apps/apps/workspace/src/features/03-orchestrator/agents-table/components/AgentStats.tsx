@@ -45,13 +45,13 @@ export const AgentStats = ({ data }: StatsProps) => {
       />
       <StatsCard
         key={"Total Machines"}
-        icon={<Monitor stroke="var(--primary)" className="size-7" />}
+        icon={<Monitor className="size-7" />}
         title={"Total Machines"}
         content={stats?.totalMachineCount ?? 0}
       />
       <StatsCard
         key={"Total Active Machines"}
-        icon={<BsRobot fill="var(--primary)" className="size-7" />}
+        icon={<BsRobot className="size-7" />}
         title={"Total Active Machines"}
         content={stats?.active ?? 0}
       />

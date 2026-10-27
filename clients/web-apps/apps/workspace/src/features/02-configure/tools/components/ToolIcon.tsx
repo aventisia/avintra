@@ -39,5 +39,5 @@ export const ToolIcon = ({ name, iconUrl, className }: ToolIconProps) => {
     );
   }
 
-  return <Wrench className={cn("text-slate-600", className)} aria-hidden="true" />;
+  return <Wrench className={cn("text-ink-2", className)} aria-hidden="true" />;
 };

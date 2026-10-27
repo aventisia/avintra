@@ -41,7 +41,7 @@ const UsageTables = () => {
   );
 
   return (
-    <div className="space-y-4 rounded-lg border bg-white p-4">
+    <div className="space-y-4 rounded-lg border bg-surface p-4">
       <div className="flex items-center justify-between gap-4">
         <p className="text-base font-medium">Usage by Users &amp; Agents</p>
         <div className="flex items-center gap-2">
@@ -59,11 +59,11 @@ const UsageTables = () => {
       </div>
 
       <Tabs defaultValue="users">
-        <TabsList className="grid w-full grid-cols-2 rounded-none border-b bg-white px-3 text-base">
-          <TabsTrigger value="users" className="rounded-none data-[state=active]:border-b-black">
+        <TabsList className="grid w-full grid-cols-2 rounded-none border-b bg-transparent px-3 text-base">
+          <TabsTrigger value="users" className="rounded-none">
             Users
           </TabsTrigger>
-          <TabsTrigger value="agents" className="rounded-none data-[state=active]:border-b-black">
+          <TabsTrigger value="agents" className="rounded-none">
             Agents
           </TabsTrigger>
         </TabsList>

@@ -17,7 +17,7 @@ const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
 
   return (
-    <Badge className="border-black text-sm font-normal" variant={"outline"}>
+    <Badge className="text-sm font-normal" variant={"outline"}>
       Available Credits:
       <span className="ml-1 font-semibold">
         {isLoading ? (
@@ -25,10 +25,8 @@ const AvailableCredits = () => {
         ) : (
           <span
             className={cn(
-              "font-mono",
-              data?.data?.availableCredits && data?.data?.availableCredits < 0
-                ? "text-destructive"
-                : "",
+              "font-mono tabular-nums",
+              data?.data?.availableCredits && data?.data?.availableCredits < 0 ? "text-bad" : "",
             )}
           >
             {data

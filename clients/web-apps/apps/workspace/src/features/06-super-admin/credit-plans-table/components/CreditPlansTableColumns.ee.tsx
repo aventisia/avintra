@@ -66,7 +66,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("oneUnit")} />
     ),
     cell: ({ row }) => {
-      return <div className="w-auto font-medium">{row.getValue("oneUnit") || "N/A"}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto font-medium">
+          {row.getValue("oneUnit") || "N/A"}
+        </div>
+      );
     },
   },
   // Credits
@@ -76,7 +80,11 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("credits")} />
     ),
     cell: ({ row }) => {
-      return <div className="w-auto font-medium">{row.getValue("credits") || "N/A"}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto font-medium">
+          {row.getValue("credits") || "N/A"}
+        </div>
+      );
     },
   },
   createDTActionsColumn<CreditPlansTableDto>({

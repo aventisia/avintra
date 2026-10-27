@@ -113,13 +113,13 @@ export function UploadedItemsTable({
           if (t === "Failed") {
             return (
               <Tooltip content={r}>
-                <CircleXIcon className="h-4 w-4 text-red-500" />
+                <CircleXIcon className="h-4 w-4 text-bad" />
               </Tooltip>
             );
           }
 
           if (t === "Success") {
-            return <CircleCheckIcon className="h-4 w-4 text-green-500" />;
+            return <CircleCheckIcon className="h-4 w-4 text-ok" />;
           }
 
           return <div className="text-sm text-muted-foreground">Pending</div>;

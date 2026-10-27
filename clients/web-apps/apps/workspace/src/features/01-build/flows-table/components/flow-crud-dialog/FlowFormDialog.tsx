@@ -36,7 +36,7 @@ const AvailabilityHint = ({ message }: { message: CustomFormMessage | null }) =>
     <span
       className={cn(
         "flex items-center gap-1.5 pt-1.5 text-[12px]",
-        isChecking ? "text-muted-foreground" : "text-emerald-600",
+        isChecking ? "text-muted-foreground" : "text-ok",
       )}
     >
       {isChecking ? (
@@ -124,15 +124,10 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
       onClose={onClose}
       isDismissLocked={isSaving}
       isOutsideClickLocked={isDirty}
-      mark={
-        <AgentAvatar
-          size="lg"
-          className="size-12 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)] [&>svg]:size-6"
-        />
-      }
+      mark={<AgentAvatar size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
       eyebrow={EYEBROWS[crudAction]}
       title={
-        <span className={cn(!trimmedName && "text-slate-300")}>
+        <span className={cn(!trimmedName && "text-muted-foreground")}>
           {trimmedName || "Untitled agent"}
         </span>
       }
@@ -212,11 +207,9 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
           </FormField>
 
           {!isCreating && (
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-slate-50/80 px-3.5 py-3 ring-1 ring-slate-900/[0.05]">
+            <div className="flex items-center justify-between gap-4 rounded-xl bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
               <label htmlFor={disabledId} className="min-w-0">
-                <span className="block text-[13px] font-semibold text-slate-900">
-                  Disable agent
-                </span>
+                <span className="block text-[13px] font-semibold text-ink">Disable agent</span>
                 <span className="block text-[12px] text-muted-foreground">
                   Turn it off when it’s outdated or no longer needed
                 </span>

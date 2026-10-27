@@ -70,8 +70,8 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
               className={cn(
                 "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200",
                 mode === "manual"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-surface text-ink ring-1 ring-line"
+                  : "text-muted-foreground hover:bg-hover hover:text-ink",
               )}
             >
               <Mail className="size-4 shrink-0" aria-hidden="true" />
@@ -83,8 +83,8 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
               className={cn(
                 "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200",
                 mode === "auto"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                  ? "bg-surface text-ink ring-1 ring-line"
+                  : "text-muted-foreground hover:bg-hover hover:text-ink",
               )}
             >
               <Settings2 className="size-4 shrink-0" aria-hidden="true" />
@@ -135,10 +135,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
       {/* Create notification dialog (right side) */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent side={"right"} className="!max-w-[36rem]">
-          <DialogDefaultHeader
-            className="px-3.5 py-4 text-lg tracking-wide"
-            heading="Create notification"
-          />
+          <DialogDefaultHeader className="px-3.5 py-4 text-heading" heading="Create notification" />
           <NotificationComposeForm onSuccess={() => setIsCreateOpen(false)} />
         </DialogContent>
       </Dialog>

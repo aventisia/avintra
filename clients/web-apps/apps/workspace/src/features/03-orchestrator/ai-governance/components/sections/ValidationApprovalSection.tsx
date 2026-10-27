@@ -120,7 +120,7 @@ export const ValidationApprovalSection = () => {
                     onChange={(e) => setApproverSearch(e.target.value)}
                   />
                   {showApproverDropdown && (
-                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md">
+                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-pop">
                       {approvers.length === 0 && (
                         <div className="p-2 text-xs text-muted-foreground">No users found</div>
                       )}

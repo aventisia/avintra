@@ -1,3 +1,4 @@
+import type { BadgeProps } from "@avplatform/ui/badge";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
 import { JobStatusEnum } from "..";
@@ -30,17 +31,16 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-// TODO: We need to set the color for each status in the html to avoid tailwind css purging the unused classes
-export const statusColor: { [key in JobStatusEnum]: string } = {
-  [JobStatusEnum.Completed]: "bg-green-200 text-green-700",
-  [JobStatusEnum.Running]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Aborted]: "bg-orange-200 text-orange-600",
-  [JobStatusEnum.Canceled]: "bg-orange-200 text-orange-600",
-  [JobStatusEnum.Cleanup]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Paused]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Resumed]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Retrying]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Created]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Failed]: "bg-red-200 text-red-600",
-  [JobStatusEnum.Killed]: "bg-orange-200 text-orange-600",
+export const statusVariant: { [key in JobStatusEnum]: BadgeProps["variant"] } = {
+  [JobStatusEnum.Completed]: "completed",
+  [JobStatusEnum.Running]: "running",
+  [JobStatusEnum.Aborted]: "failed",
+  [JobStatusEnum.Canceled]: "secondary",
+  [JobStatusEnum.Cleanup]: "running",
+  [JobStatusEnum.Paused]: "queued",
+  [JobStatusEnum.Resumed]: "running",
+  [JobStatusEnum.Retrying]: "running",
+  [JobStatusEnum.Created]: "queued",
+  [JobStatusEnum.Failed]: "failed",
+  [JobStatusEnum.Killed]: "failed",
 };

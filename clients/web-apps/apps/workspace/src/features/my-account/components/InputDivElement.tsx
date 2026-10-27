@@ -22,12 +22,12 @@ export function InputDivElement({
       <label className="mb-2 inline-block sm:mb-0 sm:mr-5 sm:text-right xl:mr-14 xl:w-60">
         <div className="text-left">
           <div className="flex items-center">
-            <div className="text-sm font-medium text-slate-800">
+            <div className="text-sm font-medium text-ink">
               {headingForInput}
-              {isRequired && <span className="font-medium text-rose-500"> *</span>}
+              {isRequired && <span className="font-medium text-bad"> *</span>}
             </div>
           </div>
-          <div className="mt-1.5 text-xs leading-relaxed text-slate-500/80 dark:text-slate-400 xl:mt-3">
+          <div className="mt-1.5 text-xs leading-relaxed text-muted-foreground xl:mt-3">
             {messageForInput}
           </div>
         </div>

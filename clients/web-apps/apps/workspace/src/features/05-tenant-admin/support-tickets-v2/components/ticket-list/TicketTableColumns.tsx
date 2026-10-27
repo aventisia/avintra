@@ -1,14 +1,13 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
 
-import { TICKET_STATUS_COLOR, TICKET_TABLE_KEY } from "../../constants/constants";
+import { TICKET_STATUS_VARIANT, TICKET_TABLE_KEY } from "../../constants/constants";
 import { TicketTableDto } from "../../dtos/TicketDto";
 import { TicketRowActions } from "../ticket-row-actions/TicketRowActions";
 
@@ -38,6 +37,10 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     id: "ticket",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Ticket" />
+    ),
+    enableSorting: false,
     cell: ({ row }) => {
       const ticketNumber = row.original.ticketNumber;
       const createdOn = row.original.createdOn;
@@ -58,7 +61,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
               </span>
             </NavLink>
             <div className="w-auto truncate text-2xs font-light">
-              {ticketNumber} opened {timeAgo} by {createdBy}
+              <span className="font-mono">{ticketNumber}</span> opened {timeAgo} by {createdBy}
             </div>
           </div>
         </div>
@@ -94,7 +97,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
+      return <Badge variant={TICKET_STATUS_VARIANT[status] ?? "secondary"}>{status}</Badge>;
     },
   },
   {
@@ -111,7 +114,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
     ),
     cell: ({ row }) => {
       const date = row.getValue("createdOn") as string;
-      return <div>{date ? formatDate(date) : "-"}</div>;
+      return <div className="font-mono tabular-nums">{date ? formatDate(date) : "-"}</div>;
     },
   },
   {
@@ -119,14 +122,16 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Comments" />
     ),
-    cell: ({ row }) => <div>{row.getValue("commentCount")}</div>,
+    cell: ({ row }) => <div className="font-mono tabular-nums">{row.getValue("commentCount")}</div>,
   },
   {
     accessorKey: "attachmentCount",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Attachments" />
     ),
-    cell: ({ row }) => <div>{row.getValue("attachmentCount")}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{row.getValue("attachmentCount")}</div>
+    ),
   },
   createDTActionsColumn<TicketTableDto>({
     renderCell: (row) => <TicketRowActions rowId={row.id || ""} />,

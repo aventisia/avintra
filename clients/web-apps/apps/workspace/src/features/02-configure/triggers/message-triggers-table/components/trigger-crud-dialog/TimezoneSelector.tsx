@@ -85,7 +85,7 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
             type="button"
             variant="ghost"
             size="icon7"
-            className="absolute right-2 top-1.5"
+            className="absolute right-1 top-1/2 -translate-y-1/2"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? (
@@ -99,7 +99,7 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border border-line bg-surface shadow-pop">
           <div className="p-2">
             {inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">

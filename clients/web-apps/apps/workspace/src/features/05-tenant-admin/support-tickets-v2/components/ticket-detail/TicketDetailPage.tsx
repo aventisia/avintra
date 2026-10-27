@@ -9,13 +9,12 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NavLink, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-import { TICKET_STATUS_COLOR } from "../../constants/constants";
+import { TICKET_STATUS_VARIANT } from "../../constants/constants";
 import { TicketDto } from "../../dtos/TicketDto";
 import { useFetchTicket } from "../../hooks/useFetchTickets";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
@@ -40,7 +39,7 @@ const metadataRows = (ticket: TicketDto) => [
     label: "Status",
     value: ticket.status || "-",
     badge: ticket.status
-      ? { text: ticket.status, className: TICKET_STATUS_COLOR[ticket.status] }
+      ? { text: ticket.status, variant: TICKET_STATUS_VARIANT[ticket.status] ?? "secondary" }
       : undefined,
   },
   { label: "Required By", value: ticket.requiredBy ? formatDate(ticket.requiredBy) : "-" },
@@ -131,7 +130,7 @@ export const TicketDetailPage = ({
               <Button
                 type="button"
                 size="sm"
-                className="bg-green-200 text-green-700"
+                variant="outline"
                 onClick={() => statusMutation.mutate("InProgress")}
                 disabled={statusMutation.isPending}
               >
@@ -141,7 +140,7 @@ export const TicketDetailPage = ({
               <Button
                 type="button"
                 size="sm"
-                className="bg-orange-200 text-orange-600"
+                variant="outline"
                 onClick={() => statusMutation.mutate("Closed")}
                 disabled={statusMutation.isPending}
               >
@@ -154,7 +153,7 @@ export const TicketDetailPage = ({
 
       <div className="rounded-lg border bg-background px-5 py-3.5">
         <div className="mb-3">
-          <h1 className="text-xl font-semibold">{ticket.title}</h1>
+          <h1 className="text-title text-ink">{ticket.title}</h1>
         </div>
         <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
           {metadataRows(ticket).map((row) => (
@@ -164,11 +163,7 @@ export const TicketDetailPage = ({
               </span>
               <div className="flex gap-2 items-center">
                 <span className="text-sm font-medium break-all">{row.value}</span>
-                {row.badge && (
-                  <Badge className={cn("h-[1.1rem] px-1.5", row.badge.className)}>
-                    {row.badge.text}
-                  </Badge>
-                )}
+                {row.badge && <Badge variant={row.badge.variant}>{row.badge.text}</Badge>}
               </div>
             </div>
           ))}

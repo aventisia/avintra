@@ -27,7 +27,7 @@ const TargetMark = ({ target }: { target: MoveTarget }) => {
     return <FolderMark color={getFolderColor(target.summary.folder)} size="sm" />;
   }
   return (
-    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-dashed border-indigo-300 bg-indigo-50/60 text-indigo-500">
+    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-dashed border-primary/30 bg-selected text-primary-text">
       <Plus className="size-4" />
     </span>
   );
@@ -37,7 +37,7 @@ const TargetText = ({ target, query }: { target: MoveTarget; query: string }) =>
   if (target.kind === "root") {
     return (
       <>
-        <span className="block truncate text-[13px] font-medium text-slate-800">Agents</span>
+        <span className="block truncate text-[13px] font-medium text-ink">Agents</span>
         <span className="block truncate text-[11.5px] text-muted-foreground">
           Take it out of its folder
         </span>
@@ -48,7 +48,7 @@ const TargetText = ({ target, query }: { target: MoveTarget; query: string }) =>
   if (target.kind === "create") {
     return (
       <>
-        <span className="block truncate text-[13px] font-medium text-indigo-700">
+        <span className="block truncate text-[13px] font-medium text-primary-text">
           Create “{target.name}”
         </span>
         <span className="block truncate text-[11.5px] text-muted-foreground">
@@ -61,7 +61,7 @@ const TargetText = ({ target, query }: { target: MoveTarget; query: string }) =>
   const { folder, visibleAgentCount } = target.summary;
   return (
     <>
-      <span className="block truncate text-[13px] font-medium text-slate-800">
+      <span className="block truncate text-[13px] font-medium text-ink">
         <HighlightedText text={folder.name} query={query} />
       </span>
       <MetaLine
@@ -101,7 +101,7 @@ export const MoveTargetOption = ({
     className={cn(
       "flex cursor-pointer select-none items-center gap-3 rounded-lg px-2 py-2 transition-colors",
       isHighlighted && "bg-muted",
-      isSelected && "bg-indigo-50/70",
+      isSelected && "bg-selected",
     )}
   >
     <TargetMark target={target} />
@@ -111,7 +111,7 @@ export const MoveTargetOption = ({
     <span
       className={cn(
         "grid size-[18px] shrink-0 place-items-center rounded-full transition-colors duration-200",
-        isSelected ? "bg-primary" : "bg-popover shadow-[inset_0_0_0_1.5px_rgb(203,213,225)]",
+        isSelected ? "bg-primary" : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
       )}
     >
       <motion.span

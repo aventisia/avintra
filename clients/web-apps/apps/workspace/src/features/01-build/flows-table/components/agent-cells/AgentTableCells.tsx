@@ -21,7 +21,7 @@ import { getAccessLevelLabel, getAgentBuilderLink } from "../../utils/agent-attr
 import { getFlowTypeLabel } from "../../utils/flow-type-label.util";
 import { FolderChip } from "../FolderChip";
 
-const EMPTY_VALUE = <span className="text-slate-300">-</span>;
+const EMPTY_VALUE = <span className="text-muted-foreground">-</span>;
 
 type AgentNameCellProps = {
   flow: FlowsTableDto;
@@ -30,7 +30,7 @@ type AgentNameCellProps = {
 };
 
 const MetaSeparator = () => (
-  <span aria-hidden="true" className="text-base leading-none text-slate-300">
+  <span aria-hidden="true" className="text-base leading-none text-muted-foreground">
     ·
   </span>
 );
@@ -45,8 +45,8 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
     draggable: false,
     title: `Open ${flow.name} v${flow.versionNumber} in Agent Builder`,
     className: cn(
-      "min-w-0 truncate rounded-sm text-sm font-semibold outline-none transition-colors hover:text-indigo-600 focus-visible:ring-2 focus-visible:ring-indigo-500/50",
-      flow.isArchived ? "text-slate-500" : "text-slate-900",
+      "min-w-0 truncate rounded-sm text-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
+      flow.isArchived ? "text-muted-foreground" : "text-ink",
     ),
   };
   const name = (
@@ -73,13 +73,13 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
           )}
           {folder && <FolderChip folder={folder} />}
         </div>
-        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-slate-500">
-          <span className="shrink-0 tabular-nums">v{flow.versionNumber}</span>
+        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground">
+          <span className="shrink-0 font-mono tabular-nums">v{flow.versionNumber}</span>
           {!flow.isArchived && flow.isPublished && (
             <>
               <MetaSeparator />
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
+                <span className="size-1.5 rounded-full bg-ok ring-2 ring-ok/20" />
                 Published
               </span>
             </>
@@ -99,7 +99,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
                 className="inline-flex items-center gap-1"
                 title={flow.queues?.map((queue) => queue.name).join(", ")}
               >
-                <ListChecks className="size-3 text-slate-400" />
+                <ListChecks className="size-3 text-muted-foreground" />
                 {queueCount} {pluralize(queueCount, "queue")}
               </span>
             </>
@@ -140,8 +140,8 @@ export const AgentPlatformCell = ({ platform }: { platform: AgentPlatform }) => 
   if (!agentPlatform) return EMPTY_VALUE;
 
   return (
-    <span className="inline-flex items-center gap-1.5 text-slate-600">
-      <agentPlatform.icon className="size-3.5 text-slate-400" />
+    <span className="inline-flex items-center gap-1.5 text-ink-2">
+      <agentPlatform.icon className="size-3.5 text-muted-foreground" />
       {agentPlatform.label}
     </span>
   );
@@ -159,8 +159,8 @@ export const AccessLevelCell = ({ accessLevel }: AccessLevelCellProps) => {
   const dotClassName = ACCESS_LEVELS[accessLevel as keyof typeof ACCESS_LEVELS]?.dot;
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-background py-0.5 pl-2 pr-2.5 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-200">
-      <span className={cn("size-1.5 rounded-full bg-slate-400", dotClassName)} />
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-background py-0.5 pl-2 pr-2.5 text-xs font-medium text-ink-2 ring-1 ring-inset ring-line">
+      <span className={cn("size-1.5 rounded-full bg-muted-foreground", dotClassName)} />
       {getAccessLevelLabel(accessLevel)}
     </span>
   );
@@ -175,7 +175,7 @@ export const CreatorCell = ({ name }: { name?: string }) => {
   return (
     <span className="inline-flex min-w-0 items-center gap-2">
       <PersonAvatar name={name} />
-      <span className="max-w-[12rem] truncate text-slate-700">{name}</span>
+      <span className="max-w-[12rem] truncate text-ink-2">{name}</span>
     </span>
   );
 };

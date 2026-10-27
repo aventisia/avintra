@@ -61,11 +61,7 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
       const expiresAt = row.original.expiresAt;
       const isRevoked = row.original.isRevoked;
       const status = getApiKeyStatus(expiresAt, isRevoked);
-      return (
-        <Badge className={status.className} variant={status.variant}>
-          {status.label}
-        </Badge>
-      );
+      return <Badge variant={status.variant}>{status.label}</Badge>;
     },
   },
   {
@@ -75,7 +71,11 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
     ),
     cell: ({ row }) => {
       const prefix = row.getValue<string | null>("keyPrefix");
-      return <div className="w-auto truncate font-mono text-muted-foreground">{prefix || "-"}</div>;
+      return (
+        <div className="w-auto truncate font-mono tabular-nums text-muted-foreground">
+          {prefix || "-"}
+        </div>
+      );
     },
   },
   {
@@ -87,9 +87,9 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
       const expiresAt = row.getValue<string | null>("expiresAt");
       const formattedDate = formatDate(expiresAt, true);
       if (!formattedDate || formattedDate === "01 Jan 0001") {
-        return <div className="truncate font-medium">{FALLBACK_VALUE}</div>;
+        return <div className="truncate font-mono tabular-nums">{FALLBACK_VALUE}</div>;
       }
-      return <div className="truncate font-medium">{formattedDate}</div>;
+      return <div className="truncate font-mono tabular-nums">{formattedDate}</div>;
     },
   },
   {
@@ -100,9 +100,9 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
     cell: ({ row }) => {
       const formattedDate = formatDate(row.getValue("lastUsedAt"), true);
       if (!formattedDate || formattedDate === "01 Jan 0001") {
-        return <div className="w-auto truncate font-medium">{FALLBACK_VALUE}</div>;
+        return <div className="w-auto truncate font-mono tabular-nums">{FALLBACK_VALUE}</div>;
       }
-      return <div className="w-auto truncate font-medium">{formattedDate}</div>;
+      return <div className="w-auto truncate font-mono tabular-nums">{formattedDate}</div>;
     },
   },
   {
@@ -144,10 +144,10 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
       const shortDate = formatDate(raw, false);
       const fullDate = formatDate(raw, true);
       if (!shortDate || shortDate === "01 Jan 0001") {
-        return <div className="max-w-40 truncate font-medium">{FALLBACK_VALUE}</div>;
+        return <div className="max-w-40 truncate font-mono tabular-nums">{FALLBACK_VALUE}</div>;
       }
       return (
-        <div className="max-w-40 truncate font-medium" title={fullDate}>
+        <div className="max-w-40 truncate font-mono tabular-nums" title={fullDate}>
           {shortDate}
         </div>
       );
@@ -185,10 +185,10 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
       const shortDate = formatDate(raw, false);
       const fullDate = formatDate(raw, true);
       if (!shortDate || shortDate === "01 Jan 0001") {
-        return <div className="max-w-40 truncate font-medium">{FALLBACK_VALUE}</div>;
+        return <div className="max-w-40 truncate font-mono tabular-nums">{FALLBACK_VALUE}</div>;
       }
       return (
-        <div className="max-w-40 truncate font-medium" title={fullDate}>
+        <div className="max-w-40 truncate font-mono tabular-nums" title={fullDate}>
           {shortDate}
         </div>
       );

@@ -69,10 +69,14 @@ export const JobsStats = ({ data }: StatsProps) => {
         content={stats.jobs}
         footer={
           <>
-            <span className="font-medium text-xs">{stats.completed}</span> Completed,{" "}
-            <span className="font-medium text-xs">{stats.failed}</span> Failed,{" "}
-            <span className="font-medium text-xs">{stats.aborted}</span> Aborted,{" "}
-            <span className="font-medium text-xs">{stats.killed}</span> Killed
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.completed}</span>{" "}
+            Completed,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.failed}</span>{" "}
+            Failed,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.aborted}</span>{" "}
+            Aborted,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.killed}</span>{" "}
+            Killed
           </>
         }
       />
@@ -92,7 +96,9 @@ export const JobsStats = ({ data }: StatsProps) => {
         content={stats.totalExecutionLabel}
         footer={
           <>
-            Avg. <span className="font-medium text-xs">{stats.avgLabel}</span> per job
+            Avg.{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.avgLabel}</span> per
+            job
           </>
         }
       />

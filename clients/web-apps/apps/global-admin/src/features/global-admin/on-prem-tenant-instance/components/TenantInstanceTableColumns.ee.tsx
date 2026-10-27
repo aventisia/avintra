@@ -68,7 +68,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("platformVersion") ? "v" + row.getValue("platformVersion") : "--"}
       </div>
     ),
@@ -79,7 +79,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("deployedOn")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("deployedOn")
           ? format(row.getValue("deployedOn"), "dd MMM yyyy h:mm a")
           : "--"}
@@ -96,7 +96,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("lastValidatedOn")
           ? format(row.getValue("lastValidatedOn"), "dd MMM yyyy h:mm a")
           : "--"}
@@ -113,7 +113,9 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("noOfInvalidCheck")}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {row.getValue("noOfInvalidCheck")}
+      </div>
     ),
   },
   createDTActionsColumn<OnPremInstanceDto>({

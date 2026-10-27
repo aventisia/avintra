@@ -36,19 +36,17 @@ export const ModeCard = ({
       data-autofocus={autoFocusTarget || undefined}
       onClick={() => onSelect(mode)}
       className={cn(
-        "flex flex-col gap-3 rounded-xl p-4 text-left outline-none transition-[background-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500",
+        "flex flex-col gap-3 rounded-lg p-4 text-left outline-none transition-[background-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
         isChecked
-          ? "bg-indigo-50/60 shadow-[0_8px_24px_-12px_rgba(79,70,229,0.45)] ring-[1.5px] ring-indigo-500"
-          : "bg-popover ring-1 ring-border hover:bg-slate-50/80 hover:ring-slate-300",
+          ? "bg-selected ring-[1.5px] ring-primary"
+          : "bg-popover ring-1 ring-border hover:bg-hover hover:ring-line-strong",
       )}
     >
       <span className="flex items-center justify-between">
         <span
           className={cn(
-            "grid size-9 place-items-center rounded-[10px] ring-1",
-            mode === "open"
-              ? "bg-emerald-50 text-emerald-600 ring-emerald-600/15"
-              : "bg-indigo-50 text-indigo-600 ring-indigo-600/15",
+            "grid size-9 place-items-center rounded-md bg-sunken text-ink-2 ring-1 ring-line",
+            isChecked && "text-primary-text",
           )}
         >
           <Icon className="size-[18px]" />
@@ -56,7 +54,7 @@ export const ModeCard = ({
         <span
           className={cn(
             "grid size-[18px] place-items-center rounded-full transition-colors duration-200",
-            isChecked ? "bg-primary" : "bg-popover shadow-[inset_0_0_0_1.5px_rgb(203,213,225)]",
+            isChecked ? "bg-primary" : "bg-surface ring-[1.5px] ring-inset ring-line-strong",
           )}
         >
           <motion.span
@@ -68,7 +66,7 @@ export const ModeCard = ({
         </span>
       </span>
       <span>
-        <span className="block text-[14px] font-semibold text-slate-900">{title}</span>
+        <span className="block text-[14px] font-semibold text-ink">{title}</span>
         <span className="mt-1 block text-[12.5px] leading-[18px] text-muted-foreground">
           {description}
         </span>

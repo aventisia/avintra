@@ -4,7 +4,7 @@ import { DTColumnHeader } from "@avplatform/ui/data-table";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 import { Column, ColumnDef } from "@tanstack/react-table";
 
-import { TABLE_KEY, getStatusColor } from "../constants";
+import { TABLE_KEY, getStatusBadgeVariant } from "../constants";
 import { InputSchemaField } from "../dtos/queues-table-dto";
 import { WorkItemRow } from "../types/my-queue-types";
 import { WorkItemsTableCellLink } from "./work-item-table/WorkItemsTableCellLink";
@@ -104,7 +104,10 @@ export const buildColumns = (
         if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
         const formatted = new Date(value).toLocaleString();
         return (
-          <span className="inline-block w-40 truncate font-medium" title={formatted}>
+          <span
+            className="inline-block w-40 truncate font-mono font-medium tabular-nums"
+            title={formatted}
+          >
             {formatted}
           </span>
         );
@@ -123,7 +126,10 @@ export const buildColumns = (
               if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
               const formatted = new Date(value).toLocaleString();
               return (
-                <span className="inline-block w-40 truncate font-medium" title={formatted}>
+                <span
+                  className="inline-block w-40 truncate font-mono font-medium tabular-nums"
+                  title={formatted}
+                >
                   {formatted}
                 </span>
               );
@@ -141,7 +147,7 @@ export const buildColumns = (
         />
       ),
       cell: ({ row }) => (
-        <Badge className={getStatusColor(row.original.status)}>
+        <Badge variant={getStatusBadgeVariant(row.original.status)}>
           {row.original.status?.replace(/([A-Z])/g, " $1")}
         </Badge>
       ),

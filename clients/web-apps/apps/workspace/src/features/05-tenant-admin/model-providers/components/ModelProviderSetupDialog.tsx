@@ -199,7 +199,7 @@ export const ModelProviderSetupDialog = () => {
         <DialogHeader className="px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
             <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-accent p-2">
+              <div className="rounded-lg bg-sunken p-2">
                 <img
                   src={provider ? getProviderIcon(provider) : undefined}
                   alt={provider?.label}
@@ -323,7 +323,7 @@ export const ModelProviderSetupDialog = () => {
                         const supportedModalities = getSupportedModalities(model);
 
                         const capabilityBadge = capabilityLabel ? (
-                          <Badge className="bg-slate-200 text-slate-600">{capabilityLabel}</Badge>
+                          <Badge variant="secondary">{capabilityLabel}</Badge>
                         ) : null;
 
                         return (

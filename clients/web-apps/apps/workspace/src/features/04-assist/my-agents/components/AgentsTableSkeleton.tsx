@@ -13,7 +13,7 @@ export const AgentsTableSkeleton: React.FC = () => {
         {new Array(8).fill(null).map((_, index) => (
           <Card
             key={index}
-            className="relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-slate-200 shadow-sm"
+            className="relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-line"
           >
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
               <Skeleton className="h-8 w-8 rounded-lg bg-accent" />

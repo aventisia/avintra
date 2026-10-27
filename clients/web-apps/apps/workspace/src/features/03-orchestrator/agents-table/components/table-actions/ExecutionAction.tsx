@@ -57,23 +57,18 @@ export const ExecutionAction = ({
           <Button
             variant="ghost"
             size="icon7"
-            className="hover:bg-slate-200"
+            className="hover:bg-hover"
             onClick={() => {
               if (jobId) abortJobMutation(jobId);
             }}
           >
-            <StopIcon className="h-[1.125rem] w-[1.125rem] text-red-500/80" />
+            <StopIcon className="h-[1.125rem] w-[1.125rem] text-bad" />
           </Button>
         </Tooltip>
       ) : (
         <Tooltip content="Execute">
-          <Button
-            variant="ghost"
-            size="icon7"
-            className="hover:bg-slate-200"
-            onClick={handleCreateJob}
-          >
-            <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
+          <Button variant="ghost" size="icon7" className="hover:bg-hover" onClick={handleCreateJob}>
+            <PlayIcon className="h-[1.125rem] w-[1.125rem] text-ok" />
           </Button>
         </Tooltip>
       )}

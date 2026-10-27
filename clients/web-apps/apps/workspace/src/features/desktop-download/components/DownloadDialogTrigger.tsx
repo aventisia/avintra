@@ -25,6 +25,7 @@ export const DownloadDialogTrigger: React.FC<DownloadDialogTriggerProps> = ({
     <Tooltip content="Download Desktop App">
       <button
         type="button"
+        aria-label="Download desktop app"
         className={cn(buttonVariants({ variant: "ghost", size: triggerSize }), "hover:bg-hover")}
         onClick={() => toggleOpen()}
       >

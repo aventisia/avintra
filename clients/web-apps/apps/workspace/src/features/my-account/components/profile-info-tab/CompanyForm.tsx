@@ -40,7 +40,7 @@ export const CompanyForm = () => {
       disabled={userSession?.tenantName != DefaultTenantsEnum.IndividualUsers}
     >
       <div>
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-xl font-medium">
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-xl font-medium">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
             ? "Billing Info"
             : "Tenant Info"}
@@ -61,7 +61,7 @@ export const CompanyForm = () => {
                   name="tenantName"
                   disabled={!hasSpecialPermission}
                   placeholder=""
-                  className="border-slate-300/60 shadow-sm"
+                  className="border-input"
                   size={80}
                 />
               </InputDivElement>
@@ -74,7 +74,7 @@ export const CompanyForm = () => {
                 <InputField
                   type="text"
                   name="role"
-                  className="border-slate-300/60 shadow-sm"
+                  className="border-input"
                   placeholder=""
                   disabled={!hasSpecialPermission}
                   size={80}
@@ -95,7 +95,7 @@ export const CompanyForm = () => {
               disabled={
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
             <InputField
               name="addressLine2"
@@ -104,7 +104,7 @@ export const CompanyForm = () => {
               disabled={
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
-              className="mt-3 border-slate-300/60 shadow-sm"
+              className="mt-3 border-input"
             />
           </InputDivElement>
 
@@ -116,7 +116,7 @@ export const CompanyForm = () => {
             {form.getValues("country") !== "" && (
               <SelectField
                 {...countriesSelectProps}
-                className="border-slate-300/60 shadow-sm"
+                className="border-input"
                 disabled={
                   userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
                 }
@@ -136,7 +136,7 @@ export const CompanyForm = () => {
               disabled={
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement>
 
@@ -152,7 +152,7 @@ export const CompanyForm = () => {
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
               placeholder=""
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement>
 
@@ -168,13 +168,13 @@ export const CompanyForm = () => {
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
               placeholder=""
-              className="border-slate-300/60 shadow-sm"
+              className="border-input"
             />
           </InputDivElement> */}
         </div>
 
         {/* Save details button */}
-        {/* <div className="mt-6 flex border-t border-dashed border-slate-300/70 pt-5 md:justify-end">
+        {/* <div className="mt-6 flex border-t border-dashed border-line pt-5 md:justify-end">
           {userSession?.tenantName == DefaultTenantsEnum.IndividualUsers && (
             <SubmitButton
               variant="default"

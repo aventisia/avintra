@@ -107,20 +107,16 @@ export const JobsTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="jobs" />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                <TabsList className="h-fit w-full gap-1 rounded-lg px-1.5 py-1.5">
+                <TabsList>
                   {tabs.map((tab) => {
                     const TabIcon = tab.icon;
                     return (
-                      <TabsTrigger
-                        value={tab.value}
-                        key={tab.value}
-                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
-                      >
+                      <TabsTrigger value={tab.value} key={tab.value}>
                         {TabIcon && <TabIcon className="size-4 shrink-0" aria-hidden="true" />}
                         <span>{tab.label}</span>
                       </TabsTrigger>
@@ -129,7 +125,7 @@ export const JobsTable = () => {
                 </TabsList>
               </Tabs>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-2">
               <DTSearchBox
                 table={table}
                 searchColumns={["flowName", "flowVersionNumber", "status"]}

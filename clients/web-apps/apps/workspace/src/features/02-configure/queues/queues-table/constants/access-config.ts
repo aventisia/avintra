@@ -14,27 +14,27 @@ export const QUEUE_WORK_ITEM_ACCESS_META: Record<
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
     label: "Full Access",
     description: "Unrestricted access to all queue work item actions",
-    badgeClass: "bg-purple-50 text-purple-700 border-purple-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.View]: {
     label: "Can View",
     description: "View queue work items without changes",
-    badgeClass: "bg-gray-50 text-gray-700 border-gray-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
     label: "Can Create",
     description: "Add new items to the queue",
-    badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
     label: "Can Edit",
     description: "Modify queue work item details or state",
-    badgeClass: "bg-orange-50 text-orange-700 border-orange-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
     label: "Can Delete",
     description: "Remove or process queue items",
-    badgeClass: "bg-red-50 text-red-700 border-red-200",
+    badgeClass: "bg-bad/10 text-bad border-bad/35",
   },
 };
 

@@ -1,14 +1,13 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
 
-import { TICKET_STATUS_COLOR } from "@/features/05-tenant-admin/support-tickets-v2/constants/constants";
+import { TICKET_STATUS_VARIANT } from "@/features/05-tenant-admin/support-tickets-v2/constants/constants";
 import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
 
 import { TABLE_KEY } from "../constants";
@@ -107,7 +106,7 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
+      return <Badge variant={TICKET_STATUS_VARIANT[status] ?? "secondary"}>{status}</Badge>;
     },
   },
   {
@@ -129,7 +128,7 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
     ),
     cell: ({ row }) => {
       const date = row.getValue("createdOn") as string;
-      return <div>{date ? formatDate(date) : "-"}</div>;
+      return <div className="font-mono tabular-nums">{date ? formatDate(date) : "-"}</div>;
     },
   },
   {
@@ -137,14 +136,16 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Total Comments" />
     ),
-    cell: ({ row }) => <div>{row.getValue("commentCount")}</div>,
+    cell: ({ row }) => <div className="font-mono tabular-nums">{row.getValue("commentCount")}</div>,
   },
   {
     accessorKey: "attachmentCount",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Total Attachments" />
     ),
-    cell: ({ row }) => <div>{row.getValue("attachmentCount")}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{row.getValue("attachmentCount")}</div>
+    ),
   },
   createDTActionsColumn<TicketTableDto>({
     renderCell: (row) => <SaTicketRowActions rowId={row.id || ""} />,

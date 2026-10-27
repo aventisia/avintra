@@ -50,7 +50,9 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
         <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
       ),
       cell: ({ row }) => (
-        <div className="w-auto truncate font-medium">{row.getValue("totalUsers")}</div>
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {row.getValue("totalUsers")}
+        </div>
       ),
     },
     {
@@ -63,7 +65,9 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
         />
       ),
       cell: ({ row }) => (
-        <div className="w-auto truncate font-medium">{row.getValue("totalPublishedAgents")}</div>
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {row.getValue("totalPublishedAgents")}
+        </div>
       ),
     },
     {
@@ -76,7 +80,7 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
         />
       ),
       cell: ({ row }) => (
-        <div className="w-auto truncate font-medium">
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
           {formatExecutionTime(row.getValue("totalExecutionTime"))}
         </div>
       ),
@@ -91,7 +95,9 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
         />
       ),
       cell: ({ row }) => (
-        <div className="w-auto truncate font-medium">{row.getValue("totalMachinesAttached")}</div>
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {row.getValue("totalMachinesAttached")}
+        </div>
       ),
     },
     {
@@ -105,7 +111,9 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
         />
       ),
       cell: ({ row }) => (
-        <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {formatDate(row.getValue("createdOn"))}
+        </div>
       ),
     },
   ];

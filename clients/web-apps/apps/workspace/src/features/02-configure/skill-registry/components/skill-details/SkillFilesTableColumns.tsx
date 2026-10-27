@@ -68,7 +68,11 @@ export const getSkillFilesTableColumns = (
         enableHiding={false}
       />
     ),
-    cell: ({ row }) => <div className="w-24 font-medium">{formatDate(row.original.createdOn)}</div>,
+    cell: ({ row }) => (
+      <div className="w-24 font-medium font-mono tabular-nums">
+        {formatDate(row.original.createdOn)}
+      </div>
+    ),
   },
   createDTActionsColumn<SkillFileDto>({
     size: 48,

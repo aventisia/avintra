@@ -11,11 +11,11 @@ export const Billing = () => {
   return (
     <div className="space-y-4 py-4">
       <div className="flex items-center gap-2">
-        <p className="text-lg font-medium">Tenant</p>
+        <p className="text-title text-ink">Tenant</p>
         <HelpButton guideId="tenant" />
       </div>
 
-      <div className="min-h-[82vh] rounded-lg border bg-white">
+      <div className="min-h-[82vh] rounded-lg border bg-surface">
         <BillingTabs />
       </div>
     </div>

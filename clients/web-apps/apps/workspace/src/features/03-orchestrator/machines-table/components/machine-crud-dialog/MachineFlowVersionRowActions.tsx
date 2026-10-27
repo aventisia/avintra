@@ -90,7 +90,7 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
           className={cn(buttonVariants({ variant: "dropdownItem" }), "h-8")}
           onClick={() => handleExecuteFlowVersionAction()}
         >
-          <PlayIcon className="size-4 text-green-500/80" />
+          <PlayIcon className="size-4 text-ok" />
           Execute
         </DropdownMenuItem>
       </DropdownMenuContent>

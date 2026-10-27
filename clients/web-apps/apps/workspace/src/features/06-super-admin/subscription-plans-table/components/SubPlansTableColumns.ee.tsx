@@ -56,7 +56,11 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Price" />,
     cell: ({ row }) => {
       const price = row.getValue<number>("price");
-      return <div className="w-auto truncate font-medium">{price === 0 ? "Free" : `${price}`}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto truncate font-medium">
+          {price === 0 ? "Free" : `${price}`}
+        </div>
+      );
     },
   },
   {
@@ -74,7 +78,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxCredits")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(
           Number(row.getValue("maxCredits")) > 9999999 ? -1 : row.getValue("maxCredits"),
         )}
@@ -91,7 +95,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("maxPublishedItems"))}
       </div>
     ),
@@ -106,7 +110,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("historyRetentionDays"))}
       </div>
     ),
@@ -117,7 +121,9 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxSpaces")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{displayValue(row.getValue("maxSpaces"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {displayValue(row.getValue("maxSpaces"))}
+      </div>
     ),
   },
   {
@@ -130,7 +136,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("storageLimitMB"))}
       </div>
     ),
@@ -141,7 +147,9 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxUsers")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{displayValue(row.getValue("maxUsers"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {displayValue(row.getValue("maxUsers"))}
+      </div>
     ),
   },
 
@@ -165,7 +173,9 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   createDTActionsColumn<SubPlansTableDto>({

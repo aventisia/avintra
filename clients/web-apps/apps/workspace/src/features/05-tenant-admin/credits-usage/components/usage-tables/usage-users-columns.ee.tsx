@@ -45,7 +45,7 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
       <DTColumnHeader tableKey={tableKey} column={column} title="Total Credits" />
     ),
     cell: ({ row }) => (
-      <span className="font-medium tabular-nums">
+      <span className="font-mono font-medium tabular-nums">
         {row.original.totalCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
       </span>
     ),
@@ -57,7 +57,7 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
       <DTColumnHeader tableKey={tableKey} column={column} title="LLM Credits" />
     ),
     cell: ({ row }) => (
-      <span className="tabular-nums">
+      <span className="font-mono tabular-nums">
         {row.original.totalLlmCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
       </span>
     ),
@@ -69,7 +69,7 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
       <DTColumnHeader tableKey={tableKey} column={column} title="Execution Credits" />
     ),
     cell: ({ row }) => (
-      <span className="tabular-nums">
+      <span className="font-mono tabular-nums">
         {row.original.totalExecutionCredits.toLocaleString("en-US", {
           maximumFractionDigits: 2,
         })}

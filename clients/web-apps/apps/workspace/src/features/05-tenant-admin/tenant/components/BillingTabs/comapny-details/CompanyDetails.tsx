@@ -27,9 +27,9 @@ const CompanyDetails = () => {
     <>
       <div className="rounded-lg border">
         <div className="flex items-center justify-between border-b p-4">
-          <p className="text-base font-medium">Billing Details</p>
+          <p className="text-heading text-ink">Billing Details</p>
           <Button
-            className="flex items-center gap-1.5 bg-primary-50 text-primary"
+            className="flex items-center gap-1.5 bg-selected text-primary-text"
             variant={"ghost"}
             size={"sm"}
             onClick={() => setOpen(true)}

@@ -84,7 +84,11 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
     ),
     cell: ({ row }) => {
       const recipientCount = row.getValue<number>("recipientCount");
-      return <div className="w-auto truncate font-medium">{recipientCount ?? FALLBACK_VALUE}</div>;
+      return (
+        <div className="w-auto truncate font-mono font-medium tabular-nums">
+          {recipientCount ?? FALLBACK_VALUE}
+        </div>
+      );
     },
   },
   {
@@ -98,7 +102,7 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
       if (!formattedDate || formattedDate === "01 Jan 0001") {
         return <div className="truncate font-medium">{FALLBACK_VALUE}</div>;
       }
-      return <div className="truncate font-medium">{formattedDate}</div>;
+      return <div className="truncate font-mono font-medium tabular-nums">{formattedDate}</div>;
     },
   },
   createDTActionsColumn<NotificationDto>({

@@ -32,14 +32,14 @@ export const FormField = ({
 }: FormFieldProps) => (
   <div>
     <div className="mb-1.5 flex items-baseline justify-between gap-3">
-      <label htmlFor={htmlFor} className="text-[12.5px] font-semibold text-slate-700">
+      <label htmlFor={htmlFor} className="text-[12.5px] font-semibold text-ink-2">
         {label}
-        {isOptional && <span className="ml-1.5 font-normal text-slate-400">Optional</span>}
+        {isOptional && <span className="ml-1.5 font-normal text-muted-foreground">Optional</span>}
       </label>
       <span
         className={cn(
           "text-[11px] tabular-nums transition-colors",
-          length >= maxLength ? "font-medium text-amber-600" : "text-slate-400",
+          length >= maxLength ? "font-medium text-warn" : "text-muted-foreground",
         )}
       >
         {length}/{maxLength}
@@ -57,7 +57,7 @@ export const FormField = ({
           transition={PANEL_TRANSITION}
           className="overflow-hidden"
         >
-          <span className="flex items-center gap-1.5 pt-1.5 text-[12px] text-rose-600">
+          <span className="flex items-center gap-1.5 pt-1.5 text-[12px] text-bad">
             <CircleAlert className="size-3.5 shrink-0" />
             {error}
           </span>

@@ -50,7 +50,7 @@ export const FolderMark = ({ color, size = "md", className }: FolderMarkProps) =
  * Tile for the top level of the Agents page, where agents outside any folder live.
  */
 export const AgentsRootMark = ({ size = "md", className }: Omit<FolderMarkProps, "color">) => (
-  <MarkTile size={size} className={cn("bg-slate-50 text-slate-500 ring-slate-900/10", className)}>
+  <MarkTile size={size} className={cn("bg-sunken text-muted-foreground ring-line", className)}>
     <NewAgentIcon />
   </MarkTile>
 );

@@ -36,7 +36,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </span>
       </div>
@@ -100,14 +100,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
       <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isVerified")} />
     ),
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className={
-          row.getValue("isVerified")
-            ? "border-green-200 bg-green-50 text-green-700"
-            : "border-orange-200 bg-orange-50 text-orange-700"
-        }
-      >
+      <Badge variant={row.getValue("isVerified") ? "completed" : "draft"}>
         {row.getValue("isVerified") ? "Verified" : "Draft"}
       </Badge>
     ),
@@ -128,7 +121,9 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
     header: ({ column }) => (
       <DTColumnHeader column={column} tableKey="tools" title={getColumnName("createdOn")} />
     ),
-    cell: ({ row }) => <div>{formatDate(row.getValue("createdOn"))}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{formatDate(row.getValue("createdOn"))}</div>
+    ),
   },
   createDTActionsColumn<ToolDto>({
     renderCell: (row) => (

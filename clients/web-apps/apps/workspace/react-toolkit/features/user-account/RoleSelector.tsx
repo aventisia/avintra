@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { CheckIcon, ChevronDownIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -93,7 +93,6 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
                       className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                     />
                     <span className="flex-1">{getRoleLabel(role)}</span>
-                    {isSelected && <CheckIcon className="h-4 w-4 text-primary" />}
                   </CommandItem>
                 );
               })}

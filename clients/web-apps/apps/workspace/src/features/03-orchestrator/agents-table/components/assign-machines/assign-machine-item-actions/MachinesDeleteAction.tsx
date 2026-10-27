@@ -33,7 +33,7 @@ export const MachinesDeleteAction = ({ id }: MachinesDeleteActionProps) => {
         mutate({ flowVersionId, machineIds: [id] });
       }}
     >
-      <TrashIcon className={cn("mb-[2px] text-destructive group-focus:text-white", "h-4 w-4")} />
+      <TrashIcon className="mb-[2px] h-4 w-4" />
       Remove
     </DropdownMenuItem>
   );

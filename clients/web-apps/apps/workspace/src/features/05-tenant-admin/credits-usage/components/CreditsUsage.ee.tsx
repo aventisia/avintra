@@ -25,14 +25,11 @@ export const CreditsUsage = () => {
         <ChartsHeader />
 
         <Tabs defaultValue="credits">
-          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-none border-b bg-white px-3 text-base">
-            <TabsTrigger
-              value="credits"
-              className="rounded-none data-[state=active]:border-b-black"
-            >
+          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-none border-b bg-transparent px-3 text-base">
+            <TabsTrigger value="credits" className="rounded-none">
               Platform Credits
             </TabsTrigger>
-            <TabsTrigger value="byok" className="rounded-none data-[state=active]:border-b-black">
+            <TabsTrigger value="byok" className="rounded-none">
               BYOK Consumption
             </TabsTrigger>
           </TabsList>
@@ -46,8 +43,8 @@ export const CreditsUsage = () => {
                 <UsageCharts />
 
                 {/* LLM / model credits by service */}
-                <div className="rounded-lg border bg-white px-6 py-4">
-                  <p className="mb-4 text-base font-medium">LLM Credits by Model</p>
+                <div className="rounded-lg border bg-surface px-6 py-4">
+                  <p className="mb-4 text-heading">LLM Credits by Model</p>
                   <ModelCharts />
                 </div>
 
@@ -60,8 +57,8 @@ export const CreditsUsage = () => {
           <TabsContent value="byok" className="space-y-6 pt-4">
             <>
               {/* BYOK consumption by model provider */}
-              <div className="rounded-lg border bg-white px-6 py-4">
-                <p className="mb-4 text-base font-medium">BYOK Consumption by Model</p>
+              <div className="rounded-lg border bg-surface px-6 py-4">
+                <p className="mb-4 text-heading">BYOK Consumption by Model</p>
                 <ByokModelCharts />
               </div>
 

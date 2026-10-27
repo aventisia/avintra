@@ -52,7 +52,7 @@ const RejectWithRemarkDialog = () => {
         <div className="space-y-2 p-3">
           <Label htmlFor="remarks" className="ml-1 flex items-center gap-0.5">
             <span>Remarks</span>
-            <span className="text-destructive">*</span>
+            <span className="text-bad">*</span>
           </Label>
 
           <Textarea

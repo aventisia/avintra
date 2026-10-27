@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@avplatform/ui/cards"
  */
 export const TemplateCardSkeleton = () => {
   return (
-    <Card className="rounded-3xl border shadow-none">
+    <Card className="rounded-lg border border-line shadow-none">
       <CardHeader className="space-y-4 pb-4">
         {/* Icon placeholder */}
         <div className="flex items-center gap-4">

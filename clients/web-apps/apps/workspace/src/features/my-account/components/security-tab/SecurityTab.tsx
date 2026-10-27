@@ -24,7 +24,7 @@ export const SecurityTab = () => {
       disabled={isPending}
       className="box box--stacked flex flex-col p-5"
     >
-      {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
+      {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
         Security
       </div> */}
       <div>
@@ -33,12 +33,7 @@ export const SecurityTab = () => {
           isRequired={true}
           messageForInput="Enter your current password to verify your identity."
         >
-          <InputField
-            name="oldPwd"
-            type="password"
-            className="border-slate-300/60 shadow-sm"
-            size={80}
-          />
+          <InputField name="oldPwd" type="password" className="border-input" size={80} />
         </InputDivElement>
 
         <InputDivElement
@@ -46,12 +41,7 @@ export const SecurityTab = () => {
           isRequired={true}
           messageForInput="Create a new password for your account."
         >
-          <InputField
-            name="newPwd"
-            type="password"
-            className="border-slate-300/60 shadow-sm"
-            size={80}
-          />
+          <InputField name="newPwd" type="password" className="border-input" size={80} />
         </InputDivElement>
 
         <InputDivElement
@@ -59,24 +49,15 @@ export const SecurityTab = () => {
           isRequired={true}
           messageForInput="Please re-enter the new password you've just chosen."
         >
-          <InputField
-            type="password"
-            name="confirmNewPwd"
-            className="border-slate-300/60 shadow-sm"
-            size={80}
-          />
+          <InputField type="password" name="confirmNewPwd" className="border-input" size={80} />
         </InputDivElement>
 
         <InputDivElement
           headingForInput="Log out From All Sessions"
           isRequired={false}
-          messageForInput="Please choose weather to log out from all your login sessions elsewhere."
+          messageForInput="Please choose whether to log out from all your login sessions elsewhere."
         >
-          <CheckboxField
-            label=""
-            name="logoffFromOtherSessions"
-            className="border-slate-300/60 shadow-md outline outline-1 outline-slate-300/60"
-          />
+          <CheckboxField label="" name="logoffFromOtherSessions" className="border-input" />
         </InputDivElement>
       </div>
       <div className="flex pt-5 md:justify-end">

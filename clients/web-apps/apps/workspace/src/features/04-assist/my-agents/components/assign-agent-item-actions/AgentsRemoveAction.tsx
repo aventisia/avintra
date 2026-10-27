@@ -24,7 +24,7 @@ export const AgentsRemoveAction = ({ agentId, machineIds }: AgentsRemoveActionPr
         removeAgents({ agentId, machineIds });
       }}
     >
-      <TrashIcon className={cn("mb-[2px] text-destructive group-focus:text-white", "h-4 w-4")} />
+      <TrashIcon className={cn("mb-[2px] text-destructive", "h-4 w-4")} />
       Remove
     </DropdownMenuItem>
   );

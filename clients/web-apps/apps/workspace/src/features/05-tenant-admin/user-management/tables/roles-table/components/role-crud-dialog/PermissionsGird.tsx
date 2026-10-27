@@ -23,7 +23,7 @@ const PermissionsGrid: React.FC<PermissionsGridProps> = ({
   });
 
   return (
-    <div className="mx-auto w-fit rounded-lg border bg-white text-md">
+    <div className="mx-auto w-fit rounded-lg border bg-surface text-md">
       {/* Header row */}
       <div className="grid grid-cols-7 rounded-t-lg border-b">
         <div className="col-span-2 ms-1 whitespace-nowrap border-r px-2 py-1 font-medium">

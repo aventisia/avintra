@@ -75,7 +75,7 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Triage Panel</h2>
+      <h2 className="text-heading">Triage Panel</h2>
       <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <SelectField

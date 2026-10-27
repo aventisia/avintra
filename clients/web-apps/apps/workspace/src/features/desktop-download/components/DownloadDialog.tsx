@@ -1,6 +1,8 @@
-import { Dialog, DialogContent } from "@avplatform/ui/dialog";
+import { Button } from "@avplatform/ui/buttons";
+import { Dialog, DialogClose, DialogContent } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useDownloadDialogStore } from "../stores/download-dialog-store";
@@ -30,6 +32,16 @@ export const DownloadDialog: React.FC<DownloadDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DownloadDialogTrigger triggerSize={triggerSize} />
       <DialogContent side={"right"} className={cn("!max-w-[46rem] overflow-hidden", className)}>
+        <DialogClose asChild>
+          <Button
+            variant="ghost"
+            size="icon8"
+            className="absolute right-3 top-3 z-10"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </DialogClose>
         <ScrollArea className="h-screen overflow-hidden">
           <DownloadDialogContent />
         </ScrollArea>

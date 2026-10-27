@@ -47,7 +47,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
           {/* Left side */}
           <div className="flex flex-col gap-4">
             {/* Template Name */}
-            <h1 className="text-4xl font-semibold tracking-tight">{template.name}</h1>
+            <h1 className="text-title text-ink">{template.name}</h1>
 
             {/* Metadata: uses, last updated, creator */}
             <div className="flex flex-row items-center gap-1 text-sm text-muted-foreground">
@@ -85,7 +85,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               <Badge className="flex items-center gap-1 capitalize">
                 {transformTemplateType(template?.type)}
               </Badge>
-              <Badge variant="outline" className="flex items-center gap-1 bg-slate-100">
+              <Badge variant="outline" className="flex items-center gap-1 bg-sunken">
                 <Tag className="h-3 w-3" />
 
                 {template?.accessType == "Public" ? "Public" : "Tenant"}
@@ -95,11 +95,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               {template?.tags
                 ?.filter((tag) => tag.toLowerCase() !== template?.type?.toLowerCase()) //Filter tags that are similar to project type
                 ?.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="outline"
-                    className="flex items-center gap-1 bg-slate-100"
-                  >
+                  <Badge key={tag} variant="outline" className="flex items-center gap-1 bg-sunken">
                     <Tag className="h-3 w-3" />
                     {tag}
                   </Badge>

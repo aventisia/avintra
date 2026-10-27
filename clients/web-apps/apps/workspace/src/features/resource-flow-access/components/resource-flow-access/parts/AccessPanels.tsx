@@ -52,7 +52,7 @@ export const AccessPanels = ({ draft, mode }: AccessPanelsProps) => (
                 <button
                   type="button"
                   onClick={() => draft.replace([])}
-                  className="text-[12px] font-medium text-muted-foreground transition hover:text-rose-600"
+                  className="text-[12px] font-medium text-muted-foreground transition hover:text-bad"
                 >
                   Remove all
                 </button>
@@ -67,7 +67,7 @@ export const AccessPanels = ({ draft, mode }: AccessPanelsProps) => (
               description="Search above and pick the agents that should have access."
             />
           ) : (
-            <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl bg-popover ring-1 ring-border/90">
+            <ul className="divide-y divide-line overflow-hidden rounded-lg bg-surface ring-1 ring-line">
               <AnimatePresence initial={false}>
                 {draft.rows.map(({ agent, change }) => (
                   <motion.li
@@ -94,8 +94,7 @@ export const AccessPanels = ({ draft, mode }: AccessPanelsProps) => (
             description={
               <>
                 Includes agents created later. Choose{" "}
-                <span className="font-medium text-emerald-900">Selected agents</span> to limit
-                access.
+                <span className="font-medium text-ink">Selected agents</span> to limit access.
               </>
             }
           />
