@@ -34,7 +34,8 @@ public static class NodeToJsonHelper
         { NodeFieldTypeEnum.CloudExecutionSwitch, "cloud-execution-switch" },
         { NodeFieldTypeEnum.JsonEditor, "json-editor" },
         { NodeFieldTypeEnum.CodeEditor, "code-editor" },
-        { NodeFieldTypeEnum.ConfigPanelModelOutput, "config-panel-model-output" }
+        { NodeFieldTypeEnum.ConfigPanelModelOutput, "config-panel-model-output" },
+        { NodeFieldTypeEnum.MachineSelect, "machine-select" }
     };
 
     public static string ConvertNodeToJson(Type nodeType, List<string> supportedPlatforms)

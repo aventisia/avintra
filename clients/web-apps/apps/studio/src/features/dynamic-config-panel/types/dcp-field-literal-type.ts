@@ -61,6 +61,7 @@ export type DCPControlType =
   | "queue-status-select"
   | "flow-select"
   | "cloud-execution-switch"
+  | "machine-select"
   | "queue-conditional-group"
   | "queue-priority-group"
   | "string-array"
