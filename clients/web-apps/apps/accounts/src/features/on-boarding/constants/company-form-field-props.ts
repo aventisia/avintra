@@ -4,12 +4,14 @@ import { enumToArray } from "@avplatform/ui/utils";
 
 //Role
 const roleProps: InputFieldProps = {
+  className: "h-control-lg",
   label: "Role",
   name: "role",
 };
 
 // Organization Name
 const organizationNameProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "organizationName",
   label: "Organization Name",
   type: "text",
@@ -18,6 +20,7 @@ const organizationNameProps: InputFieldProps = {
 
 // Organization Domain
 const organizationDomainProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "domain",
   label: "Organization Domain",
   type: "text",
@@ -26,6 +29,7 @@ const organizationDomainProps: InputFieldProps = {
 
 // Number of Employees
 const numberOfEmployeesProps: SelectFieldProps = {
+  className: "h-control-lg",
   name: "numberOfEmployees",
   label: "Number of Employees",
   selectOptions: [
@@ -41,6 +45,7 @@ const numberOfEmployeesProps: SelectFieldProps = {
 
 // Industry
 const industryProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "industry",
   label: "Industry",
   type: "text",
@@ -48,6 +53,7 @@ const industryProps: InputFieldProps = {
 
 // Country
 const countryProps: SelectFieldProps = {
+  className: "h-control-lg",
   name: "country",
   label: "Country",
   selectOptions: enumToArray(CountriesEnum),

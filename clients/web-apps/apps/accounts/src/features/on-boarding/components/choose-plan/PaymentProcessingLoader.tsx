@@ -51,9 +51,9 @@ const PaymentProcessingLoader = ({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-5">
-            <CheckCircle className="text-green-600 h-12 w-12 animate-pulse" />
+            <CheckCircle className="text-ok h-12 w-12 animate-pulse" />
             <div className="flex flex-col gap-1 items-center">
-              <p className="text-2xl font-semibold text-green-600">Payment Successful!</p>
+              <p className="text-2xl font-semibold text-ok">Payment Successful!</p>
               <p className="text-base  text-muted-foreground">
                 {countdown == 0
                   ? "Redirecting in few seconds"

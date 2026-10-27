@@ -59,7 +59,7 @@ const ChargeSummary = ({
       </div>
 
       {total === 0 ? (
-        <Button className="mt-2 w-full" disabled={isPending} onClick={handleSubscription}>
+        <Button size="lg" className="mt-2 w-full" disabled={isPending} onClick={handleSubscription}>
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />
@@ -70,7 +70,7 @@ const ChargeSummary = ({
           )}
         </Button>
       ) : (
-        <Button disabled={isPending} onClick={handleSubscription} className="mt-2 w-full">
+        <Button size="lg" disabled={isPending} onClick={handleSubscription} className="mt-2 w-full">
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />

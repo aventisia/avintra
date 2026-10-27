@@ -26,7 +26,7 @@ export const AccountSetupMain = () => {
   return (
     <>
       <PageContainer>
-        <LeftContainer className="lg:w-[60%]">
+        <LeftContainer>
           <HeaderContainer>
             <AppLogo showFullLogo={true} className="h-7" />
             <a
@@ -53,12 +53,7 @@ export const AccountSetupMain = () => {
           <MinimalFooter />
         </LeftContainer>
 
-        <RightContainer
-          heading="Discover Scalable AI-Powered Workflows"
-          subHeading="Sign up to build intuitive, AI-powered workflows tailored to your needs."
-          imgSrc="agentbuilder.svg"
-          className="lg:w-[40%]"
-        />
+        <RightContainer />
       </PageContainer>
     </>
   );

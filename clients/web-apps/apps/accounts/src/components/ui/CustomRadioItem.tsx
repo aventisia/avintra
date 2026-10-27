@@ -40,7 +40,7 @@ const CustomRadioItem = ({
           "p-6 border-2 rounded-lg  transition-all h-full w-full",
           className,
           highlightSelected && "cursor-pointer",
-          highlightSelected && (selected == value ? " border-primary" : "hover:border-gray-300"),
+          highlightSelected && (selected == value ? " border-primary" : "hover:border-line-strong"),
         )}
       >
         {children}
