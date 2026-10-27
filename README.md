@@ -181,21 +181,25 @@ sudo docker network create avplatform-net
 
 These changes affect an existing deployment the next time it boots.
 
-- **Community edition is an explicit opt-in.** Set `ON_PREM_EDITION=Community` on a Community install
-  before the next boot. An existing Community install that leaves it unset will refuse to start, and so
-  will a deployment that sets only one of the two identity variables. A paid deployment sets both
-  `ON_PREM_TENANT_ID` and `ON_PREM_INSTANCE_KEY` and leaves `ON_PREM_EDITION` unset.
-  - Both identity variables blank and no opt-in:
-    `Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.`
+- **Community edition is detected from the identity variables.** A deployment with both
+  `ON_PREM_TENANT_ID` and `ON_PREM_INSTANCE_KEY` runs as a paid edition and is validated by GlobalAdmin;
+  a deployment with neither runs as Community. `ON_PREM_EDITION` is no longer read and can be removed
+  from existing environments.
+  - Both identity variables blank: Community, with a startup warning on stderr.
   - One identity variable set:
-    `Refusing to start: <variable> is set but <other variable> is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.`
-- **Startup seeding corrects the default plan to the running edition.** On every boot the seeded
-  `Default` plan and the default tenant's active subscription are brought in line with the edition:
-  Community gets 1 space and 1 day of history retention, Enterprise 365 days, Commercial stays unlimited
-  (`int.MaxValue`, never a date), and the history-cleanup job keeps skipping unlimited retention instead
-  of purging. Rows that already match are not written, so a second boot of the same deployment changes
-  nothing. No other tenant's subscription is touched; those keep their stored values, and on Community the
-  code caps spaces and history at 1 regardless of what a stored row says.
+    `Refusing to start: <variable> is set but <other variable> is missing. Set both identity variables for a paid deployment, or unset both to run the Community edition.`
+- **Startup seeding never rewrites stored limits.** A new database gets the default plan and the default
+  tenant's subscription for the running edition: Community 1 space and 1 day of history retention,
+  Enterprise 365 days, Commercial unlimited (`int.MaxValue`, never a date). Existing plan and subscription
+  rows are corrected only on paid deployments, never on a Community boot, so a deployment booted without
+  its identity variables cannot downgrade them.
+- **History retention is enforced in code for Community and stored for paid editions.** The jobs list, job
+  execution logs (list and detail), node execution logs, and flow version history (list, by-id, clone)
+  serve a rolling window: one day on a Community deployment, whatever the subscription row says, so a
+  Community install cannot widen its history by editing its own database; unlimited on a paid deployment,
+  whose cleanup job purges at the stored `HistoryRetentionDays`. The daily cleanup job follows the stored
+  value (`int.MaxValue` means no purge, a stored 0 is treated as one day) and never applies the Community
+  cap, so a paid database booted without its identity variables keeps its history.
 - **Branding colours accept only hex, `rgb()` and `rgba()`.** `hsl()`/`hsla()` values are now invalid: a
   `BRANDING_*_COLOR` using hsl is ignored at startup with a warning and that property keeps its built-in
   default colour (the other colours still apply). Convert existing hsl values to hex or rgb before
