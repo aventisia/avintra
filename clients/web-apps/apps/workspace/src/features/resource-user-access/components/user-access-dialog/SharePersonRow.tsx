@@ -1,3 +1,4 @@
+import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
 import { Lock, Undo2, X } from "lucide-react";
 
@@ -8,10 +9,12 @@ import { ShareChange, ShareRow } from "../../types/resource-user-access-draft.ty
 import { getShareRoleLabel } from "../../utils/resource-user-access.util";
 import { RoleMenu } from "./RoleMenu";
 
-const CHANGE_BADGES: Partial<Record<ShareChange, { label: string; className: string }>> = {
-  added: { label: "New", className: "bg-emerald-50 text-emerald-700 ring-emerald-600/15" },
-  edited: { label: "Changed", className: "bg-amber-50 text-amber-700 ring-amber-600/15" },
-  removed: { label: "Removing", className: "bg-rose-50 text-rose-600 ring-rose-600/15" },
+const CHANGE_BADGES: Partial<
+  Record<ShareChange, { label: string; variant: BadgeProps["variant"] }>
+> = {
+  added: { label: "New", variant: "default" },
+  edited: { label: "Changed", variant: "review" },
+  removed: { label: "Removing", variant: "destructive" },
 };
 
 /**
@@ -31,7 +34,7 @@ export const SharePersonRow = ({
     <div
       className={cn(
         "group flex items-center gap-3 px-3.5 py-2.5 transition-colors",
-        isRemoved ? "bg-slate-50/80" : "hover:bg-slate-50/70",
+        isRemoved ? "bg-sunken" : "hover:bg-hover",
       )}
     >
       <PersonAvatar
@@ -42,26 +45,21 @@ export const SharePersonRow = ({
         <div className="flex items-center gap-2">
           <p
             className={cn(
-              "truncate text-[13.5px] font-medium text-slate-900",
-              isRemoved && "text-slate-400 line-through decoration-slate-300",
+              "truncate text-[13.5px] font-medium text-ink",
+              isRemoved && "text-muted-foreground line-through decoration-line-strong",
             )}
           >
             {row.person.name}
           </p>
           {row.isYou && (
-            <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-px text-[10.5px] font-semibold text-slate-600 ring-1 ring-slate-900/[0.06]">
+            <Badge variant="secondary" className="shrink-0">
               You
-            </span>
+            </Badge>
           )}
           {badge && (
-            <span
-              className={cn(
-                "shrink-0 rounded-full px-1.5 py-px text-[10.5px] font-semibold ring-1",
-                badge.className,
-              )}
-            >
+            <Badge variant={badge.variant} className="shrink-0">
               {badge.label}
-            </span>
+            </Badge>
           )}
         </div>
         {row.person.email && row.person.email !== row.person.name && (
@@ -73,7 +71,7 @@ export const SharePersonRow = ({
         <button
           type="button"
           onClick={() => draft.restoreRow(row)}
-          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg bg-popover px-2 text-[12px] font-medium text-slate-600 ring-1 ring-border transition hover:text-slate-900 hover:ring-slate-300"
+          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-surface px-2 text-[12px] font-medium text-ink-2 ring-1 ring-line-strong transition hover:text-ink hover:ring-line-strong"
         >
           <Undo2 className="size-3.5" />
           Undo
@@ -82,10 +80,10 @@ export const SharePersonRow = ({
         <span
           aria-label={`Your access: ${getShareRoleLabel(row.role)}. You can’t change your own access.`}
           title="You can’t change your own access"
-          className="inline-flex h-7 shrink-0 items-center gap-1 px-2 text-[12.5px] font-medium text-slate-400"
+          className="inline-flex h-7 shrink-0 items-center gap-1 px-2 text-[12.5px] font-medium text-muted-foreground"
         >
           {draft.hasRoles ? getShareRoleLabel(row.role) : "You"}
-          <Lock className="size-3.5 text-slate-300" aria-hidden />
+          <Lock className="size-3.5 text-muted-foreground" aria-hidden />
         </span>
       ) : (
         <>
@@ -101,7 +99,7 @@ export const SharePersonRow = ({
             aria-label={`Remove ${row.person.name}`}
             title={`Remove ${row.person.name}`}
             onClick={() => draft.removeRow(row)}
-            className="-ml-1.5 grid size-7 shrink-0 place-items-center rounded-lg text-slate-400 opacity-0 transition hover:bg-rose-50 hover:text-rose-600 focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+            className="-ml-1.5 grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-bad/10 hover:text-bad focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
           >
             <X className="size-4" />
           </button>

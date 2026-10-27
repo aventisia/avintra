@@ -14,7 +14,7 @@ export const MenuContent = ({
       sideOffset={6}
       {...props}
       className={cn(
-        "z-50 min-w-36 overflow-hidden rounded-xl bg-popover p-1.5 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/[0.08]",
+        "z-50 min-w-36 overflow-hidden rounded-xl bg-popover p-1.5 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.35)] ring-1 ring-line",
         "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         className,
       )}
@@ -33,8 +33,8 @@ export const MenuItem = ({ className, isDestructive = false, ...props }: MenuIte
     className={cn(
       "flex cursor-pointer select-none items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] outline-none transition-colors [&>svg]:size-4 [&>svg]:shrink-0",
       isDestructive
-        ? "text-rose-600 data-[highlighted]:bg-rose-50 [&>svg]:text-rose-500"
-        : "text-slate-700 data-[highlighted]:bg-muted data-[highlighted]:text-slate-900 [&>svg]:text-slate-500 data-[highlighted]:[&>svg]:text-slate-700",
+        ? "text-bad data-[highlighted]:bg-bad/10 [&>svg]:text-bad"
+        : "text-ink-2 data-[highlighted]:bg-muted data-[highlighted]:text-ink [&>svg]:text-muted-foreground data-[highlighted]:[&>svg]:text-ink-2",
       className,
     )}
   />
@@ -47,7 +47,7 @@ export const MenuLabel = ({ className, ...props }: ComponentProps<typeof Dropdow
   <DropdownMenu.Label
     {...props}
     className={cn(
-      "px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400",
+      "px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground",
       className,
     )}
   />
@@ -61,7 +61,7 @@ export const MenuShortcut = ({ className, ...props }: ComponentProps<"span">) =>
     aria-hidden
     {...props}
     className={cn(
-      "ml-auto flex items-center gap-px pl-2 text-[13px] font-semibold text-slate-400 [&>svg]:size-3 [&>svg]:stroke-[3]",
+      "ml-auto flex items-center gap-px pl-2 text-[13px] font-semibold text-muted-foreground [&>svg]:size-3 [&>svg]:stroke-[3]",
       className,
     )}
   />
@@ -71,5 +71,5 @@ export const MenuShortcut = ({ className, ...props }: ComponentProps<"span">) =>
  * Divider between groups of a dropdown menu.
  */
 export const MenuSeparator = () => (
-  <DropdownMenu.Separator className="-mx-1.5 my-1.5 h-px bg-slate-100" />
+  <DropdownMenu.Separator className="-mx-1.5 my-1.5 h-px bg-line" />
 );

@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { NavLink } from "react-router-dom";
 
 import { TABLE_KEY } from "../constants";
-import { getStatusColor } from "../constants/column-display-names";
+import { getStatusBadgeVariant } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
@@ -55,7 +55,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
         <NavLink
           to={`wid/${id}?name=${encodeURIComponent(queueName)}`}
           title="View work item"
-          className="w-auto truncate font-medium text-foreground underline-offset-4 hover:text-primary hover:underline"
+          className="w-auto truncate font-mono tabular-nums text-foreground underline-offset-4 hover:text-primary-text hover:underline"
         >
           {id}
         </NavLink>
@@ -68,7 +68,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
     ),
     cell: ({ row }) => (
-      <Badge className={getStatusColor(row.original.status)}>
+      <Badge variant={getStatusBadgeVariant(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),
@@ -88,7 +88,9 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created On"} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   // Optional columns — hidden by default, users can toggle them on via the
@@ -103,7 +105,9 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       // Unrouted items carry Guid.Empty (all zeros) — treat as no source item.
       const isEmptyGuid = !sourceWorkItemId || sourceWorkItemId.startsWith("00000000-");
       return (
-        <div className="w-auto truncate font-medium">{isEmptyGuid ? "--" : sourceWorkItemId}</div>
+        <div className="w-auto truncate font-mono tabular-nums">
+          {isEmptyGuid ? "--" : sourceWorkItemId}
+        </div>
       );
     },
     enableSorting: false,
@@ -116,7 +120,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
       return (
-        <div className="w-auto truncate font-medium">
+        <div className="w-auto truncate font-medium font-mono tabular-nums">
           {retryTime ? formatDate(retryTime as string, true) : "--"}
         </div>
       );
@@ -128,7 +132,9 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry Count"} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.original.retryCount ?? 0}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {row.original.retryCount ?? 0}
+      </div>
     ),
   },
   createDTActionsColumn<QueueWorkItemDto>({

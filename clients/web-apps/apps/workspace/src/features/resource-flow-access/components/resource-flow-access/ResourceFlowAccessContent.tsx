@@ -34,28 +34,26 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
       initial={{ opacity: 0, y: 16, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", duration: 0.5, bounce: 0.16 }}
-      className="relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] w-[min(35rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-[20px] bg-popover text-slate-900 shadow-[0_32px_80px_-16px_rgba(15,23,42,0.4)] ring-1 ring-slate-900/[0.06]"
+      className="relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] w-[min(35rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-lg bg-surface text-ink shadow-pop ring-1 ring-line"
     >
       <header className="flex items-start gap-4 px-6 pb-4 pt-6">
         <span
           className={cn(
-            "grid size-12 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50",
+            "grid size-12 shrink-0 place-items-center rounded-lg border border-line bg-sunken",
             MARK_SHADOW,
           )}
         >
           <ResourceMark resourceType={draft.resourceType} className="size-6" />
         </span>
         <div className="min-w-0 flex-1 mt-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
-            Agent access
-          </p>
-          <DialogPrimitive.Title className="truncate text-[18px] font-semibold tracking-[-0.01em] text-slate-900">
+          <p className="font-mono text-label uppercase text-muted-foreground">Agent access</p>
+          <DialogPrimitive.Title className="truncate text-heading text-ink">
             {resourceName}
           </DialogPrimitive.Title>
         </div>
         <DialogPrimitive.Close
           aria-label="Close"
-          className="-mr-2 -mt-1 grid size-8 place-items-center rounded-lg text-slate-400 outline-none transition hover:bg-muted hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+          className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-hover hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus"
         >
           <X className="size-4" />
         </DialogPrimitive.Close>
@@ -93,7 +91,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
             <AccessPanels draft={draft} mode={mode} />
 
             <p className="mt-5 flex gap-2 text-[12px] leading-5 text-muted-foreground">
-              <Info className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
+              <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
               Access applies to every version of an agent, including ones created and published
               later.
             </p>
@@ -101,13 +99,13 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
         )}
       </div>
 
-      <footer className="flex items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/70 px-6 py-3.5">
+      <footer className="flex items-center justify-between gap-4 border-t border-line bg-sunken px-6 py-3.5">
         <PolicySummary draft={draft} mode={mode} resourceType={draft.resourceType} />
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={draft.close}
-            className="h-9 rounded-lg px-3.5 text-[13px] font-medium text-slate-600 outline-none transition hover:bg-border/60 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+            className="h-control-md rounded-md px-3.5 text-button text-ink-2 outline-none transition hover:bg-hover hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
           >
             Cancel
           </button>
@@ -115,7 +113,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
             type="button"
             onClick={draft.save}
             disabled={!canSave}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-[13px] font-semibold text-white shadow-[0_1px_2px_rgba(67,56,202,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] outline-none transition hover:bg-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:bg-border disabled:text-slate-400 disabled:shadow-none"
+            className="inline-flex h-control-md items-center gap-2 rounded-md bg-primary px-4 text-button text-primary-foreground outline-none transition hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:bg-fill disabled:text-muted-foreground"
           >
             {draft.isSaving && <LoaderCircle className="size-4 animate-spin" />}
             {draft.isSaving ? "Saving" : "Save changes"}

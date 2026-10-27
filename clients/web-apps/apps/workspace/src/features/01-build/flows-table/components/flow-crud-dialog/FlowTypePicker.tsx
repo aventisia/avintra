@@ -20,10 +20,10 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
 
   return (
     <fieldset disabled={isLocked}>
-      <legend className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-slate-700">
+      <legend className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-2">
         Type
         {isLocked && (
-          <span className="flex items-center gap-1 font-normal text-slate-400">
+          <span className="flex items-center gap-1 font-normal text-muted-foreground">
             <Lock className="size-3" />
             Can’t be changed after creation
           </span>
@@ -37,11 +37,11 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
             <label
               key={value}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-indigo-500",
+                "flex items-center gap-3 rounded-xl px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
                 isLocked ? "cursor-default" : "cursor-pointer",
                 isSelected
-                  ? "bg-indigo-50/60 ring-[1.5px] ring-indigo-500"
-                  : "bg-popover ring-1 ring-border hover:bg-slate-50/80 hover:ring-slate-300",
+                  ? "bg-selected ring-[1.5px] ring-primary"
+                  : "bg-popover ring-1 ring-border hover:bg-sunken/80 hover:ring-line-strong",
               )}
             >
               <input type="radio" value={value} {...registration} className="peer sr-only" />
@@ -49,14 +49,14 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
                 className={cn(
                   "grid size-8 shrink-0 place-items-center rounded-lg ring-1",
                   isSelected
-                    ? "bg-indigo-100/70 text-indigo-600 ring-indigo-600/15"
-                    : "bg-slate-50 text-slate-500 ring-slate-900/[0.06]",
+                    ? "bg-selected text-primary-text ring-primary/30"
+                    : "bg-sunken text-muted-foreground ring-line",
                 )}
               >
                 <Icon className="size-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-semibold text-slate-900">{label}</span>
+                <span className="block text-[13px] font-semibold text-ink">{label}</span>
                 <span className="block truncate text-[12px] text-muted-foreground">
                   {description}
                 </span>
@@ -67,7 +67,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
                     "grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-200",
                     isSelected
                       ? "bg-primary"
-                      : "bg-popover shadow-[inset_0_0_0_1.5px_rgb(203,213,225)]",
+                      : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
                   )}
                 >
                   {isSelected && <span className="size-1.5 rounded-full bg-popover" />}

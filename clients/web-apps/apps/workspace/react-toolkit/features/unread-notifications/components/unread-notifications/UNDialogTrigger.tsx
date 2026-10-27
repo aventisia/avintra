@@ -30,6 +30,7 @@ export const UNDialogTrigger = ({ triggerSize = "icon8" }: UNDialogTriggerProps)
   return (
     <Tooltip content={UN_DIALOG_HEADING}>
       <DialogTrigger
+        aria-label={UN_DIALOG_HEADING}
         className={cn(
           buttonVariants({ variant: "ghost", size: triggerSize }),
           "hover:bg-hover",

@@ -23,7 +23,7 @@ export default function MarkdownEditorInput({
         foldGutter: false,
         highlightActiveLine: false,
       }}
-      className="text-wrap rounded-lg border-0 bg-slate-50 p-0 text-sm text-foreground"
+      className="text-wrap rounded-lg border-0 bg-sunken p-0 text-sm text-foreground"
       theme="light"
     />
   );

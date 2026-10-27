@@ -61,7 +61,7 @@ const ByokModelCharts = () => {
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
       {/* Model Provider selector */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg bg-white px-6 py-4">
+      <div className="mb-4 flex items-center gap-3 rounded-lg bg-surface px-6 py-4">
         <p className="text-sm font-medium">Model Provider</p>
         <Select
           value={activeProvider ?? ""}
@@ -85,7 +85,7 @@ const ByokModelCharts = () => {
 
       {/* Per-model charts for the selected provider */}
       {activeProvider && (
-        <div className="grid grid-cols-2 gap-4 rounded-lg bg-white px-6 py-6">
+        <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
           {currentModels.map((model) => (
             <ModelChart
               key={model.model}

@@ -106,8 +106,8 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
         <div className="flex items-center gap-2">
           {isFrequencyChange ? (
             planFrequency == "monthly" && (
-              <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-600">
-                <InfoIcon className="h-4 w-4 text-orange-400" />
+              <div className="flex items-center gap-3 rounded-lg bg-warn/10 px-3 py-2 text-[0.85rem] text-warn">
+                <InfoIcon className="h-4 w-4 text-warn" />
                 The change to monthly billing will take effect after your current billing cycle ends
               </div>
             )
@@ -124,7 +124,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
               >
                 <ArrowLeft className="mt-[2px] h-5 w-5" />
               </Button>
-              <h2 className="text-lg font-semibold">Choose Plan</h2>
+              <h2 className="text-heading">Choose Plan</h2>
             </>
           )}
         </div>
@@ -136,11 +136,11 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
             value={planFrequency}
             onValueChange={(value: string) => setPlanFrequency(value as PlanFrequency)}
           >
-            <TabsList className="rounded-full">
+            <TabsList className="rounded-md">
               <TabsTrigger
                 disabled={isFrequencyChange}
                 value="monthly"
-                className="rounded-full px-8"
+                className="rounded-md px-8"
                 onClick={() => {
                   setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
                 }}
@@ -150,7 +150,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
               <TabsTrigger
                 disabled={isFrequencyChange}
                 value="yearly"
-                className="rounded-full px-8"
+                className="rounded-md px-8"
                 onClick={() => {
                   setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
                 }}
@@ -211,8 +211,8 @@ export default ChoosePlan;
 
 export const CheckMark = () => {
   return (
-    <div className="mt-[2px] rounded-full bg-green-500 p-[2px]">
-      <Check className="h-3 w-3 text-white" />
+    <div className="mt-[2px] rounded-full bg-ok p-[2px]">
+      <Check className="h-3 w-3 text-bg" />
     </div>
   );
 };

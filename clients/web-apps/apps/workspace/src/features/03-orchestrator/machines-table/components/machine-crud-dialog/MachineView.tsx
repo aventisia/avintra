@@ -11,7 +11,6 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { BanIcon, CheckCircleIcon, MonitorCogIcon, MonitorIcon, NetworkIcon } from "lucide-react";
@@ -21,7 +20,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMachine } from "../../apis/machines-table-apis";
-import { statusColor } from "../../constants/column-display-names";
+import { statusVariant } from "../../constants/column-display-names";
 import type { MachineRecordDto } from "../../dtos/machine-record.dto";
 import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
 
@@ -123,7 +122,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
       {/* Agents section */}
       <ViewInfoRowsCard
         title="Agents"
-        className="border-primary-100"
+        className="border-line"
         icon={<NewAgentIcon className="size-3.5 text-primary" />}
       >
         {machine.machineFlowVersions && machine.machineFlowVersions.length > 0 ? (
@@ -166,9 +165,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
       >
         <ViewInfoRow
           label="Status"
-          value={
-            <Badge className={cn("font-mono", statusColor[machine.status])}>{machine.status}</Badge>
-          }
+          value={<Badge variant={statusVariant[machine.status]}>{machine.status}</Badge>}
         />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Last Checked In" value={formatDate(machine.lastCheckedIn, true)} />

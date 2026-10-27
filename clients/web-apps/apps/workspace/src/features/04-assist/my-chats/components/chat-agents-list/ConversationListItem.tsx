@@ -19,7 +19,7 @@ export function ConversationListItem({
   return (
     <div className="relative ml-9 mt-1 w-[calc(100%-2.5rem)] last:mb-0.5">
       {isActive && (
-        <div className="pointer-events-none absolute -left-[1px] top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-[#1e1b6e]" />
+        <div className="pointer-events-none absolute -left-[1px] top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-indicator" />
       )}
       <button
         onClick={() =>
@@ -28,8 +28,8 @@ export function ConversationListItem({
           )
         }
         className={cn(
-          "w-[calc(100%-1rem)] text-left ml-2 px-4 rounded-lg py-2.5 transition-colors focus-visible:bg-[#f0f0f8] focus-visible:ring-0",
-          isActive ? "bg-[#f0f0f8]" : "hover:bg-[#f0f0f8]",
+          "w-[calc(100%-1rem)] text-left ml-2 px-4 rounded-lg py-2.5 transition-colors focus-visible:bg-hover focus-visible:ring-0",
+          isActive ? "bg-selected" : "hover:bg-hover",
         )}
       >
         <p

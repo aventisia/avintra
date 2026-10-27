@@ -111,7 +111,7 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
       {layoutMode !== "stacked" && (
         <div className={cn("w-full flex items-center justify-between")}>
           <div className="flex items-center gap-2">
-            <p className="text-lg font-medium">Chats</p>
+            <h1 className="text-title text-ink">Chats</h1>
             <HelpButton guideId="assist-chats" />
           </div>
           {HAS_AGENTS && <SearchCommandTrigger />}

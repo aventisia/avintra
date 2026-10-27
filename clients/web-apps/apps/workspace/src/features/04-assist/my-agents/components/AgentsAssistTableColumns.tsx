@@ -18,7 +18,9 @@ export const agentsAssistTableColumns: ColumnDef<AgentsAssistDto>[] = [
     accessorKey: "versionNumber",
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("versionNumber")}</div>
+      <div className="w-auto truncate font-mono font-medium tabular-nums">
+        {row.getValue("versionNumber")}
+      </div>
     ),
   },
   {

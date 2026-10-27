@@ -17,13 +17,13 @@ const AvailableIntegrations = () => {
 
   return (
     <div className="space-y-2">
-      <p className="px-1 text-lg font-normal">Available</p>
+      <p className="px-1 text-heading text-ink">Available</p>
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {availableIntegrations.map((item) => {
           return (
-            <Card className="p-4 hover:shadow-md">
+            <Card className="p-4 hover:border-line-strong">
               <CardHeader className="flex-row items-center gap-3 p-0">
-                <div className="rounded-lg bg-accent p-2">
+                <div className="rounded-lg bg-sunken p-2">
                   <img src={basePath + item.icon} alt={item.name} className="h-6 w-6" />
                 </div>
                 <CardTitle className="!mt-0 text-base capitalize">{item.name}</CardTitle>
@@ -34,7 +34,7 @@ const AvailableIntegrations = () => {
               <CardFooter className="mt-2 justify-end p-0">
                 <Button
                   variant={"ghost"}
-                  className="bg-transparent font-normal text-primary"
+                  className="bg-transparent font-normal text-primary-text disabled:bg-transparent"
                   onClick={() => handleOpenIntegrationsDialog(item)}
                   disabled={item.disabled}
                 >

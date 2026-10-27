@@ -38,10 +38,10 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
       listLabel="Agents"
       header={
         <div className="flex items-center justify-between px-3.5 pb-1.5 pt-3">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             {debouncedQuery ? "Matching agents" : "Recently created"}
           </span>
-          {isSearching && <LoaderCircle className="size-3.5 animate-spin text-slate-400" />}
+          {isSearching && <LoaderCircle className="size-3.5 animate-spin text-muted-foreground" />}
         </div>
       }
       options={results.map((agent) => {
@@ -59,7 +59,7 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
             <>
               <AgentAvatar size="md" />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium text-slate-800">
+                <span className="block truncate text-[13px] font-medium text-ink">
                   <HighlightedText text={agent.name} query={debouncedQuery} />
                 </span>
                 <MetaLine
@@ -75,10 +75,10 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
               </span>
               <span
                 className={cn(
-                  "grid size-[18px] shrink-0 place-items-center rounded-[5px] transition-colors",
+                  "grid size-[18px] shrink-0 place-items-center rounded-sm transition-colors",
                   isSelected
-                    ? "bg-primary text-white"
-                    : "bg-popover text-transparent shadow-[inset_0_0_0_1.5px_rgb(203,213,225)]",
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-surface text-transparent ring-[1.5px] ring-inset ring-line-strong",
                 )}
               >
                 <Check className="size-3" strokeWidth={3.5} />
@@ -92,7 +92,7 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
           <>
             {Array.from({ length: 4 }, (_, index) => (
               <li key={index} className="flex animate-pulse items-center gap-3 px-2 py-2">
-                <span className="size-8 rounded-[10px] bg-muted" />
+                <span className="size-8 rounded-md bg-muted" />
                 <span className="flex-1 space-y-1.5">
                   <span className="block h-3 w-2/5 rounded bg-muted" />
                   <span className="block h-2.5 w-1/4 rounded bg-muted" />
@@ -101,12 +101,12 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
             ))}
           </>
         ) : isError ? (
-          <li className="px-3 py-8 text-center text-[13px] text-rose-600">
+          <li className="px-3 py-8 text-center text-[13px] text-bad">
             Couldn’t load agents. Try again in a moment.
           </li>
         ) : (
           <li className="px-3 py-8 text-center">
-            <p className="text-[13px] font-medium text-slate-700">
+            <p className="text-[13px] font-medium text-ink-2">
               {debouncedQuery ? `No agents match “${debouncedQuery}”` : "No agents yet"}
             </p>
             <p className="mt-1 text-[12px] text-muted-foreground">
@@ -130,7 +130,9 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
             <Kbd>esc</Kbd>
             close
           </span>
-          <span className="ml-auto tabular-nums">{draft.selectedIds.length} selected</span>
+          <span className="ml-auto font-mono tabular-nums">
+            {draft.selectedIds.length} selected
+          </span>
         </>
       }
     />

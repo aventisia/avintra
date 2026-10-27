@@ -22,7 +22,7 @@ export const AgentAvatar = ({ size = "md", className }: AgentAvatarProps) => (
   <span
     aria-hidden="true"
     className={cn(
-      "inline-grid shrink-0 place-items-center bg-indigo-50 text-indigo-500 ring-1 ring-inset ring-indigo-100",
+      "inline-grid shrink-0 place-items-center bg-sunken text-ink-2 ring-1 ring-inset ring-line",
       SIZES[size],
       className,
     )}

@@ -24,7 +24,7 @@ export const FileDropZone = ({ onDrop }: FileDropZoneProps) => {
         "flex items-center h-[10rem] justify-center rounded-lg border-2 border-dashed p-4 cursor-pointer transition-colors",
         isDragActive
           ? "border-primary bg-primary/5"
-          : "border-gray-300 hover:border-primary hover:bg-primary/5",
+          : "border-line-strong hover:border-primary hover:bg-primary/5",
       )}
       onClick={open}
     >
@@ -35,7 +35,7 @@ export const FileDropZone = ({ onDrop }: FileDropZoneProps) => {
         ) : (
           <>
             <CloudUploadIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
-            <span className="text-sm font-medium text-gray-600 block">
+            <span className="text-sm font-medium text-ink-2 block">
               Drag & Drop or{" "}
               <Button
                 autoFocus

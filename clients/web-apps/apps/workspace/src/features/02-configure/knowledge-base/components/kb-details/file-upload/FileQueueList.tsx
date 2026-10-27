@@ -18,7 +18,7 @@ export const FileQueueList = ({ files, activeFileId, isPending, onRemove }: File
 
   return (
     <div className="flex flex-col gap-2">
-      <h4 className="text-sm ml-1 font-medium text-slate-700">Files ({files.length})</h4>
+      <h4 className="text-sm ml-1 font-medium text-ink-2">Files ({files.length})</h4>
       <div className="flex flex-col gap-2">
         {files.map((fileItem) => (
           <FileQueueRow
@@ -49,12 +49,12 @@ const FileQueueRow = ({ fileItem, isActive, isPending, onRemove }: FileQueueRowP
   return (
     <div
       className={`flex items-center justify-between rounded-xl p-2 px-2.5 ${
-        isActive ? "bg-primary-50 border border-primary-200" : "bg-muted"
+        isActive ? "bg-selected border border-line" : "bg-muted"
       }`}
     >
       <div className="flex items-center gap-3 flex-1">
         {/* Status icon */}
-        <div className="bg-white rounded-full flex items-center justify-center size-9 shadow-sm border border-indigo-100">
+        <div className="bg-surface rounded-full flex items-center justify-center size-9 shadow-sm border border-line">
           {getStatusIcon(fileItem.status)}
         </div>
 
@@ -66,7 +66,7 @@ const FileQueueRow = ({ fileItem, isActive, isPending, onRemove }: FileQueueRowP
               {fileItem.stageMessage}
             </p>
             {fileItem.status === "failed" && (
-              <p className="text-2xs text-red-600">({fileItem.errorMessage})</p>
+              <p className="text-2xs text-bad">({fileItem.errorMessage})</p>
             )}
             {fileItem.status === "queued" && (
               <p className="text-2xs text-muted-foreground">{formatFileSize(fileItem.file.size)}</p>

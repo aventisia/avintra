@@ -47,7 +47,7 @@ export const CardDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && requestClose()}>
       <DialogPortal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-[3px] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-scrim data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           ref={contentRef}
           aria-describedby={undefined}
@@ -69,7 +69,7 @@ export const CardDialog = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ type: "spring", duration: 0.5, bounce: 0.16 }}
               className={cn(
-                "relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] flex-col overflow-hidden rounded-[20px] bg-popover text-slate-900 shadow-[0_32px_80px_-16px_rgba(15,23,42,0.4)] ring-1 ring-slate-900/[0.06]",
+                "relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] flex-col overflow-hidden rounded-lg bg-popover text-ink ring-1 ring-line",
                 widthClassName,
               )}
             >
@@ -84,7 +84,7 @@ export const CardDialog = ({
                   >
                     {eyebrow}
                   </p>
-                  <DialogPrimitive.Title className="truncate text-[18px] font-semibold tracking-[-0.01em] text-slate-900">
+                  <DialogPrimitive.Title className="truncate text-heading text-ink">
                     {title}
                   </DialogPrimitive.Title>
                 </div>
@@ -93,7 +93,7 @@ export const CardDialog = ({
                   aria-label="Close"
                   onClick={requestClose}
                   disabled={isDismissLocked}
-                  className="-mr-2 -mt-1 grid size-8 place-items-center rounded-lg text-slate-400 outline-none transition hover:bg-muted hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50 disabled:opacity-40"
+                  className="-mr-2 -mt-1 grid size-8 place-items-center rounded-lg text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
                 >
                   <X className="size-4" />
                 </button>
@@ -101,7 +101,7 @@ export const CardDialog = ({
 
               <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-5 pt-1">{children}</div>
 
-              <footer className="flex items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/70 px-6 py-3.5">
+              <footer className="flex items-center justify-between gap-4 border-t border-line bg-sunken/70 px-6 py-3.5">
                 {footer}
               </footer>
             </motion.section>

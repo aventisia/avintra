@@ -30,10 +30,10 @@ const AgentDragPreview = () => (
   <div
     id={AGENT_DRAG_PREVIEW_ID}
     aria-hidden="true"
-    className="pointer-events-none fixed left-[-9999px] top-0 flex max-w-64 items-center gap-2 rounded-xl bg-popover py-1.5 pl-1.5 pr-3 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/10"
+    className="pointer-events-none fixed left-[-9999px] top-0 flex max-w-64 items-center gap-2 rounded-lg bg-popover py-1.5 pl-1.5 pr-3 shadow-pop ring-1 ring-line"
   >
     <AgentAvatar size="sm" />
-    <span data-agent-name className="truncate text-[13px] font-medium text-slate-800" />
+    <span data-agent-name className="truncate text-[13px] font-medium text-ink" />
   </div>
 );
 

@@ -18,7 +18,9 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"ID"} />,
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("id")}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums w-auto truncate font-medium">{row.getValue("id")}</div>
+    ),
     enableSorting: false,
   },
   {
@@ -27,7 +29,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("validatedOn")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("validatedOn")
           ? format(row.getValue("validatedOn"), "dd MMM yyyy h:mm a")
           : "--"}
@@ -51,7 +53,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("executionTime")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatSecondsToCompactDuration(row.getValue("executionTime") || 0)}
       </div>
     ),
@@ -62,7 +64,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("executedJobs")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatNumber(row.getValue("executedJobs") || 0)}
       </div>
     ),
@@ -77,7 +79,7 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatNumber(row.getValue("publishedAgents") || 0)}
       </div>
     ),
@@ -88,7 +90,9 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("users")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatNumber(row.getValue("users") || 0)}</div>
+      <div className="font-mono tabular-nums w-auto truncate font-medium">
+        {formatNumber(row.getValue("users") || 0)}
+      </div>
     ),
   },
 ];

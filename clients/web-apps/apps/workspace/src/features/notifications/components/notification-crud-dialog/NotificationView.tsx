@@ -62,7 +62,7 @@ export const NotificationView = ({ rowId }: NotificationViewProps) => {
       <ViewDefaultCard>
         {/* Notification profile section */}
         <div className="flex flex-col gap-1">
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Notification</p>
+          <p className="font-mono text-label uppercase text-muted-foreground">Notification</p>
           <p className="text-base font-medium leading-tight">
             {notification.title || FALLBACK_VALUE}
           </p>
@@ -70,7 +70,7 @@ export const NotificationView = ({ rowId }: NotificationViewProps) => {
 
         {/* Message section */}
         <div className="flex flex-col gap-1">
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Message</p>
+          <p className="font-mono text-label uppercase text-muted-foreground">Message</p>
           <p className="whitespace-pre-wrap text-sm text-muted-foreground">
             {notification.message}
           </p>
