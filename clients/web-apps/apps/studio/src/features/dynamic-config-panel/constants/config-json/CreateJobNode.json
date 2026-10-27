@@ -60,12 +60,13 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "machine-select",
       "name": "Machine",
       "label": "Machine",
       "description": "Unique name of the registered machine that runs the created job. Required when cloud execution is off.",
       "defaultValue": "",
       "required": false,
+      "dependsOn": "TargetFlowVersionId",
       "renderIf": {
         "conditions": [
           {
