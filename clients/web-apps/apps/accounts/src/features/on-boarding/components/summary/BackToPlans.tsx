@@ -18,7 +18,7 @@ export const BackToPlans = () => {
         <Button onClick={() => setStepNo(2)} variant={"ghost"} className="p-1.5" size={"icon9"}>
           <ArrowLeft className="mt-[2px] h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-semibold">Summary</h1>
+        <h1 className="text-title text-ink">Summary</h1>
       </div>
     </div>
   );

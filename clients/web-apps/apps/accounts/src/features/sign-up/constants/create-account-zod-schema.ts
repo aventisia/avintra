@@ -34,5 +34,5 @@ export const createAccountZodSchema = z
   })
   .refine((data) => data.termsAgreement, {
     path: ["termsAgreement"],
-    message: "You must accept our Terms of Service",
+    message: "Accept the Terms of Service to continue.",
   });

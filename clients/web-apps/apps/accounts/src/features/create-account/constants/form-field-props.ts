@@ -1,6 +1,6 @@
 import type { FloatingLabelInputFieldProps, InputOtpFieldProps } from "@avplatform/ui/form";
 
-const className = "h-11 text-md";
+const className = "h-control-lg";
 const labelClassName = "text-md";
 
 // First Name

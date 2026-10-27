@@ -91,7 +91,7 @@ export const ChoosePlan = () => {
         className="w-full"
       >
         <div className="flex items-center justify-between w-full">
-          <h2 className="text-2xl font-medium text-foreground">Choose Plan</h2>
+          <h2 className="text-title text-ink">Choose Plan</h2>
           <div className="flex gap-2 items-center">
             {storedCountryData !== "India" && (
               <Select
