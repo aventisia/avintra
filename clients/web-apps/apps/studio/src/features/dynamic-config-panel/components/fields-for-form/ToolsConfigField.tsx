@@ -289,7 +289,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             type="button"
             variant="outline"
             size="sm"
-            className="text-primary hover:text-primary bg-accent hover:bg-indigo-100"
+            className="text-primary hover:text-primary bg-accent hover:bg-hover"
             onClick={handleSaveConfig}
             disabled={isAddDisabled}
           >

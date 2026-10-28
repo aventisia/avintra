@@ -1,25 +1,41 @@
 import { Input } from "@avplatform/ui";
-import { Search } from "lucide-react";
-import { KeyboardEvent, useEffect, useRef } from "react";
+import { Button } from "@avplatform/ui/buttons";
+import { Search, X } from "lucide-react";
+import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 
+import { countActions } from "../utils/count-actions.util";
 import { ActionCategoryList } from "./ActionCategoryList";
 import { PrimaryCategoryList } from "./PrimaryCategoryList";
 
 export const ActionSelectorContent = () => {
-  const { origin, primaryCategoryLabel, setQuery, query, setPrimaryCategoryLabel } =
-    useNodeSelectorStore(
-      useShallow((state) => ({
-        origin: state.origin,
-        primaryCategoryLabel: state.primaryCategoryLabel,
-        query: state.query,
-        setQuery: state.setQuery,
-        setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
-      })),
-    );
+  const {
+    origin,
+    primaryCategoryLabel,
+    setQuery,
+    query,
+    setPrimaryCategoryLabel,
+    actionSelectorData,
+    setShowDialog,
+  } = useNodeSelectorStore(
+    useShallow((state) => ({
+      origin: state.origin,
+      primaryCategoryLabel: state.primaryCategoryLabel,
+      query: state.query,
+      setQuery: state.setQuery,
+      setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
+      actionSelectorData: state.actionSelectorData,
+      setShowDialog: state.setShowDialog,
+    })),
+  );
+
+  const totalActions = useMemo(
+    () => countActions(actionSelectorData.flatMap((primary) => primary.actionCategories)),
+    [actionSelectorData],
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
@@ -31,7 +47,7 @@ export const ActionSelectorContent = () => {
     };
   }, [setQuery, setPrimaryCategoryLabel]);
 
-  useHotkeys("ctrl+k, cmd+k", (e) => {
+  useHotkeys("ctrl+k, cmd+k, slash", (e) => {
     e.preventDefault();
     if (inputRef.current) inputRef.current.focus();
   });
@@ -46,20 +62,38 @@ export const ActionSelectorContent = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-var(--header-height)-4*var(--header-padding))] flex-col rounded-lg bg-background">
-      <div className="flex shrink-0 items-center border-b px-3 pt-1">
-        <Search className="mr-2 h-4 w-4 opacity-50" />
+    <div className="flex h-[calc(100vh-var(--header-height)-4*var(--header-padding))] flex-col rounded-lg bg-surface text-ink">
+      <div className="flex h-12 shrink-0 items-center gap-2 border-b border-line pl-4 pr-2">
+        <h2 className="min-w-0 flex-1 text-[16px]/5 font-semibold tracking-[-0.01em]">Add step</h2>
+        <Button
+          variant="ghost"
+          size="icon7"
+          aria-label="Close"
+          onClick={() => setShowDialog(false)}
+        >
+          <X className="size-4" />
+        </Button>
+      </div>
 
+      <div className="relative flex shrink-0 items-center border-b border-line p-3">
+        <Search className="pointer-events-none absolute left-[22px] size-4 text-muted-foreground" />
         <Input
           ref={inputRef}
+          type="search"
           name="query"
-          className="border-none px-0 pr-1.5 shadow-none placeholder:text-xs focus-visible:ring-0"
-          placeholder="Search nodes and categories..."
+          aria-label="Search actions"
+          className="h-control-sm pl-[33px] pr-[34px] text-[13.5px]"
+          placeholder={`Search ${totalActions} actions`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleInputKeyDown}
           autoFocus
         />
+        {!query && (
+          <kbd className="pointer-events-none absolute right-[19px] grid h-[18px] min-w-[18px] place-items-center rounded-sm border border-line bg-fill px-1 font-mono text-[11px] font-medium leading-none text-muted-foreground">
+            /
+          </kbd>
+        )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-hidden">

@@ -56,7 +56,7 @@ const GenerateButton = ({
         icon={<SparklesIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
         size="sm"
-        className="flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+        className="flex items-center gap-2"
       />
     );
   }
@@ -65,10 +65,7 @@ const GenerateButton = ({
     <Button
       variant="outline"
       size="sm"
-      className={cn(
-        "flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white",
-        isPending && "cursor-wait",
-      )}
+      className={cn("flex items-center gap-2", isPending && "cursor-wait")}
       type="button"
       disabled={isPending}
       onClick={() => {

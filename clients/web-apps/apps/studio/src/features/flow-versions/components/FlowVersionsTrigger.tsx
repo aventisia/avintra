@@ -29,14 +29,14 @@ export const FlowVersionsTrigger = () => {
         disabled={isAgentHistory || isExecutionLog || isVersionTransitioning}
         className={cn(
           buttonVariants({ variant: "ghost", size: "xs" }),
-          "group h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-fill pl-3 pr-2.5 font-bold text-ink-2 hover:bg-hover hover:text-ink",
+          "max-w-[15rem] gap-1 px-1.5 font-mono font-normal text-muted-foreground",
         )}
       >
         <span className="min-w-0 truncate">v{versionNumber}</span>
         {isVersionTransitioning ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <ChevronDownIcon className="h-3 w-3 shrink-0 transition-all group-hover:mt-0.5" />
+          <ChevronDownIcon className="size-3 shrink-0" />
         )}
       </PopoverTrigger>
     </Tooltip>

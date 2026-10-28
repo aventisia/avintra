@@ -8,7 +8,7 @@ interface FileViewerHeaderProps {
 }
 
 const FileViewerHeader = ({ controlPanel, pageControl }: FileViewerHeaderProps) => (
-  <header className="flex h-16 shrink-0 items-center justify-between border-b px-4 gap-4">
+  <header className="flex h-16 shrink-0 items-center justify-between border-b border-line px-4 gap-4">
     {/* Left slot: file selector */}
     <div className="flex  items-center min-w-0">
       <FileViewerSelect />

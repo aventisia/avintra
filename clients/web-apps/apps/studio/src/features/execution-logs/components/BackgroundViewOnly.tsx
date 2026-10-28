@@ -7,8 +7,8 @@ export const BackgroundViewOnly = memo(() => {
       variant={BackgroundVariant.Dots}
       gap={16}
       size={1}
-      color="hsl(215.4 16.3% 46.9%)"
-      className="!bg-slate-200 "
+      color="var(--canvas-grid)"
+      className="!bg-bg"
     />
   );
 });

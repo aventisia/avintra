@@ -102,9 +102,9 @@ export function UpdateDesktopApp({ domain, onInstall, onSkip }: UpdateDesktopApp
   if (checking || !isResolved) {
     return (
       <div className="flex flex-1 items-center justify-center p-6">
-        <div className="flex items-center gap-3 text-foreground">
+        <div className="flex items-center gap-3 text-ink">
           <LoadingSpinner />
-          <span className="text-base font-medium">Checking for updates...</span>
+          <span className="text-body font-medium">Checking for updates...</span>
         </div>
       </div>
     );
@@ -131,9 +131,9 @@ export function UpdateDesktopApp({ domain, onInstall, onSkip }: UpdateDesktopApp
     if (installing && (!progress || progress.status === "INSTALLING")) {
       return (
         <div className="flex flex-1 items-center justify-center p-6">
-          <div className="flex items-center gap-3 text-foreground">
+          <div className="flex items-center gap-3 text-ink">
             <LoadingSpinner />
-            <span className="text-base font-medium">
+            <span className="text-body font-medium">
               Updating Desktop App v{updateInfo?.version ?? "-"}
             </span>
           </div>
@@ -158,27 +158,27 @@ export function UpdateDesktopApp({ domain, onInstall, onSkip }: UpdateDesktopApp
       subtitle="A newer version of the Avintra Desktop App is available. We recommend updating to the latest version for the best experience."
     >
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50/60 p-4 text-sm">
+        <div className="flex flex-col gap-3 rounded-md border border-line bg-sunken p-4 text-body-sm">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Current version</span>
-            <span className="font-medium text-foreground">
+            <span className="font-mono text-code text-ink">
               {updateInfo?.current_version ? `v${updateInfo.current_version}` : "Unknown"}
             </span>
           </div>
-          <div className="border-t border-border" />
+          <div className="border-t border-line" />
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Latest version</span>
-            <span className="font-medium text-foreground">
+            <span className="font-mono text-code text-ink">
               {updateInfo?.version ? `v${updateInfo.version}` : "Unknown"}
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button type="button" onClick={handleUpdate} className="w-full h-11 text-md">
+          <Button type="button" onClick={handleUpdate} size="lg" className="w-full">
             Update Now
           </Button>
-          <Button type="button" variant="outline" onClick={onSkip} className="w-full h-11 text-md">
+          <Button type="button" variant="outline" onClick={onSkip} size="lg" className="w-full">
             Skip for now
           </Button>
         </div>
