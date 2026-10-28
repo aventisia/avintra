@@ -8,5 +8,5 @@ export const DCPTabsList = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return <TabsList className={cn("h-8 rounded-full px-1 ", className)}>{children}</TabsList>;
+  return <TabsList className={cn("h-8 gap-4 border-b-0", className)}>{children}</TabsList>;
 };

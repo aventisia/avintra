@@ -14,7 +14,6 @@ import React from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
 import { NodeContainer } from "@/components/node-container";
-import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 // import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -42,51 +41,51 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
     : 0;
 
   const customIconMapper: { [key: string]: JSX.Element } = {
-    ConditionalNodeIcon: <SplitIcon className="h-6 w-6 rotate-180 text-white" />,
-    LoopNodeIcon: <Repeat2Icon className="h-6 w-6 text-white" />,
-    BlockNodeIcon: <BoxesIcon className="h-6 w-6 text-[#1E1B4B]" />,
+    ConditionalNodeIcon: <SplitIcon className="rotate-180" />,
+    LoopNodeIcon: <Repeat2Icon />,
+    BlockNodeIcon: <BoxesIcon />,
   };
 
+  const isCollapsedGroup = nodeData?.isGroupHead && !nodeData?.isExpanded;
+
+  const glyph = isCollapsedGroup ? (
+    <GroupIcon />
+  ) : nodeData.iconUrl ? (
+    <NodeImage src={nodeData.iconUrl} />
+  ) : nodeData.icon ? (
+    (customIconMapper[nodeData.icon] ?? iconMapper[nodeData.icon])
+  ) : (
+    <NodeImage src={nodeData.img} />
+  );
+
   return (
-    <OpenNodeLog nodeId={nodeId} isDisabled={nodeData?.isDisabled}>
-      {nodeData?.isGroupHead &&
-        !nodeData?.isExpanded &&
+    <OpenNodeLog nodeId={nodeId}>
+      {isCollapsedGroup &&
         Array.from({ length: renderCount }).map((_, i) => (
           <div
             key={i}
-            className={`absolute inset-0 left-${
-              renderCount - i
-            } top-${renderCount - i} -z-10 h-16 w-16 overflow-clip rounded-lg border border-slate-500 bg-white hover:ring hover:ring-ring ${
-              nodeData?.isDisabled && "opacity-50"
-            } ${nodeData?.isCut && "border-red-400 opacity-60"}`}
+            style={{ translate: `${(renderCount - i) * 4}px ${(renderCount - i) * 4}px` }}
+            className={cn(
+              "absolute inset-0 -z-10 rounded-md border border-line-strong bg-surface",
+              nodeData?.isDisabled && "opacity-50",
+              nodeData?.isCut && "border-dashed border-bad opacity-60",
+            )}
           />
         ))}
 
-      <NodeContainer {...{ nodeId, nodeData, selected }} {...props}>
-        {nodeData?.isGroupHead && !nodeData?.isExpanded ? (
-          <GroupIcon />
-        ) : (
-          <>
-            {nodeData.supportedPlatforms?.length === 1 &&
-              nodeData.supportedPlatforms.includes("windows") && (
-                <MonitorIcon className="absolute left-1 top-1 h-2.5 w-2.5 text-muted-foreground" />
-              )}
-
-            {nodeData.iconUrl ? (
-              <NodeImage src={nodeData.iconUrl} />
-            ) : nodeData.icon ? (
-              Object.keys(customIconMapper).includes(nodeData.icon) ? (
-                customIconMapper[nodeData.icon]
-              ) : (
-                iconMapper[nodeData.icon]
-              )
-            ) : (
-              <NodeImage src={nodeData.img} />
-            )}
-
-            <NodeHeading>{nodeData.label}</NodeHeading>
-          </>
-        )}
+      <NodeContainer
+        {...{ nodeId, nodeData, selected, glyph }}
+        kind={isCollapsedGroup ? "Group" : undefined}
+        {...props}
+      >
+        {!isCollapsedGroup &&
+          nodeData.supportedPlatforms?.length === 1 &&
+          nodeData.supportedPlatforms.includes("windows") && (
+            <MonitorIcon
+              aria-label="Windows only"
+              className="absolute left-1 top-1 size-2.5 text-muted-foreground"
+            />
+          )}
 
         {nodeData?.isGroupHead && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -94,7 +93,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
               <Button
                 variant="outline"
                 size="icon6"
-                className={cn("rounded-full nodrag nopan")}
+                className="nodrag nopan rounded-full"
                 onClick={() => toggleGroupExpand(nodeData?.groupId || "")}
               >
                 {nodeData?.isExpanded ? (

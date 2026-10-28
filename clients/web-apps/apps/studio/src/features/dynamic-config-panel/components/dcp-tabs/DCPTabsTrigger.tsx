@@ -15,10 +15,7 @@ export const DCPTabsTrigger = ({
   return (
     <TabsTrigger
       value={tabValue}
-      className={cn(
-        "rounded-full py-1.5 text-xs font-medium leading-3 outline-none data-[state=active]:text-primary data-[state=active]:shadow-sm",
-        className,
-      )}
+      className={cn("h-8 data-[state=active]:after:-bottom-px", className)}
       onClick={handleClick}
     >
       {children}

@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 export const FPCSearchBox = () => {
   return (
     <div
-      className="mx-3.5 mb-1.5 flex w-auto items-center rounded-lg bg-slate-100 px-3"
+      className="mx-3.5 mb-1.5 flex w-auto items-center rounded-md border border-line bg-sunken px-3"
       cmdk-input-wrapper=""
     >
       <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />

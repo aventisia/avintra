@@ -115,15 +115,15 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
         <div
           ref={ref}
           className={cn(
-            "shadow-xl z-40 overflow-clip rounded-xl bg-background",
+            "z-40 overflow-clip rounded-xl bg-surface shadow-pop",
             "translate-x-0 transform transition-transform duration-300 ease-in-out",
             contained
               ? cn(
-                  "absolute inset-y-0 border border-border",
+                  "absolute inset-y-0 border border-line",
                   fill ? "inset-x-0 w-auto" : cn(sideClasses[panelSide], width),
                 )
               : cn(
-                  "fixed border-l border-r border-border",
+                  "fixed border-l border-r border-line",
                   appBanner
                     ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height)+0.5rem)]"
                     : "top-[calc(var(--header-height)+var(--header-padding)+0.5rem)]",
@@ -161,7 +161,7 @@ const PanelHeader = React.forwardRef<HTMLDivElement, PanelHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          "flex h-12 items-center justify-between gap-2 border-b pl-4 pr-2 text-lg tracking-wide",
+          "flex h-12 items-center justify-between gap-2 border-b border-line pl-4 pr-2 text-heading",
           className,
         )}
       >
@@ -183,11 +183,7 @@ const PanelTitle = React.forwardRef<HTMLHeadingElement, PanelTitleProps>(
     const { id } = usePanelContext();
 
     return (
-      <h2
-        ref={ref}
-        id={`panel-title-${id}`}
-        className={cn("text-[1rem] font-semibold text-foreground", className)}
-      >
+      <h2 ref={ref} id={`panel-title-${id}`} className={cn("text-heading text-ink", className)}>
         {children}
       </h2>
     );

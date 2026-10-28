@@ -85,15 +85,15 @@ const PublishFlow = () => {
       variant="default"
       size="sm"
       disabled={isDisabled}
-      className=" items-center justify-start gap-2 "
+      className="gap-1.5"
       onClick={() => void guardDirtyNodeConfig(handlePublishClick)}
     >
       {isPending ? (
-        <LoadingSpinner className="h-4 w-4 shrink-0" />
+        <LoadingSpinner className="size-3.5 shrink-0" />
       ) : (
-        <RocketIcon className="h-4 w-4 shrink-0" />
+        <RocketIcon className="size-3.5 shrink-0" />
       )}
-      <span className="text-sm font-bold">Publish</span>
+      Publish
     </Button>
   );
 };

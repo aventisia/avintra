@@ -71,7 +71,7 @@ const ChatAgentPromptAction = ({ name, disabled }: ChatAgentPromptActionProps) =
         label={isImprove ? "Improve with AI" : "Generate"}
         icon={<SparklesIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
-        className="flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+        className="flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
       />
     );
   }

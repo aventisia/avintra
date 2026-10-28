@@ -1,3 +1,4 @@
+import { Badge } from "@avplatform/ui/badge";
 import { PopoverContent, PopoverDefaultHeader, PopoverWrapper } from "@avplatform/ui/popover";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
@@ -29,12 +30,14 @@ export const FlowVersions = () => {
     })),
   );
 
-  const { setVersion } = useFlowsVersionsStore(
+  const { versionID, setVersion } = useFlowsVersionsStore(
     useShallow((state) => ({
       versionID: state.versionID,
       setVersion: state.setVersion,
     })),
   );
+
+  const isDraft = data?.data?.find((v) => v.id === versionID)?.isPublished === false;
 
   //Set initial version to view as draft
   useEffect(() => {
@@ -55,12 +58,19 @@ export const FlowVersions = () => {
   }, [data?.data, versionId, setVersion]);
 
   return (
-    <PopoverWrapper open={isPopoverOpen} onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}>
-      <FlowVersionsTrigger />
-      <PopoverContent align="end" variant={"responsive"} className="ml-1 mt-1.5">
-        <PopoverDefaultHeader heading={"Versions"} />
-        <FVPopoverContent flowVersionsList={data?.data} isLoading={isLoading} />
-      </PopoverContent>
-    </PopoverWrapper>
+    <>
+      <PopoverWrapper open={isPopoverOpen} onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}>
+        <FlowVersionsTrigger />
+        <PopoverContent align="end" variant={"responsive"} className="ml-1 mt-1.5">
+          <PopoverDefaultHeader heading={"Versions"} />
+          <FVPopoverContent flowVersionsList={data?.data} isLoading={isLoading} />
+        </PopoverContent>
+      </PopoverWrapper>
+      {isDraft && (
+        <Badge variant="draft" className="shrink-0">
+          Draft
+        </Badge>
+      )}
+    </>
   );
 };
