@@ -97,7 +97,7 @@ export const ReactFlowViewOnly = () => {
         </ReactFlow>
 
         {isLoading && (
-          <div className="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+          <div className="absolute bg-bg/70 inset-0 flex items-center justify-center backdrop-blur-sm">
             <LoadingSpinner className="h-6 w-6 text-primary" />
           </div>
         )}

@@ -1,4 +1,3 @@
-import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
@@ -114,23 +113,25 @@ const ShortcutsDialog = () => {
           <div className="space-y-6 p-4">
             {shortcutSections.map((section, sectionIdx) => (
               <div key={sectionIdx}>
-                <h3 className="mb-3 text-sm font-semibold">{section.title}</h3>
+                <h3 className="mb-3 font-mono text-label uppercase text-muted-foreground">
+                  {section.title}
+                </h3>
                 <div className="grid grid-cols-2 gap-2">
                   {section.shortcuts.map((shortcut, shortcutIdx) => (
                     <div
                       key={shortcutIdx}
-                      className="flex items-center justify-between rounded-lg border bg-slate-50 px-3 py-2"
+                      className="flex items-center justify-between rounded-md border border-line bg-sunken px-3 py-2"
                     >
-                      <span className="text-sm">{shortcut.description}</span>
+                      <span className="text-body-sm text-ink">{shortcut.description}</span>
                       <div className="flex items-center gap-1">
                         {/* Render icons instead of text keys */}
                         {shortcut.keys.map((key, keyIdx) => (
                           <React.Fragment key={keyIdx}>
-                            <Button variant={"outline"} size={"xs"}>
+                            <kbd className="grid h-[22px] min-w-[22px] place-items-center rounded-sm border border-line bg-fill px-1.5 font-mono text-[11px] font-medium leading-none text-ink-2">
                               {key}
-                            </Button>
+                            </kbd>
                             {keyIdx < shortcut.keys.length - 1 && (
-                              <span className="text-xs text-gray-400">+</span>
+                              <span className="text-xs text-muted-foreground">+</span>
                             )}
                           </React.Fragment>
                         ))}

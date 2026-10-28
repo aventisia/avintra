@@ -12,9 +12,8 @@
 // Exclusions:
 //  - Green is intentionally excluded because the Execute button is green and would
 //    cause confusion.
-//  - Indigo/violet are excluded because the avatar circle fill is `bg-primary-200`
-//    (a light indigo hsl(240 78% 81%)), so an indigo/violet outline would be
-//    invisible against it.
+//  - Indigo/violet are excluded so a ring is never mistaken for the indigo primary
+//    accent.
 export const COLLABORATION_COLORS = [
   "border-rose-300", // red
   "border-orange-300", // orange

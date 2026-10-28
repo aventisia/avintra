@@ -24,12 +24,15 @@ const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
         }
       >
         {/* Hidden span to measure text width */}
-        <span ref={spanRef} className="invisible absolute whitespace-pre p-0 text-xs" />
+        <span
+          ref={spanRef}
+          className="invisible absolute whitespace-pre p-0 text-[14px] font-semibold"
+        />
         <input
           ref={ref}
           value={value}
           placeholder={placeholder}
-          className={`block min-w-0 max-w-full truncate rounded-none !border-0 !border-none bg-transparent !p-0 !text-xs !shadow-none !outline-none !ring-0 ${className}`}
+          className={`block min-w-0 max-w-full truncate rounded-none !border-0 !border-none bg-transparent !p-0 !text-[14px] font-semibold text-ink !shadow-none !outline-none !ring-0 ${className}`}
           style={{ width, maxWidth: "100%" }}
           {...props}
         />
