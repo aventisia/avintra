@@ -18,7 +18,7 @@ export const ConfigSelectorContent = () => {
   return (
     <Command className="h-full">
       {/* Search Box */}
-      <div className="mx-3 rounded-lg bg-slate-100">
+      <div className="mx-3 rounded-lg bg-sunken">
         <CommandInput className="h-9 text-xs" placeholder="Search key..." autoFocus />
       </div>
 

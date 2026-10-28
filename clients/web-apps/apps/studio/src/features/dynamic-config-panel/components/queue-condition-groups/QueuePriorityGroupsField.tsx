@@ -82,7 +82,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
 
   return (
     <GroupedFieldsWrapper groupName="Configure Priority">
-      <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+      <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
         <PriorityFieldsLabelHeader />
 
         {fields.map((item, index) => (

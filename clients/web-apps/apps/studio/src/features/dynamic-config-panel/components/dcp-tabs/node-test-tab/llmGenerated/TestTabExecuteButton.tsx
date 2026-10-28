@@ -35,7 +35,7 @@ export function TestTabExecuteButton({
           </>
         )}
         {isPending && (
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-primary-foreground/20 to-transparent" />
         )}
       </Button>
     </DCPTabsFooterWrapper>

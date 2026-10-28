@@ -1,4 +1,3 @@
-import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { LogsIcon, X } from "lucide-react";
@@ -51,37 +50,38 @@ export const NodeDetailPanel = () => {
   if (!nodeId) return null;
 
   return (
-    <Panel id={NODE_DETAIL_PANEL_ID} side="right" width="w-[30rem]" closeOnEscape>
-      <PanelContent className="overflow-hidden py-2 pl-2">
-        <ScrollArea className="h-full w-full">
-          <ViewContainer className="pt-1">
-            <ViewInfoRowsCard
-              title="Node Log"
-              icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
-              action={
-                <div className="flex items-center gap-1 pr-1">
-                  {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
-                  <PanelClose
-                    className="h-6 w-6 p-0 -mr-1.5 text-muted-foreground/60 opacity-60 hover:text-primary hover:opacity-100"
-                    aria-label="Close panel"
-                  >
-                    <X className="size-[1.2rem]" />
-                  </PanelClose>
-                </div>
-              }
-              className="border-0 bg-transparent p-0 pt-0 shadow-none"
-              headerClassName="px-0"
-              bodyClassName="pt-2 px-0 pr-2"
+    <Panel
+      id={NODE_DETAIL_PANEL_ID}
+      side="right"
+      width="w-[30rem]"
+      className="rounded-lg border-line bg-surface shadow-pop"
+      closeOnEscape
+    >
+      <PanelContent className="flex flex-col overflow-hidden">
+        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-line pl-4 pr-2">
+          <LogsIcon className="size-3.5 text-muted-foreground" />
+          <span className="text-body-sm font-semibold text-ink">Node log</span>
+          <div className="ml-auto flex items-center gap-1">
+            {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
+            <PanelClose
+              className="size-6 p-0 text-muted-foreground hover:text-ink"
+              aria-label="Close panel"
             >
-              <JsonViewer
-                jsonData={JSON.stringify(nodeLogPayload, null, 2)}
-                enableValueClipboard
-                viewportClassName=""
-                parseNestedStrings
-                shortenTextAfterLength={70}
-              />
-            </ViewInfoRowsCard>
-          </ViewContainer>
+              <X className="size-4" />
+            </PanelClose>
+          </div>
+        </div>
+        <ScrollArea className="min-h-0 flex-1">
+          <div className="p-4">
+            <JsonViewer
+              jsonData={JSON.stringify(nodeLogPayload, null, 2)}
+              enableValueClipboard
+              viewportClassName=""
+              parseNestedStrings
+              shortenTextAfterLength={70}
+              className="rounded-md border border-line bg-sunken px-3 pt-2 font-mono text-code"
+            />
+          </div>
         </ScrollArea>
       </PanelContent>
     </Panel>

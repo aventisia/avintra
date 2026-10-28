@@ -1,10 +1,5 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  SimpleDDMenuItem,
-} from "@avplatform/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api/core";
@@ -24,7 +19,6 @@ import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/u
 import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
-import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useExportFlow } from "@/hooks/useExportFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -165,8 +159,6 @@ export const HeaderActionMenu: React.FC = () => {
             <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
           </>
         ) : null}
-        <DropdownMenuSeparator className="mt-1 mb-2" />
-        <PublishFlow />
       </DropdownMenuContent>
     </DropdownMenu>
   );

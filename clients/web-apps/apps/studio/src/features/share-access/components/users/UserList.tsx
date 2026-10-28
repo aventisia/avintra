@@ -13,7 +13,7 @@ const UserList = () => {
 
   return (
     <Command>
-      <div className="my-1.5 rounded-lg bg-slate-100">
+      <div className="my-1.5 rounded-lg bg-sunken">
         <CommandInput className="h-9 text-xs" placeholder="Search..." autoFocus />
       </div>
       <UsersNoContentMessage />
@@ -30,7 +30,7 @@ const UserList = () => {
                   {/* Content container */}
                   <div className="flex grow items-center gap-2">
                     <Avatar className={cn("flex h-7 w-7")}>
-                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
+                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-primary-foreground">
                         {val.initials ? val.initials : "--"}
                       </AvatarFallback>
                     </Avatar>

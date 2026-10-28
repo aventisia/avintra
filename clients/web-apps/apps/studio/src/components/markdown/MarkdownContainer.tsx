@@ -28,7 +28,7 @@ const MarkdownContainer = ({
         <MarkdownEditorInput value={textValue} setValue={setTextValue} />
       </TabsContent>
       <TabsContent
-        className="min-h-[5rem] w-[56.5vw] rounded-lg border border-input bg-slate-50 p-2"
+        className="min-h-[5rem] w-[56.5vw] rounded-lg border border-input bg-sunken p-2"
         value="preview"
       >
         <MarkdownViewer textValue={textValue} />
