@@ -131,7 +131,7 @@ public class FlowVersionService : IFlowVersionService
             }
 
             // Validate user's access permissions for viewing the flow
-            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 flowVersion.Flow.Id,
                 ResourceTypeEnum.Flow,
