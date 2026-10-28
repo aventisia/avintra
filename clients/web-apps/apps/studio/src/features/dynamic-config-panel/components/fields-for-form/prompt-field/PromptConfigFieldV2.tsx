@@ -10,10 +10,10 @@ const VARIABLE_PATTERN = /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g;
 
 const LINE_HEIGHT = 20;
 const CHARS_PER_TOKEN = 4;
-// Matches the DCP tab scroll area height (tab-list 4rem + footer 4rem + DCP
+// Matches the DCP tab scroll area height (tab-list 2.5rem + footer 3.5rem + DCP
 // header) minus its inner paddings/borders so the editor fits without the tab
 // scrolling.
-const FILL_HEIGHT = "calc(100vh - 13.25rem - var(--header-height) - var(--header-padding) - 1rem)";
+const FILL_HEIGHT = "calc(100vh - 12rem - var(--header-height) - var(--header-padding) - 1rem)";
 
 interface PromptConfigFieldV2Props {
   name: string;
@@ -73,7 +73,7 @@ const PromptConfigFieldV2 = ({
           <div
             ref={gutterRef}
             aria-hidden
-            className="w-9 shrink-0 overflow-hidden border-r border-input bg-muted py-2 text-right font-mono text-sm text-muted-foreground"
+            className="w-9 shrink-0 overflow-hidden border-r border-input bg-sunken py-2 text-right font-mono text-sm text-muted-foreground"
           >
             {Array.from({ length: lineCount }, (_, index) => index + 1).map((line) => (
               <div
@@ -102,7 +102,7 @@ const PromptConfigFieldV2 = ({
         </div>
 
         {showFooter && (
-          <div className="flex shrink-0 items-start justify-between gap-3 border-t border-input bg-muted/40 px-3 py-2 text-xs">
+          <div className="flex shrink-0 items-start justify-between gap-3 border-t border-input bg-sunken px-3 py-2 text-xs">
             <div className="flex shrink-0 items-center gap-2 font-mono text-muted-foreground">
               {showTokenCount && (
                 <span>
@@ -110,7 +110,7 @@ const PromptConfigFieldV2 = ({
                 </span>
               )}
               {showTokenCount && variables.length > 0 && (
-                <span className="block rounded-full size-[0.2rem] bg-slate-400" />
+                <span className="block rounded-full size-[0.2rem] bg-muted-foreground" />
               )}
               {variables.length > 0 && (
                 <span>
@@ -125,7 +125,7 @@ const PromptConfigFieldV2 = ({
                 {variables.map((variable) => (
                   <span
                     key={variable}
-                    className="rounded bg-primary-100 px-1.5 py-0.5 font-mono text-3xs text-primary-700"
+                    className="rounded bg-sunken px-1.5 py-0.5 font-mono text-3xs text-primary-text"
                   >
                     {variable}
                   </span>

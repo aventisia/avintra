@@ -34,7 +34,7 @@ const PromptActionButton = ({
     disabled={disabled || isPending}
     className={cn(
       "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
-      isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",
+      isPending ? "cursor-wait" : "hover:bg-primary hover:text-primary-foreground",
     )}
     onClick={onClick}
   >

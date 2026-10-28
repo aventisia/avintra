@@ -1,8 +1,9 @@
 import { Button } from "@avplatform/ui/buttons";
 import Lucide from "@avplatform/ui/components/Lucide";
+import { useThemeStore } from "@avplatform/ui/stores";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import ServiceUrlPage from "./ServiceUrlPage";
 import { TauriAppFooter } from "./TauriAppFooter";
@@ -28,6 +29,17 @@ const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
 function App() {
   return <SetupFlow />;
+}
+
+function AppHeader({ children }: { children?: ReactNode }) {
+  const isDark = useThemeStore((state) => state.isDark);
+
+  return (
+    <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
+      <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
+      {children}
+    </header>
+  );
 }
 
 function SetupFlow() {
@@ -139,21 +151,18 @@ function SetupFlow() {
 
   if (isResuming) {
     return (
-      <div className="relative flex min-h-screen flex-col bg-background">
-        <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
-          <img src="/logo.svg" alt="Aventisia" className="h-7" />
-        </header>
+      <div className="relative flex min-h-screen flex-col bg-bg text-ink">
+        <AppHeader />
         <div className="flex flex-1 items-center justify-center p-6">
-          <span className="text-muted-foreground">Resuming setup...</span>
+          <span className="text-body text-muted-foreground">Resuming setup...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
-      <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
-        <img src="/logo.svg" alt="Aventisia" className="h-7" />
+    <div className="relative flex min-h-screen flex-col bg-bg pb-8 text-ink">
+      <AppHeader>
         {isTauriEnv() && step !== "service-url" && appBaseUrl !== "" && (
           <Button type="button" variant="outline" size="sm" onClick={handleOpenWebApp}>
             <span className="inline-flex items-center gap-1.5">
@@ -162,7 +171,7 @@ function SetupFlow() {
             </span>
           </Button>
         )}
-      </header>
+      </AppHeader>
 
       {step === "service-url" ? (
         <ServiceUrlPage onContinue={handleServiceUrlContinue} />

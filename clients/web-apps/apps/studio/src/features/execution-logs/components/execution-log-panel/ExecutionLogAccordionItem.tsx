@@ -1,10 +1,8 @@
-import { DotSeparator } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircle2, CircleStopIcon, CircleXIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-import { JobStatusEnum } from "../../enums/job-status-enum";
 import { LogEntry } from "../../types/log-list-type";
+import { LEVEL_STYLES, STATUS_LEVEL } from "../../utils/job-log-level";
 
 interface Props {
   entry: LogEntry;
@@ -44,41 +42,37 @@ export default function ExecutionLogAccordionItem({ entry, isSelected, onClick }
     return parts.join(" ");
   };
 
-  return (
-    <div ref={ref} className="relative pb-1 last:pb-0.5" onClick={() => onClick(entry.id)}>
-      {isSelected && (
-        <div className="pointer-events-none absolute -left-0.5 top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-primary" />
-      )}
+  const level = STATUS_LEVEL[entry.status] ?? "info";
+  const levelStyle = LEVEL_STYLES[level];
+  const isError = level === "error";
 
-      <div
+  return (
+    <div
+      ref={ref}
+      onClick={() => onClick(entry.id)}
+      className={cn(
+        "grid cursor-pointer grid-cols-[64px_72px_minmax(0,1fr)_48px] gap-3 px-4 font-mono text-[12.5px]/6 tabular-nums text-ink-2 [&>*]:truncate",
+        isError ? "bg-bad/5 shadow-[inset_2px_0_0_var(--bad)] hover:bg-bad/10" : "hover:bg-hover",
+        isSelected && "bg-selected text-ink hover:bg-selected",
+        isSelected && !isError && "shadow-[inset_2px_0_0_var(--indicator)]",
+      )}
+    >
+      <span className="text-muted-foreground">{entry.time}</span>
+      <span
         className={cn(
-          "ml-3 flex cursor-pointer items-center justify-between rounded-lg border border-transparent px-4 py-3 transition-all duration-200",
-          isSelected
-            ? "border bg-accent hover:text-primary shadow-sm"
-            : "hover:border hover:bg-accent hover:text-primary hover:shadow-sm",
+          "inline-flex items-center gap-1.5 text-[10.5px] uppercase tracking-[0.07em]",
+          levelStyle.text,
         )}
       >
-        <div className="flex items-center gap-0 h-[1.1rem]">
-          <div className="flex items-center gap-1.5 h-[1.1rem]">
-            {entry.status == JobStatusEnum["Aborted"] && (
-              <CircleStopIcon className="h-3.5 w-3.5 text-orange-500" />
-            )}
-
-            {entry.status == JobStatusEnum["Failed"] && (
-              <CircleXIcon className="h-3.5 w-3.5 text-red-500" />
-            )}
-            {entry.status == JobStatusEnum["Completed"] && (
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-            )}
-            <span className="text-xs font-medium ">#{entry.id.slice(0, 4)}</span>
-          </div>
-          <DotSeparator className="mx-1 h-[1.1rem]" />
-          <span className=" text-xs font-medium text-muted-foreground">{entry.time}</span>
-        </div>
-        <span className="text-2xs font-medium text-muted-foreground h-[1.1rem]">
-          {formatSecondsToCompactDuration(entry.duration)}
-        </span>
-      </div>
+        <span aria-hidden="true" className={cn("size-1.5 shrink-0", levelStyle.shape)} />
+        {levelStyle.label}
+      </span>
+      <span className={cn(isError || isSelected ? "text-ink" : "text-ink-2")}>
+        #{entry.id.slice(0, 8)}
+      </span>
+      <span className="text-right text-muted-foreground">
+        {formatSecondsToCompactDuration(entry.duration)}
+      </span>
     </div>
   );
 }

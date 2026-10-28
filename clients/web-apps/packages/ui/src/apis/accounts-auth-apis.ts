@@ -46,4 +46,10 @@ const checkVerificationCode = (postObj: CheckVerificationCodeDto) => {
     .then((res) => res.data);
 };
 
-export { checkVerificationCode, createVerificationCode, discoverTenant, getTenantInfo, isEmailAvailable };
+export {
+  checkVerificationCode,
+  createVerificationCode,
+  discoverTenant,
+  getTenantInfo,
+  isEmailAvailable,
+};

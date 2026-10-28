@@ -24,12 +24,7 @@ export default function ExecutionLogAccordion({ data, selectedEntry, onSelect }:
   }, [selectedEntry, data]);
 
   return (
-    <Accordion
-      type="multiple"
-      className="relative space-y-1"
-      value={openItems}
-      onValueChange={setOpenItems}
-    >
+    <Accordion type="multiple" className="relative" value={openItems} onValueChange={setOpenItems}>
       {data.map((section) => (
         <ExecutionAccordionSection
           key={section.date}

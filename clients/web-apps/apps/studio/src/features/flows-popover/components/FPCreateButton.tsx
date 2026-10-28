@@ -27,7 +27,7 @@ export const FPCreateButton: React.FC = () => {
         })
       }
     >
-      <PlusIcon className="h-5 w-5 stroke-2 text-primary" />
+      <PlusIcon className="h-5 w-5 stroke-2 text-primary-text" />
     </Button>
   );
 };

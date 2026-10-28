@@ -27,24 +27,24 @@ export const FacePileTooltip: React.FC<FacePileTooltipProps> = ({
         <Tooltip.Content
           side="bottom"
           sideOffset={12}
-          className="z-50 rounded-md border border-secondary bg-secondary px-3 py-2 text-xs text-white shadow-md"
+          className="z-50 rounded-md bg-ink px-3 py-2 text-xs text-bg shadow-pop"
           onMouseEnter={onEnter}
           onMouseLeave={onLeave}
         >
           <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8 border-[2.2px] border-primary bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+            <Avatar className="h-8 w-8 border-2 border-bg bg-sunken text-xs font-bold capitalize text-ink-2">
               <AvatarImage src={data.avatarSrc || ""} alt={data.initials} />
-              <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+              <AvatarFallback className="bg-sunken text-xs font-bold capitalize text-ink-2">
                 {data.initials}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-medium text-white">{data.userFullName}</h3>
-              <span className="text-2xs text-muted-foreground">{data.userName}</span>
+              <h3 className="font-medium text-bg">{data.userFullName}</h3>
+              <span className="text-2xs text-bg/70">{data.userName}</span>
               {data.type && <div className="mt-1 text-2xs">{data.type}</div>}
             </div>
           </div>
-          <Tooltip.Arrow className="fill-secondary" />
+          <Tooltip.Arrow className="fill-ink" />
         </Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>

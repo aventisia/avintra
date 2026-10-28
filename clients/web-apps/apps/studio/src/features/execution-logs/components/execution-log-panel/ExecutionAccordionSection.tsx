@@ -13,27 +13,20 @@ interface Props {
 export default function ExecutionAccordionSection({ section, selectedEntry, onSelect }: Props) {
   return (
     <AccordionItem key={section.date} value={section.date} className="border-none">
-      {/* Date Header */}
-      <AccordionTrigger className="group relative flex w-full items-center justify-start gap-3 rounded-lg py-2 [&>svg]:hidden">
-        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-          <ChevronDown className="h-4 w-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
-        </div>
-        <span className="text-md font-medium">{section.date}</span>
+      <AccordionTrigger className="group flex h-8 w-full items-center justify-start gap-2 px-4 py-0 text-label uppercase text-muted-foreground hover:bg-hover hover:no-underline [&>svg]:hidden">
+        <ChevronDown className="size-3.5 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
+        <span className="font-mono">{section.date}</span>
       </AccordionTrigger>
 
       <AccordionContent className="p-0">
-        {/* Timeline Container */}
-        <div className="relative ml-4 space-y-0">
-          {/* Timeline Entries */}
-          {section.entries.map((entry) => (
-            <ExecutionLogAccordionItem
-              key={entry.id}
-              entry={entry}
-              isSelected={entry.id === selectedEntry}
-              onClick={onSelect}
-            />
-          ))}
-        </div>
+        {section.entries.map((entry) => (
+          <ExecutionLogAccordionItem
+            key={entry.id}
+            entry={entry}
+            isSelected={entry.id === selectedEntry}
+            onClick={onSelect}
+          />
+        ))}
       </AccordionContent>
     </AccordionItem>
   );

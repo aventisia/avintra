@@ -1,4 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
+import { useThemeStore } from "@avplatform/ui/stores";
 // Language Modules
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
@@ -33,6 +34,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   disabled = false,
   className,
 }) => {
+  const isDark = useThemeStore((state) => state.isDark);
   // Dynamically load the correct syntax highlighting extension
   const extensions = useMemo(() => {
     switch (language) {
@@ -72,11 +74,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         bracketMatching: true,
       }}
       placeholder={placeholder}
-      theme="light"
+      theme={isDark ? "dark" : "light"}
       contentEditable={disabled}
       aria-disabled={disabled}
       className={cn(
-        "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
+        "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
         disabled && "cursor-not-allowed opacity-80 focus-within:border-0 focus-within:ring-0",
         className,
       )}

@@ -109,10 +109,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
                     )}
                   </Button>
                 </div>
-                <Progress
-                  value={progress}
-                  className={progress === 100 ? "bg-green-500" : "bg-primary"}
-                />
+                <Progress value={progress} className={progress === 100 ? "bg-ok" : "bg-primary"} />
               </div>
             );
           })}

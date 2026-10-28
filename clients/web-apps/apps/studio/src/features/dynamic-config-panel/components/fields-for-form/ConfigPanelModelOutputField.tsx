@@ -108,7 +108,7 @@ const ConfigPanelModelOutputField = ({
                 {/* TODO: not sure if JsonViewer is required here or not */}
                 {description ? (
                   <Tooltip
-                    className="max-w-[50vw] bg-white"
+                    className="max-w-[50vw] bg-surface"
                     content={
                       <JsonViewer
                         jsonData={description}
@@ -118,7 +118,7 @@ const ConfigPanelModelOutputField = ({
                       />
                     }
                   >
-                    <div className="rounded hover:bg-slate-100 hover:text-primary">
+                    <div className="rounded hover:bg-hover hover:text-primary">
                       <InformationCircleIcon className="h-3.5 w-3.5" />
                     </div>
                   </Tooltip>

@@ -34,7 +34,7 @@ export const ChatTrigger = () => {
       >
         <ChatBubbleLeftRightIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         {unreadCount > 0 && !isChatOpen ? (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-bad px-1 text-[9px] font-bold leading-none text-bad-foreground">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}

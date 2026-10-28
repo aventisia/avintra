@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Loader2 } from "lucide-react";
-import { useCallback } from "react";
+import { cn } from "@avplatform/ui/lib";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 
@@ -17,6 +17,14 @@ export default function SaveFlow() {
 
   // Uncommitted config-form edits count as unsaved changes too.
   const isFormDirty = useDynamicConfigPanelStore((state) => state.isFormDirty);
+  const isDirty = isSavePending || isFormDirty;
+
+  const [savedAt, setSavedAt] = useState<Date>();
+  const wasPendingRef = useRef(isPending);
+  useEffect(() => {
+    if (wasPendingRef.current && !isPending) setSavedAt(new Date());
+    wasPendingRef.current = isPending;
+  }, [isPending]);
 
   // Get setExecutionState action from current flow store
   const { executionState } = useCurrentFlowStore(
@@ -57,14 +65,28 @@ export default function SaveFlow() {
     [handleSave],
   );
 
+  const saveState = isPending
+    ? "Saving…"
+    : isDirty
+      ? "Not saved"
+      : savedAt
+        ? `Saved ${savedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`
+        : "Saved";
+
   return (
-    <Button
-      disabled={!isSavePending && !isFormDirty}
-      size={"xs"}
-      className="mr-2.5 min-w-16 text-xs"
-      onClick={handleSave}
-    >
-      {isPending ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : "Save"}
-    </Button>
+    <div className="flex items-center gap-1">
+      <span
+        aria-live="polite"
+        className={cn(
+          "whitespace-nowrap font-mono text-[12px] text-muted-foreground",
+          !isPending && isDirty && "text-bad",
+        )}
+      >
+        {saveState}
+      </span>
+      <Button disabled={!isDirty} variant="ghost" size="sm" onClick={handleSave}>
+        Save
+      </Button>
+    </div>
   );
 }

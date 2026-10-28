@@ -195,13 +195,13 @@ export const DCPForm = () => {
                       )}
                     >
                       <div className="absolute -top-3">
-                        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                        <span className="rounded-full bg-fill px-1.5 py-1 text-xs font-medium text-ink-2">
                           Outputs
                         </span>
                       </div>
                     </h3>
 
-                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                       {nodeConfig?.fields?.map((field) => {
                         // Check if the field should be rendered based on direction and renderIf conditions
                         if (!shouldRenderField("Output", field, watchedValues)) {

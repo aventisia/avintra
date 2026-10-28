@@ -41,7 +41,7 @@ export const ConditionListField = ({
   });
 
   return (
-    <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+    <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
       <div className="mb-2 flex w-full items-center justify-between">
         <div className="flex items-center">
           <ConditionLabel label={`Group ${groupIndex + 1}`} className="text-[0.9rem]" />

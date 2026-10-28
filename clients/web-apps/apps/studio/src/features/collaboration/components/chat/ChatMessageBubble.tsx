@@ -19,15 +19,15 @@ interface ChatMessageBubbleProps {
 export const ChatMessageBubble = ({ message, isOwn }: ChatMessageBubbleProps) => {
   const presence = useCollaborationStore((state) => state.presence);
   const colorMap = collaborationColorMapForPresence(presence);
-  const ringColor = colorMap[message.senderUserId ?? ""]?.border ?? "border-gray-300";
+  const ringColor = colorMap[message.senderUserId ?? ""]?.border ?? "border-line-strong";
 
   const senderName = message.senderDisplayName ?? message.senderEmail ?? "Unknown";
   const initials = getInitials(message.senderDisplayName, message.senderEmail);
 
   return (
     <div className={cn("flex items-start gap-2", isOwn && "flex-row-reverse")}>
-      <Avatar className={`h-6 w-6 shrink-0 rounded-full border-2 ${ringColor} bg-primary-200`}>
-        <AvatarFallback className="border-none bg-primary-200 text-[9px] font-bold uppercase tracking-wider text-secondary">
+      <Avatar className={`h-6 w-6 shrink-0 rounded-full border-2 ${ringColor} bg-sunken`}>
+        <AvatarFallback className="border-none bg-sunken text-[9px] font-bold uppercase tracking-wider text-ink-2">
           {initials}
         </AvatarFallback>
       </Avatar>
@@ -40,7 +40,7 @@ export const ChatMessageBubble = ({ message, isOwn }: ChatMessageBubbleProps) =>
             "rounded-lg px-2.5 py-1.5 text-xs leading-snug shadow-sm",
             isOwn
               ? "rounded-tr-sm bg-primary text-primary-foreground"
-              : "rounded-tl-sm bg-muted text-foreground",
+              : "rounded-tl-sm bg-sunken text-ink",
           )}
         >
           {message.message}

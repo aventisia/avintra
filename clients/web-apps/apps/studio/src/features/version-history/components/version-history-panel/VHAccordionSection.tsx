@@ -15,10 +15,10 @@ export default function VHAccordionSection({ section, selectedEntry, onSelect }:
     <AccordionItem key={section.date} value={section.date} className="border-none">
       {/* Date Header */}
       <AccordionTrigger className="group relative flex w-full items-center justify-start gap-3 rounded-lg py-2 [&>svg]:hidden">
-        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-          <ChevronDown className="h-4 w-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
+        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface">
+          <ChevronDown className="h-4 w-4 text-ink-2 transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </div>
-        <span className="text-md font-medium">{section.date}</span>
+        <span className="text-body-sm font-semibold text-ink">{section.date}</span>
       </AccordionTrigger>
 
       <AccordionContent className="p-0">

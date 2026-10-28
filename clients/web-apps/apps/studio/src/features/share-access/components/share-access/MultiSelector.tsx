@@ -84,7 +84,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28]">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
@@ -152,7 +152,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border border-line bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -161,7 +161,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
               </div>
             )}
             {isError && (
-              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+              <div className="p-4 text-center text-sm text-bad">Error loading results</div>
             )}
             {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">
@@ -179,13 +179,13 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   <div
                     key={result.id}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
                   >
                     <Avatar className={cn("flex h-7 w-7")}>
-                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
+                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-primary-foreground">
                         {`${result.firstName?.charAt(0)}${result.lastName?.charAt(0)}`}
                       </AvatarFallback>
                     </Avatar>

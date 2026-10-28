@@ -23,7 +23,7 @@ export const FPTNameAndVersion = () => {
       <span className="truncate text-xs">{currentFlow.name}</span>
 
       {/* flow version container */}
-      <Badge variant={"default"} className="gap-1 bg-white text-3xs text-foreground shadow">
+      <Badge variant="outline">
         {/* show flow version is saving */}
         {isFlowSaving ? (
           <>

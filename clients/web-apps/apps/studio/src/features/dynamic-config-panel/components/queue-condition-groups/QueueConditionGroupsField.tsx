@@ -83,7 +83,7 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
 
   return (
     <GroupedFieldsWrapper groupName="Configure Conditions">
-      <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+      <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
         <FieldsLabelHeader />
 
         {fields.map((item, index) => (
