@@ -333,6 +333,22 @@ public class JobsTableService : IJobsTableService
                 newJob.RefId = userRecord.Id;
             }
 
+            if (newJob.TriggerType == TriggerTypesEnum.Flow)
+            {
+                var parentAgent = await _unitOfWork.FlowVersionRepo
+                    .GetByConditionAsync(w => w.Id == newJob.RefId)
+                    .Include(s => s.Flow)
+                    .FirstOrDefaultAsync();
+
+                newJob.ExecutedBy = parentAgent != null
+                    ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
+                    : "flow_Unknown";
+
+                newJob.ExecutedOn = newJob.Machine != null
+                    ? $"newJob.Machine.Name}"
+                    : "Cloud";
+            }
+
             // Manual mapping: Set the ExecutionLocation for unpublished flow
             if (!flowVersion.IsFlowVersionPublished)
             {
@@ -340,7 +356,7 @@ public class JobsTableService : IJobsTableService
                 newJob.ExecutedOn = _clientContextResolver.GetUnpublishedExecutionLocation();
             }
 
-            // TODO: Mannual mapping till the time JobInputData is stored as JsonDocument in the database
+            // TODO: Manual mapping till the time JobInputData is stored as JsonDocument in the database
             newJob.InputArgumentsJson = jobInsertDto.JobInputData != null ? jobInsertDto.JobInputData.RootElement.GetRawText() : null;
 
             // Insert job
@@ -373,19 +389,19 @@ public class JobsTableService : IJobsTableService
     {
         var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
 
-        if (!IsMachineCaller())
-        {
-            var parentJobId = jobInsertDto.RefId;
-            var parentIsRunning = parentJobId.HasValue
-                && await _unitOfWork.JobRepo
-                    .GetByConditionAsync(w => w.Id == parentJobId.Value
-                        && w.TenantId == tenantId
-                        && w.Status == JobStatusEnum.Running)
-                    .AnyAsync();
+        // if (!IsMachineCaller())
+        // {
+        //     var parentJobId = jobInsertDto.RefId;
+        //     var parentIsRunning = parentJobId.HasValue
+        //         && await _unitOfWork.JobRepo
+        //             .GetByConditionAsync(w => w.Id == parentJobId.Value
+        //                 && w.TenantId == tenantId
+        //                 && w.Status == JobStatusEnum.Running)
+        //             .AnyAsync();
 
-            if (!parentIsRunning)
-                return serviceResponse.Update("Parent job not found.", 404);
-        }
+        //     if (!parentIsRunning)
+        //         return serviceResponse.Update("Parent job not found.", 404);
+        // }
 
         jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
         return await InsertJobAsync(jobInsertDto, tenantId);
