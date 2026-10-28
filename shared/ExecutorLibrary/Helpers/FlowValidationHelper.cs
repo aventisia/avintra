@@ -123,7 +123,65 @@ public static class FlowValidationHelper
             }
         }
 
+        foreach (var breakContinueNode in nodes.Where(n =>
+            (string.Equals(n.Type, "breakLoopNode", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(n.Type, "continueLoopNode", StringComparison.OrdinalIgnoreCase)) &&
+            n.Data?.IsDisabled != true))
+        {
+            if (!IsNodeInsideLoopBody(breakContinueNode.Id, nodes, edges))
+            {
+                return $"{(string.Equals(breakContinueNode.Type, "breakLoopNode", StringComparison.OrdinalIgnoreCase) ? "Break" : "Continue")} node '{breakContinueNode.Id}' must be placed inside a loop body.";
+            }
+        }
+
         return null;
+    }
+
+    private static bool IsNodeInsideLoopBody(string nodeId, List<ReactFlowNodeModel> nodes, List<ReactFlowEdgeModel> edges)
+    {
+        foreach (var loopNode in nodes.Where(n => string.Equals(n.Type, "forLoopNode", StringComparison.OrdinalIgnoreCase)))
+        {
+            var mergeId = loopNode.Data?.MergeBranchesNodeId;
+            if (string.IsNullOrWhiteSpace(mergeId))
+            {
+                continue;
+            }
+
+            var bodyStartId = edges
+                .Where(e => e.Source == loopNode.Id && !string.Equals(e.Target, mergeId, StringComparison.OrdinalIgnoreCase))
+                .Select(e => e.Target)
+                .FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(bodyStartId))
+            {
+                continue;
+            }
+
+            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { bodyStartId };
+            var queue = new Queue<string>();
+            queue.Enqueue(bodyStartId);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (string.Equals(current, nodeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+                if (string.Equals(current, mergeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                foreach (var next in edges.Where(e => e.Source == current).Select(e => e.Target))
+                {
+                    if (string.IsNullOrWhiteSpace(next) || !visited.Add(next))
+                    {
+                        continue;
+                    }
+                    queue.Enqueue(next);
+                }
+            }
+        }
+
+        return false;
     }
 
     // TODO: We need to put it in better helper class since it is being repeated inside the FlowProcessor as well. We can consider putting it in ReactFlowHelper or create a new helper class for conditional node related logic.

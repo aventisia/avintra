@@ -19,6 +19,8 @@ internal class Program
         "ConditionalBranchNode",
         "LoopNode",
         "GetWorkItemNode",
+        "BreakLoopNode",
+        "ContinueLoopNode",
     };
 
     // Force-load every NodeLibrary.* assembly found next to this binary.

@@ -42,6 +42,8 @@ type NodeDataType = {
   inputs?: NodeInputType[];
   outputs?: NodeOutputType[];
   disabled?: boolean;
+  /** Badge shown when the action is disabled; defaults to "Coming soon". */
+  disabledHint?: string;
   hidden?: boolean;
   doNotRenderIf?: DoNotRenderIfType;
   badge?: string;
