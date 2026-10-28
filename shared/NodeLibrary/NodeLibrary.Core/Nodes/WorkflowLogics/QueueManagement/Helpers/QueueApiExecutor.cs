@@ -24,7 +24,8 @@ public static class QueueApiExecutor
         HttpMethod method,
         string accessToken,
         object? payload = null,
-        string? envType = null)
+        string? envType = null,
+        Guid? spaceId = null)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
@@ -41,6 +42,7 @@ public static class QueueApiExecutor
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         NodeHttpHeaders.ApplyEnvHeader(request, envType);
+        NodeHttpHeaders.ApplySpaceHeader(request, spaceId);
 
         if (method != HttpMethod.Get && method != HttpMethod.Delete && payload != null)
         {
