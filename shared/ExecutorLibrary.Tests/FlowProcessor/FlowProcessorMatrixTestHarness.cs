@@ -3,6 +3,8 @@ using ExecutorLibrary.FlowProcessor;
 using ExecutorLibrary.FlowProcessor.Interfaces;
 using ExecutorLibrary.FlowProcessor.Models;
 using ExecutorLibrary.Models;
+using NodeLibrary.Enums;
+using NodeLibrary.Models;
 
 namespace ExecutorLibrary.Tests.FlowProcessor;
 
@@ -14,13 +16,22 @@ public static class FlowProcessorMatrixTestHarness
         failures += RunCase("OuterLoopCallsBlockWithInnerLoop", BuildOuterLoopWithInnerLoop, AssertOuterLoopWithInnerLoop);
         failures += RunCase("BlockContainsRouterBranch", BuildBlockWithRouter, AssertBlockWithRouter);
         failures += RunCase("NestedBlockCalls", BuildNestedBlocks, AssertNestedBlocks);
+        failures += RunCase("BreakExitsLoopEarly", BuildBreakLoopFlow, AssertBreakLoopFlow);
+        failures += RunCase("ContinueSkipsToNextIteration", BuildContinueLoopFlow, AssertContinueLoopFlow);
+        failures += RunCase("BreakOutsideLoopFailsValidation", BuildBreakOutsideLoopFlow, AssertBreakOutsideLoopFails, expectFailure: true);
+        failures += RunCase("ConditionalContinueSkipsMatchingIterations", BuildConditionalContinueFlow, AssertConditionalContinueFlow);
+        failures += RunCase("ConditionalContinueFallsThroughWhenFalse", BuildAlwaysFalseContinueFlow, AssertAlwaysFalseContinueFlow);
+        failures += RunCase("ConditionalBreakExitsOnMatchingIteration", BuildConditionalBreakFlow, AssertConditionalBreakFlow);
+        failures += RunCase("ConditionalBreakFallsThroughWhenFalse", BuildAlwaysFalseBreakFlow, AssertAlwaysFalseBreakFlow);
+        failures += RunCase("ContinueInsideRouterRepeatsEveryIteration", BuildContinueInsideRouterFlow, AssertContinueInsideRouterFlow);
         return failures;
     }
 
     private static int RunCase(
         string name,
         Func<(ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows)> build,
-        Action<FlowExecutionResult> assert)
+        Action<FlowExecutionResult> assert,
+        bool expectFailure = false)
     {
         try
         {
@@ -33,7 +44,7 @@ public static class FlowProcessorMatrixTestHarness
                 .GetAwaiter()
                 .GetResult();
 
-            if (!result.IsSuccess)
+            if (!result.IsSuccess && !expectFailure)
                 throw new InvalidOperationException(result.ErrorMessage ?? "Flow failed.");
 
             assert(result);
@@ -123,6 +134,275 @@ public static class FlowProcessorMatrixTestHarness
         AssertEqual("inner-block", workLog.CallerReferenceId, "deep node caller reference");
         AssertTrue(logs.ToList().IndexOf(outerLog) < logs.ToList().IndexOf(innerLog), "outer block must precede nested block");
         AssertTrue(logs.ToList().IndexOf(innerLog) < logs.ToList().IndexOf(workLog), "nested block must precede deep work");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildBreakLoopFlow()
+    {
+        var main = CreateLoopWithFlowControl("break", "breakLoopNode");
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertBreakLoopFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(0, logs.Count(log => log.NodeId == "break-work"), "work after break must never execute");
+        var breakLogs = logs.Where(log => log.NodeId == "break-control").ToList();
+        AssertEqual(1, breakLogs.Count, "break must trigger exactly once");
+        var loopLogs = logs.Where(log => log.NodeId == "break-loop").ToList();
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "enter"), "loop must enter");
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "exit"), "break must exit the loop");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildContinueLoopFlow()
+    {
+        var main = CreateLoopWithFlowControl("continue", "continueLoopNode");
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertContinueLoopFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(0, logs.Count(log => log.NodeId == "continue-work"), "work after continue must never execute");
+        AssertEqual(3, logs.Count(log => log.NodeId == "continue-control"), "continue must trigger once per iteration");
+        var loopLogs = logs.Where(log => log.NodeId == "continue-loop").ToList();
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "exit"), "loop must exit after all iterations");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildConditionalContinueFlow()
+    {
+        // Skips only the iteration where the current item equals 2.
+        var conditions = new List<List<ResolvedConditionModel>>
+        {
+            new()
+            {
+                new ResolvedConditionModel
+                {
+                    FirstValue = "{{CurrentItem}}",
+                    ComparisonOperator = ComparisonOperatorEnum.EqualTo,
+                    SecondValue = "2"
+                }
+            }
+        };
+        var main = CreateLoopWithFlowControl("cond-continue", "continueLoopNode", conditions);
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertConditionalContinueFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        var workLogs = logs.Where(log => log.NodeId == "cond-continue-work").ToList();
+        AssertEqual(2, workLogs.Count, "work must run on the two iterations the condition skips");
+        AssertEqual(3, logs.Count(log => log.NodeId == "cond-continue-control"), "continue must trigger once per iteration");
+        var loopLogs = logs.Where(log => log.NodeId == "cond-continue-loop").ToList();
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "exit"), "loop must exit after all iterations");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildAlwaysFalseContinueFlow()
+    {
+        var conditions = new List<List<ResolvedConditionModel>>
+        {
+            new()
+            {
+                new ResolvedConditionModel
+                {
+                    FirstValue = "{{CurrentItem}}",
+                    ComparisonOperator = ComparisonOperatorEnum.EqualTo,
+                    SecondValue = "no-such-item"
+                }
+            }
+        };
+        var main = CreateLoopWithFlowControl("pass-continue", "continueLoopNode", conditions);
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertAlwaysFalseContinueFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(3, logs.Count(log => log.NodeId == "pass-continue-work"), "work must run on every iteration when the condition never holds");
+        var controlLogs = logs.Where(log => log.NodeId == "pass-continue-control").ToList();
+        AssertEqual(3, controlLogs.Count, "continue must trigger once per iteration");
+        AssertTrue(controlLogs.All(log => log.Outputs.TryGetValue("Action", out var action) && action == "passthrough"), "non-matching iterations must fall through");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildConditionalBreakFlow()
+    {
+        // Breaks out when the current item equals 2: work runs on iteration 1 only.
+        var conditions = new List<List<ResolvedConditionModel>>
+        {
+            new()
+            {
+                new ResolvedConditionModel
+                {
+                    FirstValue = "{{CurrentItem}}",
+                    ComparisonOperator = ComparisonOperatorEnum.EqualTo,
+                    SecondValue = "2"
+                }
+            }
+        };
+        var main = CreateLoopWithFlowControl("cond-break", "breakLoopNode", conditions);
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertConditionalBreakFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(1, logs.Count(log => log.NodeId == "cond-break-work"), "work must run only before the matching iteration breaks the loop");
+        AssertEqual(2, logs.Count(log => log.NodeId == "cond-break-control"), "break must trigger on the first two iterations only");
+        var loopLogs = logs.Where(log => log.NodeId == "cond-break-loop").ToList();
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "exit"), "break must exit the loop early");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildAlwaysFalseBreakFlow()
+    {
+        var conditions = new List<List<ResolvedConditionModel>>
+        {
+            new()
+            {
+                new ResolvedConditionModel
+                {
+                    FirstValue = "{{CurrentItem}}",
+                    ComparisonOperator = ComparisonOperatorEnum.EqualTo,
+                    SecondValue = "no-such-item"
+                }
+            }
+        };
+        var main = CreateLoopWithFlowControl("pass-break", "breakLoopNode", conditions);
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertAlwaysFalseBreakFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(3, logs.Count(log => log.NodeId == "pass-break-work"), "work must run on every iteration when the condition never holds");
+        var controlLogs = logs.Where(log => log.NodeId == "pass-break-control").ToList();
+        AssertEqual(3, controlLogs.Count, "break must trigger once per iteration");
+        AssertTrue(controlLogs.All(log => log.Outputs.TryGetValue("Action", out var action) && action == "passthrough"), "non-matching iterations must fall through");
+        var loopLogs = logs.Where(log => log.NodeId == "pass-break-loop").ToList();
+        AssertTrue(loopLogs.Any(log => log.Outputs.TryGetValue("LoopStatus", out var status) && status == "exit"), "loop must exit normally after all iterations");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildBreakOutsideLoopFlow()
+    {
+        var start = Node("outside-start", "triggerNode", "manualTrigger");
+        var control = Node("outside-break", "breakLoopNode", "BreakLoopNode");
+        var end = Node("outside-end", "flowEndNode", "flowEndNode");
+        var main = new ReactFlowDataModel
+        {
+            Nodes = new List<ReactFlowNodeModel> { start, control, end },
+            Edges = new List<ReactFlowEdgeModel> { Edge(start.Id, control.Id), Edge(control.Id, end.Id) }
+        };
+        return (main, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertBreakOutsideLoopFails(FlowExecutionResult result)
+    {
+        AssertTrue(!result.IsSuccess, "break outside a loop must fail validation");
+        AssertTrue((result.ErrorMessage ?? string.Empty).Contains("must be placed inside a loop body"), "validation must name the loop-body rule");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildContinueInsideRouterFlow()
+    {
+        var loopId = "router-continue-loop";
+        var routerId = "router-continue-router";
+        var loop = Node(loopId, "forLoopNode", "Loop",
+            inputs: new[]
+            {
+                new ReactFlowNodeInput { Key = "LoopType", Value = "ForEachLoop" },
+                new ReactFlowNodeInput { Key = "ListVariableName", Value = "{{items}}" }
+            },
+            mergeId: "router-continue-loop-merge");
+        loop.Data.Outputs.Add(new ReactFlowNodeOutput
+        {
+            Key = "ItemVariableName",
+            Value = new ReactFlowNodeOutputValue { Value = "{{CurrentItem}}", Enabled = true }
+        });
+
+        var flow = new ReactFlowDataModel
+        {
+            Nodes = new List<ReactFlowNodeModel>
+            {
+                Node("router-continue-start", "triggerNode", "manualTrigger"),
+                loop,
+                Node("router-continue-body-start", "branchStartNode", "branchStartNode"),
+                Node(routerId, "conditionalNode", "ConditionalActivity",
+                    branches: new[] { "router-continue-branch" },
+                    mergeId: "router-continue-router-merge"),
+                Node("router-continue-branch", "branchNode1", "DefaultBranch"),
+                Node("router-continue-control", "continueLoopNode", "ContinueLoopNode"),
+                Node("router-continue-work", "activityNode", "ActivityNode"),
+                Node("router-continue-branch-end", "branchEndNode", "branchEndNode", parentId: routerId),
+                Node("router-continue-router-merge", "mergeBranchesNode", "mergeBranchesNode"),
+                Node("router-continue-loop-end", "branchEndNode", "branchEndNode", parentId: loopId),
+                Node("router-continue-loop-merge", "mergeBranchesNode", "mergeBranchesNode"),
+                Node("router-continue-end", "flowEndNode", "flowEndNode")
+            },
+            Edges = new List<ReactFlowEdgeModel>
+            {
+                Edge("router-continue-start", loopId),
+                Edge(loopId, "router-continue-body-start"),
+                Edge("router-continue-body-start", routerId),
+                Edge(routerId, "router-continue-branch"),
+                Edge("router-continue-branch", "router-continue-control"),
+                Edge("router-continue-control", "router-continue-branch-end"),
+                Edge("router-continue-branch-end", "router-continue-router-merge", sourceHandle: "branch-return"),
+                Edge("router-continue-router-merge", "router-continue-work"),
+                Edge("router-continue-work", "router-continue-loop-end"),
+                Edge("router-continue-loop-end", "router-continue-loop-merge", sourceHandle: "branch-return"),
+                Edge("router-continue-loop-merge", loopId, type: "loopBack", sourceHandle: "branch-return"),
+                Edge("router-continue-loop-merge", "router-continue-end")
+            }
+        };
+        return (flow, new Dictionary<Guid, ReactFlowDataModel>());
+    }
+
+    private static void AssertContinueInsideRouterFlow(FlowExecutionResult result)
+    {
+        var logs = result.NodeLogs;
+        AssertEqual(3, logs.Count(log => log.NodeId == "router-continue-control"), "the router branch must continue once per iteration");
+        AssertEqual(0, logs.Count(log => log.NodeId == "router-continue-work"), "work after the router must never run while the branch keeps continuing");
+    }
+
+    private static ReactFlowDataModel CreateLoopWithFlowControl(string prefix, string controlType, object? controlConditions = null)
+    {
+        var loopId = $"{prefix}-loop";
+        var startId = $"{prefix}-start";
+        var branchStartId = $"{prefix}-branch-start";
+        var controlId = $"{prefix}-control";
+        var workId = $"{prefix}-work";
+        var branchEndId = $"{prefix}-branch-end";
+        var mergeId = $"{prefix}-merge";
+        var endId = $"{prefix}-end";
+
+        var controlInputs = new List<ReactFlowNodeInput>();
+        if (controlConditions is not null)
+        {
+            controlInputs.Add(new ReactFlowNodeInput { Key = "Conditions", Value = controlConditions });
+        }
+
+        var loopNode = Node(loopId, "forLoopNode", "Loop", inputs: new[] { new ReactFlowNodeInput { Key = "LoopType", Value = "ForEachLoop" }, new ReactFlowNodeInput { Key = "ListVariableName", Value = "{{items}}" } }, mergeId: mergeId);
+        loopNode.Data.Outputs.Add(new ReactFlowNodeOutput { Key = "ItemVariableName", Value = new ReactFlowNodeOutputValue { Value = "{{CurrentItem}}", Enabled = true } });
+
+        var flow = new ReactFlowDataModel
+        {
+            Nodes = new List<ReactFlowNodeModel>
+            {
+                Node(startId, "triggerNode", "manualTrigger"),
+                loopNode,
+                Node(branchStartId, "branchStartNode", "branchStartNode"),
+                Node(controlId, controlType, controlType, inputs: controlInputs),
+                Node(workId, "activityNode", "ActivityNode"),
+                Node(branchEndId, "branchEndNode", "branchEndNode", parentId: loopId),
+                Node(mergeId, "mergeBranchesNode", "mergeBranchesNode"),
+                Node(endId, "flowEndNode", "flowEndNode")
+            },
+            Edges = new List<ReactFlowEdgeModel>
+            {
+                Edge(startId, loopId), Edge(loopId, branchStartId), Edge(branchStartId, controlId),
+                Edge(controlId, workId), Edge(workId, branchEndId), Edge(branchEndId, mergeId, sourceHandle: "branch-return"),
+                Edge(mergeId, loopId, type: "loopBack", sourceHandle: "branch-return"), Edge(mergeId, endId)
+            }
+        };
+        return flow;
     }
 
     private static ReactFlowDataModel CreateLinearLoopFlow(string prefix, string listVariable, string bodyNodeId, Guid? blockVersion)

@@ -115,8 +115,16 @@
             "description": "Breaks out of the current loop in the workflow execution.",
             "img": "/assets/BreakLoop.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["cloud", "windows"],
-            "doNotRenderIf": ["production"]
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "continueLoopNode",
+            "name": "ContinueLoopNode",
+            "label": "Continue Loop",
+            "description": "Skips to the next iteration of the current loop in the workflow execution.",
+            "img": "/assets/BreakLoop.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",

@@ -54,7 +54,9 @@ const getJsonFilepath = (nodeUniqueName: string): string => {
   if (
     nodeUniqueName === "ConditionalActivity" ||
     nodeUniqueName === "ConditionalBranchActivity" ||
-    nodeUniqueName === "LoopActivity"
+    nodeUniqueName === "LoopActivity" ||
+    nodeUniqueName === "BreakLoopNode" ||
+    nodeUniqueName === "ContinueLoopNode"
   ) {
     return `../constants/custom-config-json/${nodeUniqueName}.json`;
   }

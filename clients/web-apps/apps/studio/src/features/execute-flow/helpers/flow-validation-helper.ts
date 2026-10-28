@@ -3,6 +3,7 @@ import { Edge, Node } from "@xyflow/react";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeDataType } from "@/types/node-data-type";
+import { isNodeInsideLoopBody } from "@/utils/is-node-inside-loop-body-util";
 
 /**
  * Support/placeholder node types that are not considered as executable nodes.
@@ -154,6 +155,16 @@ export const isValidFlowGraph = (nodes: Node<NodeDataType>[], edges: Edge[]): st
 
     if (!hasBodyEdge) {
       return `For loop node '${loopNode.id}' has no loop body entry edge.`;
+    }
+  }
+
+  for (const node of nodes.filter(
+    (n) =>
+      (n.type === "breakLoopNode" || n.type === "continueLoopNode") && n.data?.isDisabled !== true,
+  )) {
+    if (!isNodeInsideLoopBody(node.id, nodes, edges)) {
+      const label = node.type === "breakLoopNode" ? "Break" : "Continue";
+      return `${label} node '${node.id}' must be placed inside a loop body.`;
     }
   }
 
