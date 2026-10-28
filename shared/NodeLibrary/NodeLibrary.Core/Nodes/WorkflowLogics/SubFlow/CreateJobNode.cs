@@ -112,7 +112,8 @@ public class CreateJobNode : BaseNode
                 HttpMethod.Post,
                 callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required"),
                 payload,
-                callerContext.EnvType);
+                callerContext.EnvType,
+                callerContext.SpaceId);
 
             var childJobId = createdJob.GetProperty("id").GetGuid();
             JobId.Set(context, childJobId);
@@ -200,7 +201,8 @@ public class CreateJobNode : BaseNode
                 HttpMethod.Get,
                 callerContext.AccessToken ?? throw new InvalidOperationException("Access token is required"),
                 null,
-                callerContext.EnvType);
+                callerContext.EnvType,
+                callerContext.SpaceId);
 
             var status = childJob.TryGetProperty("status", out var statusElement)
                 ? statusElement.GetString() ?? string.Empty

@@ -335,18 +335,28 @@ public class JobsTableService : IJobsTableService
 
             if (newJob.TriggerType == TriggerTypesEnum.Flow)
             {
-                var parentAgent = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == newJob.RefId)
-                    .Include(s => s.Flow)
-                    .FirstOrDefaultAsync();
+                var parentJob = newJob.RefId.HasValue
+                    ? await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == newJob.RefId.Value && w.TenantId == tenantId)
+                        .IgnoreQueryFilters()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync()
+                    : null;
 
-                newJob.ExecutedBy = parentAgent != null
+                var parentAgent = parentJob == null
+                    ? null
+                    : await _unitOfWork.FlowVersionRepo
+                        .GetByConditionAsync(w => w.Id == parentJob.FlowVersionId)
+                        .IgnoreQueryFilters()
+                        .Include(s => s.Flow)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
+
+                newJob.ExecutedBy = parentAgent?.Flow != null
                     ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
                     : "flow_Unknown";
 
-                newJob.ExecutedOn = newJob.Machine != null
-                    ? $"newJob.Machine.Name}"
-                    : "Cloud";
+                newJob.ExecutedOn = resolvedMachineName ?? "Cloud";
             }
 
             // Manual mapping: Set the ExecutionLocation for unpublished flow
@@ -388,20 +398,6 @@ public class JobsTableService : IJobsTableService
     public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId)
     {
         var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
-
-        // if (!IsMachineCaller())
-        // {
-        //     var parentJobId = jobInsertDto.RefId;
-        //     var parentIsRunning = parentJobId.HasValue
-        //         && await _unitOfWork.JobRepo
-        //             .GetByConditionAsync(w => w.Id == parentJobId.Value
-        //                 && w.TenantId == tenantId
-        //                 && w.Status == JobStatusEnum.Running)
-        //             .AnyAsync();
-
-        //     if (!parentIsRunning)
-        //         return serviceResponse.Update("Parent job not found.", 404);
-        // }
 
         jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
         return await InsertJobAsync(jobInsertDto, tenantId);

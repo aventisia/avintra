@@ -62,6 +62,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Get the job from the database, including its flow version/type to decide whether to persist output data.
             var job = await unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -123,12 +124,24 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 }
                 else if (job.TriggerType == TriggerTypesEnum.Flow)
                 {
-                    var parentAgent = await unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w => w.Id == job.RefId)
-                        .Include(s => s.Flow)
-                        .FirstOrDefaultAsync();
+                    var parentJob = job.RefId.HasValue
+                        ? await unitOfWork.JobRepo
+                            .GetByConditionAsync(w => w.Id == job.RefId.Value)
+                            .IgnoreQueryFilters()
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync()
+                        : null;
 
-                    job.ExecutedBy = parentAgent != null
+                    var parentAgent = parentJob == null
+                        ? null
+                        : await unitOfWork.FlowVersionRepo
+                            .GetByConditionAsync(w => w.Id == parentJob.FlowVersionId)
+                            .IgnoreQueryFilters()
+                            .Include(s => s.Flow)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync();
+
+                    job.ExecutedBy = parentAgent?.Flow != null
                         ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
                         : "flow_Unknown";
 
@@ -177,6 +190,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 {
                     UserId = flowExecutionArgs.UserId,
                     TenantId = flowExecutionArgs.TenantId,
+                    SpaceId = job.SpaceId,
                     AccessToken = flowExecutionArgs.AccessToken ?? string.Empty,
                     AppBaseUrl = _environmentConfig.AppBaseUrl,
                     EnvType = flowExecutionArgs.EnvType
@@ -247,6 +261,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 
             var job = await unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -294,6 +309,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 {
                     UserId = flowExecutionArgs.UserId,
                     TenantId = flowExecutionArgs.TenantId,
+                    SpaceId = job.SpaceId,
                     AccessToken = flowExecutionArgs.AccessToken ?? string.Empty,
                     AppBaseUrl = _environmentConfig.AppBaseUrl,
                     EnvType = flowExecutionArgs.EnvType

@@ -48,4 +48,21 @@ public static class NodeHttpHeaders
         headers.Remove(EnvHeaderName);
         headers.Add(EnvHeaderName, value);
     }
+
+    /// <summary>
+    /// The header name used to convey the current space to backend services.
+    /// </summary>
+    public const string SpaceHeaderName = "X-Space-Id";
+
+    /// <summary>
+    /// Adds the <c>X-Space-Id</c> header when the caller context carries a space.
+    /// Central (null or <see cref="Guid.Empty"/>) omits the header.
+    /// </summary>
+    public static void ApplySpaceHeader(HttpRequestMessage request, Guid? spaceId)
+    {
+        request.Headers.Remove(SpaceHeaderName);
+
+        if (spaceId.HasValue && spaceId.Value != Guid.Empty)
+            request.Headers.Add(SpaceHeaderName, spaceId.Value.ToString());
+    }
 }

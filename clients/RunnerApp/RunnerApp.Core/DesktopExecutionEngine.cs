@@ -238,6 +238,7 @@ public class DesktopExecutionEngine : IExecutionEngine
         var caller = new CallerContext
         {
             TenantId = graph.TenantId,
+            SpaceId = graph.SpaceId,
             AccessToken = _accessToken,
             AppBaseUrl = _appBaseUrl,
             EnvType = graph.EnvType
