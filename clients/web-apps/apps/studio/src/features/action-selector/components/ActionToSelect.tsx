@@ -46,7 +46,7 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
           )}
           {data.disabled && data.isVerified !== false && (
             <Badge className="ml-1 text-3xs" variant={"outline"}>
-              Coming soon
+              {data.disabledHint ?? "Coming soon"}
             </Badge>
           )}
         </h2>
