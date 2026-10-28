@@ -59,7 +59,7 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
           {data.badge && <ActionTag tone="primary">{data.badge}</ActionTag>}
           {data.isVerified === false && <ActionTag tone="warn">Unverified</ActionTag>}
           {data.disabled && data.isVerified !== false && (
-            <ActionTag tone="muted">Coming soon</ActionTag>
+            <ActionTag tone="muted">{data.disabledHint ?? "Coming soon"}</ActionTag>
           )}
           {isWindowsOnly && (
             <MonitorIcon
