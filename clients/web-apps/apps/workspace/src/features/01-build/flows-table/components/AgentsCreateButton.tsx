@@ -6,7 +6,7 @@ import { ChevronUp, FolderPlus, Option, Plus } from "lucide-react";
 import { MenuContent, MenuItem, MenuShortcut } from "@/components/MenuParts";
 import NewAgentIcon from "@/components/NewAgentIcon";
 
-import { useFolderDialogStore } from "../stores/folder-dialog.store";
+import { useFolderFormDialog } from "../hooks/useFolderFormDialog.hook";
 
 /**
  * Split create button of the Agents page: the main part creates an agent, its menu also
@@ -14,7 +14,7 @@ import { useFolderDialogStore } from "../stores/folder-dialog.store";
  */
 export const AgentsCreateButton = () => {
   const { locked, openCreateDialog } = useCreateEntityAction("flow");
-  const openFolderDialog = useFolderDialogStore((state) => state.openDialog);
+  const { openCreateFolderDialog } = useFolderFormDialog();
 
   const openCreateAgentDialog = () => openCreateDialog("flow");
 
@@ -35,7 +35,7 @@ export const AgentsCreateButton = () => {
                 <span className="ml-1">N</span>
               </MenuShortcut>
             </MenuItem>
-            <MenuItem onSelect={() => openFolderDialog({ kind: "create" })}>
+            <MenuItem onSelect={() => openCreateFolderDialog()}>
               <FolderPlus />
               Create folder
             </MenuItem>

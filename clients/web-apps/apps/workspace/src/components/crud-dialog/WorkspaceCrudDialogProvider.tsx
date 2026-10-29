@@ -53,6 +53,11 @@ const FlowFormDialog = lazy(() =>
     (m) => ({ default: m.FlowFormDialog }),
   ),
 );
+const FolderCrudDialog = lazy(() =>
+  import("@/features/01-build/flows-table/components/folder-dialogs/FolderCrudDialog").then(
+    (m) => ({ default: m.FolderCrudDialog }),
+  ),
+);
 const QueueCrudDialogContent = lazy(() =>
   import("@/features/02-configure/queues/queues-table/components/queue-crud-dialog/QueueCrudDialogContent").then(
     (m) => ({ default: m.QueueCrudDialogContent }),
@@ -182,6 +187,9 @@ const crudDialogRegistry: CrudDialogRegistry = {
   },
   flow: {
     Dialog: FlowFormDialog,
+  },
+  folder: {
+    Dialog: FolderCrudDialog,
   },
   queue: {
     maxWidth: "!max-w-[36rem]",

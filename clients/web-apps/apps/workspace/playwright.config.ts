@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Drives the queue agent-access checks against an already running dev server and backend.
+ * Runs the e2e specs against an already running dev server and backend.
  */
 export default defineConfig({
   testDir: "./e2e",
