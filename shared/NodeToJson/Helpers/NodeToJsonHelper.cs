@@ -30,9 +30,12 @@ public static class NodeToJsonHelper
         { NodeFieldTypeEnum.CredentialsSelect, "credentials-select" },
         { NodeFieldTypeEnum.QueueSelect, "queue-select" },
         { NodeFieldTypeEnum.QueueStatusSelect, "queue-status-select" },
+        { NodeFieldTypeEnum.FlowSelect, "flow-select" },
+        { NodeFieldTypeEnum.CloudExecutionSwitch, "cloud-execution-switch" },
         { NodeFieldTypeEnum.JsonEditor, "json-editor" },
         { NodeFieldTypeEnum.CodeEditor, "code-editor" },
-        { NodeFieldTypeEnum.ConfigPanelModelOutput, "config-panel-model-output" }
+        { NodeFieldTypeEnum.ConfigPanelModelOutput, "config-panel-model-output" },
+        { NodeFieldTypeEnum.MachineSelect, "machine-select" }
     };
 
     public static string ConvertNodeToJson(Type nodeType, List<string> supportedPlatforms)
@@ -157,6 +160,13 @@ public static class NodeToJsonHelper
             if (placeholderAttr != null)
             {
                 field["placeholder"] = placeholderAttr.Placeholder;
+            }
+
+            // If DependsOn attribute is present then add the dependency to the field
+            var dependsOnAttr = prop.GetCustomAttribute<DependsOnAttribute>();
+            if (dependsOnAttr != null)
+            {
+                field["dependsOn"] = dependsOnAttr.FieldName;
             }
 
             // Get RenderIf attributes

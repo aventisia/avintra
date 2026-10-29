@@ -19,6 +19,15 @@ public class FlowVersionController : BaseApiController
         return ResultHelper(await _flowVersionService.GetFlowVersionsAsync(flowId));
     }
 
+    /// <summary>
+    /// Retrieves a flow version by its identifier.
+    /// </summary>
+    [HttpGet("{flowVersionId}")]
+    public async Task<ActionResult<ServiceResponse<SearchFlowVersionResDto>>> GetFlowVersion(Guid flowVersionId)
+    {
+        return ResultHelper(await _flowVersionService.GetFlowVersionAsync(flowVersionId));
+    }
+
     // Creates a new flow version
     [HttpPost("create")]
     public async Task<ActionResult<ServiceResponse<FlowVersionDto>>> InsertFlowVersion([FromBody] FlowVersionDto flowVersionDto)

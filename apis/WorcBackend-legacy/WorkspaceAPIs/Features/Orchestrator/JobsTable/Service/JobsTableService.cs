@@ -272,7 +272,7 @@ public class JobsTableService : IJobsTableService
                     .GetByConditionAsync(w =>
                         w.Name.ToLower() == requestedMachineName.ToLower())
                     .FirstOrDefaultAsync();
-                    
+
                 if (requestedMachine == null)
                     return serviceResponse.Update("Invalid execution location.", 400);
 
@@ -333,6 +333,32 @@ public class JobsTableService : IJobsTableService
                 newJob.RefId = userRecord.Id;
             }
 
+            if (newJob.TriggerType == TriggerTypesEnum.Flow)
+            {
+                var parentJob = newJob.RefId.HasValue
+                    ? await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == newJob.RefId.Value && w.TenantId == tenantId)
+                        .IgnoreQueryFilters()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync()
+                    : null;
+
+                var parentAgent = parentJob == null
+                    ? null
+                    : await _unitOfWork.FlowVersionRepo
+                        .GetByConditionAsync(w => w.Id == parentJob.FlowVersionId)
+                        .IgnoreQueryFilters()
+                        .Include(s => s.Flow)
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
+
+                newJob.ExecutedBy = parentAgent?.Flow != null
+                    ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
+                    : "flow_Unknown";
+
+                newJob.ExecutedOn = resolvedMachineName ?? "Cloud";
+            }
+
             // Manual mapping: Set the ExecutionLocation for unpublished flow
             if (!flowVersion.IsFlowVersionPublished)
             {
@@ -340,7 +366,7 @@ public class JobsTableService : IJobsTableService
                 newJob.ExecutedOn = _clientContextResolver.GetUnpublishedExecutionLocation();
             }
 
-            // TODO: Mannual mapping till the time JobInputData is stored as JsonDocument in the database
+            // TODO: Manual mapping till the time JobInputData is stored as JsonDocument in the database
             newJob.InputArgumentsJson = jobInsertDto.JobInputData != null ? jobInsertDto.JobInputData.RootElement.GetRawText() : null;
 
             // Insert job
@@ -367,6 +393,14 @@ public class JobsTableService : IJobsTableService
             _logger.LogError(ex, "Error occurred while inserting new job.");
             return serviceResponse;
         }
+    }
+
+    public async Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId)
+    {
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
+
+        jobInsertDto.TriggerType = TriggerTypesEnum.Flow;
+        return await InsertJobAsync(jobInsertDto, tenantId);
     }
 
     // Updates an existing job.
@@ -834,7 +868,10 @@ public class JobsTableService : IJobsTableService
             // Notify the initiating user (job.RefId) so the frontend can refresh the
             // credit balance immediately after the run completes. This covers the
             // runner/desktop path, which does not otherwise emit a JobCompleted signal.
-            if (job.RefId.HasValue && job.RefId.Value != Guid.Empty)
+            // IMPORTANT NOTE: Flow-triggered jobs carry the parent job id in RefId, not a user id.
+            if (job.TriggerType != TriggerTypesEnum.Flow
+                && job.RefId.HasValue
+                && job.RefId.Value != Guid.Empty)
             {
                 await _executionNotificationService.NotifyExecutionCompletedAsync(
                     job.RefId.Value, job.Id, job.Status, job.Remark);
@@ -1020,6 +1057,9 @@ public class JobsTableService : IJobsTableService
         }
     }
 
+    private bool IsMachineCaller()
+        => MachineIdentityClaims.TryGetMachineId(_httpContextAccessor.HttpContext?.User, out _);
+
     private async Task<bool> DoesCallerMatchMachineAsync(Guid machineId)
     {
         var user = _httpContextAccessor.HttpContext?.User;
@@ -1057,7 +1097,7 @@ public class JobsTableService : IJobsTableService
         await using var command = dbConnection.CreateCommand();
         command.Transaction = _workspaceDbContext.Database.CurrentTransaction?.GetDbTransaction();
         command.CommandText =
-            "SELECT \"Id\" FROM \"run_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR ((\"MachineId\" IS NULL OR \"MachineId\" = @emptyMachineId) AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" = @triggerType))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
+            "SELECT \"Id\" FROM \"run_Jobs\" WHERE \"TenantId\" = @tenantId AND \"Status\" = @status AND \"FlowVersionId\" = ANY(@flowVersionIds) AND (\"MachineId\" = @machineId OR ((\"MachineId\" IS NULL OR \"MachineId\" = @emptyMachineId) AND (LOWER(\"ExecutedOn\") = 'web server' OR \"TriggerType\" IN (@triggerType, @flowTriggerType)))) ORDER BY \"CreatedOn\" ASC LIMIT 1 FOR UPDATE SKIP LOCKED";
 
         var tenantParam = command.CreateParameter();
         tenantParam.ParameterName = "tenantId";
@@ -1093,6 +1133,13 @@ public class JobsTableService : IJobsTableService
         triggerTypeParam.Value = TriggerTypesEnum.Time.ToString();
         triggerTypeParam.DbType = DbType.String;
         command.Parameters.Add(triggerTypeParam);
+
+        var flowTriggerTypeParam = command.CreateParameter();
+        flowTriggerTypeParam.ParameterName = "flowTriggerType";
+        // IMPORTANT NOTE: "TriggerType" is persisted as text (EnumToStringConverter<TriggerTypesEnum>), so the parameter must be the enum name, not its integer value.
+        flowTriggerTypeParam.Value = TriggerTypesEnum.Flow.ToString();
+        flowTriggerTypeParam.DbType = DbType.String;
+        command.Parameters.Add(flowTriggerTypeParam);
 
         var result = await command.ExecuteScalarAsync();
         return result is Guid jobId ? jobId : Guid.Empty;
@@ -1268,6 +1315,61 @@ public class JobsTableService : IJobsTableService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId, Guid? parentJobId)
+    {
+        var serviceResponse = ServiceResponse<FlowJobStatusDto>.Create("Failed to fetch job status", 500);
+
+        try
+        {
+            Job? job;
+
+            if (IsMachineCaller())
+            {
+                job = await _unitOfWork.JobRepo
+                    .GetByConditionAsync(w => w.Id == jobId && w.TenantId == tenantId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+            }
+            else
+            {
+                if (!parentJobId.HasValue)
+                    return serviceResponse.Update("Job not found.", 404);
+
+                var linkedParentJobId = parentJobId.Value;
+
+                job = await _unitOfWork.JobRepo
+                    .GetByConditionAsync(w => w.Id == jobId
+                        && w.TenantId == tenantId
+                        && w.TriggerType == TriggerTypesEnum.Flow
+                        && w.RefId == linkedParentJobId)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+
+                if (job != null
+                    && !await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == linkedParentJobId && w.TenantId == tenantId)
+                        .AnyAsync())
+                    job = null;
+            }
+
+            // If record not found, log and return
+            if (job == null)
+                return serviceResponse.Update("Job not found.", 404);
+
+            return serviceResponse.Update(null, 200, new FlowJobStatusDto
+            {
+                Id = job.Id,
+                Status = job.Status,
+                OutputDataJson = job.OutputDataJson
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving job status for Job ID {jobId}.", jobId);
+            return serviceResponse;
+        }
     }
 
     // Exports jobs data into a CSV file 
