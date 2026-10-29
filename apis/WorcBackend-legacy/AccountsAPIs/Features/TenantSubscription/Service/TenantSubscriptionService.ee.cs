@@ -685,7 +685,7 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             if (currentPlan != null)
             {
                 var effectiveMaxSpaces = _environmentConfig.IsCommunityDeployment ? 1 : currentPlan.MaxSpaces;
-                var effectiveHistoryRetentionDays = _environmentConfig.IsCommunityDeployment ? 1 : currentPlan.HistoryRetentionDays;
+                var effectiveHistoryRetentionDays = HistoryRetentionUtil.GetEffectiveRetentionDays(_environmentConfig.IsCommunityDeployment, tenantSubscription.HistoryRetentionDays);
 
                 // Populate the subscription plan details for the dashboard
                 subscriptionDashboardDto.CurrentPlan = new CurrentSubscriptionPlanDto()
@@ -1256,9 +1256,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 {
                     SubscriptionId = s.Id,
                     TenantId = s.TenantId,
-                    HistoryRetentionDays = _environmentConfig.IsCommunityDeployment
-                        ? 1
-                        : s.HistoryRetentionDays
+                    // IMPORTANT NOTE: the cleanup feed reports the stored value, not the Community cap,
+                    // so a paid database booted as Community cannot purge history above what it stored.
+                    HistoryRetentionDays = HistoryRetentionUtil.GetStoredRetentionDays(s.HistoryRetentionDays)
                 }).ToList();
             }
             else
