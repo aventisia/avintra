@@ -4,17 +4,20 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
 {
     private readonly ILogger<FlowVersionHistoryService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
 
     public FlowVersionHistoryService(
         ILogger<FlowVersionHistoryService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        EnvironmentConfig environmentConfig)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _environmentConfig = environmentConfig;
     }
 
     // Retrieves all flow version history records for a specific flow version, ordered by creation date in descending order (latest first).
@@ -31,8 +34,9 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         {
             // Fetch all history records for the given flow version ID
             // Sort the results by CreatedOn in descending order to get the latest versions first
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var records = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.FlowVersionId == flowVersionId)
+                .GetByConditionAsync(w => w.FlowVersionId == flowVersionId && w.CreatedOn >= earliestReadable)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
@@ -67,9 +71,9 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
 
         try
         {
-            // Attempt to find the flow version history by its Id
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryId)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryId && w.CreatedOn >= earliestReadable)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
@@ -399,8 +403,9 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         try
         {
             // Retrieve the flow version history record along with its associated flow and version data
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id && w.CreatedOn >= earliestReadable)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -500,8 +505,9 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         try
         {
             // Retrieve the flow version history record using the version ID from the DTO
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id && w.CreatedOn >= earliestReadable)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
