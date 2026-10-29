@@ -13,11 +13,13 @@ public class NodeExecutionLogService : INodeExecutionLogService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public NodeExecutionLogService(IUnitOfWork unitOfWork, ICurrentTenantService currentTenantService)
+    public NodeExecutionLogService(IUnitOfWork unitOfWork, ICurrentTenantService currentTenantService, EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _environmentConfig = environmentConfig;
     }
 
     // Inserts a batch of node execution logs for the specified job. Logs already persisted
@@ -92,6 +94,15 @@ public class NodeExecutionLogService : INodeExecutionLogService
     public async Task<ServiceResponse<List<NodeExecutionLogDto>>> GetNodeExecutionLogsAsync(Guid jobId)
     {
         var serviceResponse = ServiceResponse<List<NodeExecutionLogDto>>.Create("Failed to retrieve logs.", 500);
+
+        // The logs of a job outside the history retention are no longer readable.
+        var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
+        var isJobReadable = await _unitOfWork.JobRepo
+            .GetByConditionAsync(j => j.Id == jobId && j.CreatedOn >= earliestReadable)
+            .AnyAsync();
+
+        if (!isJobReadable)
+            return serviceResponse.Update("Job not found.", 404);
 
         var logs = await _unitOfWork.JobNodeExecutionLogRepo
             .GetByConditionAsync(n => n.JobId == jobId)
