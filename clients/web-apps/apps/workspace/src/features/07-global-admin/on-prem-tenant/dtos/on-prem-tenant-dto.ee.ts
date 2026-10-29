@@ -37,6 +37,12 @@ export interface OnPremTenantDto {
   /** Indicates whether login is disabled for this tenant */
   isLoginDisabled: boolean;
 
+  /** Indicates whether single sign-on is allowed for this tenant */
+  isSsoAllowed: boolean;
+
+  /** Indicates whether custom branding is allowed for this tenant */
+  isBrandingAllowed: boolean;
+
   /** Organization email address */
   ourEmails?: string | null;
 
