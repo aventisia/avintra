@@ -1,10 +1,10 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 export function NoAgentsAvailable({ includeChat = true }: { includeChat?: boolean }) {
   return (
-    <NoContentMessage
+    <EmptyState
       className="h-[calc(100vh-4*var(--header-height))]"
       Icon={NewAgentIcon}
       primaryMessage="No agents assigned"

@@ -130,8 +130,8 @@ export const FlowBlockCrudForm = () => {
             <InputField
               {...field}
               fieldSize="xs"
-              description="Enter name for the Block node"
-              label="Block Name"
+              description="Enter name for the block node"
+              label="Block name"
             />
           )}
         />
@@ -141,7 +141,7 @@ export const FlowBlockCrudForm = () => {
           render={({ field }) => (
             <SelectField
               {...field}
-              label="Access Type"
+              label="Access type"
               description="Select the access type"
               size="xs"
               selectOptions={selectOptions}
@@ -156,8 +156,8 @@ export const FlowBlockCrudForm = () => {
               <InputField
                 {...field}
                 fieldSize="xs"
-                description="Enter description for the Block node"
-                label="Block Description"
+                description="Enter description for the block node"
+                label="Block description"
               />
             )}
           />

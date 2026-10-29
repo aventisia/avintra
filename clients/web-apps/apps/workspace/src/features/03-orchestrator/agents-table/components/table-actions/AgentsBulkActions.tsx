@@ -24,7 +24,7 @@ export function AgentsBulkActions({ table }: Readonly<AgentsBulkActionsProps>) {
 
   const handleDisable = () => {
     showCustomAlertDialog({
-      title: "Disable Agents",
+      title: "Disable agents",
       description: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "agents" : "agent"} will be disabled`,
       confirmBtnText: "Disable",
       isDestructive: true,

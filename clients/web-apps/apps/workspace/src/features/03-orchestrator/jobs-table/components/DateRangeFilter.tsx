@@ -98,8 +98,8 @@ export const DateRangeFilter = () => {
   //  Presets
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     {
       label: historyLimitDays === 1 ? "Last 1 day" : "Last 7 days",
       value: historyLimitDays === 1 ? 1 : 7,

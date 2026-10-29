@@ -104,7 +104,7 @@ const ExportDialogForm = () => {
                 searchQuery={agentSearchTerm}
                 isLoading={agentIsLoading}
                 isError={agentIsError}
-                placeholder="Search for Agents..."
+                placeholder="Search for agents..."
                 maxHeight="300px"
               />
             </div>

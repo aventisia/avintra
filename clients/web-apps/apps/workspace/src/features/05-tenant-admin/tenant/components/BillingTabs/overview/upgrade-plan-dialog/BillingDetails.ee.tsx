@@ -36,7 +36,7 @@ const BillingDetails = ({ billingData }: { billingData: CompanyDetailsDTO | unde
 
   return (
     <div className="rounded-lg border">
-      <div className="border-b p-4 text-base font-medium">Billing Details</div>
+      <div className="border-b p-4 text-base font-medium">Billing details</div>
       <div className="space-y-3 p-4">
         {isIndividualUser
           ? renderRow("Name", `${userSession?.firstName} ${userSession?.lastName}`)

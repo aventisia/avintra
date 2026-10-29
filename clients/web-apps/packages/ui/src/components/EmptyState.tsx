@@ -1,7 +1,7 @@
 import { cn } from "@/ui/lib";
 import { type IconProps } from "@/ui/types";
 
-interface NoContentMessageProps {
+interface EmptyStateProps {
   /** (Optional): To show relevant icon if there is no content*/
   Icon?: React.ComponentType<IconProps>;
 
@@ -14,7 +14,7 @@ interface NoContentMessageProps {
   /** (Optiona): Action (JSX) to take when content is empty. Mostly a create button to start create a content */
   action?: React.ReactNode;
 
-  /** (Optional): To pass css classes to override NoContentMessage container style */
+  /** (Optional): To pass css classes to override EmptyState container style */
   className?: string;
 }
 
@@ -22,13 +22,13 @@ interface NoContentMessageProps {
  * is dynamic (fetching from database) or conditon based data to be shown then
  * data can be null or empty and this component can be rendered
  */
-const NoContentMessage = ({
+const EmptyState = ({
   Icon,
   primaryMessage,
   secondaryMessage,
   action,
   className,
-}: NoContentMessageProps) => {
+}: EmptyStateProps) => {
   return (
     <div
       className={cn(
@@ -41,7 +41,7 @@ const NoContentMessage = ({
           <Icon className="size-4" />
         </div>
       )}
-      <p className="text-[16px]/5 font-semibold tracking-[-0.01em] text-ink">{primaryMessage}</p>
+      <p className="text-heading text-ink">{primaryMessage}</p>
       {secondaryMessage && (
         <p className="max-w-[380px] text-body-sm text-muted-foreground">{secondaryMessage}</p>
       )}
@@ -50,4 +50,4 @@ const NoContentMessage = ({
   );
 };
 
-export { NoContentMessage, type NoContentMessageProps };
+export { EmptyState, type EmptyStateProps };

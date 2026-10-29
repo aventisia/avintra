@@ -15,11 +15,11 @@ export const SA_NOTIFICATIONS_TABLE_KEY = SA_TABLE_KEY;
 export const getSaDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Notification", description: "" };
+      return { heading: "Create notification", description: "" };
     case "read":
       return { heading: "Notification", description: "" };
     case "update":
-      return { heading: "Edit Notification", description: "" };
+      return { heading: "Edit notification", description: "" };
     default:
       return { heading: "", description: "" };
   }

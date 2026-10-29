@@ -6,7 +6,7 @@ import { OnPremInstanceTypesEnum } from "../enums/tenant-instance-type-enum.ee";
 // Instance Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Instance Id",
+  label: "Instance ID",
   disabled: true,
 };
 
@@ -23,7 +23,7 @@ const nameProps: InputFieldProps = {
 // Type
 const typeProps: SelectFieldProps = {
   name: "type",
-  label: "Instance Type",
+  label: "Instance type",
   isRequired: true,
   description: "The type of the instance.",
   selectOptions: enumToArray(OnPremInstanceTypesEnum),
@@ -32,7 +32,7 @@ const typeProps: SelectFieldProps = {
 // Disable Instance
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Instance",
+  label: "Disable instance",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 

@@ -1,5 +1,5 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { type Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
 
 import { Badge } from "@/ui/components/badge";
 import { Button } from "@/ui/components/buttons";
@@ -29,7 +29,7 @@ export function DTSelectionInfo<TData>({ table }: DTSelectionInfoProps<TData>) {
         size={"icon6"}
         onClick={() => table.toggleAllPageRowsSelected(false)}
       >
-        <XMarkIcon className="h-4 w-4 stroke-[2] text-[--icon-color]" />
+        <X className="h-4 w-4 stroke-[2] text-[--icon-color]" />
       </Button>
     </div>
   );

@@ -18,7 +18,7 @@ export const DeviceHistoryTab = () => {
   return (
     <div className="box box--stacked flex flex-col p-5">
       {/* <div className="mb-6 flex items-center border-b border-dashed border-line pb-5 text-sm font-medium">
-        Device History
+        Device history
       </div> */}
       <div>
         <div className="text-sm text-muted-foreground">

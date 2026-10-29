@@ -85,7 +85,7 @@ export const CreditPlansCrudForm = ({ rowId, crudAction }: CreditPlansCrudFormPr
         render={({ field }) => (
           <InputField
             value={field.value ?? ""}
-            label="One Unit"
+            label="One unit"
             type="number"
             step="any"
             onChange={(e) => {

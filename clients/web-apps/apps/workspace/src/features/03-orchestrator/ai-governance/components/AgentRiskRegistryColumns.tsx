@@ -85,7 +85,7 @@ export const buildAgentRiskRegistryColumns = (
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Agent Name" />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Agent name" />
     ),
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export const buildAgentRiskRegistryColumns = (
       <DTColumnHeader
         tableKey={AI_GOVERNANCE_TABLE_KEY}
         column={column}
-        title="Composite Risk Tier"
+        title="Composite risk tier"
       />
     ),
     cell: ({ row }) => renderTier(row.original.compositeTier),
@@ -134,7 +134,7 @@ export const buildAgentRiskRegistryColumns = (
   {
     accessorKey: "openIssues",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Open Issues" />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Open issues" />
     ),
     cell: ({ row }) =>
       row.original.openIssues > 0 ? (
@@ -148,14 +148,14 @@ export const buildAgentRiskRegistryColumns = (
   {
     accessorKey: "reviewDate",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Reviewed On" />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Reviewed on" />
     ),
     cell: ({ row }) => renderDate(row.original.reviewDate),
   },
   {
     accessorKey: "approvalDate",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Approved On" />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Approved on" />
     ),
     cell: ({ row }) => renderDate(row.original.approvalDate),
   },

@@ -25,11 +25,11 @@ const UploadItemsDialog = () => {
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <DialogContent side={"right"} className="!max-w-[60rem]">
         <DialogDefaultHeader
-          heading="Upload Items"
+          heading="Upload items"
           children={
             <>
               <Button className="mr-2" onClick={handleClick} type="button" variant={"link"}>
-                Browse File
+                Browse file
               </Button>
             </>
           }

@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { FileWarningIcon } from "lucide-react";
 import { type ComponentType, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -48,8 +48,8 @@ const VIEWER_REGISTRY: Record<FileType, ViewerRegistryEntry> = {
 
 //  Empty state
 
-const EmptyState = () => (
-  <NoContentMessage
+const NoFilesState = () => (
+  <EmptyState
     primaryMessage="No files available"
     secondaryMessage="Upload a file to get started"
     Icon={FileWarningIcon}
@@ -73,10 +73,10 @@ export default function FileViewer() {
     resetPdf();
   }, [activeFileId, resetViewer, resetPdf]);
 
-  if (files.length === 0) return <EmptyState />;
+  if (files.length === 0) return <NoFilesState />;
 
   const activeFile: LocalFile | undefined = files.find((f) => f.id === activeFileId);
-  if (!activeFile) return <EmptyState />;
+  if (!activeFile) return <NoFilesState />;
 
   const fileType = getFileType(activeFile.extension);
   const { Viewer, ControlPanel, PageControl } = VIEWER_REGISTRY[fileType];

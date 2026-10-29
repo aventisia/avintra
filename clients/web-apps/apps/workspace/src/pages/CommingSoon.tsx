@@ -1,4 +1,4 @@
-import { ClockIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, RocketIcon } from "lucide-react";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
@@ -29,7 +29,7 @@ const ComingSoon: React.FC = () => {
           className="flex items-center justify-center rounded-lg bg-sunken p-6"
           aria-hidden="true"
         >
-          <RocketLaunchIcon className="h-16 w-16 text-primary" />
+          <RocketIcon className="h-16 w-16 text-primary" />
         </div>
         <div
           className="flex items-center justify-center space-x-4 text-muted-foreground"

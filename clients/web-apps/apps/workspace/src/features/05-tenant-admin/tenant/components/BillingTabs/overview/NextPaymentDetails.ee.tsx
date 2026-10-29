@@ -29,7 +29,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
   return (
     <div className="flex flex-col rounded-lg border pb-6">
       <div className="p-4">
-        <p className="text-heading text-ink">Next Payment</p>
+        <p className="text-heading text-ink">Next payment</p>
       </div>
       <Separator />
 
@@ -39,16 +39,16 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
             <CalendarIcon className="size-4" />
           </span>
           <div className="text-sm">
-            <p className="text-muted-foreground">Due/Renewal Date</p>
+            <p className="text-muted-foreground">Due/renewal date</p>
             <p className="font-mono font-medium">{formatDate(plan?.nextPayment?.dueDate)}</p>
           </div>
         </div>
 
         <div className="mt-4 space-y-2">
-          <h2 className="font-medium">Billing Details:</h2>
+          <h2 className="font-medium">Billing details:</h2>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <p>Subscription Fee</p>
+              <p>Subscription fee</p>
               <p className="font-mono">
                 {formatCurrency(
                   plan?.nextPayment?.subscriptionFee ?? 0,
@@ -67,7 +67,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
             <Separator />
 
             <div className="flex items-center justify-between text-sm">
-              <p>Total Amount</p>
+              <p>Total amount</p>
               <p className="font-mono">
                 {formatCurrency(
                   plan?.nextPayment?.totalAmount ?? 0,

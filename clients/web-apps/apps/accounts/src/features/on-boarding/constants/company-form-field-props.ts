@@ -13,7 +13,7 @@ const roleProps: InputFieldProps = {
 const organizationNameProps: InputFieldProps = {
   className: "h-control-lg",
   name: "organizationName",
-  label: "Organization Name",
+  label: "Organization name",
   type: "text",
   isRequired: true,
 };
@@ -22,7 +22,7 @@ const organizationNameProps: InputFieldProps = {
 const organizationDomainProps: InputFieldProps = {
   className: "h-control-lg",
   name: "domain",
-  label: "Organization Domain",
+  label: "Organization domain",
   type: "text",
   isRequired: true,
 };
@@ -31,7 +31,7 @@ const organizationDomainProps: InputFieldProps = {
 const numberOfEmployeesProps: SelectFieldProps = {
   className: "h-control-lg",
   name: "numberOfEmployees",
-  label: "Number of Employees",
+  label: "Number of employees",
   selectOptions: [
     { label: "1 to 100", value: "100" },
     { label: "100 to 500", value: "500" },

@@ -8,7 +8,7 @@ import { ProvideEmailForm } from "./ProvideEmailForm";
 
 export const ProvideEmail = () => {
   // Set dcoument title
-  useDocumentTitle("Reset Password");
+  useDocumentTitle("Reset password");
 
   // Return component
   return (

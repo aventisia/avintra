@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { DTCreateButton } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
@@ -124,7 +124,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
             view={view}
             emptyState={
               isSearching || isFiltered ? (
-                <NoContentMessage
+                <EmptyState
                   Icon={NewAgentIcon}
                   primaryMessage="No agents found"
                   secondaryMessage={
@@ -135,17 +135,17 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
                   className="h-52"
                 />
               ) : showArchived && archivedCount === 0 ? (
-                <NoContentMessage
+                <EmptyState
                   Icon={NewAgentIcon}
                   primaryMessage="No archived agents"
-                  secondaryMessage="Turn off the Archived toggle to see this folder's active agents."
+                  secondaryMessage="Turn off the archived toggle to see this folder's active agents."
                   className="h-52"
                 />
               ) : !showArchived && archivedCount > 0 ? (
-                <NoContentMessage
+                <EmptyState
                   Icon={NewAgentIcon}
                   primaryMessage="No active agents"
-                  secondaryMessage="Turn on the Archived toggle to see this folder's archived agents."
+                  secondaryMessage="Turn on the archived toggle to see this folder's archived agents."
                   className="h-52"
                 />
               ) : (

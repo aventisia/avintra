@@ -8,7 +8,7 @@ import { useCollaborationStore } from "../stores/collaboration-store";
 import { ChatPanel } from "./chat/ChatPanel";
 import { ChatTrigger } from "./chat/ChatTrigger";
 
-const CHAT_HEADING = "Live Chat";
+const CHAT_HEADING = "Live chat";
 
 interface ChatProps {
   /** Additional class name to override popover content container style */

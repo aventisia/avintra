@@ -68,7 +68,7 @@ const openAssignAgentsDialog = async (page: Page, queueName: string) => {
   const row = queueRow(page, queueName);
   await expect(row).toBeVisible();
   await row.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("menuitem", { name: "Assign Agents" }).click();
+  await page.getByRole("menuitem", { name: "Assign agents" }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
@@ -210,7 +210,7 @@ test("AC8: Production disables the entry and never opens the dialog", async ({ p
   await expect(row).toBeVisible();
   await row.getByRole("button", { name: "Open menu" }).click();
 
-  const item = page.getByRole("menuitem", { name: "Assign Agents" });
+  const item = page.getByRole("menuitem", { name: "Assign agents" });
   await expect(item).toBeVisible();
   await expect(item).toHaveAttribute("aria-disabled", "true");
   await item.click({ force: true });

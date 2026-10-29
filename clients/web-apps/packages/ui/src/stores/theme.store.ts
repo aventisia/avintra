@@ -4,8 +4,7 @@ type ThemeMode = "system" | "light" | "dark";
 
 const THEME_MODES: ThemeMode[] = ["system", "light", "dark"];
 const THEME_STORAGE_KEY = "av-theme-mode";
-// shortcut: defaults to light until app screens drop hard-coded colors, switch to "system" after the Phase 7 cleanup
-const DEFAULT_THEME_MODE: ThemeMode = "light";
+const DEFAULT_THEME_MODE: ThemeMode = "system";
 const DARK_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 
 const readStoredThemeMode = (): ThemeMode => {
@@ -26,7 +25,8 @@ const writeStoredThemeMode = (mode: ThemeMode) => {
 };
 
 const isDarkMode = (mode: ThemeMode) =>
-  mode === "dark" || (mode === "system" && matchMedia(DARK_SCHEME_QUERY).matches);
+  mode === "dark" ||
+  (mode === "system" && typeof matchMedia === "function" && matchMedia(DARK_SCHEME_QUERY).matches);
 
 const applyThemeMode = (mode: ThemeMode) => {
   const isDark = isDarkMode(mode);

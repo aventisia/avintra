@@ -30,7 +30,7 @@ export const RemoveUserAction = ({ id }: RemoveUserActionProps) => {
           confirmActionFn: () => {
             mutate(id);
           },
-          title: "Remove User",
+          title: "Remove user",
           confirmBtnText: "Remove",
           description: "Are you sure you want to remove this user's access to the Agent?",
         });

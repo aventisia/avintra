@@ -31,10 +31,10 @@ export function SuggestionsField({ name, disabled, isRequired, size }: Suggestio
   );
   const showPromptField = watch(fieldNames.enableDynamicActions);
   return (
-    <GroupedFieldsWrapper groupName="Configure Default Actions">
+    <GroupedFieldsWrapper groupName="Configure default actions">
       <StringArrayField
         name={fieldNames.defaultActions}
-        placeholder="Add Action"
+        placeholder="Add action"
         disabled={disabled}
         isRequired={isRequired}
         size={size}
@@ -44,7 +44,7 @@ export function SuggestionsField({ name, disabled, isRequired, size }: Suggestio
 
       <SwitchField
         name={fieldNames.enableDynamicActions}
-        label="Generate Follow-up Messages"
+        label="Generate follow-up messages"
         description="Enable dynamically generated follow-up messages during conversations."
         disabled={disabled}
         size={size}

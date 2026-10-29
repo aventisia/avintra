@@ -6,7 +6,7 @@ import { CompanyInfoForm } from "./CompanyInfoForm";
 
 export const CompanyInfo = () => {
   // Set dcoument title
-  useDocumentTitle("Company Info");
+  useDocumentTitle("Company info");
 
   // Return component
   return (

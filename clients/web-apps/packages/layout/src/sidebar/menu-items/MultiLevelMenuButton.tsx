@@ -20,7 +20,7 @@ const MultiLevelMenuButton = ({ Icon, name }: MultiLevelMenuButtonProps) => {
     <AccordionTrigger className="h-control-sm gap-2.5 rounded-sm px-2 py-0 text-body-sm font-normal text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink hover:no-underline focus-visible:shadow-focus focus-visible:outline-none motion-reduce:transition-none [&>svg]:text-muted-foreground">
       <div className="flex min-w-0 items-center gap-2.5">
         <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground" />
-        <span className="truncate capitalize">{name}</span>
+        <span className="truncate">{name}</span>
       </div>
     </AccordionTrigger>
   );

@@ -5,12 +5,10 @@ import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
-import { Loader2 } from "lucide-react";
+import { InfoIcon, Loader2, PlayIcon, SquareIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -339,7 +337,7 @@ const ExecuteFlow = () => {
           </span>
           <Tooltip content="This timer tracks the elapsed time on your device while the flow is running. The duration shown in the execution logs and jobs may differ slightly as it is calculated by the server.">
             <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-lg hover:bg-hover text-ink-2">
-              <InformationCircleIcon className="size-3.5 -mt-[1px]" />
+              <InfoIcon className="size-3.5 -mt-[1px]" />
             </span>
           </Tooltip>
         </div>
@@ -360,7 +358,7 @@ const ExecuteFlow = () => {
             {isAborting ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
             ) : (
-              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
+              <SquareIcon className="h-[1.1rem] w-[1.1rem] fill-current text-bad" />
             )}
           </Button>
         </Tooltip>
@@ -376,7 +374,7 @@ const ExecuteFlow = () => {
             {isStarting || executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
             ) : (
-              <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
+              <PlayIcon className="h-[1.1rem] w-[1.1rem] fill-current text-ok" />
             )}
           </Button>
         </Tooltip>

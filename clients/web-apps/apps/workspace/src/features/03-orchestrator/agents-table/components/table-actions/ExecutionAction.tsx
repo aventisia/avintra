@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, SquareIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
@@ -62,7 +62,7 @@ export const ExecutionAction = ({
               if (jobId) abortJobMutation(jobId);
             }}
           >
-            <StopIcon className="h-[1.125rem] w-[1.125rem] text-bad" />
+            <SquareIcon className="h-[1.125rem] w-[1.125rem] text-bad" />
           </Button>
         </Tooltip>
       ) : (

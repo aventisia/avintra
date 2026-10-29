@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "lucide-react";
 
 import { useMarkNotificationAsRead } from "@/react-toolkit/features/unread-notifications/hooks/useMarkNotificationAsRead";
 
@@ -23,7 +23,7 @@ export const UNIActions = ({ id }: UNIActionsProps) => {
       <Button
         variant={"outline"}
         size={"icon7"}
-        className="absolute right-3 top-3 z-10 bg-white opacity-0 hover:bg-white group-hover:opacity-100"
+        className="absolute right-3 top-3 z-10 bg-surface opacity-0 hover:bg-hover group-hover:opacity-100"
         onClick={(e) => {
           // mutate the notification as read
           handleMutateMarkAsRead();

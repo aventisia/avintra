@@ -18,13 +18,13 @@ const nameProps: InputFieldProps = {
   description:
     "A **friendly** name to identify this API key.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
   isRequired: true,
-  placeholder: "Production Integration",
+  placeholder: "Production integration",
 };
 
 // Expiration date and time
 const expiresAtProps: DateTimePickerFieldProps = {
   name: "expiresAt",
-  label: "Expires At (Optional)",
+  label: "Expires at (optional)",
   description: "Optional. Leave blank to keep the key active indefinitely.",
   placeholder: "Select expiration date and time",
   hourCycle: 12,

@@ -66,7 +66,7 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
     >
       <span className="absolute -left-2 bottom-1.5 top-1.5 hidden w-0.5 rounded-r-sm bg-indicator group-aria-[current=page]:block" />
       <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground group-aria-[current=page]:text-primary-text" />
-      <span className={`truncate capitalize ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
+      <span className={`truncate ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
       {badge && (
         <span
           className={`ml-auto font-mono text-2xs leading-none text-muted-foreground ${

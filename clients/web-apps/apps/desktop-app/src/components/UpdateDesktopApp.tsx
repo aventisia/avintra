@@ -22,8 +22,8 @@ interface UpdateDesktopAppProps {
  * The hook expects a full domain (origin). The flow is:
  * 1. Check for update on mount (spinner).
  * 2. If no update is available, immediately call onSkip to continue.
- * 3. If an update is available, show the update card with Update Now / Skip.
- * 4. Update Now starts download directly (no confirmation step).
+ * 3. If an update is available, show the update card with Update now / Skip.
+ * 4. Update now starts download directly (no confirmation step).
  * 5. Download + install streams progress through RunnerProgress.
  * 6. Installing uses a spinner fallback if no real progress is available.
  * 7. Errors show a unified UI with compact inline Retry / Continue anyway.
@@ -176,7 +176,7 @@ export function UpdateDesktopApp({ domain, onInstall, onSkip }: UpdateDesktopApp
 
         <div className="flex flex-col gap-2">
           <Button type="button" onClick={handleUpdate} size="lg" className="w-full">
-            Update Now
+            Update now
           </Button>
           <Button type="button" variant="outline" onClick={onSkip} size="lg" className="w-full">
             Skip for now

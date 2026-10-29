@@ -71,7 +71,7 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
 
   return (
     <ScrollArea className="h-full bg-surface p-3">
-      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary Categories">
+      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary categories">
         {actionSelectorData.map((item, index) => {
           const isDisabled = item.disabled;
           return (

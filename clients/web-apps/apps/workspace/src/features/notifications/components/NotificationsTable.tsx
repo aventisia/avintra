@@ -11,8 +11,7 @@ import {
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { Mail, Settings2 } from "lucide-react";
+import { Mail, PlusIcon, Settings2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { HelpButton } from "@/components/help/HelpButton";

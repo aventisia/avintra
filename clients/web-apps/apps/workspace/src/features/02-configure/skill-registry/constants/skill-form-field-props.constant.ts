@@ -11,7 +11,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   placeholder: "pdf-report-generator",
   description:
@@ -29,7 +29,7 @@ const descriptionProps: TextareaFieldProps = {
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 

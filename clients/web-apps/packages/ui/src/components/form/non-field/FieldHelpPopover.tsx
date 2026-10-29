@@ -1,5 +1,5 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "@radix-ui/react-popover";
+import { Info } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -29,7 +29,7 @@ const FieldHelpPopover = ({ content, className }: FieldHelpPopoverProps) => {
             className,
           )}
         >
-          <InformationCircleIcon className="h-3.5 w-3.5" />
+          <Info className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
       <PopoverPortal>
@@ -38,7 +38,7 @@ const FieldHelpPopover = ({ content, className }: FieldHelpPopoverProps) => {
           sideOffset={6}
           align="start"
           collisionPadding={8}
-          className="z-50 max-h-[var(--radix-popover-content-available-height)] w-80 max-w-[var(--radix-popover-content-available-width)] overflow-hidden rounded-lg border bg-popover text-xs leading-relaxed text-popover-foreground shadow-md outline-none"
+          className="z-50 max-h-[var(--radix-popover-content-available-height)] w-80 max-w-[var(--radix-popover-content-available-width)] overflow-hidden rounded-lg border bg-popover text-xs leading-relaxed text-popover-foreground shadow-pop outline-none"
         >
           {/*
             IMPORTANT NOTE: the `[&>div]:!block [&>div]:!w-full` classes on the

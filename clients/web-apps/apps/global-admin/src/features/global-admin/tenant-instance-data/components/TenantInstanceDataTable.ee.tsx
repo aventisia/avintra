@@ -61,7 +61,7 @@ export const TenantInstanceDataTable = () => {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <NavLink to="/on-prem-tenants">On-prem Tenants</NavLink>
+                    <NavLink to="/on-prem-tenants">On-prem tenants</NavLink>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />

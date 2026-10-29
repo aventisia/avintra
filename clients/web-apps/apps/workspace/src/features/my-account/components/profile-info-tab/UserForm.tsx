@@ -38,7 +38,7 @@ export const UserForm = () => {
     >
       <div>
         {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-xl font-medium">
-          Profile Info
+          Profile info
         </div> */}
 
         {/* Form feilds */}
@@ -55,14 +55,14 @@ export const UserForm = () => {
                 name="firstName"
                 className="border-input"
                 size={50}
-                placeholder="First Name"
+                placeholder="First name"
               />
               <InputField
                 name="lastName"
                 type="text"
                 className="border-input"
                 size={50}
-                placeholder="Last Name"
+                placeholder="Last name"
               />
             </div>
           </InputDivElement>
@@ -95,13 +95,13 @@ export const UserForm = () => {
             <InputField
               name="addressLine1"
               type="text"
-              placeholder="Address Line 1"
+              placeholder="Address line 1"
               className="border-input"
             />
             <InputField
               name="addressLine2"
               type="text"
-              placeholder="Address Line 2"
+              placeholder="Address line 2"
               className="mt-3 border-input"
             />
           </InputDivElement> */}

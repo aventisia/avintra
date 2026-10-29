@@ -83,11 +83,11 @@ export const ClearRunResultsPanel = () => {
         <Button
           variant="secondary"
           size="sm"
-          className="flex items-center gap-2 shadow"
+          className="flex items-center gap-2 shadow-pop"
           onClick={handleClear}
         >
           <Eraser className="h-4 w-4" />
-          Clear Results
+          Clear results
         </Button>
       </Tooltip>
     </Panel>

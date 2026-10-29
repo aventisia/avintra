@@ -11,8 +11,8 @@ get {
 }
 
 headers {
-  X-OnPrem-Tenant-Id: 7a6f2caa-4496-4b57-90a1-150020653ba7
-  X-OnPrem-Instance-Key: ***REMOVED***
+  X-OnPrem-Tenant-Id: {{GLOBALADMIN_METADATA_TENANT_ID}}
+  X-OnPrem-Instance-Key: {{GLOBALADMIN_METADATA_INSTANCE_KEY}}
 }
 
 script:post-response {

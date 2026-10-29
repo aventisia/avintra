@@ -1,8 +1,8 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
+import { EllipsisIcon } from "lucide-react";
 
 export const ReplaceFlowTrigger = (props: React.ComponentPropsWithoutRef<typeof DialogTrigger>) => {
   return (
@@ -15,7 +15,7 @@ export const ReplaceFlowTrigger = (props: React.ComponentPropsWithoutRef<typeof 
         )}
         {...props}
       >
-        <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+        <EllipsisIcon className="h-4 w-4 text-[--icon-color]" />
       </DialogTrigger>
     </NodeToolbar>
   );

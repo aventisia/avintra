@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -29,7 +29,7 @@ export const BackToLogin = () => {
           navigate("/login");
         }}
       >
-        <ArrowLeftIcon className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4" />
         <span className="ml-2">Back to log in</span>
       </Button>
     </ContentFooter>

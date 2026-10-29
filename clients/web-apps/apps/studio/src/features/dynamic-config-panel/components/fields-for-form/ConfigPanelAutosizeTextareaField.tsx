@@ -9,7 +9,7 @@ import {
 } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
-import { VariableIcon } from "@heroicons/react/24/outline";
+import { VariableIcon } from "lucide-react";
 import * as React from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";

@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -118,7 +118,7 @@ export const ToolsTable = () => {
               ))}
             </div>
           ) : (
-            <NoContentMessage
+            <EmptyState
               className="rounded-lg border bg-surface py-8"
               primaryMessage="No tools found"
               secondaryMessage={isReadOnlyTab ? undefined : "Please add a new tool."}

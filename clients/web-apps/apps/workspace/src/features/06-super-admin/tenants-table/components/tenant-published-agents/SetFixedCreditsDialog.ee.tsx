@@ -68,10 +68,10 @@ export const SetFixedCreditsDialog = () => {
   return (
     <Dialog open={showFixedCreditsDialog} onOpenChange={(open) => setShowFixedCreditsDialog(open)}>
       <DialogContent className="space-y-6 p-4">
-        <DialogDefaultHeader heading="Set Fixed Credits" description={agent?.name ?? ""} />
+        <DialogDefaultHeader heading="Set fixed credits" description={agent?.name ?? ""} />
 
         <div className="space-y-2">
-          <Label htmlFor="fixed-credits">Fixed Credits</Label>
+          <Label htmlFor="fixed-credits">Fixed credits</Label>
           <Input
             id="fixed-credits"
             type="number"
@@ -95,7 +95,7 @@ export const SetFixedCreditsDialog = () => {
           {/* Only show remove when a fixed credits value is currently set */}
           {hasFixedCredits && (
             <Button variant="caution" disabled={isPending} onClick={handleRemove}>
-              Remove Fixed Credits
+              Remove fixed credits
             </Button>
           )}
 
