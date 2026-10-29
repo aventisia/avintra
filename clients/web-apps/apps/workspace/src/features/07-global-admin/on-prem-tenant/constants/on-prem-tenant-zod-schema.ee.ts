@@ -79,6 +79,8 @@ export const onPremTenantZodSchema = z.object({
   contractRenewalDate: z.date({ message: reqError("Contract Renewal Date") }),
   isExecutionDisabled: z.boolean().default(false),
   isLoginDisabled: z.boolean().default(false),
+  isSsoAllowed: z.boolean().default(false),
+  isBrandingAllowed: z.boolean().default(false),
   ourEmails: emailListSchema,
   tenantEmails: emailListSchema,
   // Read (view) only fields

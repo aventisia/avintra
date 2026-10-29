@@ -56,6 +56,8 @@ export const useDefineOnPremTenantForm = ({ rowId }: UseDefineOnPremTenantFormOp
       tenantEmails: "",
       isExecutionDisabled: false,
       isLoginDisabled: false,
+      isSsoAllowed: false,
+      isBrandingAllowed: false,
       createdByUser: userSession?.firstName + " " + userSession?.lastName,
       createdOn: currDate,
       lastModifiedByUser: userSession?.firstName + " " + userSession?.lastName,
@@ -97,6 +99,8 @@ export const useDefineOnPremTenantForm = ({ rowId }: UseDefineOnPremTenantFormOp
         : currDate,
       isExecutionDisabled: onPremTenantData?.isExecutionDisabled ?? false,
       isLoginDisabled: onPremTenantData?.isLoginDisabled ?? false,
+      isSsoAllowed: onPremTenantData?.isSsoAllowed ?? false,
+      isBrandingAllowed: onPremTenantData?.isBrandingAllowed ?? false,
       // Read (view) only fields
       createdByUser:
         onPremTenantData?.createdByUser ?? userSession?.firstName + " " + userSession?.lastName,
