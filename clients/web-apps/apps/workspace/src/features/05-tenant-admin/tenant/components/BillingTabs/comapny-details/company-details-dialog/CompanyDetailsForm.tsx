@@ -18,9 +18,9 @@ import {
   organizationNameProps,
   postalCodeProps,
   stateProps,
-} from "@/features/05-tenant-admin/tenant/constants/company-details-field-props";
-import { companyDetailsZodSchema } from "@/features/05-tenant-admin/tenant/constants/company-details-zod-schema";
-import { useCompanyDetailsForm } from "@/features/05-tenant-admin/tenant/hooks/useCompanyDetailsForm";
+} from "@/features/05-tenant-admin/tenant/constants/company-details-field-props.ee";
+import { companyDetailsZodSchema } from "@/features/05-tenant-admin/tenant/constants/company-details-zod-schema.ee";
+import { useCompanyDetailsForm } from "@/features/05-tenant-admin/tenant/hooks/useCompanyDetailsForm.ee";
 
 const CompanyDetailsForm = () => {
   const { form, isSubmitting, isDirty, mutate, isPending } = useCompanyDetailsForm();

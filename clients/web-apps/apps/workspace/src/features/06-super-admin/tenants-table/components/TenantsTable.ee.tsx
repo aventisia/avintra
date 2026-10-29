@@ -1,0 +1,91 @@
+import {
+  DTCreateButton,
+  DTHeading,
+  DTPagination,
+  DTSearchBox,
+  DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
+  getDataTablePreferences,
+} from "@avplatform/ui/data-table";
+import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+
+import { HelpButton } from "@/components/help/HelpButton";
+
+import { TABLE_HEADING, TABLE_KEY } from "../constants";
+import { columnDisplayNames } from "../constants/column-display-names.ee";
+import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import { useFetchTenants } from "../hooks/useFetchTenants.ee";
+import { DateRangeFilter } from "./DateRangeFilter.ee";
+import { PlanFilter } from "./PlanFilter.ee";
+import { SATenantStats } from "./SATenantStats.ee";
+import { TenantsBulkActions } from "./TenantsBulkActions.ee";
+import { tenantsTableColumns } from "./TenantsTableColumns.ee";
+
+/**
+ * Renders a table of tenants.
+ *
+ * @returns The rendered TenantsTable component.
+ */
+export const TenantsTable = () => {
+  // Set the document title to "Tenants".
+  useDocumentTitle("Tenants");
+
+  // Get data-table preferences from local storage
+  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
+
+  // Default to sorting by Plan ascending (Pro customers at the top) unless the
+  // user has previously saved an explicit sort preference.
+  const initialSort = sortState.length > 0 ? sortState : [{ id: "activePlan", desc: false }];
+
+  // Fetch tenants data
+  const { data } = useFetchTenants();
+
+  // Create a React table for tenants data
+  const table = useDataTable(
+    tenantsTableColumns,
+    data?.data || [],
+    columnVisibility,
+    initialSort,
+    true,
+  );
+
+  // Return the rendered DataTable component.
+  return (
+    <>
+      {data ? (
+        <div className="space-y-4 pb-4 pt-[17px]">
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <HelpButton guideId="tenants" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search tenants..." />
+              <DateRangeFilter />
+              <PlanFilter table={table} data={data.data} columnId="activePlan" />{" "}
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton entity="tenant" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <SATenantStats data={data?.data} />
+
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={tenantsTableColumns.length} />
+          </div>
+          {/* Data table Pagination component */}
+          <DTPagination table={table} />
+
+          {/* Bulk actions for data table */}
+          <TenantsBulkActions table={table} />
+        </div>
+      ) : (
+        // Show data table skeleton while fetching the tenants data
+        <DataTableSkeleton />
+      )}
+    </>
+  );
+};

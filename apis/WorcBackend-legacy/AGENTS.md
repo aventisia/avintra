@@ -15,6 +15,10 @@
 - Entities live in the project-level `Entities/` folder, not in features. Name many-to-many join entities `Entity1_Entity2` (singular, PascalCase), and place them in `Entities/M2M/`.
 - Before modifying a feature, read its `README.md` when one exists; it records domain boundaries, contracts, and exceptions. Add a README only when a feature has non-obvious boundaries or invariants.
 
+## EE file marking
+
+EE marking: see root `AGENTS.md` §EE file marking.
+
 ## Feature helpers
 
 - Put helper methods in `public static` methods of a `public static class` named `<Feature>Helpers` (for example, `MachinesTableHelpers.cs`) inside the feature's `Helpers/` folder.

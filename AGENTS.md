@@ -58,6 +58,10 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - VS Code tasks: `.vscode/tasks.json`
 - CI pipeline: `Jenkinsfile`
 
+## EE file marking (issue #406)
+
+Commercial-only source files are marked `.ee`; shared and Community-visible files keep plain names. A file is `.ee` iff it is reachable only on Commercial/Enterprise paths (see the classification artifact). TypeScript/JavaScript use `.ee` before the final extension (`Name.ee.ts`, `Name.ee.tsx`, `name.ee.js`); C# uses `Name.ee.cs`, including `partial`-class companions, which compile with no project edits. Python commercial modules use `name_ee.py`, because a dot in a module filename makes the module unimportable. Java takes no suffix — a public class must live in the file named after it — so commercial-only Java is structurally exempt and is marked by package or comment instead. Rust shell sources are exempt because module filenames are load-bearing. `index.ts` barrels keep their names even inside Section A directories, and configuration and tooling files (including framework-required configs, project/solution files, migrations shared by all editions, and generated artifacts) are never renamed. Whole-method commercial seams move to `.ee` companions; inline edition-gate one-liners stay in the shared file. No build excludes `.ee` files this round; behaviour must not change. No Python, Java, or Rust file qualifies in this repository today.
+
 ## Shared handoff contract
 
 - Use `local-issues/<issue-or-slug>/round-NN/` for reports; the orchestrator carries the matching contract.

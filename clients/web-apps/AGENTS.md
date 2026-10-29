@@ -35,6 +35,10 @@ Every non-component feature module uses a dot suffix. Components, `index.ts` bar
 | Type      | `.type.ts`     | `machine-filter.type.ts`           |
 | Component | none           | `JobsTable.tsx`                    |
 
+## EE file marking
+
+EE marking: see root `AGENTS.md` §EE file marking.
+
 ## API files (`.apis.ts`)
 
 - Mirror the backend controller: same actions, same order, same request/response contracts. Convert C# PascalCase names to lower camelCase.

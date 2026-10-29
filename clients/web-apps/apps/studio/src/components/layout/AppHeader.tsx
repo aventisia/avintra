@@ -6,7 +6,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
 import { Chat } from "@/features/collaboration/components/Chat";
 import { PresenceAvatars } from "@/features/collaboration/components/PresenceAvatars";
 import { releasePublishActionIfActive } from "@/features/collaboration/hooks/useCollaboration";

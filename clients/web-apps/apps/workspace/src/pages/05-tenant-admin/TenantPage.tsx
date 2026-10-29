@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the Billings component.
 const Tenant = lazy(() =>
-  import("@/features/05-tenant-admin/tenant/components/Billing").then((module) => ({
+  import("@/features/05-tenant-admin/tenant/components/Billing.ee").then((module) => ({
     default: module.Billing,
   })),
 );

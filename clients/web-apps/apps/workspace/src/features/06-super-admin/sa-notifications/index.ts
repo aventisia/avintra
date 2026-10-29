@@ -1,2 +1,2 @@
-export { SaNotificationComposeForm } from "./components/SaNotificationComposeForm";
-export { SaNotificationsManagement } from "./components/SaNotificationsManagement";
+export { SaNotificationComposeForm } from "./components/SaNotificationComposeForm.ee";
+export { SaNotificationsManagement } from "./components/SaNotificationsManagement.ee";

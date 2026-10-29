@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the Usage component.
 const CreditsUsage = lazy(() =>
-  import("@/features/05-tenant-admin/credits-usage/components/CreditsUsage").then((module) => ({
+  import("@/features/05-tenant-admin/credits-usage/components/CreditsUsage.ee").then((module) => ({
     default: module.CreditsUsage,
   })),
 );

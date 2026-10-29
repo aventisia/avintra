@@ -1,7 +1,7 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
+import { getAvailableCredits } from "@/features/available-credits/available-credits-apis.ee";
 
 import { startJob } from "../apis/job-trigger-apis";
 import { JobDetailsDto } from "../dtos/job-details-dto";

@@ -29,7 +29,7 @@ import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
-import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant";
+import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant.ee";
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
 import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
@@ -104,17 +104,17 @@ const WebhookTriggerCrudDialogContent = lazy(() =>
   ),
 );
 const CreditPlanCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/credit-plans-table/components/credit-plans-crud-dialog/CreditPlanCrudDialogContent").then(
+  import("@/features/06-super-admin/credit-plans-table/components/credit-plans-crud-dialog/CreditPlanCrudDialogContent.ee").then(
     (m) => ({ default: m.CreditPlanCrudDialogContent }),
   ),
 );
 const SubPlansCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/subscription-plans-table/components/sub-plans-crud-dialog/SubPlansCrudDialogContent").then(
+  import("@/features/06-super-admin/subscription-plans-table/components/sub-plans-crud-dialog/SubPlansCrudDialogContent.ee").then(
     (m) => ({ default: m.SubPlansCrudDialogContent }),
   ),
 );
 const TenantCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/tenants-table/components/tenant-crud-dialog/TenantCrudDialogContent").then(
+  import("@/features/06-super-admin/tenants-table/components/tenant-crud-dialog/TenantCrudDialogContent.ee").then(
     (m) => ({ default: m.TenantCrudDialogContent }),
   ),
 );
@@ -124,17 +124,17 @@ const TicketCrudDialogContent = lazy(() =>
   ),
 );
 const SaTicketCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent").then(
+  import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent.ee").then(
     (m) => ({ default: m.SaTicketCrudDialogContent }),
   ),
 );
 const OnPremTenantCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant/components/on-prem-tenant-crud-dialog/OnPremTenantCrudDialogContent").then(
+  import("@/features/07-global-admin/on-prem-tenant/components/on-prem-tenant-crud-dialog/OnPremTenantCrudDialogContent.ee").then(
     (m) => ({ default: m.OnPremTenantCrudDialogContent }),
   ),
 );
 const TenantInstanceCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant-instance/components/tenant-instance-crud-dialog/TenantInstanceCrudDialogContent").then(
+  import("@/features/07-global-admin/on-prem-tenant-instance/components/tenant-instance-crud-dialog/TenantInstanceCrudDialogContent.ee").then(
     (m) => ({ default: m.TenantInstanceCrudDialogContent }),
   ),
 );
@@ -164,7 +164,7 @@ const NotificationCrudDialogContent = lazy(() =>
   ),
 );
 const SaNotificationCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/sa-notifications/components/sa-notification-crud-dialog/SaNotificationCrudDialogContent").then(
+  import("@/features/06-super-admin/sa-notifications/components/sa-notification-crud-dialog/SaNotificationCrudDialogContent.ee").then(
     (m) => ({ default: m.SaNotificationCrudDialogContent }),
   ),
 );
