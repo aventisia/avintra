@@ -15,6 +15,19 @@ headers {
   X-OnPrem-Instance-Key: ***REMOVED***
 }
 
+script:post-response {
+  const data = res.getBody()?.data ?? {};
+
+  test("covers the deployment allowance contract", function() {
+    expect(res.getStatus()).to.equal(200);
+
+    // IMPORTANT NOTE: the service omits the allowances until GlobalAdminAPIs#10 is deployed; an omitted allowance means "not allowed".
+    ["ssoAllowed", "brandingAllowed"].forEach((field) => {
+      expect(data[field] ?? false).to.be.a("boolean");
+    });
+  });
+}
+
 settings {
   encodeUrl: true
   timeout: 0

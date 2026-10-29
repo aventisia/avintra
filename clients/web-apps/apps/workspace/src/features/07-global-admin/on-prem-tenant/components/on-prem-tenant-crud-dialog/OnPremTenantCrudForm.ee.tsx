@@ -16,8 +16,10 @@ import {
   contractStartDateProps,
   executionTimeAllowedProps,
   idProps,
+  isBrandingAllowedProps,
   isExecutionDisabledProps,
   isLoginDisabledProps,
+  isSsoAllowedProps,
   nameProps,
   ourEmailsProps,
   tenantEmailsProps,
@@ -116,6 +118,12 @@ export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudForm
 
       {/* Disable Login */}
       {crudAction !== "create" && <SwitchField {...isLoginDisabledProps} />}
+
+      {/* Allow Single Sign-On */}
+      {crudAction !== "create" && <SwitchField {...isSsoAllowedProps} />}
+
+      {/* Allow Custom Branding */}
+      {crudAction !== "create" && <SwitchField {...isBrandingAllowedProps} />}
 
       {/* Submit button */}
       {!isReadMode && (
