@@ -45,7 +45,7 @@ public static class AccountsDbInitialSeed
                     if (existingSuperUser != null)
                     {
                         if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, existingSuperUser, logger) ||
-                            !await SeedTenantSubscriptionAsync(_accountsDbContext, existingSuperUser, logger) ||
+                            !await SeedTenantSubscriptionAsync(_accountsDbContext, environmentConfig, existingSuperUser, logger) ||
                             !await SeedTenantCreditsAsync(_accountsDbContext, existingSuperUser, logger))
                         {
                             return app;
@@ -81,7 +81,7 @@ public static class AccountsDbInitialSeed
                     return app;
 
                 // Seed the Tenant Subscription (this associates the super user with a subscription plan for their tenant)
-                if (!await SeedTenantSubscriptionAsync(_accountsDbContext, superUser, logger))
+                if (!await SeedTenantSubscriptionAsync(_accountsDbContext, environmentConfig, superUser, logger))
                     return app;
 
                 // Seed the Tenant Credits (this associates the super user with a subscription plan for their tenant)
@@ -496,14 +496,16 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
                 .SingleOrDefaultAsync();
 
-            // Bring an existing plan in line with the running edition's own limits
+            // IMPORTANT NOTE: a Community boot must never rewrite stored limits; only a paid
+            // deployment corrects drift between paid editions here.
             if (existingPlan != null)
             {
-                if (existingPlan.MaxPublishedItems != 0 ||
-                    existingPlan.MaxSpaces != maxSpaces ||
-                    existingPlan.MaxUsers != 0 ||
-                    existingPlan.StorageLimitMB != 0 ||
-                    existingPlan.HistoryRetentionDays != historyRetentionDays)
+                if (!environmentConfig.IsCommunityDeployment &&
+                    (existingPlan.MaxPublishedItems != 0 ||
+                     existingPlan.MaxSpaces != maxSpaces ||
+                     existingPlan.MaxUsers != 0 ||
+                     existingPlan.StorageLimitMB != 0 ||
+                     existingPlan.HistoryRetentionDays != historyRetentionDays))
                 {
                     existingPlan.MaxPublishedItems = 0;
                     existingPlan.MaxSpaces = maxSpaces;
@@ -514,10 +516,6 @@ public static class AccountsDbInitialSeed
                     await accountsDbContext.SaveChangesAsync();
                     logger.LogWarning("Corrected subscription plan {PlanName} to the {TenantType} limits. MaxSpaces={MaxSpaces}, HistoryRetentionDays={HistoryRetentionDays}",
                         subscriptionPlanName, environmentConfig.OnPremTenantType, maxSpaces, historyRetentionDays);
-                }
-                else
-                {
-                    logger.LogDebug("Subscription plan {PlanName} already exists with the current limits.", subscriptionPlanName);
                 }
 
                 return true;
@@ -564,7 +562,7 @@ public static class AccountsDbInitialSeed
         }
     }
 
-    private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, AccountUser superUser, ILogger logger)
+    private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -598,10 +596,12 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
                 .SingleOrDefaultAsync();
 
+            // IMPORTANT NOTE: a Community boot must never rewrite stored limits; only a paid
+            // deployment corrects drift between paid editions here.
             if (existingSubscription != null)
             {
-                // Bring the default tenant's subscription in line with the corrected plan limits
-                if (existingSubscription.PlanId == subscriptionPlan.Id &&
+                if (!environmentConfig.IsCommunityDeployment &&
+                    existingSubscription.PlanId == subscriptionPlan.Id &&
                     (existingSubscription.MaxPublishedItems != subscriptionPlan.MaxPublishedItems ||
                      existingSubscription.MaxSpaces != subscriptionPlan.MaxSpaces ||
                      existingSubscription.MaxUsers != subscriptionPlan.MaxUsers ||
@@ -617,10 +617,6 @@ public static class AccountsDbInitialSeed
                     await accountsDbContext.SaveChangesAsync();
                     logger.LogWarning("Corrected the default tenant subscription {SubscriptionId} to the {PlanName} plan limits.",
                         existingSubscription.Id, subscriptionPlanName);
-                }
-                else
-                {
-                    logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
                 }
 
                 return true;

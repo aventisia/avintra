@@ -104,13 +104,21 @@ public class JobsTableService : IJobsTableService
             if (dateRange.StartDate > dateRange.EndDate)
                 return serviceResponse.Update("Invalid date range", 400);
 
+            // IMPORTANT NOTE: the edition's history window wins over a wider client-supplied range.
+            // The window start is a rolling timestamp, so it is compared as a timestamp instead of
+            // being floored back to midnight.
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
+            var rangeStart = dateRange.StartDate.Date.ToUniversalTime();
+            if (rangeStart < earliestReadable)
+                rangeStart = earliestReadable.UtcDateTime;
+
             // Retrieve the list of records
             // Convert the resolved date range to UTC before querying. Npgsql only supports writing
             // DateTimeOffset values with offset 0 (UTC) to a 'timestamp with time zone' column, and
             // the client-supplied dates may carry a non-zero offset (e.g. +05:30).
             var jobs = await _unitOfWork.JobRepo
                         .GetByConditionAsync(w =>
-                            w.CreatedOn >= dateRange.StartDate.Date.ToUniversalTime() &&
+                            w.CreatedOn >= rangeStart &&
                             w.CreatedOn < dateRange.EndDate.Date.AddDays(1).ToUniversalTime()
                         )
                         // When we use ProjectToType then we don't have to explicitly include the related entities (FlowVersion and Flow) because the mapping configuration will handle it. However, if you want to include them for other reasons (like eager loading), you can uncomment the following lines.
@@ -139,8 +147,9 @@ public class JobsTableService : IJobsTableService
         try
         {
             // Retrieve the record
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var jobRecord = await _unitOfWork.JobRepo
-                        .GetByConditionAsync(w => w.Id == jobId)
+                        .GetByConditionAsync(w => w.Id == jobId && w.CreatedOn >= earliestReadable)
                         .Include(i => i.FlowVersion)
                         .ThenInclude(i2 => i2.Flow)
                         .FirstOrDefaultAsync(); // Since primary key (jobId) included in where clause, FirstOrDefaultAsync is appropriate here
