@@ -2,12 +2,12 @@ import type { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "name", value: "Agent Name" },
-  { key: "compositeTier", value: "Composite Risk Tier" },
+  { key: "name", value: "Agent name" },
+  { key: "compositeTier", value: "Composite risk tier" },
   { key: "status", value: "Status" },
-  { key: "openIssues", value: "Open Issues" },
-  { key: "reviewDate", value: "Reviewed On" },
-  { key: "approvalDate", value: "Approved On" },
+  { key: "openIssues", value: "Open issues" },
+  { key: "reviewDate", value: "Reviewed on" },
+  { key: "approvalDate", value: "Approved on" },
 ];
 
 /** Column visibility initial state for the registry table. */

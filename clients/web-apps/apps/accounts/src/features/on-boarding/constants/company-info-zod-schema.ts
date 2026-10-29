@@ -22,7 +22,7 @@ import { z } from "zod";
 export const DomainSchema = z
   .string()
   .trim()
-  .min(1, reqError("Organization Domain"))
+  .min(1, reqError("Organization domain"))
   .refine(
     (val) => {
       try {
@@ -42,8 +42,8 @@ export const DomainSchema = z
 export const companyInfoSchema = z.object({
   organizationName: z
     .string()
-    .min(1, { message: reqError("Organization Name") })
-    .max(255, { message: maxLenError("Organization Name", 255) }),
+    .min(1, { message: reqError("Organization name") })
+    .max(255, { message: maxLenError("Organization name", 255) }),
   domain: DomainSchema,
   numberOfEmployees: z.string().min(1, reqError("Number of Employees field")),
   country: z

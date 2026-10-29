@@ -59,7 +59,7 @@ export const DeactivationVerifyEmailForm = () => {
     >
       <div className="box flex flex-col p-5">
         {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
-          Email Settings
+          Email settings
         </div> */}
         <div>
           <InputDivElement
@@ -97,7 +97,7 @@ export const DeactivationVerifyEmailForm = () => {
           </div>
           <SubmitButton
             primaryText={
-              deactivationStatusData?.deactivating ? "Cancel Deactivation" : "Deactivate"
+              deactivationStatusData?.deactivating ? "Cancel deactivation" : "Deactivate"
             }
             variant="destructive"
             className="text-sm"

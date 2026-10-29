@@ -8,9 +8,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, UserIcon } from "lucide-react";
+import { Loader2, LogOutIcon, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -97,7 +96,7 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           }}
         >
           <UserIcon className="h-4 w-4" />
-          My Account
+          My account
         </Button>
         <Separator className="my-1 h-[0.5px]" />
         <ThemeSwitcher className="h-9" />
@@ -111,7 +110,7 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin text-[--icon-color]" />
           ) : (
-            <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
+            <LogOutIcon className="h-4 w-4" />
           )}
           Logout
         </Button>

@@ -9,11 +9,11 @@ const TABLE_KEY = "credit-plans";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Plan", description: "" };
+      return { heading: "Create plan", description: "" };
     case "read":
       return { heading: "Plan", description: "" };
     case "update":
-      return { heading: "Edit Plan", description: "" };
+      return { heading: "Edit plan", description: "" };
     default:
       return { heading: "", description: "" };
   }

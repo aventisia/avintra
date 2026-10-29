@@ -19,7 +19,7 @@ import React from "react";
  *
  * @example
  * ```tsx
- * <MinimalFooterLink href="https://example.com" className="text-blue-500">
+ * <MinimalFooterLink href="https://example.com" className="text-primary-text">
  *   Example Link
  * </MinimalFooterLink>
  * ```

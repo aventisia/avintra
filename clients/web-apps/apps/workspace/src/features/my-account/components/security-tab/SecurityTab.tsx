@@ -37,7 +37,7 @@ export const SecurityTab = () => {
         </InputDivElement>
 
         <InputDivElement
-          headingForInput="New Password"
+          headingForInput="New password"
           isRequired={true}
           messageForInput="Create a new password for your account."
         >
@@ -45,7 +45,7 @@ export const SecurityTab = () => {
         </InputDivElement>
 
         <InputDivElement
-          headingForInput="Confirm New Password"
+          headingForInput="Confirm new password"
           isRequired={true}
           messageForInput="Please re-enter the new password you've just chosen."
         >

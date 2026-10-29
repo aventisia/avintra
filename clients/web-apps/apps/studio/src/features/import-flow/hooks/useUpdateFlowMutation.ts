@@ -48,7 +48,7 @@ export const useFlowMutation = (
           setImportPending(false);
           setShowDialog(false);
           setUploadedData("");
-          toast.success("Imported Successfully");
+          toast.success("Imported successfully");
         });
     },
     onError: (error) => {

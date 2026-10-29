@@ -24,7 +24,7 @@ import { buildAgentRiskRegistryColumns } from "./AgentRiskRegistryColumns";
  * Clicking an agent name opens its registry wizard.
  */
 export const AgentRiskRegistryTable = () => {
-  useDocumentTitle("Agent Risk Registry");
+  useDocumentTitle("Agent risk registry");
 
   const openAgent = useAiGovernanceStore((state) => state.openAgent);
   const openIssues = useAiGovernanceStore((state) => state.openIssues);
@@ -96,7 +96,7 @@ export const AgentRiskRegistryTable = () => {
     <div className="space-y-4 pb-4 pt-[17px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <DTHeading heading="Agent Risk Registry" />
+          <DTHeading heading="Agent risk registry" />
           <HelpButton guideId="agent-risk-registry" />
         </div>
 

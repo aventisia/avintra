@@ -81,7 +81,7 @@ export const SpacesTable = () => {
               {isCommunityDeployment ? (
                 <UpgradeSpaceButton />
               ) : (
-                <DTCreateButton buttonText="Create Space" entity="space" />
+                <DTCreateButton buttonText="Create space" entity="space" />
               )}
             </div>
           </div>

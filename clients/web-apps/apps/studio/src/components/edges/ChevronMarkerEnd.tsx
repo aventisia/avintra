@@ -21,7 +21,7 @@ export const ChevronMarkerEnd = ({ stroke, edgeId }: ChevronMarkerEndProps) => {
           <path
             d="M4 3 L7 6 L4 9"
             fill="none"
-            stroke={stroke}
+            style={{ stroke }}
             strokeLinecap="round"
             strokeLinejoin="round"
           />

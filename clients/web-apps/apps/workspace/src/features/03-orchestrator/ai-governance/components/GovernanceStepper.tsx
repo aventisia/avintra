@@ -44,7 +44,7 @@ export const GovernanceStepper = () => {
     <aside className="flex w-72 shrink-0 flex-col border-r border-border bg-sunken p-5">
       <div className="mb-6">
         <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Agent Risk Registry
+          Agent risk registry
         </div>
       </div>
 

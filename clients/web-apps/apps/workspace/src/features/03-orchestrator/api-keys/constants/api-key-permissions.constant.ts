@@ -6,7 +6,7 @@ import type { PermissionItem } from "../types/api-key-permission.type";
 export const API_KEY_PERMISSION_ITEMS: PermissionItem[] = [
   {
     id: "machineAuth",
-    label: "Machine Authentication",
+    label: "Machine authentication",
     description: "Allow runner apps to authenticate machines using this key.",
   },
   {
@@ -21,7 +21,7 @@ export const API_KEY_PERMISSION_ITEMS: PermissionItem[] = [
   },
   {
     id: "cloudExecution",
-    label: "Cloud Execution",
+    label: "Cloud execution",
     description: "Allow synchronous execution of published agents via API using this key.",
   },
 ];

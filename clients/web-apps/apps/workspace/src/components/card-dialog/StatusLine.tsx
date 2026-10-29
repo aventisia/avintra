@@ -23,12 +23,7 @@ export const StatusLine = ({ tone, children }: StatusLineProps) => (
     {tone === "warning" ? (
       <TriangleAlert className="size-4 shrink-0" />
     ) : (
-      <span className="relative grid size-2 shrink-0 place-items-center">
-        {tone === "pending" && (
-          <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />
-        )}
-        <span className={cn("relative size-2 rounded-full", TONES[tone].dot)} />
-      </span>
+      <span className={cn("size-2 shrink-0 rounded-full", TONES[tone].dot)} />
     )}
     <span className={cn("min-w-0", tone !== "error" && "flex items-center gap-1.5 truncate")}>
       {children}

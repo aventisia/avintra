@@ -1,5 +1,5 @@
-import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { type Table } from "@tanstack/react-table";
+import { SlidersHorizontal } from "lucide-react";
 
 import { buttonVariants } from "@/ui/components/buttons";
 import { setDataTablePreferences } from "@/ui/components/data-table/dt-preferences-utils";
@@ -39,7 +39,7 @@ export function DTViewOptions<TData>({
           "data-[state=open]:border-primary data-[state=open]:ring-[3px] data-[state=open]:ring-ring",
         )}
       >
-        <AdjustmentsHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+        <SlidersHorizontal className="h-4 w-4 text-[--icon-color]" />
         View
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="p-2">

@@ -5,7 +5,7 @@ import { BillingForm } from "./BillingForm";
 
 export const BillingAddress = () => {
   // Set dcoument title
-  useDocumentTitle("Billing Address");
+  useDocumentTitle("Billing address");
   // Return component
   return (
     <ContentContainer className="fadeInRTL">

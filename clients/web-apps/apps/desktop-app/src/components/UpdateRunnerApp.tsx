@@ -93,7 +93,7 @@ export function UpdateRunnerApp({
         <div className="flex flex-col gap-2">
           <Button type="button" onClick={handleUpdate} size="lg" className="w-full">
             <span className="inline-flex items-center gap-1.5">
-              Update Now
+              Update now
               <Lucide icon="ArrowRight" className="h-4 w-4" />
             </span>
           </Button>

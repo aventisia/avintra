@@ -1,10 +1,10 @@
 import { cn } from "@avplatform/ui/lib";
 import type { IconProps } from "@avplatform/ui/types";
-import { QueueListIcon } from "@heroicons/react/24/outline";
 import {
   BookOpenCheckIcon,
   BoxesIcon,
   FolderCogIcon,
+  ListIcon,
   PuzzleIcon,
   Shield,
   WrenchIcon,
@@ -16,7 +16,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import { ResourceTypeEnum } from "../../../resource-user-access/enums/resource-type-enum";
 
 const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> = {
-  [ResourceTypeEnum.Queue]: QueueListIcon,
+  [ResourceTypeEnum.Queue]: ListIcon,
   [ResourceTypeEnum.Trigger]: AiOutlineThunderbolt,
   [ResourceTypeEnum.ConfigStore]: FolderCogIcon,
   [ResourceTypeEnum.VaultCredential]: Shield,

@@ -1,3 +1,4 @@
+import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DownloadIcon, PaperclipIcon, Trash2Icon } from "lucide-react";
@@ -59,13 +60,13 @@ export const AttachmentSection = ({
             onClick={() => setUploadDialogOpen(true)}
           >
             <PaperclipIcon className="mr-2 h-4 w-4" />
-            Add Attachment
+            Add attachment
           </Button>
         )}
       </div>
 
       {attachments.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No attachments yet.</p>
+        <EmptyState primaryMessage="No attachments yet" className="py-6" />
       ) : (
         <div className="space-y-2">
           {attachments.map((attachment) => (

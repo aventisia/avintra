@@ -31,12 +31,12 @@ const ChargeSummary = ({
 
   return (
     <div className="rounded-lg border p-4">
-      <p className="font-semibold">Charge Summary:</p>
+      <p className="font-semibold">Charge summary</p>
       <Separator className="mt-2" />
 
       <div className="space-y-2 py-2 text-sm">
         <SummaryRow
-          label="Subscription Fee"
+          label="Subscription fee"
           value={formatCurrency(basePrice, plan?.currency ?? "USD")}
         />
         {isTaxApplicable && (
@@ -44,7 +44,7 @@ const ChargeSummary = ({
         )}
         <Separator />
         <SummaryRow
-          label="Amount Due"
+          label="Amount due"
           value={formatCurrency(total, plan?.currency ?? "USD")}
           className="font-medium"
         />
@@ -66,10 +66,10 @@ const ChargeSummary = ({
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />
-              Initiating Payment...
+              Initiating payment...
             </>
           ) : (
-            "Make Payment"
+            "Make payment"
           )}
         </Button>
       )}

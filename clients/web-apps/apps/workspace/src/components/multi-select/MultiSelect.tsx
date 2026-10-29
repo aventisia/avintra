@@ -130,7 +130,7 @@ export const MultiSelect = ({
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2 shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2 shadow-pop")}
       >
         <Command>
           <div className="mb-1.5 rounded-lg bg-sunken">

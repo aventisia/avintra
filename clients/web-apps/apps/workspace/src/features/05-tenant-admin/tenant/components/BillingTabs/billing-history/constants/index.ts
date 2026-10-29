@@ -9,11 +9,11 @@ const TABLE_KEY = "billing-history";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create History", description: "" };
+      return { heading: "Create history", description: "" };
     case "read":
-      return { heading: "Billing History", description: "" };
+      return { heading: "Billing history", description: "" };
     case "update":
-      return { heading: "Edit History", description: "" };
+      return { heading: "Edit history", description: "" };
     default:
       return { heading: "", description: "" };
   }

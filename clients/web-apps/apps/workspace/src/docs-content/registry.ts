@@ -49,7 +49,7 @@ const guides: HelpGuideContent[] = [
   // Build
   {
     id: "get-started",
-    title: "Get Started",
+    title: "Get started",
     summary:
       "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",
     section: "tenant-admin",
@@ -93,7 +93,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "time-triggers",
-    title: "Time Triggers",
+    title: "Time triggers",
     summary: "Run an agent on a schedule.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -101,7 +101,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "email-triggers",
-    title: "Email Triggers",
+    title: "Email triggers",
     summary: "Start an agent when an email is received.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -109,7 +109,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "message-triggers",
-    title: "Message Triggers",
+    title: "Message triggers",
     summary: "Start an agent when a message arrives in a channel.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -117,7 +117,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "webhook-triggers",
-    title: "Webhook Triggers",
+    title: "Webhook triggers",
     summary: "Start an agent when an external system calls a webhook URL.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -125,7 +125,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "configstore",
-    title: "Key Store",
+    title: "Key store",
     summary: "Manage API keys and configuration values referenced by agents.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/config-store",
@@ -142,7 +142,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "knowledge-bases",
-    title: "Knowledge Bases",
+    title: "Knowledge bases",
     summary: "Create corpora of documents your agents can search and retrieve from.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -167,7 +167,7 @@ const guides: HelpGuideContent[] = [
   // Orchestrator
   {
     id: "agent-risk-registry",
-    title: "Agent Risk Registry",
+    title: "Agent risk registry",
     summary: "Assess, review, and govern the AI agents published in your workspace.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -175,7 +175,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "published-agents",
-    title: "Published Agents",
+    title: "Published agents",
     summary: "Manage the agents that are live in production.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -207,7 +207,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "api-keys",
-    title: "API Keys",
+    title: "API keys",
     summary: "Generate and manage API keys used to call agent endpoints.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -216,7 +216,7 @@ const guides: HelpGuideContent[] = [
   // Assist
   {
     id: "assist-agents",
-    title: "Assist — Agents",
+    title: "Assist — agents",
     summary: "Interact with the agents available to you.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -224,7 +224,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "assist-queues",
-    title: "Assist — Queues",
+    title: "Assist — queues",
     summary: "Process the work items assigned to you.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -232,7 +232,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "assist-chats",
-    title: "Assist — Chats",
+    title: "Assist — chats",
     summary: "Review and continue your conversations with agents.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -310,7 +310,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "subscription-plans",
-    title: "Subscription Plans",
+    title: "Subscription plans",
     summary: "Define the plans available to tenants.",
     section: "super-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
@@ -318,7 +318,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "credit-plans",
-    title: "Credit Plans",
+    title: "Credit plans",
     summary: "Manage credit plans and pricing.",
     section: "super-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
@@ -327,7 +327,7 @@ const guides: HelpGuideContent[] = [
   // Global Admin
   {
     id: "on-prem-tenants",
-    title: "On-prem Tenants",
+    title: "On-prem tenants",
     summary: "View and manage on-premises tenant instances and their data.",
     section: "global-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace",

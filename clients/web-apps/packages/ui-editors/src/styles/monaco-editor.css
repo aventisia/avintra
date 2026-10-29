@@ -14,11 +14,11 @@
 .monaco-editor-shell .glyph-margin {
   width: 2.3rem !important;
   height: 100% !important;
-  background-color: #f1f5f9 !important; /* slate-100 */
+  background-color: var(--sunken) !important;
 }
 
 .monaco-editor-shell .margin-view-overlays .line-numbers {
-  color: #64748b !important; /* muted-foreground / slate-500 */
+  color: var(--muted-ink) !important;
   font-size: 0.7rem !important;
   font-variant-numeric: tabular-nums;
   width: 15px !important;
@@ -32,7 +32,7 @@
 /* ── Folding chevron icons ────────────────────────────────────────────── */
 .monaco-editor-shell .codicon-folding-collapsed,
 .monaco-editor-shell .codicon-folding-expanded {
-  color: #64748b !important;
+  color: var(--muted-ink) !important;
 }
 
 /* ── Monaco context-menu ─────────────────────────────────────────────── */
@@ -70,7 +70,7 @@
 }
 
 .monaco-menu .action-item .keybinding {
-  color: #64748b !important; /* muted-foreground */
+  color: var(--muted-ink) !important;
   font-size: 0.7rem !important;
 }
 

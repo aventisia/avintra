@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { Plus } from "lucide-react";
 
 import { LockedActionTooltip } from "@/ui/components/action-lock";
 import { Button } from "@/ui/components/buttons";
@@ -26,7 +26,7 @@ export const DTCreateButton: React.FC<DTCreateButtonProps> = ({
       onClick={() => openCreateDialog(entity)}
       disabled={locked}
     >
-      <PlusIcon className="h-4 w-4" />
+      <Plus className="h-4 w-4" />
       {buttonText}
     </Button>
   );

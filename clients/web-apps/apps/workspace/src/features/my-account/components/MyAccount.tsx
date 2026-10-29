@@ -14,17 +14,17 @@ import { SecurityTab } from "./security-tab/SecurityTab";
 export function MyAccount() {
   return (
     <div className="mx-auto my-6 max-w-3xl space-y-6">
-      <h1 className="text-title text-ink">My Account</h1>
+      <h1 className="text-title text-ink">My account</h1>
       <Accordion type="single" collapsible className="space-y-6" defaultValue="profileInfo">
         <AccordionItem value={"profileInfo"} className="rounded-lg border border-line bg-surface">
-          <AccordionTrigger className="p-4 text-heading">Profile Info</AccordionTrigger>
+          <AccordionTrigger className="p-4 text-heading">Profile info</AccordionTrigger>
           <AccordionContent className="border-t">
             <ProfileInfoTab />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value={"emailSetting"} className="rounded-lg border border-line bg-surface">
-          <AccordionTrigger className="p-4 text-heading">Email Settings</AccordionTrigger>
+          <AccordionTrigger className="p-4 text-heading">Email settings</AccordionTrigger>
           <AccordionContent className="border-t">
             <EmailSettingsTab />
           </AccordionContent>
@@ -34,14 +34,14 @@ export function MyAccount() {
           value={"changePassword"}
           className="rounded-lg border border-line bg-surface"
         >
-          <AccordionTrigger className="p-4 text-heading">Change Password</AccordionTrigger>
+          <AccordionTrigger className="p-4 text-heading">Change password</AccordionTrigger>
           <AccordionContent className="border-t">
             <SecurityTab />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value={"deviceHistory"} className="rounded-lg border border-line bg-surface">
-          <AccordionTrigger className="p-4 text-heading">Connected Devices</AccordionTrigger>
+          <AccordionTrigger className="p-4 text-heading">Connected devices</AccordionTrigger>
           <AccordionContent className="border-t">
             <DeviceHistoryTab />
           </AccordionContent>
@@ -52,7 +52,7 @@ export function MyAccount() {
         className="rounded-lg border border-line bg-surface"
       >
         <AccordionTrigger className="p-4 text-heading">
-          Account Deactivation
+          Account deactivation
         </AccordionTrigger>
         <AccordionContent className="border-t">
           <AccountDeactivationTab />

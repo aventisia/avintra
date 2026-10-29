@@ -122,7 +122,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     <div className="space-y-4">
       <div className="space-y-1.5">
         <FieldLabel
-          label="Unique Name"
+          label="Unique name"
           isRequired
           description={
             "A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** any characters (letters, numbers, spaces and symbols).\n- **Cannot be changed** after creation."
@@ -139,9 +139,9 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             rebuildManualArtifacts(draftTool?.manualOperations ?? [], { name: e.target.value });
           }}
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-          placeholder="My Custom API Tool"
+          placeholder="My custom API tool"
           disabled={crudAction === "update" || crudAction === "read"}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
         {isNameCheckPending ? (
           <p className="text-xs text-muted-foreground">{nameAvailabilityMessage}</p>
@@ -160,7 +160,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           onChange={(e) => updateDraft({ description: e.target.value })}
           placeholder="Describe what this tool does"
           rows={3}
-          className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
 
@@ -175,7 +175,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           onChange={(e) => updateDraft({ iconUrl: e.target.value })}
           onBlur={() => setTouched((prev) => ({ ...prev, iconUrl: true }))}
           placeholder="https://example.com/icon.svg"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
         {getError("iconUrl") && <p className="text-xs text-destructive">{getError("iconUrl")}</p>}
       </div>
@@ -191,7 +191,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           onChange={(e) => updateDraft({ baseUrl: e.target.value })}
           onBlur={() => setTouched((prev) => ({ ...prev, baseUrl: true }))}
           placeholder="https://api.example.com"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
         {getError("baseUrl") && <p className="text-xs text-destructive">{getError("baseUrl")}</p>}
       </div>

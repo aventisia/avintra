@@ -1,9 +1,42 @@
 import { cn } from "@avplatform/ui/lib";
+import { useThemeStore } from "@avplatform/ui/stores";
 import type { FormFieldSizeType } from "@avplatform/ui/types";
-import Editor, { type EditorProps, type OnChange } from "@monaco-editor/react";
+import Editor, {
+  type EditorProps,
+  type Monaco,
+  type OnChange,
+  useMonaco,
+} from "@monaco-editor/react";
 import * as React from "react";
 
-const aventisiaMonacoTheme = "aventisia-light";
+const aventisiaMonacoTheme = "aventisia-ink";
+
+const readInkColor = (name: string) =>
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+// IMPORTANT NOTE: Monaco's defineTheme does not resolve CSS custom properties, so the Ink values are read at runtime and the theme is redefined whenever the app theme flips.
+const defineInkTheme = (monaco: Monaco) => {
+  const isDark = document.documentElement.classList.contains("dark");
+  monaco.editor.defineTheme(aventisiaMonacoTheme, {
+    base: isDark ? "vs-dark" : "vs",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editor.background": readInkColor("--surface"),
+      "editor.foreground": readInkColor("--ink"),
+      "editorGutter.background": readInkColor("--sunken"),
+      "editorLineNumber.foreground": readInkColor("--muted-ink"),
+      "editorLineNumber.activeForeground": readInkColor("--ink"),
+      "editorGutter.foldingControlForeground": readInkColor("--muted-ink"),
+      "menu.background": readInkColor("--surface"),
+      "menu.foreground": readInkColor("--ink"),
+      "menu.border": readInkColor("--line"),
+      "menu.selectionBackground": readInkColor("--hover"),
+      "menu.selectionForeground": readInkColor("--ink"),
+      "menu.separatorBackground": readInkColor("--line"),
+    },
+  });
+};
 
 interface MonacoEditorProps extends Omit<EditorProps, "onChange" | "className"> {
   /** Controls the outer container sizing — mirrors Textarea's size prop. */
@@ -34,6 +67,15 @@ const MonacoEditor = React.forwardRef<HTMLDivElement, MonacoEditorProps>(
     },
     ref,
   ) => {
+    const monaco = useMonaco();
+    const isDark = useThemeStore((state) => state.isDark);
+
+    React.useEffect(() => {
+      if (!monaco || theme !== aventisiaMonacoTheme) return;
+      defineInkTheme(monaco);
+      monaco.editor.setTheme(aventisiaMonacoTheme);
+    }, [monaco, isDark, theme]);
+
     const handleChange: OnChange = (newValue) => {
       onChange?.(newValue ?? "");
     };
@@ -42,43 +84,13 @@ const MonacoEditor = React.forwardRef<HTMLDivElement, MonacoEditorProps>(
       <div
         ref={ref}
         className={cn(
-          "monaco-editor-shell w-full overflow-hidden rounded-lg border border-input bg-background shadow-sm shadow-black/5 ring-offset-background transition-shadow focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
+          "monaco-editor-shell w-full overflow-hidden rounded-lg border border-input bg-surface ring-offset-background transition-shadow duration-[120ms] motion-reduce:transition-none focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
           disabled && "cursor-not-allowed opacity-80",
           className,
         )}
       >
         <Editor
-          beforeMount={(monaco) => {
-            // Monaco's defineTheme does NOT resolve CSS custom properties.
-            // Hex values are derived from the corresponding CSS vars in index.css.
-            monaco.editor.defineTheme(aventisiaMonacoTheme, {
-              base: "vs",
-              inherit: true,
-              rules: [],
-              colors: {
-                // --background: hsl(0 0% 100%)
-                "editor.background": "#ffffff",
-                // --foreground: hsl(222.2 84% 4.9%)
-                "editor.foreground": "#020817",
-                // --muted: hsl(210 40% 96.1%)  ≈ slate-100
-                "editorGutter.background": "#f1f5f9",
-                // --muted-foreground: hsl(215.4 16.3% 46.9%)  ≈ slate-500
-                "editorLineNumber.foreground": "#64748b",
-                "editorLineNumber.activeForeground": "#020817",
-                "editorGutter.foldingControlForeground": "#64748b",
-                // --popover / --popover-foreground
-                "menu.background": "#ffffff",
-                "menu.foreground": "#020817",
-                // --border: hsl(214.3 31.8% 91.4%)  ≈ slate-200
-                "menu.border": "#e2e8f0",
-                // --accent: hsl(226 100% 97%)  ≈ indigo-50
-                "menu.selectionBackground": "#eff3ff",
-                // --accent-foreground: hsl(222.2 47.4% 11.2%)  ≈ slate-900
-                "menu.selectionForeground": "#0f172a",
-                "menu.separatorBackground": "#e2e8f0",
-              },
-            });
-          }}
+          beforeMount={defineInkTheme}
           height={height}
           language={language}
           theme={theme}

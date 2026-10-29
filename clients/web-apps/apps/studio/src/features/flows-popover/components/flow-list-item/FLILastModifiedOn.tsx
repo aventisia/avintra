@@ -31,7 +31,7 @@ export const FLILastModifiedOn = ({
       className="mt-[1px] flex items-center text-2xs text-muted-foreground"
       title={`Last modified by ${lastModifiedBy}`}
     >
-      {currentFlow.id === id ? "Currently Opened" : formattedTime}
+      {currentFlow.id === id ? "Currently open" : formattedTime}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "lucide-react";
 
 const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
 const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefined;
@@ -14,7 +14,7 @@ const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefin
 export const UpgradeSpaceButton = () => {
   return (
     <UpgradeFeatureButton
-      label="Create Space"
+      label="Create space"
       icon={<PlusIcon className="h-4 w-4" />}
       pricingUrl={UPGRADE_PRICING_URL}
       size="xs"

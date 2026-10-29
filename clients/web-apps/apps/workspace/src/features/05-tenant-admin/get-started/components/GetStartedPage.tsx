@@ -2,12 +2,12 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import {
   ArrowRightIcon,
   CheckCircle2Icon,
   CircleIcon,
   CpuIcon,
+  InfoIcon,
   KeyRoundIcon,
   PlayCircleIcon,
   ShieldCheckIcon,
@@ -35,14 +35,14 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     step: 1,
     title: "Invite users",
     description:
-      "Invite the people who will work in your tenant. Invitations can only be sent by the Tenant Admin — there is no self-sign-up for new members.",
+      "Invite the people who will work in your tenant. Invitations can only be sent by the tenant admin — there is no self-sign-up for new members.",
     route: "/tenant/users",
     guideId: "users",
     Icon: UsersIcon,
   },
   {
     step: 2,
-    title: "Define Spaces",
+    title: "Define spaces",
     description:
       "Create spaces to organize users and resources the way you work — for example by team or project. Use the information button on each page to learn what a feature is for and how to set it up.",
     route: "/tenant/spaces",
@@ -51,7 +51,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     step: 3,
-    title: "Save credentials in the Vault",
+    title: "Save credentials in the vault",
     description:
       "Store the credentials for the applications you want to use. Secrets are encrypted at rest and access is audited.",
     route: "/configure/vault",
@@ -60,7 +60,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     step: 4,
-    title: "Enable Models",
+    title: "Enable models",
     description:
       "Connect and enable the AI models your agents will use by setting up a model provider and its API key.",
     route: "/tenant/model-providers",
@@ -84,7 +84,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
  * create an agent), each linking to the relevant feature page and its help guide.
  */
 const GetStartedPage = () => {
-  useDocumentTitle("Get Started");
+  useDocumentTitle("Get started");
   const navigate = useNavigate();
 
   const { isComplete, markComplete } = useOnboardingStore(
@@ -95,7 +95,7 @@ const GetStartedPage = () => {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-title text-ink">Get Started</h2>
+          <h2 className="text-title text-ink">Get started</h2>
           <HelpButton guideId="get-started" />
         </div>
         {isComplete ? <Badge variant="completed">Setup complete</Badge> : null}
@@ -104,8 +104,8 @@ const GetStartedPage = () => {
       <p className="mb-8 max-w-3xl text-base text-muted-foreground">
         Complete these five steps to set up your workspace and build your first agent. Each step
         opens the relevant page — use the{" "}
-        <InformationCircleIcon className="inline size-5 align-text-bottom" aria-label="info" />{" "}
-        information button on any page to learn what a feature does and how to set it up.
+        <InfoIcon className="inline size-5 align-text-bottom" aria-label="info" /> information
+        button on any page to learn what a feature does and how to set it up.
       </p>
 
       <ol className="space-y-4">

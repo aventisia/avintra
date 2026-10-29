@@ -5,7 +5,7 @@ import UserTypeSelection from "./UserTypeSelection";
 
 export const UserType = () => {
   // Set document title
-  useDocumentTitle("Create Account");
+  useDocumentTitle("Create account");
 
   // Return component
   return (

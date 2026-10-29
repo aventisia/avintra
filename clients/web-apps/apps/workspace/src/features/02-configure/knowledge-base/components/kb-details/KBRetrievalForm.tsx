@@ -84,7 +84,7 @@ export const KnowledgeBaseRetrievalForm = ({
               max={1.0}
               step={0.1}
               className="text-sm resize-none"
-              label="Score Threshold"
+              label="Score threshold"
               isRequired
             />
           );

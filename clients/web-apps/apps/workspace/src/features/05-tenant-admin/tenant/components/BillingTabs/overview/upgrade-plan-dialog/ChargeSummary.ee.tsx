@@ -81,7 +81,7 @@ const ChargeSummary = ({
       </div>
       <div className="space-y-3 p-4 text-sm">
         {plan && basePrice >= 0 ? (
-          <SummaryRow label="Subscription Fee" value={formatCurrency(basePrice, currency)} />
+          <SummaryRow label="Subscription fee" value={formatCurrency(basePrice, currency)} />
         ) : null}
 
         {/* Show top-up breakdown if any */}
@@ -101,7 +101,7 @@ const ChargeSummary = ({
         <Separator />
 
         <SummaryRow
-          label="Amount Due"
+          label="Amount due"
           value={formatCurrency(total, currency)}
           className="font-medium"
         />

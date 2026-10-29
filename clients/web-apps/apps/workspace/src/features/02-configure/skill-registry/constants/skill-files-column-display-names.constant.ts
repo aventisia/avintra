@@ -2,10 +2,10 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "fileName", value: "File/Document Name" },
-  { key: "fileType", value: "File Type" },
-  { key: "createdBy", value: "Created By" },
-  { key: "createdOn", value: "Created On" },
+  { key: "fileName", value: "File/document name" },
+  { key: "fileType", value: "File type" },
+  { key: "createdBy", value: "Created by" },
+  { key: "createdOn", value: "Created on" },
 ];
 
 // Get the column display name for the given column key.

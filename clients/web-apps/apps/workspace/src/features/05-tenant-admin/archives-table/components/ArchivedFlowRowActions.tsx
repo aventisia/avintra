@@ -1,6 +1,6 @@
 import { DataTableRowActions } from "@avplatform/ui/data-table";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ExternalLinkIcon } from "lucide-react";
 
 interface ArchivedFlowRowActionsProps {
   rowId: string;
@@ -18,7 +18,7 @@ export const ArchivedFlowRowActions = ({ rowId, refId }: ArchivedFlowRowActionsP
     <DataTableRowActions>
       <SimpleDDMenuItem
         content="View"
-        Icon={ArrowTopRightOnSquareIcon}
+        Icon={ExternalLinkIcon}
         onClick={handleOpenArchivedFlowAction}
       />
     </DataTableRowActions>

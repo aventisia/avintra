@@ -15,11 +15,11 @@ const TABLE_KEY = "tenants";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Tenant", description: "" };
+      return { heading: "Create tenant", description: "" };
     case "read":
       return { heading: "Tenant", description: "" };
     case "update":
-      return { heading: "Edit Tenant", description: "" };
+      return { heading: "Edit tenant", description: "" };
     default:
       return { heading: "", description: "" };
   }

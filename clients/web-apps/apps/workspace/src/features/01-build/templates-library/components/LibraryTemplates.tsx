@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -28,8 +28,8 @@ const LibraryTemplates = ({
 
     const checkCategory = (templateType: string) => {
       if (selectedCategory === "All templates") return true;
-      if (selectedCategory === "Automation Agent") return ["Agent"].includes(templateType);
-      if (selectedCategory === "Chat Agent") return ["ChatAgent"].includes(templateType);
+      if (selectedCategory === "Automation agent") return ["Agent"].includes(templateType);
+      if (selectedCategory === "Chat agent") return ["ChatAgent"].includes(templateType);
       return templateType.includes(selectedCategory);
     };
 
@@ -76,7 +76,7 @@ const LibraryTemplates = ({
           currentItems.map((item) => <TemplateCard key={item.id} template={item} />)
         ) : (
           // Empty state when no templates found
-          <NoContentMessage
+          <EmptyState
             Icon={Search}
             primaryMessage="No templates found"
             secondaryMessage="Try adjusting your search or filter criteria"

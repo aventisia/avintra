@@ -9,11 +9,11 @@ const metadataRows = (skill?: SkillTableDto) => {
       value: skill?.isDisabled ? "Disabled" : "Active",
     },
     {
-      label: "Total Files",
+      label: "Total files",
       value: skill?.fileCount?.toString() ?? "0",
     },
     {
-      label: "Access Level",
+      label: "Access level",
       value: skill?.accessLevel?.replace(/([A-Z])/g, " $1") ?? "Personal",
       badge: skill?.isTenantWideAccess ? "Tenant-wide" : undefined,
     },

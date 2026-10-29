@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowUpRight, SquarePen } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { SimpleDDMenuItem } from "@/ui/components/dropdown-menu";
@@ -25,7 +25,7 @@ export const DTRowActionStore: React.FC<DTEditRowActionStoreProps> = ({
     <SimpleDDMenuItem
       size={size}
       content={crudAction === "read" ? "View" : "Edit"}
-      Icon={crudAction === "read" ? ArrowUpRightIcon : PencilSquareIcon}
+      Icon={crudAction === "read" ? ArrowUpRight : SquarePen}
       onClick={() => {
         setCrudDialogOptions({
           showDialog: true,

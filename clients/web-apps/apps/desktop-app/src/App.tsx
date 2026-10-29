@@ -1,3 +1,4 @@
+import { ThemeSwitcher } from "@avplatform/layout/header";
 import { useThemeStore } from "@avplatform/ui/stores";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
@@ -33,6 +34,7 @@ function AppHeader() {
   return (
     <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
       <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
+      <ThemeSwitcher className="px-0" />
     </header>
   );
 }

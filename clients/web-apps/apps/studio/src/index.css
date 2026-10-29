@@ -1,12 +1,5 @@
 @import "@avplatform/tailwind-config/tailwind.css";
 
-:root {
-  --flow-start: #f4f4f4;
-  --flow-end: #f4f4f4;
-  --flow-border-start: #b7b7b7;
-  --flow-border-end: #b7b7b7;
-}
-
 /* Style for  markdown editor toolbar */
 .md-editor-toolbar button svg {
   color: var(--ink) !important;

@@ -96,7 +96,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
             {selectedItems.map((item) => (
               <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
                 {/* <Avatar className={cn("flex h-5 w-5")}>
-                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-secondary text-white">
+                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-primary-foreground">
                   {`${item.firstName?.charAt(0)}${item.lastName?.charAt(0)}`}
                 </AvatarFallback>
               </Avatar> */}

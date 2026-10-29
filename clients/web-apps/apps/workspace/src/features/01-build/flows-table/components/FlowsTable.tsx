@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
@@ -220,7 +220,7 @@ export const FlowsTable = () => {
               view={view}
               folderById={chipFolderById}
               emptyState={
-                <NoContentMessage
+                <EmptyState
                   Icon={NewAgentIcon}
                   primaryMessage={emptyMessage.primary}
                   secondaryMessage={emptyMessage.secondary}

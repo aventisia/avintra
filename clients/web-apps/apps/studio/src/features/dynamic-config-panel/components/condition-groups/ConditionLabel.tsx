@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InfoIcon } from "lucide-react";
 
 interface ConditionLabelProps {
   label: React.ReactNode;
@@ -20,7 +20,7 @@ export const ConditionLabel: React.FC<ConditionLabelProps> = ({
     {description ? (
       <Tooltip content={description}>
         <div className="rounded hover:bg-hover hover:text-primary">
-          <InformationCircleIcon className="h-3.5 w-3.5" />
+          <InfoIcon className="h-3.5 w-3.5" />
         </div>
       </Tooltip>
     ) : null}

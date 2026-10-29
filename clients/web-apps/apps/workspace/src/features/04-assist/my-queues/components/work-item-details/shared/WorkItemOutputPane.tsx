@@ -213,7 +213,7 @@ export const WorkItemOutputPane = ({
       <div className="space-y-3">
         <div>
           <div className="flex items-center justify-between px-1 pb-2">
-            <h3 className="text-xs font-semibold">Extracted Output</h3>
+            <h3 className="text-xs font-semibold">Extracted output</h3>
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>JSON</span>
               <Switch

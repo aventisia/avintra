@@ -65,7 +65,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Total Jobs */}
       <StatsCard
         icon={<MonitorPlayIcon className="size-7" />}
-        title="Total Jobs"
+        title="Total jobs"
         content={stats.jobs}
         footer={
           <>
@@ -84,7 +84,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Active Agents */}
       <StatsCard
         icon={<NewAgentIcon className="size-7 " />}
-        title="Total Agents"
+        title="Total agents"
         content={stats.agents}
         footer="Distinct agents that have executed jobs"
       />
@@ -92,7 +92,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Execution Time */}
       <StatsCard
         icon={<Clock10Icon className="size-7" />}
-        title="Execution Time"
+        title="Execution time"
         content={stats.totalExecutionLabel}
         footer={
           <>

@@ -101,7 +101,7 @@ export const SkillFilesTable = () => {
               {canManageFiles && (
                 <LockedActionTooltip>
                   <Button size="xs" disabled={locked} onClick={() => setShowDialog(true)}>
-                    Add File
+                    Add file
                   </Button>
                 </LockedActionTooltip>
               )}

@@ -43,7 +43,7 @@ export const AccountDeactivation = () => {
     >
       <div className="box box--stacked flex flex-col p-5">
         {/* <div className="mb-6 flex items-center border-b border-dashed border-line pb-5 text-sm font-medium">
-          Account Deactivation
+          Account deactivation
         </div> */}
         <div>
           {(deactivationStatusData?.deactivating && (

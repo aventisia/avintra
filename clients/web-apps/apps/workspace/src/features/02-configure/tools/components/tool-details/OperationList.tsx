@@ -1,3 +1,5 @@
+import { EmptyState } from "@avplatform/ui";
+
 import { ToolDto } from "../../dtos/index";
 import { normalizeToolOperations } from "../../utils/tool-operations.util";
 
@@ -30,7 +32,7 @@ export const OperationList = ({ tool, showTitle }: OperationListProps) => {
       )}
 
       {!operations.length ? (
-        <p className="text-sm text-muted-foreground">No operations available.</p>
+        <EmptyState primaryMessage="No operations available" className="py-6" />
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {operations.map((operation) => (

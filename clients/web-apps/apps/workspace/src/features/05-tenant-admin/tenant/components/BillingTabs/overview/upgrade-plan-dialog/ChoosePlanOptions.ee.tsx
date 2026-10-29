@@ -28,7 +28,7 @@ const ChoosePlanOptions = () => {
 
   return (
     <div className="space-y-5 px-8 py-10 pt-3">
-      <h2 className="text-heading">Our Deployment Options</h2>
+      <h2 className="text-heading">Our deployment options</h2>
 
       <div className="grid grid-cols-2 gap-4">
         {/* Enterprise Self hosted Plan */}
@@ -39,7 +39,7 @@ const ChoosePlanOptions = () => {
           )}
         >
           <div className="px-4 pt-4">
-            <h3 className="font-semibold">Enterprise/Commercial - Self-Hosted</h3>
+            <h3 className="font-semibold">Enterprise/commercial - self-hosted</h3>
           </div>
           <Separator />
           <div className="grid px-5 pb-4">
@@ -47,7 +47,7 @@ const ChoosePlanOptions = () => {
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
-                  <span className="block font-semibold">Host on Your Infrastructure</span>
+                  <span className="block font-semibold">Host on your infrastructure</span>
                   Deploy Avintra securely within your private cloud or on-premise setup for complete
                   control.
                 </div>
@@ -55,7 +55,7 @@ const ChoosePlanOptions = () => {
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
-                  <span className="block font-semibold">Bring Your Own Key Vault</span>
+                  <span className="block font-semibold">Bring your own key vault</span>
                   Integrate seamlessly with your existing key vault for secure credential and secret
                   management.
                 </div>
@@ -63,7 +63,7 @@ const ChoosePlanOptions = () => {
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
-                  <span className="block font-semibold">Connect via Your API Keys</span>
+                  <span className="block font-semibold">Connect via your API keys</span>
                   Securely integrate with your internal or third-party systems using your own API
                   credentials.
                 </div>
@@ -71,7 +71,7 @@ const ChoosePlanOptions = () => {
               <li className="flex items-start gap-2">
                 <CheckMark />
                 <div>
-                  <span className="block font-semibold">Full Environment Separation</span>
+                  <span className="block font-semibold">Full environment separation</span>
                   Includes dedicated Dev, Staging, and Production environments to support
                   enterprise-grade CI/CD and governance.
                 </div>
@@ -85,14 +85,14 @@ const ChoosePlanOptions = () => {
                 setOpen(false);
                 showCustomAlertDialog({
                   confirmActionFn: () => {},
-                  confirmBtnText: "Submit Request",
+                  confirmBtnText: "Submit request",
                   description: "Our sales team will get in touch with you shortly.",
-                  title: "Enterprise/Commercial – Self-Hosted",
+                  title: "Enterprise/commercial – self-hosted",
                   isDestructive: false,
                 });
               }}
             >
-              Choose Plan
+              Choose plan
             </Button>
           </div>
         </div>
@@ -101,7 +101,7 @@ const ChoosePlanOptions = () => {
         {isStarterPlan ? (
           <div className="col-span-1 grid space-y-4 rounded-lg border">
             <div className="px-4 pt-4">
-              <h3 className="font-semibold">Pro – Aventisia Multi-Tenant Cloud</h3>
+              <h3 className="font-semibold">Pro – Aventisia multi-tenant Cloud</h3>
             </div>
             <Separator />
             <div className="grid px-5 pb-4">
@@ -109,7 +109,7 @@ const ChoosePlanOptions = () => {
                 <li className="flex items-start gap-2">
                   <CheckMark />
                   <div>
-                    <span className="block font-semibold">Fully Managed by Aventisia</span>
+                    <span className="block font-semibold">Fully managed by Aventisia</span>
                     Skip the infrastructure hassle — we host, monitor, and manage everything for
                     you.
                   </div>
@@ -117,7 +117,7 @@ const ChoosePlanOptions = () => {
                 <li className="flex items-start gap-2">
                   <CheckMark />
                   <div>
-                    <span className="block font-semibold">Secure Key Management</span>
+                    <span className="block font-semibold">Secure key management</span>
                     Use Aventisia’s multi-tenant key vault, or integrate your own for managing
                     credentials securely.
                   </div>
@@ -125,7 +125,7 @@ const ChoosePlanOptions = () => {
                 <li className="flex items-start gap-2">
                   <CheckMark />
                   <div>
-                    <span className="block font-semibold">Use Built-In APIs</span>
+                    <span className="block font-semibold">Use built-in APIs</span>
                     Access Avintra's powerful APIs for seamless integration with your applications
                     and workflows.
                   </div>
@@ -133,7 +133,7 @@ const ChoosePlanOptions = () => {
                 <li className="flex items-start gap-2">
                   <CheckMark />
                   <div>
-                    <span className="block font-semibold">Integrated Environments</span>
+                    <span className="block font-semibold">Integrated environments</span>
                     Dev, Staging, and Production environments come pre-configured for faster
                     deployment and testing cycles.
                   </div>
@@ -145,7 +145,7 @@ const ChoosePlanOptions = () => {
                 size={"lg"}
                 onClick={() => setChosenPlan("Pro")}
               >
-                Choose Plan
+                Choose plan
               </Button>
             </div>
           </div>

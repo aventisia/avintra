@@ -5,7 +5,7 @@ import { enumToArray } from "@avplatform/ui/utils";
 // Pin Code
 const pinCodeProps: InputFieldProps = {
   className: "h-control-lg",
-  label: "Pin Code",
+  label: "Pin code",
   name: "postalCode",
   isRequired: true,
 };
@@ -14,7 +14,7 @@ const pinCodeProps: InputFieldProps = {
 const addressLine1Props: InputFieldProps = {
   className: "h-control-lg",
   name: "addressLine1",
-  label: "Address Line 1",
+  label: "Address line 1",
   type: "text",
   isRequired: true,
 };
@@ -23,7 +23,7 @@ const addressLine1Props: InputFieldProps = {
 const addressLine2Props: InputFieldProps = {
   className: "h-control-lg",
   name: "addressLine2",
-  label: "Address Line 2",
+  label: "Address line 2",
   type: "text",
   isRequired: false,
 };

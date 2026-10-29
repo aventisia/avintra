@@ -4,18 +4,18 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "selectRow", value: "Select Row" },
+  { key: "selectRow", value: "Select row" },
   { key: "name", value: "Name" },
   { key: "status", value: "Status" },
   { key: "flowVersionCount", value: "Agents" },
-  { key: "lastCheckedIn", value: "Last Checked In" },
-  { key: "operatingSystem", value: "OS Type" },
-  { key: "osID", value: "OS Unique Id" },
+  { key: "lastCheckedIn", value: "Last checked in" },
+  { key: "operatingSystem", value: "OS type" },
+  { key: "osID", value: "OS unique ID" },
   { key: "username", value: "Username" },
   { key: "hostname", value: "Hostname" },
   { key: "isDisabled", value: "Disabled" },
-  { key: "linkedUserAccount", value: "Linked User Account" },
-  { key: "createdAt", value: "Registered At" },
+  { key: "linkedUserAccount", value: "Linked user account" },
+  { key: "createdAt", value: "Registered at" },
   { key: "id", value: "Machine ID" },
 ];
 

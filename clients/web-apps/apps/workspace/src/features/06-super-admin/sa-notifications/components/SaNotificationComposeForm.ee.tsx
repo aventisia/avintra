@@ -92,10 +92,10 @@ export const SaNotificationComposeForm = ({
   }));
 
   const audienceScopes: ISelectOption[] = [
-    { value: AudienceScopeEnum.AllUsers, label: "All Users" },
-    { value: AudienceScopeEnum.SelectedUsers, label: "Selected Users" },
-    { value: AudienceScopeEnum.SelectedRoles, label: "Selected Roles" },
-    { value: AudienceScopeEnum.SelectedTenants, label: "Selected Tenants" },
+    { value: AudienceScopeEnum.AllUsers, label: "All users" },
+    { value: AudienceScopeEnum.SelectedUsers, label: "Selected users" },
+    { value: AudienceScopeEnum.SelectedRoles, label: "Selected roles" },
+    { value: AudienceScopeEnum.SelectedTenants, label: "Selected tenants" },
   ];
 
   const recurrenceOptions: ISelectOption[] = Object.values(NotificationRecurrenceEnum).map(
@@ -242,7 +242,7 @@ export const SaNotificationComposeForm = ({
       {/* Delivery channel */}
       <SelectField
         name="deliveryChannel"
-        label="Delivery Channel"
+        label="Delivery channel"
         isRequired
         selectOptions={deliveryChannels}
         placeholder="Select delivery channel"
@@ -255,14 +255,14 @@ export const SaNotificationComposeForm = ({
         isRequired
         selectOptions={audienceScopes}
         placeholder="Select audience"
-        description="Super Admins can target all users, selected users, or all users of selected tenants."
+        description="Super admins can target all users, selected users, or all users of selected tenants."
       />
 
       {/* Recipient roles (only for SelectedRoles) */}
       {audienceScope === AudienceScopeEnum.SelectedRoles && (
         <MultiSelectField
           name="roleIds"
-          label="Recipient Roles"
+          label="Recipient roles"
           selectOptions={roleOptions}
           placeholder="Select roles"
           description="Only users holding the selected roles will receive this notification."
@@ -304,7 +304,7 @@ export const SaNotificationComposeForm = ({
       {/* Scheduled send time */}
       <DateTimePickerField
         name="scheduledFor"
-        label="Schedule Send"
+        label="Schedule send"
         description="Leave empty to send immediately."
       />
 
@@ -330,7 +330,7 @@ export const SaNotificationComposeForm = ({
       {recurrenceFrequency === NotificationRecurrenceEnum.Monthly && (
         <MultiSelectField
           name="recurrenceMonthDays"
-          label="Days of Month"
+          label="Days of month"
           selectOptions={monthDayOptions}
           placeholder="Select days"
           description="Days of the month on which this notification recurs."
@@ -340,7 +340,7 @@ export const SaNotificationComposeForm = ({
       {recurrenceFrequency && recurrenceFrequency !== NotificationRecurrenceEnum.None && (
         <DateTimePickerField
           name="recurrenceEndOn"
-          label="Recurrence End Date"
+          label="Recurrence end date"
           description="The date after which this recurring notification stops."
         />
       )}

@@ -33,11 +33,11 @@ const TABLE_VIEW_TABS = [
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Skill", description: "" };
+      return { heading: "Create skill", description: "" };
     case "read":
       return { heading: "Skill", description: "" };
     case "update":
-      return { heading: "Edit Skill", description: "" };
+      return { heading: "Edit skill", description: "" };
     default:
       return { heading: "", description: "" };
   }

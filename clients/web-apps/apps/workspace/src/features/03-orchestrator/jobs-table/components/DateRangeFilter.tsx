@@ -85,8 +85,8 @@ export const DateRangeFilter = () => {
   //  Presets
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     {
       label: isCommunityDeployment ? "Last 1 day" : "Last 7 days",
       value: isCommunityDeployment ? 1 : 7,
