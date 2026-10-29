@@ -44,6 +44,7 @@ export type DCPFieldSchemaType = {
   max?: number;
   minLength?: number;
   maxLength?: number;
+  dependsOn?: string; // Not a html attribute (form field the control depends on)
   showTokenCount?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   showVariables?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   showJsonOutput?: boolean; // Not a html attribute (only required by the model config field)

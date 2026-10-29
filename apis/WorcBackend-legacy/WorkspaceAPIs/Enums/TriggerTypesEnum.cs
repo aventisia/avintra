@@ -67,5 +67,11 @@ public enum TriggerTypesEnum
     /// Triggered by a chat message or chat event.
     /// </summary>
     [Description("Triggered by a chat message.")]
-    Message
+    Message,
+
+    /// <summary>
+    /// Triggered by another flow creating this job through a Create Job step.
+    /// </summary>
+    [Description("Triggered by another flow.")]
+    Flow
 }

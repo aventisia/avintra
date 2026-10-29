@@ -11,8 +11,11 @@ import {
   ConfigPanelOuputField,
   DCPFieldSchemaType,
 } from "..";
+import { CloudExecutionSwitchField } from "./fields-for-form/CloudExecutionSwitchField";
 import { ConfigPanelModelOutputField } from "./fields-for-form/ConfigPanelModelOutputField";
+import { FlowSelectorField } from "./fields-for-form/FlowSelectorField";
 import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigField";
+import { MachineSelectorField } from "./fields-for-form/MachineSelectorField";
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
@@ -123,6 +126,12 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <JsonEditorField {...baseProps} className={field.className} />;
     case "queue-select":
       return <QueueSelectorField {...baseProps} selectOptions={[]} size="sm" />;
+    case "flow-select":
+      return <FlowSelectorField {...baseProps} />;
+    case "cloud-execution-switch":
+      return <CloudExecutionSwitchField {...baseProps} dependsOn={field.dependsOn} />;
+    case "machine-select":
+      return <MachineSelectorField {...baseProps} dependsOn={field.dependsOn} />;
     case "queue-status-select":
       return <StatusSelectorField {...baseProps} size="sm" />;
     case "queue-conditional-group":

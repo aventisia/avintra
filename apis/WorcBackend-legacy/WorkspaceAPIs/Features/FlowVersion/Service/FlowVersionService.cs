@@ -106,6 +106,62 @@ public class FlowVersionService : IFlowVersionService
         return serviceResponse;
     }
 
+    // Get a flow version by its identifier
+    public async Task<ServiceResponse<SearchFlowVersionResDto>> GetFlowVersionAsync(Guid flowVersionId)
+    {
+        var serviceResponse = new ServiceResponse<SearchFlowVersionResDto>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == flowVersionId)
+                .AsNoTracking()
+                .Include(i => i.Flow)
+                .SingleOrDefaultAsync();
+
+            if (flowVersion == null)
+            {
+                serviceResponse.Message = "Flow version not found.";
+                return serviceResponse;
+            }
+
+            // Validate user's access permissions for viewing the flow
+            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Flow.Id,
+                ResourceTypeEnum.Flow,
+                flowVersion.Flow.CreatedByUserId,
+                flowVersion.Flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                });
+
+            if (!canView)
+            {
+                serviceResponse.Message = "You do not have access to view this flow versions.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = flowVersion.Adapt<SearchFlowVersionResDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Flow version retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+        }
+
+        return serviceResponse;
+    }
+
     //Creates a flow version
     public async Task<ServiceResponse<FlowVersionDto>> InsertFlowVersionAsync(FlowVersionDto flowVersionDto)
     {
@@ -126,7 +182,7 @@ public class FlowVersionService : IFlowVersionService
                 .Include(c => c.CreatedByUser)
                 .SingleOrDefaultAsync();
 
- 
+
             // // Check if the user is the creator or has the required access (Owner/Edit)
             // var flowUserAccess = flow.FlowUsers?.FirstOrDefault(w =>
             //     w.FlowId == flow.Id &&
@@ -141,7 +197,7 @@ public class FlowVersionService : IFlowVersionService
             //     serviceResponse.Message = "You don't have access to create new flow version.";
             //     return serviceResponse;
             // }
-            
+
             // Validate update permission
             var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
@@ -372,7 +428,7 @@ public class FlowVersionService : IFlowVersionService
             //Try to get version using identifier
             var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
-                w.Id == id                
+                w.Id == id
             )
             .Include(i => i.Flow)
             .SingleOrDefaultAsync();
