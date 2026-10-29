@@ -7,7 +7,7 @@ import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@/components/Me
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";
-import { useFolderDialogStore } from "../../stores/folder-dialog.store";
+import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { FolderSummary } from "../../types/folder-summary.type";
 import { getFolderColor } from "../../utils/folder-color.util";
 import { FolderMark } from "../folder/FolderMark";
@@ -25,7 +25,7 @@ type FolderSwitcherProps = {
  */
 export const FolderSwitcher = ({ current, summaries }: FolderSwitcherProps) => {
   const navigate = useNavigate();
-  const openDialog = useFolderDialogStore((state) => state.openDialog);
+  const { openCreateFolderDialog } = useFolderFormDialog();
   const { agentsPagePath, getFolderPagePath } = useAgentsPagePaths();
 
   return (
@@ -73,7 +73,7 @@ export const FolderSwitcher = ({ current, summaries }: FolderSwitcherProps) => {
           <NewAgentIcon />
           All agents
         </MenuItem>
-        <MenuItem onSelect={() => openDialog({ kind: "create" })}>
+        <MenuItem onSelect={() => openCreateFolderDialog()}>
           <FolderPlus />
           New folder
         </MenuItem>

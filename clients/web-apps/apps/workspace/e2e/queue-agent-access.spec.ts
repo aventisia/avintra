@@ -1,17 +1,14 @@
-import {
-  type APIRequestContext,
-  type Page,
-  type Route,
-  expect,
-  request,
-  test,
-} from "@playwright/test";
+import { type APIRequestContext, type Page, expect, request, test } from "@playwright/test";
 
-const WEB_ORIGIN = "http://localhost:3002";
-const ACCOUNTS_API = process.env.E2E_ACCOUNTS_API_URL ?? "http://localhost:4000";
-const WORKSPACE_API = process.env.E2E_WORKSPACE_API_URL ?? "http://localhost:4001";
-const EMAIL = process.env.E2E_EMAIL ?? "admin@aventisia.com";
-const PASSWORD = process.env.E2E_PWD ?? "";
+import {
+  EMAIL,
+  type Session,
+  WORKSPACE_API,
+  connectPage,
+  getApiHeaders,
+  loginAsAdmin,
+} from "./support/session";
+
 const ENVIRONMENT_STORAGE_KEY = `configure-env:${EMAIL}`;
 
 const OPEN_QUEUE = "E2E Open Queue";
@@ -29,42 +26,14 @@ type QueueSummary = {
 
 type FlowOption = { label: string; value: string };
 
-type SessionCookie = {
-  name: string;
-  value: string;
-  domain: string;
-  path: string;
-  sameSite: "Lax";
-};
-
 let api: APIRequestContext;
-let accessToken = "";
-let sessionCookies: SessionCookie[] = [];
+let session: Session;
 let openQueueId = "";
 let restrictedQueueId = "";
 let agentOneId = "";
 let agentTwoId = "";
 
-const parseSessionCookies = (headers: { name: string; value: string }[]): SessionCookie[] =>
-  headers
-    .filter((header) => header.name.toLowerCase() === "set-cookie")
-    .map((header) => {
-      const [pair] = header.value.split(";");
-      const separator = pair.indexOf("=");
-
-      return {
-        name: pair.slice(0, separator),
-        value: pair.slice(separator + 1),
-        domain: "localhost",
-        path: "/",
-        sameSite: "Lax",
-      };
-    });
-
-const apiHeaders = (env: "dev" | "prod" = "dev") => ({
-  Cookie: `AccessToken=${accessToken}`,
-  "X-Env-Type": env,
-});
+const apiHeaders = (env: "dev" | "prod" = "dev") => getApiHeaders(session, env);
 
 const findQueue = async (name: string, env: "dev" | "prod") => {
   const response = await api.get(`${WORKSPACE_API}/api/queue/list`, { headers: apiHeaders(env) });
@@ -85,14 +54,6 @@ const assignFlows = async (resourceId: string, flowIds: string[]) => {
   expect(response.ok()).toBeTruthy();
 };
 
-const forwardRequests = (sourcePrefix: string, targetPrefix: string) => async (route: Route) => {
-  const response = await route.fetch({
-    url: route.request().url().replace(sourcePrefix, targetPrefix),
-  });
-
-  await route.fulfill({ response });
-};
-
 const queueRow = (page: Page, queueName: string) =>
   page.getByRole("row").filter({ hasText: queueName });
 
@@ -109,15 +70,8 @@ const openAssignAgentsDialog = async (page: Page, queueName: string) => {
 };
 
 test.beforeAll(async () => {
-  if (!PASSWORD) throw new Error("E2E_PWD must hold the seeded admin password.");
-
   api = await request.newContext();
-  const login = await api.post(`${ACCOUNTS_API}/api/auth/login`, {
-    data: { email: EMAIL, pwd: PASSWORD },
-  });
-  expect(login.ok()).toBeTruthy();
-  accessToken = (await login.json()).data.accessToken;
-  sessionCookies = parseSessionCookies(login.headersArray());
+  session = await loginAsAdmin(api);
 
   openQueueId = (await findQueue(OPEN_QUEUE, "dev")).id;
   restrictedQueueId = (await findQueue(RESTRICTED_QUEUE, "dev")).id;
@@ -143,15 +97,7 @@ test.beforeEach(async ({ page }) => {
   await assignFlows(openQueueId, []);
   await assignFlows(restrictedQueueId, [agentOneId]);
 
-  await page.context().addCookies(sessionCookies);
-  await page.route(
-    "**/workspace/api/**",
-    forwardRequests(`${WEB_ORIGIN}/workspace/api/`, `${WORKSPACE_API}/api/`),
-  );
-  await page.route(
-    "**/accounts/api/**",
-    forwardRequests(`${WEB_ORIGIN}/accounts/api/`, `${ACCOUNTS_API}/api/`),
-  );
+  await connectPage(page, session);
 });
 
 test("AC1 and AC6: the shared dialog opens and the restricted flag drives the initial mode", async ({

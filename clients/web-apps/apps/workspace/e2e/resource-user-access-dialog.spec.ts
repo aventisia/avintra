@@ -2,17 +2,19 @@ import {
   type APIRequestContext,
   type Locator,
   type Page,
-  type Route,
   expect,
   request,
   test,
 } from "@playwright/test";
 
-const WEB_ORIGIN = "http://localhost:3002";
-const ACCOUNTS_API = process.env.E2E_ACCOUNTS_API_URL ?? "http://localhost:4000";
-const WORKSPACE_API = process.env.E2E_WORKSPACE_API_URL ?? "http://localhost:4001";
-const EMAIL = process.env.E2E_EMAIL ?? "admin@aventisia.com";
-const PASSWORD = process.env.E2E_PWD ?? "";
+import {
+  ACCOUNTS_API,
+  type Session,
+  WORKSPACE_API,
+  connectPage,
+  getApiHeaders,
+  loginAsAdmin,
+} from "./support/session";
 
 const SHARED_QUEUE = "E2E Open Queue";
 const BULK_SHARE_ROUTE = "**/workspace/api/resource-user-access/bulk";
@@ -30,42 +32,14 @@ type ShareSummary = { id: string; userId: string; accessLevel: string };
 
 type Person = { id: string; name: string; email: string };
 
-type SessionCookie = {
-  name: string;
-  value: string;
-  domain: string;
-  path: string;
-  sameSite: "Lax";
-};
-
 let api: APIRequestContext;
-let accessToken = "";
-let sessionCookies: SessionCookie[] = [];
+let session: Session;
 let queueId = "";
 let removedPerson: Person;
 let editedPerson: Person;
 let addedPerson: Person;
 
-const parseSessionCookies = (headers: { name: string; value: string }[]): SessionCookie[] =>
-  headers
-    .filter((header) => header.name.toLowerCase() === "set-cookie")
-    .map((header) => {
-      const [pair] = header.value.split(";");
-      const separator = pair.indexOf("=");
-
-      return {
-        name: pair.slice(0, separator),
-        value: pair.slice(separator + 1),
-        domain: "localhost",
-        path: "/",
-        sameSite: "Lax",
-      };
-    });
-
-const apiHeaders = () => ({
-  Cookie: `AccessToken=${accessToken}`,
-  "X-Env-Type": "dev",
-});
+const apiHeaders = () => getApiHeaders(session);
 
 const listShares = async () => {
   const response = await api.get(`${WORKSPACE_API}/api/resource-user-access/${queueId}/list`, {
@@ -86,14 +60,6 @@ const removeAllShares = async () => {
     });
     expect(response.ok()).toBeTruthy();
   }
-};
-
-const forwardRequests = (sourcePrefix: string, targetPrefix: string) => async (route: Route) => {
-  const response = await route.fetch({
-    url: route.request().url().replace(sourcePrefix, targetPrefix),
-  });
-
-  await route.fulfill({ response });
 };
 
 const openShareDialog = async (page: Page) => {
@@ -140,15 +106,8 @@ const pickFixturePeople = (users: SearchedUser[]) => {
 };
 
 test.beforeAll(async () => {
-  if (!PASSWORD) throw new Error("E2E_PWD must hold the seeded admin password.");
-
   api = await request.newContext();
-  const login = await api.post(`${ACCOUNTS_API}/api/auth/login`, {
-    data: { email: EMAIL, pwd: PASSWORD },
-  });
-  expect(login.ok()).toBeTruthy();
-  accessToken = (await login.json()).data.accessToken;
-  sessionCookies = parseSessionCookies(login.headersArray());
+  session = await loginAsAdmin(api);
 
   const queues = await api.get(`${WORKSPACE_API}/api/queue/list`, { headers: apiHeaders() });
   expect(queues.ok()).toBeTruthy();
@@ -197,15 +156,7 @@ test.beforeEach(async ({ page }) => {
   });
   expect(bulk.ok()).toBeTruthy();
 
-  await page.context().addCookies(sessionCookies);
-  await page.route(
-    "**/workspace/api/**",
-    forwardRequests(`${WEB_ORIGIN}/workspace/api/`, `${WORKSPACE_API}/api/`),
-  );
-  await page.route(
-    "**/accounts/api/**",
-    forwardRequests(`${WEB_ORIGIN}/accounts/api/`, `${ACCOUNTS_API}/api/`),
-  );
+  await connectPage(page, session);
 });
 
 test("saves a removal, a role change and a new person together", async ({ page }) => {
