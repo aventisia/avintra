@@ -36,6 +36,19 @@ body:json {
       },{"Date":"2026-01-29T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-01-30T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-01-31T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-02-01T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40},{"Date":"2026-02-02T00:00:00+00:00","JobsExecuted":0,"TotalExecutionTime":0.0,"Users":21,"PublishedAgents":40}]}
 }
 
+script:post-response {
+  const enforcement = res.getBody()?.data?.enforcement ?? {};
+
+  test("covers the instance enforcement allowance contract", function() {
+    expect(res.getStatus()).to.equal(200);
+
+    // IMPORTANT NOTE: the service omits the allowances until GlobalAdminAPIs#10 is deployed; an omitted allowance means "not allowed".
+    ["isSsoAllowed", "isBrandingAllowed"].forEach((field) => {
+      expect(enforcement[field] ?? false).to.be.a("boolean");
+    });
+  });
+}
+
 settings {
   encodeUrl: true
   timeout: 0

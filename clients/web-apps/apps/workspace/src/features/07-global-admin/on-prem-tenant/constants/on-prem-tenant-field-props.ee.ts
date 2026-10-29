@@ -90,6 +90,21 @@ const isLoginDisabledProps: SwitchFieldProps = {
   description: "Disable Login for the tenant",
 };
 
+// Allow Single Sign-On
+const isSsoAllowedProps: SwitchFieldProps = {
+  name: "isSsoAllowed",
+  label: "Allow Single Sign-On",
+  description:
+    "Let the tenant use the company's single sign-on. Takes up to about 24 hours to apply.",
+};
+
+// Allow Custom Branding
+const isBrandingAllowedProps: SwitchFieldProps = {
+  name: "isBrandingAllowed",
+  label: "Allow Custom Branding",
+  description: "Let the tenant use its own brand values. Takes up to about 24 hours to apply.",
+};
+
 export {
   idProps,
   nameProps,
@@ -99,6 +114,8 @@ export {
   contractRenewalDateProps,
   isExecutionDisabledProps,
   isLoginDisabledProps,
+  isSsoAllowedProps,
+  isBrandingAllowedProps,
   ourEmailsProps,
   tenantEmailsProps,
 };
