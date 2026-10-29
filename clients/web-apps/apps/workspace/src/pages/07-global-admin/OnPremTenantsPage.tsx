@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the OnPremTenantsTable component.
 const OnPremTenantsTable = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant/components/OnPremTenantsTable").then(
+  import("@/features/07-global-admin/on-prem-tenant/components/OnPremTenantsTable.ee").then(
     (module) => ({
       default: module.OnPremTenantsTable,
     }),

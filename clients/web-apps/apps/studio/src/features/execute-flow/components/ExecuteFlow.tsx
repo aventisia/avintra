@@ -14,8 +14,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
-import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -37,6 +36,7 @@ import { useRunResultsQueryParams } from "../hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "../stores/job-data-store";
 import { useLiveExecutionStore } from "../stores/live-execution-store";
 import { clearExecutionLogForVersion } from "../utils/save-node-execution-log";
+import { getExecutionEntitlementError } from "./ExecuteFlow.ee";
 
 const ExecuteFlow = () => {
   const [isStarting, setIsStarting] = useState<boolean>(false);
@@ -144,9 +144,7 @@ const ExecuteFlow = () => {
     },
   );
 
-  const isCommercial = userSession?.deploymentType == "Commercial";
-  const isEnterprise = userSession?.deploymentType == "Enterprise";
-  const hasActivePlan = userSession?.planType == "Active";
+  const { deploymentType, planType } = userSession ?? {};
 
   const abortExecution = async () => {
     if (!currentFlow?.jobId) {
@@ -231,18 +229,9 @@ const ExecuteFlow = () => {
         return;
       }
 
-      if (isCommercial) {
-        const creditsData = await getAvailableCredits();
-        if (creditsData?.data && creditsData.data.availableCredits < 10) {
-          toast.error("Insufficient credits. Please top up to continue.");
-          return;
-        }
-      }
-
-      if (isEnterprise && !hasActivePlan) {
-        toast.error(
-          "This action is currently unavailable. Please contact your administrator or support.",
-        );
+      const entitlementError = await getExecutionEntitlementError(deploymentType, planType);
+      if (entitlementError) {
+        toast.error(entitlementError);
         return;
       }
 

@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useRef } from "react";
 
-import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { saveCompletedExecutionLog } from "@/features/execute-flow/utils/save-node-execution-log";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";

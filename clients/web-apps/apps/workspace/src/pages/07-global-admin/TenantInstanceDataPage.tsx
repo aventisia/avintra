@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the TenantInstanceDataTable component.
 const TenantInstanceDataTable = lazy(() =>
-  import("@/features/07-global-admin/tenant-instance-data/components/TenantInstanceDataTable").then(
+  import("@/features/07-global-admin/tenant-instance-data/components/TenantInstanceDataTable.ee").then(
     (module) => ({
       default: module.TenantInstanceDataTable,
     }),

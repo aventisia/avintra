@@ -1,5 +1,5 @@
 import PreferencesForm from "./PreferencesForm";
-import SsoConnectionCard from "./SsoConnectionCard";
+import SsoConnectionCard from "./SsoConnectionCard.ee";
 
 const Preferences = () => {
   return (

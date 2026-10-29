@@ -16,7 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
 import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
 import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";

@@ -10,11 +10,11 @@ import {
   isPwdEnabledProps,
   isPwdNeverExpiresEnabledProps,
   isTwoFAEnabledProps,
-} from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-field-props";
-import { preferencesSchema } from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-zod-schema";
-import { useDefinePreferencesForm } from "@/features/05-tenant-admin/tenant/hooks/useDefinePreferencesForm";
+} from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-field-props.ee";
+import { preferencesSchema } from "@/features/05-tenant-admin/tenant/constants/tenant-preferences-zod-schema.ee";
+import { useDefinePreferencesForm } from "@/features/05-tenant-admin/tenant/hooks/useDefinePreferencesForm.ee";
 
-import TabLoader from "../TabLoader";
+import TabLoader from "../TabLoader.ee";
 
 const PreferencesForm = () => {
   const {

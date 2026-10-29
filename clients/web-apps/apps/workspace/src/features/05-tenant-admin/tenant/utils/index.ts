@@ -1,4 +1,4 @@
-import { PlanFrequency } from "../types/plan-type";
+import { PlanFrequency } from "../types/plan-type.ee";
 
 function displayValue(value: number) {
   if (value < 0 || value > 9999999) return "Unlimited";

@@ -1,4 +1,4 @@
-import { SaTicketsTable } from "@/features/06-super-admin/support-tickets/components/SaTicketsTable";
+import { SaTicketsTable } from "@/features/06-super-admin/support-tickets/components/SaTicketsTable.ee";
 
 const SaSupportTicketsPage = () => {
   return <SaTicketsTable />;

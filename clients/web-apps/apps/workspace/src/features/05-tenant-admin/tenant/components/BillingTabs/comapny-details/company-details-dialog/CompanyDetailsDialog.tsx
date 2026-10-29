@@ -4,7 +4,7 @@ import { useAlertDialogStore } from "@avplatform/ui/stores";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/store/company-details/company-details-dialog-store";
+import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/store/company-details/company-details-dialog-store.ee";
 
 import CompanyDetailsForm from "./CompanyDetailsForm";
 

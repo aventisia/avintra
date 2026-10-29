@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace AccountsAPIs.Services;
 
-public class LoginWithExternalAuthService : ILoginWithExternalAuthService
+public partial class LoginWithExternalAuthService : ILoginWithExternalAuthService
 {
     private const string EntraOrganizationsAuthority = "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize";
     private const string EntraAdminConsentAuthority = "https://login.microsoftonline.com/organizations/v2.0/adminconsent";
@@ -47,21 +47,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         _authStateCache = authStateCache;
         _httpClientFactory = httpClientFactory;
         _accountsDbContext = accountsDbContext;
-    }
-
-    private string? GetSsoUnavailableMessage()
-    {
-        if (!_environmentConfig.IsSsoAllowedForDeployment)
-        {
-            return "Single sign-on is not available in the Community edition.";
-        }
-
-        if (!_environmentConfig.MicrosoftSsoEnabled)
-        {
-            return "Single sign-on is not enabled for this deployment.";
-        }
-
-        return null;
     }
 
     // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
@@ -360,21 +345,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         }
 
         return await ResolveSsoTenantByDomainAsync(authState.Email);
-    }
-
-    private async Task<Tenant?> ResolveSsoTenantByDomainAsync(string? email)
-    {
-        var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
-        if (string.IsNullOrWhiteSpace(emailDomain)) return null;
-
-        return await _unitOfWork.TenantRepo
-            .GetByConditionAsync(t =>
-                t.Domain != string.Empty &&
-                t.IsSSOEnabled &&
-                t.Type == TenantTypesEnum.Organization &&
-                t.Domain.ToLower() == emailDomain)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
     }
 
     private string BuildEntraAuthorizeUrl(string clientId, string? email, Guid tenantId, bool adminConsent)

@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the CreditPlansTable component.
 const CreditPlansTable = lazy(() =>
-  import("@/features/06-super-admin/credit-plans-table/components/CreditPlansTable").then(
+  import("@/features/06-super-admin/credit-plans-table/components/CreditPlansTable.ee").then(
     (module) => ({
       default: module.CreditPlansTable,
     }),
