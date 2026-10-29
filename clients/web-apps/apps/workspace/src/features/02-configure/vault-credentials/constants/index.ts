@@ -15,11 +15,11 @@ const TABLE_KEY = "vault";
 const getDialogHeadingDescription = (action: DialogCrudAction) => {
   switch (action) {
     case "create":
-      return { heading: "Add Credential", description: "" };
+      return { heading: "Add credential", description: "" };
     case "read":
       return { heading: "Credential", description: "" };
     case "update":
-      return { heading: "Edit Credential", description: "" };
+      return { heading: "Edit credential", description: "" };
     default:
       return { heading: "", description: "" };
   }

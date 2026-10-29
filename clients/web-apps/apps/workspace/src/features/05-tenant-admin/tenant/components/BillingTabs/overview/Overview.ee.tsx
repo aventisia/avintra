@@ -139,7 +139,7 @@ const Overview = () => {
 
           <div className="!mt-5 flex justify-end space-x-4">
             <Button variant={"outline"} onClick={() => setOpen(true)}>
-              Cancel Plan
+              Cancel plan
             </Button>
             <Button disabled={isPaymentProcessing} onClick={openUpgrade}>
               Upgrade

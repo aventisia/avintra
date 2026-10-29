@@ -14,7 +14,7 @@ import { generateDayOfWeekOptions, generateHourlyWithRangeOptions } from "./form
 // trigger Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Trigger Id",
+  label: "Trigger ID",
   disabled: true,
 };
 
@@ -22,9 +22,9 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
-  placeholder: "Trigger Name",
+  placeholder: "Trigger name",
   description:
     "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
@@ -39,7 +39,7 @@ const selectFrequencyProps: SelectFieldProps = {
 
 const effectiveDateProps: DateTimePickerFieldProps = {
   name: "effectiveDate",
-  label: "Effective Date & Time",
+  label: "Effective date & time",
   description: "The date and time when the trigger will begin.",
   isRequired: true,
   granularity: "minute",
@@ -54,20 +54,20 @@ const endDateProps: DateTimePickerFieldProps = {
 
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Trigger",
+  label: "Disable trigger",
   description: "Disable the trigger when it's not needed or should be temporarily turned off.",
 };
 
 const exceptionHoursProps: MultiSelectFieldProps = {
   name: "exceptionHours",
-  label: "Exception Hours",
+  label: "Exception hours",
   description: "Select specific hours when this trigger should be skipped.",
   selectOptions: generateHourlyWithRangeOptions(),
 };
 
 const exceptionWeekdaysProps: MultiSelectFieldProps = {
   name: "exceptionWeekdays",
-  label: "Exception Weekdays",
+  label: "Exception weekdays",
   description: "Select weekdays when the trigger should be skipped (e.g., weekends).",
   selectOptions: generateDayOfWeekOptions(),
 };

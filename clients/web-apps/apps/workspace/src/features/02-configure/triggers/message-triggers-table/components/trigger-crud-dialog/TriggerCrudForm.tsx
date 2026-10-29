@@ -227,7 +227,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           {resubscribeFrequency == "custom" && (
             <InputField
               name="resubscribeFrequencyCustom"
-              label="Custom Frequency (in days)"
+              label="Custom frequency (in days)"
             />
           )}
         </>
@@ -241,7 +241,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           <FormItem size={"base"}>
             <FormLabelExt
               size={"base"}
-              label="Select Agent(s)"
+              label="Select agent(s)"
               description="Choose the agent(s) that should be triggered by this event."
               isRequired
             />

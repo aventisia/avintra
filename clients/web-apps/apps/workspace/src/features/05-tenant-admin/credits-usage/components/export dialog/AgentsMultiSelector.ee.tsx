@@ -149,7 +149,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-surface shadow">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">

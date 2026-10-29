@@ -48,12 +48,12 @@ const BillingDetails = () => {
 
   return (
     <div className="max-w-[35rem] rounded-lg border">
-      <div className="border-b p-4 font-medium text-base">Billing Details</div>
+      <div className="border-b p-4 font-medium text-base">Billing details</div>
       <div className="p-4 space-y-3">
         {isIndividualUser
           ? renderRow("Name", fullName || userSession?.email)
-          : renderRow("Company Name", organizationName || userSession?.email)}
-        {renderRow("Billing Address", fullAddress)}
+          : renderRow("Company name", organizationName || userSession?.email)}
+        {renderRow("Billing address", fullAddress)}
         {renderRow("GST Number", gstNumber)}
       </div>
     </div>

@@ -54,7 +54,7 @@ const FileQueueRow = ({ fileItem, isActive, isPending, onRemove }: FileQueueRowP
     >
       <div className="flex items-center gap-3 flex-1">
         {/* Status icon */}
-        <div className="bg-surface rounded-full flex items-center justify-center size-9 shadow-sm border border-line">
+        <div className="bg-surface rounded-full flex items-center justify-center size-9 border border-line">
           {getStatusIcon(fileItem.status)}
         </div>
 

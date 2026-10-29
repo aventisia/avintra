@@ -98,7 +98,7 @@ export const RisksMitigationsSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 03"
-      title="Risks & Mitigations"
+      title="Risks & mitigations"
       description="Capture the key risks around the agent and the mitigation plan for each. Severity is computed automatically from likelihood and impact."
     >
       <div className="space-y-3">
@@ -190,7 +190,7 @@ export const RisksMitigationsSection = () => {
             </div>
 
             <Field
-              label="Mitigation Plan"
+              label="Mitigation plan"
               required
               info="Describe the concrete actions taken or planned to reduce the likelihood and/or impact of this risk."
             >
@@ -206,7 +206,7 @@ export const RisksMitigationsSection = () => {
 
         <Button variant="outline" onClick={addRow}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add Risk
+          Add risk
         </Button>
       </div>
     </SectionLayout>

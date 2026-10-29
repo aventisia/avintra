@@ -64,7 +64,7 @@ export const SpaceSelector = () => {
   return (
     <div
       className={cn(
-        "ml-2 transition-[margin] duration-500 md:ml-0",
+        "ml-2 transition-[margin] duration-200 motion-reduce:transition-none md:ml-0",
         sidebarExpand ? "md:ml-[--sidebar-max-width]" : "md:ml-[--sidebar-min-width]",
       )}
     >
@@ -86,7 +86,7 @@ export const SpaceSelector = () => {
           size="sm"
           className="h-[2.1rem] w-[10rem] border-transparent bg-fill text-ink shadow-none hover:bg-hover focus:border-transparent [&>span]:text-ink-2"
         >
-          <SelectValue placeholder="Select Space" />
+          <SelectValue placeholder="Select space" />
         </SelectTrigger>
         <SelectContent>
           {/* Central is always the first, default option and can never be blank. */}

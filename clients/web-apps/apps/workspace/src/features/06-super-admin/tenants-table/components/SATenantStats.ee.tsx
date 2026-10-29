@@ -106,7 +106,7 @@ export const SATenantStats = ({ data }: StatsProps) => {
       {/*  Total Tenants */}
       <StatsCard
         icon={<UsersIcon className="size-7" />}
-        title="Total Tenants"
+        title="Total tenants"
         content={stats.tenants}
         footer={formatBreakdown(stats.tenantsByPlan)}
       />
@@ -114,7 +114,7 @@ export const SATenantStats = ({ data }: StatsProps) => {
       {/*  Consumed Credits */}
       <StatsCard
         icon={<CoinsIcon className="size-7" />}
-        title="Consumed Credits"
+        title="Consumed credits"
         content={round2(stats.consumedCredits)}
         footer={formatBreakdown(stats.creditsByPlan, { isCredit: true })}
       />
@@ -122,7 +122,7 @@ export const SATenantStats = ({ data }: StatsProps) => {
       {/*  Execution Time */}
       <StatsCard
         icon={<ClockIcon className="size-7" />}
-        title="Execution Time"
+        title="Execution time"
         content={stats.executionLabel}
         footer={formatBreakdown(stats.executionByPlan, { isTime: true })}
       />

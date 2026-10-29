@@ -33,7 +33,7 @@ export const getKBFilesTableColumns = (
       <DTColumnHeader
         tableKey={DETAIL_TABLE_KEY}
         column={column}
-        title={"File/Document Name"}
+        title={"File/document name"}
         enableHiding={false}
       />
     ),
@@ -76,7 +76,7 @@ export const getKBFilesTableColumns = (
       <DTColumnHeader
         tableKey={DETAIL_TABLE_KEY}
         column={column}
-        title={"Created By"}
+        title={"Created by"}
         className="max-w-16"
         enableHiding={false}
       />
@@ -93,7 +93,7 @@ export const getKBFilesTableColumns = (
       <DTColumnHeader
         tableKey={DETAIL_TABLE_KEY}
         column={column}
-        title={"Created On"}
+        title={"Created on"}
         className="max-w-16"
         enableHiding={false}
       />

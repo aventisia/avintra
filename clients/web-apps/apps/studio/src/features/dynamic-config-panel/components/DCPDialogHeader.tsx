@@ -62,7 +62,7 @@ const DCPDialogHeader = () => {
       case "callAgentNode":
         if (nodeData?.selectedAgent) {
           href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
-          label = "Open Agent";
+          label = "Open agent";
         } else {
           return null; // Don't render anything if there's no agent
         }

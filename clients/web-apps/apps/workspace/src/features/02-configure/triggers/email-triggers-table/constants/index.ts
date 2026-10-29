@@ -15,11 +15,11 @@ const TABLE_KEY = "email-triggers";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Email Trigger", description: "" };
+      return { heading: "Create email trigger", description: "" };
     case "read":
-      return { heading: "Email Trigger", description: "" };
+      return { heading: "Email trigger", description: "" };
     case "update":
-      return { heading: "Edit Email Trigger", description: "" };
+      return { heading: "Edit email trigger", description: "" };
     default:
       return { heading: "", description: "" };
   }

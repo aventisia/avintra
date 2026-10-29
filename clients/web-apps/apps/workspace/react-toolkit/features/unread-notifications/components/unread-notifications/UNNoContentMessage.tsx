@@ -1,6 +1,6 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { BellSlashIcon } from "@heroicons/react/24/outline";
+import { BellOffIcon } from "lucide-react";
 
 interface UNNoContentMessageProps {
   /** (Optional): Additional class name to override the empty-state container */
@@ -18,9 +18,9 @@ export const UNNoContentMessage = ({
   secondaryMessage = "You have no new notifications",
 }: UNNoContentMessageProps) => {
   return (
-    <NoContentMessage
+    <EmptyState
       className={cn("h-full w-full", className)}
-      Icon={BellSlashIcon}
+      Icon={BellOffIcon}
       primaryMessage={primaryMessage}
       secondaryMessage={secondaryMessage}
     />

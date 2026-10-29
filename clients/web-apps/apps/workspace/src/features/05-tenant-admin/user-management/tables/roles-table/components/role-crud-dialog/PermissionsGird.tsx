@@ -66,7 +66,7 @@ const PermissionsGrid: React.FC<PermissionsGridProps> = ({
                 pressed={!!permissions[`${role.id}-${permission.id}`]}
                 onPressedChange={() => togglePermission(role.id, permission.id)}
                 variant="outline"
-                className="m-2 rounded-lg p-3 shadow-sm"
+                className="m-2 rounded-lg p-3"
               >
                 {permission.id}
               </Toggle>

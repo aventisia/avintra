@@ -7,14 +7,14 @@ import { UnitTypeEnum } from "../enums/unit-type-enum.ee";
 // Credit Plan Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Plan Id",
+  label: "Plan ID",
   disabled: true,
 };
 
 // Service Type
 const serviceTypeProps: SelectFieldProps = {
   name: "serviceType",
-  label: "Service Type",
+  label: "Service type",
   isRequired: true,
   description: "The type of service the plan covers.",
   selectOptions: enumToArray(ServiceTypeEnum),
@@ -24,7 +24,7 @@ const serviceTypeProps: SelectFieldProps = {
 // Unit Type
 const unitTypeProps: SelectFieldProps = {
   name: "unitType",
-  label: "Unit Type",
+  label: "Unit type",
   isRequired: true,
   description: "The unit type used to measure consumption.",
   selectOptions: enumToArray(UnitTypeEnum),
@@ -34,7 +34,7 @@ const unitTypeProps: SelectFieldProps = {
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 

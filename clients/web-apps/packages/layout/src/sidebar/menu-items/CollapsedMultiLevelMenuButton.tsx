@@ -78,9 +78,7 @@ const CollapsedMultiLevelMenuButton = ({
           }`}
         >
           <Icon className="size-4 stroke-[1.75]" />
-          <span className={`whitespace-nowrap capitalize ${sidebarExpand ? "block" : "hidden"}`}>
-            {name}
-          </span>
+          <span className={`whitespace-nowrap ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="absolute -top-[2.45rem] left-[2.15rem] w-auto rounded-md border border-line bg-surface p-1 text-ink shadow-pop">
@@ -89,7 +87,7 @@ const CollapsedMultiLevelMenuButton = ({
           {subMenuItems.map((subMenuItem, index) => (
             <li
               key={index}
-              className="flex h-control-sm cursor-pointer items-center whitespace-nowrap rounded-sm px-2 text-body-sm capitalize text-ink-2 hover:bg-hover hover:text-ink"
+              className="flex h-control-sm cursor-pointer items-center whitespace-nowrap rounded-sm px-2 text-body-sm text-ink-2 hover:bg-hover hover:text-ink"
             >
               {subMenuItem.name}
             </li>

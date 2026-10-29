@@ -9,7 +9,7 @@ import { TwoFAForm } from "./TwoFAForm";
 
 export const TwoFA = () => {
   // Set dcoument title
-  useDocumentTitle("Two Factor Authentication");
+  useDocumentTitle("Two-factor authentication");
 
   // Return component
   return (

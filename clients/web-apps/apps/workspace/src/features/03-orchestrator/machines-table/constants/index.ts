@@ -15,11 +15,11 @@ const TABLE_KEY = "machines";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Add Machine", description: "" };
+      return { heading: "Add machine", description: "" };
     case "read":
       return { heading: "Machine", description: "" };
     case "update":
-      return { heading: "Edit Machine", description: "" };
+      return { heading: "Edit machine", description: "" };
     default:
       return { heading: "", description: "" };
   }

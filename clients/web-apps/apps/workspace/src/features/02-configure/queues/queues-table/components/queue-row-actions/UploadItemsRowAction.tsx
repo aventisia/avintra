@@ -28,7 +28,7 @@ export const UploadItemsRowAction = ({ rowId }: { rowId: string }) => {
         setRowId(rowId);
         setShowDialog(true);
       }}
-      content="Upload Items"
+      content="Upload items"
       Icon={Upload}
     />
   );

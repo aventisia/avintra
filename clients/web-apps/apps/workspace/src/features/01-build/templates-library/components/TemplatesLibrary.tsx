@@ -22,7 +22,7 @@ const TemplateLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState("All templates");
 
   // List of available template categories for filtering
-  const categories = ["All templates", "Automation Agent", "Chat Agent", "Block", "Prompt"];
+  const categories = ["All templates", "Automation agent", "Chat agent", "Block", "Prompt"];
 
   if (templateID) return <TemplateDetail />;
   else
@@ -33,7 +33,7 @@ const TemplateLibrary = () => {
           <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="mx-auto mb-6 max-w-3xl text-center">
               <div className="flex items-center justify-center gap-2">
-                <h2 className="text-title text-ink">Avintra Library</h2>
+                <h2 className="text-title text-ink">Avintra library</h2>
                 <HelpButton guideId="library" />
               </div>
               <p className="mt-2 text-body text-muted-foreground">

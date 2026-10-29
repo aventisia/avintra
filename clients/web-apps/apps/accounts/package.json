@@ -16,7 +16,6 @@
   "dependencies": {
     "@avplatform/ui": "*",
     "@avplatform/layout": "*",
-    "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@tanstack/react-query": "^5.51.1",
     "@tanstack/react-table": "^8.19.3",

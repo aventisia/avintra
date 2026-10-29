@@ -19,13 +19,13 @@
     "format": "prettier --write . && eslint --fix .",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc -b",
+    "test": "vitest run",
     "pregit": "prettier --write . && eslint --fix . && tsc -b"
   },
   "dependencies": {
     "@avplatform/ui": "*"
   },
   "peerDependencies": {
-    "@heroicons/react": "^2.1.5",
     "lucide-react": "^0.428.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -38,6 +38,7 @@
     "@avplatform/typescript-config": "*",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "vitest": "^2.1.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }

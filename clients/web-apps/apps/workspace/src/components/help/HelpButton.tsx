@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InfoIcon } from "lucide-react";
 import { useState } from "react";
 
 import { HelpPopover } from "./HelpPopover";
@@ -32,7 +32,7 @@ const HelpButton = ({ guideId, tooltip = "Help", className }: HelpButtonProps) =
             aria-label={tooltip}
             className={buttonVariants({ variant: "ghost", size: "icon8" }) + ` ${className ?? ""}`}
           >
-            <InformationCircleIcon className="h-5 w-5 text-[--icon-color]" />
+            <InfoIcon className="h-5 w-5 text-[--icon-color]" />
           </button>
         </PopoverTrigger>
       </Tooltip>

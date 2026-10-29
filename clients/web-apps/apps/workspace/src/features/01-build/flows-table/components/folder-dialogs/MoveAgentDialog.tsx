@@ -1,3 +1,4 @@
+import { EmptyState } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { ArrowRight, FolderSearch, Search } from "lucide-react";
@@ -234,20 +235,15 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
       )}
 
       {!hasOtherFolders && !trimmedQuery && (
-        <div
+        <EmptyState
+          Icon={FolderSearch}
+          primaryMessage="No other folders yet"
+          secondaryMessage="Type a name above to create a folder and move this agent into it."
           className={cn(
-            "flex flex-col items-center rounded-xl border border-dashed border-border bg-sunken/50 px-6 py-6 text-center",
+            "rounded-xl border border-dashed border-line py-6",
             targets.length > 0 && "mt-2",
           )}
-        >
-          <span className="grid size-10 place-items-center rounded-full bg-popover text-primary-text shadow-sm ring-1 ring-border">
-            <FolderSearch className="size-5" />
-          </span>
-          <p className="mt-3 text-[13.5px] font-semibold text-ink">No other folders yet</p>
-          <p className="mt-1 max-w-[18rem] text-[12.5px] leading-5 text-muted-foreground">
-            Type a name above to create a folder and move this agent into it.
-          </p>
-        </div>
+        />
       )}
 
       <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">

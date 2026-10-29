@@ -35,7 +35,7 @@ export const description = "An interactive line chart";
 
 // const chartConfig = {
 //   views: {
-//     label: "Page Views",
+//     label: "Page views",
 //   },
 //   value: {
 //     label: "Value",

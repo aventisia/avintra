@@ -35,10 +35,10 @@ const FileViewerSelect = () => {
       case FILE_TYPE.PDF:
         return <img src="/workspace/assets/PDF.svg" className="size-4 shrink-0" />;
       case FILE_TYPE.IMAGE:
-        return <ImageIcon className="size-4 text-blue-400 shrink-0" />;
+        return <ImageIcon className="size-4 text-primary-text shrink-0" />;
 
       default:
-        return <FileIcon className="size-4 text-slate-400 shrink-0" />;
+        return <FileIcon className="size-4 text-muted-foreground shrink-0" />;
     }
   };
 

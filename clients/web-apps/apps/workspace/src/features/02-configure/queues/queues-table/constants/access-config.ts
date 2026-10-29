@@ -12,27 +12,27 @@ export const QUEUE_WORK_ITEM_ACCESS_META: Record<
   }
 > = {
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
-    label: "Full Access",
+    label: "Full access",
     description: "Unrestricted access to all queue work item actions",
     badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.View]: {
-    label: "Can View",
+    label: "Can view",
     description: "View queue work items without changes",
     badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
-    label: "Can Create",
+    label: "Can create",
     description: "Add new items to the queue",
     badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
-    label: "Can Edit",
+    label: "Can edit",
     description: "Modify queue work item details or state",
     badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
-    label: "Can Delete",
+    label: "Can delete",
     description: "Remove or process queue items",
     badgeClass: "bg-bad/10 text-bad border-bad/35",
   },
@@ -46,23 +46,23 @@ export const ACCESS_MENU_CONFIG: Record<
   }
 > = {
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
-    label: "Full Access",
+    label: "Full access",
     Icon: ShieldCheck,
   },
   [QueueWorkItemAccessTypesEnum.View]: {
-    label: "Can View",
+    label: "Can view",
     Icon: EyeIcon,
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
-    label: "Can Create",
+    label: "Can create",
     Icon: Plus,
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
-    label: "Can Edit",
+    label: "Can edit",
     Icon: EditIcon,
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
-    label: "Can Delete",
+    label: "Can delete",
     Icon: Trash2,
   },
 };

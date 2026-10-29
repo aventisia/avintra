@@ -52,23 +52,23 @@ export const roles: RoleInfo[] = [
   {
     id: Features.AgentsManager,
     name: Features.AgentsManager,
-    tooltip: "Agents Manager; Manages agent-related permissions and data.",
+    tooltip: "Agents manager; Manages agent-related permissions and data.",
   },
 
   {
     id: Features.UserManager,
     name: Features.UserManager,
-    tooltip: "User Manager; Manages user accounts and roles.",
+    tooltip: "User manager; Manages user accounts and roles.",
   },
   {
     id: Features.BillingManager,
     name: Features.BillingManager,
-    tooltip: "Billing Manager; Handles billing and payment-related access.",
+    tooltip: "Billing manager; Handles billing and payment-related access.",
   },
   {
     id: Features.TenantManager,
     name: Features.TenantManager,
-    tooltip: "Tenant Manager; Manages tenant-specific configurations and data.",
+    tooltip: "Tenant manager; Manages tenant-specific configurations and data.",
   },
 ];
 

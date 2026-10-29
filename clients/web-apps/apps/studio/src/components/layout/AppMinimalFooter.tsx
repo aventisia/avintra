@@ -22,12 +22,11 @@ const AppMinimalFooter = () => {
   return (
     <MinimalFooter>
       <MinimalFooterLink href={`${import.meta.env.VITE_MARKETING_URL}/terms-of-service`}>
-        Terms of Service
+        Terms of service
       </MinimalFooterLink>
       <DotSeparator />
-      {/* <span className="mx-2 -mt-3.5 text-[1.5rem] text-slate-500">.</span> */}
       <MinimalFooterLink href={`${import.meta.env.VITE_MARKETING_URL}/privacy-policy`}>
-        Privacy Policy
+        Privacy policy
       </MinimalFooterLink>
     </MinimalFooter>
   );

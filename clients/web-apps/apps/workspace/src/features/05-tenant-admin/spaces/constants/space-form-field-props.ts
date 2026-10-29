@@ -3,14 +3,14 @@ import { InputFieldProps, TextareaFieldProps } from "@avplatform/ui/form";
 // Space Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Space Id",
+  label: "Space ID",
   disabled: true,
 };
 
 // Space Name
 const nameProps: InputFieldProps = {
   name: "name",
-  label: "Space Name",
+  label: "Space name",
   isRequired: true,
   maxLength: 20,
   description:
@@ -20,7 +20,7 @@ const nameProps: InputFieldProps = {
 // Description
 const descriptionProps: TextareaFieldProps = {
   name: "description",
-  label: "Brief Description",
+  label: "Brief description",
   maxLength: 500,
   description: "A short description of the space (max 500 characters).",
 };
@@ -28,7 +28,7 @@ const descriptionProps: TextareaFieldProps = {
 // Is Disabled
 const isDisabledProps: InputFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   disabled: true,
 };
 

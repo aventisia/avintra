@@ -91,7 +91,7 @@ const CallAgentConfigForm = () => {
               >
                 name="selectAgent"
                 size="sm"
-                label="Select Agent"
+                label="Select agent"
                 description="Select an agent"
                 placeholder="Search agent"
                 queryKeyBase={["call-agent-search-flow-versions"]}

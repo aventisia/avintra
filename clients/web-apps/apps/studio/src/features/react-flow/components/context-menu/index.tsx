@@ -105,12 +105,12 @@ export const ReactFlowContextMenu = memo(() => {
         right: menu.right,
         bottom: menu.bottom,
       }}
-      className="absolute z-[1000] min-w-[12rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80 zoom-in-95"
+      className="absolute z-[1000] min-w-[12rem] overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-pop animate-in fade-in-80 zoom-in-95"
     >
       {isNodeUnderCut ? (
         <MenuItem
           icon={<XCircle size={14} />}
-          label="Cancel Cut"
+          label="Cancel cut"
           onClick={() => {
             cancelCut();
           }}
@@ -119,7 +119,7 @@ export const ReactFlowContextMenu = memo(() => {
         <>
           <MenuItem
             icon={<Scissors size={14} />}
-            label={isBranchNode ? "Cut Branch" : "Cut"}
+            label={isBranchNode ? "Cut branch" : "Cut"}
             shortcut="Ctrl+x"
             disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
@@ -128,7 +128,7 @@ export const ReactFlowContextMenu = memo(() => {
           />
           <MenuItem
             icon={<Copy size={14} />}
-            label={isBranchNode ? "Copy Branch" : "Copy"}
+            label={isBranchNode ? "Copy branch" : "Copy"}
             shortcut="Ctrl+c"
             disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
@@ -142,7 +142,7 @@ export const ReactFlowContextMenu = memo(() => {
             <>
               <MenuItem
                 icon={<ArrowUp size={14} />}
-                label="Paste Above"
+                label="Paste above"
                 shortcut="Ctrl+shift+v"
                 disabled={
                   isPaneOrStartOrEnd ||
@@ -156,7 +156,7 @@ export const ReactFlowContextMenu = memo(() => {
               />
               <MenuItem
                 icon={<ArrowDown size={14} />}
-                label="Paste Below"
+                label="Paste below"
                 shortcut="Ctrl+v"
                 disabled={
                   isPaneOrStartOrEnd ||
@@ -173,7 +173,7 @@ export const ReactFlowContextMenu = memo(() => {
             <>
               <MenuItem
                 icon={<ArrowLeft size={14} />}
-                label="Paste Before"
+                label="Paste before"
                 shortcut="Ctrl+shift+v"
                 disabled={
                   isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch
@@ -184,7 +184,7 @@ export const ReactFlowContextMenu = memo(() => {
               />
               <MenuItem
                 icon={<ArrowRight size={14} />}
-                label="Paste After"
+                label="Paste after"
                 shortcut="Ctrl+v"
                 disabled={
                   isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch

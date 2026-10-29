@@ -9,11 +9,11 @@ const TABLE_KEY = "onPremTenantInstance";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Instance", description: "" };
+      return { heading: "Create instance", description: "" };
     case "read":
-      return { heading: " Tenant Instance", description: "" };
+      return { heading: " Tenant instance", description: "" };
     case "update":
-      return { heading: "Edit Instance", description: "" };
+      return { heading: "Edit instance", description: "" };
     default:
       return { heading: "", description: "" };
   }

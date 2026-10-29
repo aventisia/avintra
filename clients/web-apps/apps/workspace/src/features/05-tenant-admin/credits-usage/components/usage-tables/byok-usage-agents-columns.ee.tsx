@@ -14,7 +14,7 @@ export const byokUsageAgentsColumns = (tableKey: string): ColumnDef<IByokAgents>
     accessorKey: "totalConsumption",
     id: "totalConsumption",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Total Consumption" />
+      <DTColumnHeader tableKey={tableKey} column={column} title="Total consumption" />
     ),
     cell: ({ row }) => (
       <span className="font-mono font-medium tabular-nums">

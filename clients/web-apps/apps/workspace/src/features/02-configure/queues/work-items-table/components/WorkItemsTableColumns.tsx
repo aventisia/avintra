@@ -76,7 +76,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created By"} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created by"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
@@ -85,7 +85,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created On"} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created on"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
@@ -98,7 +98,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "sourceWorkItemId",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Source Work Item Id"} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Source work item ID"} />
     ),
     cell: ({ row }) => {
       const sourceWorkItemId = row.original.sourceWorkItemId;
@@ -115,7 +115,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "retryTime",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry Time"} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry time"} />
     ),
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
@@ -129,7 +129,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "retryCount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry Count"} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry count"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">

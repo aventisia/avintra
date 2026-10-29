@@ -40,7 +40,7 @@ export const KBFileUploadDialog = ({
         className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
       >
         <DialogDefaultHeader
-          heading={type == "text" ? "Raw Text Input" : "Add File"}
+          heading={type == "text" ? "Raw text input" : "Add file"}
           className="p-3 px-4"
         />
         <div className="flex-1 overflow-hidden">

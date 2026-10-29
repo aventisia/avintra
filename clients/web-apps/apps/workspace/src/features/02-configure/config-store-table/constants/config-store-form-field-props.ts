@@ -11,14 +11,14 @@ import { enumToArray } from "@avplatform/ui/utils";
 // Config store Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Key Id",
+  label: "Key ID",
   disabled: true,
 };
 
 // Config store Type - Only view/edit mode
 export const typeProps: SelectFieldProps = {
   name: "type",
-  label: "Key Type",
+  label: "Key type",
   isRequired: true,
   description: "The type of key being stored (e.g. API key, JSON, etc.).",
   selectOptions: enumToArray(ConfigStoreTypesEnum),
@@ -27,7 +27,7 @@ export const typeProps: SelectFieldProps = {
 // acceses level
 export const accessLevelProps: SelectFieldProps = {
   name: "accessLevel",
-  label: "Access Level",
+  label: "Access level",
   isRequired: true,
   description: "The access level for the key, controlling who can read or use it.",
   selectOptions: enumToArray(AccessLevelTypesEnum),
@@ -36,7 +36,7 @@ export const accessLevelProps: SelectFieldProps = {
 // Name
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   placeholder: "Enter a unique name",
   description:
@@ -70,7 +70,7 @@ export const descriptionProps: TextareaFieldProps = {
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 

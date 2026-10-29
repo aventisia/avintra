@@ -96,9 +96,9 @@ export const NotificationComposeForm = ({
   }));
 
   const audienceScopes: ISelectOption[] = [
-    { value: AudienceScopeEnum.AllUsers, label: "All Users" },
-    { value: AudienceScopeEnum.SelectedUsers, label: "Selected Users" },
-    { value: AudienceScopeEnum.SelectedRoles, label: "Selected Roles" },
+    { value: AudienceScopeEnum.AllUsers, label: "All users" },
+    { value: AudienceScopeEnum.SelectedUsers, label: "Selected users" },
+    { value: AudienceScopeEnum.SelectedRoles, label: "Selected roles" },
   ];
 
   const recurrenceOptions: ISelectOption[] = Object.values(NotificationRecurrenceEnum).map(
@@ -241,7 +241,7 @@ export const NotificationComposeForm = ({
       {/* Delivery channel */}
       <SelectField
         name="deliveryChannel"
-        label="Delivery Channel"
+        label="Delivery channel"
         isRequired
         selectOptions={deliveryChannels}
         placeholder="Select delivery channel"
@@ -261,7 +261,7 @@ export const NotificationComposeForm = ({
       {audienceScope === AudienceScopeEnum.SelectedRoles && (
         <MultiSelectField
           name="roleIds"
-          label="Recipient Roles"
+          label="Recipient roles"
           selectOptions={roleOptions}
           placeholder="Select roles"
           description="Only users holding the selected roles will receive this notification."
@@ -292,7 +292,7 @@ export const NotificationComposeForm = ({
       {/* Scheduled send time */}
       <DateTimePickerField
         name="scheduledFor"
-        label="Schedule Send"
+        label="Schedule send"
         description="Leave empty to send immediately."
       />
 
@@ -318,7 +318,7 @@ export const NotificationComposeForm = ({
       {recurrenceFrequency === NotificationRecurrenceEnum.Monthly && (
         <MultiSelectField
           name="recurrenceMonthDays"
-          label="Days of Month"
+          label="Days of month"
           selectOptions={monthDayOptions}
           placeholder="Select days"
           description="Days of the month on which this notification recurs."
@@ -328,7 +328,7 @@ export const NotificationComposeForm = ({
       {recurrenceFrequency && recurrenceFrequency !== NotificationRecurrenceEnum.None && (
         <DateTimePickerField
           name="recurrenceEndOn"
-          label="Recurrence End Date"
+          label="Recurrence end date"
           description="The date after which this recurring notification stops."
         />
       )}

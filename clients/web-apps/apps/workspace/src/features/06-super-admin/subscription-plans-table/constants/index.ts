@@ -9,11 +9,11 @@ const TABLE_KEY = "subscription-plans";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Subscription Plan", description: "" };
+      return { heading: "Create subscription plan", description: "" };
     case "read":
-      return { heading: "Subscription Plan", description: "" };
+      return { heading: "Subscription plan", description: "" };
     case "update":
-      return { heading: "Edit Subscription Plans", description: "" };
+      return { heading: "Edit subscription plans", description: "" };
     default:
       return { heading: "", description: "" };
   }
