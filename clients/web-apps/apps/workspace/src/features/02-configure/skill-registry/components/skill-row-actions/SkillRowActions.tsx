@@ -1,6 +1,6 @@
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ExternalLinkIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
@@ -45,7 +45,7 @@ export const SkillRowActions = ({
     <DataTableRowActions className="w-36 min-w-36">
       {actions?.read && (
         <SimpleDDMenuItem
-          Icon={ArrowTopRightOnSquareIcon}
+          Icon={ExternalLinkIcon}
           onClick={(e) => {
             e.stopPropagation();
             navigate(

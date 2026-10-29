@@ -15,11 +15,11 @@ const TABLE_KEY = "users";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Invite User", description: "" };
+      return { heading: "Invite user", description: "" };
     case "read":
       return { heading: "User", description: "" };
     case "update":
-      return { heading: "Edit User", description: "" };
+      return { heading: "Edit user", description: "" };
     default:
       return { heading: "", description: "" };
   }

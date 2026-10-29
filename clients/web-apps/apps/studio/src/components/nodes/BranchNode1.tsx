@@ -76,25 +76,20 @@ export const BranchNode1 = memo(
 
     const pillBorderClass =
       !nodeData?.isDisabled && isExecutionLog && isActiveInPath
-        ? "border-green-500"
+        ? "border-ok"
         : selectedLiveStatus === "running"
-          ? "border-blue-500"
+          ? "border-live"
           : selectedLiveStatus === "success"
-            ? "border-green-500"
+            ? "border-ok"
             : selectedLiveStatus === "failed"
-              ? "border-red-500"
-              : "border-slate-400";
+              ? "border-bad"
+              : "border-line-strong";
 
     return (
       <>
         <>
           {nodeData?.name === "ConditionalBranchActivity" ? (
-            <OpenNodeLog
-              nodeId={nodeId}
-              showIcon={false}
-              showBorder={false}
-              isDisabled={nodeData?.isDisabled}
-            >
+            <OpenNodeLog nodeId={nodeId}>
               <div className={cn("relative", lockedByOther && "pointer-events-none opacity-70")}>
                 <OpenNodeConfig {...{ nodeData, nodeId }}>
                   <div
@@ -104,16 +99,16 @@ export const BranchNode1 = memo(
                     )}
                   >
                     {isExecutionLog && totalHits > 0 && showBranchStats && (
-                      <div className="absolute top-[0.2rem] -left-2  bg-primary text-white text-[9px] px-1.5 rounded-full font-bold border-2  z-20">
+                      <div className="absolute top-[0.2rem] -left-2  rounded-full border-2 border-surface bg-primary px-1.5 text-[9px] font-bold text-primary-foreground z-20">
                         {totalHits}
                       </div>
                     )}
                     <div
                       className={cn(
-                        "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm hover:ring hover:ring-ring",
-                        selected && "border-primary",
-                        nodeData?.isCut && "border-red-400 opacity-60",
+                        "grid h-6 w-12 place-items-center rounded-full border bg-sunken px-2 text-sm text-ink-2 hover:bg-hover",
                         pillBorderClass,
+                        selected && "shadow-select",
+                        nodeData?.isCut && "border-dashed border-bad opacity-60",
                       )}
                     >
                       <GitBranchIcon className="h-3.5 w-3.5 scale-x-[-1] rotate-180" />{" "}
@@ -131,17 +126,17 @@ export const BranchNode1 = memo(
               className={cn(
                 "flex h-6 w-12 justify-center relative",
                 nodeData?.isDisabled && "opacity-50",
-                nodeData?.isCut && "border-red-400 opacity-60",
+                nodeData?.isCut && "border-dashed border-bad opacity-60",
               )}
             >
               {isExecutionLog && totalHits > 0 && showBranchStats && (
-                <div className="absolute top-[0.2rem] -left-2  bg-primary text-white text-[9px] px-1.5 rounded-full font-bold border-2  z-20">
+                <div className="absolute top-[0.2rem] -left-2  rounded-full border-2 border-surface bg-primary px-1.5 text-[9px] font-bold text-primary-foreground z-20">
                   {totalHits}
                 </div>
               )}
               <div
                 className={cn(
-                  "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm",
+                  "grid h-6 w-12 place-items-center rounded-full border bg-sunken px-2 text-sm text-ink-2",
                   pillBorderClass,
                 )}
               >

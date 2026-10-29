@@ -29,7 +29,7 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
         {/* Published Agents */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-sm">
-            <p>Published Agents</p>
+            <p>Published agents</p>
             <p className="font-mono">{agentsCount}</p>
           </div>
         </div>

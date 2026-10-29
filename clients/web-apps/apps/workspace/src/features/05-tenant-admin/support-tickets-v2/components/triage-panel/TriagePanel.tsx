@@ -75,7 +75,7 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-heading">Triage Panel</h2>
+      <h2 className="text-heading">Triage panel</h2>
       <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <SelectField
@@ -90,13 +90,13 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
           />
           <SelectField
             name="riskLevel"
-            label="Risk Level"
+            label="Risk level"
             selectOptions={RISK_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
           />
-          <InputField name="estimatedEffortHours" label="Estimated Effort (hours)" type="number" />
+          <InputField name="estimatedEffortHours" label="Estimated effort (hours)" type="number" />
           <InputField
             name="estimatedCompletionDate"
-            label="Estimated Completion"
+            label="Estimated completion"
             type="date"
             // Disable selection of dates before today (the current date).
             min={new Date().toISOString().slice(0, 10)}
@@ -105,7 +105,7 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
             <SwitchField name="isBillable" label="Billable" description="Mark as billable" />
             <SwitchField
               name="requiresCustomerApproval"
-              label="Requires Approval"
+              label="Requires approval"
               description="Requires customer approval"
             />
           </div>
@@ -122,7 +122,7 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
         />
         <div className="flex gap-2">
           <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? "Saving..." : "Save Triage"}
+            {mutation.isPending ? "Saving..." : "Save triage"}
           </Button>
         </div>
       </Form>

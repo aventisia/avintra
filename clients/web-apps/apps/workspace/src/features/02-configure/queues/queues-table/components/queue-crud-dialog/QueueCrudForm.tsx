@@ -181,7 +181,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
       {/* <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
           <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
-            Failed Items
+            Failed items
           </label>
           <CheckboxField
             name="shouldRetryFailedItems"
@@ -191,7 +191,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         </div>
         <div className="ml-1 flex justify-between">
           <label htmlFor="shouldRetryAbandonedItems" className="fm text-sm">
-            Abandoned Items
+            Abandoned items
           </label>
           <CheckboxField
             name="shouldRetryAbandonedItems"
@@ -226,7 +226,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         <div>
           <div className="mb-2 flex items-center justify-between">
             <FormLabelExt
-              label="Work Item schema"
+              label="Work item schema"
               isRequired
               disabled={isReadMode}
               description={`Define the list of fields that each work item in the queue must contain, as a **JSON array**.
@@ -245,7 +245,7 @@ The value must be a JSON array, e.g. \`[{"name":"requestId","type":"string","isR
 An example array is pre-filled below — edit or replace it as needed.`}
             />
             <Button onClick={handleClick} type="button" variant={"link"}>
-              Browse File
+              Browse file
             </Button>
           </div>
           <pre>
@@ -257,7 +257,7 @@ An example array is pre-filled below — edit or replace it as needed.`}
         <div>
           <div className="mb-2 flex items-center justify-between">
             <FormLabelExt
-              label="Disposition Status"
+              label="Disposition status"
               isRequired={form.watch("type") === "User"}
               disabled={isReadMode}
               description={`Queue-specific disposition statuses (e.g. **Approved**, **Rejected**) in addition to the core **Pending**, **In-progress**, **Completed** and **Failed** statuses.

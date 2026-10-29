@@ -1,4 +1,4 @@
 export const APPROVAL_OPTIONS = [
-  { label: "Human Approval", value: "human" },
-  { label: "Auto Approval", value: "auto" },
+  { label: "Human approval", value: "human" },
+  { label: "Auto approval", value: "auto" },
 ];

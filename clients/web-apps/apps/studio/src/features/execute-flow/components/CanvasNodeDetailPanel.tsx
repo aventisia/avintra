@@ -230,7 +230,7 @@ export const CanvasNodeDetailPanel = () => {
                 yet and would otherwise show a card full of fallback placeholders. */}
             {selectedLiveLog && nodeLogPayload && (
               <ViewInfoRowsCard
-                title="Node Log"
+                title="Node log"
                 icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
                 action={
                   <div className="flex items-center gap-1 pr-1">

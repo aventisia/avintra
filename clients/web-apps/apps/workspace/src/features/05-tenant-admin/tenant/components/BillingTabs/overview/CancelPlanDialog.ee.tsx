@@ -32,10 +32,10 @@ const CancelPlanDialog = () => {
       <DialogContent className="!max-w-[45rem] px-1">
         <DialogHeader className="border-b px-6 py-4 pb-2">
           <DialogTitle className="justify-between">
-            <h2 className="text-heading">Cancel Plan</h2>
+            <h2 className="text-heading">Cancel plan</h2>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
               <X className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Cancel Plan</span>
+              <span className="sr-only">Cancel plan</span>
             </DialogPrimitive.Close>
           </DialogTitle>
         </DialogHeader>
@@ -143,10 +143,10 @@ const CancelPlanDialog = () => {
         <Separator />
         <DialogFooter className="px-6 py-4 pb-4">
           <Button variant={"outline"} onClick={() => setOpen(false)}>
-            Don't Cancel
+            Don't cancel
           </Button>
           <Button variant={"destructive"} onClick={() => setOpen(false)}>
-            Cancel Plan
+            Cancel plan
           </Button>
         </DialogFooter>
       </DialogContent>

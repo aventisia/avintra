@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { ServiceTypeEnum } from "@/features/06-super-admin/credit-plans-table/enums/service-type-enum.ee";
@@ -205,7 +205,7 @@ const ModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to first page</span>
-              <ChevronDoubleLeftIcon className="h-4 w-4" />
+              <ChevronsLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -232,7 +232,7 @@ const ModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to last page</span>
-              <ChevronDoubleRightIcon className="h-4 w-4" />
+              <ChevronsRightIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>

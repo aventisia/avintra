@@ -1,16 +1,16 @@
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
 export const AdminRoleTableColumnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
-  { key: "name", value: "Role Name" },
+  { key: "id", value: "Select row" },
+  { key: "name", value: "Role name" },
   { key: "description", value: "Description" },
   { key: "users", value: "Users" },
-  { key: "createdBy", value: "Created By" },
-  { key: "lastUpdatedBy", value: "Updated By" },
-  { key: "totalPermission", value: "Total Permissions" },
-  { key: "createdOn", value: "Created On" },
-  { key: "lastUpdatedOn", value: "Last Updated On" },
-  { key: "isDefault", value: "Is Default" },
+  { key: "createdBy", value: "Created by" },
+  { key: "lastUpdatedBy", value: "Updated by" },
+  { key: "totalPermission", value: "Total permissions" },
+  { key: "createdOn", value: "Created on" },
+  { key: "lastUpdatedOn", value: "Last updated on" },
+  { key: "isDefault", value: "Is default" },
 ];
 
 export const getColumnName = (key: string): string => {

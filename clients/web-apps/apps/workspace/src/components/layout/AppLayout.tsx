@@ -235,7 +235,7 @@ export const AppLayout = () => {
           <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
             <main
               className={cn(
-                "px-3 md:px-7 py-0 transition-all duration-500",
+                "px-3 md:px-7 py-0 transition-all duration-200 motion-reduce:transition-none",
                 sidebarExpand
                   ? "md:ml-[--sidebar-max-width] md:w-[calc(100vw-var(--sidebar-max-width))]"
                   : "md:ml-[--sidebar-min-width] md:w-[calc(100vw-var(--sidebar-min-width))]",

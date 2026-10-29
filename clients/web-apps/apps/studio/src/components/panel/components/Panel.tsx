@@ -116,7 +116,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
           ref={ref}
           className={cn(
             "z-40 overflow-clip rounded-xl bg-surface shadow-pop",
-            "translate-x-0 transform transition-transform duration-300 ease-in-out",
+            "translate-x-0 transform transition-transform duration-200 ease-in-out motion-reduce:transition-none",
             contained
               ? cn(
                   "absolute inset-y-0 border border-line",

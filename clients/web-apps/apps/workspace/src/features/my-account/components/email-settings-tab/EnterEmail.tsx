@@ -58,7 +58,7 @@ export const EnterEmail = () => {
     >
       <div className="box flex flex-col p-5">
         {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
-          Email Settings
+          Email settings
         </div> */}
         <div>
           <div className="inline-flex gap-1 text-body text-muted-foreground">
@@ -70,7 +70,7 @@ export const EnterEmail = () => {
             // isRequired={
             //   userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
             // }
-            messageForInput={"New Email"}
+            messageForInput={"New email"}
           >
             <InputField
               name="email"

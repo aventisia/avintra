@@ -29,7 +29,7 @@ interface StatusSelectorFieldProps extends BaseFieldProps {
  */
 const CORE_STATUSES: ISelectOption[] = [
   { value: "Pending", label: "Pending" },
-  { value: "InProgress", label: "In Progress" },
+  { value: "InProgress", label: "In progress" },
   { value: "Completed", label: "Completed" },
   { value: "Failed", label: "Failed" },
 ];

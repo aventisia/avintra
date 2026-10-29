@@ -57,7 +57,7 @@ export const FlowBreadcrumbs = () => {
 
   return (
     <Panel position="top-left">
-      <div className="flex items-center gap-2 bg-white py-1 px-2 rounded-md shadow-md border border-slate-200">
+      <div className="flex items-center gap-2 rounded-md bg-surface px-2 py-1 shadow-pop">
         {trail.map((crumb, index) => (
           <div
             key={`${crumb.flowId}-${crumb.versionId || ""}-${crumb.jobId || index}`}
@@ -65,14 +65,14 @@ export const FlowBreadcrumbs = () => {
           >
             <button
               onClick={() => handleCrumbClick(crumb, index)}
-              className="text-xs font-medium text-slate-500 hover:text-primary transition-colors"
+              className="text-xs font-medium text-muted-foreground transition-colors duration-[120ms] hover:text-primary-text"
             >
               {crumb.name}
             </button>
-            <span className="text-slate-400">/</span>
+            <span className="text-muted-foreground">/</span>
           </div>
         ))}
-        <span className="text-xs font-bold text-slate-800">{activeFlowName}</span>
+        <span className="text-xs font-semibold text-ink">{activeFlowName}</span>
       </div>
     </Panel>
   );

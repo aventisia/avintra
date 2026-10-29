@@ -11,11 +11,11 @@ const TABLE_KEY = "api-keys";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create API Key", description: "" };
+      return { heading: "Create API key", description: "" };
     case "read":
-      return { heading: "API Key", description: "" };
+      return { heading: "API key", description: "" };
     case "update":
-      return { heading: "Edit API Key", description: "" };
+      return { heading: "Edit API key", description: "" };
     default:
       return { heading: "", description: "" };
   }

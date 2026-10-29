@@ -34,7 +34,7 @@ export function FormExample() {
 
   return (
     <form onSubmit={onSubmitForm}>
-      <input type="text" placeholder="Document Title" />
+      <input type="text" placeholder="Document title" />
 
       <div className="h-[400px]">
         <FileUploader
@@ -43,7 +43,7 @@ export function FormExample() {
         />
       </div>
 
-      <Button type="submit">Submit Form & Upload Files</Button>
+      <Button type="submit">Submit form & upload files</Button>
     </form>
   );
 }

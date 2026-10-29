@@ -28,7 +28,7 @@ export function RetrievedChunksAccordion({
             <span className="sr-only">Back</span>
           </Button>
         </Tooltip>
-        <p className="text-sm font-semibold">Retrieved Chunks</p>
+        <p className="text-sm font-semibold">Retrieved chunks</p>
       </div>
       <Accordion type="single" collapsible className="px-4">
         {chunks.map((item, index) => (

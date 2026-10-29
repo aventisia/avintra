@@ -31,7 +31,7 @@ export const FlowBlockCrudDialog = () => {
       }}
     >
       <DialogContent side={"right"} className="!max-w-[40rem]">
-        <DialogDefaultHeader heading={"Configure Block"} />
+        <DialogDefaultHeader heading="Configure block" />
         <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
           <FlowBlockCrudForm />
         </ScrollArea>

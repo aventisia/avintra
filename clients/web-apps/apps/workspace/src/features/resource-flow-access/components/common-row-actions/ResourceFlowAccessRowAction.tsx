@@ -34,7 +34,7 @@ export const ResourceFlowAccessRowAction: React.FC<ResourceFlowAccessRowActionPr
   return (
     <SimpleDDMenuItem
       size="md"
-      content="Assign Agents"
+      content="Assign agents"
       Icon={BotIcon}
       disabled={disabled}
       onClick={() => {

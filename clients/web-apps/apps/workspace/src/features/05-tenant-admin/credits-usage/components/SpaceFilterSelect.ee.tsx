@@ -10,7 +10,7 @@ import {
 } from "@avplatform/ui/command";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { CheckIcon, ChevronDownIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
+import { CheckIcon, ChevronDownIcon, LayoutGridIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -77,7 +77,7 @@ export const SpaceFilterSelect = () => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-9 gap-2 rounded-sm align-middle font-normal">
-          <Squares2X2Icon className="h-4 w-4" />
+          <LayoutGridIcon className="h-4 w-4" />
           <span>{triggerLabel}</span>
           <ChevronDownIcon className="h-4 w-4" />
         </Button>

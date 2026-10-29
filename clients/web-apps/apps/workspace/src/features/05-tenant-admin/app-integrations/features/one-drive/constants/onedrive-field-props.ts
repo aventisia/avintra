@@ -2,7 +2,7 @@ import { InputFieldProps } from "@avplatform/ui/form";
 
 const oAuthRedirectURLProps: InputFieldProps = {
   name: "oAuthRedirectURL",
-  label: "OAuth Redirect URL",
+  label: "OAuth redirect URL",
   className: "text-sm resize-none",
   disabled: true,
 };
@@ -15,7 +15,7 @@ const authorizationURLProps: InputFieldProps = {
 
 const accessTokenURLProps: InputFieldProps = {
   name: "accessTokenURL",
-  label: "Access Token URL",
+  label: "Access token URL",
   className: "text-sm resize-none",
 };
 
@@ -28,7 +28,7 @@ const clientIdURLProps: InputFieldProps = {
 
 const clientSecretProps: InputFieldProps = {
   name: "clientSecret",
-  label: "Client Secret",
+  label: "Client secret",
   type: "password",
   isRequired: true,
   className: "text-sm resize-none",

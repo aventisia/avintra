@@ -5,13 +5,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
+import { Table } from "@tanstack/react-table";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "@heroicons/react/24/outline";
-import { Table } from "@tanstack/react-table";
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
 
 import { UploadedItemsTableBulkActions } from "./UploadedItemsTableBulkActions";
 
@@ -51,7 +51,7 @@ export function UploadedItemsTablePagination<TData>({
           Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </div>
         <div className="flex items-center gap-2 space-x-2">
-          <ChevronDoubleLeftIcon
+          <ChevronsLeftIcon
             role="button"
             className="h-7 w-7 rounded-lg border p-1"
             onClick={() => (!table.getCanPreviousPage() ? null : table.setPageIndex(0))}
@@ -69,7 +69,7 @@ export function UploadedItemsTablePagination<TData>({
             onClick={() => (!table.getCanNextPage() ? null : table.nextPage())}
           />
 
-          <ChevronDoubleRightIcon
+          <ChevronsRightIcon
             role="button"
             className="h-7 w-7 rounded-lg border p-1"
             onClick={() =>

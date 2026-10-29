@@ -8,6 +8,7 @@ import { useExecutionStore } from "@/features/execution-logs/stores/execution-lo
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import "./override-edge-style.css";
+import { useEdgeRunState } from "./useEdgeRunState";
 
 /** Built on top of CustomStepEdge to keep Execution edge design separate */
 export const ReadOnlyEdge = memo(
@@ -20,6 +21,7 @@ export const ReadOnlyEdge = memo(
     sourcePosition,
     targetPosition,
     markerEnd,
+    source,
     target,
   }: EdgeProps) => {
     const { getNode, getEdge } = useReactFlow();
@@ -57,8 +59,10 @@ export const ReadOnlyEdge = memo(
     // from the runner.
     const isActive = traversedEdges[id]?.[pathKey] === true;
 
-    const stroke = isExecutionLog && isActive ? "#22c55e" : "#94a3b8";
-    const statusClass = isExecutionLog && isActive ? "edge-success" : "";
+    const runState = useEdgeRunState(source, target, isExecutionLog && isActive);
+    const { stroke, className: statusClass } = isExecutionLog
+      ? runState
+      : { stroke: "var(--line-strong)", className: "" };
 
     return (
       <>
@@ -69,7 +73,7 @@ export const ReadOnlyEdge = memo(
           id={id}
           path={edgePath}
           markerEnd={markerEnd}
-          className={cn("stroke-1 ", statusClass)}
+          className={cn("stroke-1", statusClass)}
           style={{ stroke }} // Explicit inline override to ensure color applies
         />
       </>

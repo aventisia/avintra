@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -114,7 +114,7 @@ export const KnowledgeBaseTable = () => {
               ))}
             </div>
           ) : (
-            <NoContentMessage
+            <EmptyState
               className="rounded-lg border bg-surface py-8"
               primaryMessage="No knowledge base found"
               secondaryMessage="Please add new knowledge base."

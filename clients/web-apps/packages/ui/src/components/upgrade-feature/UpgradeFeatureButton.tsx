@@ -1,4 +1,4 @@
-import { LockClosedIcon } from "@heroicons/react/24/outline";
+import { Lock } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 import { Button, type ButtonProps } from "@/ui/components/buttons";
@@ -51,10 +51,7 @@ export const UpgradeFeatureButton = ({
             {icon}
           </span>
           <span>{label}</span>
-          <LockClosedIcon
-            aria-hidden="true"
-            className={cn("h-3.5 w-3.5 shrink-0", lockIconClassName)}
-          />
+          <Lock aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0", lockIconClassName)} />
         </Button>
       </Tooltip>
 

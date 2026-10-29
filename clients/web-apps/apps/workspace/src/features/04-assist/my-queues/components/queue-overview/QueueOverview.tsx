@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -49,7 +49,7 @@ export const QueueOverview = () => {
       <div className="space-y-4 pb-4 pt-[17px]">
         <h1 className="text-title text-ink">{TABLE_HEADING} Overview</h1>
         <QueueTypeSwitch value={queueType} onChange={setQueueType} />
-        <NoContentMessage
+        <EmptyState
           className="h-64 rounded-lg border border-dashed border-line"
           primaryMessage="No queues available"
           secondaryMessage={

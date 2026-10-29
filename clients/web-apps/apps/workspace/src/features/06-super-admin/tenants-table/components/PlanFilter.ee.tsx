@@ -100,7 +100,7 @@ export function PlanFilter<TData>({ table, data, columnId }: PlanFilterProps<TDa
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="p-2">
-        <DropdownMenuLabel>Filter by Plan</DropdownMenuLabel>
+        <DropdownMenuLabel>Filter by plan</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         {planOptions.map((plan) => (

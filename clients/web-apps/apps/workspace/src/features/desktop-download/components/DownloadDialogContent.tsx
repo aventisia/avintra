@@ -470,7 +470,7 @@ const DownloadContent: React.FC<{
             <div className="space-y-4">
               <DownloadRow
                 artifact={desktopAppArtifact}
-                title="Desktop App"
+                title="Desktop app"
                 description="The builder app for creating, editing, and testing agents on your local machine."
                 metadata={buildArtifactMetadata(desktopAppArtifact, desktopAppVersion)}
                 icon={<Monitor className="h-5 w-5" />}
@@ -479,7 +479,7 @@ const DownloadContent: React.FC<{
               />
               <RunnerInstallRow
                 artifact={runnerAppArtifact}
-                title="Runner App"
+                title="Runner app"
                 description="Headless Windows service that runs published agents in the background on your machine."
                 metadata={buildArtifactMetadata(runnerAppArtifact, runnerAppVersion)}
                 icon={<Terminal className="h-5 w-5" />}

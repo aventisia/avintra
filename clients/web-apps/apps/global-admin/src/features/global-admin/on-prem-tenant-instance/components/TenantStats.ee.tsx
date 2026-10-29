@@ -22,25 +22,25 @@ export const TenantStats = () => {
       <StatsCard
         key="Total Execution Time Consumed"
         icon={<ClockIcon className="size-6" />}
-        title={"Total Execution Time Consumed"}
+        title={"Total execution time consumed"}
         content={formatSecondsToCompactDuration(data?.data.totalExecutionTimeConsumed ?? 0)}
       />
       <StatsCard
         key={"Total Users"}
         icon={<UsersIcon className="size-6" />}
-        title={"Total Users"}
+        title={"Total users"}
         content={formatNumber(data?.data.totalUsers ?? 0)}
       />
       <StatsCard
         key={"Total Published Agents"}
         icon={<NewAgentIcon className="size-6" />}
-        title={"Total Published Agents"}
+        title={"Total published agents"}
         content={formatNumber(data?.data.totalPublishedAgents ?? 0)}
       />
       <StatsCard
         key={"Total Executed Jobs"}
         icon={<BadgeCheckIcon className="size-6" />}
-        title={"Total Executed Jobs"}
+        title={"Total executed jobs"}
         content={formatNumber(data?.data.totalExecutedJobs ?? 0)}
       />
     </div>

@@ -43,11 +43,11 @@ const ShortcutsDialog = () => {
       shortcuts: [
         {
           keys: ["Shift", "Drag"],
-          description: "Select Nodes and edges on canvas",
+          description: "Select nodes and edges on canvas",
         },
         {
           keys: ["Ctrl", "Scroll"],
-          description: "Zoom In/Out the Canvas",
+          description: "Zoom in/out the canvas",
         },
         {
           keys: ["Shift", " Scroll"],
@@ -110,7 +110,7 @@ const ShortcutsDialog = () => {
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
       <DialogContent className="max-w-3xl">
         <DialogDefaultHeader
-          heading="Keyboard Shortcuts"
+          heading="Keyboard shortcuts"
           description="Quick reference for all available keyboard shortcuts"
         />
         <ScrollArea className="h-[80vh]">

@@ -9,7 +9,7 @@ const TrustLocalhostSSLButton: React.FC = () => {
       href={import.meta.env.VITE_WORKSPACE_API_PATH?.replace("/api", "/swagger")}
     >
       <ShieldQuestionIcon className="size-4 stroke-[1.6]" />
-      Trust Localhost SSL
+      Trust localhost SSL
     </a>
   );
 };

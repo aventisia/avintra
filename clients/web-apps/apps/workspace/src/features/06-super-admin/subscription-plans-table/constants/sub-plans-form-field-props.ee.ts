@@ -15,7 +15,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Plan Name",
+  label: "Plan name",
   isRequired: true,
   description:
     "A **unique** name for the plan.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), space, parentheses `()`, underscore (`_`) and hyphen (`-`).\n- **Can be changed** after creation.",
@@ -28,7 +28,7 @@ const typeProps: SelectFieldProps = {
   selectOptions: enumToArray(PlanTypeEnum),
   defaultValue: "Pro",
   isRequired: true,
-  description: "The plan type (defaults to Pro).",
+  description: "The plan type (defaults to pro).",
 };
 // Max Credits
 const maxCreditsProps: InputFieldProps = {
@@ -41,7 +41,7 @@ const maxCreditsProps: InputFieldProps = {
 // Max Published Items
 const maxPublishedItemsProps: InputFieldProps = {
   name: "maxPublishedItems",
-  label: "Published Agents",
+  label: "Published agents",
   isRequired: true,
   description: "The maximum number of published agents allowed.",
 };
@@ -49,7 +49,7 @@ const maxPublishedItemsProps: InputFieldProps = {
 // History Retention Days
 const historyRetentionDaysProps: InputFieldProps = {
   name: "historyRetentionDays",
-  label: "Insights & Workflow History (in Days)",
+  label: "Insights & workflow history (in days)",
   isRequired: true,
   description: "How many days of history to retain.",
 };
@@ -65,7 +65,7 @@ const maxSpacesProps: InputFieldProps = {
 // Storage Limit MB
 const storageLimitMBProps: InputFieldProps = {
   name: "storageLimitMB",
-  label: "Storage Limit(in MB)",
+  label: "Storage limit(in MB)",
   isRequired: true,
   description: "The storage limit in megabytes.",
 };
@@ -73,7 +73,7 @@ const storageLimitMBProps: InputFieldProps = {
 // Max Users
 const maxUsersProps: InputFieldProps = {
   name: "maxUsers",
-  label: "No of Users",
+  label: "No of users",
   isRequired: true,
   description: "The maximum number of users allowed.",
 };
@@ -81,21 +81,21 @@ const maxUsersProps: InputFieldProps = {
 // Yearly Charge
 const yearlyPriceProps: InputFieldProps = {
   name: "yearlyPrice",
-  label: "Yearly Charge (per Month)",
+  label: "Yearly charge (per month)",
   isRequired: true,
   description: "The yearly charge expressed per month.",
 };
 // Monthly Charge
 const monthlyPriceProps: InputFieldProps = {
   name: "monthlyPrice",
-  label: "Monthly Charge",
+  label: "Monthly charge",
   isRequired: true,
   description: "The monthly charge.",
 };
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Plan",
+  label: "Disable plan",
   description: "Disable this plan if it's no longer available.",
 };
 
@@ -123,7 +123,7 @@ const currencyProps: SelectFieldProps = {
 // Frequency
 const frequencyProps: SelectFieldProps = {
   name: "frequency",
-  label: "Billing Frequency",
+  label: "Billing frequency",
   selectOptions: [
     { label: "Monthly", value: "Monthly" },
     { label: "Yearly", value: "Yearly" },
@@ -135,7 +135,7 @@ const frequencyProps: SelectFieldProps = {
 // Status
 const statusProps: SelectFieldProps = {
   name: "status",
-  label: "Plan Status",
+  label: "Plan status",
   selectOptions: enumToArray(PlanStatusEnum),
   defaultValue: "Current",
   isRequired: true,

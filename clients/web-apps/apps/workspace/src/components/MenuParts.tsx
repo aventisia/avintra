@@ -14,7 +14,7 @@ export const MenuContent = ({
       sideOffset={6}
       {...props}
       className={cn(
-        "z-50 min-w-36 overflow-hidden rounded-xl bg-popover p-1.5 shadow-[0_20px_50px_-12px_rgba(15,23,42,0.35)] ring-1 ring-line",
+        "z-50 min-w-36 overflow-hidden rounded-xl bg-popover p-1.5 shadow-pop ring-1 ring-line",
         "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         className,
       )}

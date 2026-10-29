@@ -1,6 +1,6 @@
 import { StopPropagationWrapper } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";

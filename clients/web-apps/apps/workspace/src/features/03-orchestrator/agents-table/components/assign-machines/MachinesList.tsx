@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import {
   Command,
   CommandEmpty,
@@ -37,10 +37,10 @@ const MachinesList = () => {
         <CommandInput className="h-9 text-xs" placeholder="Search..." autoFocus />
       </div>
       <CommandEmpty>
-        <NoContentMessage
+        <EmptyState
           // className="-mt-5"
           Icon={MonitorIcon}
-          primaryMessage="No Machine found"
+          primaryMessage="No machine found"
         />
       </CommandEmpty>
       <ScrollArea>

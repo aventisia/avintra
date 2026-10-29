@@ -64,7 +64,7 @@ const DisableAgentDialog = () => {
     <Dialog open={open} onOpenChange={(open: boolean) => setOpen(open)}>
       <DialogContent className="space-y-6 p-4">
         <div className="space-y-2">
-          <h2 className="text-heading">Disable Agent</h2>
+          <h2 className="text-heading">Disable agent</h2>
           <p className="text-sm text-muted-foreground">
             Are you sure you want to disable this agent? They will no longer be active, but their
             data will be retained.

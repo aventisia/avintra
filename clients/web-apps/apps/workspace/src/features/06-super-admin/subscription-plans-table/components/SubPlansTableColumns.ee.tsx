@@ -66,7 +66,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   {
     accessorKey: "frequency",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Billing Frequency" />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Billing frequency" />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("frequency")}</div>

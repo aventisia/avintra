@@ -41,7 +41,7 @@ const CompanyDetailsDialog = ({ children }: React.PropsWithChildren) => {
       <DialogContent className="w-full max-w-2xl">
         <DialogDefaultHeader
           className="px-3.5 py-3 text-lg tracking-wide"
-          heading="Edit Billing Details"
+          heading="Edit billing details"
         />
         <CompanyDetailsForm />
       </DialogContent>

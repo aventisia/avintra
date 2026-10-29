@@ -3,14 +3,14 @@ import { InputFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 // Machine Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Machine Id",
+  label: "Machine ID",
   disabled: true,
 };
 
 // Host Name
 export const hostnameProps: InputFieldProps = {
   name: "hostname",
-  label: "Host Name",
+  label: "Host name",
   placeholder: "thinkpad-x1",
   disabled: true,
 };
@@ -18,14 +18,14 @@ export const hostnameProps: InputFieldProps = {
 // Update-only disabled status
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Machine",
+  label: "Disable machine",
   description: "Disable this machine to prevent it from being used for job assignments.",
 };
 
 // Backend-generated machine name preview
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Machine Name",
+  label: "Machine name",
   disabled: true,
-  description: "Read-only machine name generated from the Username, OS Type, and OS Unique ID.",
+  description: "Read-only machine name generated from the username, OS type, and OS unique ID.",
 };

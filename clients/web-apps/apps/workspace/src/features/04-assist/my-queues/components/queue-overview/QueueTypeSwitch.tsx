@@ -10,8 +10,8 @@ interface QueueTypeSwitchProps {
 }
 
 const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
-  { value: QueueTypesEnum.User, label: "User Queues" },
-  { value: QueueTypesEnum.Agent, label: "Agent Queues" },
+  { value: QueueTypesEnum.User, label: "User queues" },
+  { value: QueueTypesEnum.Agent, label: "Agent queues" },
 ];
 
 /**

@@ -1,4 +1,4 @@
-import { DotSeparator, NoContentMessage } from "@avplatform/ui";
+import { DotSeparator, EmptyState } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -64,7 +64,7 @@ export const VaultCredentialTable = () => {
 
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              <DTCreateButton buttonText="Add Credential" entity="vault" />
+              <DTCreateButton buttonText="Add credential" entity="vault" />
             </div>
           </div>
           {table.getRowModel().rows?.length > 0 ? (
@@ -162,7 +162,7 @@ export const VaultCredentialTable = () => {
               ))}
             </div>
           ) : (
-            <NoContentMessage
+            <EmptyState
               className="rounded-lg border bg-surface py-8"
               primaryMessage="No credentials found"
               secondaryMessage="Please add new credentials."

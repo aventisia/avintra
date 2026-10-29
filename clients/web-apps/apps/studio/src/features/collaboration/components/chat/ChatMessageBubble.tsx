@@ -37,7 +37,7 @@ export const ChatMessageBubble = ({ message, isOwn }: ChatMessageBubbleProps) =>
         </span>
         <div
           className={cn(
-            "rounded-lg px-2.5 py-1.5 text-xs leading-snug shadow-sm",
+            "rounded-lg px-2.5 py-1.5 text-xs leading-snug",
             isOwn
               ? "rounded-tr-sm bg-primary text-primary-foreground"
               : "rounded-tl-sm bg-sunken text-ink",

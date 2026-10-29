@@ -2,7 +2,7 @@ import { InputFieldProps, SwitchFieldProps, TextareaFieldProps } from "@avplatfo
 
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Config Id",
+  label: "Config ID",
   disabled: true,
 };
 
@@ -17,7 +17,7 @@ export const nameProps: InputFieldProps = {
 
 export const userNameProps: InputFieldProps = {
   name: "username",
-  label: "User Name",
+  label: "User name",
   isRequired: true,
   placeholder: "exampleUserName",
   description: "The username associated with the credential.",
@@ -33,7 +33,7 @@ export const passwordProps: InputFieldProps = {
 
 export const confirmPasswordProps: InputFieldProps = {
   name: "confirmPassword",
-  label: "Confirm Password",
+  label: "Confirm password",
   isRequired: true,
   type: "password",
   description: "Re-enter the password to confirm it matches.",
@@ -48,6 +48,6 @@ export const descriptionProps: TextareaFieldProps = {
 
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Credentials",
-  description: "Disable this Credentials if it's been outdated, or not in use anymore",
+  label: "Disable credentials",
+  description: "Disable this credentials if it's been outdated, or not in use anymore",
 };

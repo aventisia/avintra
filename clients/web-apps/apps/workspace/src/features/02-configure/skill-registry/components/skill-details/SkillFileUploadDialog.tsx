@@ -34,7 +34,7 @@ export const SkillFileUploadDialog = ({
         side={"center"}
         className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
       >
-        <DialogDefaultHeader heading="Add File" className="p-3 px-4" />
+        <DialogDefaultHeader heading="Add file" className="p-3 px-4" />
         <div className="flex-1 overflow-hidden">
           <SkillAddFileForm skillId={skillId} skillName={skillName} onCompleted={handleComplete} />
         </div>

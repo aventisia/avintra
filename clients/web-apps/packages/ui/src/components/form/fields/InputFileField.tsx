@@ -76,9 +76,9 @@ export const InputFileField = ({
                 className="flex h-8 w-full cursor-pointer items-center rounded-md border border-line-strong bg-surface px-[11px] text-left text-body font-normal text-ink"
               >
                 <span>
-                  <p>{files?.item(0)?.name ?? "Select File"}</p>
+                  <p>{files?.item(0)?.name ?? "Select file"}</p>
                   <p className="absolute right-3 top-1/2 -translate-y-1/2 text-body-sm font-medium text-primary-text hover:underline focus:outline-none">
-                    Browse File
+                    Browse files
                   </p>
                 </span>{" "}
               </label>

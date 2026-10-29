@@ -15,11 +15,11 @@ export const TABLE_KEY = "work-items";
 export const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Add Works Items", description: "" };
+      return { heading: "Add works items", description: "" };
     case "read":
-      return { heading: "Works Items", description: "" };
+      return { heading: "Works items", description: "" };
     case "update":
-      return { heading: "Edit Works Items", description: "" };
+      return { heading: "Edit works items", description: "" };
     default:
       return { heading: "", description: "" };
   }

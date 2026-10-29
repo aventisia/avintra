@@ -9,13 +9,13 @@ import { AgentPlatform } from "../types/agent-platform.type";
 export const AGENT_TYPES = [
   {
     value: FlowTypesEnum.Agent,
-    label: "Automation Agent",
+    label: "Automation agent",
     icon: Workflow,
     tint: "bg-sunken text-ink-2 ring-line",
   },
   {
     value: FlowTypesEnum.ChatAgent,
-    label: "Chat Agent",
+    label: "Chat agent",
     icon: MessagesSquare,
     tint: "bg-sunken text-ink-2 ring-line",
   },

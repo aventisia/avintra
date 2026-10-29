@@ -76,7 +76,7 @@ export const AiModelsUsedSection = () => {
     return (
       <SectionLayout
         eyebrow="Section 04"
-        title="AI Models Used"
+        title="AI models used"
         description="Models used by the agent, resolved automatically from the agent definition."
       >
         <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -89,8 +89,8 @@ export const AiModelsUsedSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 04"
-      title="AI Models Used"
-      description="Assess each model used by the Agent for validation status, risks, and governance."
+      title="AI models used"
+      description="Assess each model used by the agent for validation status, risks, and governance."
     >
       <div className="space-y-4">
         {aiModels.map((model, index) => (
@@ -107,7 +107,7 @@ export const AiModelsUsedSection = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Node Name" info="The flow node that uses this model.">
+              <Field label="Node name" info="The flow node that uses this model.">
                 <input
                   className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
                   value={model.nodeName}
@@ -115,7 +115,7 @@ export const AiModelsUsedSection = () => {
                 />
               </Field>
               <Field
-                label="Model Type"
+                label="Model type"
                 info="The type of the model, resolved from the agent definition: Conversation, Inferencing, or Generative."
               >
                 <input
@@ -127,20 +127,20 @@ export const AiModelsUsedSection = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <Field label="Linked Knowledge Bases" info="Knowledge bases linked to this node.">
+              <Field label="Linked knowledge bases" info="Knowledge bases linked to this node.">
                 {renderLinkedChips(model.linkedKnowledgeBases)}
               </Field>
-              <Field label="Linked Skills" info="Skills linked to this node.">
+              <Field label="Linked skills" info="Skills linked to this node.">
                 {renderLinkedChips(model.linkedSkills)}
               </Field>
-              <Field label="Linked Tools" info="Tools linked to this node.">
+              <Field label="Linked tools" info="Tools linked to this node.">
                 {renderLinkedChips(model.linkedTools)}
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Field
-                label="Risk Rating"
+                label="Risk rating"
                 required
                 info="Overall risk rating of this model for this agent's use case (Low, Medium, or High)."
               >
@@ -149,7 +149,7 @@ export const AiModelsUsedSection = () => {
                 )}
               </Field>
               <Field
-                label="Output Consumed By"
+                label="Output consumed by"
                 info="Who consumes the output of this model (multi-select)."
               >
                 <MultiSelect
@@ -165,7 +165,7 @@ export const AiModelsUsedSection = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <Field
-                label="Monitoring Plan"
+                label="Monitoring plan"
                 info="Describe ongoing monitoring for this model, e.g. drift/quality checks and frequency."
               >
                 <textarea
@@ -176,7 +176,7 @@ export const AiModelsUsedSection = () => {
                 />
               </Field>
               <Field
-                label="Usage Restrictions"
+                label="Usage restrictions"
                 info="Allowed use cases or guardrails for this model."
               >
                 <textarea

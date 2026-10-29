@@ -37,7 +37,7 @@ const ConnectedIntegrations = () => {
                   onClick={() => handleOpenIntegrationsDialog(item)}
                   disabled={item.disabled}
                 >
-                  View Integration
+                  View integration
                 </Button>
               </CardFooter>
             </Card>

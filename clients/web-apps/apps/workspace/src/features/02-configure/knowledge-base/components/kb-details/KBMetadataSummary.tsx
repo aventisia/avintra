@@ -24,17 +24,17 @@ const metadataRows = (knowledgeBase?: KnowledgeBaseTableDto) => {
   // Keep rendering data-driven so adding/removing metadata fields is simple.
   return [
     {
-      label: "Vector Store",
+      label: "Vector store",
       value: knowledgeBase?.vectorStore || "Not configured",
       isBYOK: storeBYOKEnabled,
     },
     {
-      label: "Embedding Provider",
+      label: "Embedding provider",
       value: knowledgeBase?.embeddingProvider || "Not configured",
       isBYOK: embeddingBYOKEnabled,
     },
     {
-      label: "Embedding Model",
+      label: "Embedding model",
       value: knowledgeBase?.embeddingModel || "Not configured",
     },
   ];
