@@ -42,7 +42,7 @@ export const NewFolderTile = ({ draggedAgent, isFirstFolder }: NewFolderTileProp
         "data-[drop-active=true]:border-primary data-[drop-active=true]:bg-selected",
       )}
     >
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-popover shadow-sm ring-1 ring-border transition group-hover/drop:ring-primary/30 group-data-[drop-active=true]/drop:rotate-6 group-data-[drop-active=true]/drop:scale-110">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-popover ring-1 ring-border transition group-hover/drop:ring-primary/30 group-data-[drop-active=true]/drop:rotate-6 group-data-[drop-active=true]/drop:scale-110">
         <FolderPlus className="size-[18px]" />
       </span>
       <span className="min-w-0">

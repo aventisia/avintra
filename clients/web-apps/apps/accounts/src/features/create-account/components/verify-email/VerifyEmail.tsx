@@ -9,7 +9,7 @@ import { VerifyEmailForm } from "./VerifyEmailForm";
 
 export const VerifyEmail = () => {
   // Set dcoument title
-  useDocumentTitle("Verify Email Address");
+  useDocumentTitle("Verify email address");
 
   // Return component
   return (

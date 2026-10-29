@@ -2,12 +2,12 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "id", value: "Select row" },
   { key: "name", value: "Name" },
   { key: "type", value: "Type" },
-  { key: "versionNumber", value: "Version Number" },
-  { key: "lastModifiedBy", value: "Archived By" },
-  { key: "lastModifiedOn", value: "Archived On" },
+  { key: "versionNumber", value: "Version number" },
+  { key: "lastModifiedBy", value: "Archived by" },
+  { key: "lastModifiedOn", value: "Archived on" },
 ];
 
 // Get the column display name for the given column key.

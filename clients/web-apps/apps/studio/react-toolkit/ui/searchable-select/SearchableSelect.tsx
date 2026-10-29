@@ -109,10 +109,10 @@ export const SearchableSelect = ({
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2")}
       >
         <Command>
-          <div className="mb-1.5 rounded-lg bg-slate-100">
+          <div className="mb-1.5 rounded-lg bg-sunken">
             <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>

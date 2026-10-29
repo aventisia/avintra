@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 // import { MessageCircleMoreIcon } from "lucide-react";
@@ -85,7 +85,7 @@ export default function ChatAgentsList({ data: agents, setTab, tab, mode }: Chat
     <div className="flex flex-col h-full select-none">
       {agents.length == 0 && (
         <div className="h-full">
-          <NoContentMessage
+          <EmptyState
             primaryMessage={tab === "archived" ? "No archived conversations" : "No agents assigned"}
             secondaryMessage={
               tab === "archived"

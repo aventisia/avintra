@@ -12,7 +12,7 @@ import { SaveAsEnum } from "./save-as-enums";
 // Save As
 const saveAsProps: SelectFieldProps = {
   name: "saveAs",
-  label: "Save As",
+  label: "Save as",
   isRequired: true,
   selectOptions: enumToArray(SaveAsEnum),
 };
@@ -20,14 +20,14 @@ const saveAsProps: SelectFieldProps = {
 // Access Level
 const accessLevelProps: SelectFieldProps = {
   name: "accessType",
-  label: "Access Level",
+  label: "Access level",
   isRequired: true,
   selectOptions: enumToArray(AccessTypeEnum),
 };
 
 const templateNameProps: InputFieldProps = {
   name: "name",
-  label: "Template Name",
+  label: "Template name",
   className: "text-sm",
   isRequired: true,
 };

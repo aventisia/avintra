@@ -18,6 +18,6 @@ export const CanEditAction = ({ item }: CanEditActionProps) => {
   };
   // Return the component
   return (
-    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can Edit" Icon={EditIcon} />
+    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can edit" Icon={EditIcon} />
   );
 };

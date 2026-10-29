@@ -20,7 +20,7 @@ export interface AudioPlayerProps {
 
 const AudioPlayer = ({
   src,
-  title = "Generated Audio",
+  title = "Generated audio",
   subtitle,
   format = "audio/mpeg",
   autoPlay = false,
@@ -163,7 +163,7 @@ const AudioPlayer = ({
         {/* Play / Pause */}
         <button
           onClick={togglePlayPause}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-105 active:scale-95"
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95"
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? (
@@ -186,7 +186,7 @@ const AudioPlayer = ({
           </div>
           {/* Thumb — appears on hover */}
           <div
-            className="absolute h-2.5 w-2.5 -ml-1 rounded-full bg-primary shadow opacity-0 scale-50 transition-all group-hover/compact-scrubber:opacity-100 group-hover/compact-scrubber:scale-100"
+            className="absolute h-2.5 w-2.5 -ml-1 rounded-full bg-primary opacity-0 scale-50 transition-all group-hover/compact-scrubber:opacity-100 group-hover/compact-scrubber:scale-100"
             style={{ left: `${progress}%` }}
           />
         </div>
@@ -208,13 +208,13 @@ const AudioPlayer = ({
 
   // ─── Full Mode: original card layout ────────────────────────────────────
   return (
-    <div className="group relative flex w-full flex-col gap-4 rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur-xl shadow-sm transition-all duration-300 hover:shadow-md hover:bg-background/80">
+    <div className="group relative flex w-full flex-col gap-4 rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur-xl transition-all duration-[120ms] hover:bg-background/80">
       {audioElement}
 
       {/* Header: Icon, Title, and Remove Button */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-inner">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary">
             {isFile ? <FileAudio className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </div>
           <div className="flex flex-col">
@@ -242,7 +242,7 @@ const AudioPlayer = ({
         {/* Play/Pause Button */}
         <button
           onClick={togglePlayPause}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform hover:scale-105 active:scale-95"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95"
         >
           {isPlaying ? (
             <Pause className="h-4 w-4 fill-current" />
@@ -264,7 +264,7 @@ const AudioPlayer = ({
               />
             </div>
             <div
-              className="absolute h-3 w-3 -ml-1.5 rounded-full bg-primary shadow opacity-0 scale-50 transition-all group-hover/scrubber:opacity-100 group-hover/scrubber:scale-100"
+              className="absolute h-3 w-3 -ml-1.5 rounded-full bg-primary opacity-0 scale-50 transition-all group-hover/scrubber:opacity-100 group-hover/scrubber:scale-100"
               style={{ left: `${progress}%` }}
             />
           </div>

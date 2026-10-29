@@ -1,4 +1,4 @@
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { Trash2 } from "lucide-react";
 import React from "react";
 
 import { LockedActionTooltip, useActionLock } from "@/ui/components/action-lock";
@@ -22,11 +22,7 @@ const DTBulkDeleteAction = React.forwardRef<
       disabled={disabled || locked}
       ref={ref}
     >
-      <TrashIcon
-        className={cn(
-          "mb-[2px] h-4 w-4 text-destructive group-hover:text-white group-focus:text-white",
-        )}
-      />
+      <Trash2 className="mb-[2px] h-4 w-4" />
       Delete
     </button>
   );

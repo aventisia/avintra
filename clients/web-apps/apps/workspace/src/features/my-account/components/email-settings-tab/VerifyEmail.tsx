@@ -47,7 +47,7 @@ export const VerifyEmail = () => {
     >
       <div className="box flex flex-col p-5">
         {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
-          Email Settings
+          Email settings
         </div> */}
         <div>
           <InputDivElement
@@ -66,7 +66,7 @@ export const VerifyEmail = () => {
             onClick={() => setStepNo(1)}
           >
             <Lucide icon="ArrowLeft" className="h-6 w-6" />
-            <span className="ml-1">Incorrect Email</span>
+            <span className="ml-1">Incorrect email</span>
           </Button>
           <div className="me-2 flex flex-row flex-wrap items-center gap-2 text-sm">
             <p>Did not receive the code?</p>

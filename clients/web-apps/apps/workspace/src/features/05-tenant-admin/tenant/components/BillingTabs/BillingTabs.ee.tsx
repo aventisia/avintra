@@ -15,13 +15,13 @@ const BillingTabs = () => {
             Overview
           </TabsTrigger>
           <TabsTrigger value="paymentMethods" className="rounded-none">
-            Payment Methods
+            Payment methods
           </TabsTrigger>
           <TabsTrigger value="billingHistory" className="rounded-none">
-            Billing History
+            Billing history
           </TabsTrigger>
           <TabsTrigger value="companyDetails" className="rounded-none">
-            Billing Details
+            Billing details
           </TabsTrigger>
           <TabsTrigger value="preferences" className="rounded-none">
             Preferences

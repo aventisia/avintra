@@ -16,7 +16,7 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent Name" />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent name" />
     ),
     cell: ({ row }) => {
       const { name, versionNumber } = row.original;
@@ -48,7 +48,7 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
   {
     accessorKey: "dailyAverageCredits",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily Average Credits" />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily average credits" />
     ),
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">{round2(row.getValue("dailyAverageCredits"))}</span>
@@ -59,7 +59,7 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
   {
     accessorKey: "dailyAverageRuntime",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily Avg Runtime" />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Daily avg runtime" />
     ),
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">
@@ -72,7 +72,7 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
   {
     accessorKey: "fixedCredits",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Fixed Credit" />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Fixed credit" />
     ),
     cell: ({ row }) => {
       const fixedCredits = row.getValue<number | null>("fixedCredits");

@@ -12,8 +12,8 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableActions } from "./table-actions/TableActions";
 
 const flowTypeLabelOverrides: Record<string, string> = {
-  Agent: "Automation Agent",
-  ChatAgent: "Chat Agent",
+  Agent: "Automation agent",
+  ChatAgent: "Chat agent",
 };
 
 /**

@@ -10,11 +10,11 @@ export const FLOWS_QUERY_KEY = ["flows"];
 export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Agent", description: "" };
+      return { heading: "Create agent", description: "" };
     case "read":
       return { heading: "Agent", description: "" };
     case "update":
-      return { heading: "Edit Agent", description: "" };
+      return { heading: "Edit agent", description: "" };
     default:
       return { heading: "", description: "" };
   }

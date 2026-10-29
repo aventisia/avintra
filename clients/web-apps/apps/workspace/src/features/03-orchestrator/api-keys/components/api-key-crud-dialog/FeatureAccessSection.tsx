@@ -16,7 +16,7 @@ export const FeatureAccessSection = ({ disabled }: FeatureAccessSectionProps) =>
   return (
     <div className="overflow-hidden rounded-lg border border-line bg-surface">
       <div className="border-b border-line bg-sunken px-5 py-4">
-        <h3 className="text-heading text-ink">Feature Access</h3>
+        <h3 className="text-heading text-ink">Feature access</h3>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Enable or disable specific features for this key.
         </p>

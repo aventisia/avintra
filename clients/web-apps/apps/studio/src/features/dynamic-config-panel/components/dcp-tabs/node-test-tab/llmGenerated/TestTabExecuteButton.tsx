@@ -21,7 +21,7 @@ export function TestTabExecuteButton({
         size="sm"
         type="button"
         disabled={isPending}
-        className={cn("relative overflow-hidden transition-all duration-300 ease-out")}
+        className={cn("relative overflow-hidden transition-all duration-[120ms] ease-out")}
       >
         {isPending ? (
           <>

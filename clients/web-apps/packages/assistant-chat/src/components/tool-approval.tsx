@@ -122,14 +122,14 @@ export const ToolApprovalRequest = ({
     <div
       className={cn(
         "aui-tool-approval-root w-full rounded-lg border shadow-sm",
-        state === "pending" ? "border-amber-500/40 bg-amber-500/5" : "border-border/60 bg-muted/20",
+        state === "pending" ? "border-warn/40 bg-warn/5" : "border-border/60 bg-muted/20",
       )}
     >
       <div className="flex items-start gap-2 px-4 py-3">
         {state === "pending" ? (
-          <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-amber-600" />
+          <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-warn" />
         ) : state === "approved" ? (
-          <CheckIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+          <CheckIcon className="mt-0.5 size-4 shrink-0 text-ok" />
         ) : (
           <XCircleIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
         )}

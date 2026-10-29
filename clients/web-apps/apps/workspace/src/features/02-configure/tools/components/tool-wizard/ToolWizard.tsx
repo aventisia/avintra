@@ -148,7 +148,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const canProceed = isIngestValid && isNameValidForSubmit;
 
   const steps = [
-    { key: "ingest", label: "Ingest Spec", component: <StepIngestSpec crudAction={crudAction} /> },
+    { key: "ingest", label: "Ingest spec", component: <StepIngestSpec crudAction={crudAction} /> },
     { key: "authenticate", label: "Authenticate", component: <StepAuthenticate /> },
     {
       key: "playground",

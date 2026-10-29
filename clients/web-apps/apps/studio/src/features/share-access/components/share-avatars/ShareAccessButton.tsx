@@ -24,7 +24,7 @@ export const ShareAccessButton: React.FC<Props> = ({ onClick }) => (
         sideOffset={4}
         className="z-50 rounded-md bg-ink px-3 py-1.5 text-xs text-bg shadow-pop"
       >
-        Share Access
+        Share access
         <Tooltip.Arrow className="fill-ink" />
       </Tooltip.Content>
     </Tooltip.Portal>

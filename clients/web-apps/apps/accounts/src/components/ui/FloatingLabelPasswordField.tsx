@@ -77,7 +77,7 @@ export default function FloatingLabelPasswordField({ ...props }: FloatingLabelPa
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 flex-1 rounded-full transition-colors duration-300 ease-in-out ${
+                  className={`h-1 flex-1 rounded-full transition-colors duration-200 ease-in-out ${
                     i < strengthScore ? getStrengthColor(strengthScore) : "bg-fill"
                   }`}
                 />

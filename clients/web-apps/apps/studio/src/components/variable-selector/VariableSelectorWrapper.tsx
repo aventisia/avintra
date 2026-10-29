@@ -47,7 +47,7 @@ const VariableSelectorWrapper = ({
         tabIndex={-1}
         align="end"
         variant={"responsive"}
-        className={cn(className, "max-h-96 shadow-sm")}
+        className={cn(className, "max-h-96")}
         {...props}
       >
         <Tabs defaultValue="variables" className="flex h-full w-full flex-col">

@@ -1,8 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
-import { Scan } from "lucide-react";
+import { MinusIcon, PlusIcon, Scan } from "lucide-react";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 

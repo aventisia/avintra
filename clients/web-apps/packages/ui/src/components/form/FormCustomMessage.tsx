@@ -1,6 +1,6 @@
 import { type FormMessageProps } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { CircleCheck, CircleX, TriangleAlert } from "lucide-react";
 import { type FieldError } from "react-hook-form";
 
 export type FormCustomMessageProps = {
@@ -46,9 +46,9 @@ export const FormCustomMessage = ({
             )}
             {...props}
           >
-            {messageType === "Yellow" && <ExclamationTriangleIcon className="h-3.5 w-3.5" />}
-            {messageType === "Red" && <XCircleIcon className="h-3.5 w-3.5" />}
-            {messageType === "Green" && <CheckCircleIcon className="h-3.5 w-3.5" />}
+            {messageType === "Yellow" && <TriangleAlert className="h-3.5 w-3.5" />}
+            {messageType === "Red" && <CircleX className="h-3.5 w-3.5" />}
+            {messageType === "Green" && <CircleCheck className="h-3.5 w-3.5" />}
             {errorMessage}
             {errors.length > 1 && index < errors.length - 1 && " &"}
           </p>

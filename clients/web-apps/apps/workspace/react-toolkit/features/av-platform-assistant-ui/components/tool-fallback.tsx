@@ -139,7 +139,7 @@ function ToolFallbackTrigger({
         data-slot="tool-fallback-trigger-chevron"
         className={cn(
           "aui-tool-fallback-trigger-chevron size-4 shrink-0",
-          "transition-transform duration-300 ease-out",
+          "transition-transform duration-200 ease-out",
           "group-data-[state=closed]/trigger:-rotate-90",
           "group-data-[state=open]/trigger:rotate-0",
         )}
@@ -163,8 +163,8 @@ function ToolFallbackContent({
         "data-[state=open]:animate-collapsible-down",
         "data-[state=closed]:fill-mode-forwards",
         "data-[state=closed]:pointer-events-none",
-        "data-[state=open]:duration-300",
-        "data-[state=closed]:duration-300",
+        "data-[state=open]:duration-200",
+        "data-[state=closed]:duration-200",
         className,
       )}
       {...props}

@@ -32,11 +32,11 @@ const TABLE_KEY = "jobs";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Job", description: "" };
+      return { heading: "Create job", description: "" };
     case "read":
       return { heading: "Job", description: "" };
     case "update":
-      return { heading: "Edit Job", description: "" };
+      return { heading: "Edit job", description: "" };
     default:
       return { heading: "", description: "" };
   }

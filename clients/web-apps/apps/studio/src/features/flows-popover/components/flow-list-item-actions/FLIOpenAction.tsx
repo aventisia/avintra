@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ExternalLinkIcon } from "lucide-react";
 
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 
@@ -19,7 +19,7 @@ export const FLIOpenAction = ({ flowId }: FLIOpenActionProps) => {
     <SimpleDDMenuItem
       size="sm"
       content="Open"
-      Icon={ArrowTopRightOnSquareIcon}
+      Icon={ExternalLinkIcon}
       onClick={() => handleOpenFlowAction(flowId)}
     />
   );

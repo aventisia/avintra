@@ -19,7 +19,7 @@ const MarkdownContainer = ({
     <Tabs defaultValue="write" className={cn("w-full", className)}>
       <div className="flex justify-between">
         <TabsList>
-          <TabsTrigger value="write">Write Instructions</TabsTrigger>
+          <TabsTrigger value="write">Write instructions</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
         </TabsList>
         {children}

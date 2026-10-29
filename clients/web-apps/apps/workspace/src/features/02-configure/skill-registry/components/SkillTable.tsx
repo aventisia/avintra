@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -118,7 +118,7 @@ export const SkillTable = () => {
               ))}
             </div>
           ) : (
-            <NoContentMessage
+            <EmptyState
               className="rounded-lg border bg-surface py-8"
               primaryMessage="No skill found"
               secondaryMessage={isReadOnly ? undefined : "Please add a new skill."}

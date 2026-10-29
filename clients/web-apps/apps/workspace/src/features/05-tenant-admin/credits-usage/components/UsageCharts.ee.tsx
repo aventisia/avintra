@@ -32,7 +32,7 @@ const UsageCharts = () => {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <ChartLineInteractive
-        title="Total Credits Used"
+        title="Total credits used"
         total={totalCredits}
         data={creditChartData}
         chartConfig={totalCreditsChartConfig}
@@ -41,7 +41,7 @@ const UsageCharts = () => {
         className="col-span-2"
       />
       <ChartLineInteractive
-        title="Total Execution Credits"
+        title="Total execution credits"
         total={data?.data.usageSummary.totalExecutionCredits || 0}
         data={executionCreditChartData}
         chartConfig={totalCreditsChartConfig}
@@ -49,7 +49,7 @@ const UsageCharts = () => {
         className="col-span-1"
       />
       <ChartLineInteractive
-        title="Total LLM Credits"
+        title="Total LLM credits"
         total={data?.data.usageSummary.totalLlmCredits || 0}
         data={llmCreditChartData}
         chartConfig={totalCreditsChartConfig}

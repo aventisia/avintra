@@ -23,11 +23,11 @@ const ISSUE_STATUS_OPTIONS: SelectOption[] = [
   { value: "open", label: "Open" },
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
-  { value: "wont-fix", label: "Won't Fix" },
+  { value: "wont-fix", label: "Won't fix" },
 ];
 
 const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
-  { value: "model-output", label: "Model Output" },
+  { value: "model-output", label: "Model output" },
   { value: "data", label: "Data" },
   { value: "security", label: "Security" },
   { value: "compliance", label: "Compliance" },
@@ -76,7 +76,7 @@ const createEmptyIssue = (flowVersionId: string): AgentRiskIssueDto => ({
  * "Add Issue" button at the top.
  */
 export const IssuesTable = () => {
-  useDocumentTitle("Issues & Violations");
+  useDocumentTitle("Issues & violations");
 
   const selectedAgentId = useAiGovernanceStore((state) => state.selectedAgentId);
   const updateAssessment = useAiGovernanceStore((state) => state.updateAssessment);
@@ -152,7 +152,7 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "detectedOn",
-      header: "Detected On",
+      header: "Detected on",
       cell: ({ row, getValue }) => (
         <DateInput
           value={String(getValue() ?? "")}
@@ -174,7 +174,7 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "resolutionNotes",
-      header: "Resolution Notes",
+      header: "Resolution notes",
       cell: ({ row, getValue }) => (
         <textarea
           className="w-full rounded-lg border border-border bg-background p-2 text-sm"
@@ -214,7 +214,7 @@ export const IssuesTable = () => {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <button type="button" onClick={goToTable} className="text-muted-foreground">
-                  Agent Risk Registry
+                  Agent risk registry
                 </button>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -224,14 +224,14 @@ export const IssuesTable = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Issues & Violations</BreadcrumbPage>
+              <BreadcrumbPage>Issues & violations</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <Button variant="outline" onClick={addIssue}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add Issue
+          Add issue
         </Button>
       </div>
 

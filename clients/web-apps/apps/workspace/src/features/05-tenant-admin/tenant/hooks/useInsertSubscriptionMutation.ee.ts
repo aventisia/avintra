@@ -18,7 +18,7 @@ export const useInsertSubscriptionMutation = () => {
 
   // Success handler function
   const handlePaymentSuccess = () => {
-    toast.success("Plan Upgraded Successfully");
+    toast.success("Plan upgraded successfully");
   };
 
   // Failure handler function

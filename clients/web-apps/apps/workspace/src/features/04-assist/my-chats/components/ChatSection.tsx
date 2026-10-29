@@ -140,7 +140,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
         {/* ACTIONS */}
         {conversationId && !isArchived && (
           <div className="flex flex-row-reverse items-center gap-1 justify-center">
-            <Tooltip content="New Conversation">
+            <Tooltip content="New conversation">
               <Button variant="ghost" size="icon7" onClick={handleNewConversation}>
                 <SquarePenIcon className="h-4 w-4" />
               </Button>
@@ -148,7 +148,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
 
             <Separator orientation="vertical" className="h-5 w-[0.5px]" />
 
-            <Tooltip content="Archive Conversation">
+            <Tooltip content="Archive conversation">
               <Button
                 variant="ghost"
                 size="icon7"

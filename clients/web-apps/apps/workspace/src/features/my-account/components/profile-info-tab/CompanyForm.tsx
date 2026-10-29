@@ -91,7 +91,7 @@ export const CompanyForm = () => {
             <InputField
               name="addressLine1"
               type="text"
-              placeholder="Address Line 1"
+              placeholder="Address line 1"
               disabled={
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }
@@ -100,7 +100,7 @@ export const CompanyForm = () => {
             <InputField
               name="addressLine2"
               type="text"
-              placeholder="Address Line 2"
+              placeholder="Address line 2"
               disabled={
                 userSession?.tenantName != DefaultTenantsEnum.IndividualUsers
               }

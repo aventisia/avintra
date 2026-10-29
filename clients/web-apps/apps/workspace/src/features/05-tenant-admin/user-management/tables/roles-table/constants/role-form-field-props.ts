@@ -5,14 +5,14 @@ import { ACCESSES } from "./permissions-and-acesses";
 // Project Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Role Id",
+  label: "Role ID",
   disabled: true,
   className: "text-base",
 };
 
 export const roleNameProps: InputFieldProps = {
   name: "fullName",
-  label: "Full Name",
+  label: "Full name",
   isRequired: true,
   type: "text",
   maxLength: 256,

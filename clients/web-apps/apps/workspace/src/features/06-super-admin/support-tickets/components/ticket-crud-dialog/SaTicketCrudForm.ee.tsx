@@ -108,7 +108,7 @@ export const SaTicketCrudForm = ({ rowId, crudAction }: SaTicketCrudFormProps) =
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
           <Button type="submit" disabled={!isDirty || isPending} className="min-w-[5rem]">
-            {crudAction === "create" ? "Create Ticket" : "Save changes"}
+            {crudAction === "create" ? "Create ticket" : "Save changes"}
           </Button>
         </div>
       )}

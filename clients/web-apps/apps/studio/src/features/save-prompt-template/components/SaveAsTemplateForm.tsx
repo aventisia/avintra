@@ -99,7 +99,7 @@ export const SaveAsTemplateForm = () => {
 
             <Button disabled={isPending} size={"sm"} type="submit">
               {isPending ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
-              Submit For Approval
+              Submit for approval
             </Button>
           </div>
         )}

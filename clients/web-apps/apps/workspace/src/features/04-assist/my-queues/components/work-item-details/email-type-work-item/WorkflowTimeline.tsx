@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
@@ -233,7 +233,7 @@ export default function WorkflowTimeline({
   return (
     <div className="w-full max-w-4xl space-y-2">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-xs font-semibold">Activity Log</h3>
+        <h3 className="text-xs font-semibold">Activity log</h3>
       </div>
 
       <div className="rounded-lg border border-line bg-surface p-6">
@@ -257,7 +257,7 @@ export default function WorkflowTimeline({
                 </div>
               </>
             ) : (
-              <NoContentMessage primaryMessage="No activity recorded yet." />
+              <EmptyState primaryMessage="No activity recorded yet." />
             )}
           </div>
         )}

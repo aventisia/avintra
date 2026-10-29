@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { Workflow } from "lucide-react";
 
 /**
@@ -6,7 +6,7 @@ import { Workflow } from "lucide-react";
  */
 export const FVNoContentMessage = () => {
   return (
-    <NoContentMessage
+    <EmptyState
       className="-mt-5"
       Icon={Workflow}
       primaryMessage="No flow versions found"

@@ -232,7 +232,7 @@ export const WorkItemDetails = () => {
             workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
               <SearchableSelect
                 options={buildDispositionOptions(myCurrentQueue)}
-                placeholder="Disposition Status"
+                placeholder="Disposition status"
                 value={selectedDisposition}
                 onValueChange={handleDispositionChange}
                 className="w-60"

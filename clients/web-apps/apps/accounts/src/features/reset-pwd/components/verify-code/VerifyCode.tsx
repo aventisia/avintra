@@ -9,7 +9,7 @@ import { VerifyCodeForm } from "./VerifyCodeForm";
 
 export const VerifyCode = () => {
   // Set dcoument title
-  useDocumentTitle("Verify Code");
+  useDocumentTitle("Verify code");
 
   // Return component
   return (

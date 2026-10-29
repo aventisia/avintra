@@ -2,7 +2,7 @@ import { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@avplatform
 
 const connectUsingProps: SelectFieldProps = {
   name: "connectUsing",
-  label: "Connect Using",
+  label: "Connect using",
   isRequired: true,
   className: "text-sm resize-none",
   selectOptions: [
@@ -11,7 +11,7 @@ const connectUsingProps: SelectFieldProps = {
       value: "OAuth2",
     },
     {
-      label: "Service Account",
+      label: "Service account",
       value: "service_account",
     },
   ],
@@ -20,7 +20,7 @@ const connectUsingProps: SelectFieldProps = {
 // OAuth Props
 const oAuthRedirectURLProps: InputFieldProps = {
   name: "oAuthRedirectURL",
-  label: "OAuth Redirect URL",
+  label: "OAuth redirect URL",
   disabled: true,
   readOnly: true,
   className: "text-sm resize-none",
@@ -35,7 +35,7 @@ const clientIdProps: InputFieldProps = {
 
 const clientSecretProps: InputFieldProps = {
   name: "clientSecret",
-  label: "Client Secret",
+  label: "Client secret",
   type: "password",
   isRequired: true,
   className: "text-sm resize-none",
@@ -51,14 +51,14 @@ const regionProps: InputFieldProps = {
 
 const serviceAccountEmailProps: InputFieldProps = {
   name: "serviceAccountEmail",
-  label: "Service Account Email",
+  label: "Service account email",
   isRequired: true,
   className: "text-sm resize-none",
 };
 
 const privateKeyProps: InputFieldProps = {
   name: "privateKey",
-  label: "Private Key",
+  label: "Private key",
   type: "password",
   isRequired: true,
   className: "text-sm resize-none",
@@ -66,7 +66,7 @@ const privateKeyProps: InputFieldProps = {
 
 const impersonateUserProps: SwitchFieldProps = {
   name: "impersonateUser",
-  label: "Impersonate a User",
+  label: "Impersonate a user",
   description: "",
   className: "text-sm resize-none",
 };
@@ -80,7 +80,7 @@ const emailProps: InputFieldProps = {
 
 const httpRequestNodeProps: SwitchFieldProps = {
   name: "httpRequestNode",
-  label: "HTTP Request Node",
+  label: "HTTP request node",
   description: "",
   className: "text-sm resize-none",
 };

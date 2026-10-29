@@ -6,7 +6,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "type", value: "Type" },
   { key: "status", value: "Status" },
   { key: "recipientCount", value: "Recipients" },
-  { key: "createdOn", value: "Created On" },
+  { key: "createdOn", value: "Created on" },
 ];
 
 export const getColumnName = (key: string): string => {

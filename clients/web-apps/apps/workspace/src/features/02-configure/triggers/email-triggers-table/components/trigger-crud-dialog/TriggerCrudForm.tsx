@@ -224,7 +224,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           <FormItem size={"base"}>
             <FormLabelExt
               size={"base"}
-              label="Select Agent(s)"
+              label="Select agent(s)"
               description="Choose the agent(s) that should be triggered by this event."
               isRequired
             />

@@ -160,7 +160,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           <FormItem size={"base"}>
             <FormLabelExt
               size={"base"}
-              label="Select Agent(s)"
+              label="Select agent(s)"
               description="Choose the agent(s) that should be triggered by this event."
               isRequired
             />
@@ -198,7 +198,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         render={({ field }) => (
           <FormItem>
             <FormLabelExt
-              label="Exception Dates"
+              label="Exception dates"
               description="Dates to exclude for triggers. Please enter date in format (YYYY-MM-DD)"
             />
             <FormControl>

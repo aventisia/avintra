@@ -7,7 +7,7 @@
 export const VCBContainer = ({ children }: React.PropsWithChildren) => {
   return (
     <div
-      className="flex items-center rounded-lg border border-slate-200 bg-white p-1 shadow-sm"
+      className="flex items-center rounded-lg border border-line bg-surface p-1"
       onContextMenu={(e) => e.preventDefault()}
     >
       {children}

@@ -30,7 +30,7 @@ const CLOSING_JOB_STATUSES = [
 
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Job Id",
+  label: "Job ID",
   disabled: true,
   description: "Unique identifier of the job. Auto-populated for update actions.",
 };
@@ -56,11 +56,11 @@ export const flowVersionIdProps: AsyncSingleSelectFieldProps<
 
 export const triggerTypeProps: SelectFieldProps = {
   name: "triggerType",
-  label: "Trigger Type",
+  label: "Trigger type",
   isRequired: true,
   disabled: true,
   selectOptions: enumToArray(TriggerTypesEnum),
-  description: "The trigger type is always Manual for jobs created from this form.",
+  description: "The trigger type is always manual for jobs created from this form.",
 };
 
 export const priorityProps: SelectFieldProps = {
@@ -81,7 +81,7 @@ export const statusProps: SelectFieldProps = {
 
 export const closingStatusProps: SelectFieldProps = {
   name: "closingStatus",
-  label: "Closing Status",
+  label: "Closing status",
   isRequired: true,
   selectOptions: CLOSING_JOB_STATUSES.map((status) => ({
     value: status,
@@ -99,7 +99,7 @@ export const executeOnCloudProps: SwitchFieldProps = {
 
 export const enableClosingStatusProps: SwitchFieldProps = {
   name: "isClosingStatusEnabled",
-  label: "Close Job",
+  label: "Close job",
   description:
     "Enable to manually close the job by selecting a terminal status. Remarks are required when closing the job.",
 };
@@ -123,7 +123,7 @@ export const executionLocationProps: AsyncSingleSelectFieldProps<
 
 export const existingJobIdProps: InputFieldProps = {
   name: "existingJobId",
-  label: "Existing Job ID (Optional)",
+  label: "Existing job ID (optional)",
   placeholder: "00000000-0000-0000-0000-000000000000",
   description:
     "Optional existing job id. If provided, the same job id will be reused with retry count > 0.",
@@ -131,7 +131,7 @@ export const existingJobIdProps: InputFieldProps = {
 
 export const jobInputDataProps: JsonEditorFieldProps = {
   name: "jobInputData",
-  label: "Job Input Data (Optional)",
+  label: "Job input data (optional)",
   description:
     "Provide a valid JSON payload that will be passed to the job as input data. Leave as-is or empty to submit without input data.",
 };

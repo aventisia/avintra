@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DotSeparator, NoContentMessage } from "@avplatform/ui";
+import { DotSeparator, EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
@@ -220,7 +220,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
   const onDeleteClick = (index: number) => {
     showCustomAlertDialog({
-      title: "Delete Tool Configuration",
+      title: "Delete tool configuration",
       description: "Are you sure you want to remove this tool configuration?",
       confirmBtnText: "Delete",
       isDestructive: true,
@@ -234,14 +234,14 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   };
 
   return (
-    <GroupedFieldsWrapper groupName="Configure Tools">
+    <GroupedFieldsWrapper groupName="Configure tools">
       <div className="space-y-4">
         <SearchableSelectField
           name={fieldNames.tool}
-          label="Select Tool"
+          label="Select tool"
           selectOptions={toolOptions}
           size="sm"
-          placeholder="Select Tool"
+          placeholder="Select tool"
           isLoading={isUsableToolsLoading}
           disabled={isUsableToolsLoading}
           fallbackIcon={<Wrench className="h-4 w-4 shrink-0 text-muted-foreground" />}
@@ -249,18 +249,18 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
         <VaultCredentialSelectField
           name={fieldNames.credential_name}
-          label="Select Credential"
+          label="Select credential"
           size="sm"
           modelProvider={credentialType}
           disabled={!currentTool || isToolOperationsLoading}
-          placeholder="Select Credential"
+          placeholder="Select credential"
         />
 
         <MultiSelectField
           name={fieldNames.actions}
-          label="Select Actions"
+          label="Select actions"
           options={availableActionsForTool}
-          placeholder="Select Actions"
+          placeholder="Select actions"
           isRequired
           fieldSize="sm"
           disabled={!currentTool || isToolOperationsLoading || availableActionsForTool.length === 0}
@@ -293,7 +293,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             onClick={handleSaveConfig}
             disabled={isAddDisabled}
           >
-            {editingIndex !== null ? "Save Changes" : "Add Tool"}
+            {editingIndex !== null ? "Save changes" : "Add tool"}
           </Button>
 
           <Button
@@ -312,7 +312,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
       <div className="space-y-2.5">
         {fields.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No tools added"
             Icon={Grip}
             secondaryMessage="You have no tool configurations added."

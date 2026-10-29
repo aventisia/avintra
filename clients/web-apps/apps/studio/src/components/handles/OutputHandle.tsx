@@ -31,7 +31,7 @@ export const OutputHandle = ({
       position={position}
       isConnectable={connections.length < connectionCount}
       className={cn(
-        "z-[5] h-1.5 w-1.5 rounded-full border-indigo-500 bg-indigo-400",
+        "z-[5] h-1.5 w-1.5 rounded-full border-primary bg-primary",
 
         className,
       )}

@@ -20,25 +20,25 @@ const ConnectedIntegrationDialogContent = () => {
         </div>
         {/* Connection Status */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Connection Status:</span>
+          <span className="text-muted-foreground">Connection status:</span>
           <Badge variant="completed">Connected</Badge>
         </div>
 
         {/* Last Sync */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Last Sync:</span>
+          <span className="text-muted-foreground">Last sync:</span>
           <span>14/02/2025</span>
         </div>
 
         {/* Date Connected */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Date Connected:</span>
+          <span className="text-muted-foreground">Date connected:</span>
           <span>14/07/2024</span>
         </div>
 
         {/* Agents Connected */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Agents Connected:</span>
+          <span className="text-muted-foreground">Agents connected:</span>
           <span className="text-primary underline">10</span>
         </div>
       </div>

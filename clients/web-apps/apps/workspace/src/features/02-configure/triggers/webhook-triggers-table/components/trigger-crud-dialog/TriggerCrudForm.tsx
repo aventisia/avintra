@@ -149,7 +149,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           <FormItem size={"base"}>
             <FormLabelExt
               size={"base"}
-              label="Select Agent"
+              label="Select agent"
               description="Choose the agent that should be triggered by this event."
               isRequired
             />
@@ -171,7 +171,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
 
       <InputField {...callbackUrlProps} disabled={isReadMode} />
       <pre>
-        <JsonEditorField name="inputSchema" label="Input Arguments Schema" disabled={isReadMode} />
+        <JsonEditorField name="inputSchema" label="Input arguments schema" disabled={isReadMode} />
       </pre>
 
       {/* Is Disabled */}

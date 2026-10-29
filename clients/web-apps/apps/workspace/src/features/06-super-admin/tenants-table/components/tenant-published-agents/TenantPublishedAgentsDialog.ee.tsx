@@ -19,7 +19,7 @@ export const TenantPublishedAgentsDialog = () => {
   const [searchParams] = useSearchParams();
   const tname = searchParams.get("tname") ?? "Tenant";
 
-  useDocumentTitle("Published Agents");
+  useDocumentTitle("Published agents");
 
   const { data, isLoading } = useFetchTenantPublishedAgents(tid ?? "");
 

@@ -1,10 +1,5 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronUpDownIcon,
-  EyeSlashIcon,
-} from "@heroicons/react/24/outline";
 import { type Column } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
 import { Button } from "@/ui/components/buttons";
 import { setDataTablePreferences } from "@/ui/components/data-table/dt-preferences-utils";
@@ -58,28 +53,28 @@ export const DTColumnHeader = <TData, TValue>({
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="h-3 w-3" />
+              <ArrowDown className="h-3 w-3" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="h-3 w-3" />
+              <ArrowUp className="h-3 w-3" />
             ) : (
-              <ChevronUpDownIcon className="h-3 w-3" />
+              <ChevronsUpDown className="h-3 w-3" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => handleSorting(false)}>
-            <ArrowUpIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+            <ArrowUp className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
             Asc
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleSorting(true)}>
-            <ArrowDownIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+            <ArrowDown className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
             Desc
           </DropdownMenuItem>
           {enableHiding && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleHideColumn}>
-                <EyeSlashIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+                <EyeOff className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
                 Hide
               </DropdownMenuItem>
             </>

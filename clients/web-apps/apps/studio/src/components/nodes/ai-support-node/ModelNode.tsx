@@ -80,9 +80,10 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
       <div className="relative">
         <div
           className={cn(
-            "flex h-16 w-16 items-center justify-center rounded-full   border border-slate-300   bg-white hover:ring hover:ring-ring cursor-pointer",
+            "flex h-16 w-16 items-center justify-center cursor-pointer rounded-full border border-line-strong bg-surface hover:bg-hover",
             (connectedNodeData?.data?.isDisabled as NodeDataType) && "opacity-50",
-            (connectedNodeData?.data?.isCut as NodeDataType) && "border-red-400 opacity-60",
+            (connectedNodeData?.data?.isCut as NodeDataType) &&
+              "border-dashed border-bad opacity-60",
           )}
           onDoubleClick={() => {
             if (!connectedNodeId || !connectedNodeData?.data) return;

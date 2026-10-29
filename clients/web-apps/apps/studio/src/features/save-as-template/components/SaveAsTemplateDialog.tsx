@@ -40,7 +40,7 @@ export const SaveAsTemplateDialog = () => {
     >
       <DialogContent className="!max-w-[60vw]" side="right">
         {/* Header with static title */}
-        <DialogDefaultHeader heading="Save As Template" />
+        <DialogDefaultHeader heading="Save as template" />
 
         {/* Main form to save current config as a template */}
         <SaveAsTemplateForm />

@@ -1,4 +1,4 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Info } from "lucide-react";
 import * as React from "react";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
@@ -95,7 +95,7 @@ const RadioGroupField = ({
                         size === "base" && "text-sm",
                       )}
                     >
-                      <InformationCircleIcon
+                      <Info
                         className={cn(
                           size === "xs" && "h-3 w-3",
                           size === "sm" && "h-3.5 w-3.5",

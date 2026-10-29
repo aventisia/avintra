@@ -71,8 +71,8 @@ export const ToolCrudForm = ({
 
       <InputField
         name="name"
-        label="Unique Name"
-        placeholder="My Custom API"
+        label="Unique name"
+        placeholder="My custom API"
         isRequired
         description="A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Cannot be changed** after creation."
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
@@ -104,7 +104,7 @@ export const ToolCrudForm = ({
       />
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">OpenAPI Specification</label>
+        <label className="text-sm font-medium">OpenAPI specification</label>
         <JsonEditor
           value={form.watch("openApiSpec") ?? ""}
           onChange={(value) => form.setValue("openApiSpec", value, { shouldDirty: true })}
@@ -115,22 +115,22 @@ export const ToolCrudForm = ({
 
       <SelectField
         name="authenticationType"
-        label="Authentication Type"
+        label="Authentication type"
         description="How the tool authenticates with the external API. Choose the method that matches the API."
         selectOptions={[
           { label: "No authentication", value: ToolAuthenticationTypeEnum.None },
-          { label: "API Key (Header)", value: ToolAuthenticationTypeEnum.ApiKeyHeader },
-          { label: "API Key (Query)", value: ToolAuthenticationTypeEnum.ApiKeyQuery },
-          { label: "Bearer Token", value: ToolAuthenticationTypeEnum.Bearer },
-          { label: "Basic Authentication", value: ToolAuthenticationTypeEnum.Basic },
+          { label: "API key (header)", value: ToolAuthenticationTypeEnum.ApiKeyHeader },
+          { label: "API key (query)", value: ToolAuthenticationTypeEnum.ApiKeyQuery },
+          { label: "Bearer token", value: ToolAuthenticationTypeEnum.Bearer },
+          { label: "Basic authentication", value: ToolAuthenticationTypeEnum.Basic },
         ]}
       />
 
       <SelectField
         name="credentialName"
         label="Credential"
-        placeholder="Select a Custom API Tool credential"
-        description="Select a Custom API Tool credential to use for authentication, if required."
+        placeholder="Select a custom API tool credential"
+        description="Select a custom API tool credential to use for authentication, if required."
         selectOptions={(customApiCredentials ?? []).map((cred) => ({
           label: cred.label,
           value: cred.value,

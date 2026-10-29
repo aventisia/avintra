@@ -77,7 +77,7 @@ const InputFields = ({
             {...field}
             fieldSize="xs"
             description="Initial value for the field"
-            label="Default Value"
+            label="Default value"
           />
         )}
       />
@@ -88,7 +88,7 @@ const InputFields = ({
         render={({ field }) => (
           <SelectField
             {...field}
-            label="Field Type"
+            label="Field type"
             description="Select the input type"
             size="xs"
             selectOptions={[
@@ -110,7 +110,7 @@ const InputFields = ({
                 {...field}
                 fieldSize="xs"
                 description="Enter semicolon-separated options for the select input (e.g., 'Red; Green; Blue')"
-                label="Select Options"
+                label="Select options"
               />
             )}
           />
@@ -123,7 +123,7 @@ const InputFields = ({
           control={control}
           render={({ field: { value, onChange, ...rest } }) => (
             <SwitchField
-              label="Is Required"
+              label="Is required"
               size="xs"
               description="Mark this field as required"
               value={value ? "true" : "false"} // convert to string

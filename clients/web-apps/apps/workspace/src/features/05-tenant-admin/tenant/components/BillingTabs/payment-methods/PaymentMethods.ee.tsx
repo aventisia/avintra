@@ -15,7 +15,7 @@ const PaymentMethods = () => {
     <>
       <div className="rounded-lg border">
         <div className="flex items-center justify-between border-b p-4">
-          <p className="text-heading text-ink">Payment Methods</p>
+          <p className="text-heading text-ink">Payment methods</p>
           {/* <Button
             className="flex items-center gap-1 bg-selected text-primary-text"
             variant={"ghost"}

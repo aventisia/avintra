@@ -4,13 +4,13 @@ export const TICKET_TABLE_KEY = "support-tickets-v2";
 export const TICKET_TABLE_HEADING = "Support Tickets";
 
 export const REQUEST_TYPES = [
-  { value: "ServiceRequest", label: "Service Request" },
-  { value: "ChangeRequest", label: "Change Request" },
+  { value: "ServiceRequest", label: "Service request" },
+  { value: "ChangeRequest", label: "Change request" },
 ] as const;
 
 export const TICKET_STATUSES = [
   { value: "New", label: "New" },
-  { value: "InProgress", label: "In Progress" },
+  { value: "InProgress", label: "In progress" },
   { value: "Closed", label: "Closed" },
 ] as const;
 

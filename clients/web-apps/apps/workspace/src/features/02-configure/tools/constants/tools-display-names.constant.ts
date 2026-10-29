@@ -2,8 +2,8 @@ import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-en
 
 export const AUTHENTICATION_TYPE_DISPLAY_NAMES: Record<ToolAuthenticationTypeEnum, string> = {
   [ToolAuthenticationTypeEnum.None]: "No authentication",
-  [ToolAuthenticationTypeEnum.ApiKeyHeader]: "API Key (Header)",
-  [ToolAuthenticationTypeEnum.ApiKeyQuery]: "API Key (Query)",
-  [ToolAuthenticationTypeEnum.Bearer]: "Bearer Token",
-  [ToolAuthenticationTypeEnum.Basic]: "Basic Authentication",
+  [ToolAuthenticationTypeEnum.ApiKeyHeader]: "API key (header)",
+  [ToolAuthenticationTypeEnum.ApiKeyQuery]: "API key (query)",
+  [ToolAuthenticationTypeEnum.Bearer]: "Bearer token",
+  [ToolAuthenticationTypeEnum.Basic]: "Basic authentication",
 };

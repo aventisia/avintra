@@ -23,8 +23,8 @@ export const DateRangeFilter = () => {
 
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     { label: "Last 7 days", value: 7 },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },

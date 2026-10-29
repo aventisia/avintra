@@ -61,7 +61,7 @@ export const CreditPlansTable = () => {
                 placeholder="Search plan..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Create Plan" entity="creditPlan" />
+              <DTCreateButton buttonText="Create plan" entity="creditPlan" />
             </div>
           </div>
 

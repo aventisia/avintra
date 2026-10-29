@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { CircleCheckIcon } from "lucide-react";
 
 /**
  * Formats a number as a string with commas in US format and upto two decimal places.
@@ -99,11 +99,11 @@ export const PlanFeatures = ({
 
   return (
     <div className={cn(className)}>
-      <h3 className="font-medium">Plan Includes:</h3>
+      <h3 className="font-medium">Plan includes:</h3>
       <ul className="mt-2 space-y-2 text-sm">
         {featuresList.map((feature, index) => (
           <li key={index} className="flex items-start gap-2">
-            <CheckCircleIcon className="mt-0.5 size-4 shrink-0 text-ok" /> {feature}
+            <CircleCheckIcon className="mt-0.5 size-4 shrink-0 text-ok" /> {feature}
           </li>
         ))}
       </ul>

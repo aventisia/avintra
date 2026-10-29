@@ -31,20 +31,20 @@ const CustomApiToolForm = ({
   const authType = watch("authenticationType");
 
   const authTypeOptions = [
-    { label: "API Key (Header)", value: CustomApiToolAuthTypeEnum.ApiKeyHeader },
-    { label: "API Key (Query)", value: CustomApiToolAuthTypeEnum.ApiKeyQuery },
-    { label: "Bearer Token", value: CustomApiToolAuthTypeEnum.Bearer },
-    { label: "Basic Authentication", value: CustomApiToolAuthTypeEnum.Basic },
+    { label: "API key (header)", value: CustomApiToolAuthTypeEnum.ApiKeyHeader },
+    { label: "API key (query)", value: CustomApiToolAuthTypeEnum.ApiKeyQuery },
+    { label: "Bearer token", value: CustomApiToolAuthTypeEnum.Bearer },
+    { label: "Basic authentication", value: CustomApiToolAuthTypeEnum.Basic },
   ];
 
   return (
     <div className="space-y-4 px-2.5 pb-5">
-      {isReadOnly && <InputField name="id" label="Vault Id" value={rowId} disabled />}
+      {isReadOnly && <InputField name="id" label="Vault ID" value={rowId} disabled />}
 
       <InputField
         name="name"
-        label="Unique Name"
-        placeholder="Custom API Tool"
+        label="Unique name"
+        placeholder="Custom API tool"
         isRequired
         description="Name cannot be modified after creation."
         autoFocus
@@ -61,7 +61,7 @@ const CustomApiToolForm = ({
 
       <SelectField
         name="authenticationType"
-        label="Authentication Type"
+        label="Authentication type"
         placeholder="Select authentication type"
         selectOptions={authTypeOptions}
         isRequired
@@ -94,13 +94,13 @@ const CustomApiToolForm = ({
         <>
           <InputField
             name="apiKeyHeaderName"
-            label="Header Name"
-            placeholder="e.g. X-API-Key"
+            label="Header name"
+            placeholder="e.g. X-API-key"
             isRequired
           />
           <InputField
             name="apiKeyHeaderValue"
-            label="API Key"
+            label="API key"
             placeholder="API key"
             type="password"
             isRequired
@@ -112,13 +112,13 @@ const CustomApiToolForm = ({
         <>
           <InputField
             name="apiKeyQueryName"
-            label="Parameter Name"
+            label="Parameter name"
             placeholder="e.g. apiKey"
             isRequired
           />
           <InputField
             name="apiKeyQueryValue"
-            label="API Key"
+            label="API key"
             placeholder="API key"
             type="password"
             isRequired
@@ -129,7 +129,7 @@ const CustomApiToolForm = ({
       {crudAction !== "create" && (
         <SwitchField
           name="isDisabled"
-          label="Disable Record"
+          label="Disable record"
           description="Disable this record if it's been outdated, or not required anymore"
         />
       )}

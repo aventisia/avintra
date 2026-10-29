@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { CommandEmpty } from "@avplatform/ui/command";
 import { User2Icon } from "lucide-react";
 
@@ -8,7 +8,7 @@ import { User2Icon } from "lucide-react";
 export const UsersNoContentMessage = () => {
   return (
     <CommandEmpty>
-      <NoContentMessage
+      <EmptyState
         // className="-mt-5"
         Icon={User2Icon}
         primaryMessage="No user found"

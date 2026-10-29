@@ -25,7 +25,6 @@
     "@avplatform/ui": "*",
     "@babel/runtime": "^7.24.0",
     "@dagrejs/dagre": "^1.1.3",
-    "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@microsoft/signalr": "^10.0.0",
     "@monaco-editor/react": "^4.6.0",

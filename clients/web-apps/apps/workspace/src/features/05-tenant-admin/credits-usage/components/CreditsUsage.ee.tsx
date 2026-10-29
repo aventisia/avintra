@@ -27,10 +27,10 @@ export const CreditsUsage = () => {
         <Tabs defaultValue="credits">
           <TabsList className="grid w-full max-w-md grid-cols-2 rounded-none border-b bg-transparent px-3 text-base">
             <TabsTrigger value="credits" className="rounded-none">
-              Platform Credits
+              Platform credits
             </TabsTrigger>
             <TabsTrigger value="byok" className="rounded-none">
-              BYOK Consumption
+              BYOK consumption
             </TabsTrigger>
           </TabsList>
 
@@ -44,7 +44,7 @@ export const CreditsUsage = () => {
 
                 {/* LLM / model credits by service */}
                 <div className="rounded-lg border bg-surface px-6 py-4">
-                  <p className="mb-4 text-heading">LLM Credits by Model</p>
+                  <p className="mb-4 text-heading">LLM credits by model</p>
                   <ModelCharts />
                 </div>
 
@@ -58,7 +58,7 @@ export const CreditsUsage = () => {
             <>
               {/* BYOK consumption by model provider */}
               <div className="rounded-lg border bg-surface px-6 py-4">
-                <p className="mb-4 text-heading">BYOK Consumption by Model</p>
+                <p className="mb-4 text-heading">BYOK consumption by model</p>
                 <ByokModelCharts />
               </div>
 

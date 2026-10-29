@@ -12,7 +12,7 @@ export const FolderGlyph = ({ className }: { className?: string }) => (
     />
     <g
       className={cn(
-        "origin-bottom transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] [transform-box:fill-box]",
+        "origin-bottom transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] [transform-box:fill-box]",
         "group-data-[drop-active=true]/drop:[transform:skewX(-12deg)_scaleY(0.8)]",
       )}
     >

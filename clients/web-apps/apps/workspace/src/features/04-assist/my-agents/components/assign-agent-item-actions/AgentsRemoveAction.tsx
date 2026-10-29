@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "lucide-react";
 
 import { useRemoveAssignedAgentsMutation } from "../../hooks/useRemoveAssignedAgentsMutation";
 

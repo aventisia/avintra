@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { ChevronDownIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ShieldCheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 

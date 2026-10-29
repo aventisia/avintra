@@ -3,8 +3,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 
 import NewChatIcon from "@/components/NewChatIcon";
 
-// import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
-
 interface ChatAssistantProps {
   className?: string;
 }

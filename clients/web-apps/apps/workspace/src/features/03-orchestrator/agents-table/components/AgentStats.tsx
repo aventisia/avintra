@@ -40,19 +40,19 @@ export const AgentStats = ({ data }: StatsProps) => {
       <StatsCard
         key="Total Published Agents"
         icon={<NewAgentIcon className="size-7" />}
-        title={"Total Published Agents"}
+        title={"Total published agents"}
         content={data?.length}
       />
       <StatsCard
         key={"Total Machines"}
         icon={<Monitor className="size-7" />}
-        title={"Total Machines"}
+        title={"Total machines"}
         content={stats?.totalMachineCount ?? 0}
       />
       <StatsCard
         key={"Total Active Machines"}
         icon={<BsRobot className="size-7" />}
-        title={"Total Active Machines"}
+        title={"Total active machines"}
         content={stats?.active ?? 0}
       />
     </div>

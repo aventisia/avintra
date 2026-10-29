@@ -212,7 +212,7 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
 
   if (!draftTool) {
     return (
-      <p className="text-sm text-muted-foreground">No tool draft loaded. Go back to Step 1.</p>
+      <p className="text-sm text-muted-foreground">No tool draft loaded. Go back to step 1.</p>
     );
   }
 
@@ -225,8 +225,8 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
 
       <div className="flex items-center justify-between gap-3">
         <FieldLabel
-          label="Operation Verification"
-          description="Select the operations to test. An operation is marked Verified only when the server records a successful HTTP 200 test."
+          label="Operation verification"
+          description="Select the operations to test. An operation is marked verified only when the server records a successful HTTP 200 test."
         />
         {operations.length > 0 && (
           <div className="flex shrink-0 items-center gap-2 text-xs">

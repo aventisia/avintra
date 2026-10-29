@@ -63,7 +63,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     {
       name: "submittedOn",
       description: "Date the request was submitted",
-      label: "Submitted On",
+      label: "Submitted on",
       type: "Date",
       isRequired: false,
       isUsedForUniqueIdentifier: false,

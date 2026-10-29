@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { UsersIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCollaborationStore } from "../../stores/collaboration-store";

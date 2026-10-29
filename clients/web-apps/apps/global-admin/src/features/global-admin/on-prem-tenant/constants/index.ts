@@ -9,11 +9,11 @@ const TABLE_KEY = "onPremTenant";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create On-prem Tenant", description: "" };
+      return { heading: "Create on-prem tenant", description: "" };
     case "read":
-      return { heading: "On-prem Tenant", description: "" };
+      return { heading: "On-prem tenant", description: "" };
     case "update":
-      return { heading: "Edit On-prem Tenant", description: "" };
+      return { heading: "Edit on-prem tenant", description: "" };
     default:
       return { heading: "", description: "" };
   }

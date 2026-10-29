@@ -6,14 +6,14 @@ import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 // queue Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Queue Id",
+  label: "Queue ID",
   disabled: true,
 };
 
 // Name
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   description:
     "A **unique**, descriptive name for the queue.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
@@ -22,14 +22,14 @@ export const nameProps: InputFieldProps = {
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 
 // Type
 export const typeProps: SelectFieldProps = {
   name: "type",
-  label: "Instance Type",
+  label: "Instance type",
   isRequired: true,
   description:
     "Choose who processes items from this queue:\n\n- **Agent** — items are processed by an agent.\n- **User** — items are processed by a user.",
@@ -41,7 +41,7 @@ export const typeProps: SelectFieldProps = {
 
 export const processingModeProps: SelectFieldProps = {
   name: "processingMode",
-  label: "Processing Mode",
+  label: "Processing mode",
   isRequired: true,
   description:
     "How items are picked for processing:\n\n- **Flexible** — items can be picked in any order.\n- **Fifo** — items are processed in first-in, first-out order.",
@@ -62,7 +62,7 @@ export const descriptionProps: TextareaFieldProps = {
 
 export const maxRetriesProps: InputFieldProps = {
   name: "maximumRetryAttempts",
-  label: "Max Of Retries",
+  label: "Max of retries",
   description: "The maximum number of times an item can be retried.",
   type: "number",
   min: 0,
@@ -72,12 +72,12 @@ export const maxRetriesProps: InputFieldProps = {
 
 export const inputJsonSchemaProps: InputFieldProps = {
   name: "specificDataSchemaFile",
-  label: "Specific Data Json Schema",
+  label: "Specific data JSON schema",
   description: "A JSON schema describing the expected input data for items.",
 };
 
 export const outputJsonSchemaProps: InputFieldProps = {
   name: "outputDataSchemaFile",
-  label: "Output Data Json Schema",
+  label: "Output data JSON schema",
   description: "A JSON schema describing the output data produced by processing items.",
 };

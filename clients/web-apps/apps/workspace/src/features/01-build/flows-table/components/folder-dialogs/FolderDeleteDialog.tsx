@@ -23,7 +23,7 @@ const FLOWING_DOTS = [0, 1, 2];
 
 const AgentsFlowArrow = ({ count }: { count: number }) => (
   <div className="flex flex-col items-center gap-1.5">
-    <span className="rounded-full bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-2 shadow-sm ring-1 ring-border">
+    <span className="rounded-full bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-2 ring-1 ring-border">
       {count} {pluralize(count, "agent")}
     </span>
     <div className="relative h-1.5 w-20 overflow-hidden" aria-hidden="true">

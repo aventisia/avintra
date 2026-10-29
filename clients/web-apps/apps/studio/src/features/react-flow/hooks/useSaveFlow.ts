@@ -142,7 +142,7 @@ export const useSaveFlow = () => {
     });
 
     if (currentFlow?.accessType === "View" && pending) {
-      toast.info("You are in View-only mode. Changes will not be saved.");
+      toast.info("You are in view-only mode. Changes will not be saved.");
       return false;
     }
 

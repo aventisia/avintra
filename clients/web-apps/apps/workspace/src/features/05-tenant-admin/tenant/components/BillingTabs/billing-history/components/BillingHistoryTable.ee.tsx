@@ -52,7 +52,7 @@ export const BillingHistoryTable = () => {
               <DTSearchBox
                 table={table}
                 searchColumns={["invoice"]}
-                placeholder="Search History..."
+                placeholder="Search history..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
             </div>

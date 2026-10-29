@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { CircleXIcon, Trash2Icon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { Progress } from "@/react-toolkit/ui/progress";
@@ -57,7 +57,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
   return (
     <div className="h-full rounded-lg border">
       <div className="flex items-center justify-between p-2">
-        <h2 className="text-xs font-medium">Upload Files ({filesToUpload.length})</h2>
+        <h2 className="text-xs font-medium">Upload files ({filesToUpload.length})</h2>
         <div className="flex gap-2">
           <FileDropzone
             addFile={addFile}
@@ -68,7 +68,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
           />
           {filesToUpload.length > 0 && (
             <Button variant="ghost" size="xs" type="button" onClick={removeAll}>
-              Delete All
+              Delete all
             </Button>
           )}
         </div>
@@ -103,9 +103,9 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
                     }
                   >
                     {isUploading ? (
-                      <XCircleIcon className="h-5 w-5" />
+                      <CircleXIcon className="h-5 w-5" />
                     ) : (
-                      <TrashIcon className="h-4 w-4" />
+                      <Trash2Icon className="h-4 w-4" />
                     )}
                   </Button>
                 </div>

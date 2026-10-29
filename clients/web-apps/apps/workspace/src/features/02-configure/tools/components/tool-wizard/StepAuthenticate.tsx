@@ -5,10 +5,10 @@ import { FieldLabel } from "./FieldLabel";
 
 const authOptions = [
   { label: "No authentication", value: ToolAuthenticationTypeEnum.None },
-  { label: "API Key (Header)", value: ToolAuthenticationTypeEnum.ApiKeyHeader },
-  { label: "API Key (Query)", value: ToolAuthenticationTypeEnum.ApiKeyQuery },
-  { label: "Bearer Token", value: ToolAuthenticationTypeEnum.Bearer },
-  { label: "Basic Authentication", value: ToolAuthenticationTypeEnum.Basic },
+  { label: "API key (header)", value: ToolAuthenticationTypeEnum.ApiKeyHeader },
+  { label: "API key (query)", value: ToolAuthenticationTypeEnum.ApiKeyQuery },
+  { label: "Bearer token", value: ToolAuthenticationTypeEnum.Bearer },
+  { label: "Basic authentication", value: ToolAuthenticationTypeEnum.Basic },
 ];
 
 export const StepAuthenticate = () => {
@@ -18,7 +18,7 @@ export const StepAuthenticate = () => {
 
   if (!draftTool) {
     return (
-      <p className="text-sm text-muted-foreground">No tool draft loaded. Go back to Step 1.</p>
+      <p className="text-sm text-muted-foreground">No tool draft loaded. Go back to step 1.</p>
     );
   }
 
@@ -40,13 +40,13 @@ export const StepAuthenticate = () => {
     <div className="space-y-4">
       <div className="space-y-1.5">
         <FieldLabel
-          label="Authentication Type"
+          label="Authentication type"
           description="How the tool authenticates with the external API. Choose the method that matches the API."
         />
         <select
           value={draftTool.authenticationType ?? ToolAuthenticationTypeEnum.None}
           onChange={(e) => handleAuthChange(e.target.value)}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {authOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -59,15 +59,15 @@ export const StepAuthenticate = () => {
       <div className="space-y-1.5">
         <FieldLabel
           label="Credential"
-          description="Select a Custom API Tool credential to use for authentication, if required."
+          description="Select a custom API tool credential to use for authentication, if required."
         />
         <select
           value={draftTool.credentialName ?? ""}
           onChange={(e) => handleCredentialChange(e.target.value)}
           disabled={isCredentialsLoading}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">Select a Custom API Tool credential...</option>
+          <option value="">Select a custom API tool credential...</option>
           {(customApiCredentials ?? []).map((cred) => (
             <option key={cred.value} value={cred.value}>
               {cred.label}

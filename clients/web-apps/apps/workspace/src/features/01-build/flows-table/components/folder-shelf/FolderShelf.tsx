@@ -25,10 +25,7 @@ const DragHint = ({ agentName }: { agentName: string }) => (
     transition={PANEL_TRANSITION}
     className="flex max-w-[22rem] items-center gap-2 rounded-full bg-selected px-2.5 py-1 text-[12px] font-medium text-primary-text ring-1 ring-primary/30"
   >
-    <span className="relative grid size-2 shrink-0 place-items-center">
-      <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-60" />
-      <span className="relative size-2 rounded-full bg-primary" />
-    </span>
+    <span className="size-2 shrink-0 rounded-full bg-primary" />
     <span className="truncate">Drop {agentName} on a folder</span>
   </motion.p>
 );

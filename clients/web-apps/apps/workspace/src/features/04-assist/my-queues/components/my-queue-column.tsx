@@ -97,7 +97,7 @@ export const buildColumns = (
     {
       accessorKey: "createdOn",
       header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created On" />
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created on" />
       ),
       cell: ({ row }) => {
         const value = row.original.createdOn;
@@ -119,7 +119,7 @@ export const buildColumns = (
           {
             accessorKey: "closedOn",
             header: ({ column }: { column: Column<WorkItemRow, unknown> }) => (
-              <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Closed On" />
+              <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Closed on" />
             ),
             cell: ({ row }: { row: { original: WorkItemRow } }) => {
               const value = row.original.closedOn;

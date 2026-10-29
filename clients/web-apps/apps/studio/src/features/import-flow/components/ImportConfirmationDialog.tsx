@@ -32,7 +32,7 @@ export const ImportConfirmationDialog: React.FC<ImportConfirmationDialogProps> =
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Import Agent</AlertDialogTitle>
+          <AlertDialogTitle>Import agent</AlertDialogTitle>
           <AlertDialogDescription>
             This will overwrite your current flow with the imported data. Are you sure you want to
             proceed?

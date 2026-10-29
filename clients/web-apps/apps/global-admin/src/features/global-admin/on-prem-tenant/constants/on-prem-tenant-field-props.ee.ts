@@ -11,7 +11,7 @@ import { OnPremTenantTypes } from "../enums/on-prem-tenant-type-enum.ee";
 // Tenant Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Tenant Id",
+  label: "Tenant ID",
   disabled: true,
 };
 
@@ -37,7 +37,7 @@ const typeProps: SelectFieldProps = {
 // Execution Time Allowed
 const executionTimeAllowedProps: InputFieldProps = {
   name: "executionTimeAllowed",
-  label: "Execution Time Allowed (in Hours)",
+  label: "Execution time allowed (in hours)",
   isRequired: true,
   description: "The number of hours executions are allowed.",
 };
@@ -45,7 +45,7 @@ const executionTimeAllowedProps: InputFieldProps = {
 // Contract Start Date
 const contractStartDateProps: DateTimePickerFieldProps = {
   name: "contractStartDate",
-  label: "Contract Start Date",
+  label: "Contract start date",
   isRequired: true,
   description: "When the contract starts.",
   granularity: "minute",
@@ -54,7 +54,7 @@ const contractStartDateProps: DateTimePickerFieldProps = {
 // Contract Renewal Date
 const contractRenewalDateProps: DateTimePickerFieldProps = {
   name: "contractRenewalDate",
-  label: "Contract Renewal Date",
+  label: "Contract renewal date",
   isRequired: true,
   description: "When the contract renews.",
   granularity: "minute",
@@ -63,7 +63,7 @@ const contractRenewalDateProps: DateTimePickerFieldProps = {
 // Name
 const ourEmailsProps: InputFieldProps = {
   name: "ourEmails",
-  label: "Aventisia Emails",
+  label: "Aventisia emails",
   description: "Enter one or more email addresses separated by semicolons (;)",
   isRequired: true,
 };
@@ -71,7 +71,7 @@ const ourEmailsProps: InputFieldProps = {
 // Name
 const tenantEmailsProps: InputFieldProps = {
   name: "tenantEmails",
-  label: "Client Emails",
+  label: "Client emails",
   description: "Enter one or more email addresses separated by semicolons (;)",
   isRequired: true,
 };
@@ -79,15 +79,15 @@ const tenantEmailsProps: InputFieldProps = {
 // Disable Execution
 const isExecutionDisabledProps: SwitchFieldProps = {
   name: "isExecutionDisabled",
-  label: "Disable Execution",
+  label: "Disable execution",
   description: "Disable executions for the tenant",
 };
 
 // Disable Login
 const isLoginDisabledProps: SwitchFieldProps = {
   name: "isLoginDisabled",
-  label: "Disable Login",
-  description: "Disable Login for the tenant",
+  label: "Disable login",
+  description: "Disable login for the tenant",
 };
 
 // Allow Single Sign-On

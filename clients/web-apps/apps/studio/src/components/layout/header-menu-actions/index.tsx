@@ -1,12 +1,12 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
 import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api/core";
 import {
   ArrowLeftRightIcon,
   BookCopyIcon,
   DockIcon,
+  ExternalLinkIcon,
   ImportIcon,
   KeyboardIcon,
   LockOpenIcon,
@@ -93,8 +93,8 @@ export const HeaderActionMenu: React.FC = () => {
         {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem
             size="md"
-            Icon={ArrowTopRightOnSquareIcon}
-            content="Open UI Inspector"
+            Icon={ExternalLinkIcon}
+            content="Open UI inspector"
             onClick={openUIInspector}
           />
         ) : null}
@@ -120,7 +120,7 @@ export const HeaderActionMenu: React.FC = () => {
         <SimpleDDMenuItem
           size="md"
           Icon={BookCopyIcon}
-          content="Save As Template"
+          content="Save as template"
           onClick={() => void guardDirtyNodeConfig(() => setSATDialog(true))}
         />
 
@@ -129,7 +129,7 @@ export const HeaderActionMenu: React.FC = () => {
             onClick={() => setExportDialog(true)}
             size="md"
             Icon={ArrowLeftRightIcon}
-            content="Add Input/Output"
+            content="Add input/output"
           />
         ) : null}
 
@@ -137,7 +137,7 @@ export const HeaderActionMenu: React.FC = () => {
           <SimpleDDMenuItem
             size="md"
             Icon={KeyboardIcon}
-            content="Keyboard Shortcuts"
+            content="Keyboard shortcuts"
             onClick={() => {
               keyboardDialog(true);
             }}
@@ -149,7 +149,7 @@ export const HeaderActionMenu: React.FC = () => {
             <SimpleDDMenuItem
               size="md"
               Icon={UploadIcon}
-              content="Export (Trimmed)"
+              content="Export (trimmed)"
               onClick={() => {
                 void guardDirtyNodeConfig(exportFlowTrimmed);
               }}

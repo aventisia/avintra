@@ -18,7 +18,7 @@ export const DCPDialog = ({ children }: React.PropsWithChildren) => {
     <DialogWrapper open={showDialog} onOpenChangeFn={() => setShowDialog(!showDialog)}>
       {children}
       <DialogContent side={"right"} className={cn("!max-w-[32rem]")}>
-        <DialogDefaultHeader heading="Create New Credential" />
+        <DialogDefaultHeader heading="Create new credential" />
         <ScrollArea
           style={{
             height: `calc(100vh - 3.8rem )`,

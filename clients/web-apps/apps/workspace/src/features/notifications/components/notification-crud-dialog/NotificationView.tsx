@@ -1,4 +1,4 @@
-import { LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
+import { EmptyState, LoadingSpinner, Separator } from "@avplatform/ui";
 import {
   ViewContainer,
   ViewDefaultCard,
@@ -47,7 +47,7 @@ export const NotificationView = ({ rowId }: NotificationViewProps) => {
   if (!notification) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <NoContentMessage
+        <EmptyState
           className="-mt-20"
           Icon={BellIcon}
           primaryMessage="Notification record is not available."
@@ -97,31 +97,31 @@ export const NotificationView = ({ rowId }: NotificationViewProps) => {
         title="Schedule"
         icon={<BellIcon className="size-3.5 text-muted-foreground" />}
       >
-        <ViewInfoRow label="Scheduled For" value={formatDate(notification.scheduledFor, true)} />
+        <ViewInfoRow label="Scheduled for" value={formatDate(notification.scheduledFor, true)} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Sent On" value={formatDate(notification.sentOn, true)} />
+        <ViewInfoRow label="Sent on" value={formatDate(notification.sentOn, true)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Recurrence" value={formatEnumLabel(notification.recurrenceFrequency)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
-          label="Recurrence End"
+          label="Recurrence end"
           value={formatDate(notification.recurrenceEndOn, true)}
         />
       </ViewInfoRowsCard>
 
       {/* Audit trail section */}
       <ViewInfoRowsCard
-        title="Audit Trail"
+        title="Audit trail"
         icon={<BellIcon className="size-3.5 text-muted-foreground" />}
       >
-        <ViewInfoRow label="Created By" value={notification.createdBy} />
+        <ViewInfoRow label="Created by" value={notification.createdBy} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Created On" value={formatDate(notification.createdOn, true)} />
+        <ViewInfoRow label="Created on" value={formatDate(notification.createdOn, true)} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Last Modified By" value={notification.lastModifiedBy} />
+        <ViewInfoRow label="Last modified by" value={notification.lastModifiedBy} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
-          label="Last Modified On"
+          label="Last modified on"
           value={formatDate(notification.lastModifiedOn, true)}
         />
       </ViewInfoRowsCard>

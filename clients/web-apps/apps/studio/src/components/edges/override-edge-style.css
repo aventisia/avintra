@@ -1,26 +1,19 @@
-/* default (build phase) */
 .react-flow__edge .react-flow__edge-path {
-  stroke: #94a3b8 !important;
+  stroke: var(--line-strong) !important;
 }
 
-/* .react-flow__edge marker path {
-  stroke: #94a3b8 !important;
-} */
-
-/* SUCCESS */
 .react-flow__edge .react-flow__edge-path.edge-success {
-  stroke: #22c55e !important;
+  stroke: var(--ok) !important;
 }
 
-.react-flow__edge.edge-success marker path {
-  stroke: #22c55e !important;
+.react-flow__edge .react-flow__edge-path.edge-live {
+  stroke: var(--live) !important;
 }
 
-/* ERROR */
 .react-flow__edge .react-flow__edge-path.edge-error {
-  stroke: #ef4444 !important;
+  stroke: var(--bad) !important;
 }
 
-.react-flow__edge.edge-error marker path {
-  stroke: #ef4444 !important;
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--primary) !important;
 }

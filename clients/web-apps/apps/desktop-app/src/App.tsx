@@ -1,3 +1,4 @@
+import { ThemeSwitcher } from "@avplatform/layout/header";
 import { Button } from "@avplatform/ui/buttons";
 import Lucide from "@avplatform/ui/components/Lucide";
 import { useThemeStore } from "@avplatform/ui/stores";
@@ -37,7 +38,10 @@ function AppHeader({ children }: { children?: ReactNode }) {
   return (
     <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
       <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
-      {children}
+      <div className="flex items-center gap-2">
+        {children}
+        <ThemeSwitcher className="px-0" />
+      </div>
     </header>
   );
 }

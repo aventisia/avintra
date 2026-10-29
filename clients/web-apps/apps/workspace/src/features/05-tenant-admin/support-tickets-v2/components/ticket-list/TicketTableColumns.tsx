@@ -75,7 +75,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
         tableKey={TICKET_TABLE_KEY}
         className="hidden"
         column={column}
-        title="Ticket Number"
+        title="Ticket number"
       />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("ticketNumber")}</div>,
@@ -103,14 +103,14 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created By" />
+      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created by" />
     ),
     cell: ({ row }) => <div>{row.getValue("createdBy")}</div>,
   },
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created On" />
+      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created on" />
     ),
     cell: ({ row }) => {
       const date = row.getValue("createdOn") as string;
@@ -120,14 +120,14 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   {
     accessorKey: "commentCount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Comments" />
+      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total comments" />
     ),
     cell: ({ row }) => <div className="font-mono tabular-nums">{row.getValue("commentCount")}</div>,
   },
   {
     accessorKey: "attachmentCount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Attachments" />
+      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total attachments" />
     ),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums">{row.getValue("attachmentCount")}</div>

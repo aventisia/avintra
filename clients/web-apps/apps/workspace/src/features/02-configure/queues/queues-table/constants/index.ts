@@ -17,11 +17,11 @@ const TABLE_KEY = "queues";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Queue", description: "" };
+      return { heading: "Create queue", description: "" };
     case "read":
       return { heading: "Queue", description: "" };
     case "update":
-      return { heading: "Edit Queue", description: "" };
+      return { heading: "Edit queue", description: "" };
     default:
       return { heading: "", description: "" };
   }

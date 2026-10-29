@@ -15,7 +15,7 @@ export const usageAgentsColumns = (tableKey: string): ColumnDef<IAgents>[] => [
     accessorKey: "totalCredits",
     id: "totalCredits",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Total Credits" />
+      <DTColumnHeader tableKey={tableKey} column={column} title="Total credits" />
     ),
     cell: ({ row }) => (
       <span className="font-mono font-medium tabular-nums">
@@ -27,7 +27,7 @@ export const usageAgentsColumns = (tableKey: string): ColumnDef<IAgents>[] => [
     accessorKey: "totalLlmCredits",
     id: "totalLlmCredits",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="LLM Credits" />
+      <DTColumnHeader tableKey={tableKey} column={column} title="LLM credits" />
     ),
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">
@@ -39,7 +39,7 @@ export const usageAgentsColumns = (tableKey: string): ColumnDef<IAgents>[] => [
     accessorKey: "totalExecutionCredits",
     id: "totalExecutionCredits",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Execution Credits" />
+      <DTColumnHeader tableKey={tableKey} column={column} title="Execution credits" />
     ),
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">

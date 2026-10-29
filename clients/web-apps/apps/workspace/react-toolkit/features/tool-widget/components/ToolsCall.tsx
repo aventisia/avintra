@@ -119,7 +119,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   return (
     <ToolFallbackRoot
       defaultOpen={status === "pending" || isStreaming || isExecuting}
-      className="shadow-sm mb-2"
+      className="mb-2"
     >
       <ToolFallbackTrigger toolName={toolLabel} status={uiStatus} className={cn("rounded-lg")} />
 
@@ -135,7 +135,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
             <JsonEditor value={draftEditStr} onChange={setDraftEditStr} disabled={false} />
             <div className="mt-3 flex items-center justify-end gap-2">
               <Button variant="outline" size="xs" onClick={handleCancelEdit}>
-                Cancel Edit
+                Cancel edit
               </Button>
               <Button variant="default" size="xs" onClick={handleSaveEdit}>
                 Save

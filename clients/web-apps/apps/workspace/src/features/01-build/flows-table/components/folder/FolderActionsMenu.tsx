@@ -1,5 +1,4 @@
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { FolderOpen, MoreHorizontal } from "lucide-react";
+import { FolderOpen, MoreHorizontal, SquarePenIcon, TrashIcon } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
 
@@ -33,7 +32,7 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
           Open
         </MenuItem>
         <MenuItem onSelect={() => openEditFolderDialog(folder.id)}>
-          <PencilSquareIcon />
+          <SquarePenIcon />
           Edit details
         </MenuItem>
         <MenuSeparator />

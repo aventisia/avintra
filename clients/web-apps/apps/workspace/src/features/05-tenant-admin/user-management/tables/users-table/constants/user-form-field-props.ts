@@ -3,14 +3,14 @@ import { InputFieldProps, MultiSelectFieldProps, SwitchFieldProps } from "@avpla
 // User Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "User Id",
+  label: "User ID",
   disabled: true,
 };
 
 // First Name
 const firstNameProps: InputFieldProps = {
   name: "firstName",
-  label: "First Name",
+  label: "First name",
   isRequired: true,
   description:
     "The user's first name.\n\n- **Max length:** 50 characters.\n- **Allowed characters:** letters only, with a single space between words.\n- **Can be changed** after creation.",
@@ -19,7 +19,7 @@ const firstNameProps: InputFieldProps = {
 // Last Name
 const lastNameProps: InputFieldProps = {
   name: "lastName",
-  label: "Last Name",
+  label: "Last name",
   isRequired: true,
   description:
     "The user's last name.\n\n- **Max length:** 50 characters.\n- **Allowed characters:** letters only, with a single space between words.\n- **Can be changed** after creation.",
@@ -37,7 +37,7 @@ const emailProps: InputFieldProps = {
 // User roles
 const userRolesProps: MultiSelectFieldProps = {
   name: "userRoles",
-  label: "User Roles",
+  label: "User roles",
   isRequired: true,
   placeholder: "Select roles",
   description: "Select the roles to assign to the user.",
@@ -57,7 +57,7 @@ const userSpacesProps: MultiSelectFieldProps = {
 // Two Factor Enabled
 const twoFactorEnabledProps: SwitchFieldProps = {
   name: "twoFactorEnabled",
-  label: "Enable Two-Factor Authentication (2FA)",
+  label: "Enable two-factor authentication (2FA)",
   description:
     "If enabled, user will need an additional verification step (e.g., one time password via email or code from an authenticator app) to log in, enhancing security",
 };
@@ -65,7 +65,7 @@ const twoFactorEnabledProps: SwitchFieldProps = {
 // Unlock Account
 const unlockAccountProps: SwitchFieldProps = {
   name: "unlockAccount",
-  label: "Unlock Account",
+  label: "Unlock account",
   description:
     "Unlocking the account will allow the user to log in again. Use caution if the account was locked due to security concerns",
 };
@@ -73,28 +73,28 @@ const unlockAccountProps: SwitchFieldProps = {
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 
 // Lockout End
 const lockoutEndProps: InputFieldProps = {
   name: "lockoutEnd",
-  label: "Lockout Ends At",
+  label: "Lockout ends at",
   disabled: true,
 };
 
 // Email Confirmed
 const emailConfirmedProps: InputFieldProps = {
   name: "emailConfirmed",
-  label: "Email Confirmed",
+  label: "Email confirmed",
   disabled: true,
 };
 
 // Pwd Set On
 const pwdSetOnProps: InputFieldProps = {
   name: "pwdSetOn",
-  label: "Password Last Set On",
+  label: "Password last set on",
   disabled: true,
 };
 

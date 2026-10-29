@@ -140,7 +140,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
             isRequired
             name={fieldNames.model}
             selectOptions={availableModels}
-            label="Embedding Model"
+            label="Embedding model"
             primaryText="Models"
             isLoading={false}
             disabled={isByokEnabled && !credentialsValue}

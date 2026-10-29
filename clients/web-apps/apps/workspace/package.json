@@ -21,7 +21,6 @@
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
     "@codemirror/lang-json": "^6.0.2",
-    "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@microsoft/signalr": "^10.0.0",
     "@radix-ui/react-icons": "^1.3.0",

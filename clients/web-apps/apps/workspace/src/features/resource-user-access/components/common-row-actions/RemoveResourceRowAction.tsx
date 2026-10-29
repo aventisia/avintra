@@ -49,7 +49,7 @@ export const RemoveResourceRowAction: React.FC<RemoveResourceRowActionProps> = (
         showCustomAlertDialog({
           confirmActionFn: () => mutate(rowId),
           confirmBtnText: "Remove",
-          title: "Remove Access",
+          title: "Remove access",
           description: "Remove the access to shared resource",
         });
       }}

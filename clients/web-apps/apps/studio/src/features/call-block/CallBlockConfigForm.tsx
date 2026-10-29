@@ -102,7 +102,7 @@ const CallBlockConfigForm = () => {
               >
                 name="selectBlock"
                 size="sm"
-                label="Select Block"
+                label="Select block"
                 description="Select a block"
                 placeholder="Search block"
                 queryKeyBase={["call-block-search-flow-versions"]}

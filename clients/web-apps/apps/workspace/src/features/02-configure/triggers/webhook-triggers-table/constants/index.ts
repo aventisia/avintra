@@ -15,11 +15,11 @@ const TABLE_KEY = "webhook-triggers";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Webhook Trigger", description: "" };
+      return { heading: "Create webhook trigger", description: "" };
     case "read":
-      return { heading: "Webhook Trigger", description: "" };
+      return { heading: "Webhook trigger", description: "" };
     case "update":
-      return { heading: "Edit Webhook Trigger", description: "" };
+      return { heading: "Edit webhook trigger", description: "" };
     default:
       return { heading: "", description: "" };
   }

@@ -134,7 +134,7 @@ export const JobsTable = () => {
               <DateRangeFilter />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               {tabValue == "History" ? <DTExportButton fileName={TABLE_KEY} table={table} /> : null}
-              <DTCreateButton buttonText="Create Job" entity="job" />
+              <DTCreateButton buttonText="Create job" entity="job" />
             </div>
           </div>
           {/* Data table to render data */}

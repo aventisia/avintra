@@ -15,11 +15,11 @@ const TABLE_KEY = "triggers";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Time Trigger", description: "" };
+      return { heading: "Create time trigger", description: "" };
     case "read":
-      return { heading: "Time Trigger", description: "" };
+      return { heading: "Time trigger", description: "" };
     case "update":
-      return { heading: "Edit Time Trigger", description: "" };
+      return { heading: "Edit time trigger", description: "" };
     default:
       return { heading: "", description: "" };
   }

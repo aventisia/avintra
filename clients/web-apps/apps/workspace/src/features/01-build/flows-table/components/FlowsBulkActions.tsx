@@ -7,10 +7,9 @@ import {
   TableCNActionBarSeparator,
   exportTableCNToCsv,
 } from "@avplatform/ui/table-cn";
-import { TrashIcon } from "@heroicons/react/24/outline";
 import { Table } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Download } from "lucide-react";
+import { Download, TrashIcon } from "lucide-react";
 
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants";

@@ -15,11 +15,11 @@ const TABLE_KEY = "message-triggers";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Message Trigger", description: "" };
+      return { heading: "Create message trigger", description: "" };
     case "read":
-      return { heading: "Message Trigger", description: "" };
+      return { heading: "Message trigger", description: "" };
     case "update":
-      return { heading: "Edit Message Trigger", description: "" };
+      return { heading: "Edit message trigger", description: "" };
     default:
       return { heading: "", description: "" };
   }

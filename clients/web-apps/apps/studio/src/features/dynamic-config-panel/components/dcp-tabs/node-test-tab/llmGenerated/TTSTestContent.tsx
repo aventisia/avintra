@@ -30,7 +30,7 @@ const TTSTestContent = ({ formData }: { formData: Record<string, unknown> }) => 
     >
       <div className="flex flex-col gap-4 p-3">
         <div>
-          <SectionLabel>Text to Synthesize</SectionLabel>
+          <SectionLabel>Text to synthesize</SectionLabel>
           <Textarea
             rows={6}
             value={ttsText}
@@ -41,7 +41,7 @@ const TTSTestContent = ({ formData }: { formData: Record<string, unknown> }) => 
         </div>
 
         <div>
-          <SectionLabel>Generated Audio</SectionLabel>
+          <SectionLabel>Generated audio</SectionLabel>
           <div className="overflow-hidden rounded-lg border border-border/50">
             {isPending ? (
               <div className="p-3">
@@ -52,7 +52,7 @@ const TTSTestContent = ({ formData }: { formData: Record<string, unknown> }) => 
                 <AudioPlayer
                   src={ttsData.output}
                   format="audio/mpeg"
-                  title="Generated Speech"
+                  title="Generated speech"
                   autoPlay={false}
                 />
               </div>

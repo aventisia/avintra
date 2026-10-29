@@ -44,7 +44,7 @@ const ShareAccessDialog = () => {
                   <ArrowLeftIcon />
                 </Button>
               ) : null}
-              <span>Share Access</span>
+              <span>Share access</span>
             </div>
             {view == "Users" ? (
               <Button onClick={() => setView("Search")} variant={"ghost"} size={"icon7"}>

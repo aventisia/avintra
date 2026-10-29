@@ -15,11 +15,11 @@ const TABLE_KEY = "spaces";
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Space", description: "" };
+      return { heading: "Create space", description: "" };
     case "read":
       return { heading: "Space", description: "" };
     case "update":
-      return { heading: "Edit Space", description: "" };
+      return { heading: "Edit space", description: "" };
     default:
       return { heading: "", description: "" };
   }

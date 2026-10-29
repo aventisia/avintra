@@ -197,7 +197,7 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
 
             {files.length > 0 && (
               <div className="flex flex-col gap-2">
-                <h4 className="text-sm font-medium text-ink-2">Selected Files</h4>
+                <h4 className="text-sm font-medium text-ink-2">Selected files</h4>
                 <div className="flex flex-col gap-2">
                   {files.map((file) => {
                     const isUploading = file.status === "uploading";
@@ -211,7 +211,7 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
                         className="flex items-center justify-between rounded-xl bg-muted p-2"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="bg-surface rounded-full flex items-center justify-center h-10 w-10 shadow-sm border border-line">
+                          <div className="bg-surface rounded-full flex items-center justify-center h-10 w-10 border border-line">
                             <FileTextIcon className="h-5 w-5 text-primary" />
                           </div>
                           <div className="flex flex-col">
@@ -264,7 +264,7 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
               </Button>
             )}
             <Button onClick={handleUploadAll} disabled={isPending || stagedFiles.length === 0}>
-              {isPending ? "Uploading..." : "Upload Files"}
+              {isPending ? "Uploading..." : "Upload files"}
             </Button>
             {footer}
           </div>

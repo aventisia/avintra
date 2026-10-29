@@ -49,7 +49,7 @@ export const modelProviderDefinitions: ModelProviderDefinition[] = [
   },
   {
     value: ModelProviderEnum.Ollama,
-    label: "Ollama On-prem",
+    label: "Ollama on-prem",
     vaultCredentialType: VaultCredentialAppsEnum.Ollama,
     description: "Connect to a self-hosted Ollama server to use its local models.",
   },

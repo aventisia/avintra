@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "lucide-react";
 import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";

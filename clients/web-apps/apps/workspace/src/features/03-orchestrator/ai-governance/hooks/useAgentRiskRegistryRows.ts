@@ -15,8 +15,8 @@ import { computeAgentRiskTier } from "../utils/tiering-engine";
 
 /** Maps the raw flow type to a human-friendly agent type label. */
 const agentTypeLabel = (type?: string): string => {
-  if (type === "ChatAgent") return "Chat Agent";
-  if (type === "Agent") return "Automation Agent";
+  if (type === "ChatAgent") return "Chat agent";
+  if (type === "Agent") return "Automation agent";
   return type ?? "";
 };
 

@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 /**

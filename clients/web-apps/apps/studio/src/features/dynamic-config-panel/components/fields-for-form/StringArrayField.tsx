@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Input, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -111,7 +110,7 @@ export function StringArrayField({
       {/* Rows */}
       <div className="flex flex-col gap-1.5 mb-4">
         {items.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No action added"
             secondaryMessage="You have no action added."
             Icon={CircleOffIcon}

@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { SquarePenIcon, TrashIcon } from "lucide-react";
 
 import { MetaLine } from "@/components/MetaLine";
 import { pluralize } from "@/utils/pluralize.util";
@@ -61,7 +61,7 @@ export const FolderHero = ({
             onClick={() => openEditFolderDialog(folder.id)}
             className="inline-flex h-8 items-center gap-1.5 rounded-md bg-surface px-3 text-[12.5px] font-medium text-ink-2 ring-1 ring-line-strong outline-none transition hover:bg-hover hover:text-ink focus-visible:ring-2 focus-visible:ring-focus active:scale-[0.98]"
           >
-            <PencilSquareIcon className="size-3.5" />
+            <SquarePenIcon className="size-3.5" />
             Edit
           </button>
           <button

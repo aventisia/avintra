@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { ConditionLabel, ConditionListField, DCPFieldSchemaType, defaultConditionObj } from "../..";

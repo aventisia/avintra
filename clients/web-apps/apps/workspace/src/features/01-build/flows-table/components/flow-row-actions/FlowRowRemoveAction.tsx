@@ -37,7 +37,7 @@ export const FlowRowRemoveAction = ({ rowId }: FlowRowRemoveActionProps) => {
           showCustomAlertDialog({
             confirmActionFn: () => removeFlow(rowId),
             confirmBtnText: "Remove",
-            title: "Remove Access",
+            title: "Remove access",
             description: "Remove the shared flow access",
           });
         }}

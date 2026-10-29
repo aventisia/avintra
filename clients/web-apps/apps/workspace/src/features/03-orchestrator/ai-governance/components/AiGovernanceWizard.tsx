@@ -186,7 +186,7 @@ export const AiGovernanceWizard = () => {
           className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeftIcon className="h-3.5 w-3.5" />
-          Agent Risk Registry
+          Agent risk registry
         </button>
 
         {renderSection(activeSection)}

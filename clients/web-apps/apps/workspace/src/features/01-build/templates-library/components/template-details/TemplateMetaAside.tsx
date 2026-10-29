@@ -69,7 +69,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
       {parsedPromptSchema ? (
         <Card>
           <CardHeader>
-            <CardTitle>Prompt Configuration</CardTitle>
+            <CardTitle>Prompt configuration</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-3 text-sm">
@@ -105,7 +105,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">JSON Output</span>
+                    <span className="text-muted-foreground">JSON output</span>
                     <span className="col-span-2">
                       {parsedPromptSchema.modelConfig.is_json_output ? "Enabled" : "Disabled"}
                     </span>

@@ -7,14 +7,14 @@ import { TemplateAccessTypesEnum } from "../enums/template-access-type-enum";
 // Access Level
 const accessLevelProps: SelectFieldProps = {
   name: "accessType",
-  label: "Access Level",
+  label: "Access level",
   isRequired: true,
   selectOptions: enumToArray(TemplateAccessTypesEnum),
 };
 
 const templateNameProps: InputFieldProps = {
   name: "name",
-  label: "Template Name",
+  label: "Template name",
   className: "text-sm",
   isRequired: true,
 };

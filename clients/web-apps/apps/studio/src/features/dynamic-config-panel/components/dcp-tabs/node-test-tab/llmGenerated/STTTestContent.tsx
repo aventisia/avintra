@@ -48,7 +48,7 @@ const STTTestContent = ({ formData }: { formData: Record<string, unknown> }) => 
     >
       <div className="flex flex-col gap-4 p-3">
         <div>
-          <SectionLabel>Audio Input</SectionLabel>
+          <SectionLabel>Audio input</SectionLabel>
           <STTInputStep file={file} onFileChange={setFile} />
         </div>
 

@@ -25,9 +25,19 @@ interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   nodeData: NodeDataType;
   nodeId: string;
+  glyph?: React.ReactNode;
+  kind?: React.ReactNode;
 }
 
-const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeId, ...props }) => {
+const BaseNode: React.FC<BaseNodeProps> = ({
+  selected,
+  nodeData,
+  children,
+  nodeId,
+  glyph: glyphOverride,
+  kind,
+  ...props
+}) => {
   const { toggleGroupExpand } = useGroupToggle();
 
   const renderCount = nodeData?.count
@@ -50,6 +60,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
 
   const glyph = isCollapsedGroup ? (
     <GroupIcon />
+  ) : glyphOverride ? (
+    glyphOverride
   ) : nodeData.iconUrl ? (
     <NodeImage src={nodeData.iconUrl} />
   ) : nodeData.icon ? (
@@ -75,7 +87,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
 
       <NodeContainer
         {...{ nodeId, nodeData, selected, glyph }}
-        kind={isCollapsedGroup ? "Group" : undefined}
+        kind={isCollapsedGroup ? "Group" : kind}
         {...props}
       >
         {!isCollapsedGroup &&

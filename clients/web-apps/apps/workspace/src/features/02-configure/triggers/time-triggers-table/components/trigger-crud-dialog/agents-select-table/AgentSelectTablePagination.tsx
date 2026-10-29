@@ -1,11 +1,11 @@
 import { Button } from "@avplatform/ui/buttons";
+import { Table } from "@tanstack/react-table";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "@heroicons/react/24/outline";
-import { Table } from "@tanstack/react-table";
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
@@ -49,7 +49,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <ChevronDoubleLeftIcon className="h-4 w-4" />
+            <ChevronsLeftIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -76,7 +76,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <ChevronDoubleRightIcon className="h-4 w-4" />
+            <ChevronsRightIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>

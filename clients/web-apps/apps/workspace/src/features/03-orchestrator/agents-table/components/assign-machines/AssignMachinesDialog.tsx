@@ -36,14 +36,14 @@ const AssignMachinesDialog = () => {
                   <Button onClick={() => setView("Machines")} variant={"ghost"} size={"icon7"}>
                     <ArrowLeftIcon className="h-5 w-5" />
                   </Button>
-                  <span>Assign Machines</span>
+                  <span>Assign machines</span>
                 </>
               ) : (
-                <span className="pl-1">Assigned Machines</span>
+                <span className="pl-1">Assigned machines</span>
               )}
             </div>
             {view == "Machines" ? (
-              <Tooltip content="Assign Machines">
+              <Tooltip content="Assign machines">
                 <Button onClick={() => setView("Search")} variant={"ghost"} size={"icon7"}>
                   <PlusIcon className="h-5 w-5" />
                 </Button>

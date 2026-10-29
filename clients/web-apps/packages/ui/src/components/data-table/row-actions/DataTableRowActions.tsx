@@ -1,4 +1,4 @@
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { Ellipsis } from "lucide-react";
 
 import { buttonVariants } from "@/ui/components/buttons";
 import {
@@ -25,7 +25,7 @@ export const DataTableRowActions: React.FC<DataTableRowActionsProps> = ({
           "hover:border-primary-100 data-[state=open]:border-primary-100 data-[state=open]:bg-muted",
         )}
       >
-        <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+        <Ellipsis className="h-4 w-4 text-[--icon-color]" />
         <span className="sr-only">Open menu</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={cn("flex w-fit min-w-28 flex-col", className)}>

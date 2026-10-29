@@ -42,7 +42,7 @@ export default function AddFileDropDown() {
               disabled={locked}
               onClick={handleAddFile}
               Icon={FileTextIcon}
-              content="Add File"
+              content="Add file"
             />
             <SimpleDDMenuItem
               size="md"
@@ -52,13 +52,13 @@ export default function AddFileDropDown() {
                 setType("text");
               }}
               Icon={TypeIcon}
-              content="Add Text"
+              content="Add text"
             />
           </DropdownMenuContent>
         }
       >
         <FileTextIcon className="h-3.5 w-3.5" />
-        Add File
+        Add file
       </SplitButton>
     </LockedActionTooltip>
   );

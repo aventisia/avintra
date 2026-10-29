@@ -90,7 +90,7 @@ export const ChatToolCall = ({
             isRunning && "animate-spin text-primary",
             !isRunning && isErrored && "text-destructive",
             !isRunning && !isErrored && isCancelled && "text-muted-foreground",
-            !isRunning && !isErrored && !isCancelled && "text-emerald-600",
+            !isRunning && !isErrored && !isCancelled && "text-ok",
           )}
         />
         <span className={cn("min-w-0 flex-1 truncate", isCancelled && "line-through")}>

@@ -22,7 +22,7 @@ export const DownloadDialogTrigger: React.FC<DownloadDialogTriggerProps> = ({
   if (IS_TAURI) return null;
 
   return (
-    <Tooltip content="Download Desktop App">
+    <Tooltip content="Download desktop app">
       <button
         type="button"
         aria-label="Download desktop app"

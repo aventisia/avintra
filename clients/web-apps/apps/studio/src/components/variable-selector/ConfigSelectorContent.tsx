@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
@@ -24,7 +24,7 @@ export const ConfigSelectorContent = () => {
 
       {/* No content message */}
       <CommandEmpty className="h-full">
-        <NoContentMessage
+        <EmptyState
           className="mt-5"
           primaryMessage="No key found"
           secondaryMessage="Try a different search term."

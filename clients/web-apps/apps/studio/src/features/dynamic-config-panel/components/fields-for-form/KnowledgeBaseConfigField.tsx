@@ -69,11 +69,11 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
 
   // Render the KnowledgeBaseConfigField component
   return (
-    <GroupedFieldsWrapper groupName="Knowledge Base">
+    <GroupedFieldsWrapper groupName="Knowledge base">
       <MultiSelectField
         size="sm"
         name={knowledgeBaseFieldName}
-        label="Knowledge Base(s)"
+        label="Knowledge base(s)"
         placeholder="Select knowledge base(s)"
         selectOptions={knowledgeBaseSelectOptions}
       />
@@ -81,7 +81,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
       <InputField
         name={numberOfChunksFieldName}
         type="number"
-        label="Number Of Chunks"
+        label="Number of chunks"
         fieldSize="sm"
       />
 
@@ -89,7 +89,7 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
         {...sourceThresholdField}
         render={({ field }) => (
           <SliderField
-            label="Source Threshold"
+            label="Source threshold"
             name={field.name}
             trackColor="bg-muted"
             min={0}

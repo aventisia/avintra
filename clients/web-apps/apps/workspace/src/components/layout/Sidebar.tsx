@@ -5,7 +5,7 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { CircleArrowLeftIcon, CircleArrowRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { SidebarBrandingFooter } from "./SidebarBrandingFooter";
@@ -52,7 +52,7 @@ const Sidebar = ({ className }: SidebarProps) => {
   return (
     <div
       className={cn(
-        "fixed left-0 z-10 hidden border-r  transition-[width] duration-500 md:flex md:flex-col",
+        "fixed left-0 z-10 hidden border-r transition-[width] duration-200 motion-reduce:transition-none md:flex md:flex-col",
         appBanner
           ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height))] h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
           : "top-[calc(var(--header-height)+var(--header-padding))] h-[calc(100vh-var(--header-height)-var(--header-padding))]",
@@ -68,9 +68,9 @@ const Sidebar = ({ className }: SidebarProps) => {
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
-            <ArrowLeftCircleIcon className="h-5 w-5" />
+            <CircleArrowLeftIcon className="h-5 w-5" />
           ) : (
-            <ArrowRightCircleIcon className="h-5 w-5" />
+            <CircleArrowRightIcon className="h-5 w-5" />
           )}
         </Button>
       </Tooltip>

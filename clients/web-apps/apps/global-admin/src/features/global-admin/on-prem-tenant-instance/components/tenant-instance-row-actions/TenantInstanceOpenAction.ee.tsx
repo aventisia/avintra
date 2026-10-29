@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ExternalLinkIcon } from "lucide-react";
 
 import { useNavigateToInstance } from "../../hooks/useNavigateToInstance.ee";
 
@@ -15,7 +15,7 @@ export const TenantInstanceOpenAction = ({ rowId, name }: TenantInstanceOpenActi
   return (
     <SimpleDDMenuItem
       content="Open"
-      Icon={ArrowTopRightOnSquareIcon}
+      Icon={ExternalLinkIcon}
       onClick={() => handleOpenInstance(rowId, name)}
     />
   );

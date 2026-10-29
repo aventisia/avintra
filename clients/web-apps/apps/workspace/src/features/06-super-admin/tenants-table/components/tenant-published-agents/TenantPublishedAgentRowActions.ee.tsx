@@ -23,7 +23,7 @@ export const TenantPublishedAgentRowActions = ({
     <DataTableRowActions className="w-48 max-w-48">
       <SimpleDDMenuItem
         size="md"
-        content="Set Fixed Credits"
+        content="Set fixed credits"
         Icon={CoinsIcon}
         onClick={() => {
           setFlowVersionId(flowVersionId);

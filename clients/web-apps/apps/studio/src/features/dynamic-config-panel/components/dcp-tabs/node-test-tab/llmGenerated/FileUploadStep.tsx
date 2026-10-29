@@ -78,7 +78,7 @@ const FileUploadStep = () => {
               <span className="text-muted-foreground text-2xs">
                 Supported formats: {SUPPORTED_FORMAT_LABEL}
               </span> */}
-              <span className="text-muted-foreground text-sm">Attach Files</span>
+              <span className="text-muted-foreground text-sm">Attach files</span>
             </>
           )}
         </div>

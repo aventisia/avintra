@@ -70,7 +70,7 @@ export const ThinkingIndicator = ({
       </span>
       <span
         key={currentLabel}
-        className="fade-in slide-in-from-bottom-1 animate-in leading-none duration-300 motion-reduce:animate-none"
+        className="fade-in slide-in-from-bottom-1 animate-in leading-none duration-200 motion-reduce:animate-none"
       >
         {currentLabel}
         <span aria-hidden>…</span>

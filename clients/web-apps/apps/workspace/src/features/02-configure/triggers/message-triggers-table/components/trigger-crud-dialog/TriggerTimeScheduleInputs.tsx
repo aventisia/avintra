@@ -22,7 +22,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
         <SelectField
           name="interval"
           isRequired
-          label={"Repeat Every (Minutes)"}
+          label={"Repeat every (minutes)"}
           description="Select the interval in minutes for repeating the trigger."
           selectOptions={generateMinutesOptions()}
         />
@@ -33,7 +33,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
           <SelectField
             name="interval"
             isRequired
-            label={"Repeat Every (Hours)"}
+            label={"Repeat every (hours)"}
             description="Select the interval in hours for repeating the trigger."
             selectOptions={generateHourlyOptions()}
           />
@@ -52,7 +52,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
           <SelectField
             name="interval"
             isRequired
-            label={"Repeat Every (Days of Month)"}
+            label={"Repeat every (days of month)"}
             description="Choose the day of the month for repeating the trigger."
             selectOptions={generateDayOfMonthOptions()}
           />
@@ -72,7 +72,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
         <>
           <MultiSelectField
             name="weekdays"
-            label="Repeat Every (Week)"
+            label="Repeat every (week)"
             isRequired
             description="Select the weekdays for repeating the trigger."
             selectOptions={generateDayOfWeekOptions()}
@@ -93,7 +93,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
         <>
           <SelectField
             name="interval"
-            label="Repeat Every (Month)"
+            label="Repeat every (month)"
             isRequired
             description="Choose the months for repeating the trigger."
             selectOptions={generateMonthOptions()}
@@ -109,7 +109,7 @@ export const TriggerTimeScheduleInputs = ({ frequency }: { frequency?: string })
           />
           <MultiSelectField
             name="monthDays"
-            label="Day(s) of the Month"
+            label="Day(s) of the month"
             isRequired
             description="Select the specific days of the month for triggering."
             selectOptions={generateDayOfMonthOptions()}

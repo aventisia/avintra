@@ -25,7 +25,7 @@ export const TenantSwitchRowAction = ({ rowId }: TenantSwitchRowActionProps) => 
 
   return (
     <SimpleDDMenuItem
-      content="Switch Tenant"
+      content="Switch tenant"
       Icon={ShieldHalfIcon}
       onClick={() => {
         mutate(rowId);

@@ -24,7 +24,7 @@ export const KBRetrievalSection = ({
       ) : (
         <>
           <div className="px-[1.1rem] py-3.5 pb-0">
-            <p className="text-sm font-semibold">Test Chunks Retrieval</p>
+            <p className="text-sm font-semibold">Test chunks retrieval</p>
             <p className="text-2xs mb-1 text-muted-foreground">
               Search through your knowledge base by entering a query below. The system will retrieve
               the most relevant chunks of information.

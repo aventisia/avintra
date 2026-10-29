@@ -33,7 +33,7 @@ export const ThirdPartyToolsUsedSection = () => {
     return (
       <SectionLayout
         eyebrow="Section 05"
-        title="Third-Party Tools Used"
+        title="Third-party tools used"
         description="Tools used by the agent, resolved automatically from the agent definition."
       >
         <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -46,7 +46,7 @@ export const ThirdPartyToolsUsedSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 05"
-      title="Third-Party Tools Used"
+      title="Third-party tools used"
       description="Tools used by the agent, resolved automatically. Complete due diligence and record any risks and mitigations."
     >
       <div className="space-y-4">
@@ -73,7 +73,7 @@ export const ThirdPartyToolsUsedSection = () => {
             </label>
 
             <Field
-              label="Due Diligence Status"
+              label="Due diligence status"
               info="Summarise the due-diligence performed on this tool, e.g. vendor assessment reviewed, data-handling confirmed, or contract terms verified."
             >
               <input

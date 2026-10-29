@@ -30,9 +30,9 @@ interface TicketDetailPageProps {
 }
 
 const metadataRows = (ticket: TicketDto) => [
-  { label: "Ticket Number", value: ticket.ticketNumber || "-" },
+  { label: "Ticket number", value: ticket.ticketNumber || "-" },
   {
-    label: "Request Type",
+    label: "Request type",
     value: ticket.requestType === "ChangeRequest" ? "Change Request" : "Service Request",
   },
   {
@@ -42,25 +42,25 @@ const metadataRows = (ticket: TicketDto) => [
       ? { text: ticket.status, variant: TICKET_STATUS_VARIANT[ticket.status] ?? "secondary" }
       : undefined,
   },
-  { label: "Required By", value: ticket.requiredBy ? formatDate(ticket.requiredBy) : "-" },
-  { label: "Created By", value: ticket.createdBy || "-" },
-  { label: "Created On", value: ticket.createdOn ? formatDate(ticket.createdOn) : "-" },
-  { label: "Last Modified By", value: ticket.lastModifiedBy || "-" },
+  { label: "Required by", value: ticket.requiredBy ? formatDate(ticket.requiredBy) : "-" },
+  { label: "Created by", value: ticket.createdBy || "-" },
+  { label: "Created on", value: ticket.createdOn ? formatDate(ticket.createdOn) : "-" },
+  { label: "Last modified by", value: ticket.lastModifiedBy || "-" },
   {
-    label: "Last Modified On",
+    label: "Last modified on",
     value: ticket.lastModifiedOn ? formatDate(ticket.lastModifiedOn) : "-",
   },
 ];
 
 const changeRequestRows = (ticket: TicketDto) => [
   ...(ticket.agentName ? [{ label: "Agent", value: ticket.agentName }] : []),
-  ...(ticket.changeSummary ? [{ label: "Change Summary", value: ticket.changeSummary }] : []),
-  ...(ticket.changeReason ? [{ label: "Change Reason", value: ticket.changeReason }] : []),
+  ...(ticket.changeSummary ? [{ label: "Change summary", value: ticket.changeSummary }] : []),
+  ...(ticket.changeReason ? [{ label: "Change reason", value: ticket.changeReason }] : []),
   ...(ticket.expectedBehavior
-    ? [{ label: "Expected Behavior", value: ticket.expectedBehavior }]
+    ? [{ label: "Expected behavior", value: ticket.expectedBehavior }]
     : []),
   ...(ticket.requestedTimeline
-    ? [{ label: "Requested Timeline", value: formatDate(ticket.requestedTimeline) }]
+    ? [{ label: "Requested timeline", value: formatDate(ticket.requestedTimeline) }]
     : []),
 ];
 
@@ -114,7 +114,7 @@ export const TicketDetailPage = ({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <NavLink to={listPath}>Support Tickets</NavLink>
+                  <NavLink to={listPath}>Support tickets</NavLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -177,7 +177,7 @@ export const TicketDetailPage = ({
 
       {isCR && crRows.length > 0 && (
         <div className="rounded-lg border bg-background px-5 py-3.5">
-          <h3 className="text-sm font-semibold mb-3">Change Request Details</h3>
+          <h3 className="text-sm font-semibold mb-3">Change request details</h3>
           <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
             {crRows.map((row) => (
               <div key={row.label} className="flex flex-col gap-0.5">

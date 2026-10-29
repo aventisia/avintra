@@ -115,7 +115,7 @@ export const workItemsTableColumns = (
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Created By"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Created by"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
@@ -124,7 +124,7 @@ export const workItemsTableColumns = (
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Created On"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Created on"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
@@ -137,7 +137,7 @@ export const workItemsTableColumns = (
   {
     accessorKey: "sourceWorkItemId",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Source Work Item Id"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Source work item ID"} />
     ),
     cell: ({ row }) => {
       const sourceWorkItemId = row.original.sourceWorkItemId;
@@ -154,7 +154,7 @@ export const workItemsTableColumns = (
   {
     accessorKey: "retryTime",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry Time"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry time"} />
     ),
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
@@ -168,7 +168,7 @@ export const workItemsTableColumns = (
   {
     accessorKey: "retryCount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry Count"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry count"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">

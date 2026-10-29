@@ -14,13 +14,13 @@ export type FlowTypeOption = {
 export const FLOW_TYPE_OPTIONS: FlowTypeOption[] = [
   {
     value: FlowTypesEnum.Agent,
-    label: "Automation Agent",
+    label: "Automation agent",
     description: "Automates tasks and processes with rules and logic",
     icon: Workflow,
   },
   {
     value: FlowTypesEnum.ChatAgent,
-    label: "Chat Agent",
+    label: "Chat agent",
     description: "Holds dynamic, context-aware conversations",
     icon: MessagesSquare,
   },

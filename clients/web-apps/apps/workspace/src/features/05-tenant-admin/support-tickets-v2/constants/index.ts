@@ -10,13 +10,13 @@ const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return {
-        heading: "Create Support Ticket",
+        heading: "Create support ticket",
         description: "Fill in the details to raise a new request",
       };
     case "read":
-      return { heading: "Support Ticket", description: "" };
+      return { heading: "Support ticket", description: "" };
     case "update":
-      return { heading: "Edit Support Ticket", description: "" };
+      return { heading: "Edit support ticket", description: "" };
     default:
       return { heading: "", description: "" };
   }

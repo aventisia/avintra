@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "@heroicons/react/24/outline";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
+import { PlusIcon } from "lucide-react";
 import { memo } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";

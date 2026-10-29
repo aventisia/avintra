@@ -124,7 +124,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
               >
                 <ArrowLeft className="mt-[2px] h-5 w-5" />
               </Button>
-              <h2 className="text-heading">Choose Plan</h2>
+              <h2 className="text-heading">Choose plan</h2>
             </>
           )}
         </div>

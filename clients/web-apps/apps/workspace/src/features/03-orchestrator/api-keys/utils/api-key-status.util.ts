@@ -35,7 +35,7 @@ export const getApiKeyStatus = (expiresAt: string | null, isRevoked: boolean): A
   }
 
   if (diffMs < ONE_DAY_MS * EXPIRING_SOON_DAYS) {
-    return { label: "Expiring Soon", variant: "review" };
+    return { label: "Expiring soon", variant: "review" };
   }
 
   return { label: "Active", variant: "completed" };

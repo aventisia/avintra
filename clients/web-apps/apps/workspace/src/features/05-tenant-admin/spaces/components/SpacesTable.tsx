@@ -91,7 +91,7 @@ export const SpacesTable = () => {
                   <UpgradeCreateButton label="Create Space" pricingUrl={UPGRADE_PRICING_URL} />
                 )
               ) : (
-                <DTCreateButton buttonText="Create Space" entity="space" />
+                <DTCreateButton buttonText="Create space" entity="space" />
               )}
             </div>
           </div>

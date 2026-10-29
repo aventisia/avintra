@@ -58,7 +58,7 @@ export const SubPlansTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search plans..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Create Plan" entity="subscriptionPlan" />
+              <DTCreateButton buttonText="Create plan" entity="subscriptionPlan" />
             </div>
           </div>
 

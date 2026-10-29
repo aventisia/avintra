@@ -21,6 +21,6 @@ export const ExecutionLogsTrigger = () => {
   };
 
   return (
-    <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution Logs" onClick={handleClick} />
+    <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution logs" onClick={handleClick} />
   );
 };

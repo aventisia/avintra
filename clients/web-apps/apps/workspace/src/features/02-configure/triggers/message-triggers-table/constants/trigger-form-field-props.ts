@@ -12,7 +12,7 @@ import { teamsMessageResourceOptions } from "./form-utils";
 // trigger Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Trigger Id",
+  label: "Trigger ID",
   disabled: true,
 };
 
@@ -20,7 +20,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   description:
     "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
@@ -43,7 +43,7 @@ const resourceProps: SelectFieldProps = {
 
 const expiryDateTimeProps: DateTimePickerFieldProps = {
   name: "expiryDateTime",
-  label: "Expiry Date & Time",
+  label: "Expiry date & time",
   description: "The date and time when the trigger will expire.",
   isRequired: true,
   granularity: "minute",
@@ -58,7 +58,7 @@ const resubscribeEnabledProps: SwitchFieldProps = {
 
 const resubscribeFrequencyProps: InputFieldProps = {
   name: "resubscribeFrequency",
-  label: "Subscription Period (in minutes)",
+  label: "Subscription period (in minutes)",
   isRequired: true,
   description:
     "Enter the subscription duration in minutes (1-4320). Microsoft 365 subscriptions expire after a maximum of 3 days.",
@@ -66,13 +66,13 @@ const resubscribeFrequencyProps: InputFieldProps = {
 
 const subscriptionIdProps: InputFieldProps = {
   name: "subscriptionId",
-  label: "Subscription Id",
+  label: "Subscription ID",
   description: "The subscription identifier (optional).",
 };
 
 const credentialNameProps: InputFieldProps = {
   name: "credentialName",
-  label: "Credential Name",
+  label: "Credential name",
   description: "CredentialName",
   isRequired: true,
 };
@@ -87,7 +87,7 @@ const providerProps: SelectFieldProps = {
 
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Trigger",
+  label: "Disable trigger",
   description: "Disable the trigger when it's not needed or should be temporarily turned off.",
 };
 

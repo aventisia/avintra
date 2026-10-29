@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, SquareIcon } from "lucide-react";
 
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 
@@ -52,7 +52,7 @@ export const ExecutionAction = ({
               if (jobId) abortJobMutation(jobId);
             }}
           >
-            <StopIcon className="h-[1.1rem] w-[1.1rem] text-bad" />
+            <SquareIcon className="h-[1.1rem] w-[1.1rem] text-bad" />
           </Button>
         </Tooltip>
       ) : (

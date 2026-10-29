@@ -18,6 +18,6 @@ export const CanViewAction = ({ item }: CanViewActionProps) => {
   };
   // Return the component
   return (
-    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can View" Icon={EyeIcon} />
+    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can view" Icon={EyeIcon} />
   );
 };

@@ -108,7 +108,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
 
     if (promptField.value) {
       showCustomAlertDialog({
-        title: "Use Prompt Template",
+        title: "Use prompt template",
         description: "This will replace the existing prompt content and model configurations.",
         confirmBtnText: "Continue",
         isDestructive: false,
@@ -141,7 +141,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
           onValueChange={handleOptionChange}
         />
 
-        <Tooltip content="Save Prompt Template">
+        <Tooltip content="Save prompt template">
           <Button
             type="button"
             variant="outline"
