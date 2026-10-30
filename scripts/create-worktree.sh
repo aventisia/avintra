@@ -8,16 +8,19 @@
 # re-prefixed with the worktree number so multiple checkouts can run at once
 # without port clashes.
 #
-# Port mapping (N = worktree number, first worktree = 1):
+# The worktree number N (1-50) is the only input: the worktree is named
+# "wt-N" and its port prefix is N, so the name always identifies the ports.
+#
+# Port mapping:
 #   2999 -> 1 299      3001 -> 1 301      4000 -> 1 400
 #   2999 -> 2 299      3001 -> 2 301      4000 -> 2 400
 #   i.e. new = N*1000 + (original/1000)*100 + (original % 100).
 #
 # Usage:
-#   ./scripts/create-worktree.sh                 # prompt for a name, detached HEAD
-#   ./scripts/create-worktree.sh my-feature      # prompt skipped, detached HEAD
-#   ./scripts/create-worktree.sh my-feature --branch   # branch "my-feature-base-branch"
-#   ./scripts/create-worktree.sh my-feature --skip-install   # do not install dependencies
+#   ./scripts/create-worktree.sh                 # prompt for a number, detached HEAD
+#   ./scripts/create-worktree.sh 3               # worktree "wt-3", port prefix 3, detached HEAD
+#   ./scripts/create-worktree.sh 3 --branch      # branch "wt-3-base-branch"
+#   ./scripts/create-worktree.sh 3 --skip-install   # do not install dependencies
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
@@ -60,7 +63,7 @@ fi
 # ---------------------------------------------------------------------------
 # Arguments
 # ---------------------------------------------------------------------------
-WT_NAME=""
+N=""
 CREATE_BRANCH=0
 SKIP_INSTALL=0
 for arg in "$@"; do
@@ -69,7 +72,7 @@ for arg in "$@"; do
     --detach) CREATE_BRANCH=0 ;;
     --skip-install) SKIP_INSTALL=1 ;;
     -*) die "unknown option: $arg" ;;
-    *) WT_NAME="$arg" ;;
+    *) N="$arg" ;;
   esac
 done
 
@@ -81,17 +84,18 @@ MAIN="$(git worktree list --porcelain 2>/dev/null | awk 'NR==1{sub(/^worktree /,
 [ -n "$MAIN" ] || die "not inside a git repository"
 
 # ---------------------------------------------------------------------------
-# Worktree name
+# Worktree number -> name and port prefix
 # ---------------------------------------------------------------------------
-if [ -z "$WT_NAME" ]; then
-  printf 'Enter worktree name: '
-  read -r WT_NAME || die "aborted"
+if [ -z "$N" ]; then
+  printf 'Enter worktree number (1-%d): ' "$MAX_WORKTREES"
+  read -r N || die "aborted"
 fi
-WT_NAME="${WT_NAME#"${WT_NAME%%[![:space:]]*}"}"
-WT_NAME="${WT_NAME%"${WT_NAME##*[![:space:]]}"}"
-[ -n "$WT_NAME" ] || die "worktree name cannot be empty"
-[[ "$WT_NAME" =~ ^[A-Za-z0-9._-]+$ ]] \
-  || die "invalid worktree name '$WT_NAME' (use letters, digits, '.', '_' or '-')"
+N="${N#"${N%%[![:space:]]*}"}"
+N="${N%"${N##*[![:space:]]}"}"
+[ -n "$N" ] || die "worktree number cannot be empty"
+[[ "$N" =~ ^[1-9][0-9]?$ ]] && [ "$N" -le "$MAX_WORKTREES" ] \
+  || die "invalid worktree number '$N' (use a whole number from 1 to $MAX_WORKTREES)"
+WT_NAME="wt-$N"
 
 PARENT="$(dirname "$MAIN")"
 WT_BASE="$PARENT/$WT_BASE_NAME"
@@ -107,20 +111,13 @@ fi
 # ---------------------------------------------------------------------------
 # Preflight checks
 # ---------------------------------------------------------------------------
-[ -e "$WT_PATH" ] && die "path already exists: $WT_PATH"
-if git worktree list | grep -Fq "$WT_PATH"; then
-  die "a worktree already exists at: $WT_PATH"
+[ -e "$WT_PATH" ] && die "worktree number $N is in use; path already exists: $WT_PATH"
+if git worktree list --porcelain | grep -Fxq "worktree $WT_PATH"; then
+  die "worktree number $N is in use; a worktree is registered at: $WT_PATH"
 fi
 if [ "$CREATE_BRANCH" -eq 1 ]; then
   git -C "$MAIN" show-ref --verify --quiet "refs/heads/$BRANCH" \
     && die "branch '$BRANCH' already exists"
-fi
-
-WORKTREE_COUNT="$(git worktree list --porcelain | grep -c '^worktree ' || true)"
-N="$WORKTREE_COUNT"
-[ "$N" -ge 1 ] || die "unexpected worktree count: $WORKTREE_COUNT"
-if [ "$N" -gt "$MAX_WORKTREES" ]; then
-  die "maximum of $MAX_WORKTREES worktrees reached (would use port prefix $N*)"
 fi
 
 printf 'create-worktree — setting up a new worktree\n'

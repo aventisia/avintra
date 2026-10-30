@@ -47,7 +47,7 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
   ```
 - Desktop app and Runner app share a version from the latest git tag `vX.Y.Z`. Use `scripts/release-version.sh` (or `.ps1`) to propagate it into `.csproj`, `Cargo.toml`, `tauri.conf.json`, and `package.json`. Desktop publish scripts run this automatically.
 - Jenkins targets: `uat` → `avuat.aventisia.com`, `main` → `avweb1.aventisia.com`. Web app build modes: `uat`→`staging`, `main`→`production`. Manual `REPOS_TO_BUILD` param; `web_apps` covers accounts/workspace/studio/atlas (**desktop-app excluded**).
-- `.env.local` is gitignored; example defaults are in `deploy/.env`.
+- Each service commits a `.env.example`; `scripts/setup.sh` (or `.ps1`) copies it to the gitignored `.env.local` (`.env` for the web apps and `tests/bruno`).
 - Feature PRs target `uat`, not `main`.
 
 ## Where conventions live

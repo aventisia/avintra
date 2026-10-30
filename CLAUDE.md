@@ -34,7 +34,7 @@ There is no xUnit/NUnit test suite. Verification is a mix of:
 - **Code comments**: Do not add explanatory internal comments; prefer precise names and decomposition. Only `IMPORTANT NOTE:` comments for external constraints, race conditions, or required hacks. Keep public JSDoc/XML short and leave internal functions undocumented.
 - **Git mutations**: Commits, PRs, and issue operations are user-invoked (`/commit` skill in `.claude/skills/`); the remote tracker is Gitea, not GitHub. Do not run git mutations without explicit authorization.
 - **Agent workflow files**: `AGENTS.md` (root) defines the multi-agent handoff contract used by `.opencode/agents/`; reports go under `local-issues/<issue-or-slug>/round-NN/`. `local-*` directories (`local-issues`, `local-ref`, `local-feature-context`) are gitignored scratch/context, not source.
-- **Environment files**: `.env.local` is gitignored. `deploy/.env` contains example/default values. Do not commit secrets.
+- **Environment files**: each service commits a `.env.example` template. `scripts/setup.sh` (or `.ps1`) copies it to the gitignored local file: `.env.local` for the APIs, `.env` for the web apps and `tests/bruno`. For the .NET APIs and llmpipeline, `.env.local` overrides the OS environment, so templates keep secrets commented out. Do not commit secrets.
 - **Versioning**: The Desktop app and Runner app share a version sourced from the latest git tag (`v<X.Y.Z>`). Run `scripts/release-version.sh` (Linux/macOS) or `scripts/release-version.ps1` (Windows) to propagate the version into `.csproj`, `Cargo.toml`, `tauri.conf.json`, and `package.json`. The Tauri build script calls this automatically.
 - **Corsair boundary**: Read `apis/corsair/README.md` before changing the Workspace↔Corsair boundary.
 

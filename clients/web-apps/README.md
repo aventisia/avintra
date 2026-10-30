@@ -41,7 +41,7 @@ npm run dev
 Each app can define per-environment defaults via committed `.env.<environment>` files (e.g. `.env.development`).
 **Do not put secrets in committed env files.**
 
-To override values locally without committing, create `.env.<environment>.local` files in the app directory.
+To override values locally without committing, use the gitignored `.env` (all modes, created from the app's `.env.example` by `scripts/setup.sh`) or `.env.<environment>.local` in the app directory.
 These local overrides are ignored by git automatically through the parent repository's `.gitignore`.
 
 ### Development server ports
@@ -56,7 +56,7 @@ Every app starts on a fixed port and fails fast when that port is taken, instead
 | atlas       | 3007 |
 | desktop-app | 2999 |
 
-Set `VITE_PORT` (shell environment or the app's `.env.development.local`) to run several worktrees side by side:
+Set `VITE_PORT` (shell environment or the app's `.env`) to run several worktrees side by side:
 
 ```sh
 VITE_PORT=3101

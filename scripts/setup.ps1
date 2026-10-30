@@ -1,9 +1,10 @@
 # setup.ps1 — Bootstrap this repository on a fresh clone.
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
-# and none of the project dependencies are installed. This script creates the
-# env files the services expect and installs the dependencies, so the checkout
-# can be built and run without doing it by hand.
+# and none of the project dependencies are installed. This script copies each
+# committed `.env.example` template to the local env file its service expects
+# and installs the dependencies, so the checkout can be built and run without
+# doing it by hand.
 #
 # System prerequisites (.NET 8 SDK, Node.js + npm, Python 3.12) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
@@ -15,7 +16,7 @@
 #   .\scripts\setup.ps1 -Help
 #
 # Existing env files are never overwritten unless -Force is given, so the script
-# is safe to re-run. It only writes the env files below and installs
+# is safe to re-run. It only writes the env files in $EnvFiles and installs
 # dependencies; it never commits, pushes, or deletes anything.
 
 param(
@@ -43,8 +44,8 @@ function Show-Usage {
     Write-Output @'
 setup.ps1 — Bootstrap this repository on a fresh clone.
 
-Creates the local, gitignored environment files the services expect and installs
-the project dependencies. System prerequisites (.NET 8 SDK, Node.js + npm,
+Copies each committed .env.example template to the local, gitignored env file
+its service expects and installs the project dependencies. System prerequisites (.NET 8 SDK, Node.js + npm,
 Python 3.12) must be installed separately first.
 
 Usage:
@@ -163,117 +164,38 @@ if ($null -eq $py) {
 }
 
 # ---------------------------------------------------------------------------
-# Step 2 — create gitignored env files
+# Step 2 — create gitignored env files from the committed .env.example templates
 # ---------------------------------------------------------------------------
-function Write-EnvFile {
-    param([string]$RelativePath, [string]$Content)
+$EnvFiles = @(
+    'apis/WorcBackend-legacy/AccountsAPIs/.env.local',
+    'apis/WorcBackend-legacy/WorkspaceAPIs/.env.local',
+    'apis/corsair/.env.local',
+    'apis/llmpipeline/.env.local',
+    'clients/web-apps/apps/accounts/.env',
+    'clients/web-apps/apps/workspace/.env',
+    'clients/web-apps/apps/studio/.env',
+    'clients/web-apps/apps/desktop-app/.env',
+    'tests/bruno/.env'
+)
+
+function Copy-EnvTemplate([string]$RelativePath) {
     $dst = Join-Path $Root $RelativePath
+    $src = Join-Path (Split-Path -Parent $dst) '.env.example'
+    if (-not (Test-Path -LiteralPath $src)) {
+        Die "template not found: $(Split-Path -Parent $RelativePath)/.env.example"
+    }
     if ((Test-Path -LiteralPath $dst) -and -not $Force.IsPresent) {
         KeepMark $RelativePath
         return
     }
-    $dir = Split-Path -Parent $dst
-    if (-not (Test-Path -LiteralPath $dir)) {
-        New-Item -ItemType Directory -Path $dir -Force | Out-Null
-    }
-    [System.IO.File]::WriteAllText($dst, $Content)
+    Copy-Item -LiteralPath $src -Destination $dst -Force
     OkMark $RelativePath
 }
 
-Step 'Creating gitignored env files'
-
-$accountsEnv = @'
-# Local development overrides for AccountsAPIs (gitignored).
-# Loaded only when ASPNETCORE_ENVIRONMENT=Localhost.
-# Run with this directory as the working directory so the file is found.
-
-ASPNETCORE_URLS=http://localhost:4000
-
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
-LLMPIPELINE_API_BASE_URL=http://localhost:4003
-CAMEL_API_BASE_URL=http://localhost:4005
-CORSAIR_API_BASE_URL=http://localhost:4006
-'@ + "`n"
-Write-EnvFile 'apis/WorcBackend-legacy/AccountsAPIs/.env.local' $accountsEnv
-
-$workspaceEnv = @'
-# Local development overrides for WorkspaceAPIs (gitignored).
-# Loaded only when ASPNETCORE_ENVIRONMENT=Localhost.
-# Run with this directory as the working directory so the file is found.
-
-ASPNETCORE_URLS=http://localhost:4001
-
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
-LLMPIPELINE_API_BASE_URL=http://localhost:4003
-CAMEL_API_BASE_URL=http://localhost:4005
-CORSAIR_API_BASE_URL=http://localhost:4006
-'@ + "`n"
-Write-EnvFile 'apis/WorcBackend-legacy/WorkspaceAPIs/.env.local' $workspaceEnv
-
-$corsairEnv = @'
-# Local development overrides for the Corsair sidecar (gitignored).
-# Mirrors apis/corsair/.env.example; fill in the values marked "env_var".
-
-PORT=4006
-CORSAIR_API_BASE_URL=http://localhost:4006
-APP_BASE_URL=local-avintra.aventisia.com
-
-# Value encryption key for stored credentials — replace with a real local key.
-CORSAIR_KEK=env_var
-
-POSTGRESQL_HOST=localhost
-POSTGRESQL_PORT=5432
-POSTGRESQL_USERNAME=env_var
-POSTGRESQL_PASSWORD=env_var
-
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
-LLMPIPELINE_API_BASE_URL=http://localhost:4003
-CAMEL_API_BASE_URL=http://localhost:4005
-'@ + "`n"
-Write-EnvFile 'apis/corsair/.env.local' $corsairEnv
-
-$llmEnv = @'
-# Local development overrides for the LLM Pipeline (gitignored).
-# Secrets (OPENAI_API_KEY, POSTGRESQL_*, ...) live in the committed .env as
-# "env_var" placeholders; set them here or in the OS environment to run locally.
-
-SSL_VERIFY=false
-UVICORN_PORT=4003
-
-ACCOUNTS_API_BASE_URL=https://localhost:4000
-WORKSPACE_API_BASE_URL=https://localhost:4001
-LLMPIPELINE_API_BASE_URL=http://localhost:4003
-CAMEL_API_BASE_URL=http://localhost:4005
-CORSAIR_API_BASE_URL=http://localhost:4006
-'@ + "`n"
-Write-EnvFile 'apis/llmpipeline/.env.local' $llmEnv
-
-$webApps = @(
-    @{ App = 'accounts'; Port = 3001 },
-    @{ App = 'workspace'; Port = 3002 },
-    @{ App = 'studio'; Port = 3006 },
-    @{ App = 'atlas'; Port = 3007 },
-    @{ App = 'desktop-app'; Port = 2999 }
-)
-foreach ($entry in $webApps) {
-    $content = "# Local development port override (gitignored).`nVITE_PORT=$($entry.Port)`n"
-    Write-EnvFile "clients/web-apps/apps/$($entry.App)/.env" $content
+Step 'Creating gitignored env files from .env.example templates'
+foreach ($rel in $EnvFiles) {
+    Copy-EnvTemplate $rel
 }
-
-$brunoEnv = @'
-# Local secrets — gitignored. Replace with your own account before running.
-MY_EMAIL=you@example.com
-MY_PWD=your-password
-ACCOUNTS_API_PORT=4000
-WORKSPACE_API_PORT=4001
-LLMPIPELINE_API_PORT=4003
-CAMEL_API_PORT=4005
-CORSAIR_API_PORT=4006
-'@ + "`n"
-Write-EnvFile 'tests/bruno/.env' $brunoEnv
 
 # ---------------------------------------------------------------------------
 # Step 3 — install dependencies
@@ -370,8 +292,9 @@ if ($SkipInstall.IsPresent) {
 Write-Output ''
 Write-Output 'Done. Repository is bootstrapped.'
 Write-Output 'Next steps:'
-Write-Output '  - Fill in real secrets in the generated env files (PostgreSQL, API keys,'
-Write-Output '    JWT/AES keys, Bruno login) before running the services.'
+Write-Output '  - Set the secrets listed (commented out) in each generated env file, either'
+Write-Output '    in your OS environment or by uncommenting them there, before running the'
+Write-Output '    services. Also set your Bruno login in tests/bruno/.env.'
 Write-Output '  - Web apps:   npm --prefix clients/web-apps run dev'
 Write-Output '  - Backend:    cd apis/WorcBackend-legacy/AccountsAPIs; dotnet run'
 Write-Output '  - LLM:        cd apis/llmpipeline; $env:ENV="local"; .\venv\Scripts\python dev.py'

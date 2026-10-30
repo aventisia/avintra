@@ -6,16 +6,19 @@
 # re-prefixed with the worktree number so multiple checkouts can run at once
 # without port clashes.
 #
-# Port mapping (N = worktree number, first worktree = 1):
+# The worktree number N (1-50) is the only input: the worktree is named
+# "wt-N" and its port prefix is N, so the name always identifies the ports.
+#
+# Port mapping:
 #   2999 -> 1 299      3001 -> 1 301      4000 -> 1 400
 #   2999 -> 2 299      3001 -> 2 301      4000 -> 2 400
 #   i.e. new = N*1000 + floor(original/1000)*100 + (original % 100).
 #
 # Usage:
-#   .\scripts\create-worktree.ps1                       # prompt for a name, detached HEAD
-#   .\scripts\create-worktree.ps1 -Name my-feature      # prompt skipped, detached HEAD
-#   .\scripts\create-worktree.ps1 -Name my-feature -Branch   # branch "my-feature-base-branch"
-#   .\scripts\create-worktree.ps1 -Name my-feature -SkipInstall   # do not install dependencies
+#   .\scripts\create-worktree.ps1                     # prompt for a number, detached HEAD
+#   .\scripts\create-worktree.ps1 -Number 3           # worktree "wt-3", port prefix 3, detached HEAD
+#   .\scripts\create-worktree.ps1 -Number 3 -Branch   # branch "wt-3-base-branch"
+#   .\scripts\create-worktree.ps1 -Number 3 -SkipInstall   # do not install dependencies
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
@@ -28,7 +31,7 @@
 # dependencies; it does NOT commit, push, or touch the main checkout's files.
 
 param(
-    [string]$Name,
+    [string]$Number,
     [switch]$Branch,
     [switch]$Detach,
     [switch]$SkipInstall
@@ -109,16 +112,18 @@ $Main = $mainLine -replace '^worktree ', ''
 if ([string]::IsNullOrWhiteSpace($Main)) { Die 'not inside a git repository' }
 
 # ---------------------------------------------------------------------------
-# Worktree name
+# Worktree number -> name and port prefix
 # ---------------------------------------------------------------------------
-if ([string]::IsNullOrWhiteSpace($Name)) {
-    $Name = Read-Host 'Enter worktree name'
+if ([string]::IsNullOrWhiteSpace($Number)) {
+    $Number = Read-Host "Enter worktree number (1-$MaxWorktrees)"
 }
-$Name = $Name.Trim()
-if ([string]::IsNullOrWhiteSpace($Name)) { Die 'worktree name cannot be empty' }
-if ($Name -notmatch '^[A-Za-z0-9._-]+$') {
-    Die "invalid worktree name '$Name' (use letters, digits, '.', '_' or '-')"
+$Number = $Number.Trim()
+if ([string]::IsNullOrWhiteSpace($Number)) { Die 'worktree number cannot be empty' }
+if ($Number -notmatch '^[1-9][0-9]?$' -or [int]$Number -gt $MaxWorktrees) {
+    Die "invalid worktree number '$Number' (use a whole number from 1 to $MaxWorktrees)"
 }
+$PortPrefix = [int]$Number
+$Name = "wt-$PortPrefix"
 
 $Parent = Split-Path -Parent $Main
 $WtBase = Join-Path $Parent $WtBaseName
@@ -134,20 +139,13 @@ if ($Branch.IsPresent) {
 # ---------------------------------------------------------------------------
 # Preflight checks
 # ---------------------------------------------------------------------------
-if (Test-Path -LiteralPath $WtPath) { Die "path already exists: $WtPath" }
-if ($worktreeList | Select-String -SimpleMatch $WtPath) {
-    Die "a worktree already exists at: $WtPath"
+if (Test-Path -LiteralPath $WtPath) { Die "worktree number $PortPrefix is in use; path already exists: $WtPath" }
+if ($worktreeList -contains "worktree $($WtPath -replace '\\', '/')") {
+    Die "worktree number $PortPrefix is in use; a worktree is registered at: $WtPath"
 }
 if ($Branch.IsPresent) {
     & git -C $Main show-ref --verify --quiet "refs/heads/$BranchName"
     if ($LASTEXITCODE -eq 0) { Die "branch '$BranchName' already exists" }
-}
-
-$WorktreeCount = ($worktreeList | Select-String '^worktree ').Count
-$PortPrefix = $WorktreeCount
-if ($PortPrefix -lt 1) { Die "unexpected worktree count: $WorktreeCount" }
-if ($PortPrefix -gt $MaxWorktrees) {
-    Die "maximum of $MaxWorktrees worktrees reached (would use port prefix $PortPrefix*)"
 }
 
 Write-Output 'create-worktree — setting up a new worktree'

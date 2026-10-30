@@ -62,7 +62,7 @@ Folder runs require `-r` (recursive) — without it `bru` silently runs 0 reques
 Store secrets in a `.env` file at this collection's root — `tests/bruno/.env` (gitignored). Bruno loads it automatically for both the CLI and the desktop app, and `environments/*.bru` map the login credentials into variables:
 
 ```sh
-# tests/bruno/.env  — copy .env.sample and fill in your own values
+# tests/bruno/.env  — copy .env.example and fill in your own values
 MY_EMAIL=you@example.com
 MY_PWD='secret'
 
@@ -124,7 +124,7 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 - `collection.bru` — Root collection metadata
 - `bruno.json` — Bruno configuration
 - `environments/` — Environment-specific variables (base URLs, login credential and localhost port mapping)
-- `.env.sample` — Template for the gitignored `.env` (secrets; copy and fill in)
+- `.env.example` — Template for the gitignored `.env` (secrets; `scripts/setup.sh` copies it, then fill in)
 
 ## Notes
 

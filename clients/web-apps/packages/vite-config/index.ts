@@ -48,10 +48,9 @@ export default defineConfig({
     dedupe: ["@assistant-ui/react"],
   },
   server: {
-    // When `allowedHosts` is set, Vite overrides its defaults (which normally
-    // include localhost), so we must explicitly allow localhost/127.0.0.1 or the
-    // dev server returns a 403 "Blocked request. This host is not allowed."
-    allowedHosts: ["local-avintra.aventisia.com", "localhost", "127.0.0.1"],
+    // Vite always allows localhost and IP hosts. The leading dot allows every
+    // local nginx hostname (`local-avintra` and the `wtN-avintra` worktrees).
+    allowedHosts: [".aventisia.com"],
   },
   // `use-effect-event` (a transitive dep of @assistant-ui/react) ships a broken
   // `exports["."].source` condition pointing at an unpublished `src/index.ts`.
