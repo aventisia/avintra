@@ -32,14 +32,23 @@
 # is reported and the script exits non-zero, but the worktree is kept. Pass
 # --skip-install to skip this step.
 #
-# The script only creates the worktree, edits the copied env files, and installs
-# dependencies; it does NOT commit, push, or touch the main checkout's files.
+# Database copy: the local AccountsDb, WorkspaceDb and CorsairDb are backed up
+# once to "<repo-parent>/pg_dumps/local_{accounts,workspace,corsair}_db.dump";
+# a database is skipped when its dump already exists or the database itself does
+# not. As the last step, each dump is restored into the worktree's WT<N>_*
+# database unless that database already exists. Both steps connect with
+# POSTGRESQL_HOST/PORT/USERNAME/PASSWORD and are skipped when the PostgreSQL
+# client tools are missing or the server is unreachable.
+#
+# The script only creates the worktree, edits the copied env files, installs
+# dependencies, and copies the local databases; it does NOT commit, push, or
+# touch the main checkout's files.
 
 set -euo pipefail
 
 WT_BASE_NAME="avplatform-wt"
 MAX_WORKTREES=50
-TOTAL_STEPS=5
+TOTAL_STEPS=7
 
 # Canonical (main-checkout) service ports that participate in re-prefixing.
 BASE_PORTS=(2999 3001 3002 3006 3007 4000 4001 4003 4005 4006)
@@ -239,14 +248,12 @@ else
   done
 fi
 
-# ---------------------------------------------------------------------------
-# Step 5 — bootstrap dependencies inside the worktree
-# ---------------------------------------------------------------------------
-INSTALL_FAILED=0
+TASK_FAILED=0
 RUN_OK=1
-LOGDIR=""
+LOGDIR="$(mktemp -d)"
+trap 'rm -rf "$LOGDIR"' EXIT
 
-run_install() {
+run_task() {
   local label="$1" workdir="$2" log
   shift 2
   log="$LOGDIR/$(printf '%s' "$label" | tr -c 'A-Za-z0-9._-' '_').log"
@@ -257,7 +264,7 @@ run_install() {
   else
     failmark "$label"
     indent <"$log" >&2
-    INSTALL_FAILED=1
+    TASK_FAILED=1
     RUN_OK=0
   fi
 }
@@ -274,39 +281,88 @@ resolve_python312() {
   return 1
 }
 
+# ---------------------------------------------------------------------------
+# Step 5 — back up the local databases
+# ---------------------------------------------------------------------------
+export PGHOST="${POSTGRESQL_HOST:-localhost}"
+export PGPORT="${POSTGRESQL_PORT:-5432}"
+export PGUSER="${POSTGRESQL_USERNAME:-postgres}"
+[ -n "${POSTGRESQL_PASSWORD:-}" ] && export PGPASSWORD="$POSTGRESQL_PASSWORD"
+
+DUMP_DIR="$PARENT/pg_dumps"
+DATABASES=(
+  "${POSTGRESQL_ACCOUNTS_DB_NAME:-AccountsDb}|local_accounts_db.dump|WT${N}_AccountsDb"
+  "${POSTGRESQL_WORKSPACE_DB_NAME:-WorkspaceDb}|local_workspace_db.dump|WT${N}_WorkspaceDb"
+  "${POSTGRESQL_DATABASE:-CorsairDb}|local_corsair_db.dump|WT${N}_CorsairDb"
+)
+
+pg_unavailable_reason() {
+  local tool
+  for tool in psql pg_dump pg_restore createdb dropdb; do
+    command -v "$tool" >/dev/null 2>&1 || { printf '%s not found' "$tool"; return; }
+  done
+  psql -d postgres -tAqc 'SELECT 1' >/dev/null 2>&1 \
+    || printf 'cannot connect to PostgreSQL at %s:%s' "$PGHOST" "$PGPORT"
+}
+
+list_databases() { psql -d postgres -tAqc 'SELECT datname FROM pg_database'; }
+
+PG_SKIP_REASON="$(pg_unavailable_reason)"
+
+step "Backing up local databases"
+if [ -n "$PG_SKIP_REASON" ]; then
+  omitmark "database backup" "$PG_SKIP_REASON"
+else
+  field "folder" "$DUMP_DIR"
+  mkdir -p "$DUMP_DIR"
+  EXISTING_DBS="$(list_databases)"
+  for entry in "${DATABASES[@]}"; do
+    IFS='|' read -r src_db dump_file _ <<<"$entry"
+    dump="$DUMP_DIR/$dump_file"
+    if [ -f "$dump" ]; then
+      omitmark "$src_db" "backup exists: $dump_file"
+    elif ! grep -Fxq -- "$src_db" <<<"$EXISTING_DBS"; then
+      omitmark "$src_db" "database not found"
+    else
+      run_task "$src_db -> $dump_file" "$DUMP_DIR" \
+        sh -c 'pg_dump -Fc -f "$1.partial" "$2" && mv "$1.partial" "$1" || { rm -f "$1.partial"; exit 1; }' _ "$dump" "$src_db"
+    fi
+  done
+fi
+
+# ---------------------------------------------------------------------------
+# Step 6 — bootstrap dependencies inside the worktree
+# ---------------------------------------------------------------------------
 step "Installing dependencies"
 if [ "$SKIP_INSTALL" -eq 1 ]; then
   detail "skipped (--skip-install)"
 else
-  LOGDIR="$(mktemp -d)"
-  trap 'rm -rf "$LOGDIR"' EXIT
-
   if [ -f "$WT_PATH/clients/web-apps/package.json" ]; then
-    run_install "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
+    run_task "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
   else
     omitmark "web apps (npm install)" "clients/web-apps not found"
   fi
 
   if [ -f "$WT_PATH/apis/corsair/package.json" ]; then
-    run_install "corsair (npm install)" "$WT_PATH/apis/corsair" npm install --force
+    run_task "corsair (npm install)" "$WT_PATH/apis/corsair" npm install --force
   else
     omitmark "corsair (npm install)" "apis/corsair not found"
   fi
 
   if [ -f "$WT_PATH/clients/docs/package.json" ]; then
-    run_install "docs (npm install)" "$WT_PATH/clients/docs" npm install --force
+    run_task "docs (npm install)" "$WT_PATH/clients/docs" npm install --force
   else
     omitmark "docs (npm install)" "clients/docs not found"
   fi
 
   if [ -f "$WT_PATH/tests/bruno/package.json" ]; then
-    run_install "bruno tests (npm install)" "$WT_PATH/tests/bruno" npm install --force
+    run_task "bruno tests (npm install)" "$WT_PATH/tests/bruno" npm install --force
   else
     omitmark "bruno tests (npm install)" "tests/bruno not found"
   fi
 
   if [ -f "$WT_PATH/Avplatform.sln" ]; then
-    run_install "dotnet restore (Avplatform.sln)" "$WT_PATH" dotnet restore Avplatform.sln
+    run_task "dotnet restore (Avplatform.sln)" "$WT_PATH" dotnet restore Avplatform.sln
   else
     omitmark "dotnet restore (Avplatform.sln)" "Avplatform.sln not found"
   fi
@@ -314,9 +370,9 @@ else
   LLM_DIR="$WT_PATH/apis/llmpipeline"
   if [ -f "$LLM_DIR/requirements.txt" ]; then
     if PY="$(resolve_python312)"; then
-      run_install "llmpipeline venv ($PY -m venv)" "$LLM_DIR" "$PY" -m venv venv
+      run_task "llmpipeline venv ($PY -m venv)" "$LLM_DIR" "$PY" -m venv venv
       if [ "$RUN_OK" -eq 1 ]; then
-        run_install "llmpipeline pip install" "$LLM_DIR" ./venv/bin/pip install -r requirements.txt -r requirements-dev.txt
+        run_task "llmpipeline pip install" "$LLM_DIR" ./venv/bin/pip install -r requirements.txt -r requirements-dev.txt
       fi
     else
       omitmark "llmpipeline (venv + pip)" "Python 3.12 not found"
@@ -326,11 +382,33 @@ else
   fi
 fi
 
+# ---------------------------------------------------------------------------
+# Step 7 — restore the backups into the worktree databases
+# ---------------------------------------------------------------------------
+step "Restoring worktree databases"
+if [ -n "$PG_SKIP_REASON" ]; then
+  omitmark "database restore" "$PG_SKIP_REASON"
+else
+  EXISTING_DBS="$(list_databases)"
+  for entry in "${DATABASES[@]}"; do
+    IFS='|' read -r _ dump_file wt_db <<<"$entry"
+    dump="$DUMP_DIR/$dump_file"
+    if [ ! -f "$dump" ]; then
+      omitmark "$wt_db" "no backup: $dump_file"
+    elif grep -Fxq -- "$wt_db" <<<"$EXISTING_DBS"; then
+      omitmark "$wt_db" "database already exists"
+    else
+      run_task "$dump_file -> $wt_db" "$DUMP_DIR" \
+        sh -c 'createdb "$1" && pg_restore --no-owner --no-acl -d "$1" "$2" || { dropdb --if-exists "$1"; exit 1; }' _ "$wt_db" "$dump"
+    fi
+  done
+fi
+
 printf '\nDone. New worktree is ready:\n'
 printf '  %s\n' "$WT_PATH"
 printf 'Open it with: cd "%s"\n' "$WT_PATH"
 
-if [ "$INSTALL_FAILED" -eq 1 ]; then
-  printf '\nWarning: one or more dependency installs failed; see the output above.\n' >&2
+if [ "$TASK_FAILED" -eq 1 ]; then
+  printf '\nWarning: one or more steps failed; see the output above.\n' >&2
   exit 1
 fi
