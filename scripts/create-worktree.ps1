@@ -6,7 +6,8 @@
 # re-prefixed with the worktree number so multiple checkouts can run at once
 # without port clashes. API env files also get WT<N>_-prefixed database names
 # (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
-# and seed on first start.
+# and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
+# APIs accept requests for the worktree host.
 #
 # The worktree number N (1-50) is the only input: the worktree is named
 # "wt-N" and its port prefix is N, so the name always identifies the ports.
@@ -245,16 +246,16 @@ function Update-Ports([string]$Path) {
     return $false
 }
 
-$dbNamePattern = '(?m)^[ \t]*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE)=.*(\r?\n|$)'
+$worktreeEnvPattern = '(?m)^[ \t]*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE|APP_BASE_URL)=.*(\r?\n|$)'
 
-function Set-DbNames([string]$Path) {
+function Set-WorktreeEnv([string]$Path) {
     $prefix = "WT${PortPrefix}_"
-    $content = [System.Text.RegularExpressions.Regex]::Replace([System.IO.File]::ReadAllText($Path), $dbNamePattern, '')
-    $content += "`nPOSTGRESQL_ACCOUNTS_DB_NAME=${prefix}AccountsDb`nPOSTGRESQL_WORKSPACE_DB_NAME=${prefix}WorkspaceDb`nPOSTGRESQL_DATABASE=${prefix}CorsairDb`n"
+    $content = [System.Text.RegularExpressions.Regex]::Replace([System.IO.File]::ReadAllText($Path), $worktreeEnvPattern, '')
+    $content += "`nPOSTGRESQL_ACCOUNTS_DB_NAME=${prefix}AccountsDb`nPOSTGRESQL_WORKSPACE_DB_NAME=${prefix}WorkspaceDb`nPOSTGRESQL_DATABASE=${prefix}CorsairDb`nAPP_BASE_URL=wt${PortPrefix}-avintra.aventisia.com`n"
     [System.IO.File]::WriteAllText($Path, $content)
 }
 
-Step 'Copying env files and updating ports and database names'
+Step 'Copying env files and updating ports, database names and app base URL'
 if ($envFiles.Count -eq 0) {
     Detail '(nothing to copy)'
 } else {
@@ -273,8 +274,8 @@ if ($envFiles.Count -eq 0) {
             SkipMark $rel
         }
         if ($rel -like 'apis/*') {
-            Set-DbNames $dst
-            OkMark "$rel (databases -> WT${PortPrefix}_*)"
+            Set-WorktreeEnv $dst
+            OkMark "$rel (databases -> WT${PortPrefix}_*, APP_BASE_URL -> wt${PortPrefix}-avintra.aventisia.com)"
         }
     }
 }

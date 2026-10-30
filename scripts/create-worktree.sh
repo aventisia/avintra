@@ -8,7 +8,8 @@
 # re-prefixed with the worktree number so multiple checkouts can run at once
 # without port clashes. API env files also get WT<N>_-prefixed database names
 # (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
-# and seed on first start.
+# and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
+# APIs accept requests for the worktree host.
 #
 # The worktree number N (1-50) is the only input: the worktree is named
 # "wt-N" and its port prefix is N, so the name always identifies the ports.
@@ -215,18 +216,18 @@ copy_and_prefix() {
   fi
 }
 
-set_db_names() {
+set_worktree_env() {
   local rel="$1"
   local dst="$WT_PATH/$rel"
   local prefix="WT${N}_"
   [ -f "$dst" ] || return 0
-  perl -i -ne 'print unless /^\s*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE)=/' "$dst"
-  printf '\nPOSTGRESQL_ACCOUNTS_DB_NAME=%sAccountsDb\nPOSTGRESQL_WORKSPACE_DB_NAME=%sWorkspaceDb\nPOSTGRESQL_DATABASE=%sCorsairDb\n' \
-    "$prefix" "$prefix" "$prefix" >>"$dst"
-  okmark "$rel (databases -> ${prefix}*)"
+  perl -i -ne 'print unless /^\s*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE|APP_BASE_URL)=/' "$dst"
+  printf '\nPOSTGRESQL_ACCOUNTS_DB_NAME=%sAccountsDb\nPOSTGRESQL_WORKSPACE_DB_NAME=%sWorkspaceDb\nPOSTGRESQL_DATABASE=%sCorsairDb\nAPP_BASE_URL=wt%s-avintra.aventisia.com\n' \
+    "$prefix" "$prefix" "$prefix" "$N" >>"$dst"
+  okmark "$rel (databases -> ${prefix}*, APP_BASE_URL -> wt${N}-avintra.aventisia.com)"
 }
 
-step "Copying env files and updating ports and database names"
+step "Copying env files and updating ports, database names and app base URL"
 if [ "${#ENV_FILES[@]}" -eq 0 ]; then
   detail "(nothing to copy)"
 else
@@ -234,7 +235,7 @@ else
     copy_and_prefix "$rel"
   done
   for rel in "${ENV_FILES[@]}"; do
-    case "$rel" in apis/*) set_db_names "$rel" ;; esac
+    case "$rel" in apis/*) set_worktree_env "$rel" ;; esac
   done
 fi
 
