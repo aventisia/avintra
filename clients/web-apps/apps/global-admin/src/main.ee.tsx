@@ -7,8 +7,8 @@ import { TooltipProvider } from "@avplatform/ui/tooltip";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import App from "./App.tsx";
-import "./index.css";
+import App from "./App.ee.tsx";
+import "./index.ee.css";
 
 useBaseLayoutStore.getState().setViteEnvVars({
   BASE_URL: import.meta.env.BASE_URL,

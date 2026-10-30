@@ -139,7 +139,7 @@ public class EmailService : IEmailService
                 return await SendEmail(
                     toEmailAddress,
                     "Validation Failed – Action Required",
-                    LoadAndRenderEmailTemplate("ValidationFailedEmailTemplate.html", placeholderValues),
+                    LoadAndRenderEmailTemplate("ValidationFailedEmailTemplate.ee.html", placeholderValues),
                     ccEmailAddresses,
                     bccEmailAddresses
                 );
@@ -147,7 +147,7 @@ public class EmailService : IEmailService
                 return await SendEmail(
                     toEmailAddress,
                     "Invalid Request – Action Required",
-                    LoadAndRenderEmailTemplate("InvalidRequestEmailTemplate.html", placeholderValues),
+                    LoadAndRenderEmailTemplate("InvalidRequestEmailTemplate.ee.html", placeholderValues),
                     ccEmailAddresses,
                     bccEmailAddresses
                 );
@@ -156,7 +156,7 @@ public class EmailService : IEmailService
                 return await SendEmail(
                     toEmailAddress,
                     "Contract Expirated – Action Required",
-                    LoadAndRenderEmailTemplate("ContractExpiratedEmailTemplate.html", placeholderValues),
+                    LoadAndRenderEmailTemplate("ContractExpiratedEmailTemplate.ee.html", placeholderValues),
                     ccEmailAddresses,
                     bccEmailAddresses
                 );

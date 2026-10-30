@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { APP_PATH, authenticate, createApi, deleteTenants } from "./global-admin-helpers";
+import { APP_PATH, authenticate, createApi, deleteTenants } from "./global-admin-helpers.ee";
 
 const TENANT_NAME = `E2E Tenant ${Date.now()}`;
 const INSTANCE_NAME = `${TENANT_NAME} Instance`;
