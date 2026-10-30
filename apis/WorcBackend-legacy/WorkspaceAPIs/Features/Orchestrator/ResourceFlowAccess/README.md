@@ -28,6 +28,8 @@ only; it does not carry a space.
 - Saving a non-empty list restricts the resource. Saving an empty list is the only way to
   open it again, so removing rows by other paths (archive, flow delete) never lifts a
   restriction.
+- New resources of every wired type are created restricted with no rows, so access is
+  granted only by assigning agents.
 - Existing gates still apply. An open resource does not bypass a resource's tenant-wide flag
   or its people-sharing rows.
 - Adding a flow requires the caller to own or be a member of it. Flows already on the list

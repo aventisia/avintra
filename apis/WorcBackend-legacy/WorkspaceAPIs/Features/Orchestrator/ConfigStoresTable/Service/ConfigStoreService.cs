@@ -389,8 +389,7 @@ public class ConfigStoreService : IConfigStoreService
             newConfigStore.CreatedByUserId = _userId;
             newConfigStore.LastModifiedByUserId = _userId;
             newConfigStore.EnvType = _currentTenantService.CurrentEnvType;
-            // IMPORTANT NOTE: restriction is assign-endpoint-only; a create carrying the flag would start restricted with no rows (usable by no flow).
-            newConfigStore.IsResourceAccessRestricted = false;
+            newConfigStore.IsResourceAccessRestricted = true;
 
             // Insert the new config store into the repository
             await _unitOfWork.ConfigStoreRepo.InsertAsync(newConfigStore);
