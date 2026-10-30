@@ -86,6 +86,17 @@ server
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
+	# ----------------- /global-admin -----------------
+	location /global-admin/api/ {
+		proxy_pass http://globaladmin-apis:4002/api/;
+		include /etc/nginx/conf.d/common_api_config.conf;
+	}
+
+	location /global-admin/ {
+		alias /usr/share/nginx/html/global-admin/;
+		try_files $uri $uri.html $uri/ /index.html =404;
+	}
+
 	# ----------------- Static files / downloads -----------------
 	location /files/ {
 		alias /var/www/aventisia.com/files/;

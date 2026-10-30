@@ -41,7 +41,7 @@ interface CrudCustomDialogEntityConfig {
 
 export type CrudDialogEntityConfig = CrudSheetEntityConfig | CrudCustomDialogEntityConfig;
 
-export type CrudDialogRegistry = Record<CrudEntityKey, CrudDialogEntityConfig>;
+export type CrudDialogRegistry = Partial<Record<CrudEntityKey, CrudDialogEntityConfig>>;
 
 export interface CrudDialogProviderProps {
   /** Registry mapping entity key to its dialog configuration. */
