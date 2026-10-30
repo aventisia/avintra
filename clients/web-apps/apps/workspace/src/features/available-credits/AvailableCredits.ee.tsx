@@ -1,25 +1,40 @@
 import { LoadingSpinner } from "@avplatform/ui";
+import { Coins } from "lucide-react";
 
 import { cn } from "@/ui/lib";
 
 import { useFetchAvailableCredits } from "./useFetchAvailableCredits.ee";
 
-/** Shows the tenant's available credits in the app header. */
+/** Sidebar card with the tenant's available credits. */
 const AvailableCredits = () => {
   const { data, isLoading } = useFetchAvailableCredits();
   const availableCredits = data?.data?.availableCredits ?? 0;
 
   return (
-    <span className="inline-flex h-control-sm items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 font-mono text-code tabular-nums text-ink-2">
+    <div className="grid grid-cols-[1fr_auto] items-center gap-x-1.5 gap-y-2 rounded-md border border-line p-2.5 text-[12.5px] text-ink-2">
+      <span className="inline-flex items-center gap-1.5">
+        <Coins className="size-3.5 shrink-0 text-muted-foreground" />
+        Credits left
+      </span>
       {isLoading ? (
         <LoadingSpinner className="size-3 text-muted-foreground" />
       ) : (
-        <span className={cn("text-ink", availableCredits < 0 && "text-bad")}>
-          {availableCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-        </span>
+        <b
+          className={cn(
+            "font-mono font-medium tabular-nums text-ink",
+            availableCredits < 0 && "text-bad",
+          )}
+        >
+          {availableCredits.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+        </b>
       )}
-      credits
-    </span>
+      {/* IMPORTANT NOTE: the credits API has no granted total, so the bar only shows credits remaining or not. */}
+      <span className="col-span-full h-1 rounded-full bg-line">
+        <span
+          className={cn("block h-full rounded-full bg-primary", availableCredits <= 0 && "w-0")}
+        />
+      </span>
+    </div>
   );
 };
 

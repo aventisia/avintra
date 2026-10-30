@@ -33,9 +33,9 @@ const CollapsedMenuItem = ({ Icon, name, route }: MenuItemProps) => {
       <NavLink
         to={route}
         aria-label={name}
-        className="group relative mx-auto my-0.5 flex size-9 items-center justify-center rounded-sm text-muted-foreground transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-selected aria-[current=page]:text-primary-text motion-reduce:transition-none"
+        className="group relative mx-auto my-0.5 flex size-9 items-center justify-center rounded-sm text-muted-foreground transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:text-ink motion-reduce:transition-none"
       >
-        <span className="absolute -left-2.5 bottom-1.5 top-1.5 hidden w-0.5 rounded-r-sm bg-indicator group-aria-[current=page]:block" />
+        <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
         <Icon className="size-4 stroke-[1.75]" />
       </NavLink>
     </Tooltip>

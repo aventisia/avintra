@@ -1,4 +1,4 @@
-import { Badge } from "@avplatform/ui/badge";
+import { cn } from "@avplatform/ui/lib";
 import { Link } from "react-router-dom";
 
 interface JobsPillProps {
@@ -10,11 +10,22 @@ interface JobsPillProps {
 const JobsPill = ({ to, runningCount = 0 }: JobsPillProps) => (
   <Link
     to={to}
-    className="hidden rounded-sm focus-visible:shadow-focus focus-visible:outline-none md:inline-flex"
+    className={cn(
+      "hidden h-7 items-center gap-[7px] whitespace-nowrap rounded-sm px-2.5 text-[12.5px] font-semibold transition-colors focus-visible:shadow-focus focus-visible:outline-none md:inline-flex",
+      runningCount
+        ? "bg-live/10 text-primary-text hover:bg-live/15"
+        : "bg-sunken text-muted-foreground hover:bg-hover hover:text-ink-2",
+    )}
   >
-    <Badge variant={runningCount ? "running" : "queued"}>
-      {runningCount ? `${runningCount} running` : "No jobs running"}
-    </Badge>
+    <span
+      className={cn(
+        "size-[7px] rounded-full",
+        runningCount ? "animate-pulse bg-live motion-reduce:animate-none" : "bg-muted-foreground",
+      )}
+    />
+    {runningCount
+      ? `${runningCount} ${runningCount === 1 ? "job" : "jobs"} running`
+      : "No jobs running"}
   </Link>
 );
 
