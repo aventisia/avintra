@@ -3,7 +3,7 @@ import { getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { formatSecondsToCompactDuration } from "@/utils/format-time-utils";
+import { formatSecondsToCompactDuration } from "@/utils/format-time-utils.ee";
 
 import { TABLE_KEY, formatNumber } from "../constants";
 import { getColumnName } from "../constants/column-display-names.ee";

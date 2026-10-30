@@ -5,7 +5,7 @@ import { cn } from "@avplatform/ui/lib";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { formatSecondsToCompactDuration } from "@/utils/format-time-utils";
+import { formatSecondsToCompactDuration } from "@/utils/format-time-utils.ee";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names.ee";

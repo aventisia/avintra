@@ -1,5 +1,5 @@
-import onPremTenants from "./guides/on-prem-tenants.md?raw";
-import type { HelpGuideContent } from "./types";
+import onPremTenants from "./guides/on-prem-tenants.ee.md?raw";
+import type { HelpGuideContent } from "./types.ee";
 
 const guides: HelpGuideContent[] = [
   {

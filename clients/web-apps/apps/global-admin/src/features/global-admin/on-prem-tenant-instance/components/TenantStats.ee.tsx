@@ -1,8 +1,8 @@
 import { StatsCard } from "@avplatform/ui/cards";
 import { BadgeCheckIcon, ClockIcon, UsersIcon } from "lucide-react";
 
-import NewAgentIcon from "@/components/NewAgentIcon";
-import { formatSecondsToCompactDuration } from "@/utils/format-time-utils";
+import NewAgentIcon from "@/components/NewAgentIcon.ee";
+import { formatSecondsToCompactDuration } from "@/utils/format-time-utils.ee";
 
 import { useFetchTenantStatistics } from "../hooks/useFetchTenantStatistics.ee";
 import { useTenantRoute } from "../hooks/useTenantRoute.ee";

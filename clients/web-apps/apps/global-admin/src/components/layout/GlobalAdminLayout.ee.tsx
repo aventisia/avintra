@@ -6,11 +6,11 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { GlobalAdminCrudDialogProvider } from "@/components/crud-dialog/GlobalAdminCrudDialogProvider";
-import { useGlobalAdminSession } from "@/hooks/useGlobalAdminSession.hook";
+import { GlobalAdminCrudDialogProvider } from "@/components/crud-dialog/GlobalAdminCrudDialogProvider.ee";
+import { useGlobalAdminSession } from "@/hooks/useGlobalAdminSession.ee.hook";
 
-import { AppHeader } from "./AppHeader";
-import { globalAdminSidebarSections } from "./global-admin-sidebar-sections";
+import { AppHeader } from "./AppHeader.ee";
+import { globalAdminSidebarSections } from "./global-admin-sidebar-sections.ee";
 
 export function GlobalAdminLayout() {
   const access = useGlobalAdminSession();
