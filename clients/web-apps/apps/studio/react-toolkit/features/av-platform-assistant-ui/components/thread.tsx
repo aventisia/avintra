@@ -102,6 +102,7 @@ type ThreadHeaderProps = {
   badge?: string;
   allowNewSession?: boolean;
   onNewSession?: () => void;
+  readOnlyMessage?: string;
 };
 
 export const Thread = ({
@@ -110,6 +111,7 @@ export const Thread = ({
   badge,
   allowNewSession,
   onNewSession,
+  readOnlyMessage,
 }: ThreadHeaderProps) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
@@ -145,11 +147,19 @@ export const Thread = ({
 
         <ThreadPrimitive.Messages>{() => <ThreadMessage />}</ThreadPrimitive.Messages>
 
-        <FollowUps />
+        {!isDisabled && <FollowUps />}
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-background pb-4 md:pb-6">
           <ThreadScrollToBottom />
-          {isDisabled ? readOnly ? <ReadOnlyBanner /> : <Archived /> : <Composer />}
+          {isDisabled ? (
+            readOnly ? (
+              <ReadOnlyBanner message={readOnlyMessage} />
+            ) : (
+              <Archived />
+            )
+          ) : (
+            <Composer />
+          )}
         </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
@@ -243,9 +253,9 @@ const SpeakerToggle: FC = () => {
   );
 };
 
-const ReadOnlyBanner: FC = () => (
+const ReadOnlyBanner: FC<{ message?: string }> = ({ message }) => (
   <div className="flex w-full items-center justify-center rounded-lg border  bg-muted px-4 py-3 text-muted-foreground text-sm">
-    This conversation is in read-only mode.
+    {message || "This conversation is in read-only mode."}
   </div>
 );
 
