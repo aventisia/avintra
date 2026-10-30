@@ -113,6 +113,8 @@ export const ReactFlowExt = () => {
     return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
   }, [flowType, nodes]);
 
+  const isTestChatDisabled = currentFlow.isPublished === true;
+
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
@@ -391,6 +393,12 @@ export const ReactFlowExt = () => {
               flowVersionId={currentFlow.versionId}
               mode="temporary"
               allowNewSession
+              readOnly={isTestChatDisabled}
+              readOnlyMessage={
+                isTestChatDisabled
+                  ? "Testing is unavailable while this agent is published."
+                  : undefined
+              }
               title="Test Chat"
               badge="Test mode"
               description={

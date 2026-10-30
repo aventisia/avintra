@@ -40,6 +40,8 @@ export interface AvPlatformAssistantUIProps {
   conversationId?: string;
   /** If true, blocks new message creation and only loads historical logs. */
   readOnly?: boolean;
+  /** Replaces the generic read-only notice with caller-specific copy. */
+  readOnlyMessage?: string;
   /** Archival visual state flag. */
   archived?: boolean;
   /** Visual thread title. */
@@ -163,6 +165,7 @@ const RuntimeWrapper = ({
   description,
   badge,
   readOnly,
+  readOnlyMessage,
   initialMessages = [],
   allowNewSession = false,
   defaultActions = [],
@@ -344,6 +347,7 @@ const RuntimeWrapper = ({
             badge={badge}
             allowNewSession={allowNewSession}
             onNewSession={onNewSession}
+            readOnlyMessage={readOnlyMessage}
           />
         </SuggestionsProvider>
       </AssistantVoiceContext.Provider>
