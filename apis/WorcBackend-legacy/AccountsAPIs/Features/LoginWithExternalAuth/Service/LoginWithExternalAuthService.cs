@@ -800,12 +800,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                     await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
                         _accountsDbContext, userTenant.Id, userTenant.CreatedByUserId, userTenant.LastModifiedByUserId, _logger);
 
-                    // Assign all roles except Super Admin
-                    userRoles = Enum.GetValues(typeof(CustomRolesEnum))
-                        .Cast<CustomRolesEnum>()
-                        .Where(w => w != CustomRolesEnum.SA)
-                        .Select(r => r.ToString())
-                        .ToList();
+                    userRoles = new List<string> { CustomRolesEnum.TA.ToString(), CustomRolesEnum.OM.ToString(), CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
 
                     _logger.LogInformation(
                         "Tenant created successfully. TenantId={TenantId}, UserId={UserId}",
