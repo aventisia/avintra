@@ -206,22 +206,35 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
+            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive)
+                .Include(i => i.Plan)
+                .FirstOrDefaultAsync();
+
+            var isStarterPlan = tenantSubscription?.Plan?.Type == SubscriptionPlanTypeEnum.Starter;
+
+            var maxSpaces = _environmentConfig.IsCommunityDeployment
+                ? 1
+                : isStarterPlan
+                    ? tenantSubscription!.MaxSpaces
+                    : 0;
+
             Space? newSpace = null;
 
-            // IMPORTANT NOTE: the community limit is a check-then-insert race, so the count and the
-            // insert share one transaction under a tenant-scoped advisory lock. Commercial and
-            // Enterprise deployments keep the plain path with no transaction or lock.
-            if (_environmentConfig.IsCommunityDeployment)
+            // IMPORTANT NOTE: the plan limit is a check-then-insert race, so the count and the
+            // insert share one transaction under a tenant-scoped advisory lock. Plans without a
+            // space limit keep the plain path with no transaction or lock.
+            if (maxSpaces > 0)
             {
                 await _unitOfWork.ExecuteInTransactionAsync(async () =>
                 {
                     await _unitOfWork.AcquireAdvisoryLockAsync($"space-create:{_tenantId}");
-                    newSpace = await InsertSpaceAsync(spaceDto, serviceResponse);
+                    newSpace = await InsertSpaceAsync(spaceDto, serviceResponse, maxSpaces);
                 });
             }
             else
             {
-                newSpace = await InsertSpaceAsync(spaceDto, serviceResponse);
+                newSpace = await InsertSpaceAsync(spaceDto, serviceResponse, 0);
             }
 
             if (newSpace == null) return serviceResponse;
@@ -277,20 +290,21 @@ public class SpaceTableService : ISpaceTableService
         return serviceResponse;
     }
 
-    // Enforces the community single-space limit, rejects duplicate names, then persists the space.
+    // Enforces the plan's space limit, rejects duplicate names, then persists the space.
     // Returns null when the caller must stop with the message already set on the response.
-    private async Task<Space?> InsertSpaceAsync(SpaceDto spaceDto, ServiceResponse<SpaceTableDto> serviceResponse)
+    private async Task<Space?> InsertSpaceAsync(SpaceDto spaceDto, ServiceResponse<SpaceTableDto> serviceResponse, int maxSpaces)
     {
-        // Community deployments are limited to one space regardless of plan data.
-        var currentSpaceCount = _environmentConfig.IsCommunityDeployment
+        var currentSpaceCount = maxSpaces > 0
             ? await _unitOfWork.SpaceRepo
                 .GetByConditionAsync(s => s.TenantId == _tenantId)
                 .CountAsync()
             : 0;
-        if (_environmentConfig.IsCommunityDeployment && currentSpaceCount >= 1)
+        if (maxSpaces > 0 && currentSpaceCount >= maxSpaces)
         {
-            _logger.LogWarning("Space creation blocked: community deployments support a single space.");
-            serviceResponse.Message = "Your community edition supports a single space. Upgrade to create more spaces.";
+            _logger.LogWarning("Space creation blocked: the current plan allows {MaxSpaces} spaces.", maxSpaces);
+            serviceResponse.Message = _environmentConfig.IsCommunityDeployment
+                ? "Your community edition supports a single space. Upgrade to create more spaces."
+                : $"Your current plan allows a maximum of {maxSpaces} spaces. Upgrade to create more spaces.";
             serviceResponse.StatusCode = 403;
             return null;
         }

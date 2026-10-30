@@ -2,7 +2,14 @@ import { Calendar, UpgradeDialog } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
+import {
+  differenceInCalendarDays,
+  format,
+  isSameDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+} from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -22,14 +29,19 @@ export const DateRangeFilter = () => {
   const isCommunityDeployment = useUserSessionStore(
     (state) => state.userSession?.deploymentType === "Community",
   );
+  const isStarterPlan = useUserSessionStore((state) => state.userSession?.planType === "Starter");
 
   const hydratedRef = useRef(false);
   const today = useMemo(() => new Date(), []);
 
-  const exceedsCommunityHistory = useCallback(
+  const historyLimitDays = isCommunityDeployment || isStarterPlan ? 1 : undefined;
+
+  const exceedsHistory = useCallback(
     (range?: DateRange) =>
-      !!isCommunityDeployment && !!range?.from && !isSameDay(range.from, today),
-    [isCommunityDeployment, today],
+      !!range?.from &&
+      historyLimitDays != null &&
+      differenceInCalendarDays(today, range.from) > historyLimitDays - 1,
+    [historyLimitDays, today],
   );
 
   const isCurrentTab = searchParams.get("t") == "Current";
@@ -40,10 +52,10 @@ export const DateRangeFilter = () => {
 
   const defaultRange = useMemo<DateRange>(
     () => ({
-      from: subDays(today, isCommunityDeployment ? 0 : 6),
+      from: subDays(today, Math.min(7, historyLimitDays ?? 7) - 1),
       to: today,
     }),
-    [isCommunityDeployment, today],
+    [historyLimitDays, today],
   );
 
   // Sync date range selection with URL param on mount
@@ -52,7 +64,7 @@ export const DateRangeFilter = () => {
 
     const urlRange = paramsToRange(searchParams.get("from"), searchParams.get("to"));
 
-    const outOfRange = !!urlRange && exceedsCommunityHistory(urlRange);
+    const outOfRange = !!urlRange && exceedsHistory(urlRange);
     const finalRange = outOfRange ? defaultRange : (urlRange ?? defaultRange);
 
     // Set store + local picker state
@@ -67,7 +79,7 @@ export const DateRangeFilter = () => {
     }
 
     hydratedRef.current = true;
-  }, [defaultRange, exceedsCommunityHistory, searchParams, setSearchParams, setDateRange]);
+  }, [defaultRange, exceedsHistory, searchParams, setSearchParams, setDateRange]);
 
   const applyRange = useCallback(
     (range?: DateRange) => {
@@ -88,8 +100,8 @@ export const DateRangeFilter = () => {
     { label: "Week to Date", value: "week" },
     { label: "Month to Date", value: "month" },
     {
-      label: isCommunityDeployment ? "Last 1 day" : "Last 7 days",
-      value: isCommunityDeployment ? 1 : 7,
+      label: historyLimitDays === 1 ? "Last 1 day" : "Last 7 days",
+      value: historyLimitDays === 1 ? 1 : 7,
     },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
@@ -119,7 +131,7 @@ export const DateRangeFilter = () => {
       <Popover
         open={showRangePicker}
         onOpenChange={(open) => {
-          if (open && isCommunityDeployment) {
+          if (open && historyLimitDays === 1) {
             setShowUpgrade(true);
             return;
           }
@@ -147,7 +159,14 @@ export const DateRangeFilter = () => {
                     key={preset.label}
                     size="sm"
                     variant={isSelected ? "default" : "outline"}
-                    onClick={() => setSelectedRange(range)}
+                    onClick={() => {
+                      if (exceedsHistory(range)) {
+                        setShowRangePicker(false);
+                        setShowUpgrade(true);
+                        return;
+                      }
+                      setSelectedRange(range);
+                    }}
                     className={`justify-start border-none shadow-none ${
                       isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
                     }`}
@@ -179,10 +198,14 @@ export const DateRangeFilter = () => {
                 <Button
                   onClick={() => {
                     setShowRangePicker(false);
+                    if (exceedsHistory(selectedRange)) {
+                      setShowUpgrade(true);
+                      return;
+                    }
                     applyRange(selectedRange);
                   }}
                 >
-                  Update
+                  {exceedsHistory(selectedRange) ? "Upgrade" : "Update"}
                 </Button>
               </div>
             </div>
