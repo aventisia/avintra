@@ -4,7 +4,8 @@ vars {
   LLMPIPELINE_API_BASE_URL: http://localhost:{{process.env.LLMPIPELINE_API_PORT}}/api
   CAMEL_API_BASE_URL: http://localhost:{{process.env.CAMEL_API_PORT}}/api
   CORSAIR_API_BASE_URL: http://localhost:{{process.env.CORSAIR_API_PORT}}/api
-  GLOBALADMIN_API_BASE_URL: https://globaladmin.aventisia.com/api
+  GLOBALADMIN_API_BASE_URL: http://localhost:{{process.env.GLOBALADMIN_API_PORT}}/api
+  SA_TOKEN: {{process.env.SA_TOKEN}}
   MY_EMAIL: {{process.env.MY_EMAIL}}
   MY_PWD: {{process.env.MY_PWD}}
   SA_EMAIL: {{process.env.SA_EMAIL}}

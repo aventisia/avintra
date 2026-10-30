@@ -7,12 +7,9 @@ meta {
 put {
   url: {{GLOBALADMIN_API_BASE_URL}}/onprem-tenant
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{AUTH_TOKEN}}
-}
 
 body:json {
   {
