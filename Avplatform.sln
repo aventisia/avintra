@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NodeLibrary", "NodeLibrary"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeLibrary.Windows", "shared\NodeLibrary\NodeLibrary.Windows\NodeLibrary.Windows.csproj", "{7E5BDA2A-1103-412E-BD72-30A5C4B30FA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlobalAdminAPIs", "apis\WorcBackend-legacy\GlobalAdminAPIs\GlobalAdminAPIs.csproj", "{B508083E-293A-4CF6-BBA7-A6181C4A913B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,18 @@ Global
 		{7E5BDA2A-1103-412E-BD72-30A5C4B30FA8}.Release|x64.Build.0 = Release|Any CPU
 		{7E5BDA2A-1103-412E-BD72-30A5C4B30FA8}.Release|x86.ActiveCfg = Release|Any CPU
 		{7E5BDA2A-1103-412E-BD72-30A5C4B30FA8}.Release|x86.Build.0 = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|x64.Build.0 = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Debug|x86.Build.0 = Debug|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|x64.ActiveCfg = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|x64.Build.0 = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|x86.ActiveCfg = Release|Any CPU
+		{B508083E-293A-4CF6-BBA7-A6181C4A913B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

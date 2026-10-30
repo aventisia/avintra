@@ -9,13 +9,7 @@
 
 /** The main navigation sections of the Workspace app. */
 export type HelpSection =
-  | "build"
-  | "configure"
-  | "orchestrator"
-  | "assist"
-  | "tenant-admin"
-  | "super-admin"
-  | "global-admin";
+  "build" | "configure" | "orchestrator" | "assist" | "tenant-admin" | "super-admin";
 
 /** Metadata describing a single help guide. */
 export interface HelpGuide {
