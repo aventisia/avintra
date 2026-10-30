@@ -1,4 +1,4 @@
-import { type LucideIcon, PlusCircle, XCircle } from "lucide-react";
+import { type LucideIcon, Plus, XCircle } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -16,14 +16,14 @@ type TableCNFilterTriggerProps = React.ComponentProps<"button"> & {
  * value after the title, and its leading icon clears the filter.
  */
 export const TableCNFilterTrigger = React.forwardRef<HTMLButtonElement, TableCNFilterTriggerProps>(
-  ({ title, isActive, onClear, icon: Icon = PlusCircle, className, children, ...props }, ref) => (
+  ({ title, isActive, onClear, icon: Icon = Plus, className, children, ...props }, ref) => (
     <button
       ref={ref}
       type="button"
       data-active={isActive || undefined}
       className={cn(
-        "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed border-line-strong bg-surface px-2.5 text-body-sm font-semibold text-ink-2 outline-none transition-colors",
-        "hover:border-line-strong hover:bg-hover hover:text-ink focus-visible:shadow-focus",
+        "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed border-line-strong bg-transparent pl-[9px] pr-[11px] text-[12.5px] font-semibold text-ink-2 outline-none transition-colors",
+        "hover:border-solid hover:bg-surface hover:text-ink focus-visible:shadow-focus",
         "data-[state=open]:border-line-strong data-[state=open]:bg-hover data-[state=open]:text-ink",
         "data-[active=true]:border-solid data-[active=true]:border-line-strong data-[active=true]:bg-selected data-[active=true]:text-ink",
         className,

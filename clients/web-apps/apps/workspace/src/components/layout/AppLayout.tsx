@@ -1,5 +1,4 @@
 // import { Sidebar } from "@avplatform/layout";
-import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useEffect, useState } from "react";
@@ -42,10 +41,9 @@ export const AppLayout = () => {
   const location = useLocation();
 
   // Get the state and actions from the base layout store
-  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
+  const { setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
     useBaseLayoutStore(
       useShallow((state) => ({
-        sidebarExpand: state.sidebarExpand,
         setViteEnvVars: state.setViteEnvVars,
         setSidebarMenuSections: state.setSidebarMenuSections,
         selectedRoles: state.selectedRoles,
@@ -229,21 +227,16 @@ export const AppLayout = () => {
       {isPending || !userSession ? (
         <AppRedirectPage />
       ) : (
-        <div className="relative min-h-screen overflow-hidden">
-          <AppHeader />
+        <div className="relative flex h-screen overflow-hidden bg-bg">
           <Sidebar />
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
-            <main
-              className={cn(
-                "px-3 md:px-7 py-0 transition-all duration-200 motion-reduce:transition-none",
-                sidebarExpand
-                  ? "md:ml-[--sidebar-max-width] md:w-[calc(100vw-var(--sidebar-max-width))]"
-                  : "md:ml-[--sidebar-min-width] md:w-[calc(100vw-var(--sidebar-min-width))]",
-              )}
-            >
-              <Outlet />
-            </main>
-          </ScrollArea>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <AppHeader />
+            <ScrollArea className="min-h-0 flex-1" viewportClassName="[&>div]:!block">
+              <main className="px-3 py-0 md:px-7">
+                <Outlet />
+              </main>
+            </ScrollArea>
+          </div>
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
         </div>
       )}
