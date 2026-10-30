@@ -47,7 +47,7 @@ dotenv.config({ path: ".env.local" });
 
 const { Pool } = pg;
 
-const WORKSPACE_DATABASE = "WorkspaceDb";
+const WORKSPACE_DATABASE = process.env.POSTGRESQL_WORKSPACE_DB_NAME || "WorkspaceDb";
 
 // Platform (library) tools are free from both tenant and user constraints.
 // They are seeded with empty (Guid.Empty) tenant and user ids so they are not

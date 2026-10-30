@@ -23,6 +23,8 @@ public class EnvironmentConfig
     public int PostgresqlPort { get; set; }
     public string PostgresqlUsername { get; set; } = string.Empty;
     public string PostgresqlPassword { get; set; } = string.Empty;
+    public string PostgresqlAccountsDbName { get; set; } = "AccountsDb";
+    public string PostgresqlWorkspaceDbName { get; set; } = "WorkspaceDb";
     public string AzureBlobStorageConnectionString { get; set; } = string.Empty;
 
     // Azure Entra ID

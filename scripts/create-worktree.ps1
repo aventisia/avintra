@@ -4,7 +4,9 @@
 # "<repo-parent>\avplatform-wt\" folder. Every local, gitignored `.env` and
 # `.env.local` file is copied into the new worktree and its service ports are
 # re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes.
+# without port clashes. API env files also get WT<N>_-prefixed database names
+# (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
+# and seed on first start.
 #
 # The worktree number N (1-50) is the only input: the worktree is named
 # "wt-N" and its port prefix is N, so the name always identifies the ports.
@@ -243,7 +245,16 @@ function Update-Ports([string]$Path) {
     return $false
 }
 
-Step 'Copying env files and updating ports'
+$dbNamePattern = '(?m)^[ \t]*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE)=.*(\r?\n|$)'
+
+function Set-DbNames([string]$Path) {
+    $prefix = "WT${PortPrefix}_"
+    $content = [System.Text.RegularExpressions.Regex]::Replace([System.IO.File]::ReadAllText($Path), $dbNamePattern, '')
+    $content += "`nPOSTGRESQL_ACCOUNTS_DB_NAME=${prefix}AccountsDb`nPOSTGRESQL_WORKSPACE_DB_NAME=${prefix}WorkspaceDb`nPOSTGRESQL_DATABASE=${prefix}CorsairDb`n"
+    [System.IO.File]::WriteAllText($Path, $content)
+}
+
+Step 'Copying env files and updating ports and database names'
 if ($envFiles.Count -eq 0) {
     Detail '(nothing to copy)'
 } else {
@@ -260,6 +271,10 @@ if ($envFiles.Count -eq 0) {
             OkMark $rel
         } else {
             SkipMark $rel
+        }
+        if ($rel -like 'apis/*') {
+            Set-DbNames $dst
+            OkMark "$rel (databases -> WT${PortPrefix}_*)"
         }
     }
 }

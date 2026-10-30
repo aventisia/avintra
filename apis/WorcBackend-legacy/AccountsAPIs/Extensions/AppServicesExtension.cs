@@ -16,8 +16,8 @@ public static partial class AppServicesExtension
         var pgPassword = environmentConfig.PostgresqlPassword ?? "";
 
         // Build connection strings for different databases
-        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
-        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={environmentConfig.PostgresqlAccountsDbName};Include Error Detail=true";
+        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={environmentConfig.PostgresqlAccountsDbName};Include Error Detail=true";
 
         services.AddDbContext<AccountsDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));

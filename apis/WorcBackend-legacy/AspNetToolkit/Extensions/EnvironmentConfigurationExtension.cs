@@ -65,6 +65,8 @@ public static class EnvironmentConfigurationExtension
         var POSTGRESQL_PORT = Environment.GetEnvironmentVariable("POSTGRESQL_PORT") ?? config["EnvironmentConfig:PostgresqlPort"] ?? "5432";
         var POSTGRESQL_USERNAME = GetRequiredEnvVar("POSTGRESQL_USERNAME");
         var POSTGRESQL_PASSWORD = GetRequiredEnvVar("POSTGRESQL_PASSWORD");
+        var POSTGRESQL_ACCOUNTS_DB_NAME = Environment.GetEnvironmentVariable("POSTGRESQL_ACCOUNTS_DB_NAME") ?? "AccountsDb";
+        var POSTGRESQL_WORKSPACE_DB_NAME = Environment.GetEnvironmentVariable("POSTGRESQL_WORKSPACE_DB_NAME") ?? "WorkspaceDb";
         var AZURE_BLOB_STORAGE_CONNECTION_STRING = GetRequiredEnvVar("AZURE_BLOB_STORAGE_CONNECTION_STRING");
 
         // JWT environment variables
@@ -318,6 +320,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:PostgresqlPort", POSTGRESQL_PORT },
                     { "EnvironmentConfig:PostgresqlUsername", POSTGRESQL_USERNAME },
                     { "EnvironmentConfig:PostgresqlPassword", POSTGRESQL_PASSWORD },
+                    { "EnvironmentConfig:PostgresqlAccountsDbName", POSTGRESQL_ACCOUNTS_DB_NAME },
+                    { "EnvironmentConfig:PostgresqlWorkspaceDbName", POSTGRESQL_WORKSPACE_DB_NAME },
                     { "EnvironmentConfig:AzureBlobStorageConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING },
 
                     { "EnvironmentConfig:AzureEntraIdEnabled", AZURE_ENTRA_ID_ENABLED.ToString() },

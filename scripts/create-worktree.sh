@@ -6,7 +6,9 @@
 # "<repo-parent>/avplatform-wt/" folder. Every local, gitignored `.env` and
 # `.env.local` file is copied into the new worktree and its service ports are
 # re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes.
+# without port clashes. API env files also get WT<N>_-prefixed database names
+# (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
+# and seed on first start.
 #
 # The worktree number N (1-50) is the only input: the worktree is named
 # "wt-N" and its port prefix is N, so the name always identifies the ports.
@@ -213,12 +215,26 @@ copy_and_prefix() {
   fi
 }
 
-step "Copying env files and updating ports"
+set_db_names() {
+  local rel="$1"
+  local dst="$WT_PATH/$rel"
+  local prefix="WT${N}_"
+  [ -f "$dst" ] || return 0
+  perl -i -ne 'print unless /^\s*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE)=/' "$dst"
+  printf '\nPOSTGRESQL_ACCOUNTS_DB_NAME=%sAccountsDb\nPOSTGRESQL_WORKSPACE_DB_NAME=%sWorkspaceDb\nPOSTGRESQL_DATABASE=%sCorsairDb\n' \
+    "$prefix" "$prefix" "$prefix" >>"$dst"
+  okmark "$rel (databases -> ${prefix}*)"
+}
+
+step "Copying env files and updating ports and database names"
 if [ "${#ENV_FILES[@]}" -eq 0 ]; then
   detail "(nothing to copy)"
 else
   for rel in "${ENV_FILES[@]}"; do
     copy_and_prefix "$rel"
+  done
+  for rel in "${ENV_FILES[@]}"; do
+    case "$rel" in apis/*) set_db_names "$rel" ;; esac
   done
 fi
 

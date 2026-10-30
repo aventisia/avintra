@@ -53,8 +53,10 @@ public class WorkspaceDbContextFactory : IDesignTimeDbContextFactory<WorkspaceDb
             ?? environmentConfig.PostgresqlUsername ?? string.Empty;
         var pgPassword = Environment.GetEnvironmentVariable("POSTGRESQL_PASSWORD")
             ?? environmentConfig.PostgresqlPassword ?? string.Empty;
+        var pgDatabase = Environment.GetEnvironmentVariable("POSTGRESQL_WORKSPACE_DB_NAME")
+            ?? environmentConfig.PostgresqlWorkspaceDbName;
 
-        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=WorkspaceDb;Include Error Detail=true";
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={pgDatabase};Include Error Detail=true";
 
         var optionsBuilder = new DbContextOptionsBuilder<WorkspaceDbContext>();
         optionsBuilder.UseNpgsql(appDbConnectionString, npgsqlOptions => npgsqlOptions.UseVector());
