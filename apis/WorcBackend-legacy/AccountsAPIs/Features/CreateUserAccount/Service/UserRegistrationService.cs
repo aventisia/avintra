@@ -193,11 +193,7 @@ public class UserRegistrationService : IUserRegistrationService
                 await CreateDefaultTenantSubscriptionAsync(userTenant.Id, newUser.Id);
 
                 tenantId = userTenant.Id;
-                userRoles = Enum.GetValues(typeof(CustomRolesEnum))
-                            .Cast<CustomRolesEnum>()
-                            .Where(w => w != CustomRolesEnum.SA)
-                            .Select(r => r.ToString())
-                            .ToList();
+                userRoles = new List<string> { CustomRolesEnum.TA.ToString(), CustomRolesEnum.OM.ToString(), CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
             }
 
             // Link the new tenant to the user
