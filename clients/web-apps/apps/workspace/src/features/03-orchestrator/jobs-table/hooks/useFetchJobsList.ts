@@ -1,7 +1,7 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, startOfDay, subDays } from "date-fns";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -32,10 +32,18 @@ export const useFetchJobsList = () => {
   const isCommunityDeployment = useUserSessionStore(
     (state) => state.userSession?.deploymentType === "Community",
   );
+  const isStarterPlan = useUserSessionStore((state) => state.userSession?.planType === "Starter");
+  const historyLimitDays = isCommunityDeployment || isStarterPlan ? 1 : undefined;
   const urlRange = paramsToRange(searchParams.get("from"), searchParams.get("to"));
   const today = new Date();
-  const effectiveDateRange =
-    urlRange ?? (isCommunityDeployment ? { from: today, to: today } : dateRange);
+  let effectiveDateRange = urlRange ?? dateRange;
+
+  const earliestReadable = historyLimitDays
+    ? subDays(startOfDay(today), historyLimitDays - 1)
+    : undefined;
+  if (effectiveDateRange?.from && earliestReadable && effectiveDateRange.from < earliestReadable) {
+    effectiveDateRange = { from: earliestReadable, to: effectiveDateRange.to };
+  }
 
   const from = format(effectiveDateRange!.from!, "yyyy-MM-dd");
   const to = format(effectiveDateRange!.to!, "yyyy-MM-dd");
