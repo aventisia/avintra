@@ -13,6 +13,9 @@ CI/CD is Jenkins (root `Jenkinsfile`). There are no GitHub Actions or pre-commit
 ## Non-obvious commands
 
 ```sh
+# Local stack: run from the checkout or worktree root; dekit.yaml's header lists every command
+dekit up    # then `dekit restart <service>` after a change, `dekit screen <service>` for output, `dekit down` to stop
+
 # Python LLM pipeline local run — ENV=local loads .env and .env.local via pydantic-settings
 cd apis/llmpipeline && ENV=local ./venv/bin/uvicorn app.main:app --port 4003 --reload
 
@@ -43,5 +46,5 @@ There is no xUnit/NUnit test suite. Verification is a mix of:
 - Per-area conventions: `apis/WorcBackend-legacy/AGENTS.md`, `clients/web-apps/AGENTS.md`
 - Root agent guide and handoff contract: `AGENTS.md`
 - Full setup and Docker commands: `README.md`
-- VS Code launch tasks: `.vscode/tasks.json`
+- Local stack services and dekit commands: `dekit.yaml` (`.vscode/tasks.json` is the VS Code fallback)
 - Jenkins pipeline: `Jenkinsfile`

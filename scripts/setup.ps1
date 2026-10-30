@@ -3,10 +3,11 @@
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
 # committed `.env.example` template to the local env file its service expects
-# and installs the dependencies, so the checkout can be built and run without
+# and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
+# the local stack from dekit.yaml), so the checkout can be built and run without
 # doing it by hand.
 #
-# System prerequisites (.NET 8 SDK, Node.js + npm, Python 3.12) are NOT installed
+# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
@@ -45,7 +46,8 @@ function Show-Usage {
 setup.ps1 — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
-its service expects and installs the project dependencies. System prerequisites (.NET 8 SDK, Node.js + npm,
+its service expects and installs the project dependencies plus dekit
+(npm install -g @dekit/cli). System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
 Python 3.12) must be installed separately first.
 
 Usage:
@@ -254,6 +256,12 @@ if ($SkipInstall.IsPresent) {
     Install-Npm 'docs (npm install)' (Join-Path $Root 'clients/docs') 'clients/docs not found'
     Install-Npm 'bruno tests (npm install)' (Join-Path $Root 'tests/bruno') 'tests/bruno not found'
 
+    if (Get-Command npm -ErrorAction SilentlyContinue) {
+        Invoke-Install 'dekit (npm install -g @dekit/cli)' $Root 'npm' @('install', '-g', '@dekit/cli')
+    } else {
+        OmitMark 'dekit (npm install -g @dekit/cli)' 'npm not found'
+    }
+
     if (-not (Test-Path -LiteralPath (Join-Path $Root 'Avplatform.sln'))) {
         OmitMark 'dotnet restore (Avplatform.sln)' 'Avplatform.sln not found'
     } elseif (Get-Command dotnet -ErrorAction SilentlyContinue) {
@@ -295,9 +303,7 @@ Write-Output 'Next steps:'
 Write-Output '  - Set the secrets listed (commented out) in each generated env file, either'
 Write-Output '    in your OS environment or by uncommenting them there, before running the'
 Write-Output '    services. Also set your Bruno login in tests/bruno/.env.'
-Write-Output '  - Web apps:   npm --prefix clients/web-apps run dev'
-Write-Output '  - Backend:    cd apis/WorcBackend-legacy/AccountsAPIs; dotnet run'
-Write-Output '  - LLM:        cd apis/llmpipeline; $env:ENV="local"; .\venv\Scripts\python dev.py'
+Write-Output '  - Run the stack: dekit up, then dekit attach (more commands at the top of dekit.yaml)'
 
 if ($script:InstallFailed) {
     [Console]::Error.WriteLine('')

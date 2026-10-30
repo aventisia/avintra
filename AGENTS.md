@@ -9,26 +9,14 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
   ```sh
   dotnet build Avplatform.sln
   ```
-- Run APIs:
-  - AccountsAPIs: `dotnet run --project apis/WorcBackend-legacy/AccountsAPIs` → port 4000
-  - WorkspaceAPIs: `dotnet run --project apis/WorcBackend-legacy/WorkspaceAPIs` → port 4001
+- Run the local stack with dekit from the checkout or worktree root; `dekit.yaml` defines the services and its header lists every command:
+  - `dekit up` starts all services, `dekit restart <service>` (e.g. `workspace_apis`) picks up a change, `dekit screen <service>` prints its output, `dekit down` stops everything.
+  - Ports come from each service's env files; a worktree made by `scripts/create-worktree.sh` has its own re-prefixed ports.
 - Web apps are in `clients/web-apps` (npm workspaces + Turborepo, `npm@10.9.3`):
   - `cd clients/web-apps && npm install`
-  - All dev servers: `npm run dev`
-  - One app: `npx turbo run dev --filter=<accounts|workspace|studio|atlas>`
-  - Ports: accounts 3001, workspace 3002, studio 3006, atlas from app config, desktop-app 2999.
   - Ready-to-commit: `npm run pregit` (format + eslint --fix + `tsc -b`)
   - `turbo.json` makes `lint` depend on `^build`, so lint may require a prior build.
-- LLM Pipeline (Python/FastAPI) — dev port via `UVICORN_PORT` in `apis/llmpipeline/.env.local` (default 4003):
-  ```sh
-  cd apis/llmpipeline
-  ENV=local ./venv/bin/python dev.py
-  ```
-- Apache Camel (Java 21):
-  ```sh
-  cd apis/apache-camel && ./mvnw spring-boot:run
-  ```
-- Corsair API (Node): `cd apis/corsair && npm ci --force && npm run build && npm run dev`.
+- Corsair API (Node) installs with `cd apis/corsair && npm ci --force`.
 - Docs (Next.js/Nextra): `cd clients/docs && npm ci && npm run build:staging` (uat) or `npm run build:production` (main).
 - RunnerApp: `dotnet build clients/RunnerApp/RunnerApp.slnx`; publish via `clients/RunnerApp/RunnerApp.Linux/publish-ci.sh`.
 - Tests: there is no xUnit/NUnit suite. Verify with Bruno (`tests/bruno/`) or .NET console harnesses:
@@ -55,7 +43,7 @@ Subagent definitions live in `.opencode/agents/`; `orchestrator` is the only pri
 - Backend: `apis/WorcBackend-legacy/AGENTS.md`
 - Frontend: `clients/web-apps/AGENTS.md`
 - Full setup, Docker commands, custom HTTP headers: `README.md`
-- VS Code tasks: `.vscode/tasks.json`
+- Local stack services and dekit commands: `dekit.yaml` (`.vscode/tasks.json` is the VS Code fallback)
 - CI pipeline: `Jenkinsfile`
 
 ## EE file marking (issue #406)

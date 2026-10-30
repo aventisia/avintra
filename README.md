@@ -80,11 +80,21 @@ Pipeline, nginx, Apache Camel, and the web apps.
 ### Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Node.js 18+](https://nodejs.org/) with npm
+- [Node.js 22+](https://nodejs.org/) with npm
 - [Python 3.12+](https://www.python.org/) (for `llmpipeline`)
 - [Docker](https://www.docker.com/) (for containerized builds)
 
 ### Running Local Development
+
+The whole local stack runs with [dekit](https://dekit.run) from `dekit.yaml`; its header lists the everyday commands.
+
+```sh
+./scripts/setup.sh   # once (setup.ps1 on Windows): env files, dependencies, and dekit
+dekit up             # start every service
+dekit attach         # watch them; select a service and press r to restart it
+```
+
+To run services one at a time instead:
 
 ```sh
 # Web apps monorepo

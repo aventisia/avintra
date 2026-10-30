@@ -5,10 +5,11 @@
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
 # committed `.env.example` template to the local env file its service expects
-# and installs the dependencies, so the checkout can be built and run without
+# and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
+# the local stack from dekit.yaml), so the checkout can be built and run without
 # doing it by hand.
 #
-# System prerequisites (.NET 8 SDK, Node.js + npm, Python 3.12) are NOT installed
+# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
@@ -33,7 +34,8 @@ usage() {
 setup.sh — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
-its service expects and installs the project dependencies. System prerequisites (.NET 8 SDK, Node.js + npm,
+its service expects and installs the project dependencies plus dekit
+(npm install -g @dekit/cli). System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
 Python 3.12) must be installed separately first.
 
 Usage:
@@ -205,6 +207,12 @@ else
   install_npm "docs (npm install)" "$ROOT/clients/docs"
   install_npm "bruno tests (npm install)" "$ROOT/tests/bruno"
 
+  if command -v npm >/dev/null 2>&1; then
+    run_install "dekit (npm install -g @dekit/cli)" "$ROOT" npm install -g @dekit/cli
+  else
+    omitmark "dekit (npm install -g @dekit/cli)" "npm not found"
+  fi
+
   if [ ! -f "$ROOT/Avplatform.sln" ]; then
     omitmark "dotnet restore (Avplatform.sln)" "Avplatform.sln not found"
   elif command -v dotnet >/dev/null 2>&1; then
@@ -236,9 +244,7 @@ printf 'Next steps:\n'
 printf '  - Set the secrets listed (commented out) in each generated env file, either\n'
 printf '    in your OS environment or by uncommenting them there, before running the\n'
 printf '    services. Also set your Bruno login in tests/bruno/.env.\n'
-printf '  - Web apps:   npm --prefix clients/web-apps run dev\n'
-printf '  - Backend:    cd apis/WorcBackend-legacy/AccountsAPIs && dotnet run\n'
-printf '  - LLM:        cd apis/llmpipeline && ENV=local ./venv/bin/python dev.py\n'
+printf '  - Run the stack: dekit up, then dekit attach (more commands at the top of dekit.yaml)\n'
 
 if [ "$INSTALL_FAILED" -eq 1 ]; then
   printf '\nWarning: one or more dependency installs failed; see the output above.\n' >&2
