@@ -62,10 +62,10 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
     <NavLink
       to={route}
       onClick={closeSidebarOnDialog}
-      className="group relative flex h-control-sm items-center gap-2.5 rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-selected aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
+      className="group relative flex h-8 items-center gap-[9px] rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
     >
-      <span className="absolute -left-2 bottom-1.5 top-1.5 hidden w-0.5 rounded-r-sm bg-indicator group-aria-[current=page]:block" />
-      <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground group-aria-[current=page]:text-primary-text" />
+      <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
+      <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground group-aria-[current=page]:text-ink" />
       <span className={`truncate ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
       {badge && (
         <span
