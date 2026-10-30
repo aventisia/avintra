@@ -382,6 +382,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 CollectionName = knowledgeBaseDto.CollectionName,
                 VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig,
                 IsDisabled = knowledgeBaseDto.IsDisabled ?? false,
+                IsResourceAccessRestricted = true,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
                 CreatedOn = DateTimeOffset.UtcNow,

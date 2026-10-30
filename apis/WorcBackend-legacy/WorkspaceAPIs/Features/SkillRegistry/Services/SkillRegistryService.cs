@@ -393,6 +393,7 @@ public class SkillRegistryService : ISkillRegistryService
             newSkill.EnvType = _currentTenantService.CurrentEnvType;
             newSkill.CreatedByUserId = _userId;
             newSkill.LastModifiedByUserId = _userId;
+            newSkill.IsResourceAccessRestricted = true;
 
 
             // Persist new skill.

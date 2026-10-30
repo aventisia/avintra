@@ -397,6 +397,7 @@ public class VaultCredentialService : IVaultCredentialService
             newVaultCredential.CreatedByUserId = _userId;
             newVaultCredential.LastModifiedByUserId = _userId;
             newVaultCredential.EnvType = _currentTenantService.CurrentEnvType;
+            newVaultCredential.IsResourceAccessRestricted = true;
 
             await _unitOfWork.VaultCredentialRepo.InsertAsync(newVaultCredential);
 
