@@ -18,20 +18,18 @@ export const ArchivedToggle = ({ count, pressed, onPressedChange }: ArchivedTogg
     title={pressed ? "Show active agents" : "Show archived agents"}
     onClick={() => onPressedChange(!pressed)}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border border-dashed bg-background px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50",
+      "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50",
       pressed
         ? "border-solid border-primary bg-selected text-primary-text"
-        : "border-line text-ink-2 hover:border-line-strong hover:bg-sunken hover:text-ink",
+        : "border-transparent text-ink-2 hover:bg-hover hover:text-ink",
     )}
   >
     <Archive className="size-3.5" />
     Archived
     <span
       className={cn(
-        "rounded px-1 text-2xs tabular-nums",
-        pressed
-          ? "bg-primary/15 text-primary-text font-mono"
-          : "bg-sunken font-mono text-muted-foreground",
+        "rounded-sm px-1.5 py-px font-mono text-[11px] font-medium tabular-nums",
+        pressed ? "bg-primary/15 text-primary-text" : "bg-sunken text-muted-foreground",
       )}
     >
       {count}
