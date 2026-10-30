@@ -34,13 +34,13 @@
     <None Include="..\AspNetToolkit\serilogsettings.json" Link="serilogsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StaticFiles\EmailTemplates\ValidationFailedEmailTemplate.html">
+    <None Update="StaticFiles\EmailTemplates\ValidationFailedEmailTemplate.ee.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StaticFiles\EmailTemplates\InvalidRequestEmailTemplate.html">
+    <None Update="StaticFiles\EmailTemplates\InvalidRequestEmailTemplate.ee.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StaticFiles\EmailTemplates\ContractExpiratedEmailTemplate.html">
+    <None Update="StaticFiles\EmailTemplates\ContractExpiratedEmailTemplate.ee.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

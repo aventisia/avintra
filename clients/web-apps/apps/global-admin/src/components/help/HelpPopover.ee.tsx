@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverDefaultHeader } from "@avplatform/ui/po
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { ExternalLinkIcon } from "lucide-react";
 
-import MarkdownViewer from "@/components/markdown/MarkdownViewer";
+import MarkdownViewer from "@/components/markdown/MarkdownViewer.ee";
 import { getGuide } from "@/docs-content";
 
 interface HelpPopoverProps {

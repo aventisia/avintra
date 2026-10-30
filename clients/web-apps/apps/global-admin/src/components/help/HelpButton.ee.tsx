@@ -4,7 +4,7 @@ import { Tooltip } from "@avplatform/ui/tooltip";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-import { HelpPopover } from "./HelpPopover";
+import { HelpPopover } from "./HelpPopover.ee";
 
 interface HelpButtonProps {
   /** Guide id to open (see `src/docs-content/registry.ts`). */

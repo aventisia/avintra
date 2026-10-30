@@ -7,7 +7,7 @@ import {
   createInstance,
   createTenant,
   deleteTenants,
-} from "./global-admin-helpers";
+} from "./global-admin-helpers.ee";
 
 const RUN = Date.now();
 

@@ -1,7 +1,7 @@
 import { AppLogo, Header, HeaderContainer } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
 
-import { UserAccountMenu } from "./UserAccountMenu";
+import { UserAccountMenu } from "./UserAccountMenu.ee";
 
 const AppHeader = () => {
   return (

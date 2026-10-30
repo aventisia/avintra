@@ -1,10 +1,10 @@
 import { NotFoundPage } from "@avplatform/layout";
 import { Navigate, type RouteObject, createBrowserRouter } from "react-router-dom";
 
-import { GlobalAdminLayout } from "./components/layout/GlobalAdminLayout";
-import { OnPremTenantsPage } from "./pages/OnPremTenantsPage";
-import { TenantInstanceDataPage } from "./pages/TenantInstanceDataPage";
-import { TenantInstancePage } from "./pages/TenantInstancePage";
+import { GlobalAdminLayout } from "./components/layout/GlobalAdminLayout.ee";
+import { OnPremTenantsPage } from "./pages/OnPremTenantsPage.ee";
+import { TenantInstanceDataPage } from "./pages/TenantInstanceDataPage.ee";
+import { TenantInstancePage } from "./pages/TenantInstancePage.ee";
 
 const routerConfig: RouteObject[] = [
   {
