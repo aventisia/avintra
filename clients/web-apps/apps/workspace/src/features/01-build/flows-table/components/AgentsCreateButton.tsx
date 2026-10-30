@@ -23,6 +23,7 @@ export const AgentsCreateButton = () => {
       <SplitButton
         onClick={openCreateAgentDialog}
         disabled={locked}
+        size="default"
         menuLabel="More create options"
         menu={
           <MenuContent align="end">

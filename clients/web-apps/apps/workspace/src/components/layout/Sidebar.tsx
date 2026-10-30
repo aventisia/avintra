@@ -8,7 +8,11 @@ import { Tooltip } from "@avplatform/ui/tooltip";
 import { CircleArrowLeftIcon, CircleArrowRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
+
+import { AppLogo } from "./AppLogo";
 import { SidebarBrandingFooter } from "./SidebarBrandingFooter";
+import { SpaceSelector } from "./SpaceSelector";
 
 interface SidebarProps {
   className?: string;
@@ -23,10 +27,9 @@ interface SidebarProps {
  * @returns {JSX.Element} The rendered Sidebar component.
  *
  * @remarks
+ * - Full-height column holding the brand and space selector, the menu, and the branding footer.
  * - The sidebar's state (expanded or collapsed) is managed using `useBaseLayoutStore`.
  * - Width transitions smoothly between `--sidebar-min-width` and `--sidebar-max-width`.
- * - Accounts for an optional app banner by adjusting top offset and height via CSS vars.
- * - `ScrollArea` grows to fill available space; `SidebarBrandingFooter` is pinned at the bottom.
  *
  * @example
  * ```tsx
@@ -34,10 +37,9 @@ interface SidebarProps {
  * ```
  */
 const Sidebar = ({ className }: SidebarProps) => {
-  const { sidebarExpand, appBanner, setSidebarExpand } = useBaseLayoutStore(
+  const { sidebarExpand, setSidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
       sidebarExpand: state.sidebarExpand,
-      appBanner: state.appBanner,
       setSidebarExpand: state.setSidebarExpand,
     })),
   );
@@ -48,23 +50,25 @@ const Sidebar = ({ className }: SidebarProps) => {
     })),
   );
 
-  // Return the sidebar component
   return (
-    <div
+    <aside
       className={cn(
-        "fixed left-0 z-10 hidden border-r transition-[width] duration-200 motion-reduce:transition-none md:flex md:flex-col",
-        appBanner
-          ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height))] h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
-          : "top-[calc(var(--header-height)+var(--header-padding))] h-[calc(100vh-var(--header-height)-var(--header-padding))]",
+        "relative z-10 hidden h-full shrink-0 border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none md:flex md:flex-col",
         className,
         sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
       )}
     >
+      <div
+        className={cn("flex h-14 shrink-0 items-center", sidebarExpand ? "px-4" : "justify-center")}
+      >
+        {sidebarExpand ? <AppLogo /> : <AppLogo iconOnly className="size-6" />}
+      </div>
+      {sidebarExpand && <SpaceSelector showLabel className="px-2.5 pb-1.5" />}
       <Tooltip content={sidebarExpand ? "Collapse" : "Expand"} side="right">
         <Button
           variant="ghost"
           size="icon5"
-          className="absolute -right-2.5 top-2 z-10 rounded-full border-none bg-bg text-line-strong shadow-none hover:text-primary"
+          className="absolute -right-2.5 top-[18px] z-10 rounded-full border-none bg-bg text-line-strong shadow-none hover:text-primary"
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
@@ -81,8 +85,17 @@ const Sidebar = ({ className }: SidebarProps) => {
         </nav>
       </ScrollArea>
 
-      {userSession?.deploymentType == "Commercial" && <SidebarBrandingFooter />}
-    </div>
+      {userSession?.deploymentType == "Commercial" && (
+        <>
+          {sidebarExpand && (
+            <div className="px-2.5 pb-2.5 pt-2">
+              <AvailableCredits />
+            </div>
+          )}
+          <SidebarBrandingFooter />
+        </>
+      )}
+    </aside>
   );
 };
 

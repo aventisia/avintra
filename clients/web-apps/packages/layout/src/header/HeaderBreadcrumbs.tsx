@@ -19,12 +19,12 @@ const HeaderBreadcrumbs = ({ className }: { className?: string }) => {
 
   return (
     <Breadcrumb className={cn("hidden min-w-0 md:block", className)}>
-      <BreadcrumbList className="flex-nowrap text-body-sm text-muted-foreground">
+      <BreadcrumbList className="flex-nowrap gap-[7px] text-[13.5px] text-muted-foreground sm:gap-[7px]">
         {trail.map((crumb, index) => {
           const isLast = index === trail.length - 1;
           return (
             <Fragment key={`${crumb.name}-${index}`}>
-              {index > 0 && <BreadcrumbSeparator />}
+              {index > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
               <BreadcrumbItem className="min-w-0">
                 {isLast ? (
                   <BreadcrumbPage className="truncate">{crumb.name}</BreadcrumbPage>

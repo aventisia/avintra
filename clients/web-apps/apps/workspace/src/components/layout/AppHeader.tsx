@@ -1,15 +1,13 @@
-import {
-  Header,
-  HeaderBreadcrumbs,
-  HeaderContainer,
-  JobsPill,
-  SearchBox,
-} from "@avplatform/layout";
+import { Header, HeaderBreadcrumbs, JobsPill, SearchBox } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
-import { type IUserSessionStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { cn } from "@avplatform/ui/lib";
+import {
+  type IUserSessionStore,
+  useBaseLayoutStore,
+  useUserSessionStore,
+} from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
 import { DownloadDialog } from "@/features/desktop-download";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
@@ -25,34 +23,32 @@ const AppHeader: React.FC = () => {
       userSession: state.userSession,
     })),
   );
+  const sidebarExpand = useBaseLayoutStore((state) => state.sidebarExpand);
 
   return (
-    <HeaderContainer>
-      <Header>
-        <div className="flex min-w-0 flex-grow items-center">
-          <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
+    <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
+      <div className="flex min-w-0 flex-1 basis-0 items-center gap-3">
+        <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
+        <div className="md:hidden">
           <AppLogo />
-          <SpaceSelector />
-          {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==
-            "read_only" && <TenantSwitchBadge />}
-          <HeaderBreadcrumbs className="ml-3" />
         </div>
-        <SearchBox />
+        <SpaceSelector className={cn("w-40 shrink-0", sidebarExpand && "md:hidden")} />
+        {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==
+          "read_only" && <TenantSwitchBadge />}
+        <HeaderBreadcrumbs />
+      </div>
+      <SearchBox className="h-[34px] w-full max-w-[380px] flex-1" />
+      <div className="flex flex-1 basis-0 items-center justify-end gap-2">
         {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
         <JobsPill to="/orchestrator/jobs" />
-        <div className="ml-4 flex items-center gap-4">
-          {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
-            <TrustLocalhostSSLButton />
-          )}
-          {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}
-          <div className="flex items-center gap-2.5">
-            <DownloadDialog />
-            <UnreadNotifications />
-          </div>
-          <UserAccountModal />
-        </div>
-      </Header>
-    </HeaderContainer>
+        {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
+          <TrustLocalhostSSLButton />
+        )}
+        <DownloadDialog />
+        <UnreadNotifications />
+        <UserAccountModal />
+      </div>
+    </Header>
   );
 };
 

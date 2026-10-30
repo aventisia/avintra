@@ -39,7 +39,7 @@ export const TableCNRowElement = ({ className, ...props }: React.ComponentProps<
 export const TableCNHeadElement = ({ className, ...props }: React.ComponentProps<"th">) => (
   <th
     className={cn(
-      "h-8 whitespace-nowrap border-b border-line bg-sunken px-3 text-left align-middle font-mono text-label uppercase text-muted-foreground first:pl-4 last:pr-4 aria-[sort]:text-ink-2",
+      "h-11 whitespace-nowrap border-b border-line bg-sunken px-3 text-left align-middle font-mono text-label uppercase text-muted-foreground first:pl-4 last:pr-4 aria-[sort]:text-ink-2",
       className,
     )}
     {...props}

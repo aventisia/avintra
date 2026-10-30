@@ -59,9 +59,9 @@ const SubMenuItems = ({ items }: SubMenuItemsProps) => {
             key={index}
             to={item.route}
             onClick={closeNavbarOnSheet}
-            className="group relative flex h-[26px] items-center rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-selected aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
+            className="group relative flex h-[26px] items-center rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
           >
-            <span className="absolute -left-2.5 bottom-1.5 top-1.5 hidden w-0.5 rounded-r-sm bg-indicator group-aria-[current=page]:block" />
+            <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
             <span className="truncate">{item.name}</span>
           </NavLink>
         ))}

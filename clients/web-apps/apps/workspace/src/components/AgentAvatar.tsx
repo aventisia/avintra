@@ -13,12 +13,13 @@ const SIZES = {
 interface AgentAvatarProps {
   size?: keyof typeof SIZES;
   className?: string;
+  Icon?: React.ComponentType;
 }
 
 /**
  * Agent tile using the sidebar's agent icon on a light tint of the primary color.
  */
-export const AgentAvatar = ({ size = "md", className }: AgentAvatarProps) => (
+export const AgentAvatar = ({ size = "md", className, Icon = NewAgentIcon }: AgentAvatarProps) => (
   <span
     aria-hidden="true"
     className={cn(
@@ -27,6 +28,6 @@ export const AgentAvatar = ({ size = "md", className }: AgentAvatarProps) => (
       className,
     )}
   >
-    <NewAgentIcon />
+    <Icon />
   </span>
 );

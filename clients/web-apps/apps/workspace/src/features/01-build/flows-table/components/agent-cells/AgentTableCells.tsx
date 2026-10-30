@@ -9,11 +9,7 @@ import { HighlightedText } from "@/components/HighlightedText";
 import { PersonAvatar } from "@/components/PersonAvatar";
 import { pluralize } from "@/utils/pluralize.util";
 
-import {
-  ACCESS_LEVELS,
-  AGENT_PLATFORMS,
-  AGENT_TYPES,
-} from "../../constants/agent-attributes.constant";
+import { AGENT_PLATFORMS, AGENT_TYPES } from "../../constants/agent-attributes.constant";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
 import { AgentPlatform } from "../../types/agent-platform.type";
@@ -29,15 +25,9 @@ type AgentNameCellProps = {
   folder?: FoldersTableRowDto;
 };
 
-const MetaSeparator = () => (
-  <span aria-hidden="true" className="text-base leading-none text-muted-foreground">
-    ·
-  </span>
-);
-
 /**
- * Agent avatar and two lines: the name (opens the Agent Builder) with its folder chip,
- * then the latest version, its Published badge, last update, and queues.
+ * Agent glyph and one line: the name (opens the Agent Builder), latest version, Published dot,
+ * queue count, and folder chip.
  */
 export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) => {
   const { href, isExternal } = getAgentBuilderLink(flow.id);
@@ -45,7 +35,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
     draggable: false,
     title: `Open ${flow.name} v${flow.versionNumber} in Agent Builder`,
     className: cn(
-      "min-w-0 truncate rounded-sm text-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
+      "min-w-0 truncate rounded-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
       flow.isArchived ? "text-muted-foreground" : "text-ink",
     ),
   };
@@ -58,79 +48,59 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
   const queueCount = flow.queues?.length ?? 0;
 
   return (
-    <div className="flex min-w-0 max-w-[32rem] items-center gap-3 py-2">
-      <AgentAvatar size="xl" className={cn(flow.isArchived && "opacity-50 grayscale")} />
-      <div className="min-w-0 flex-1 space-y-0.5">
-        <div className="flex min-w-0 items-center gap-2">
-          {isExternal ? (
-            <a href={href} {...linkProps}>
-              {name}
-            </a>
-          ) : (
-            <NavLink to={href} {...linkProps}>
-              {name}
-            </NavLink>
-          )}
-          {folder && <FolderChip folder={folder} />}
-        </div>
-        <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground">
-          <span className="shrink-0 font-mono tabular-nums">v{flow.versionNumber}</span>
-          {!flow.isArchived && flow.isPublished && (
-            <>
-              <MetaSeparator />
-              <span className="inline-flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-ok ring-2 ring-ok/20" />
-                Published
-              </span>
-            </>
-          )}
-          {flow.lastModifiedOn && (
-            <>
-              <MetaSeparator />
-              <span title={`Updated ${formatDate(flow.lastModifiedOn, true)}`}>
-                {formatDistanceToNow(flow.lastModifiedOn, { addSuffix: true })}
-              </span>
-            </>
-          )}
-          {queueCount > 0 && (
-            <>
-              <MetaSeparator />
-              <span
-                className="inline-flex items-center gap-1"
-                title={flow.queues?.map((queue) => queue.name).join(", ")}
-              >
-                <ListChecks className="size-3 text-muted-foreground" />
-                {queueCount} {pluralize(queueCount, "queue")}
-              </span>
-            </>
-          )}
-        </div>
-      </div>
+    <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
+      <AgentAvatar
+        size="sm"
+        Icon={AGENT_TYPES.find((option) => option.value === flow.type)?.icon}
+        className={cn("size-[30px] rounded-md", flow.isArchived && "opacity-50 grayscale")}
+      />
+      {isExternal ? (
+        <a href={href} {...linkProps}>
+          {name}
+        </a>
+      ) : (
+        <NavLink to={href} {...linkProps}>
+          {name}
+        </NavLink>
+      )}
+      <span
+        className="shrink-0 font-mono text-[11.5px] tabular-nums text-muted-foreground"
+        title={
+          flow.lastModifiedOn
+            ? `Updated ${formatDistanceToNow(flow.lastModifiedOn, { addSuffix: true })} (${formatDate(flow.lastModifiedOn, true)})`
+            : undefined
+        }
+      >
+        v{flow.versionNumber}
+      </span>
+      {!flow.isArchived && flow.isPublished && (
+        <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-ok" />
+          Published
+        </span>
+      )}
+      {queueCount > 0 && (
+        <span
+          className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground"
+          title={flow.queues?.map((queue) => queue.name).join(", ")}
+        >
+          <ListChecks className="size-3" />
+          {queueCount} {pluralize(queueCount, "queue")}
+        </span>
+      )}
+      {folder && <FolderChip folder={folder} />}
     </div>
   );
 };
 
 /**
- * Agent type with its tinted icon.
+ * Agent type label.
  */
-export const AgentTypeCell = ({ type }: { type: string }) => {
-  const agentType = AGENT_TYPES.find((option) => option.value === type);
-  if (!agentType) return <span>{getFlowTypeLabel(type)}</span>;
-
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span
-        className={cn(
-          "grid size-5 shrink-0 place-items-center rounded-md ring-1 ring-inset",
-          agentType.tint,
-        )}
-      >
-        <agentType.icon className="size-3" />
-      </span>
-      {agentType.label}
-    </span>
-  );
-};
+export const AgentTypeCell = ({ type }: { type: string }) => (
+  <span className="text-ink-2">
+    {AGENT_TYPES.find((option) => option.value === type)?.label ?? getFlowTypeLabel(type)}
+  </span>
+);
 
 /**
  * Where the agent runs, with its icon.
@@ -152,19 +122,14 @@ type AccessLevelCellProps = {
 };
 
 /**
- * The user's access level on the agent as a pill with a colored dot.
+ * The user's access level on the agent.
  */
-export const AccessLevelCell = ({ accessLevel }: AccessLevelCellProps) => {
-  if (!accessLevel) return EMPTY_VALUE;
-  const dotClassName = ACCESS_LEVELS[accessLevel as keyof typeof ACCESS_LEVELS]?.dot;
-
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-background py-0.5 pl-2 pr-2.5 text-xs font-medium text-ink-2 ring-1 ring-inset ring-line">
-      <span className={cn("size-1.5 rounded-full bg-muted-foreground", dotClassName)} />
-      {getAccessLevelLabel(accessLevel)}
-    </span>
+export const AccessLevelCell = ({ accessLevel }: AccessLevelCellProps) =>
+  accessLevel ? (
+    <span className="text-ink-2">{getAccessLevelLabel(accessLevel)}</span>
+  ) : (
+    EMPTY_VALUE
   );
-};
 
 /**
  * Initials avatar and name of the user who created the agent.

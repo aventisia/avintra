@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import NewAgentIcon from "@/components/NewAgentIcon";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { FLOWS_QUERY_KEY, TABLE_HEADING } from "../constants";
 import { useAgentsTable } from "../hooks/useAgentsTable.hook";
@@ -108,6 +109,9 @@ const getAgentsSectionHint = ({
  *
  * @returns The rendered FlowsTable component.
  */
+const getAgentsSubtitle = (agentCount: number, folderCount: number) =>
+  `${agentCount} ${pluralize(agentCount, "agent")} in ${folderCount} ${pluralize(folderCount, "folder")}`;
+
 export const FlowsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
@@ -180,12 +184,17 @@ export const FlowsTable = () => {
   return (
     <>
       {isListReady ? (
-        <div className="space-y-6 pb-4 pt-[17px]">
+        <div className="space-y-4 pb-6 pt-6">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <HelpButton guideId="agents" />
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <DTHeading heading={TABLE_HEADING} />
+                  <HelpButton guideId="agents" />
+                </div>
+                <p className="mt-[5px] text-[13px] text-muted-foreground">
+                  {getAgentsSubtitle((flows ?? []).length, folderSummaries.length)}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <FlowsViewToggle view={view} onChange={setView} />
@@ -195,7 +204,7 @@ export const FlowsTable = () => {
             <TableCNToolbar
               table={table}
               searchPlaceholder="Search agents and folders..."
-              withViewOptions={view === "table"}
+              withViewOptions={false}
             >
               <ArchivedToggle
                 count={archivedCount}
@@ -207,7 +216,7 @@ export const FlowsTable = () => {
           </div>
           {!isFoldersFailed && <FolderShelf summaries={shelfSummaries} searchText={searchText} />}
           <section aria-labelledby="agents-section-heading" className="space-y-2.5">
-            {(folderSummaries.length > 0 || isSearching || isFiltered) && (
+            {(isSearching || isFiltered) && (
               <SectionHeading
                 id="agents-section-heading"
                 title={TABLE_HEADING}

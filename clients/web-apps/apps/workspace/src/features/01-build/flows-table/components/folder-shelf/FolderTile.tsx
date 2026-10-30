@@ -39,7 +39,7 @@ export const FolderTile = ({
       {...getAgentDropHandlers(onDropAgent, canAccept)}
       data-drop-ready={isDropReady || undefined}
       className={cn(
-        "group/drop relative flex h-[4.5rem] items-center gap-3 rounded-lg bg-popover pl-3 pr-2 ring-1 ring-border transition-[background-color,outline-color] duration-200",
+        "group/drop relative flex min-h-[52px] items-center gap-[11px] rounded-md bg-surface py-2.5 pl-3 pr-2 ring-1 ring-line transition-[background-color,outline-color] duration-200",
         "hover:ring-line-strong",
         "data-[drop-ready=true]:outline-dashed data-[drop-ready=true]:outline-[1.5px] data-[drop-ready=true]:outline-offset-[3px]",
         "data-[drop-active=true]:ring-[1.5px]",
@@ -48,18 +48,18 @@ export const FolderTile = ({
     >
       <FolderMark
         color={color}
-        className="transition-transform duration-200 group-hover/drop:scale-105"
+        className="size-8 rounded-md transition-transform duration-200 group-hover/drop:scale-105 [&>svg]:size-4"
       />
       <NavLink
         to={getFolderPagePath(folder.id)}
         draggable={false}
-        className="block min-w-0 flex-1 outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-2 focus-visible:after:ring-focus"
+        className="block min-w-0 flex-1 outline-none after:absolute after:inset-0 after:rounded-md focus-visible:after:ring-2 focus-visible:after:ring-focus"
       >
         <span className="block truncate text-[13.5px] font-semibold text-ink">
           <HighlightedText text={folder.name} query={searchText} />
         </span>
         <MetaLine
-          className="mt-0.5 text-[12px] text-muted-foreground group-data-[drop-active=true]/drop:hidden"
+          className="mt-0.5 text-[12px] text-muted-foreground"
           items={[
             visibleAgentCount > 0
               ? `${visibleAgentCount} ${pluralize(visibleAgentCount, "agent")}`
@@ -71,9 +71,6 @@ export const FolderTile = ({
             ),
           ]}
         />
-        <span className="mt-0.5 hidden text-[12px] font-medium text-ink-2 group-data-[drop-active=true]/drop:block">
-          Drop to move here
-        </span>
       </NavLink>
       <div className="relative z-10 opacity-0 transition-opacity focus-within:opacity-100 group-hover/drop:opacity-100 has-[[data-state=open]]:opacity-100 [@media(hover:none)]:opacity-100">
         <FolderActionsMenu folder={folder} />

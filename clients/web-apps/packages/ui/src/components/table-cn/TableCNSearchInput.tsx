@@ -61,7 +61,7 @@ export const TableCNSearchInput = <TData,>({
   };
 
   return (
-    <div className={cn("relative w-full mmd:w-[14rem] lg:w-[17rem]", className)}>
+    <div className={cn("relative w-full mmd:w-[14rem] lg:w-80", className)}>
       <Search
         aria-hidden="true"
         className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"

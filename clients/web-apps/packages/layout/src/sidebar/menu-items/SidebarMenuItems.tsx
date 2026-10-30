@@ -46,7 +46,7 @@ const SidebarMenuItems = () => {
 
   // Render the sidebar menu items
   return (
-    <div className="flex-grow px-2">
+    <div className="flex-grow px-2.5">
       {sidebarMenuSections?.map((sectionData, index) => (
         <div key={index}>
           <>
@@ -60,7 +60,7 @@ const SidebarMenuItems = () => {
               onValueChange={() => console.log("TODO")}
               type="single"
               collapsible
-              className="flex w-full flex-col gap-0.5 py-0"
+              className="flex w-full flex-col gap-px py-0"
             >
               {sectionData.menuItems?.map((menuItem, index) =>
                 menuItem.subMenuItems ? (
