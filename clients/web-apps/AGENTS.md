@@ -2,10 +2,11 @@
 
 ## Scope
 
-- Governs every app and package in `clients/web-apps` (`apps/*`, `packages/*`). Role scope and permissions come from the root `AGENTS.md`; these are code conventions only.
+- Governs every app and package in `clients/web-apps` (`apps/*`, `packages/*`).
 - `studio` still carries legacy patterns; adopt these conventions there incrementally.
 - `desktop-app` runs both inside the Tauri shell (`src-tauri/`) and in a plain browser. Guard every Tauri `invoke()` call with a `__TAURI_INTERNALS__` check (as in `src/TauriAppFooter.tsx` and `src/lib/setupStore.ts`) so browser use never crashes. Provision the runner (`check_runner_app`, `download_runner_app`) when the desktop app opens; launch it only during flow execution.
 - Shared UI comes from `@avplatform/*` workspace packages; confirm an export exists in the package before importing it.
+- Shared `packages/*` are source-only TypeScript with no build step; apps import the raw TS through Vite.
 
 ## Incremental adoption
 
@@ -34,10 +35,6 @@ Every non-component feature module uses a dot suffix. Components, `index.ts` bar
 | Utility   | `.util.ts`     | `date-range-selector.util.ts`      |
 | Type      | `.type.ts`     | `machine-filter.type.ts`           |
 | Component | none           | `JobsTable.tsx`                    |
-
-## EE file marking
-
-EE marking: see root `AGENTS.md` §EE file marking.
 
 ## API files (`.apis.ts`)
 
@@ -79,10 +76,6 @@ EE marking: see root `AGENTS.md` §EE file marking.
 - Keep API fetching and mutations in custom hooks; components only render.
 - Break complex logic into small, precisely named blocks.
 
-## Comments and documentation
-
-Follow the root `AGENTS.md` "Documentation and code style boundaries": short JSDoc only on exported/public APIs and complex public types, self-documenting names everywhere else. The only inline comment allowed is an `IMPORTANT NOTE:` for an external constraint, race condition, or required hack.
-
 ## Forms and display
 
 - Give form inputs short, realistic placeholders (email → `example@company.com`).
@@ -108,7 +101,7 @@ Apply every item to each touched file:
 
 ## Artifact contents
 
-The root handoff contract controls agent returns; these formats apply inside reports or explicitly requested standalone output.
+These formats apply inside reports and explicitly requested standalone output; agent returns follow `AGENT-LOOP.md`.
 
 - Code review: findings first, ordered by severity, each with file and line; then open questions or assumptions; then a concise change summary.
 - Code generation: complete, compilable code for every affected file, with backend/frontend naming and ordering kept in sync.

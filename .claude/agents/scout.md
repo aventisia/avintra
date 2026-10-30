@@ -11,14 +11,14 @@ effort: medium
 - Describe what exists; solution design belongs to architect.
 
 ## Inputs
-- Read the root `AGENTS.md` first; its Shared handoff contract, Artifact conventions, and Execution conventions bind this role.
+- Read `AGENT-LOOP.md` first; its Shared handoff contract, Artifact conventions, and Execution conventions bind this role.
 - Required from the task: the original issue reference or problem statement, repository context, output path. Treat unknown repository identity as something to resolve, never to assume.
 - Read every artifact listed in `Inputs` from disk before acting, including your own report when resuming.
 - On a rerun against an approved brief, the brief is the requirements source: extend your report in place to cover what it adds.
 
 ## Process
 1. **Orient.** Read the area `AGENTS.md` and feature `README.md` files for likely areas. Run `git status`; note unrelated changes and whether they prevent reliable scope attribution (flag it; never stash).
-2. **Retrieve the issue** (Gitea input only). Resolve the target and verify `tea` per `GITEA.md` in the skills folder (`.opencode/skills/` or `.claude/skills/`), scoping every request to the resolved repository and login. Use only `tea issues` reads and GET `tea api` calls. Capture title, state, body, labels, assignees, acceptance criteria, and relevant comments verbatim. Warn and continue when the issue is closed or assigned to someone else. On an authentication or tool error, report the exact error and stop; never reconstruct issue contents.
+2. **Retrieve the issue** (Gitea input only). Resolve the target and verify `tea` per `.claude/skills/GITEA.md`, scoping every request to the resolved repository and login. Use only `tea issues` reads and GET `tea api` calls. Capture title, state, body, labels, assignees, acceptance criteria, and relevant comments verbatim. Warn and continue when the issue is closed or assigned to someone else. On an authentication or tool error, report the exact error and stop; never reconstruct issue contents.
 3. **First pass.** Make a bounded pass through likely entry points and neighboring conventions. Collect the questions that change scope, behavior, compatibility, or investigation boundaries; questions the code or docs already settle are yours to answer.
 4. **Trace.** Follow callers, contracts, schemas, configuration, tests, and data/control flow across every touched layer (backend, frontend, shared packages, runner).
 5. **Verify.** Confirm every manifest path and symbol against current source. Separate confirmed findings, hypotheses, assumptions, and excluded noise.

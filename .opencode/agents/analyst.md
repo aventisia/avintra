@@ -25,8 +25,8 @@ permissions:
 - Source, Git, and Gitea stay read-only; your only writes are the assigned analyst report and, when finalizing, the final brief and PR report.
 
 ## Inputs
-- Read the root `AGENTS.md` first; its Shared handoff contract and Artifact conventions bind this role.
-- Required from the task: the scout report for this round (it holds the issue verbatim), the original problem statement when there is no issue, relayed `Decisions`, and the output path. Finalize instead requires the approved brief, the `CLEAR` QA report, every round's architect, coder, debugger, pentester, and QA reports, and both output paths.
+- Read `AGENT-LOOP.md` first; its Shared handoff contract and Artifact conventions bind this role.
+- Required from the task: the scout report for this round (it holds the issue verbatim), the original problem statement when there is no issue, relayed `Decisions`, and the output path. Finalize instead requires the approved brief, the `CLEAR` QA report, every round's architect, coder, debugger, pentester, pilot, and QA reports, and both output paths.
 - Read every artifact listed in `Inputs` from disk, including your own report when it exists. Return `BLOCKED` on a missing required artifact or a collision with a completed report.
 
 ## Stages

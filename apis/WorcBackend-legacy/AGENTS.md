@@ -2,8 +2,20 @@
 
 ## Scope
 
-- Governs `AccountsAPIs`, `WorkspaceAPIs`, and `AspNetToolkit` in this directory. Role scope and permissions come from the root `AGENTS.md`; these are code conventions only.
+- Governs `AccountsAPIs`, `WorkspaceAPIs`, and `AspNetToolkit` in this directory.
 - Much existing code predates these rules (controller methods with `Async`, `Delete[Entities]` instead of `DeleteMultiple[Entities]`, delete-multiple returning `bool`). Apply the rules to code you create or touch, and leave untouched code alone.
+
+## Build and data gotchas
+
+- `AccountsAPIs` and `AspNetToolkit` treat warnings as errors; `WorkspaceAPIs` only suppresses CS8602 and NU1701. The local .NET 10 SDK can skip CS1998 that the Jenkins .NET 8 SDK raises, so scan for `async` methods without `await` before trusting a local build.
+- Both APIs reference `AspNetToolkit`; after changing it, rebuild both (Jenkins does this on its own).
+- EF Core migrations use the design-time factory and `~/.dotnet/tools/dotnet-ef`, with `ASPNETCORE_ENVIRONMENT=Localhost` so `.env.local` loads:
+  ```sh
+  export ASPNETCORE_ENVIRONMENT=Localhost
+  dotnet ef migrations add <Name> -o Data/Migrations --project apis/WorcBackend-legacy/AccountsAPIs --context=AccountsDbContext
+  dotnet ef database update --project apis/WorcBackend-legacy/AccountsAPIs --context=AccountsDbContext
+  ```
+- `AccountRole` declares `[Table("Roles")]`, but Identity owns the table name: the real table is `AspNetRoles`.
 
 ## Project layout
 
@@ -14,10 +26,6 @@
   - `Helpers/` when the feature needs helper logic
 - Entities live in the project-level `Entities/` folder, not in features. Name many-to-many join entities `Entity1_Entity2` (singular, PascalCase), and place them in `Entities/M2M/`.
 - Before modifying a feature, read its `README.md` when one exists; it records domain boundaries, contracts, and exceptions. Add a README only when a feature has non-obvious boundaries or invariants.
-
-## EE file marking
-
-EE marking: see root `AGENTS.md` §EE file marking.
 
 ## Feature helpers
 
@@ -68,8 +76,7 @@ Each project has a `GlobalUsings.cs` that already imports the `AspNetToolkit.*` 
 ## Logging and documentation
 
 - Log with `_logger` only for critical production-debugging or compliance events.
-- Follow the root `AGENTS.md` "Documentation and code style boundaries": one-sentence `/// <summary>` docs on public controller methods and service-interface contracts (kept in sync) and on public DTO properties; self-documenting names everywhere else. Document a service implementation method only when it is itself a public API or a diagnostic requires it.
-- The only inline comment allowed is an `IMPORTANT NOTE:` for an external constraint, race condition, or required hack.
+- Put one-sentence `/// <summary>` docs on public controller methods and service-interface contracts (kept in sync) and on public DTO properties. Document a service implementation method only when it is itself a public API or a diagnostic requires it.
 
 ## Review checklist
 
@@ -90,7 +97,7 @@ Apply every item to each touched file:
 
 ## Artifact contents
 
-The root handoff contract controls agent returns; these formats apply inside reports or explicitly requested standalone output.
+These formats apply inside reports and explicitly requested standalone output; agent returns follow `AGENT-LOOP.md`.
 
 - Code review: findings first, ordered by severity, each with file and line; then open questions or assumptions; then a minimal change summary.
 - Code generation: complete, compilable code for every affected layer, with naming and ordering kept in sync across files.
