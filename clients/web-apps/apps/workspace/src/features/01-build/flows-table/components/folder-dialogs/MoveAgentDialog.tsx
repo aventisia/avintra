@@ -240,7 +240,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
           primaryMessage="No other folders yet"
           secondaryMessage="Type a name above to create a folder and move this agent into it."
           className={cn(
-            "rounded-xl border border-dashed border-line py-6",
+            "rounded-md border border-dashed border-line py-6",
             targets.length > 0 && "mt-2",
           )}
         />

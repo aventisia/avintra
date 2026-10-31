@@ -11,11 +11,13 @@ export const AGENT_TYPES = [
     value: FlowTypesEnum.Agent,
     label: "Automation agent",
     icon: Workflow,
+    tint: "bg-[color-mix(in_srgb,var(--primary)_10%,var(--surface))] text-[color-mix(in_srgb,var(--primary)_75%,var(--ink))] ring-[color-mix(in_srgb,var(--primary)_25%,transparent)]",
   },
   {
     value: FlowTypesEnum.ChatAgent,
     label: "Chat agent",
     icon: MessagesSquare,
+    tint: "bg-[color-mix(in_srgb,#0d9488_10%,var(--surface))] text-[color-mix(in_srgb,#0d9488_75%,var(--ink))] ring-[color-mix(in_srgb,#0d9488_25%,transparent)]",
   },
 ];
 
