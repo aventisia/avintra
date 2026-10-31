@@ -19,7 +19,7 @@ export const SimpleDDMenuItem = React.forwardRef<
       buttonVariants({ variant: "dropdownItem" }),
       "focus:bg-hover data-[highlighted]:bg-hover",
       size === "sm" && "h-7 !px-[0.3rem] text-xs",
-      size === "md" && "h-auto min-h-[30px] gap-2 border-0 py-[5px]",
+      size === "md" && "h-auto min-h-8 gap-2 border-0 py-1.5",
       className,
     )}
     {...props}

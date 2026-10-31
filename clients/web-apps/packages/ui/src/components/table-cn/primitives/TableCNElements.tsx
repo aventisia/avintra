@@ -29,7 +29,7 @@ export const TableCNRowElement = ({ className, ...props }: React.ComponentProps<
   <tr
     className={cn(
       "group/row bg-surface transition-colors duration-[120ms] ease-out hover:bg-hover",
-      "data-[state=selected]:bg-selected",
+      "data-[state=selected]:bg-[color-mix(in_srgb,var(--primary)_6%,var(--surface))]",
       className,
     )}
     {...props}

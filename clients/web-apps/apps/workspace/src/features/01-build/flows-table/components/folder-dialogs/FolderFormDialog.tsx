@@ -44,7 +44,7 @@ type AgentToMoveCalloutProps = {
 };
 
 const AgentToMoveCallout = ({ agent, folderName, folderColor }: AgentToMoveCalloutProps) => (
-  <div className="flex items-center gap-3 rounded-lg bg-sunken px-3.5 py-3 ring-1 ring-line">
+  <div className="flex items-center gap-3 rounded-md bg-sunken px-3.5 py-3 ring-1 ring-line">
     <AgentAvatar size="md" />
     <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
     <FolderMark color={folderColor} size="sm" />
