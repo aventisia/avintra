@@ -120,7 +120,7 @@ export const RisksMitigationsSection = () => {
               <button
                 type="button"
                 onClick={() => removeRow(index)}
-                className="text-muted-foreground hover:text-destructive"
+                className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
                 aria-label="Remove risk"
               >
                 <Trash2Icon className="h-4 w-4" />

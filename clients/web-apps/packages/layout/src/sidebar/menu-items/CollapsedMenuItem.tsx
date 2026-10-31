@@ -1,11 +1,14 @@
 import { Tooltip } from "@avplatform/ui/tooltip";
 import type { IconProps } from "@avplatform/ui/types";
-import { NavLink } from "react-router-dom";
+
+import { useMenuItemLink } from "./useMenuItemLink.hook";
 
 interface MenuItemProps {
   Icon: React.ComponentType<IconProps>;
   name: string;
   route: string;
+  /** Routes that mark the item current instead of its own route, for a hub entry. */
+  activeRoutes?: string[];
 }
 
 /**
@@ -27,17 +30,20 @@ interface MenuItemProps {
  * />
  * ```
  */
-const CollapsedMenuItem = ({ Icon, name, route }: MenuItemProps) => {
+const CollapsedMenuItem = ({ Icon, name, route, activeRoutes }: MenuItemProps) => {
+  const { LinkComponent, ariaCurrent } = useMenuItemLink(activeRoutes);
+
   return (
     <Tooltip content={name} side="right">
-      <NavLink
+      <LinkComponent
         to={route}
+        aria-current={ariaCurrent}
         aria-label={name}
         className="group relative mx-auto my-0.5 flex size-9 items-center justify-center rounded-sm text-muted-foreground transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:text-ink motion-reduce:transition-none"
       >
         <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
         <Icon className="size-4 stroke-[1.75]" />
-      </NavLink>
+      </LinkComponent>
     </Tooltip>
   );
 };

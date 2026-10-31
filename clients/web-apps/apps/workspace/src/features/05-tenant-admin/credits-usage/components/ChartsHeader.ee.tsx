@@ -1,8 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Download } from "lucide-react";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
 import { useExportDialogStore } from "../store/export-dialog-store.ee";
 import { AvailableCredits } from "./AvailableCredits.ee";
 import ChartsHeaderDateRangeFilter from "./ChartsHeaderDateRangeFilter.ee";
@@ -16,7 +14,6 @@ const ChartsHeader = () => {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <p className="text-title text-ink">Usage</p>
-          <HelpButton guideId="usage" />
         </div>
         <AvailableCredits />
       </div>

@@ -1,6 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
-import { Undo2, X } from "lucide-react";
+import { Trash2, Undo2 } from "lucide-react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { MetaLine } from "@/components/MetaLine";
@@ -73,7 +73,7 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
           onClick={() => draft.remove(agent.id)}
           className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-bad/10 hover:text-bad focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
         >
-          <X className="size-4" />
+          <Trash2 className="size-4" />
         </button>
       )}
     </div>

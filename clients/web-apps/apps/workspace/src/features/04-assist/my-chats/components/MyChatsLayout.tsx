@@ -3,7 +3,6 @@ import { cn } from "@avplatform/ui/lib";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { useFetchChatAgents } from "../hooks/useFetchChatAgents";
@@ -112,7 +111,6 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
         <div className={cn("w-full flex items-center justify-between")}>
           <div className="flex items-center gap-2">
             <h1 className="text-title text-ink">Chats</h1>
-            <HelpButton guideId="assist-chats" />
           </div>
           {HAS_AGENTS && <SearchCommandTrigger />}
         </div>
