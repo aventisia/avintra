@@ -1,9 +1,9 @@
+import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { NavLink } from "react-router-dom";
 
 import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
 import { useAgentsPagePaths } from "../hooks/useAgentsPagePaths.hook";
 import { getFolderColor } from "../utils/folder-color.util";
-import { FolderGlyph } from "./folder/FolderGlyph";
 
 /**
  * Small link chip showing the folder an agent sits in; opens that folder.

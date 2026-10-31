@@ -1,10 +1,10 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { Archive, Cpu, ListChecks } from "lucide-react";
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { HighlightedText } from "@/components/HighlightedText";
 
 import { AGENT_PLATFORMS, AGENT_TYPES } from "../constants/agent-attributes.constant";
 import { FlowsTableDto } from "../dtos/flows-table-dto";

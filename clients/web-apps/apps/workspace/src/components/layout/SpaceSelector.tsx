@@ -77,7 +77,7 @@ export const SpaceSelector = ({
         {showLabel ? (
           <SelectTrigger
             size="sm"
-            className="h-auto w-full gap-2 rounded-md border-line bg-ink/[0.04] px-[9px] py-[7px] text-left text-[13px] font-semibold text-ink shadow-none hover:bg-ink/[0.06] [&>svg:last-child]:hidden"
+            className="h-auto w-full gap-2 rounded-md border-line bg-ink/[0.04] px-[9px] py-[3px] text-left text-[13px] font-semibold text-ink shadow-none hover:bg-ink/[0.06] [&>svg:last-child]:hidden"
           >
             <div className="min-w-0">
               <small className="block text-[11px] font-medium text-muted-foreground">Space</small>

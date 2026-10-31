@@ -1,7 +1,10 @@
 import { EmptyState } from "@avplatform/ui";
+import { CountToggle } from "@avplatform/ui/count-toggle";
 import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
+import { ViewModeToggle } from "@avplatform/ui/view-mode-toggle";
+import { Archive } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -23,10 +26,8 @@ import {
 } from "../utils/agents-list-items.util";
 import { AgentsCreateButton } from "./AgentsCreateButton";
 import { AgentsListView } from "./AgentsListView";
-import { ArchivedToggle } from "./ArchivedToggle";
 import { FlowsGridSkeleton } from "./FlowsGridSkeleton";
 import { flowsTableColumns } from "./FlowsTableColumns";
-import { FlowsViewToggle } from "./FlowsViewToggle";
 import { FolderDialogs } from "./folder-dialogs/FolderDialogs";
 import { FolderShelf } from "./folder-shelf/FolderShelf";
 import { SectionHeading } from "./folder-shelf/SectionHeading";
@@ -195,7 +196,7 @@ export const FlowsTable = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <FlowsViewToggle view={view} onChange={setView} />
+                <ViewModeToggle view={view} onChange={setView} />
                 {!showArchived && <AgentsCreateButton />}
               </div>
             </div>
@@ -204,7 +205,10 @@ export const FlowsTable = () => {
               searchPlaceholder="Search agents and folders..."
               withViewOptions={false}
             >
-              <ArchivedToggle
+              <CountToggle
+                Icon={Archive}
+                label="Archived"
+                title={showArchived ? "Show active agents" : "Show archived agents"}
                 count={archivedCount}
                 pressed={showArchived}
                 onPressedChange={setShowArchived}

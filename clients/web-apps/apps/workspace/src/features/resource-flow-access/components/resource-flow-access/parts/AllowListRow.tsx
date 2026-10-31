@@ -1,9 +1,9 @@
 import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
+import { MetaLine } from "@avplatform/ui/meta-line";
 import { Trash2, Undo2 } from "lucide-react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { MetaLine } from "@/components/MetaLine";
 
 import type { ResourceFlowDraft } from "../../../hooks/useResourceFlowDraft.hook";
 import type { FlowAccessAgent, FlowAccessChange } from "../../../types/flow-access.type";

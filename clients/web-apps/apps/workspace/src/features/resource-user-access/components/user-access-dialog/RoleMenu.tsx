@@ -1,7 +1,6 @@
+import { MenuContent, MenuItem, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { Check, ChevronDown, Trash2 } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
-
-import { MenuContent, MenuItem, MenuSeparator } from "@/components/MenuParts";
 
 import { USER_ACCESS_ROLES } from "../../constants/user-access-roles.constant";
 import { ResourceAccessTypeEnum } from "../../enums/resource-access-type-enum";

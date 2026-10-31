@@ -1,11 +1,11 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
+import { MetaLine } from "@avplatform/ui/meta-line";
 import { Check, LoaderCircle } from "lucide-react";
 import { useState } from "react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { HighlightedText } from "@/components/HighlightedText";
 import { Kbd } from "@/components/Kbd";
-import { MetaLine } from "@/components/MetaLine";
 
 import { PickerShell } from "../../../../resource-access-shared/components/PickerShell";
 import type { ResourceFlowDraft } from "../../../hooks/useResourceFlowDraft.hook";

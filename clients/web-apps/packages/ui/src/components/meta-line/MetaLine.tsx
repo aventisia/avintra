@@ -1,11 +1,12 @@
-import { cn } from "@avplatform/ui/lib";
 import { Fragment, type ReactNode } from "react";
 
-interface MetaLineProps {
+import { cn } from "@/ui/lib";
+
+export type MetaLineProps = {
   items: ReactNode[];
   className?: string;
   dotClassName?: string;
-}
+};
 
 /**
  * One truncating line of details separated by dots; empty items are skipped.

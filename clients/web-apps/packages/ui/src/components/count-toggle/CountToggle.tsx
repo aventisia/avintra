@@ -1,21 +1,33 @@
-import { cn } from "@avplatform/ui/lib";
-import { Archive } from "lucide-react";
+import type { ComponentType } from "react";
 
-type ArchivedToggleProps = {
+import { cn } from "@/ui/lib";
+import { type IconProps } from "@/ui/types";
+
+export type CountToggleProps = {
+  Icon: ComponentType<IconProps>;
+  label: string;
   count: number;
   pressed: boolean;
   onPressedChange: (pressed: boolean) => void;
+  title?: string;
 };
 
 /**
- * Toolbar toggle that switches the list between active and archived agents, with how many are archived.
+ * Toolbar toggle with an icon, a label and a count pill; disabled while unpressed with a zero count.
  */
-export const ArchivedToggle = ({ count, pressed, onPressedChange }: ArchivedToggleProps) => (
+export const CountToggle = ({
+  Icon,
+  label,
+  count,
+  pressed,
+  onPressedChange,
+  title,
+}: CountToggleProps) => (
   <button
     type="button"
     aria-pressed={pressed}
     disabled={count === 0 && !pressed}
-    title={pressed ? "Show active agents" : "Show archived agents"}
+    title={title}
     onClick={() => onPressedChange(!pressed)}
     className={cn(
       "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 text-[13px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50",
@@ -24,8 +36,8 @@ export const ArchivedToggle = ({ count, pressed, onPressedChange }: ArchivedTogg
         : "border-transparent text-ink-2 hover:bg-hover hover:text-ink",
     )}
   >
-    <Archive className="size-3.5" />
-    Archived
+    <Icon className="size-3.5" />
+    {label}
     <span
       className={cn(
         "rounded-sm px-1.5 py-px font-mono text-[11px] font-medium tabular-nums",
