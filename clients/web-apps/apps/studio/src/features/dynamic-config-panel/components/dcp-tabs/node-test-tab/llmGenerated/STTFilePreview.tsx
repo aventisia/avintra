@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { FileAudio, X } from "lucide-react";
+import { FileAudio, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface STTFilePreviewProps {
@@ -64,9 +64,9 @@ const STTFilePreview = ({ file, onRemove }: STTFilePreviewProps) => {
           type="button"
           onClick={onRemove}
           aria-label="Remove file"
-          className="shrink-0 text-muted-foreground hover:text-destructive"
+          className="shrink-0 text-muted-foreground hover:bg-bad/10 hover:text-bad"
         >
-          <X className="h-3.5 w-3.5" />
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>
 

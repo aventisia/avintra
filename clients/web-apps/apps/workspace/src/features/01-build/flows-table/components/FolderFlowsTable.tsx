@@ -7,7 +7,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { FLOWS_QUERY_KEY, FOLDER_NOT_FOUND_TOAST_ID } from "../constants";
@@ -99,7 +98,6 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2">
               <FolderBreadcrumb current={currentSummary} summaries={folderSummaries} />
-              <HelpButton guideId="agents" />
             </div>
             <div className="flex items-center gap-2">
               <FlowsViewToggle view={view} onChange={setView} />

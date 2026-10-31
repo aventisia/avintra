@@ -1,10 +1,9 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
-import { PopoverTrigger } from "@avplatform/ui/popover";
+import { Button } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { useState } from "react";
 
-import { HelpPopover } from "./HelpPopover";
+import { useHelpPanelStore } from "./help-panel.store";
 
 interface HelpButtonProps {
   /** Guide id to open (see `src/docs-content/registry.ts`). */
@@ -16,27 +15,24 @@ interface HelpButtonProps {
 }
 
 /**
- * An "i" affordance that opens the relevant help guide for the current page or
- * feature in a popover. Used in page headers and contextual locations across
- * the app.
+ * An "i" affordance that opens a specific help guide in the help panel, for spots that need
+ * a guide other than the current page's.
  */
 const HelpButton = ({ guideId, tooltip = "Help", className }: HelpButtonProps) => {
-  const [open, setOpen] = useState(false);
+  const openGuide = useHelpPanelStore((state) => state.openGuide);
 
   return (
-    <HelpPopover guideId={guideId} open={open} onOpenChange={setOpen}>
-      <Tooltip content={tooltip}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            aria-label={tooltip}
-            className={buttonVariants({ variant: "ghost", size: "icon8" }) + ` ${className ?? ""}`}
-          >
-            <InfoIcon className="h-5 w-5 text-[--icon-color]" />
-          </button>
-        </PopoverTrigger>
-      </Tooltip>
-    </HelpPopover>
+    <Tooltip content={tooltip}>
+      <Button
+        variant="ghost"
+        size="icon7"
+        aria-label={tooltip}
+        onClick={() => openGuide(guideId)}
+        className={cn("text-muted-foreground", className)}
+      >
+        <InfoIcon className="size-4" strokeWidth={1.75} />
+      </Button>
+    </Tooltip>
   );
 };
 

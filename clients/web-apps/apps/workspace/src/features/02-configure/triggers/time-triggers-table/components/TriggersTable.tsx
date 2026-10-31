@@ -10,7 +10,6 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -59,7 +58,6 @@ export const TriggersTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="time-triggers" />
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox

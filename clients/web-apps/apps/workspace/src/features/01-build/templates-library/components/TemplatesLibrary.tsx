@@ -6,8 +6,6 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
 import LibraryTemplates from "./LibraryTemplates";
 import { TemplateDetail } from "./template-details/TemplateDetails";
 
@@ -34,7 +32,6 @@ const TemplateLibrary = () => {
             <div className="mx-auto mb-6 max-w-3xl text-center">
               <div className="flex items-center justify-center gap-2">
                 <h2 className="text-title text-ink">Avintra library</h2>
-                <HelpButton guideId="library" />
               </div>
               <p className="mt-2 text-body text-muted-foreground">
                 The Avintra Library brings together a rich catalog of ready-to-use automations and

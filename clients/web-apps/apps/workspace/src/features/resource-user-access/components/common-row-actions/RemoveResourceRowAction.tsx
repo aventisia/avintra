@@ -4,7 +4,7 @@ import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserMinus2Icon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import React from "react";
 
 import { removeResourceUserAccess } from "../../apis/resource-user-access.apis";
@@ -35,7 +35,7 @@ export const RemoveResourceRowAction: React.FC<RemoveResourceRowActionProps> = (
     <SimpleDDMenuItem
       children={
         <>
-          <UserMinus2Icon className={cn("", "h-4 w-4")} /> <>Remove</>
+          <Trash2Icon className={cn("", "h-4 w-4")} /> <>Remove</>
         </>
       }
       className={cn(

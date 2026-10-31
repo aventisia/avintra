@@ -92,7 +92,7 @@ const SortRule = <TData,>({
         aria-label={`Remove ${label} sort`}
         variant="ghost"
         size="icon8"
-        className="shrink-0 text-muted-foreground hover:text-bad"
+        className="shrink-0 text-muted-foreground hover:bg-bad/10 hover:text-bad"
         onClick={onRemove}
       >
         <Trash2 className="size-3.5" />

@@ -1,16 +1,18 @@
 import { Header, HeaderBreadcrumbs, JobsPill, SearchBox } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
+import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
   type IUserSessionStore,
   useBaseLayoutStore,
   useUserSessionStore,
 } from "@avplatform/ui/stores";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import { CircleHelpIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { DownloadDialog } from "@/features/desktop-download";
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+import { useHelpPanelStore } from "@/components/help/help-panel.store";
+import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
 
 import { AppLogo } from "./AppLogo";
 import { SpaceSelector } from "./SpaceSelector";
@@ -24,11 +26,22 @@ const AppHeader: React.FC = () => {
     })),
   );
   const sidebarExpand = useBaseLayoutStore((state) => state.sidebarExpand);
+  const { isHelpOpen, toggleHelp } = useHelpPanelStore(
+    useShallow((state) => ({ isHelpOpen: state.isOpen, toggleHelp: state.toggleOpen })),
+  );
 
   return (
     <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
       <div className="flex min-w-0 flex-1 basis-0 items-center gap-3">
-        <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
+        <SidebarOnDialog
+          appLogo={<AppLogo />}
+          footer={
+            <div className="px-2.5 py-2">
+              <SidebarAccountMenu />
+            </div>
+          }
+          className="flex md:hidden"
+        />
         <div className="md:hidden">
           <AppLogo />
         </div>
@@ -44,9 +57,18 @@ const AppHeader: React.FC = () => {
         {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
           <TrustLocalhostSSLButton />
         )}
-        <DownloadDialog />
-        <UnreadNotifications />
-        <UserAccountModal />
+        <Tooltip content="Help" shortcut="?">
+          <Button
+            variant="ghost"
+            size="icon8"
+            aria-label="Help"
+            aria-pressed={isHelpOpen}
+            onClick={() => toggleHelp()}
+            className="text-ink-2 aria-pressed:bg-hover aria-pressed:text-ink"
+          >
+            <CircleHelpIcon className="size-[18px]" strokeWidth={1.75} />
+          </Button>
+        </Tooltip>
       </div>
     </Header>
   );

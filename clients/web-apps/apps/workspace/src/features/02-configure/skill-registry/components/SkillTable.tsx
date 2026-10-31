@@ -12,7 +12,6 @@ import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
@@ -61,7 +60,6 @@ export const SkillTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="skills" />
               <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">

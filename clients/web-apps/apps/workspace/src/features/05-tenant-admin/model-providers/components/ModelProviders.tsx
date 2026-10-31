@@ -13,8 +13,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
 import { getProviderIcon, modelProviderDefinitions } from "../constants/model-provider-definitions";
 import { useFetchModelProviders } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
@@ -59,7 +57,6 @@ export const ModelProviders = () => {
         <div>
           <div className="flex items-center gap-2">
             <p className="text-title text-ink">Models</p>
-            <HelpButton guideId="models" />
           </div>
           <p className="text-sm text-muted-foreground">
             Configure AI model providers and choose the models your tenant can use.

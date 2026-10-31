@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Trash2Icon, XIcon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 
 import type { FileQueueItem } from "./types";
 import { formatFileSize, getStatusColor, getStatusIcon } from "./utils";
@@ -127,7 +127,7 @@ const FileQueueRow = ({
           disabled={isInFlight || isPending}
           aria-label="Remove file"
         >
-          <XIcon className="h-4 w-4" />
+          <Trash2Icon className="h-4 w-4" />
         </Button>
       )}
     </div>

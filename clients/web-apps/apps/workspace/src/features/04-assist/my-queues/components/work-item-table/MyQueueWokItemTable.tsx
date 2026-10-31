@@ -19,7 +19,6 @@ import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 
 import { TABLE_HEADING } from "../../constants";
@@ -120,7 +119,6 @@ export const MyQueueWokItemTable = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <HelpButton guideId="assist-queues" />
           <DTHeading heading={TABLE_HEADING} />
           <SearchableSelect
             options={queues.map((q) => ({

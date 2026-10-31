@@ -5,7 +5,6 @@ import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui
 import { useMemo, useState } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { pluralize } from "@/utils/pluralize.util";
 
@@ -186,11 +185,10 @@ export const FlowsTable = () => {
       {isListReady ? (
         <div className="space-y-4 pb-6 pt-6">
           <div className="space-y-4">
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
                   <DTHeading heading={TABLE_HEADING} />
-                  <HelpButton guideId="agents" />
                 </div>
                 <p className="mt-[5px] text-[13px] text-muted-foreground">
                   {getAgentsSubtitle((flows ?? []).length, folderSummaries.length)}

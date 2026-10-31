@@ -29,8 +29,9 @@ import { EnvironmentToggle } from "@/features/02-configure/components/Environmen
 
 import NewAgentIcon from "../NewAgentIcon";
 import NewChatIcon from "../NewChatIcon";
+import type { HubId } from "./sidebar-hub.type";
 
-const sidebarMenuSections: SidebarMenuSectionType[] = [
+const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
   {
     // sectionInternalName: build
     sectionName: "Build",
@@ -60,6 +61,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: ListIcon,
         name: "Queues",
         route: "/configure/queues",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -67,6 +69,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: AiOutlineThunderbolt,
         name: "Triggers",
         route: "/configure/triggers",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
         subMenuItems: [
           {
@@ -96,6 +99,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: FolderCogIcon,
         name: "Key store",
         route: "/configure/configstore",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -103,6 +107,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: Shield,
         name: "Vault",
         route: "/configure/vault",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -110,6 +115,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BookOpenCheckIcon,
         name: "Knowledge bases",
         route: "/configure/knowledge-base",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -117,6 +123,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: PuzzleIcon,
         name: "Skills",
         route: "/configure/skill-registry",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -124,6 +131,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: WrenchIcon,
         name: "Tools",
         route: "/configure/tools",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
     ],
@@ -145,6 +153,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: ShieldCheck,
         name: "Agent risk registry",
         route: "/orchestrator/agent-risk-registry",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -152,6 +161,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: DesktopIcon,
         name: "Machines",
         route: "/orchestrator/machines",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -159,6 +169,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: MonitorPlayIcon,
         name: "Jobs",
         route: "/orchestrator/jobs",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -166,6 +177,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: NewChatIcon,
         name: "Conversations",
         route: "/orchestrator/conversations",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -173,6 +185,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: KeySquareIcon,
         name: "API keys",
         route: "/orchestrator/api-keys",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
     ],
@@ -186,6 +199,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: NewAgentIcon,
         name: "Agents",
         route: "/assist/agents",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -193,6 +207,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: ListIcon,
         name: "Queues",
         route: "/assist/queues",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -213,6 +228,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BookOpenCheckIcon,
         name: "Get started",
         route: "/tenant/get-started",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
         hideWhenOnboardingComplete: true,
       },
@@ -221,6 +237,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: IdCardIcon,
         name: "Tenant",
         route: "/tenant/overview",
+        hub: "admin",
         type: ["Commercial"],
       },
       {
@@ -228,6 +245,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: UsersIcon,
         name: "Users",
         route: "/tenant/users",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -235,6 +253,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: FolderCogIcon,
         name: "Spaces",
         route: "/tenant/spaces",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       // Add integrations only if not production
@@ -245,15 +264,17 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
               Icon: Workflow,
               name: "Integrations",
               route: "/tenant/integrations",
+              hub: "admin",
               type: ["Commercial", "Enterprise", "Community"],
             },
-          ] as SidebarMenuItemType[])
+          ] as SidebarMenuItemType<HubId>[])
         : []),
       {
         permissions: ["TA"],
         Icon: Cpu,
         name: "Models",
         route: "/tenant/model-providers",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -261,6 +282,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: Wallet,
         name: "Usage",
         route: "/tenant/usage",
+        hub: "admin",
         type: ["Commercial"],
       },
       {
@@ -268,6 +290,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/tenant/approvals",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       // Add notifications menu item for tenant admin
@@ -276,6 +299,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BellIcon,
         name: "Notifications",
         route: "/tenant/notifications",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -283,6 +307,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: ArchiveIcon,
         name: "Archive",
         route: "/tenant/archive",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -290,6 +315,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: IdCardIcon,
         name: "Preferences",
         route: "/tenant/preferences", // Only applicabe in case of enterprise and community deployment
+        hub: "admin",
         type: ["Enterprise", "Community"],
       },
       {
@@ -297,6 +323,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CircleHelpIcon,
         name: "Support",
         route: "/tenant/support/tickets",
+        hub: "admin",
         type: ["Commercial"],
       },
     ],
@@ -310,6 +337,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: IdCardIcon,
         name: "Tenants",
         route: "/sa/tenants",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
@@ -317,6 +345,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/sa/approvals",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
@@ -324,6 +353,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BellIcon,
         name: "Notifications",
         route: "/sa/notifications",
+        hub: "multi-tenant",
         type: ["Commercial", "Enterprise"],
       },
 
@@ -332,6 +362,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BadgeDollarSignIcon,
         name: "Subscription plans",
         route: "/sa/subscription-plans",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
@@ -339,6 +370,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: BanknoteIcon,
         name: "Credit plans",
         route: "/sa/credit-plans",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       // {
@@ -353,6 +385,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CircleHelpIcon,
         name: "Support",
         route: "/sa/support/tickets",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
     ],
@@ -366,7 +399,7 @@ export function getSidebarMenuBasedOnPermissions(
   userRoles: string[],
   deploymentType: DeploymentType,
   isOnboardingComplete = false,
-): SidebarMenuSectionType[] {
+): SidebarMenuSectionType<HubId>[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
@@ -386,7 +419,7 @@ export function getSidebarMenuBasedOnPermissions(
         menuItems: filteredMenuItems,
       };
     })
-    .filter((section): section is SidebarMenuSectionType => section !== null);
+    .filter((section): section is SidebarMenuSectionType<HubId> => section !== null);
 }
 
 export function flattenMenuRoutes(sections: SidebarMenuSectionType[]): string[] {

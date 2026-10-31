@@ -10,7 +10,6 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
@@ -60,7 +59,6 @@ export const ConfigStoresTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="configstore" />
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox

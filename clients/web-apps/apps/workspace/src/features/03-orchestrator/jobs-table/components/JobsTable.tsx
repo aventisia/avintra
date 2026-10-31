@@ -15,8 +15,6 @@ import { CalendarClock, History, Play } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
 import {
   DateRangeFilter,
   HISTORY_JOB_STATUSES,
@@ -110,7 +108,6 @@ export const JobsTable = () => {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="jobs" />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
                 <TabsList>
                   {tabs.map((tab) => {

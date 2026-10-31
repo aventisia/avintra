@@ -36,12 +36,12 @@ export const NewFolderTile = ({ draggedAgent, isFirstFolder }: NewFolderTileProp
       data-drop-ready={isDropReady || undefined}
       className={cn(
         "group/drop flex h-full min-h-[52px] w-full items-center gap-[11px] rounded-md border border-dashed border-line bg-sunken/50 py-2.5 pl-3 pr-2 text-left text-muted-foreground outline-none transition duration-200",
-        "hover:border-primary hover:bg-[color-mix(in_srgb,var(--primary)_6%,var(--surface))] hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
+        "hover:border-focus hover:bg-focus/[0.06] hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
         "data-[drop-ready=true]:border-primary/30 data-[drop-ready=true]:text-primary-text",
         "data-[drop-active=true]:border-primary data-[drop-active=true]:bg-selected",
       )}
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-popover ring-1 ring-border transition group-hover/drop:ring-primary/30 group-data-[drop-active=true]/drop:rotate-6 group-data-[drop-active=true]/drop:scale-110">
+      <span className="grid size-8 shrink-0 place-items-center rounded-md bg-popover ring-1 ring-border transition group-hover/drop:ring-focus/30 group-data-[drop-active=true]/drop:rotate-6 group-data-[drop-active=true]/drop:scale-110">
         <FolderPlus className="size-4" />
       </span>
       <span className="min-w-0">

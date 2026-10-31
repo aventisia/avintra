@@ -6,9 +6,11 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
+import { HelpPanel } from "@/components/help/HelpPanel";
 import { ROLE_TA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
+import { DownloadDialog } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
@@ -17,6 +19,7 @@ import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
+import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
@@ -26,6 +29,7 @@ import { getWebSocketUrl } from "@/utils/get-websocket-url";
 import AppHeader from "./AppHeader";
 import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { HubNav } from "./HubNav";
 import { PreventNavigationBlocker } from "./PreventNavigationBlocker";
 import { Sidebar } from "./Sidebar";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
@@ -231,13 +235,19 @@ export const AppLayout = () => {
           <Sidebar />
           <div className="flex min-w-0 flex-1 flex-col">
             <AppHeader />
-            <ScrollArea className="min-h-0 flex-1" viewportClassName="[&>div]:!block">
-              <main className="px-3 py-0 md:px-7">
-                <Outlet />
-              </main>
-            </ScrollArea>
+            <div className="flex min-h-0 flex-1">
+              <HubNav />
+              <ScrollArea className="min-w-0 flex-1" viewportClassName="[&>div]:!block">
+                <main className="px-3 py-0 md:px-7">
+                  <Outlet />
+                </main>
+              </ScrollArea>
+              <HelpPanel />
+            </div>
           </div>
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
+          <UnreadNotifications />
+          <DownloadDialog />
         </div>
       )}
       <WorkspaceCrudDialogProvider />

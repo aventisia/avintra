@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
-import { SquarePenIcon, TrashIcon } from "lucide-react";
+import { SquarePenIcon, Trash2Icon } from "lucide-react";
 
 import { MetaLine } from "@/components/MetaLine";
 import { pluralize } from "@/utils/pluralize.util";
@@ -71,7 +71,7 @@ export const FolderHero = ({
             onClick={() => openDialog({ kind: "delete", folder })}
             className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
           >
-            <TrashIcon className="size-4" />
+            <Trash2Icon className="size-4" />
           </button>
         </div>
       </div>

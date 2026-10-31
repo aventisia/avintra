@@ -10,8 +10,6 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names.ee";
 import { columnVisibilityState } from "../constants/column-visibility-state.ee";
@@ -52,7 +50,6 @@ export const SubPlansTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="subscription-plans" />
             </div>
 
             <div className="flex items-center gap-2">
