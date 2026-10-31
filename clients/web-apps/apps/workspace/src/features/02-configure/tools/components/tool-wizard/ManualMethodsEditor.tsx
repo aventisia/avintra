@@ -109,7 +109,7 @@ export const ManualMethodsEditor = ({
                           setEditIndex(editIndex - 1);
                         }
                       }}
-                      className="rounded p-1 text-muted-foreground hover:text-destructive disabled:opacity-50"
+                      className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad disabled:opacity-50"
                       aria-label={`Remove ${operation.name}`}
                     >
                       <Trash2Icon className="h-3.5 w-3.5" />

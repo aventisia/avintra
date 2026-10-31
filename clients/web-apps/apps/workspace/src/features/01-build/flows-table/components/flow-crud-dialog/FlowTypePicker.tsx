@@ -2,6 +2,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Lock } from "lucide-react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
+import { AGENT_TYPES } from "../../constants/agent-attributes.constant";
 import { FLOW_TYPE_OPTIONS } from "../../constants/flow-type-options.constant";
 
 type FlowTypePickerProps = {
@@ -32,6 +33,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
       <div className="space-y-2">
         {options.map(({ value, label, description, icon: Icon }) => {
           const isSelected = value === selectedType;
+          const tint = AGENT_TYPES.find((agentType) => agentType.value === value)?.tint;
 
           return (
             <label
@@ -40,7 +42,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
                 "flex items-center gap-3 rounded-md px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
                 isLocked ? "cursor-default" : "cursor-pointer",
                 isSelected
-                  ? "bg-selected ring-[1.5px] ring-primary"
+                  ? "bg-focus/[0.06] ring-1 ring-focus"
                   : "bg-popover ring-1 ring-border hover:bg-sunken/80 hover:ring-line-strong",
               )}
             >
@@ -48,9 +50,10 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
               <span
                 className={cn(
                   "grid size-8 shrink-0 place-items-center rounded-md ring-1",
-                  isSelected
-                    ? "bg-selected text-primary-text ring-primary/30"
-                    : "bg-sunken text-muted-foreground ring-line",
+                  tint ??
+                    (isSelected
+                      ? "bg-focus/[0.06] text-primary-text ring-focus/30"
+                      : "bg-sunken text-muted-foreground ring-line"),
                 )}
               >
                 <Icon className="size-4" />
@@ -65,9 +68,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
                 <span
                   className={cn(
                     "grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-200",
-                    isSelected
-                      ? "bg-primary"
-                      : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
+                    isSelected ? "bg-focus" : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
                   )}
                 >
                   {isSelected && <span className="size-1.5 rounded-full bg-popover" />}

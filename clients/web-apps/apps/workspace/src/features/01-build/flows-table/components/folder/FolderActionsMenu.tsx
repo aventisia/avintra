@@ -1,4 +1,4 @@
-import { FolderOpen, MoreHorizontal, SquarePenIcon, TrashIcon } from "lucide-react";
+import { FolderOpen, MoreHorizontal, SquarePenIcon, Trash2Icon } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
 
@@ -37,7 +37,7 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
         </MenuItem>
         <MenuSeparator />
         <MenuItem isDestructive onSelect={() => openDialog({ kind: "delete", folder })}>
-          <TrashIcon />
+          <Trash2Icon />
           Delete folder
         </MenuItem>
       </MenuContent>
