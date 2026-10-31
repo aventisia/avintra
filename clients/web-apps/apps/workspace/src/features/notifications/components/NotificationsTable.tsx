@@ -14,7 +14,6 @@ import { cn } from "@avplatform/ui/lib";
 import { Mail, PlusIcon, Settings2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import NotificationSettingsPanel from "@/features/05-tenant-admin/tenant/components/BillingTabs/notifications/NotificationSettingsPanel";
 
 import { columnDisplayNames } from "../constants/column-display-names";
@@ -61,7 +60,6 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
           <DTHeading heading="Notifications" />
-          <HelpButton guideId="tenant-notifications" />
           <div className="ml-1 inline-flex shrink-0 items-center gap-1 rounded-lg bg-muted px-1.5 py-1.5">
             <button
               type="button"

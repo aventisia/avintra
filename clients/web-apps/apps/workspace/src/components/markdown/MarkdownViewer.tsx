@@ -17,18 +17,22 @@ const MarkdownViewer = ({
     // Headers with custom styling
     h1: ({ children }) => (
       <h2
-        className={`border-b border-line pb-1 font-semibold tracking-tight text-ink ${
-          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
-        }`}
+        className={
+          compact
+            ? "mb-1.5 mt-5 font-mono text-label uppercase text-muted-foreground first:mt-0"
+            : "mb-4 mt-10 border-b border-line pb-1 text-3xl font-semibold tracking-tight text-ink"
+        }
       >
         {children}
       </h2>
     ),
     h2: ({ children }) => (
       <h2
-        className={`border-b border-line pb-1 font-semibold tracking-tight text-ink ${
-          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
-        }`}
+        className={
+          compact
+            ? "mb-1.5 mt-5 font-mono text-label uppercase text-muted-foreground first:mt-0"
+            : "mb-4 mt-10 border-b border-line pb-1 text-3xl font-semibold tracking-tight text-ink"
+        }
       >
         {children}
       </h2>
@@ -36,7 +40,7 @@ const MarkdownViewer = ({
     h3: ({ children }) => (
       <h3
         className={`mb-2 font-semibold tracking-tight text-ink ${
-          compact ? "mt-2 text-base" : "mt-8 text-2xl"
+          compact ? "mt-4 text-body-sm first:mt-0" : "mt-8 text-2xl"
         }`}
       >
         {children}
@@ -45,7 +49,7 @@ const MarkdownViewer = ({
     h4: ({ children }) => (
       <h4
         className={`mb-2 font-semibold tracking-tight text-ink ${
-          compact ? "mt-2 text-sm" : "mt-7 text-xl"
+          compact ? "mt-3 text-body-sm" : "mt-7 text-xl"
         }`}
       >
         {children}
@@ -54,7 +58,7 @@ const MarkdownViewer = ({
     h5: ({ children }) => (
       <h5
         className={`mb-1 font-semibold tracking-tight text-ink ${
-          compact ? "mt-2 text-sm" : "mt-6 text-lg"
+          compact ? "mt-3 text-body-sm" : "mt-6 text-lg"
         }`}
       >
         {children}
@@ -63,7 +67,7 @@ const MarkdownViewer = ({
     h6: ({ children }) => (
       <h6
         className={`mb-1 font-semibold tracking-tight text-ink ${
-          compact ? "mt-2 text-sm" : "mt-5 text-base"
+          compact ? "mt-3 text-body-sm" : "mt-5 text-base"
         }`}
       >
         {children}
@@ -72,9 +76,7 @@ const MarkdownViewer = ({
     // Paragraphs
     p: ({ children }) => (
       <p
-        className={`text-ink-2 ${
-          compact ? "not-first:mt-2 text-[0.8125rem] leading-5" : "not-first:mt-6 leading-7"
-        }`}
+        className={`text-ink-2 ${compact ? "text-body-sm [&+*]:mt-2" : "not-first:mt-6 leading-7"}`}
       >
         {children}
       </p>
@@ -134,25 +136,27 @@ const MarkdownViewer = ({
     // Lists
     ul: ({ children }) => (
       <ul
-        className={`list-disc ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+        className={`list-disc ${compact ? "mt-2 space-y-1 pl-4 marker:text-muted-foreground [&+*]:mt-2" : "not-first:mt-6 space-y-2"}`}
       >
         {children}
       </ul>
     ),
     ol: ({ children }) => (
       <ol
-        className={`list-decimal ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+        className={`list-decimal ${compact ? "mt-2 space-y-1 pl-4 marker:text-muted-foreground [&+*]:mt-2" : "not-first:mt-6 space-y-2"}`}
       >
         {children}
       </ol>
     ),
-    li: ({ children }) => <li className={`text-ink-2 ${compact ? "my-0" : "my-2"}`}>{children}</li>,
+    li: ({ children }) => (
+      <li className={`text-ink-2 ${compact ? "my-0 pl-0.5 text-body-sm" : "my-2"}`}>{children}</li>
+    ),
 
     // Blockquotes (for callouts/notes)
     blockquote: ({ children }) => (
       <div
         className={`flex overflow-x-auto rounded-lg border border-line bg-sunken py-2 pe-4 text-ink-2 ${
-          compact ? "mt-2 text-[0.8125rem]" : "mt-6"
+          compact ? "mt-2 text-body-sm" : "mt-6"
         }`}
       >
         <div className="w-full min-w-0 leading-7">{children}</div>

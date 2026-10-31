@@ -29,7 +29,7 @@ export const TableCNRowElement = ({ className, ...props }: React.ComponentProps<
   <tr
     className={cn(
       "group/row bg-surface transition-colors duration-[120ms] ease-out hover:bg-hover",
-      "data-[state=selected]:bg-[color-mix(in_srgb,var(--primary)_6%,var(--surface))]",
+      "data-[state=selected]:bg-[color-mix(in_srgb,var(--focus)_8%,var(--surface))]",
       className,
     )}
     {...props}
@@ -50,7 +50,7 @@ export const TableCNCellElement = ({ className, ...props }: React.ComponentProps
   <td
     className={cn(
       "h-row whitespace-nowrap border-b border-line px-3 align-middle first:pl-4 last:pr-4 group-last/row:border-b-0",
-      "first:group-data-[state=selected]/row:shadow-[inset_2px_0_0_var(--indicator)]",
+      "first:group-data-[state=selected]/row:shadow-[inset_2px_0_0_var(--focus)]",
       className,
     )}
     {...props}

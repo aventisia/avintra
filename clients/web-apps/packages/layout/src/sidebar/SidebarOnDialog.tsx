@@ -11,6 +11,8 @@ import { SidebarMenuItems } from "./menu-items";
 
 interface SidebarOnDialogProps {
   appLogo: React.ReactNode;
+  /** Rendered below the menu, such as the app's account menu. */
+  footer?: React.ReactNode;
   className?: string;
 }
 
@@ -21,6 +23,7 @@ interface SidebarOnDialogProps {
  *
  * @param {SidebarOnDialogProps} props - The properties for the SidebarOnDialog component.
  * @param {React.ReactNode} props.appLogo - The application logo to display at the top of the sidebar.
+ * @param {React.ReactNode} [props.footer] - Content rendered below the menu, such as the account menu.
  * @param {string} [props.className] - Additional class names to style the component.
  *
  * @returns {JSX.Element} The SidebarOnDialog component.
@@ -35,7 +38,7 @@ interface SidebarOnDialogProps {
  * <SidebarOnDialog className="custom-class" />
  * ```
  */
-const SidebarOnDialog = ({ appLogo, className }: SidebarOnDialogProps) => {
+const SidebarOnDialog = ({ appLogo, footer, className }: SidebarOnDialogProps) => {
   // Get state and actions from the base layout store
   const { sidebarOnDialogOpen, setSidebarOnDialogOpen, setSidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
@@ -71,6 +74,7 @@ const SidebarOnDialog = ({ appLogo, className }: SidebarOnDialogProps) => {
             <SidebarMenuItems />
             <UpgradeCard />
           </nav>
+          {footer}
         </ScrollArea>
       </DialogContent>
     </Dialog>

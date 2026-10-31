@@ -183,7 +183,7 @@ export const MethodForm = ({
                     })
                   }
                   aria-label="Remove header"
-                  className="rounded p-1 text-destructive hover:bg-destructive/10"
+                  className="rounded p-1 text-bad hover:bg-bad/10"
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />
                 </button>
@@ -239,7 +239,7 @@ export const MethodForm = ({
                     })
                   }
                   aria-label="Remove parameter"
-                  className="rounded p-1 text-destructive hover:bg-destructive/10"
+                  className="rounded p-1 text-bad hover:bg-bad/10"
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />
                 </button>

@@ -1,6 +1,6 @@
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
-import { Lock, Undo2, X } from "lucide-react";
+import { Lock, Trash2, Undo2 } from "lucide-react";
 
 import { PersonAvatar } from "@/components/PersonAvatar";
 
@@ -85,25 +85,23 @@ export const SharePersonRow = ({
           {draft.hasRoles ? getShareRoleLabel(row.role) : "You"}
           <Lock className="size-3.5 text-muted-foreground" aria-hidden />
         </span>
+      ) : draft.hasRoles ? (
+        <RoleMenu
+          role={row.role}
+          personName={row.person.name}
+          onChange={(role) => draft.setRole(row, role)}
+          onRemove={() => draft.removeRow(row)}
+        />
       ) : (
-        <>
-          {draft.hasRoles && (
-            <RoleMenu
-              role={row.role}
-              personName={row.person.name}
-              onChange={(role) => draft.setRole(row, role)}
-            />
-          )}
-          <button
-            type="button"
-            aria-label={`Remove ${row.person.name}`}
-            title={`Remove ${row.person.name}`}
-            onClick={() => draft.removeRow(row)}
-            className="-ml-1.5 grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-bad/10 hover:text-bad focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-          >
-            <X className="size-4" />
-          </button>
-        </>
+        <button
+          type="button"
+          aria-label={`Remove ${row.person.name}`}
+          title={`Remove ${row.person.name}`}
+          onClick={() => draft.removeRow(row)}
+          className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
+        >
+          <Trash2 className="size-4" />
+        </button>
       )}
     </div>
   );

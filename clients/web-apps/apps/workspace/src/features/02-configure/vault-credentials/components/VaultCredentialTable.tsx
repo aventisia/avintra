@@ -10,7 +10,6 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
 import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { Tooltip } from "@/ui/components/tooltip";
@@ -59,7 +58,6 @@ export const VaultCredentialTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="vault" />
             </div>
 
             <div className="flex items-center gap-2">
