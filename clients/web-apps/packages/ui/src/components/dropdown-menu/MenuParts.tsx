@@ -1,6 +1,7 @@
-import { cn } from "@avplatform/ui/lib";
-import { DropdownMenu } from "radix-ui";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import type { ComponentProps } from "react";
+
+import { cn } from "@/ui/lib";
 
 /**
  * Floating panel of a dropdown menu.
@@ -8,9 +9,9 @@ import type { ComponentProps } from "react";
 export const MenuContent = ({
   className,
   ...props
-}: ComponentProps<typeof DropdownMenu.Content>) => (
-  <DropdownMenu.Portal>
-    <DropdownMenu.Content
+}: ComponentProps<typeof DropdownMenuPrimitive.Content>) => (
+  <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Content
       sideOffset={6}
       {...props}
       className={cn(
@@ -19,19 +20,21 @@ export const MenuContent = ({
         className,
       )}
     />
-  </DropdownMenu.Portal>
+  </DropdownMenuPrimitive.Portal>
 );
 
-type MenuItemProps = ComponentProps<typeof DropdownMenu.Item> & { isDestructive?: boolean };
+export type MenuItemProps = ComponentProps<typeof DropdownMenuPrimitive.Item> & {
+  isDestructive?: boolean;
+};
 
 /**
  * Row of a dropdown menu; destructive rows turn rose.
  */
 export const MenuItem = ({ className, isDestructive = false, ...props }: MenuItemProps) => (
-  <DropdownMenu.Item
+  <DropdownMenuPrimitive.Item
     {...props}
     className={cn(
-      "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap h-8 rounded-sm px-2 text-body-sm outline-none transition-colors [&>svg]:size-4 [&>svg]:shrink-0",
+      "flex h-8 cursor-pointer select-none items-center gap-2 whitespace-nowrap rounded-sm px-2 text-body-sm outline-none transition-colors [&>svg]:size-4 [&>svg]:shrink-0",
       isDestructive
         ? "text-bad data-[highlighted]:bg-bad/10 [&>svg]:text-bad"
         : "text-ink-2 data-[highlighted]:bg-hover data-[highlighted]:text-ink [&>svg]:text-muted-foreground data-[highlighted]:[&>svg]:text-ink-2",
@@ -43,8 +46,11 @@ export const MenuItem = ({ className, isDestructive = false, ...props }: MenuIte
 /**
  * Small uppercase heading inside a dropdown menu.
  */
-export const MenuLabel = ({ className, ...props }: ComponentProps<typeof DropdownMenu.Label>) => (
-  <DropdownMenu.Label
+export const MenuLabel = ({
+  className,
+  ...props
+}: ComponentProps<typeof DropdownMenuPrimitive.Label>) => (
+  <DropdownMenuPrimitive.Label
     {...props}
     className={cn(
       "px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground",
@@ -70,4 +76,6 @@ export const MenuShortcut = ({ className, ...props }: ComponentProps<"span">) =>
 /**
  * Divider between groups of a dropdown menu.
  */
-export const MenuSeparator = () => <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line" />;
+export const MenuSeparator = () => (
+  <DropdownMenuPrimitive.Separator className="-mx-1 my-1 h-px bg-line" />
+);

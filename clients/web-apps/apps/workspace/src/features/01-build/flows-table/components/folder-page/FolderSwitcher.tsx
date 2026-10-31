@@ -1,9 +1,9 @@
+import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
 import { ChevronsUpDown, FolderPlus } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
 
-import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@/components/MenuParts";
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";
