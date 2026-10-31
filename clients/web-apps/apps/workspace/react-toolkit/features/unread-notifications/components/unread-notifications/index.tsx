@@ -1,31 +1,19 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { Dialog, DialogClose, DialogContent } from "@avplatform/ui/dialog";
-import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UNDialogContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogContent";
-import { UNDialogTrigger } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogTrigger";
 import { UNSkeleton } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNSkeleton";
 import { useFetchUnreadNotifications } from "@/react-toolkit/features/unread-notifications/hooks/useFetchUnreadNotifications";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
-
-interface UnreadNotificationsProps {
-  /** Additional class name to override notification dialog content container style */
-  className?: string;
-
-  /** Additional class name to override notification trigger icon button */
-  triggerSize?: "icon7" | "icon8" | "icon9";
-}
+import { focusAccountMenuTrigger } from "@/react-toolkit/features/user-account/account-menu-trigger.util";
 
 /**
- * Renders the Unread Notifications in dialog
+ * Renders the Unread Notifications in dialog, opened through `useUnreadNotificationsStore`
  */
-export const UnreadNotifications = ({
-  className,
-  triggerSize = "icon8",
-}: UnreadNotificationsProps) => {
+export const UnreadNotifications = () => {
   // Get store state and actions
   const { isOpen, toggleOpen } = useUnreadNotificationsStore(
     useShallow((state) => ({
@@ -40,10 +28,12 @@ export const UnreadNotifications = ({
   // Return Unread Notifications Dialog
   return (
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
-      {/* Custom notification Dialog trigger */}
-      <UNDialogTrigger triggerSize={triggerSize} />
       {/* Dialog content */}
-      <DialogContent side={"right"} className={cn("!max-w-[26rem]", className)}>
+      <DialogContent
+        side={"right"}
+        className="!max-w-[26rem]"
+        onCloseAutoFocus={focusAccountMenuTrigger}
+      >
         {/* Header with title and close button */}
         <div className="flex items-center justify-between border-b px-3.5 py-3">
           <h2 className="text-base font-semibold">Notifications</h2>

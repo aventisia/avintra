@@ -14,7 +14,6 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -73,7 +72,6 @@ export const SpacesTable = () => {
             <div className="flex w-max flex-col gap-0.5">
               <div className="flex w-max items-center gap-2">
                 <DTHeading heading={TABLE_HEADING} />
-                <HelpButton guideId="spaces" />
               </div>
               <p className="ml-1 max-w-md text-sm text-muted-foreground">
                 A logical container that acts as a global filtering / scoping dimension across the

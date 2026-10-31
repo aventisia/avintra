@@ -36,9 +36,9 @@ export const ModeCard = ({
       data-autofocus={autoFocusTarget || undefined}
       onClick={() => onSelect(mode)}
       className={cn(
-        "flex flex-col gap-3 rounded-lg p-4 text-left outline-none transition-[background-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+        "flex flex-col gap-3 rounded-md p-4 text-left outline-none transition-[background-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
         isChecked
-          ? "bg-selected ring-[1.5px] ring-primary"
+          ? "bg-focus/[0.06] ring-1 ring-focus"
           : "bg-popover ring-1 ring-border hover:bg-hover hover:ring-line-strong",
       )}
     >
@@ -54,7 +54,7 @@ export const ModeCard = ({
         <span
           className={cn(
             "grid size-[18px] place-items-center rounded-full transition-colors duration-200",
-            isChecked ? "bg-primary" : "bg-surface ring-[1.5px] ring-inset ring-line-strong",
+            isChecked ? "bg-focus" : "bg-surface ring-[1.5px] ring-inset ring-line-strong",
           )}
         >
           <motion.span

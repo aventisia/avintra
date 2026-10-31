@@ -96,7 +96,6 @@ const GetStartedPage = () => {
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-title text-ink">Get started</h2>
-          <HelpButton guideId="get-started" />
         </div>
         {isComplete ? <Badge variant="completed">Setup complete</Badge> : null}
       </div>

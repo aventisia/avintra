@@ -9,6 +9,7 @@ export * from "./mutation-error";
 export * from "./model-capability.util";
 export * from "./redirect-util";
 export * from "./regex-list";
+export * from "./route-match.util";
 export * from "./sleep-util";
 export * from "./user-session-utils";
 export * from "./currency-formatter";

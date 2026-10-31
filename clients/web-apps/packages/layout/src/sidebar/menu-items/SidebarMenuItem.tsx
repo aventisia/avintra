@@ -1,13 +1,16 @@
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import type { IconProps } from "@avplatform/ui/types";
-import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useMenuItemLink } from "./useMenuItemLink.hook";
 
 interface SidebarMenuItemProps {
   Icon: React.ComponentType<IconProps>;
   name: string;
   route: string;
   badge?: string;
+  /** Routes that mark the item current instead of its own route, for a hub entry. */
+  activeRoutes?: string[];
 }
 
 /**
@@ -41,7 +44,7 @@ interface SidebarMenuItemProps {
  * />
  * ```
  */
-const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => {
+const SidebarMenuItem = ({ Icon, name, route, badge, activeRoutes }: SidebarMenuItemProps) => {
   // Get the sidebarExpand and sidebarOnDialogOpen state from the base layout store
   const { sidebarOnDialogOpen, setSidebarOnDialogOpen, sidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
@@ -58,9 +61,12 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
     }
   }
 
+  const { LinkComponent, ariaCurrent } = useMenuItemLink(activeRoutes);
+
   return (
-    <NavLink
+    <LinkComponent
       to={route}
+      aria-current={ariaCurrent}
       onClick={closeSidebarOnDialog}
       className="group relative flex h-8 items-center gap-[9px] rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
     >
@@ -76,7 +82,7 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
           {badge}
         </span>
       )}
-    </NavLink>
+    </LinkComponent>
   );
 };
 

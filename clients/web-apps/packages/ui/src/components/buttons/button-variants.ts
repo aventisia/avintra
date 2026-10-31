@@ -9,13 +9,16 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary-hover",
-        caution: "bg-transparent text-bad hover:bg-hover",
+        caution: "bg-transparent text-bad hover:bg-bad/10 hover:text-bad",
         destructive: "bg-bad text-bad-foreground hover:bg-bad-hover",
         outline: "border-line-strong bg-surface text-ink hover:bg-hover",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
         ghost: "bg-transparent text-ink-2 hover:bg-hover hover:text-ink",
         dropdownItem: [MENU_ITEM, "text-ink"],
-        dropdownCautionItem: [MENU_ITEM, "w-full text-bad"],
+        dropdownCautionItem: [
+          MENU_ITEM,
+          "w-full text-bad hover:bg-bad/10 focus:bg-bad/10 focus-visible:bg-bad/10 data-[highlighted]:bg-bad/10",
+        ],
         link: "!h-auto rounded-sm !p-0 font-medium text-primary-text underline decoration-line-strong underline-offset-[3px] hover:decoration-current active:translate-y-0 disabled:bg-transparent",
       },
       size: {

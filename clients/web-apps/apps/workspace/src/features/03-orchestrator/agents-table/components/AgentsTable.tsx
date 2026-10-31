@@ -10,7 +10,6 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
@@ -64,7 +63,6 @@ export const AgentsTable = () => {
             {/* <AgentsTableHeading /> */}
             <div className="flex items-center gap-2">
               <DTHeading heading="Published" />
-              <HelpButton guideId="published-agents" />
             </div>
 
             <div className="flex items-center gap-2">
