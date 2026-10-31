@@ -27,7 +27,7 @@ const TargetMark = ({ target }: { target: MoveTarget }) => {
     return <FolderMark color={getFolderColor(target.summary.folder)} size="sm" />;
   }
   return (
-    <span className="grid size-7 shrink-0 place-items-center rounded-lg border border-dashed border-primary/30 bg-selected text-primary-text">
+    <span className="grid size-7 shrink-0 place-items-center rounded-md border border-dashed border-primary/30 bg-selected text-primary-text">
       <Plus className="size-4" />
     </span>
   );
@@ -99,7 +99,7 @@ export const MoveTargetOption = ({
     onClick={onChoose}
     onDoubleClick={onSubmit}
     className={cn(
-      "flex cursor-pointer select-none items-center gap-3 rounded-lg px-2 py-2 transition-colors",
+      "flex cursor-pointer select-none items-center gap-3 rounded-md px-2 py-2 transition-colors",
       isHighlighted && "bg-muted",
       isSelected && "bg-selected",
     )}

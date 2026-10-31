@@ -318,7 +318,7 @@ const MultiSelectorItem = forwardRef<
         "flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1 transition-colors data-[selected=true]:bg-hover [&>svg]:text-primary-text",
         size === "xs" && "px-1 py-1 text-2xs",
         size === "sm" && "px-1.5 py-1 text-xs",
-        size === "base" && "min-h-[30px] px-2 py-1 text-body-sm",
+        size === "base" && "min-h-8 px-2 py-1 text-body-sm",
         className,
         isIncluded && "cursor-default",
         props.disabled && "cursor-not-allowed text-muted-foreground",

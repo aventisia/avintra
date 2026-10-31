@@ -27,7 +27,7 @@ export const TableCNRowActionsMenu = ({
     <DropdownMenuTrigger
       aria-label={ariaLabel}
       className={cn(
-        "inline-grid size-7 place-items-center rounded-lg text-muted-foreground outline-none transition-colors",
+        "inline-grid size-7 place-items-center rounded-md text-muted-foreground outline-none transition-colors",
         "hover:bg-hover hover:text-ink focus-visible:shadow-focus group-hover/row:text-ink-2",
         "data-[state=open]:bg-hover data-[state=open]:text-ink",
       )}
@@ -39,7 +39,7 @@ export const TableCNRowActionsMenu = ({
       sideOffset={6}
       className={cn(
         TABLE_CN_PANEL_CLASS_NAME,
-        "flex w-fit min-w-36 max-w-none flex-col p-1.5",
+        "flex w-fit min-w-36 max-w-none flex-col p-1",
         contentClassName,
       )}
     >

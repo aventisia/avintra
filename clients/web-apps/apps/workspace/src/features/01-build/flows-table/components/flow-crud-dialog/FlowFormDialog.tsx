@@ -207,7 +207,7 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
           </FormField>
 
           {!isCreating && (
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
+            <div className="flex items-center justify-between gap-4 rounded-md bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
               <label htmlFor={disabledId} className="min-w-0">
                 <span className="block text-[13px] font-semibold text-ink">Disable agent</span>
                 <span className="block text-[12px] text-muted-foreground">
