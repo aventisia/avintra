@@ -5,7 +5,7 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { CircleArrowLeftIcon, CircleArrowRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
@@ -68,13 +68,13 @@ const Sidebar = ({ className }: SidebarProps) => {
         <Button
           variant="ghost"
           size="icon5"
-          className="absolute -right-2.5 top-[18px] z-10 rounded-full border-none bg-bg text-line-strong shadow-none hover:text-primary"
+          className="absolute -right-2.5 top-[18px] z-10 rounded-full border border-line bg-bg text-muted-foreground shadow-none hover:border-line-strong hover:bg-bg hover:text-ink"
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
-            <CircleArrowLeftIcon className="h-5 w-5" />
+            <ChevronLeftIcon className="h-3 w-3" />
           ) : (
-            <CircleArrowRightIcon className="h-5 w-5" />
+            <ChevronRightIcon className="h-3 w-3" />
           )}
         </Button>
       </Tooltip>

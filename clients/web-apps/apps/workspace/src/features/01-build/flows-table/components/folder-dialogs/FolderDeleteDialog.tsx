@@ -23,7 +23,7 @@ const FLOWING_DOTS = [0, 1, 2];
 
 const AgentsFlowArrow = ({ count }: { count: number }) => (
   <div className="flex flex-col items-center gap-1.5">
-    <span className="rounded-full bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-2 ring-1 ring-border">
+    <span className="rounded-sm bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-2 ring-1 ring-border">
       {count} {pluralize(count, "agent")}
     </span>
     <div className="relative h-1.5 w-20 overflow-hidden" aria-hidden="true">
@@ -42,7 +42,7 @@ const AgentsFlowArrow = ({ count }: { count: number }) => (
 );
 
 const ImpactDiagram = ({ folder, count }: { folder: FoldersTableRowDto; count: number }) => (
-  <div className="flex items-end justify-center gap-4 rounded-xl bg-sunken/80 px-4 pb-3.5 pt-4 ring-1 ring-line">
+  <div className="flex items-end justify-center gap-4 rounded-md bg-sunken/80 px-4 pb-3.5 pt-4 ring-1 ring-line">
     <figure className="flex w-24 flex-col items-center gap-1.5">
       <FolderMark color={getFolderColor(folder)} size="lg" />
       <figcaption className="max-w-full truncate text-[12px] font-medium text-ink-2">

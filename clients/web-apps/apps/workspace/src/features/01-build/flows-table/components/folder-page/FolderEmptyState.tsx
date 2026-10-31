@@ -12,7 +12,7 @@ export const FolderEmptyState = ({ folder }: { folder: FoldersTableRowDto }) => 
   const { openCrudDialog } = useCrudDialogUrlState();
 
   return (
-    <div className="flex flex-col items-center rounded-[20px] border border-dashed border-line bg-sunken/40 px-6 py-12 text-center">
+    <div className="flex flex-col items-center rounded-lg border border-dashed border-line bg-sunken/40 px-6 py-12 text-center">
       <FolderMark color={getFolderColor(folder)} size="xl" className="rotate-[-4deg]" />
       <p className="mt-4 text-[15px] font-semibold text-ink">This folder is empty</p>
       <p className="mt-1 max-w-sm text-[13px] leading-5 text-muted-foreground">

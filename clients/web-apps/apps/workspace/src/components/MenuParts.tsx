@@ -14,7 +14,7 @@ export const MenuContent = ({
       sideOffset={6}
       {...props}
       className={cn(
-        "z-50 min-w-36 overflow-hidden rounded-xl bg-popover p-1.5 shadow-pop ring-1 ring-line",
+        "z-50 min-w-36 overflow-hidden rounded-lg bg-popover p-1 shadow-pop ring-1 ring-line",
         "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         className,
       )}
@@ -31,10 +31,10 @@ export const MenuItem = ({ className, isDestructive = false, ...props }: MenuIte
   <DropdownMenu.Item
     {...props}
     className={cn(
-      "flex cursor-pointer select-none items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] outline-none transition-colors [&>svg]:size-4 [&>svg]:shrink-0",
+      "flex cursor-pointer select-none items-center gap-2 whitespace-nowrap h-8 rounded-sm px-2 text-body-sm outline-none transition-colors [&>svg]:size-4 [&>svg]:shrink-0",
       isDestructive
         ? "text-bad data-[highlighted]:bg-bad/10 [&>svg]:text-bad"
-        : "text-ink-2 data-[highlighted]:bg-muted data-[highlighted]:text-ink [&>svg]:text-muted-foreground data-[highlighted]:[&>svg]:text-ink-2",
+        : "text-ink-2 data-[highlighted]:bg-hover data-[highlighted]:text-ink [&>svg]:text-muted-foreground data-[highlighted]:[&>svg]:text-ink-2",
       className,
     )}
   />
@@ -47,7 +47,7 @@ export const MenuLabel = ({ className, ...props }: ComponentProps<typeof Dropdow
   <DropdownMenu.Label
     {...props}
     className={cn(
-      "px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground",
+      "px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground",
       className,
     )}
   />
@@ -70,6 +70,4 @@ export const MenuShortcut = ({ className, ...props }: ComponentProps<"span">) =>
 /**
  * Divider between groups of a dropdown menu.
  */
-export const MenuSeparator = () => (
-  <DropdownMenu.Separator className="-mx-1.5 my-1.5 h-px bg-line" />
-);
+export const MenuSeparator = () => <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line" />;

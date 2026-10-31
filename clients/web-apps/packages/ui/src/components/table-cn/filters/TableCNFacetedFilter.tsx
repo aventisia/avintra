@@ -115,7 +115,7 @@ export const TableCNFacetedFilter = <TData, TValue>({
             <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
               No results found.
             </CommandEmpty>
-            <CommandGroup className="max-h-[18.75rem] overflow-y-auto overflow-x-hidden p-1.5">
+            <CommandGroup className="max-h-[18.75rem] overflow-y-auto overflow-x-hidden p-1">
               {options.map((option) => {
                 const isSelected = selectedValues.includes(option.value);
                 const count = option.count ?? facets?.get(option.value) ?? 0;
@@ -144,7 +144,7 @@ export const TableCNFacetedFilter = <TData, TValue>({
             {selectedValues.length > 0 && (
               <>
                 <CommandSeparator className="mx-0 bg-line" />
-                <CommandGroup className="p-1.5">
+                <CommandGroup className="p-1">
                   <CommandItem
                     onSelect={() => onReset()}
                     className={cn(TABLE_CN_COMMAND_ITEM_CLASS_NAME, "justify-center")}
