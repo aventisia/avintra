@@ -1,8 +1,8 @@
-import { cn } from "@avplatform/ui/lib";
+import { cn } from "@/ui/lib";
 
 /**
- * Two-tone folder icon. Its front flap tilts open while an agent is dragged over the nearest
- * `group/drop` ancestor.
+ * Two-tone folder icon. Its front flap tilts open while the nearest `group/drop` ancestor has
+ * `data-drop-active="true"`.
  */
 export const FolderGlyph = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>

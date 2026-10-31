@@ -1,9 +1,9 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
+import { MetaLine } from "@avplatform/ui/meta-line";
 import { Plus } from "lucide-react";
 import { motion } from "motion/react";
 
-import { HighlightedText } from "@/components/HighlightedText";
-import { MetaLine } from "@/components/MetaLine";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { MoveTarget } from "../../types/move-target.type";

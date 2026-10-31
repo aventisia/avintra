@@ -1,4 +1,5 @@
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
@@ -22,7 +23,6 @@ import { useSaveFolder } from "../../hooks/useSaveFolder.hook";
 import { FolderColor } from "../../types/folder-color.type";
 import { MovableAgent } from "../../types/movable-agent.type";
 import { getFieldInputClassName } from "../../utils/field-input.util";
-import { FolderGlyph } from "../folder/FolderGlyph";
 import { FolderMark } from "../folder/FolderMark";
 import { FolderColorPicker } from "./FolderColorPicker";
 import { FormField } from "./FormField";
