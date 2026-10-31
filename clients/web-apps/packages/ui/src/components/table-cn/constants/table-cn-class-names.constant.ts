@@ -7,7 +7,7 @@ export const TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME =
 
 /** Row of a TableCN command list. */
 export const TABLE_CN_COMMAND_ITEM_CLASS_NAME =
-  "gap-2.5 rounded-sm px-2.5 py-2 text-body-sm text-ink-2 aria-selected:bg-hover aria-selected:text-ink";
+  "gap-2 rounded-sm text-body-sm text-ink-2 aria-selected:bg-hover aria-selected:text-ink";
 
 /** Search field at the top of a TableCN command list. */
 export const TABLE_CN_COMMAND_INPUT_CLASS_NAME = "h-10 text-body-sm";

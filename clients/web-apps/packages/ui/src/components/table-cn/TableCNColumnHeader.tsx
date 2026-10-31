@@ -28,10 +28,7 @@ type HeaderMenuItemProps = {
 };
 
 const HeaderMenuItem = ({ icon: Icon, label, isActive = false, onSelect }: HeaderMenuItemProps) => (
-  <DropdownMenuItem
-    onSelect={onSelect}
-    className="gap-2.5 rounded-sm px-2.5 py-2 text-body-sm text-ink-2 focus:bg-hover focus:text-ink"
-  >
+  <DropdownMenuItem onSelect={onSelect} className="text-ink-2 focus:text-ink">
     <Icon className="size-4 text-muted-foreground" />
     {label}
     {isActive && <Check className="ml-auto size-4 text-primary-text" />}
@@ -81,7 +78,7 @@ export const TableCNColumnHeader = <TData, TValue>({
       <DropdownMenuContent
         align="start"
         sideOffset={6}
-        className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-48 max-w-none p-1.5")}
+        className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-48 max-w-none p-1")}
       >
         {canSort && (
           <>
@@ -99,7 +96,7 @@ export const TableCNColumnHeader = <TData, TValue>({
             />
           </>
         )}
-        {canSort && canHide && <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-line" />}
+        {canSort && canHide && <DropdownMenuSeparator className="bg-line" />}
         {canHide && (
           <HeaderMenuItem
             icon={EyeOff}

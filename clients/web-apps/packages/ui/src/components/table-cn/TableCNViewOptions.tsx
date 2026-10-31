@@ -74,7 +74,7 @@ export const TableCNViewOptions = <TData,>({
             </CommandEmpty>
             <CommandGroup
               heading={hiddenCount > 0 ? `${hiddenCount} hidden` : "Columns"}
-              className="p-1.5"
+              className="p-1"
             >
               {columns.map((column) => (
                 <CommandItem

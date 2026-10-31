@@ -52,7 +52,11 @@ const SectionHeader = ({
   return (
     <h3 className="flex h-[34px] items-end justify-between gap-2 whitespace-nowrap px-2 pb-[5px] font-mono text-label uppercase text-muted-foreground">
       {name}
-      {SectionHeaderAction && <SectionHeaderAction />}
+      {SectionHeaderAction && (
+        <span className="-mb-[5px] flex">
+          <SectionHeaderAction />
+        </span>
+      )}
     </h3>
   );
 };

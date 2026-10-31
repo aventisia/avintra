@@ -93,7 +93,7 @@ export const CardDialog = ({
                   aria-label="Close"
                   onClick={requestClose}
                   disabled={isDismissLocked}
-                  className="-mr-2 -mt-1 grid size-8 place-items-center rounded-lg text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
+                  className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
                 >
                   <X className="size-4" />
                 </button>

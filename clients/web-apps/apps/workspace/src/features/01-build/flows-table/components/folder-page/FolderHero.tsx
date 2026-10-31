@@ -69,7 +69,7 @@ export const FolderHero = ({
             aria-label={`Delete folder ${folder.name}`}
             title="Delete folder"
             onClick={() => openDialog({ kind: "delete", folder })}
-            className="grid size-8 place-items-center rounded-lg text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
+            className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
           >
             <TrashIcon className="size-4" />
           </button>

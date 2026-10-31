@@ -22,7 +22,7 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         aria-label={`Actions for folder ${folder.name}`}
-        className="grid size-8 place-items-center rounded-lg text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink-2"
+        className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink-2"
       >
         <MoreHorizontal className="size-4" />
       </DropdownMenu.Trigger>

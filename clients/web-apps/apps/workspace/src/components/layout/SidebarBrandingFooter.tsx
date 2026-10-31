@@ -19,24 +19,24 @@ const SidebarBrandingFooter = (): JSX.Element => {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center gap-3 border-t justify-center p-3 transition-all duration-200 motion-reduce:transition-none",
+        "flex shrink-0 items-center gap-1.5 px-[18px] pb-2",
         !sidebarExpand && "justify-center px-0",
       )}
     >
       {sidebarExpand ? (
         <>
-          <span className="truncate text-xs  text-muted-foreground">Powered by</span>
+          <span className="truncate text-xs text-muted-foreground">Powered by</span>
           <img
             src="/workspace/logo.svg"
             alt="Aventisia Technologies"
-            className="h-4 shrink-0 dark:opacity-80 dark:brightness-0 dark:invert"
+            className="h-3 shrink-0 opacity-70 dark:brightness-0 dark:invert"
           />
         </>
       ) : (
         <img
           src="/workspace/favicon.svg"
           alt="Aventisia Technologies"
-          className="h-4 w-4 shrink-0"
+          className="h-4 w-4 shrink-0 opacity-70"
         />
       )}
     </div>

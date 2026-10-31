@@ -32,7 +32,7 @@ export const FolderSwitcher = ({ current, summaries }: FolderSwitcherProps) => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         aria-label={`Folder ${current.folder.name}, switch folder`}
-        className="-my-1 flex min-w-0 items-center gap-2 rounded-lg py-1 pl-1 pr-1.5 text-lg font-semibold text-ink outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted"
+        className="-my-1 flex min-w-0 items-center gap-2 rounded-md py-1 pl-1 pr-1.5 text-lg font-semibold text-ink outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted"
       >
         <FolderMark color={getFolderColor(current.folder)} size="sm" />
         <span className="max-w-[18rem] truncate">{current.folder.name}</span>

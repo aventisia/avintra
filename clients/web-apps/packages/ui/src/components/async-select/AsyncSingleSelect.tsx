@@ -270,7 +270,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
                       className={cn(
                         "flex w-full items-center rounded-sm text-left transition-colors duration-[120ms] ease-out hover:bg-hover",
                         isHighlighted && "bg-hover outline-none ring-1 ring-inset ring-focus",
-                        size === "base" && "min-h-[30px] px-2 py-1 text-body-sm",
+                        size === "base" && "min-h-8 px-2 py-1 text-body-sm",
                         size === "sm" && "px-[0.55rem] py-[0.34rem] text-xs",
                         size === "xs" && "px-[0.45rem] py-[0.25rem] text-2xs",
                       )}

@@ -37,7 +37,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
             <label
               key={value}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
+                "flex items-center gap-3 rounded-md px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
                 isLocked ? "cursor-default" : "cursor-pointer",
                 isSelected
                   ? "bg-selected ring-[1.5px] ring-primary"
@@ -47,7 +47,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
               <input type="radio" value={value} {...registration} className="peer sr-only" />
               <span
                 className={cn(
-                  "grid size-8 shrink-0 place-items-center rounded-lg ring-1",
+                  "grid size-8 shrink-0 place-items-center rounded-md ring-1",
                   isSelected
                     ? "bg-selected text-primary-text ring-primary/30"
                     : "bg-sunken text-muted-foreground ring-line",

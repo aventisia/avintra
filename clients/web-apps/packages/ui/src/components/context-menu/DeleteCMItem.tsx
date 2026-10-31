@@ -17,7 +17,7 @@ export const DeleteCMItem = React.forwardRef<
       buttonVariants({ variant: "dropdownCautionItem" }),
       "gap-2",
       size === "sm" && "group h-8 !px-[0.5rem] text-xs",
-      size === "md" && "group h-[30px]",
+      size === "md" && "group h-8",
       className,
     )}
     {...props}

@@ -59,19 +59,19 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
     >
       <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
         {/* Agent icon tile */}
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sunken text-ink-2 ring-1 ring-line transition-transform duration-200 group-hover:scale-105">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-2 ring-1 ring-line transition-transform duration-200 group-hover:scale-105">
           <NewAgentIcon className="h-4 w-4" />
         </div>
         {/* Supported platform and (shared) access level */}
         <div className="flex min-w-0 items-center gap-1">
           {folder && <FolderChip folder={folder} />}
-          <span className="inline-flex items-center gap-1 rounded-full border border-line bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-2">
+          <span className="inline-flex items-center gap-1 rounded-sm border border-line bg-sunken px-1.5 py-0.5 text-2xs font-medium text-ink-2">
             <Monitor className="h-3 w-3" />
             {platform}
           </span>
           <Badge
             variant="outline"
-            className="whitespace-nowrap rounded-full border-line bg-muted px-2 py-0.5 text-primary"
+            className="whitespace-nowrap rounded-sm border-line bg-muted px-2 py-0.5 text-primary"
           >
             {flow.accessLevel?.replace(/([A-Z])/g, " $1").trim()}
           </Badge>
@@ -169,14 +169,14 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
                   to={getQueueUrl(queue.id, queue.name, queue.type)}
                   draggable={false}
                   title={queue.name}
-                  className="inline-flex max-w-32 items-center rounded-full border border-line bg-surface px-2 py-0.5 text-2xs font-medium text-ink-2 transition-colors hover:border-line-strong hover:bg-hover hover:text-ink"
+                  className="inline-flex max-w-32 items-center rounded-sm border border-line bg-surface px-2 py-0.5 text-2xs font-medium text-ink-2 transition-colors hover:border-line-strong hover:bg-hover hover:text-ink"
                 >
                   <span className="truncate">{queue.name}</span>
                 </NavLink>
               ))}
               {hiddenQueueCount > 0 && (
                 <span
-                  className="inline-flex items-center rounded-full border border-line bg-sunken px-2 py-0.5 text-2xs font-medium text-muted-foreground"
+                  className="inline-flex items-center rounded-sm border border-line bg-sunken px-2 py-0.5 text-2xs font-medium text-muted-foreground"
                   title={`${hiddenQueueCount} more queue(s)`}
                 >
                   +{hiddenQueueCount}

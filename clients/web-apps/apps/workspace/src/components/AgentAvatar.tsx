@@ -3,11 +3,11 @@ import { cn } from "@avplatform/ui/lib";
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 const SIZES = {
-  xs: "size-6 rounded-md [&>svg]:size-3.5",
-  sm: "size-7 rounded-lg [&>svg]:size-4",
-  md: "size-8 rounded-[10px] [&>svg]:size-[18px]",
-  lg: "size-9 rounded-xl [&>svg]:size-5",
-  xl: "size-10 rounded-xl [&>svg]:size-[22px]",
+  xs: "size-6 rounded-sm [&>svg]:size-3.5",
+  sm: "size-7 rounded-md [&>svg]:size-4",
+  md: "size-8 rounded-md [&>svg]:size-[18px]",
+  lg: "size-9 rounded-md [&>svg]:size-5",
+  xl: "size-10 rounded-lg [&>svg]:size-[22px]",
 } as const;
 
 interface AgentAvatarProps {

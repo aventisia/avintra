@@ -57,7 +57,7 @@ const SortRule = <TData,>({
         <SelectTrigger
           aria-label={`Sort field ${index + 1}`}
           size="sm"
-          className="w-40 rounded-lg font-medium text-ink-2"
+          className="w-40 rounded-md font-medium text-ink-2"
         >
           <SelectValue />
         </SelectTrigger>
@@ -76,7 +76,7 @@ const SortRule = <TData,>({
         <SelectTrigger
           aria-label={`${label} sort direction`}
           size="sm"
-          className="w-[7.5rem] rounded-lg text-ink-2"
+          className="w-[7.5rem] rounded-md text-ink-2"
         >
           <SelectValue />
         </SelectTrigger>
@@ -137,7 +137,7 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
           <ArrowDownUp />
           Sort
           {sorting.length > 0 && (
-            <span className="grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-full bg-fill px-1 font-mono text-2xs font-medium tabular-nums text-ink-2">
+            <span className="grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-sm bg-fill px-1 font-mono text-2xs font-medium tabular-nums text-ink-2">
               {sorting.length}
             </span>
           )}

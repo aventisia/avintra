@@ -46,13 +46,18 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
     </>
   );
   const queueCount = flow.queues?.length ?? 0;
+  const agentType = AGENT_TYPES.find((option) => option.value === flow.type);
 
   return (
     <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
       <AgentAvatar
         size="sm"
-        Icon={AGENT_TYPES.find((option) => option.value === flow.type)?.icon}
-        className={cn("size-[30px] rounded-md", flow.isArchived && "opacity-50 grayscale")}
+        Icon={agentType?.icon}
+        className={cn(
+          "size-[30px] rounded-md",
+          agentType?.tint,
+          flow.isArchived && "opacity-50 grayscale",
+        )}
       />
       {isExternal ? (
         <a href={href} {...linkProps}>

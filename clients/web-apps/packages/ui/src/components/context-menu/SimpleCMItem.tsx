@@ -20,7 +20,7 @@ export const SimpleCMItem = React.forwardRef<
       buttonVariants({ variant: "dropdownItem" }),
       "gap-2",
       size === "sm" && "h-8 !px-[0.5rem] text-xs",
-      size === "md" && "h-[30px]",
+      size === "md" && "h-8",
       className,
     )}
     {...props}
