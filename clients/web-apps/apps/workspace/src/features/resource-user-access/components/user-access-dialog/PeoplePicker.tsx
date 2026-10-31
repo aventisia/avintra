@@ -1,9 +1,9 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { cn } from "@avplatform/ui/lib";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { HighlightedText } from "@/components/HighlightedText";
 import { Kbd } from "@/components/Kbd";
 import { PersonAvatar } from "@/components/PersonAvatar";
 

@@ -1,8 +1,7 @@
+import { MenuContent, MenuItem, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { FolderOpen, MoreHorizontal, SquarePenIcon, Trash2Icon } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
-
-import { MenuContent, MenuItem, MenuSeparator } from "@/components/MenuParts";
 
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
 import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";

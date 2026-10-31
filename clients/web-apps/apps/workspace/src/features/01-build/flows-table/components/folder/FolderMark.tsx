@@ -1,10 +1,10 @@
+import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
 import type { ReactNode } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { FolderColor } from "../../types/folder-color.type";
-import { FolderGlyph } from "./FolderGlyph";
 
 const SIZES = {
   xs: "size-5 rounded-sm [&>svg]:size-3",

@@ -1,17 +1,18 @@
-import { Button } from "@avplatform/ui/buttons";
 import { LayoutGrid, List } from "lucide-react";
 
-import { FlowsViewMode } from "../hooks/useFlowsView";
+import { Button } from "@/ui/components/buttons";
 
-interface FlowsViewToggleProps {
-  view: FlowsViewMode;
-  onChange: (view: FlowsViewMode) => void;
-}
+export type ViewMode = "grid" | "table";
+
+export type ViewModeToggleProps = {
+  view: ViewMode;
+  onChange: (view: ViewMode) => void;
+};
 
 /**
- * Segmented control to switch the Agents list between grid and table views.
+ * Segmented control to switch a list between grid and table views.
  */
-export const FlowsViewToggle = ({ view, onChange }: FlowsViewToggleProps) => {
+export const ViewModeToggle = ({ view, onChange }: ViewModeToggleProps) => {
   return (
     <div className="flex h-8 items-center gap-0.5 rounded-lg border p-0.5">
       <Button

@@ -1,3 +1,4 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -5,7 +6,6 @@ import { ListChecks } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { HighlightedText } from "@/components/HighlightedText";
 import { PersonAvatar } from "@/components/PersonAvatar";
 import { pluralize } from "@/utils/pluralize.util";
 

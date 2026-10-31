@@ -1,8 +1,11 @@
 import { EmptyState } from "@avplatform/ui";
+import { CountToggle } from "@avplatform/ui/count-toggle";
 import { DTCreateButton } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
+import { ViewModeToggle } from "@avplatform/ui/view-mode-toggle";
+import { Archive } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,10 +26,8 @@ import {
   filterArchivedAgents,
 } from "../utils/agents-list-items.util";
 import { AgentsListView } from "./AgentsListView";
-import { ArchivedToggle } from "./ArchivedToggle";
 import { FlowsGridSkeleton } from "./FlowsGridSkeleton";
 import { flowsTableColumns } from "./FlowsTableColumns";
-import { FlowsViewToggle } from "./FlowsViewToggle";
 import { FolderDialogs } from "./folder-dialogs/FolderDialogs";
 import { FolderBreadcrumb } from "./folder-page/FolderBreadcrumb";
 import { FolderEmptyState } from "./folder-page/FolderEmptyState";
@@ -100,7 +101,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
               <FolderBreadcrumb current={currentSummary} summaries={folderSummaries} />
             </div>
             <div className="flex items-center gap-2">
-              <FlowsViewToggle view={view} onChange={setView} />
+              <ViewModeToggle view={view} onChange={setView} />
               {!showArchived && <DTCreateButton entity="flow" />}
             </div>
           </div>
@@ -110,7 +111,10 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
             searchPlaceholder="Search agents..."
             withViewOptions={view === "table"}
           >
-            <ArchivedToggle
+            <CountToggle
+              Icon={Archive}
+              label="Archived"
+              title={showArchived ? "Show active agents" : "Show archived agents"}
               count={archivedCount}
               pressed={showArchived}
               onPressedChange={setShowArchived}
