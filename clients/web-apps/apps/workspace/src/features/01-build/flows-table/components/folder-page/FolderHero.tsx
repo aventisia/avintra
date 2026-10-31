@@ -1,15 +1,15 @@
+import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
+import { MetaLine } from "@avplatform/ui/meta-line";
 import { formatDate } from "@avplatform/ui/utils";
 import { SquarePenIcon, Trash2Icon } from "lucide-react";
 
-import { MetaLine } from "@/components/MetaLine";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { useFolderDialogStore } from "../../stores/folder-dialog.store";
 import { FolderSummary } from "../../types/folder-summary.type";
 import { getFolderColor } from "../../utils/folder-color.util";
-import { FolderGlyph } from "../folder/FolderGlyph";
 import { FolderMark } from "../folder/FolderMark";
 
 /**

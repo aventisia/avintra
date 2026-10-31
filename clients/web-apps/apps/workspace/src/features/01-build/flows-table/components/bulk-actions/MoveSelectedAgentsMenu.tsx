@@ -1,8 +1,8 @@
+import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { TableCNActionBarItem } from "@avplatform/ui/table-cn";
 import { FolderInput } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 
-import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@/components/MenuParts";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { FlowsTableDto } from "../../dtos/flows-table-dto";

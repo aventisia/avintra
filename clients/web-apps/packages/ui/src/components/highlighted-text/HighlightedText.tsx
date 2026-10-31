@@ -1,7 +1,7 @@
-interface HighlightedTextProps {
+export type HighlightedTextProps = {
   text: string;
   query: string;
-}
+};
 
 /**
  * Marks the first case-insensitive match of the trimmed query inside the text.
