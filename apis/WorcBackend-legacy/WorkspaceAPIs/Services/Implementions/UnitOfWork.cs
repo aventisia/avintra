@@ -46,6 +46,8 @@ public class UnitOfWork : IUnitOfWork
     public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
     public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);
     public IToolRepo ToolRepo => new ToolRepo(_workspaceDbContext);
+    public IPlatformToolRepo PlatformToolRepo => new PlatformToolRepo(_workspaceDbContext);
+    public ITenantPlatformToolRepo TenantPlatformToolRepo => new TenantPlatformToolRepo(_workspaceDbContext);
     public ITicketRepo TicketRepo => new TicketRepo(_workspaceDbContext);
     public ITicketCommentRepo TicketCommentRepo => new TicketCommentRepo(_workspaceDbContext);
     public ITicketAttachmentRepo TicketAttachmentRepo => new TicketAttachmentRepo(_workspaceDbContext);
