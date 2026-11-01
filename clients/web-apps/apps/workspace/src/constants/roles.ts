@@ -12,6 +12,9 @@ export const ROLE_LABELS: Record<string, string> = {
   TU: "User",
 };
 
+/** System role code for the Super Admin role. */
+export const ROLE_SA = "SA";
+
 /** System role code for the Tenant Admin role. */
 export const ROLE_TA = "TA";
 
