@@ -1,6 +1,7 @@
 import { Header, HeaderBreadcrumbs, JobsPill, SearchBox } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
 import { Button } from "@avplatform/ui/buttons";
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import {
   type IUserSessionStore,
@@ -8,10 +9,12 @@ import {
   useUserSessionStore,
 } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { CircleHelpIcon, UserIcon } from "lucide-react";
+import { CircleHelpIcon, DownloadIcon, UserIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
+import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
 
@@ -31,6 +34,7 @@ const AppHeader: React.FC = () => {
     useShallow((state) => ({ isHelpOpen: state.isOpen, toggleHelp: state.toggleOpen })),
   );
   const { openAccountDialog } = useAccountDialogUrlState();
+  const navigate = useNavigate();
 
   return (
     <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
@@ -54,7 +58,18 @@ const AppHeader: React.FC = () => {
       </div>
       <SearchBox
         className="h-[34px] w-full max-w-[380px] flex-1"
-        actions={[{ label: "My account", Icon: UserIcon, onSelect: openAccountDialog }]}
+        actions={[
+          { label: "My account", Icon: UserIcon, onSelect: openAccountDialog },
+          ...(IS_TAURI
+            ? []
+            : [
+                {
+                  label: "Download desktop app",
+                  Icon: DownloadIcon,
+                  onSelect: () => navigate(DESKTOP_DOWNLOAD_ROUTE),
+                },
+              ]),
+        ]}
       />
       <div className="flex flex-1 basis-0 items-center justify-end gap-2">
         {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
