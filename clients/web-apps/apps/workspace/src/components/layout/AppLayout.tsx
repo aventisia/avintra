@@ -7,7 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
 import { HelpPanel } from "@/components/help/HelpPanel";
-import { ROLE_TA } from "@/constants/roles";
+import { ROLE_SA, ROLE_TA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
 import { DownloadDialog } from "@/features/desktop-download";
@@ -133,12 +133,14 @@ export const AppLayout = () => {
     // user's roles on first login. Only set the store if it hasn't been initialized
     // yet for this session to avoid clobbering a user's in-session selection.
     if (selectedRoles.length === 0) {
-      const storedRoles = localStorage.getItem(SELECTED_ROLES_STORAGE_KEY);
-      const initialRoles =
-        storedRoles && storedRoles.length > 0
-          ? storedRoles.split(",")
-          : (userSession?.userRoles ?? []);
-      setSelectedRoles(initialRoles);
+      const userRoles = userSession.userRoles ?? [];
+      /* IMPORTANT NOTE: Only super admins can pick roles, so anyone else always gets all their roles, even with a stale selection stored before the picker was hidden. */
+      const storedRoles = userRoles.includes(ROLE_SA)
+        ? (localStorage.getItem(SELECTED_ROLES_STORAGE_KEY)?.split(",") ?? []).filter((role) =>
+            userRoles.includes(role),
+          )
+        : [];
+      setSelectedRoles(storedRoles.length > 0 ? storedRoles : userRoles);
     }
   }, [isPending, selectedRoles.length, setSelectedRoles, setViteEnvVars, userSession]);
 
