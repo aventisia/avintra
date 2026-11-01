@@ -5,7 +5,8 @@ import { Library } from "lucide-react";
 
 import { QueryTabItem } from "@/components/QueryTab";
 
-import { columnVisibilityState } from "./skill-files-column-visibility-state.constant";
+import { columnVisibilityState } from "./column-visibility-state.constant";
+import { columnVisibilityState as skillFilesColumnVisibilityState } from "./skill-files-column-visibility-state.constant";
 
 /**
  * The unique key for the skill query to be used in the query client. ["skill"]
@@ -21,6 +22,14 @@ const TABLE_HEADING = "Skills";
 const TABLE_KEY = "skill";
 const DETAIL_TABLE_KEY = "skill-details";
 
+/** Page sizes offered by the skill table, unchanged from the legacy table. */
+const SKILL_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const SKILL_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnVisibility: columnVisibilityState,
+};
+
 /** Page sizes offered by the table, unchanged from the legacy table. */
 const SKILL_FILES_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
 
@@ -28,7 +37,7 @@ const SKILL_FILES_ROW_LABELS = { singular: "file", plural: "files" };
 
 const SKILL_FILES_INITIAL_STATE: InitialTableState = {
   pagination: { pageIndex: 0, pageSize: 50 },
-  columnVisibility: columnVisibilityState,
+  columnVisibility: skillFilesColumnVisibilityState,
   columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
 };
 
@@ -65,6 +74,8 @@ export {
   SKILL_FILES_INITIAL_STATE,
   SKILL_FILES_PAGE_SIZE_OPTIONS,
   SKILL_FILES_ROW_LABELS,
+  SKILL_INITIAL_STATE,
+  SKILL_PAGE_SIZE_OPTIONS,
   TABLE_HEADING,
   TABLE_KEY,
   DETAIL_TABLE_KEY,

@@ -1,12 +1,7 @@
 import { DotSeparator, EmptyState } from "@avplatform/ui";
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
 
@@ -14,15 +9,23 @@ import ResourceFlowAccessDialog from "@/features/resource-flow-access/components
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { Tooltip } from "@/ui/components/tooltip";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  VAULT_INITIAL_STATE,
+  VAULT_PAGE_SIZE_OPTIONS,
+} from "../constants";
 import { useFetchVaultCredentials } from "../hooks/useFetchVaultCredentials.hook";
 import { useTableTab } from "../hooks/useTableTab";
 import { getVaultCredentialAppIcon } from "../vault-credential-config/constants/vault-credential-app-icon-mapper.constant";
 import { vaultCredentialTableColumns } from "./VaultCredentialTableColumns";
 import { VaultCredentialTableSkeleton } from "./VaultCredentialTableSkeleton";
-import { VaultCredentialBulkActions } from "./vault-credential-row-actions/VaultCredentialBulkActions";
 import { VaultCredentialRowActions } from "./vault-credential-row-actions/VaultCredentialRowActions";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: VAULT_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "credential", plural: "credentials" },
+};
 
 /**
  * Renders a table of configs.
@@ -32,22 +35,20 @@ import { VaultCredentialRowActions } from "./vault-credential-row-actions/VaultC
 export const VaultCredentialTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   const { queryKey } = useTableTab();
 
   const { data, isFetching, isLoading } = useFetchVaultCredentials();
   const isVaultCredentialsLoading = isLoading || isFetching;
 
-  const vaultCredentialTableColumnsArray = vaultCredentialTableColumns();
-
-  const table = useDataTable(
-    vaultCredentialTableColumnsArray,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data || [],
+    columns: vaultCredentialTableColumns(),
+    getRowId: (credential) => credential.id ?? "",
+    initialState: VAULT_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
   const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
@@ -61,10 +62,11 @@ export const VaultCredentialTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
               <DTCreateButton buttonText="Add credential" entity="vault" />
             </div>
           </div>
+          {/* Search for the card list */}
+          <TableCNToolbar table={table} searchPlaceholder="Search..." withViewOptions={false} />
           {table.getRowModel().rows?.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
@@ -166,12 +168,10 @@ export const VaultCredentialTable = () => {
               secondaryMessage="Please add new credentials."
             />
           )}
-          <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
+          <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
           <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
-
-          <VaultCredentialBulkActions table={table} />
         </div>
       ) : (
         <VaultCredentialTableSkeleton />
