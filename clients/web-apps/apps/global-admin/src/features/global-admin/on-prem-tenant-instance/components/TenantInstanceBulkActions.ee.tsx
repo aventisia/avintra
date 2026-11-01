@@ -1,7 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 import { TenantInstanceOptimisticMutationFn } from "../apis/tenant-instance-apis.ee";
@@ -17,6 +23,7 @@ export function TenantInstanceBulkActions({ table }: TenantInstanceBulkActionsPr
 
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -34,31 +41,34 @@ export function TenantInstanceBulkActions({ table }: TenantInstanceBulkActionsPr
   // TODO: Rollback selection if there is an error
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected instances
-                  deleteTenants({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={Trash2}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected instances
+                deleteTenants({
+                  payload: selectedRowIds,
+                  crudAction: "delete-multiple",
+                });
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "instances" : "instance"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "instances" : "instance"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

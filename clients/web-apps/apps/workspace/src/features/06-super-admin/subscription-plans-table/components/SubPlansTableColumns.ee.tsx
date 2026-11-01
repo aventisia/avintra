@@ -1,59 +1,47 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY, displayValue } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
+import { displayValue } from "../constants";
 import { getColumnName } from "../constants/column-display-names.ee";
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto.ee";
 import { SubPlansRowActions } from "./sub-plans-row-actions/SubPlansRowActions.ee";
+
+const renderHeader =
+  (columnKey: string, className?: string) =>
+  ({ column }: HeaderContext<SubPlansTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} className={className} />
+  );
 
 /**
  * Array of table columns for the subscription plans table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<SubPlansTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "currency",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Currency" />
-    ),
+    meta: { label: getColumnName("currency") },
+    header: renderHeader("currency"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("currency")}</div>
     ),
   },
   {
     accessorKey: "price",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Price" />,
+    meta: { label: getColumnName("price") },
+    header: renderHeader("price"),
     cell: ({ row }) => {
       const price = row.getValue<number>("price");
       return (
@@ -65,18 +53,16 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "frequency",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Billing frequency" />
-    ),
+    meta: { label: getColumnName("frequency") },
+    header: renderHeader("frequency"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("frequency")}</div>
     ),
   },
   {
     accessorKey: "maxCredits",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxCredits")} />
-    ),
+    meta: { label: getColumnName("maxCredits") },
+    header: renderHeader("maxCredits"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(
@@ -87,13 +73,8 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "maxPublishedItems",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("maxPublishedItems")}
-      />
-    ),
+    meta: { label: getColumnName("maxPublishedItems") },
+    header: renderHeader("maxPublishedItems"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("maxPublishedItems"))}
@@ -102,13 +83,8 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "historyRetentionDays",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("historyRetentionDays")}
-      />
-    ),
+    meta: { label: getColumnName("historyRetentionDays") },
+    header: renderHeader("historyRetentionDays"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("historyRetentionDays"))}
@@ -117,9 +93,8 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "maxSpaces",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxSpaces")} />
-    ),
+    meta: { label: getColumnName("maxSpaces") },
+    header: renderHeader("maxSpaces"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("maxSpaces"))}
@@ -128,13 +103,8 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "storageLimitMB",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("storageLimitMB")}
-      />
-    ),
+    meta: { label: getColumnName("storageLimitMB") },
+    header: renderHeader("storageLimitMB"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("storageLimitMB"))}
@@ -143,42 +113,33 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
   },
   {
     accessorKey: "maxUsers",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("maxUsers")} />
-    ),
+    meta: { label: getColumnName("maxUsers") },
+    header: renderHeader("maxUsers"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {displayValue(row.getValue("maxUsers"))}
       </div>
     ),
   },
-
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("createdOn")}
-      />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn", "w-[7rem]"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
-  createDTActionsColumn<SubPlansTableDto>({
-    renderCell: (row) => <SubPlansRowActions rowId={row.id || "rowId"} />,
+  getRowActionsColumn<SubPlansTableDto>({
+    actions: ({ row }) => <SubPlansRowActions rowId={row.original.id || "rowId"} />,
   }),
 ];

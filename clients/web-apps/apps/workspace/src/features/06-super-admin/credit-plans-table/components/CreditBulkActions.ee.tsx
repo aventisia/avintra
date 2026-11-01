@@ -1,7 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
 
 import { creditOptimisticMutationFn } from "../apis/credit-plans-table-apis.ee";
 import { CREDIT_PLANS_QUERY_KEY } from "../constants";
@@ -14,6 +20,7 @@ interface CreditBulkActionsProps {
 export function CreditsBulkActions({ table }: CreditBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -28,35 +35,36 @@ export function CreditsBulkActions({ table }: CreditBulkActionsProps) {
     CreditPlansTableDto
   >(selectedRowIds, creditOptimisticMutationFn, CREDIT_PLANS_QUERY_KEY);
 
-  // TODO: Rollback selection if there is an error
-
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              // Show alert dialog to confirm delete
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected models
-                  deleteCreditPlans({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={Trash2}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            // Show alert dialog to confirm delete
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected models
+                deleteCreditPlans({
+                  payload: selectedRowIds,
+                  crudAction: "delete-multiple",
+                });
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "plans" : "plan"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "plans" : "plan"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

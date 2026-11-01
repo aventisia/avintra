@@ -1,6 +1,6 @@
 /** Column visibility initial state for the model table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   serviceType: true,
   unitType: true,
   oneUnit: true,
