@@ -218,7 +218,10 @@ public class OnPremInstanceService : IOnPremInstanceService
         {
             // Check if the OnPremInstance name already exists to avoid duplication (case-insensitive)
             var existingOnPremInstance = await _unitOfWork.OnPremInstanceRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == OnPremInstanceDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.OnPremTenantId == OnPremInstanceDto.OnPremTenantId &&
+                    w.Name.ToLower() == OnPremInstanceDto.Name.ToLower()
+                )
                 .FirstOrDefaultAsync();
 
             // If OnPremInstance exists, return a conflict response
