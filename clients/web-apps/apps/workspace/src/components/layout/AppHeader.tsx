@@ -8,10 +8,11 @@ import {
   useUserSessionStore,
 } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { CircleHelpIcon } from "lucide-react";
+import { CircleHelpIcon, UserIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
+import { useAccountDialogUrlState } from "@/features/my-account";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
 
 import { AppLogo } from "./AppLogo";
@@ -29,6 +30,7 @@ const AppHeader: React.FC = () => {
   const { isHelpOpen, toggleHelp } = useHelpPanelStore(
     useShallow((state) => ({ isHelpOpen: state.isOpen, toggleHelp: state.toggleOpen })),
   );
+  const { openAccountDialog } = useAccountDialogUrlState();
 
   return (
     <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
@@ -50,7 +52,10 @@ const AppHeader: React.FC = () => {
           "read_only" && <TenantSwitchBadge />}
         <HeaderBreadcrumbs />
       </div>
-      <SearchBox className="h-[34px] w-full max-w-[380px] flex-1" />
+      <SearchBox
+        className="h-[34px] w-full max-w-[380px] flex-1"
+        actions={[{ label: "My account", Icon: UserIcon, onSelect: openAccountDialog }]}
+      />
       <div className="flex flex-1 basis-0 items-center justify-end gap-2">
         {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
         <JobsPill to="/orchestrator/jobs" />
