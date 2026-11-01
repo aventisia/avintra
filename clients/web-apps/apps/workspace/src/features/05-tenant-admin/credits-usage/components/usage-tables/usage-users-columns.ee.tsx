@@ -1,16 +1,17 @@
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { IUsers } from "../../dtos/credits-usage-dto.ee";
 import { UsageBreakdownCell } from "./UsageBreakdownCell.ee";
 
-export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
+export const usageUsersColumns: ColumnDef<IUsers>[] = [
   {
     accessorKey: "fullName",
     id: "fullName",
+    meta: { label: "User" },
     accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim() || row.username,
-    header: ({ column }) => <DTColumnHeader tableKey={tableKey} column={column} title="User" />,
+    header: ({ column }) => <TableCNColumnHeader column={column} label="User" />,
     cell: ({ row }) => {
       const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
       const initials = fullName
@@ -41,9 +42,8 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
   {
     accessorKey: "totalCredits",
     id: "totalCredits",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Total credits" />
-    ),
+    meta: { label: "Total credits" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Total credits" />,
     cell: ({ row }) => (
       <span className="font-mono font-medium tabular-nums">
         {row.original.totalCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
@@ -53,9 +53,8 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
   {
     accessorKey: "totalLlmCredits",
     id: "totalLlmCredits",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="LLM credits" />
-    ),
+    meta: { label: "LLM credits" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="LLM credits" />,
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">
         {row.original.totalLlmCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
@@ -65,9 +64,8 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
   {
     accessorKey: "totalExecutionCredits",
     id: "totalExecutionCredits",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Execution credits" />
-    ),
+    meta: { label: "Execution credits" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Execution credits" />,
     cell: ({ row }) => (
       <span className="font-mono tabular-nums">
         {row.original.totalExecutionCredits.toLocaleString("en-US", {
@@ -79,6 +77,7 @@ export const usageUsersColumns = (tableKey: string): ColumnDef<IUsers>[] => [
   {
     accessorKey: "breakdown",
     id: "breakdown",
+    meta: { label: "Breakdown" },
     header: () => <div className="text-left">Breakdown</div>,
     enableSorting: false,
     cell: ({ row }) => (

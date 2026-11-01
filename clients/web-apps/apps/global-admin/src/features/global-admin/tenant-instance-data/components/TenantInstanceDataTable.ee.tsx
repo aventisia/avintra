@@ -6,24 +6,25 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import {
-  DTPagination,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { NavLink } from "react-router-dom";
 
 import { useTenantRoute } from "../../on-prem-tenant-instance/hooks/useTenantRoute.ee";
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  TENANT_INSTANCE_DATA_INITIAL_STATE,
+  TENANT_INSTANCE_DATA_PAGE_SIZE_OPTIONS,
+} from "../constants";
 import { useFetchTenantInstancesData } from "../hooks/useFetchTenantInstancesData.ee";
 import { DateRangeFilter } from "./DateRangeFilter.ee";
 import { instanceDataTableColumns } from "./InstanceDataTableColumns.ee";
 import { TenantInstanceStats } from "./TenantInstanceStats.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: TENANT_INSTANCE_DATA_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of on-prem tenants.
@@ -35,22 +36,18 @@ export const TenantInstanceDataTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch on-prem tenants data
   const { data } = useFetchTenantInstancesData(id ?? "");
 
-  // Create a React table for on-prem tenants data
-  const table = useDataTable(
-    instanceDataTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: instanceDataTableColumns,
+    initialState: TENANT_INSTANCE_DATA_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
@@ -78,27 +75,19 @@ export const TenantInstanceDataTable = () => {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
+          </div>
 
-            <div className="flex items-center gap-2">
+          {/* Data table with its view options, filters, stats and footer */}
+          <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+            <TableCNToolbar table={table}>
               <DateRangeFilter />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
+            </TableCNToolbar>
             <TenantInstanceStats />
-
-            <div className="pr-0.5">
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={instanceDataTableColumns.length} />
-            </div>
-          </div>
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the tenants data
-        <DataTableSkeleton />
+        // Show the table skeleton while fetching the tenants data
+        <TableCNSkeleton columnCount={7} filterCount={1} />
       )}
     </>
   );

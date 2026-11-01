@@ -1,15 +1,16 @@
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { IByokUsers } from "../../dtos/byok-usage-dto.ee";
 
-export const byokUsageUsersColumns = (tableKey: string): ColumnDef<IByokUsers>[] => [
+export const byokUsageUsersColumns: ColumnDef<IByokUsers>[] = [
   {
     accessorKey: "fullName",
     id: "fullName",
+    meta: { label: "User" },
     accessorFn: (row) => `${row.firstName} ${row.lastName}`.trim() || row.username,
-    header: ({ column }) => <DTColumnHeader tableKey={tableKey} column={column} title="User" />,
+    header: ({ column }) => <TableCNColumnHeader column={column} label="User" />,
     cell: ({ row }) => {
       const fullName = `${row.original.firstName} ${row.original.lastName}`.trim();
       const initials = fullName
@@ -40,9 +41,8 @@ export const byokUsageUsersColumns = (tableKey: string): ColumnDef<IByokUsers>[]
   {
     accessorKey: "totalConsumption",
     id: "totalConsumption",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title="Total consumption" />
-    ),
+    meta: { label: "Total consumption" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Total consumption" />,
     cell: ({ row }) => (
       <span className="font-mono font-medium tabular-nums">
         {row.original.totalConsumption.toLocaleString("en-US", { maximumFractionDigits: 2 })}

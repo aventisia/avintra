@@ -1,21 +1,20 @@
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  CREDIT_PLANS_INITIAL_STATE,
+  CREDIT_PLANS_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchCreditPlans } from "../hooks/useFetchCreditPlans.ee";
 import { CreditsBulkActions } from "./CreditBulkActions.ee";
 import { creditPlansTableColumns } from "./CreditPlansTableColumns.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: CREDIT_PLANS_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of credits.
@@ -26,21 +25,19 @@ export const CreditPlansTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch models data
   const { data } = useFetchCreditPlans();
 
-  const table = useDataTable(
-    creditPlansTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: creditPlansTableColumns,
+    initialState: CREDIT_PLANS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["serviceType"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
@@ -52,27 +49,23 @@ export const CreditPlansTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["serviceType"]}
-                placeholder="Search plan..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton buttonText="Create plan" entity="creditPlan" />
             </div>
           </div>
 
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={creditPlansTableColumns.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <CreditsBulkActions table={table} />
+          {/* Data table with its search, view options, footer and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<CreditsBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search plan..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the models data
-        <DataTableSkeleton />
+        // Show the table skeleton while fetching the plans
+        <TableCNSkeleton columnCount={6} />
       )}
     </>
   );

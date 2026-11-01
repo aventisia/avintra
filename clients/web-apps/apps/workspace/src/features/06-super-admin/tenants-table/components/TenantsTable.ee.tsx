@@ -1,24 +1,23 @@
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  TENANTS_INITIAL_STATE,
+  TENANTS_PAGE_SIZE_OPTIONS,
+} from "../constants";
 import { useFetchTenants } from "../hooks/useFetchTenants.ee";
 import { DateRangeFilter } from "./DateRangeFilter.ee";
 import { PlanFilter } from "./PlanFilter.ee";
 import { SATenantStats } from "./SATenantStats.ee";
 import { TenantsBulkActions } from "./TenantsBulkActions.ee";
 import { tenantsTableColumns } from "./TenantsTableColumns.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: TENANTS_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of tenants.
@@ -29,26 +28,19 @@ export const TenantsTable = () => {
   // Set the document title to "Tenants".
   useDocumentTitle("Tenants");
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
-  // Default to sorting by Plan ascending (Pro customers at the top) unless the
-  // user has previously saved an explicit sort preference.
-  const initialSort = sortState.length > 0 ? sortState : [{ id: "activePlan", desc: false }];
-
   // Fetch tenants data
   const { data } = useFetchTenants();
 
-  // Create a React table for tenants data
-  const table = useDataTable(
-    tenantsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    initialSort,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: tenantsTableColumns,
+    initialState: TENANTS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
@@ -60,28 +52,28 @@ export const TenantsTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search tenants..." />
-              <DateRangeFilter />
-              <PlanFilter table={table} data={data.data} columnId="activePlan" />{" "}
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton entity="tenant" />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+
+          {/* Data table with its search, filters, stats, footer and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<TenantsBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search tenants..." />
+            <div className="flex items-center gap-2">
+              <DateRangeFilter />
+              <PlanFilter table={table} data={data.data} columnId="activePlan" />
+            </div>
             <SATenantStats data={data?.data} />
-
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={tenantsTableColumns.length} />
-          </div>
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <TenantsBulkActions table={table} />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the tenants data
-        <DataTableSkeleton />
+        // Show the table skeleton while fetching the tenants data
+        <TableCNSkeleton columnCount={8} filterCount={2} withSearch />
       )}
     </>
   );

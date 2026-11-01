@@ -1,26 +1,25 @@
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  SA_TICKETS_INITIAL_STATE,
+  SA_TICKETS_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchSaTickets } from "../hooks/useFetchSaTickets.ee";
 import { saTicketTableColumns } from "./SaTicketTableColumns.ee";
 import { SaTicketBulkActions } from "./ticket-row-actions/SaTicketBulkActions.ee";
 
 const tabs = ["In Progress", "Closed"];
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: SA_TICKETS_PAGE_SIZE_OPTIONS,
+};
 
 export const SaTicketsTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -56,16 +55,16 @@ export const SaTicketsTable = () => {
     handleTabParamChange(tab);
   };
 
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
   const { data } = useFetchSaTickets();
 
-  const table = useDataTable(
-    saTicketTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: saTicketTableColumns,
+    initialState: SA_TICKETS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["title", "ticketNumber"],
+  });
 
   // Filter the table by the active tab's status.
   useEffect(() => {
@@ -87,12 +86,6 @@ export const SaTicketsTable = () => {
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["title", "ticketNumber"]}
-                placeholder="Search tickets..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
                 <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
                   {tabs.map((tab) => (
@@ -105,12 +98,19 @@ export const SaTicketsTable = () => {
               <DTCreateButton entity="saSupportTicket" />
             </div>
           </div>
-          <DataTable table={table} columnsLength={saTicketTableColumns.length} />
-          <SaTicketBulkActions table={table} />
-          <DTPagination table={table} isRowSelectionEnabled />
+
+          {/* Data table with its search, view options, footer and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<SaTicketBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search tickets..." />
+          </TableCN>
         </div>
       ) : (
-        <DataTableSkeleton />
+        <TableCNSkeleton columnCount={8} withSearch />
       )}
     </>
   );
