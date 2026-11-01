@@ -13,5 +13,7 @@ export const machineSelectTableColumns: ColumnDef<AssignMachineDto>[] = [
     accessorKey: "id",
     header: ({ column, table }) => <AssignAllMachineCheckBox table={table} column={column} />,
     cell: ({ row }) => <AssignMachineCheckBox row={row} />,
+    enableSorting: false,
+    enableHiding: false,
   },
 ];

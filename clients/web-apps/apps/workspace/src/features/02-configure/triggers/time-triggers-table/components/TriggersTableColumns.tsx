@@ -1,17 +1,16 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import {
   formatDate,
   formatTimeZoneLabel,
   getEnumValueByKey,
   normalizeTimeZone,
 } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { TriggerFrequencyTypesEnum } from "@/enums/trigger-frequency-types-enum";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
-import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
@@ -40,39 +39,25 @@ const formatNextTriggerTime = (value: string | undefined, timezone: string) => {
     return format(date, "dd MMM yyyy, h:mm a");
   }
 };
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<TimeTriggerDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<TimeTriggerDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div title={row.getValue("name")} className="w-auto truncate max-w-80 font-medium">
@@ -85,12 +70,10 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       </div>
     ),
   },
-
   {
     accessorKey: "frequency",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("frequency")} />
-    ),
+    meta: { label: getColumnName("frequency") },
+    header: renderHeader("frequency"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(TriggerFrequencyTypesEnum, row.getValue("frequency"))}
@@ -99,13 +82,8 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "lastTriggeredTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastTriggeredTime")}
-      />
-    ),
+    meta: { label: getColumnName("lastTriggeredTime") },
+    header: renderHeader("lastTriggeredTime"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.getValue("lastTriggeredTime")
@@ -116,13 +94,8 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "nextTriggerTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("nextTriggerTime")}
-      />
-    ),
+    meta: { label: getColumnName("nextTriggerTime") },
+    header: renderHeader("nextTriggerTime"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatNextTriggerTime(row.original.nextTriggerTime, row.original.timezone)}
@@ -131,9 +104,8 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "agents",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("agents")} />
-    ),
+    meta: { label: getColumnName("agents") },
+    header: renderHeader("agents"),
     cell: ({ row }) => {
       const agents = row.original.agents ?? [];
 
@@ -152,19 +124,16 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "timezone",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("timezone")} />
-    ),
+    meta: { label: getColumnName("timezone") },
+    header: renderHeader("timezone"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("timezone")}</div>
     ),
   },
-
   {
     accessorKey: "effectiveDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("effectiveDate")} />
-    ),
+    meta: { label: getColumnName("effectiveDate") },
+    header: renderHeader("effectiveDate"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("effectiveDate"))}
@@ -173,21 +142,20 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
@@ -198,25 +166,20 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
   },
   {
     accessorKey: "lastModifiedBy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedBy")}
-      />
-    ),
+    meta: { label: getColumnName("lastModifiedBy") },
+    header: renderHeader("lastModifiedBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("lastModifiedBy")}</div>
     ),
   },
   {
     accessorKey: "lastModifiedOn",
+    meta: { label: getColumnName("lastModifiedOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        label={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
@@ -225,13 +188,13 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
       </div>
     ),
   },
-  createDTActionsColumn<TimeTriggerDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<TimeTriggerDto>({
+    actions: ({ row }) => (
       <TriggerRowActions
-        rowId={row.id ?? "rowId"}
-        name={row.name}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess || false}
+        rowId={row.original.id ?? "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),
   }),

@@ -1,25 +1,23 @@
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import { useMemo } from "react";
 
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  TIME_TRIGGERS_INITIAL_STATE,
+  TIME_TRIGGERS_PAGE_SIZE_OPTIONS,
+} from "../constants";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
 import { useTableTab } from "../hooks/useTableTab";
 import { triggersTableColumns } from "./TriggersTableColumns";
 
 // import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
+
+const PAGINATION_PROPS = { pageSizeOptions: TIME_TRIGGERS_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders a table of triggers.
@@ -30,49 +28,41 @@ export const TriggersTable = () => {
   // Set the document title
   useDocumentTitle(`${TABLE_HEADING}`);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
 
   // Fetch triggers data
   const { data } = useFetchTriggers();
 
-  const triggersTableColumnsArray = triggersTableColumns();
-  // Create a React table for triggers data
-  const table = useDataTable(
-    triggersTableColumnsArray,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  const columns = useMemo(() => triggersTableColumns(), []);
 
-  // Return the rendered DataTable component.
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns,
+    initialState: TIME_TRIGGERS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
+
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading and create action */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
             </div>
             <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["name"]}
-                placeholder="Search triggers..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton entity="timeTrigger" />
             </div>
           </div>
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={triggersTableColumnsArray.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          {/* Table with its toolbar, pagination footer, and (commented) bulk actions */}
+          <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+            <TableCNToolbar table={table} searchPlaceholder="Search triggers..." />
+          </TableCN>
 
           {/* Resource Share Dialog component */}
           <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
@@ -81,8 +71,8 @@ export const TriggersTable = () => {
           {/* <TriggerBulkActions table={table} /> */}
         </div>
       ) : (
-        // Show data table skeleton while fetching the triggers data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the triggers data
+        <TableCNSkeleton columnCount={columns.length} />
       )}
     </>
   );
