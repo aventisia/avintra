@@ -228,7 +228,6 @@ public static class AppServicesExtension
 
                     // Get request path (ensure lowercase for consistent matching)
                     var path = context?.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
-                    Console.WriteLine($"Request from Client ID: {clientId}, for path {path}");
 
                     // Find endpoint-specific rate limiting configuration
                     var endpoint = rateLimiterConfig.Endpoints
@@ -238,7 +237,6 @@ public static class AppServicesExtension
                     // - If endpoint config exists: use clientId + endpoint path
                     // - Otherwise: use clientId + "default"
                     var rateLimitKey = endpoint != null ? $"{clientId}:{endpoint.Path}" : $"{clientId}:default";
-                    Console.WriteLine($"Rate Limit Key: {rateLimitKey}");
 
                     // If there is an endpoint-specific configuration, use its rules
                     if (endpoint != null)

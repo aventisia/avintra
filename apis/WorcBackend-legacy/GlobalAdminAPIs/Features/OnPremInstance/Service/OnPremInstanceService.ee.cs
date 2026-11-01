@@ -216,11 +216,18 @@ public class OnPremInstanceService : IOnPremInstanceService
 
         try
         {
+            if (string.IsNullOrWhiteSpace(OnPremInstanceDto.Name))
+            {
+                serviceResponse.Message = "OnPremInstance name is required.";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
             // Check if the OnPremInstance name already exists to avoid duplication (case-insensitive)
             var existingOnPremInstance = await _unitOfWork.OnPremInstanceRepo
                 .GetByConditionAsync(w =>
                     w.OnPremTenantId == OnPremInstanceDto.OnPremTenantId &&
-                    w.Name.ToLower() == OnPremInstanceDto.Name.ToLower()
+                    w.Name.ToLower() == OnPremInstanceDto.Name.Trim().ToLower()
                 )
                 .FirstOrDefaultAsync();
 
@@ -228,7 +235,7 @@ public class OnPremInstanceService : IOnPremInstanceService
             if (existingOnPremInstance != null)
             {
                 _logger.LogWarning($"Attempt to insert duplicate OnPremInstance with name {OnPremInstanceDto.Name}. User: {_username}");
-                serviceResponse.Message = "An OnPremInstance with the same name already exists.";
+                serviceResponse.Message = "An OnPremInstance with the same name already exists in this tenant.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -252,6 +259,12 @@ public class OnPremInstanceService : IOnPremInstanceService
             serviceResponse.Message = "OnPremInstance inserted successfully.";
             _logger.LogInformation($"Successfully inserted new OnPremInstance with name {OnPremInstanceDto.Name}. User: {_username}");
         }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Duplicate OnPremInstance name rejected by the database unique index.");
+            serviceResponse.Message = "An OnPremInstance with the same name already exists in this tenant.";
+            serviceResponse.StatusCode = 409;
+        }
         catch (Exception ex)
         {
             // Log the exception if an error occurs
@@ -273,6 +286,13 @@ public class OnPremInstanceService : IOnPremInstanceService
 
         try
         {
+            if (string.IsNullOrWhiteSpace(OnPremInstanceDto.Name))
+            {
+                serviceResponse.Message = "OnPremInstance name is required.";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
             // Retrieve the existing OnPremInstance by ID
             var existingOnPremInstance = await _unitOfWork.OnPremInstanceRepo
                 .GetByConditionAsync(w => w.Id == OnPremInstanceDto.Id)
@@ -290,14 +310,15 @@ public class OnPremInstanceService : IOnPremInstanceService
             var duplicateOnPremInstance = await _unitOfWork.OnPremInstanceRepo
                 .GetByConditionAsync(w =>
                     w.Id != OnPremInstanceDto.Id &&
-                    w.Name.ToLower() == OnPremInstanceDto.Name.ToLower())
+                    w.OnPremTenantId == OnPremInstanceDto.OnPremTenantId &&
+                    w.Name.ToLower() == OnPremInstanceDto.Name.Trim().ToLower())
                 .FirstOrDefaultAsync();
 
             // If a duplicate OnPremInstance is found, return a conflict response
             if (duplicateOnPremInstance != null)
             {
                 _logger.LogWarning($"Duplicate OnPremInstance found with name '{OnPremInstanceDto.Name}' (excluding current one). User: {_username}");
-                serviceResponse.Message = "An OnPremInstance with the same name already exists.";
+                serviceResponse.Message = "An OnPremInstance with the same name already exists in this tenant.";
                 serviceResponse.StatusCode = 409;
                 return serviceResponse;
             }
@@ -318,6 +339,12 @@ public class OnPremInstanceService : IOnPremInstanceService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "OnPremInstance updated successfully.";
             _logger.LogInformation($"Successfully updated OnPremInstance with ID {OnPremInstanceDto.Id}. User: {_username}");
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Duplicate OnPremInstance name rejected by the database unique index.");
+            serviceResponse.Message = "An OnPremInstance with the same name already exists in this tenant.";
+            serviceResponse.StatusCode = 409;
         }
         catch (Exception ex)
         {

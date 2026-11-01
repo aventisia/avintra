@@ -62,6 +62,9 @@ namespace GlobalAdminAPIs.Data.Migrations
 
                     b.HasIndex("OnPremTenantId", "DeployedOn");
 
+                    b.HasIndex("OnPremTenantId", "Name")
+                        .IsUnique();
+
                     b.ToTable("ga_OnPremInstances");
                 });
 

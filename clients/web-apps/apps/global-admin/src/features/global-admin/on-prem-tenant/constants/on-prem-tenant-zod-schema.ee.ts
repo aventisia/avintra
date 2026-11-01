@@ -26,18 +26,6 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const emailListSchema = z
   .string()
   .trim()
-  .min(1, "Email cannot be empty")
-  .refine(
-    (val) => {
-      const emails = val
-        .split(";")
-        .map((e) => e.trim())
-        .filter(Boolean);
-
-      return emails.length > 0;
-    },
-    { message: "At least one email is required" },
-  )
   .refine(
     (val) => {
       const emails = val
@@ -61,8 +49,6 @@ export const emailListSchema = z
     },
   );
 
-//const today = new Date();
-
 /**
  * Represents the Zod schema for a onPremTenant.
  */
@@ -74,8 +60,6 @@ export const onPremTenantZodSchema = z.object({
     message: "Value must be greater than 0",
   }),
   contractStartDate: z.date({ message: reqError("Contract Start Date") }),
-  //.min(today, { message: "Contract start date cannot be in the past" }),
-
   contractRenewalDate: z.date({ message: reqError("Contract Renewal Date") }),
   isExecutionDisabled: z.boolean().default(false),
   isLoginDisabled: z.boolean().default(false),
@@ -89,12 +73,3 @@ export const onPremTenantZodSchema = z.object({
   lastModifiedByUser: z.string(),
   lastModifiedOn: z.date(),
 });
-// .refine(
-//   (data) =>
-//     data.contractRenewalDate !== undefined &&
-//     data.contractRenewalDate > data?.contractStartDate,
-//   {
-//     message: "Contract renewal date must be after start date",
-//     path: ["contractRenewalDate"],
-//   },
-// );

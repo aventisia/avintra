@@ -369,10 +369,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         name: "On-prem Tenants",
         // IMPORTANT NOTE: GlobalAdmin is a separate app; an absolute URL makes the shared
         // sidebar leave the Workspace router instead of resolving this path inside it.
-        route: new URL(
-          `${import.meta.env.VITE_GLOBALADMIN_PATH}on-prem-tenants`,
-          window.location.origin,
-        ).href,
+        route:
+          typeof window === "undefined"
+            ? `${import.meta.env.VITE_GLOBALADMIN_PATH}on-prem-tenants`
+            : new URL(
+                `${import.meta.env.VITE_GLOBALADMIN_PATH}on-prem-tenants`,
+                window.location.origin,
+              ).href,
         type: ["Commercial"],
       },
     ],

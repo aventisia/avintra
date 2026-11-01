@@ -17,10 +17,10 @@ export interface OnPremInstanceDto {
   platformVersion: string;
 
   /** Deployment date */
-  deployedOn: Date | string;
+  deployedOn: string;
 
   /** Last validation date */
-  lastValidatedOn: Date | string;
+  lastValidatedOn: string;
 
   /**
    * Number of invalid checks performed on the instance

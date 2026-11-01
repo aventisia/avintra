@@ -1,7 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
-import { appendAuthHeader } from "../../on-prem-tenant/utils/appendAuthHeader.ee";
+import { appendAuthHeader } from "@/utils/appendAuthHeader.ee";
+
 import { OnPremInstanceDataDto } from "../dtos/tenant-instance-dto.ee";
 import { OnpremInstanceStaticDto } from "../dtos/tenant-statistics-dto.ee";
 
@@ -12,10 +13,10 @@ const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem/i
  */
 const getTenantInstancesData = (id: string, startDate: string = "", endDate: string = "") => {
   return axiosInstance
-    .get<IHttpResponse<OnPremInstanceDataDto[]>>(
-      `${baseAPIURL}/${id}/list?startDate=${startDate}&endDate=${endDate}`,
-      appendAuthHeader(),
-    )
+    .get<IHttpResponse<OnPremInstanceDataDto[]>>(`${baseAPIURL}/${id}/list`, {
+      ...appendAuthHeader(),
+      params: { startDate: startDate || undefined, endDate: endDate || undefined },
+    })
     .then((res) => res.data);
 };
 
