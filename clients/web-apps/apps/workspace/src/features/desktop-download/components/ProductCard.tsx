@@ -20,7 +20,7 @@ export const ProductCard = ({
   details,
   action,
 }: ProductCardProps) => (
-  <article className="flex flex-col rounded-xl border border-line bg-surface p-6">
+  <article className="flex flex-col rounded-lg border border-line bg-surface p-6">
     <div className="flex items-start justify-between gap-4">
       <span className="grid size-11 place-items-center rounded-lg bg-sunken text-ink-2 [&_svg]:size-5">
         {icon}
