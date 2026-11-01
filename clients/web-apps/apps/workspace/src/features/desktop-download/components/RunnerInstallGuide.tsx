@@ -41,7 +41,7 @@ const InstallStep = ({
 );
 
 const Requirements = () => (
-  <aside className="self-start rounded-xl border border-line bg-sunken p-5 lg:sticky lg:top-6">
+  <aside className="self-start rounded-lg border border-line bg-sunken p-5 lg:sticky lg:top-6">
     <h3 className="text-label uppercase text-muted-foreground">Before you start</h3>
     <ul className="mt-3 space-y-3 text-body-sm text-ink-2">
       <li>Windows 10, Windows 11 or Windows Server</li>

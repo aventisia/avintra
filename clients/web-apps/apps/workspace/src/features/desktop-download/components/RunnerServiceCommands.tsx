@@ -31,7 +31,7 @@ export const RunnerServiceCommands = () => (
       {SERVICE_TASKS.map(({ title, description, command }) => (
         <div
           key={title}
-          className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-5 last:md:col-span-2"
+          className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-5 last:md:col-span-2"
         >
           <div>
             <h3 className="text-body font-medium text-ink">{title}</h3>

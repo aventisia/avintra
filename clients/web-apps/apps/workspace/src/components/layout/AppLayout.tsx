@@ -20,7 +20,8 @@ import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
+import { UnreadNotificationsPoller } from "@/react-toolkit/features/unread-notifications/components/UnreadNotificationsPoller";
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
@@ -166,7 +167,7 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes([...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE]);
+    setAllowedRoutes([...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE, NOTIFICATIONS_ROUTE]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
@@ -249,7 +250,7 @@ export const AppLayout = () => {
             </div>
           </div>
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
-          <UnreadNotifications />
+          <UnreadNotificationsPoller />
           <AccountDialog />
         </div>
       )}
