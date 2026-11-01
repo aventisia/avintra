@@ -1,13 +1,7 @@
 import { EmptyState } from "@avplatform/ui";
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
-import { useMemo } from "react";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
@@ -15,11 +9,12 @@ import ResourceFlowAccessDialog from "@/features/resource-flow-access/components
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import {
-  COLUMN_VISIBILITY_STATE,
   TABLE_HEADING,
   TABLE_KEY,
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,
+  TOOLS_INITIAL_STATE,
+  TOOLS_PAGE_SIZE_OPTIONS,
 } from "../constants/tools-table.constants";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
@@ -29,22 +24,29 @@ import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
 
+const PAGINATION_PROPS = {
+  pageSizeOptions: TOOLS_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "Tool", plural: "Tools" },
+};
+
 /**
  * Renders a list of tools with Personal, Shared, and Platform tabs.
  */
 export const ToolsTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    TABLE_KEY,
-    COLUMN_VISIBILITY_STATE,
-  );
-
   const { isPlatformTab, isReadOnly, queryKey } = useTableTab();
   const { data, isLoading } = useFetchTools();
 
-  const tableColumns = useMemo(() => toolsTableColumns(isPlatformTab), [isPlatformTab]);
-  const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data || [],
+    columns: toolsTableColumns(),
+    getRowId: (tool) => tool.id ?? "",
+    initialState: TOOLS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
   const isReadOnlyTab = isReadOnly;
 
@@ -54,17 +56,22 @@ export const ToolsTable = () => {
         <ToolsTableSkeleton />
       ) : (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading and tabs */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <QueryTabs tabs={[...TABLE_VIEW_TABS]} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search tools..." />
               {!isReadOnly && <DTCreateButton buttonText="Add" entity="tool" />}
             </div>
           </div>
+          {/* Search for the card list */}
+          <TableCNToolbar
+            table={table}
+            searchPlaceholder="Search tools..."
+            withViewOptions={false}
+          />
 
           {table.getRowModel().rows?.length > 0 ? (
             <div className="grid grid-cols-3 gap-3 rounded-lg border bg-surface px-2.5 py-3">
@@ -123,7 +130,7 @@ export const ToolsTable = () => {
             />
           )}
 
-          <DTPagination table={table} singularLabel="Tool" pluralLabel="Tools" />
+          <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
           <ResourceUserAccessDialog queryKey={queryKey} />
 

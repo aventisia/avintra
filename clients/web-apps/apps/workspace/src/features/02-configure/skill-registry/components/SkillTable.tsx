@@ -1,14 +1,8 @@
 import { EmptyState } from "@avplatform/ui";
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
@@ -16,13 +10,24 @@ import ResourceFlowAccessDialog from "@/features/resource-flow-access/components
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
-import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
-import { columnVisibilityState } from "../constants/column-visibility-state.constant";
+import {
+  SKILL_INITIAL_STATE,
+  SKILL_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+  TABLE_TAB_QUERY_PARAM,
+  TABLE_VIEW_TABS,
+} from "../constants";
 import { useFetchSkills } from "../hooks/useFetchSkills.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
 import { SkillTableColumns } from "./SkillTableColumns";
 import { SkillTableSkeleton } from "./SkillTableSkeleton";
 import { SkillRowActions } from "./skill-row-actions/SkillRowActions";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: SKILL_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "Skill", plural: "Skills" },
+};
 
 /**
  * Renders a list of skills.
@@ -31,43 +36,40 @@ export const SkillTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Get the active tab and the query key used to invalidate the merged skills list
   const { isPlatformTab, isReadOnly, queryKey } = useTableTab();
 
   // Fetch skills data
   const { data } = useFetchSkills();
 
-  const skillTableColumnsArray = useMemo(() => SkillTableColumns(isPlatformTab), [isPlatformTab]);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data || [],
+    columns: SkillTableColumns(),
+    getRowId: (skill) => skill.id ?? "",
+    initialState: SKILL_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Create a React table for skills data
-  const table = useDataTable(
-    skillTableColumnsArray,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
-
-  // Return the rendered DataTable component.
+  // Return the rendered card list.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading and tabs */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
               <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
               {!isReadOnly && <DTCreateButton buttonText="Add" entity="skill" />}
             </div>
           </div>
-          {/* DT with only rows and custom design */}
+          {/* Search for the card list */}
+          <TableCNToolbar table={table} searchPlaceholder="Search..." withViewOptions={false} />
+          {/* TableCN with only rows and custom design */}
           {table.getRowModel().rows?.length > 0 ? (
             <div className="grid grid-cols-3 gap-3 rounded-lg border bg-surface px-2.5 py-3">
               {table.getRowModel().rows.map((row) => (
@@ -122,8 +124,8 @@ export const SkillTable = () => {
               secondaryMessage={isReadOnly ? undefined : "Please add a new skill."}
             />
           )}
-          {/* Data table Pagination component */}
-          <DTPagination table={table} singularLabel="Skill" pluralLabel="Skills" />
+          {/* Card list pagination */}
+          <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
           {/* Resource Share Dialog component */}
           <ResourceUserAccessDialog queryKey={queryKey} />
