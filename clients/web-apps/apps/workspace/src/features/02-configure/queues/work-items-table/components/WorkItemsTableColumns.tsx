@@ -1,13 +1,20 @@
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { NavLink } from "react-router-dom";
 
-import { TABLE_KEY } from "../constants";
-import { getStatusBadgeVariant } from "../constants/column-display-names";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
+import { getColumnName, getStatusBadgeVariant } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { WorkItemRowActions } from "./WorkItemRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<QueueWorkItemDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the WorkItems table.
@@ -19,7 +26,8 @@ import { WorkItemRowActions } from "./WorkItemRowActions";
 export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
   {
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />,
+    meta: { label: getColumnName("id") },
+    header: renderHeader("id"),
     enableSorting: false,
     // Make the work item ID a link that opens the full work item detail
     // (JSON/form viewer and file viewer), matching the Assist experience.
@@ -38,9 +46,8 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => (
       <Badge variant={getStatusBadgeVariant(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
@@ -49,18 +56,16 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created by"} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created on"} />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("createdOn"))}
@@ -71,9 +76,8 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   // table's View options (column visibility filter).
   {
     accessorKey: "sourceWorkItemId",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Source work item ID"} />
-    ),
+    meta: { label: getColumnName("sourceWorkItemId") },
+    header: renderHeader("sourceWorkItemId"),
     cell: ({ row }) => {
       const sourceWorkItemId = row.original.sourceWorkItemId;
       // Unrouted items carry Guid.Empty (all zeros) — treat as no source item.
@@ -88,9 +92,8 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   },
   {
     accessorKey: "retryTime",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry time"} />
-    ),
+    meta: { label: getColumnName("retryTime") },
+    header: renderHeader("retryTime"),
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
       return (
@@ -102,16 +105,15 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   },
   {
     accessorKey: "retryCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry count"} />
-    ),
+    meta: { label: getColumnName("retryCount") },
+    header: renderHeader("retryCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.original.retryCount ?? 0}
       </div>
     ),
   },
-  createDTActionsColumn<QueueWorkItemDto>({
-    renderCell: (row) => <WorkItemRowActions rowId={row.id ?? "rowId"} />,
+  getRowActionsColumn<QueueWorkItemDto>({
+    actions: ({ row }) => <WorkItemRowActions rowId={row.original.id ?? "rowId"} />,
   }),
 ];

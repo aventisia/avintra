@@ -1,35 +1,32 @@
-import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../../constants";
-import { columnDisplayNames } from "../../constants/column-display-names";
-import { columnVisibilityState } from "../../constants/column-visibility-state";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  TICKETS_INITIAL_STATE,
+  TICKETS_PAGE_SIZE_OPTIONS,
+} from "../../constants";
 import { useFetchTickets } from "../../hooks/useFetchTickets";
 import { TicketBulkActions } from "../ticket-row-actions/TicketBulkActions";
 import { ticketTableColumns } from "./TicketTableColumns";
 
+const PAGINATION_PROPS = { pageSizeOptions: TICKETS_PAGE_SIZE_OPTIONS };
+
 export const TicketsTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
   const { data } = useFetchTickets();
 
-  const table = useDataTable(
-    ticketTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: ticketTableColumns,
+    initialState: TICKETS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["title", "ticketNumber"],
+  });
 
   return (
     <>
@@ -40,21 +37,20 @@ export const TicketsTable = () => {
               <DTHeading heading={TABLE_HEADING} />
             </div>
             <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["title", "ticketNumber"]}
-                placeholder="Search tickets..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton entity="ticket" />
             </div>
           </div>
-          <DataTable table={table} columnsLength={ticketTableColumns.length} />
-          <TicketBulkActions table={table} />
-          <DTPagination table={table} isRowSelectionEnabled />
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<TicketBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search tickets..." />
+          </TableCN>
         </div>
       ) : (
-        <DataTableSkeleton />
+        <TableCNSkeleton columnCount={10} />
       )}
     </>
   );

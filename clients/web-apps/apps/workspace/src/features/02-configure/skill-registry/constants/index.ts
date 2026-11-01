@@ -1,7 +1,11 @@
+import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
 import { DialogCrudAction } from "@avplatform/ui/types";
+import { InitialTableState } from "@tanstack/react-table";
 import { Library } from "lucide-react";
 
 import { QueryTabItem } from "@/components/QueryTab";
+
+import { columnVisibilityState } from "./skill-files-column-visibility-state.constant";
 
 /**
  * The unique key for the skill query to be used in the query client. ["skill"]
@@ -16,6 +20,17 @@ const TABLE_HEADING = "Skills";
 
 const TABLE_KEY = "skill";
 const DETAIL_TABLE_KEY = "skill-details";
+
+/** Page sizes offered by the table, unchanged from the legacy table. */
+const SKILL_FILES_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const SKILL_FILES_ROW_LABELS = { singular: "file", plural: "files" };
+
+const SKILL_FILES_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnVisibility: columnVisibilityState,
+  columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
+};
 
 /**
  * Key used for the query param in tables tab.
@@ -47,6 +62,9 @@ export {
   DATA_QUERY_KEY,
   DETAIL_DATA_QUERY_KEY,
   getDialogHeadingDescription,
+  SKILL_FILES_INITIAL_STATE,
+  SKILL_FILES_PAGE_SIZE_OPTIONS,
+  SKILL_FILES_ROW_LABELS,
   TABLE_HEADING,
   TABLE_KEY,
   DETAIL_TABLE_KEY,
