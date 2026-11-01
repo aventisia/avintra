@@ -1,46 +1,37 @@
-import { Checkbox, CopyableText } from "@avplatform/ui";
+import { CopyableText } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, DTOpenViewCell, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { DTOpenViewCell } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
+
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import {
   JobRowActions,
   JobsTableRowDto,
-  TABLE_KEY,
   formatSecondsToCompactDuration,
   getColumnName,
   statusVariant,
 } from "..";
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<JobsTableRowDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
-  {
-    accessorKey: "selectRow",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<JobsTableRowDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     id: "job",
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Job" />,
+    meta: { label: getColumnName("job") },
+    header: renderHeader("job"),
     cell: ({ row }) => (
       <DTOpenViewCell
         rowId={row.original.id}
@@ -51,9 +42,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => (
       <Badge variant={statusVariant[row.original.status]}>{row.getValue("status")}</Badge>
     ),
@@ -75,12 +65,12 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "startTimeStamp",
+    meta: { label: getColumnName("startTimeStamp") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("startTimeStamp")}
+        label={getColumnName("startTimeStamp")}
       />
     ),
     cell: ({ row }) => (
@@ -93,12 +83,12 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "endTimeStamp",
+    meta: { label: getColumnName("endTimeStamp") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("endTimeStamp")}
+        label={getColumnName("endTimeStamp")}
       />
     ),
     cell: ({ row }) => (
@@ -111,9 +101,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "duration",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("duration")} />
-    ),
+    meta: { label: getColumnName("duration") },
+    header: renderHeader("duration"),
     cell: ({ row }) => {
       const duration = Number(row.getValue("duration"));
       return (
@@ -125,13 +114,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "creditsConsumed",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("creditsConsumed")}
-      />
-    ),
+    meta: { label: getColumnName("creditsConsumed") },
+    header: renderHeader("creditsConsumed"),
     cell: ({ row }) => {
       const value = row.getValue("creditsConsumed");
       return (
@@ -145,9 +129,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "remarks",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("remarks")} />
-    ),
+    meta: { label: getColumnName("remarks") },
+    header: renderHeader("remarks"),
     cell: ({ row }) => (
       <div title={row.getValue("remarks") ?? ""} className="max-w-36 truncate font-medium">
         {row.getValue("remarks") ?? FALLBACK_VALUE}
@@ -156,9 +139,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "triggerType",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("triggerType")} />
-    ),
+    meta: { label: getColumnName("triggerType") },
+    header: renderHeader("triggerType"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("triggerType") ?? FALLBACK_VALUE}
@@ -167,9 +149,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "createdByName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdByName")} />
-    ),
+    meta: { label: getColumnName("createdByName") },
+    header: renderHeader("createdByName"),
     cell: ({ row }) => {
       const createdByName = row.getValue("createdByName") as string | undefined;
       // Backend format: "Full Name (email@domain.com)" - extract just the display name
@@ -186,12 +167,12 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "createdAt",
+    meta: { label: getColumnName("createdAt") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdAt")}
+        label={getColumnName("createdAt")}
       />
     ),
     cell: ({ row }) => (
@@ -205,13 +186,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
 
   {
     accessorKey: "executionLocation",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("executionLocation")}
-      />
-    ),
+    meta: { label: getColumnName("executionLocation") },
+    header: renderHeader("executionLocation"),
     cell: ({ row }) => (
       <div
         title={row.getValue("executionLocation") ?? ""}
@@ -224,13 +200,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   {
     id: "isFlowVersionPublished",
     accessorKey: "isFlowVersionPublished",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("isFlowVersionPublished")}
-      />
-    ),
+    meta: { label: getColumnName("isFlowVersionPublished") },
+    header: renderHeader("isFlowVersionPublished"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("isFlowVersionPublished") === true ? "Yes" : "No"}
@@ -239,9 +210,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "retryCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("retryCount")} />
-    ),
+    meta: { label: getColumnName("retryCount") },
+    header: renderHeader("retryCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-mono tabular-nums">
         {row.getValue("retryCount") ?? 0}
@@ -250,9 +220,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "priority",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("priority")} />
-    ),
+    meta: { label: getColumnName("priority") },
+    header: renderHeader("priority"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue("priority") ?? FALLBACK_VALUE}
@@ -261,9 +230,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "flowVersionId",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("flowVersionId")} />
-    ),
+    meta: { label: getColumnName("flowVersionId") },
+    header: renderHeader("flowVersionId"),
     cell: ({ row }) => (
       <CopyableText
         title={row.getValue("flowVersionId")}
@@ -275,9 +243,8 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   },
   {
     accessorKey: "id",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("id")} />
-    ),
+    meta: { label: getColumnName("id") },
+    header: renderHeader("id"),
     cell: ({ row }) => (
       <CopyableText
         title={row.getValue("id")}
@@ -287,7 +254,9 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
   },
-  createDTActionsColumn<JobsTableRowDto>({
-    renderCell: (row) => <JobRowActions status={row.status} rowId={row.id ?? "rowId"} />,
+  getRowActionsColumn<JobsTableRowDto>({
+    actions: ({ row }) => (
+      <JobRowActions status={row.original.status} rowId={row.original.id ?? "rowId"} />
+    ),
   }),
 ];

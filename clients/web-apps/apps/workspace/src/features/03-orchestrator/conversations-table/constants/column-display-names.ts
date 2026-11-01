@@ -5,7 +5,6 @@ import { ConversationStatusEnum } from "../enums/conversation-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select row" },
   { key: "title", value: "Conversation" },
   { key: "flowName", value: "Agent" },
   { key: "totalExchange", value: "Exchanges" },
