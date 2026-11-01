@@ -1,4 +1,6 @@
 import type { BadgeProps } from "@avplatform/ui/badge";
+import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
+import { InitialTableState } from "@tanstack/react-table";
 
 import { QueueTransactionStatusTypesEnum } from "../enums/queue-work-item-status-enum";
 
@@ -15,6 +17,14 @@ const EVENT_QUERY_KEY = "queue-work-item-events";
 const TABLE_HEADING = "Queues";
 
 const TABLE_KEY = "my-queues";
+
+/** Page sizes offered by the table, unchanged from the legacy table. */
+const MY_QUEUES_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const MY_QUEUES_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
+};
 
 type StatusBadgeVariant = NonNullable<BadgeProps["variant"]>;
 
@@ -39,4 +49,11 @@ export const getStatusBadgeVariant = (status?: string | null): StatusBadgeVarian
   return statusBadgeVariant[status] ?? DEFAULT_STATUS_BADGE_VARIANT;
 };
 
-export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY, EVENT_QUERY_KEY };
+export {
+  DATA_QUERY_KEY,
+  TABLE_HEADING,
+  TABLE_KEY,
+  EVENT_QUERY_KEY,
+  MY_QUEUES_INITIAL_STATE,
+  MY_QUEUES_PAGE_SIZE_OPTIONS,
+};

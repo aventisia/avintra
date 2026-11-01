@@ -1,19 +1,23 @@
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { TABLE_KEY } from "../constants";
 import { getColumnName, statusVariant } from "../constants/column-display-names";
 import { AdminConversationDto } from "../dtos/conversations-table-dto";
 import { ConversationsTableCellLink } from "./ConversationsTableCellLink";
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<AdminConversationDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
   {
     accessorKey: "title",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("title")} />
-    ),
+    meta: { label: getColumnName("title") },
+    header: renderHeader("title"),
     cell: ({ row }) => {
       return (
         <ConversationsTableCellLink
@@ -25,9 +29,8 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
   },
   {
     accessorKey: "flowName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("flowName") ?? 0} />
-    ),
+    meta: { label: getColumnName("flowName") },
+    header: renderHeader("flowName"),
     cell: ({ row }) => (
       <div className="flex  items-center gap-2 ">
         <div className="max-w-48  truncate font-medium">{`${row.getValue("flowName")} `}</div>
@@ -37,30 +40,28 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
   },
   {
     accessorKey: "totalExchange",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalExchange")} />
-    ),
+    meta: { label: getColumnName("totalExchange") },
+    header: renderHeader("totalExchange"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-mono tabular-nums">{row.getValue("totalExchange")}</div>
     ),
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => (
       <Badge variant={statusVariant[row.original.status]}>{row.getValue("status")}</Badge>
     ),
   },
   {
     accessorKey: "timestamp",
+    meta: { label: getColumnName("timestamp") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("timestamp")}
+        label={getColumnName("timestamp")}
       />
     ),
     cell: ({ row }) => (
@@ -74,9 +75,8 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
 
   {
     accessorKey: "username",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("username")} />
-    ),
+    meta: { label: getColumnName("username") },
+    header: renderHeader("username"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {`${row.original.firstName} ${row.original.lastName}`}

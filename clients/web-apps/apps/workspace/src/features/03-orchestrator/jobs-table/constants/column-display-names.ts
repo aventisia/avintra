@@ -1,12 +1,12 @@
 import type { BadgeProps } from "@avplatform/ui/badge";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
-import { JobStatusEnum } from "..";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "selectRow", value: "Select row" },
-  { key: "flowName", value: "Agent" },
+  { key: "select", value: "Select row" },
+  { key: "job", value: "Job" },
   { key: "status", value: "Status" },
   { key: "startTimeStamp", value: "Started at" },
   { key: "endTimeStamp", value: "Ended at" },
@@ -20,7 +20,6 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "createdByName", value: "Created by" },
   { key: "createdAt", value: "Created at" },
   { key: "executionLocation", value: "Execution location" },
-  { key: "remarks", value: "Remarks" },
   { key: "flowVersionId", value: "Agent ID" },
   { key: "id", value: "Job ID" },
 ];

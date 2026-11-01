@@ -1,7 +1,12 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2Icon } from "lucide-react";
 
 import { DATA_QUERY_KEY, JobsTableRowDto, jobOptimisticMutationFn } from "..";
 
@@ -27,29 +32,29 @@ export function JobsBulkActions({ table }: JobsBulkActionsProps) {
   >(selectedRowIds, jobOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  deleteJobs({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
-
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "jobs" : "job"}`,
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <TableCNActionBarItem
+        icon={Trash2Icon}
+        tone="destructive"
+        onClick={() => {
+          showDefaultAlertDialog({
+            confirmActionFn: () => {
+              deleteJobs({
+                payload: selectedRowIds,
+                crudAction: "delete-multiple",
               });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+
+              table.toggleAllRowsSelected(false);
+            },
+            alertType: "delete-multiple",
+            additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "jobs" : "job"}`,
+          });
+        }}
+      >
+        Delete
+      </TableCNActionBarItem>
+    </TableCNActionBar>
   );
 }
