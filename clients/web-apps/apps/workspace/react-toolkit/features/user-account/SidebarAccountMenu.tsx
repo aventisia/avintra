@@ -22,7 +22,7 @@ import { PersonAvatar } from "@/components/PersonAvatar";
 import { adminHubs } from "@/components/layout/sidebar-hubs.constant";
 import { getHubRoutes } from "@/components/layout/sidebar-hubs.util";
 import { ROLE_SA } from "@/constants/roles";
-import { useDownloadDialogStore } from "@/features/desktop-download/stores/download-dialog-store";
+import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
@@ -63,7 +63,6 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
       toggleNotifications: state.toggleOpen,
     })),
   );
-  const toggleDownloadDialog = useDownloadDialogStore((state) => state.toggleOpen);
   const { openAccountDialog } = useAccountDialogUrlState();
 
   const fullName = userSession ? getUserDisplayName(userSession) : "User Name";
@@ -164,7 +163,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
           )}
         </AccountMenuAction>
         {!IS_TAURI && (
-          <AccountMenuAction onClick={runAndCloseMenus(() => toggleDownloadDialog(true))}>
+          <AccountMenuAction onClick={runAndCloseMenus(() => navigate(DESKTOP_DOWNLOAD_ROUTE))}>
             <DownloadIcon />
             Download desktop app
           </AccountMenuAction>
