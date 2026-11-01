@@ -9,13 +9,14 @@ import {
   useUserSessionStore,
 } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { CircleHelpIcon, DownloadIcon, UserIcon } from "lucide-react";
+import { BellIcon, CircleHelpIcon, DownloadIcon, UserIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { useAccountDialogUrlState } from "@/features/my-account";
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
 
 import { AppLogo } from "./AppLogo";
@@ -60,6 +61,11 @@ const AppHeader: React.FC = () => {
         className="h-[34px] w-full max-w-[380px] flex-1"
         actions={[
           { label: "My account", Icon: UserIcon, onSelect: openAccountDialog },
+          {
+            label: "Notifications",
+            Icon: BellIcon,
+            onSelect: () => navigate(NOTIFICATIONS_ROUTE),
+          },
           ...(IS_TAURI
             ? []
             : [
