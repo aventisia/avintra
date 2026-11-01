@@ -15,6 +15,7 @@ import { PersonAvatar } from "@/components/PersonAvatar";
 import { adminHubs } from "@/components/layout/sidebar-hubs.constant";
 import { getHubRoutes } from "@/components/layout/sidebar-hubs.util";
 import { useDownloadDialogStore } from "@/features/desktop-download/stores/download-dialog-store";
+import { useAccountDialogUrlState } from "@/features/my-account";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
@@ -53,6 +54,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
     })),
   );
   const toggleDownloadDialog = useDownloadDialogStore((state) => state.toggleOpen);
+  const { openAccountDialog } = useAccountDialogUrlState();
 
   const fullName =
     [userSession?.firstName, userSession?.lastName].filter(Boolean).join(" ") || "User Name";
@@ -137,7 +139,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
           )}
         </div>
         <Separator className="my-1 h-[0.5px]" />
-        <AccountMenuAction onClick={runAndCloseMenus(() => navigate("/account"))}>
+        <AccountMenuAction onClick={runAndCloseMenus(openAccountDialog)}>
           <Lucide icon="User" className="h-4 w-4" />
           My account
         </AccountMenuAction>

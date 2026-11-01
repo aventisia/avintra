@@ -60,7 +60,6 @@ import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
-import MyAccountPage from "./pages/MyAccountPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -80,10 +79,6 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
-      },
-      {
-        path: "/account",
-        element: <MyAccountPage />,
       },
       // configure section
       {

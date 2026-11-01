@@ -9,7 +9,9 @@ import { useEffect, useId, useState } from "react";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import {
@@ -22,10 +24,8 @@ import { useMoveFlowToFolder } from "../../hooks/useMoveFlowToFolder.hook";
 import { useSaveFolder } from "../../hooks/useSaveFolder.hook";
 import { FolderColor } from "../../types/folder-color.type";
 import { MovableAgent } from "../../types/movable-agent.type";
-import { getFieldInputClassName } from "../../utils/field-input.util";
 import { FolderMark } from "../folder/FolderMark";
 import { FolderColorPicker } from "./FolderColorPicker";
-import { FormField } from "./FormField";
 
 type FolderFormDialogProps = {
   isOpen: boolean;

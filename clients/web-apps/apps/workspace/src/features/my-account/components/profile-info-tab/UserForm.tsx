@@ -1,175 +1,114 @@
-import { PhoneInput } from "@avplatform/ui";
-import { SubmitButton } from "@avplatform/ui/buttons";
-import { CountriesEnum } from "@avplatform/ui/enums";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-  InputField,
-  SelectField,
-} from "@avplatform/ui/form";
-import { enumToArray } from "@avplatform/ui/utils";
+import { Skeleton } from "@avplatform/ui";
+import { cn } from "@avplatform/ui/lib";
+import { useId } from "react";
+import { createPortal } from "react-dom";
 import type { z } from "zod";
+
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
 import { useDefineProfileInfoForm } from "../../hooks/useDefineProfileInfoForm";
 import { useProfileInfoFormMutation } from "../../hooks/useProfileInfoFormMutation";
+import type { AccountTabProps } from "../../types/account-tab.type";
 import type { UserProfileZodSchema } from "../../types/profile-zod-schema";
-// import CheckboxFeildDiv from "../CheckboxFeildDiv";
-import { InputDivElement } from "../InputDivElement";
 
-export const UserForm = () => {
-  const { form, isLoading } = useDefineProfileInfoForm();
+const NAME_MAX_LENGTH = 50;
+
+export const UserForm = ({ footerSlot }: AccountTabProps) => {
+  const { form, isDirty, isLoading } = useDefineProfileInfoForm();
   const { mutate, isPending } = useProfileInfoFormMutation();
+  const fieldId = useId();
+  const formId = `${fieldId}-form`;
 
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof UserProfileZodSchema>) => {
-    mutate(formData as unknown as MyAccountDto);
-  };
+  const { errors } = form.formState;
+  const firstName = form.watch("firstName");
+  const lastName = form.watch("lastName");
+
+  const handleSubmit = form.handleSubmit((formData: z.infer<typeof UserProfileZodSchema>) =>
+    mutate(formData as unknown as MyAccountDto, { onSuccess: () => form.reset(formData) }),
+  );
+
+  const nameFields = [
+    {
+      name: "firstName",
+      label: "First name",
+      value: firstName,
+      autoComplete: "given-name",
+      placeholder: "Jane",
+    },
+    {
+      name: "lastName",
+      label: "Last name",
+      value: lastName,
+      autoComplete: "family-name",
+      placeholder: "Doe",
+    },
+  ] as const;
 
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      method="Post"
-      className="box flex flex-col p-5"
-    >
-      <div>
-        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-xl font-medium">
-          Profile info
-        </div> */}
+    <>
+      <form id={formId} onSubmit={handleSubmit} noValidate>
+        <fieldset disabled={isPending} className="grid gap-4 sm:grid-cols-2">
+          {nameFields.map(({ name, label, value, autoComplete, placeholder }) => {
+            const inputId = `${fieldId}-${name}`;
+            const error = errors[name]?.message;
+            return (
+              <FormField
+                key={name}
+                htmlFor={inputId}
+                label={label}
+                length={value.length}
+                maxLength={NAME_MAX_LENGTH}
+                error={error}
+              >
+                {isLoading ? (
+                  <Skeleton className="h-11" />
+                ) : (
+                  <input
+                    id={inputId}
+                    autoComplete={autoComplete}
+                    maxLength={NAME_MAX_LENGTH}
+                    placeholder={placeholder}
+                    aria-invalid={Boolean(error)}
+                    aria-describedby={error ? `${inputId}-error` : undefined}
+                    {...form.register(name)}
+                    className={cn(getFieldInputClassName(Boolean(error)), "h-11")}
+                  />
+                )}
+              </FormField>
+            );
+          })}
+        </fieldset>
+      </form>
 
-        {/* Form feilds */}
-        <div>
-          <InputDivElement
-            headingForInput="Full Name"
-            isRequired={true}
-            messageForInput="Enter your full legal name as it appears on your official documentation."
-            showSkelaton={isLoading}
-          >
-            <div className="flex w-auto flex-col items-center gap-2 md:flex-row">
-              <InputField
-                type="text"
-                name="firstName"
-                className="border-input"
-                size={50}
-                placeholder="First name"
-              />
-              <InputField
-                name="lastName"
-                type="text"
-                className="border-input"
-                size={50}
-                placeholder="Last name"
-              />
-            </div>
-          </InputDivElement>
-
-          <InputDivElement
-            headingForInput={"Phone Number"}
-            showSkelaton={isLoading}
-            messageForInput="Please provide a valid phone number where we can reach you if needed."
-          >
-            <FormField
-              name={"phoneNumber"}
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <PhoneInput value={field.value} onChange={field.onChange} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
+      {footerSlot &&
+        createPortal(
+          <>
+            <StatusLine tone={isDirty ? "pending" : "idle"}>
+              {isDirty ? "Unsaved changes" : "Shown to people in your workspace"}
+            </StatusLine>
+            <div className="flex shrink-0 items-center gap-2">
+              {isDirty && (
+                <CardDialogButton onClick={() => form.reset()} disabled={isPending}>
+                  Discard
+                </CardDialogButton>
               )}
-            />
-          </InputDivElement>
-
-          {/* <InputDivElement
-            headingForInput="Address"
-            messageForInput="Please specify the address you are currently residing in."
-            showSkelaton={isLoading}
-          >
-            <InputField
-              name="addressLine1"
-              type="text"
-              placeholder="Address line 1"
-              className="border-input"
-            />
-            <InputField
-              name="addressLine2"
-              type="text"
-              placeholder="Address line 2"
-              className="mt-3 border-input"
-            />
-          </InputDivElement> */}
-
-          <InputDivElement
-            headingForInput="Country"
-            messageForInput="Please specify the country you are currently residing in."
-            showSkelaton={isLoading}
-          >
-            {
-              <SelectField
-                name="country"
-                selectOptions={enumToArray(CountriesEnum)}
-                className="border-input"
-              />
-            }
-          </InputDivElement>
-
-          {/* <InputDivElement
-            headingForInput="State or Province"
-            messageForInput="Please specify your state or province you are currently residing in."
-            showSkelaton={isLoading}
-          >
-            <InputField
-              name="stateOrProvince"
-              type="text"
-              placeholder=""
-              className="border-input"
-            />
-          </InputDivElement> */}
-
-          {/* <InputDivElement
-            headingForInput="City"
-            messageForInput="Enter the name of the city or locality where your address is located."
-            showSkelaton={isLoading}
-          >
-            <InputField
-              name="city"
-              type="text"
-              placeholder=""
-              className="border-input"
-            />
-          </InputDivElement> */}
-
-          {/* <InputDivElement
-            headingForInput="Zip or Postal Code"
-            messageForInput="Please specify your zip or postal code of your current locality."
-            showSkelaton={isLoading}
-          >
-            <InputField
-              name="zipOrPostalCode"
-              type="text"
-              placeholder="548462"
-              className="border-input"
-            />
-          </InputDivElement> */}
-        </div>
-
-        <div className="flex pt-5 md:justify-end">
-          <SubmitButton
-            variant="default"
-            type="submit"
-            primaryText="Save"
-            className="border-primary/50 w-full px-4 md:w-auto"
-            isPending={isLoading || isPending}
-          />
-        </div>
-      </div>
-    </Form>
+              <CardDialogButton
+                type="submit"
+                form={formId}
+                variant="primary"
+                disabled={!isDirty || isLoading || isPending}
+                isBusy={isPending}
+              >
+                {isPending ? "Saving" : "Save changes"}
+              </CardDialogButton>
+            </div>
+          </>,
+          footerSlot,
+        )}
+    </>
   );
 };
