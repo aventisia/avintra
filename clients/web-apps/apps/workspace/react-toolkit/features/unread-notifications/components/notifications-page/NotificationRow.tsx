@@ -8,14 +8,14 @@ import { CheckIcon } from "lucide-react";
 import { NOTIFICATION_SOURCE_LABELS } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import type { NotificationHistoryDto } from "@/react-toolkit/features/unread-notifications/dtos/notification-history.dto";
 import { useMarkNotificationAsRead } from "@/react-toolkit/features/unread-notifications/hooks/useMarkNotificationAsRead";
-import { extractNotificationUrl } from "@/react-toolkit/features/unread-notifications/utils/extract-notification-url";
 
 import { NotificationTypeIcon } from "./NotificationTypeIcon";
 
+// TODO: link rows to `actionUrl` (or `extractNotificationUrl(message)`) once the backend sends
+// routes the app has; today every backend link points to a missing page, so rows are not clickable.
 export const NotificationRow = ({ notification }: { notification: NotificationHistoryDto }) => {
   const { mutate: markAsRead, isPending } = useMarkNotificationAsRead();
   const { title, message, type, sourceType, isRead, createdOn } = notification;
-  const targetUrl = notification.actionUrl || extractNotificationUrl(message);
   const heading = title || message;
   const createdAt = new Date(createdOn);
 
@@ -30,16 +30,7 @@ export const NotificationRow = ({ notification }: { notification: NotificationHi
               isRead ? "text-ink-2" : "font-medium text-ink",
             )}
           >
-            {targetUrl ? (
-              <a
-                href={targetUrl}
-                className="outline-none after:absolute after:inset-0 after:rounded-[inherit] focus-visible:after:shadow-focus"
-              >
-                {heading}
-              </a>
-            ) : (
-              heading
-            )}
+            {heading}
           </p>
           <time
             dateTime={createdAt.toISOString()}
@@ -56,11 +47,7 @@ export const NotificationRow = ({ notification }: { notification: NotificationHi
         )}
         <MetaLine
           className="mt-1.5 text-xs text-muted-foreground"
-          items={[
-            sourceType && NOTIFICATION_SOURCE_LABELS[sourceType],
-            type,
-            targetUrl && <span className="text-primary-text">View details</span>,
-          ]}
+          items={[sourceType && NOTIFICATION_SOURCE_LABELS[sourceType], type]}
         />
       </div>
       <div className="relative flex w-7 shrink-0 justify-center self-start">
