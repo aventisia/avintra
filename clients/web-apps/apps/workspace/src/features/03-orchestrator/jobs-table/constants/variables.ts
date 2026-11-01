@@ -1,6 +1,9 @@
+import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
 import { DialogCrudAction } from "@avplatform/ui/types";
+import { InitialTableState } from "@tanstack/react-table";
 
-import { JobStatusEnum } from "..";
+import { JobStatusEnum } from "../enums/job-status-enum";
+import { columnVisibilityState } from "./column-visibility-state";
 
 /**
  * Default JSON payload shown in the create job form. It acts as a placeholder
@@ -28,6 +31,15 @@ const TABLE_HEADING = "Jobs";
  * The unique key for the jobs table to be used DTColumnHeader
  */
 const TABLE_KEY = "jobs";
+
+/** Page sizes offered by the table, unchanged from the legacy table. */
+const JOBS_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const JOBS_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnVisibility: columnVisibilityState,
+  columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
+};
 
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
@@ -68,6 +80,8 @@ export {
   DATA_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
+  JOBS_INITIAL_STATE,
+  JOBS_PAGE_SIZE_OPTIONS,
   HISTORY_JOB_STATUSES,
   CLOSING_JOB_STATUSES,
   getDialogHeadingDescription,
