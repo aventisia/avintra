@@ -9,6 +9,7 @@ const UNREAD = {
   message: "Your workspace has 50 credits left.",
   type: "Warning",
   sourceType: "LowCredit",
+  actionUrl: "/agents",
   isRead: false,
   createdOn: new Date().toISOString(),
 };
@@ -20,6 +21,7 @@ const READ = {
   title: "Maintenance window",
   type: "Information",
   sourceType: "Manual",
+  actionUrl: "/tenant/credits",
   isRead: true,
 };
 
@@ -58,6 +60,8 @@ test("The notifications page opens from the account menu, filters by status and 
 
   await page.getByRole("tab", { name: "All" }).click();
   await expect(page.getByText(READ.title)).toBeVisible();
+  await expect(page.getByRole("link", { name: UNREAD.title })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: READ.title })).toHaveCount(0);
 
   const markRequest = page.waitForRequest(
     (req) => req.method() === "PUT" && req.url().endsWith(`/unread/${UNREAD.notificationId}`),
