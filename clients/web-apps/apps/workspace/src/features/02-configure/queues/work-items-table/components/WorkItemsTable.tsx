@@ -1,12 +1,4 @@
-import {
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -14,20 +6,19 @@ import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
-import { TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import { TABLE_KEY, WORK_ITEMS_INITIAL_STATE, WORK_ITEMS_PAGE_SIZE_OPTIONS } from "../constants";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 import {
   WorkItemsTableRow,
   customColumnId,
-  customFieldLabel,
   parseWorkItemData,
   tableCustomFields,
 } from "../utils/work-items-custom-columns.util";
 import { PayloadTableHeading } from "./TableHeading";
 import { WorkItemBulkActions } from "./WorkItemBulkActions";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
+
+const PAGINATION_PROPS = { pageSizeOptions: WORK_ITEMS_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders a table of WorkItems.
@@ -46,7 +37,6 @@ export const WorkItemsTable = () => {
   // IMPORTANT NOTE: keep the table key per queue; custom column ids are field names,
   // so a shared key would carry a hidden column from one queue to another.
   const tableKey = `${TABLE_KEY}-${queueId}`;
-  const { columnVisibility, sortState } = getDataTablePreferences(tableKey, columnVisibilityState);
 
   // The work items screen is reachable from both the Personal and the Shared
   // queues tab, so the queue must be resolved against both lists.
@@ -70,17 +60,6 @@ export const WorkItemsTable = () => {
     return items.map((item) => ({ ...item, customData: parseWorkItemData(item.workItemData) }));
   }, [customFields.length, data?.data]);
 
-  const viewColumnNames = useMemo(
-    () => [
-      ...columnDisplayNames,
-      ...customFields.map((field) => ({
-        key: customColumnId(field),
-        value: customFieldLabel(field),
-      })),
-    ],
-    [customFields],
-  );
-
   const searchColumns = useMemo(
     () => ["workItemId", ...customFields.map(customColumnId)],
     [customFields],
@@ -101,39 +80,43 @@ export const WorkItemsTable = () => {
     return isProd ? !actions.update : queue.accessLevel === "View";
   }, [queue, isProd, actions.update]);
 
-  const filteredColumns = useMemo(() => {
-    const columns = workItemsTableColumns(name, customFields, tableKey);
-    if (!hasOnlyReadAccess) return columns;
+  const columns = useMemo(() => {
+    const allColumns = workItemsTableColumns(name, customFields);
+    if (!hasOnlyReadAccess) return allColumns;
 
-    return columns.filter((column) => column.id !== "actions");
-  }, [customFields, hasOnlyReadAccess, name, tableKey]);
+    return allColumns.filter((column) => column.id !== "actions");
+  }, [customFields, hasOnlyReadAccess, name]);
 
-  // Create a React table for WorkItems data
-  const table = useDataTable(filteredColumns, rows, columnVisibility, sortState, true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: rows,
+    columns,
+    initialState: WORK_ITEMS_INITIAL_STATE,
+    persistKey: tableKey,
+    searchColumns,
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading */}
           <div className="flex items-center justify-between">
             <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={searchColumns} placeholder="Search..." />
-              <DTViewOptions {...{ table, tableKey }} columnDisplayNames={viewColumnNames} />
-            </div>
           </div>
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={filteredColumns.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-          {/* Bulk actions for selected work items (edit access only) */}
-          {!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
+          {/* Table with its toolbar and pagination footer */}
+          <TableCN
+            table={table}
+            label={name}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the WorkItems data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the WorkItems data
+        <TableCNSkeleton columnCount={7} />
       )}
     </>
   );

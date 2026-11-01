@@ -1,6 +1,6 @@
 /** Column visibility initial state for the agents table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   flowId: false,
   name: true,
   type: true,

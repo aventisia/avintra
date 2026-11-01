@@ -1,13 +1,14 @@
-import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { NavLink } from "react-router-dom";
 
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
-import { getStatusBadgeVariant } from "../constants/column-display-names";
+import { getColumnName, getStatusBadgeVariant } from "../constants/column-display-names";
 import {
   WorkItemsTableRow,
   customColumnId,
@@ -15,25 +16,24 @@ import {
 } from "../utils/work-items-custom-columns.util";
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<WorkItemsTableRow, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 const formatCustomFieldValue = (value: unknown): string => {
   if (value === null || value === undefined || value === "") return FALLBACK_VALUE;
   return typeof value === "object" ? JSON.stringify(value) : String(value);
 };
 
-const customFieldColumns = (
-  fields: InputSchemaField[],
-  tableKey: string,
-): ColumnDef<WorkItemsTableRow>[] =>
+const customFieldColumns = (fields: InputSchemaField[]): ColumnDef<WorkItemsTableRow>[] =>
   fields.map((field) => ({
     id: customColumnId(field),
     accessorFn: (row) => row.customData?.[field.name],
+    meta: { label: customFieldLabel(field) },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={tableKey}
-        column={column}
-        title={customFieldLabel(field)}
-        className="max-w-40"
-      />
+      <TableCNColumnHeader column={column} label={customFieldLabel(field)} className="max-w-40" />
     ),
     cell: ({ getValue }) => {
       const value = formatCustomFieldValue(getValue());
@@ -47,45 +47,25 @@ const customFieldColumns = (
 
 /**
  * Array of table columns for the WorkItems table.
+ * Each column object contains an accessorKey, header component, and cell component.
  *
  * @param queueName Name of the parent queue, used for the detail-view link and
  * back navigation.
  * @param customFields The queue's non-array custom fields, rendered after Status.
- * @param tableKey Key holding this queue's saved column visibility and sort state.
  */
 export const workItemsTableColumns = (
   queueName = "WorkItem",
   customFields: InputSchemaField[] = [],
-  tableKey: string,
 ): ColumnDef<WorkItemsTableRow>[] => [
-  {
-    accessorKey: "selectRow",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<WorkItemsTableRow>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     id: "workItemId",
     accessorKey: "id",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Work Item Id"} />
-    ),
+    meta: { label: getColumnName("workItemId") },
+    header: renderHeader("workItemId"),
     enableSorting: false,
     // Make the work item ID a link that opens the full work item detail
     // (JSON/form viewer and file viewer), matching the Assist experience.
@@ -104,28 +84,27 @@ export const workItemsTableColumns = (
   },
   {
     accessorKey: "status",
-    header: ({ column }) => <DTColumnHeader tableKey={tableKey} column={column} title={"Status"} />,
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => (
       <Badge variant={getStatusBadgeVariant(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),
   },
-  ...customFieldColumns(customFields, tableKey),
+  ...customFieldColumns(customFields),
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Created by"} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Created on"} />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("createdOn"))}
@@ -136,9 +115,8 @@ export const workItemsTableColumns = (
   // table's View options (column visibility filter).
   {
     accessorKey: "sourceWorkItemId",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Source work item ID"} />
-    ),
+    meta: { label: getColumnName("sourceWorkItemId") },
+    header: renderHeader("sourceWorkItemId"),
     cell: ({ row }) => {
       const sourceWorkItemId = row.original.sourceWorkItemId;
       // Unrouted items carry Guid.Empty (all zeros) — treat as no source item.
@@ -153,9 +131,8 @@ export const workItemsTableColumns = (
   },
   {
     accessorKey: "retryTime",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry time"} />
-    ),
+    meta: { label: getColumnName("retryTime") },
+    header: renderHeader("retryTime"),
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
       return (
@@ -167,16 +144,15 @@ export const workItemsTableColumns = (
   },
   {
     accessorKey: "retryCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry count"} />
-    ),
+    meta: { label: getColumnName("retryCount") },
+    header: renderHeader("retryCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.original.retryCount ?? 0}
       </div>
     ),
   },
-  createDTActionsColumn<WorkItemsTableRow>({
-    renderCell: (row) => <WorkItemRowActions rowId={row.id ?? "rowId"} />,
+  getRowActionsColumn<WorkItemsTableRow>({
+    actions: ({ row }) => <WorkItemRowActions rowId={row.original.id ?? "rowId"} />,
   }),
 ];

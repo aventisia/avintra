@@ -1,7 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
 
 import { configStoreOptimisticMutationFn } from "../../apis/config-stores-table-apis";
 import { ConfigStoresTableDto } from "../../dtos/config-stores-table-dto";
@@ -14,6 +20,7 @@ interface ConfigStoresBulkActionsProps {
 export function ConfigStoresBulkActions({ table }: Readonly<ConfigStoresBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // queryKey already includes the current space id and tab segment
   const { queryKey } = useTableTab();
@@ -34,32 +41,35 @@ export function ConfigStoresBulkActions({ table }: Readonly<ConfigStoresBulkActi
   // TODO: Rollback selection if there is an error
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              // Show alert dialog to confirm delete
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected config stores
-                  deleteConfigStores({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={Trash2}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            // Show alert dialog to confirm delete
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected config stores
+                deleteConfigStores({
+                  payload: selectedRowIds,
+                  crudAction: "delete-multiple",
+                });
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "key stores" : "key store"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "key stores" : "key store"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

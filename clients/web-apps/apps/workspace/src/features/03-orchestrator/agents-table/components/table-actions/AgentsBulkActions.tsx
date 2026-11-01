@@ -1,7 +1,11 @@
-import { Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { DTBulkActions, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip } from "@avplatform/ui/action-lock";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
 import { CircleOff, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -38,27 +42,18 @@ export function AgentsBulkActions({ table }: Readonly<AgentsBulkActionsProps>) {
   };
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <Button
-            variant="ghost"
-            size="xs"
-            className="gap-2.5 text-sm tracking-wide"
-            onClick={handleDisable}
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-[--icon-color]" />
-            ) : (
-              <CircleOff className="h-3.5 w-3.5 text-[--icon-color]" />
-            )}
-            Disable
-          </Button>
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={isProcessing ? Loader2 : CircleOff}
+          onClick={handleDisable}
+          disabled={isProcessing}
+        >
+          Disable
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }
