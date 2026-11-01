@@ -61,6 +61,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<TenantPlatformTool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         // Machines are a tenant-global pool (not scoped by space) — any machine in the tenant
         // can execute jobs/flow versions from any space.
         modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -100,6 +101,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
         modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<PlatformTool>().HasIndex(index => index.Name).IsUnique();
+        modelBuilder.Entity<TenantPlatformTool>().HasIndex(index => new { index.TenantId, index.PlatformToolId }).IsUnique();
         modelBuilder.Entity<Queue>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<ConfigStore>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<VaultCredential>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
@@ -224,6 +227,8 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Tool and WorkspaceUser
         modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TenantPlatformTool>().HasOne(one => one.PlatformTool).WithMany().HasForeignKey(f => f.PlatformToolId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ResourceFlowAccess>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
 
@@ -385,6 +390,8 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
     public DbSet<Tool> Tools { get; set; }
+    public DbSet<PlatformTool> PlatformTools { get; set; }
+    public DbSet<TenantPlatformTool> TenantPlatformTools { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketComment> TicketComments { get; set; }
     public DbSet<TicketAttachment> TicketAttachments { get; set; }
