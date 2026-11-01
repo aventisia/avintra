@@ -1,57 +1,43 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names.ee";
 import { OnPremInstanceDto } from "../dtos/tenant-instance-dto.ee";
 import { OnPremInstanceTypesEnum } from "../enums/tenant-instance-type-enum.ee";
 import { TenantInstanceLink } from "./TenantInstanceLink.ee";
 import { TenantInstanceRowAction } from "./tenant-instance-row-actions/TenantInstanceRowAction.ee";
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<OnPremInstanceDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 /**
  * Array of table columns for the on-prem tenants table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<OnPremInstanceDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <TenantInstanceLink rowId={row.original.id || "rowId"} cellValue={row.getValue("name")} />
     ),
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(OnPremInstanceTypesEnum, row.getValue("type")) ?? "--"}
@@ -60,13 +46,8 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
   },
   {
     accessorKey: "platformVersion",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("platformVersion")}
-      />
-    ),
+    meta: { label: getColumnName("platformVersion") },
+    header: renderHeader("platformVersion"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("platformVersion") ? "v" + row.getValue("platformVersion") : "--"}
@@ -75,9 +56,8 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
   },
   {
     accessorKey: "deployedOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("deployedOn")} />
-    ),
+    meta: { label: getColumnName("deployedOn") },
+    header: renderHeader("deployedOn"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("deployedOn")
@@ -88,13 +68,8 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
   },
   {
     accessorKey: "lastValidatedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastValidatedOn")}
-      />
-    ),
+    meta: { label: getColumnName("lastValidatedOn") },
+    header: renderHeader("lastValidatedOn"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("lastValidatedOn")
@@ -105,20 +80,17 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
   },
   {
     accessorKey: "noOfInvalidCheck",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("noOfInvalidCheck")}
-      />
-    ),
+    meta: { label: getColumnName("noOfInvalidCheck") },
+    header: renderHeader("noOfInvalidCheck"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("noOfInvalidCheck")}
       </div>
     ),
   },
-  createDTActionsColumn<OnPremInstanceDto>({
-    renderCell: (row) => <TenantInstanceRowAction rowId={row.id || "rowId"} name={row.name} />,
+  getRowActionsColumn<OnPremInstanceDto>({
+    actions: ({ row }) => (
+      <TenantInstanceRowAction rowId={row.original.id || "rowId"} name={row.original.name} />
+    ),
   }),
 ];

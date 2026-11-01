@@ -1,14 +1,20 @@
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
 
-import { TABLE_KEY, formatNumber } from "../constants";
+import { formatNumber } from "../constants";
 import { getColumnName } from "../constants/column-display-names.ee";
 import { OnPremInstanceDataDto } from "../dtos/tenant-instance-dto.ee";
 import { ValidationSourceTypesEnum } from "../enums/validation-source-type-enum.ee";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<OnPremInstanceDataDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the on-prem tenants table.
@@ -17,7 +23,8 @@ import { ValidationSourceTypesEnum } from "../enums/validation-source-type-enum.
 export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   {
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"ID"} />,
+    meta: { label: "ID" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="ID" />,
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">{row.getValue("id")}</div>
     ),
@@ -25,9 +32,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "validatedOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("validatedOn")} />
-    ),
+    meta: { label: getColumnName("validatedOn") },
+    header: renderHeader("validatedOn"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("validatedOn")
@@ -38,9 +44,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "validatedBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("validatedBy")} />
-    ),
+    meta: { label: getColumnName("validatedBy") },
+    header: renderHeader("validatedBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(ValidationSourceTypesEnum, row.getValue("validatedBy"))}
@@ -49,9 +54,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "executionTime",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("executionTime")} />
-    ),
+    meta: { label: getColumnName("executionTime") },
+    header: renderHeader("executionTime"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatSecondsToCompactDuration(row.getValue("executionTime") || 0)}
@@ -60,9 +64,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "executedJobs",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("executedJobs")} />
-    ),
+    meta: { label: getColumnName("executedJobs") },
+    header: renderHeader("executedJobs"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatNumber(row.getValue("executedJobs") || 0)}
@@ -71,13 +74,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "publishedAgents",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("publishedAgents")}
-      />
-    ),
+    meta: { label: getColumnName("publishedAgents") },
+    header: renderHeader("publishedAgents"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatNumber(row.getValue("publishedAgents") || 0)}
@@ -86,9 +84,8 @@ export const instanceDataTableColumns: ColumnDef<OnPremInstanceDataDto>[] = [
   },
   {
     accessorKey: "users",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("users")} />
-    ),
+    meta: { label: getColumnName("users") },
+    header: renderHeader("users"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {formatNumber(row.getValue("users") || 0)}

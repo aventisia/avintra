@@ -1,7 +1,11 @@
-import { Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { DTBulkActions, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useOptimisticMutation, useQueryData, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
 import { CircleOff } from "lucide-react";
 
@@ -16,6 +20,7 @@ interface TenantsBulkActionsProps {
 export function TenantsBulkActions({ table }: TenantsBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get tenants query data
   const tenantsQueryData = useQueryData<TenantsTableDto>(DATA_QUERY_KEY);
@@ -52,22 +57,18 @@ export function TenantsBulkActions({ table }: TenantsBulkActionsProps) {
   };
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <Button
-            variant="ghost"
-            size="xs"
-            className="gap-2.5 text-sm tracking-wide"
-            onClick={disableSelectedTenantsHandler}
-          >
-            <CircleOff className="h-3.5 w-3.5 text-[--icon-color]" />
-            Disable
-          </Button>
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={CircleOff}
+          disabled={locked}
+          onClick={disableSelectedTenantsHandler}
+        >
+          Disable
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }
