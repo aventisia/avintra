@@ -1,14 +1,18 @@
 import { Skeleton } from "@avplatform/ui";
-import { DTSearchBox, DataTable } from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { useShallow } from "zustand/react/shallow";
 
 import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
 
-import { machineSelectTableColumnVisibilityState } from "../../../constants/column-visibility-state";
 import { useMachinesSelectTableStore } from "../../../stores/machines-select-table-store";
 import { machineSelectTableColumns } from "./MachineSelectTableColumns";
 import { MachineSelectTablePagination } from "./MachineSelectTablePagination";
+
+const MACHINES_QUERY_KEYS = {
+  page: "machinesPage",
+  perPage: "machinesPerPage",
+  sort: "machinesSort",
+};
 
 interface MachineSelectTableProps {
   isRowSelectionEnabled?: boolean;
@@ -26,14 +30,17 @@ export function MachineSelectTable({
     })),
   );
 
-  // Create a React table for agents data
-  const table = useDataTable(
-    machineSelectTableColumns,
-    currentMachines ?? [],
-    machineSelectTableColumnVisibilityState,
-    [],
-    true,
-  );
+  // Create a TableCN table; the assignment state itself stays in the store
+  const { table } = useTableCN({
+    data: currentMachines ?? [],
+    columns: machineSelectTableColumns,
+    getRowId: (row) => row.id,
+    initialState: { pagination: { pageIndex: 0, pageSize: 50 } },
+    queryKeys: MACHINES_QUERY_KEYS,
+    persistKey: "agent-machines-select",
+    searchColumns: ["name"],
+  });
+
   return isFetching ? (
     <DataTableSkeletonGeneric
       columnCount={2}
@@ -52,14 +59,17 @@ export function MachineSelectTable({
         <h4 className="ml-1 flex w-full items-center truncate text-md text-foreground">
           {isReadOnly ? "Assigned Machines" : "Select machines"}
         </h4>
-
-        <div className="flex items-center gap-2">
-          <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search machines..." />
-        </div>
       </div>
 
-      {/* Data table to render data */}
-      <DataTable table={table} columnsLength={machineSelectTableColumns.length} />
+      {/* IMPORTANT NOTE: TableCN always renders its own footer; this dialog keeps its
+          store-derived assigned-count footer instead, so the built-in one is hidden. */}
+      <TableCN table={table} label="Machines" paginationProps={{ className: "hidden" }}>
+        <TableCNToolbar
+          table={table}
+          searchPlaceholder="Search machines..."
+          withViewOptions={false}
+        />
+      </TableCN>
       <div className="mt-2">
         <MachineSelectTablePagination isRowSelectionEnabled={isRowSelectionEnabled} table={table} />
       </div>

@@ -1,47 +1,34 @@
-import { Checkbox } from "@avplatform/ui";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { MessageTriggerDto } from "../dtos/message-trigger-dto";
 import { EmailTriggerProviderEnum } from "../enums/trigger-frequency-provider-enum";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<MessageTriggerDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<MessageTriggerDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div title={row.getValue("name")} className="w-auto truncate max-w-80 font-medium">
@@ -56,40 +43,34 @@ export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
   },
   {
     accessorKey: "provider",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("provider")} />
-    ),
+    meta: { label: getColumnName("provider") },
+    header: renderHeader("provider"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(EmailTriggerProviderEnum, row.getValue("provider")) ?? FALLBACK_VALUE}
       </div>
     ),
   },
-
   {
     accessorKey: "resource",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("resource")} />
-    ),
+    meta: { label: getColumnName("resource") },
+    header: renderHeader("resource"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("resource")}</div>
     ),
   },
   {
     accessorKey: "reference",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("reference")} />
-    ),
+    meta: { label: getColumnName("reference") },
+    header: renderHeader("reference"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("reference") ?? "NA"}</div>
     ),
   },
-
   {
     accessorKey: "agents",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("agents")} />
-    ),
+    meta: { label: getColumnName("agents") },
+    header: renderHeader("agents"),
     cell: ({ row }) => {
       const agents = row.original.agents ?? [];
 
@@ -108,23 +89,16 @@ export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
   },
   {
     accessorKey: "timezone",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("timezone")} />
-    ),
+    meta: { label: getColumnName("timezone") },
+    header: renderHeader("timezone"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("timezone")}</div>
     ),
   },
-
   {
     accessorKey: "expiryDateTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("expiryDateTime")}
-      />
-    ),
+    meta: { label: getColumnName("expiryDateTime") },
+    header: renderHeader("expiryDateTime"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("expiryDateTime"))}
@@ -133,21 +107,20 @@ export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
@@ -158,25 +131,20 @@ export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
   },
   {
     accessorKey: "lastModifiedBy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedBy")}
-      />
-    ),
+    meta: { label: getColumnName("lastModifiedBy") },
+    header: renderHeader("lastModifiedBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("lastModifiedBy")}</div>
     ),
   },
   {
     accessorKey: "lastModifiedOn",
+    meta: { label: getColumnName("lastModifiedOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        label={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
@@ -185,13 +153,13 @@ export const triggersTableColumns = (): ColumnDef<MessageTriggerDto>[] => [
       </div>
     ),
   },
-  createDTActionsColumn<MessageTriggerDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<MessageTriggerDto>({
+    actions: ({ row }) => (
       <TriggerRowActions
-        rowId={row.id ?? "rowId"}
-        name={row.name}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess || false}
+        rowId={row.original.id ?? "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),
   }),

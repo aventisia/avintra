@@ -1,6 +1,5 @@
 import { Skeleton } from "@avplatform/ui";
-import { DTSearchBox, DataTable } from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { useShallow } from "zustand/react/shallow";
 
 import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric";
@@ -8,6 +7,12 @@ import { DataTableSkeletonGeneric } from "@/components/DataTableSkeletonGeneric"
 import { useAgentsSelectTableStore } from "../../../stores/agents-select-table-store";
 import { agentSelectTableColumns } from "./AgentSelectTableColumns";
 import { AgentSelectTablePagination } from "./AgentSelectTablePagination";
+
+const AGENTS_QUERY_KEYS = {
+  page: "messageAgentsPage",
+  perPage: "messageAgentsPerPage",
+  sort: "messageAgentsSort",
+};
 
 interface AgentSelectTableProps {
   isReadMode?: boolean;
@@ -25,19 +30,16 @@ export function AgentSelectTable({
     })),
   );
 
-  // Create a React table for agents data
-  const table = useDataTable(
-    agentSelectTableColumns,
-    currentAgents ?? [],
-    {
-      id: true,
-      name: false,
-      versionNumber: true,
-      isAssigned: false,
-    },
-    [],
-    true,
-  );
+  // Create a TableCN table; the assignment state itself stays in the store
+  const { table } = useTableCN({
+    data: currentAgents ?? [],
+    columns: agentSelectTableColumns,
+    getRowId: (row) => row.id,
+    initialState: { pagination: { pageIndex: 0, pageSize: 50 } },
+    queryKeys: AGENTS_QUERY_KEYS,
+    persistKey: "message-agents-select",
+    searchColumns: ["name"],
+  });
 
   return isFetching ? (
     <DataTableSkeletonGeneric
@@ -57,14 +59,17 @@ export function AgentSelectTable({
         <h4 className="ml-1 flex w-full items-center truncate text-md text-foreground">
           {isReadMode ? "Assigned agents" : "Select agents..."}
         </h4>
-
-        <div className="flex items-center gap-2">
-          <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
-        </div>
       </div>
 
-      {/* Data table to render data */}
-      <DataTable table={table} columnsLength={agentSelectTableColumns.length} />
+      {/* IMPORTANT NOTE: TableCN always renders its own footer; this dialog keeps its
+          store-derived assigned-count footer instead, so the built-in one is hidden. */}
+      <TableCN table={table} label="Agents" paginationProps={{ className: "hidden" }}>
+        <TableCNToolbar
+          table={table}
+          searchPlaceholder="Search agents..."
+          withViewOptions={false}
+        />
+      </TableCN>
       <div className="mt-2">
         <AgentSelectTablePagination table={table} />
       </div>
