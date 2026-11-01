@@ -1,19 +1,17 @@
-import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  ARCHIVED_FLOWS_INITIAL_STATE,
+  ARCHIVED_FLOWS_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchArchivedFlows } from "../hooks/useFetchArchivedFlows";
 import { archivedFlowsTableColumns } from "./ArchivedFlowsTableColumns";
+
+const PAGINATION_PROPS = { pageSizeOptions: ARCHIVED_FLOWS_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders a table of Archived flows.
@@ -24,42 +22,34 @@ export const ArchivedFlowsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch Archived flows data
   const { data } = useFetchArchivedFlows();
 
-  // Create a React table for Archived flows data
-  const table = useDataTable(
-    archivedFlowsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: archivedFlowsTableColumns,
+    initialState: ARCHIVED_FLOWS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading */}
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
           </div>
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={archivedFlowsTableColumns.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          {/* Table with its toolbar and pagination footer */}
+          <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+            <TableCNToolbar table={table} searchPlaceholder="Search agents..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the Archived flows data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the Archived flows data
+        <TableCNSkeleton columnCount={6} />
       )}
     </>
   );

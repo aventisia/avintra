@@ -1,6 +1,6 @@
 /** Column visibility initial state for the queues table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   name: true,
   type: true,
   processingMode: true,

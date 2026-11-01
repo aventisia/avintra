@@ -1,12 +1,18 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { TemplatesApprovalDto } from "../dtos/templates-approval-dtos";
 import { PendingTemplatesRowActions } from "./TemplatesApprovalRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<TemplatesApprovalDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Column definitions for the Templates Approval table.
@@ -17,48 +23,21 @@ import { PendingTemplatesRowActions } from "./TemplatesApprovalRowActions";
  */
 export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   {
-    accessorKey: "id",
-    header: ({ table }) => (
-      // Header checkbox for selecting all rows on the current page
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      // Checkbox for selecting individual row
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
-  {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
   },
   {
     accessorKey: "schemaVersion",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("schemaVersion")} />
-    ),
+    meta: { label: getColumnName("schemaVersion") },
+    header: renderHeader("schemaVersion"),
     cell: ({ row }) => (
       <div className="font-mono tabular-nums w-auto truncate font-medium">
         {row.getValue("schemaVersion")}
@@ -67,21 +46,20 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
@@ -90,12 +68,12 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
       </div>
     ),
   },
-  createDTActionsColumn<TemplatesApprovalDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<TemplatesApprovalDto>({
+    actions: ({ row }) => (
       <PendingTemplatesRowActions
-        rowId={row.id}
-        refId={row.refId || ""}
-        accessPath={row.accessPath || ""}
+        rowId={row.original.id}
+        refId={row.original.refId || ""}
+        accessPath={row.original.accessPath || ""}
       />
     ),
   }),

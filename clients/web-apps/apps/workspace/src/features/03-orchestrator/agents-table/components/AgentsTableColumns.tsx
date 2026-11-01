@@ -1,12 +1,12 @@
-import { Checkbox } from "@avplatform/ui";
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableActions } from "./table-actions/TableActions";
@@ -16,38 +16,25 @@ const flowTypeLabelOverrides: Record<string, string> = {
   ChatAgent: "Chat agent",
 };
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<AgentsTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 /**
  * Array of table columns for the agents table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<AgentsTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <FlowVersionNavLink
         to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
@@ -61,9 +48,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => {
       const typeValue = String(row.getValue("type"));
       return (
@@ -75,9 +61,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   },
   {
     accessorKey: "machineCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("machineCount")} />
-    ),
+    meta: { label: getColumnName("machineCount") },
+    header: renderHeader("machineCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-mono tabular-nums">
         {row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent
@@ -88,13 +73,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   },
   {
     accessorKey: "supportedPlatform",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("supportedPlatform")}
-      />
-    ),
+    meta: { label: getColumnName("supportedPlatform") },
+    header: renderHeader("supportedPlatform"),
     cell: ({ row }) => {
       const supportedPlatform = row.original?.supportedPlatform;
       let platform = "Cloud & Windows";
@@ -112,9 +92,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => {
       const { isDisabled, machineCount } = row.original;
 
@@ -144,35 +123,33 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate max-w-72 font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-mono tabular-nums">
         {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
-  createDTActionsColumn<AgentsTableDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<AgentsTableDto>({
+    actions: ({ row }) => (
       <TableActions
-        count={row.machineCount || 0}
-        rowId={row.id}
-        isDisabled={row.isDisabled}
-        type={row.type}
-        flowName={row.name}
-        flowVersionNumber={row.versionNumber}
-        supportedPlatform={row.supportedPlatform}
-        isTenantWideAccess={row.isAssignedToAllUsers ?? false}
+        count={row.original.machineCount || 0}
+        rowId={row.original.id}
+        isDisabled={row.original.isDisabled}
+        type={row.original.type}
+        flowName={row.original.name}
+        flowVersionNumber={row.original.versionNumber}
+        supportedPlatform={row.original.supportedPlatform}
+        isTenantWideAccess={row.original.isAssignedToAllUsers ?? false}
       />
     ),
   }),

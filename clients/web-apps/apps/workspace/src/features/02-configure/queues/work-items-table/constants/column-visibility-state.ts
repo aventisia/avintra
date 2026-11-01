@@ -1,5 +1,5 @@
 export const columnVisibilityState = {
-  selectRow: false,
+  select: false,
   workItemId: true,
   queueName: true,
   status: true,
