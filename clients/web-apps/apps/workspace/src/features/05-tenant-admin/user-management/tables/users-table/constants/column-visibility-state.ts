@@ -1,6 +1,6 @@
 /** Column visibility initial state for the users table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   firstName: true,
   lastName: true,
   email: true,

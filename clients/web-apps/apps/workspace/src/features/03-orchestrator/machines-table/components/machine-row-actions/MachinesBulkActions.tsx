@@ -1,8 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
-import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
-import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
+import { useShowAlertHandler, useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
 
 import { deleteMachines } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -15,6 +20,7 @@ interface MachinesBulkActionsProps {
 export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -34,29 +40,32 @@ export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
   );
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showCustomAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected machines
-                  mutate(selectedRowIds);
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={Trash2}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            showCustomAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected machines
+                mutate(selectedRowIds);
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                confirmBtnText: `Yes, delete ${entityName}`,
-                title: `Delete ${entityName}?`,
-                description: `Are you sure you want to delete selected ${entityName}? This action will unassign any agents connected to selected ${entityName}, which may affect your workflows.`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              confirmBtnText: `Yes, delete ${entityName}`,
+              title: `Delete ${entityName}?`,
+              description: `Are you sure you want to delete selected ${entityName}? This action will unassign any agents connected to selected ${entityName}, which may affect your workflows.`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

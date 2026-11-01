@@ -1,6 +1,6 @@
 /** Column visibility initial state for the config stores table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   name: true,
   type: true,
   accessLevel: true,

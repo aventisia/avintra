@@ -1,5 +1,5 @@
 export const roleTableColumnvisibilityState = {
-  id: false,
+  select: false,
   fullName: true,
   description: true,
   users: true,

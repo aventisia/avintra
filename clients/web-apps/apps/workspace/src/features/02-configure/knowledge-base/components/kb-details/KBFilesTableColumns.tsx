@@ -1,9 +1,10 @@
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { DETAIL_TABLE_KEY } from "../../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { KnowledgeBaseFileDto, VectorizationStatus } from "../../dtos/kb-file-dto";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { FileNameCell } from "./FileNameCell";
@@ -29,25 +30,18 @@ export const getKBFilesTableColumns = (
 ): ColumnDef<KnowledgeBaseFileDto>[] => [
   {
     accessorKey: "fileName",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"File/document name"}
-        enableHiding={false}
-      />
+    meta: { label: "File/document name" },
+    enableHiding: false,
+    header: ({ column }: HeaderContext<KnowledgeBaseFileDto, unknown>) => (
+      <TableCNColumnHeader column={column} label="File/document name" />
     ),
     cell: ({ row }) => <FileNameCell fileName={row.original.fileName} />,
   },
   {
     accessorKey: "chunksCount",
+    meta: { label: "Chunks" },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"Chunks"}
-        className="max-w-16"
-      />
+      <TableCNColumnHeader className="max-w-16" column={column} label="Chunks" />
     ),
     cell: ({ row }) => (
       <div className="w-16 font-medium font-mono tabular-nums">
@@ -57,13 +51,9 @@ export const getKBFilesTableColumns = (
   },
   {
     accessorKey: "status",
+    meta: { label: "Status" },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"Status"}
-        className="max-w-20"
-      />
+      <TableCNColumnHeader className="max-w-20" column={column} label="Status" />
     ),
     cell: ({ row }) => {
       const status = row.original.status;
@@ -72,14 +62,10 @@ export const getKBFilesTableColumns = (
   },
   {
     accessorKey: "createdBy",
+    meta: { label: "Created by" },
+    enableHiding: false,
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"Created by"}
-        className="max-w-16"
-        enableHiding={false}
-      />
+      <TableCNColumnHeader className="max-w-16" column={column} label="Created by" />
     ),
     cell: ({ row }) => (
       <div title={row.getValue("createdBy")} className="w-28 truncate font-medium">
@@ -89,14 +75,10 @@ export const getKBFilesTableColumns = (
   },
   {
     accessorKey: "createdOn",
+    meta: { label: "Created on" },
+    enableHiding: false,
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={"Created on"}
-        className="max-w-16"
-        enableHiding={false}
-      />
+      <TableCNColumnHeader className="max-w-16" column={column} label="Created on" />
     ),
     cell: ({ row }) => (
       <div className="w-24 font-medium font-mono tabular-nums">
@@ -104,14 +86,14 @@ export const getKBFilesTableColumns = (
       </div>
     ),
   },
-  createDTActionsColumn<KnowledgeBaseFileDto>({
+  getRowActionsColumn<KnowledgeBaseFileDto>({
     size: 48,
     minSize: 48,
     maxSize: 48,
     enableResizing: false,
-    renderCell: (row) => (
+    actions: ({ row }) => (
       <KBFilesTableRowAction
-        row={row}
+        row={row.original}
         knowledgeBaseId={knowledgeBaseId}
         knowledgeBase={knowledgeBase}
       />

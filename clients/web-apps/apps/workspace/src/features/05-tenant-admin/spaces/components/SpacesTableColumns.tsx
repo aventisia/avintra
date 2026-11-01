@@ -1,8 +1,9 @@
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { SpacesTableDto } from "../dtos/spaces-table-dto";
 import { SpaceRowActions } from "./space-row-actions/SpaceRowActions";
@@ -27,6 +28,12 @@ const formatExecutionTime = (totalSeconds: unknown): string => {
   return parts.join(" ");
 };
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<SpacesTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 /**
  * Builds the table columns for the spaces table.
  * Each column object contains an accessorKey, header component, and cell component.
@@ -39,16 +46,14 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
   const columns: ColumnDef<SpacesTableDto>[] = [
     {
       accessorKey: "name",
-      header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-      ),
+      meta: { label: getColumnName("name") },
+      header: renderHeader("name"),
       cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
     },
     {
       accessorKey: "totalUsers",
-      header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
-      ),
+      meta: { label: getColumnName("totalUsers") },
+      header: renderHeader("totalUsers"),
       cell: ({ row }) => (
         <div className="font-mono tabular-nums w-auto truncate font-medium">
           {row.getValue("totalUsers")}
@@ -57,13 +62,8 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
     },
     {
       accessorKey: "totalPublishedAgents",
-      header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={TABLE_KEY}
-          column={column}
-          title={getColumnName("totalPublishedAgents")}
-        />
-      ),
+      meta: { label: getColumnName("totalPublishedAgents") },
+      header: renderHeader("totalPublishedAgents"),
       cell: ({ row }) => (
         <div className="font-mono tabular-nums w-auto truncate font-medium">
           {row.getValue("totalPublishedAgents")}
@@ -72,13 +72,8 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
     },
     {
       accessorKey: "totalExecutionTime",
-      header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={TABLE_KEY}
-          column={column}
-          title={getColumnName("totalExecutionTime")}
-        />
-      ),
+      meta: { label: getColumnName("totalExecutionTime") },
+      header: renderHeader("totalExecutionTime"),
       cell: ({ row }) => (
         <div className="font-mono tabular-nums w-auto truncate font-medium">
           {formatExecutionTime(row.getValue("totalExecutionTime"))}
@@ -87,13 +82,8 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
     },
     {
       accessorKey: "totalMachinesAttached",
-      header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={TABLE_KEY}
-          column={column}
-          title={getColumnName("totalMachinesAttached")}
-        />
-      ),
+      meta: { label: getColumnName("totalMachinesAttached") },
+      header: renderHeader("totalMachinesAttached"),
       cell: ({ row }) => (
         <div className="font-mono tabular-nums w-auto truncate font-medium">
           {row.getValue("totalMachinesAttached")}
@@ -102,12 +92,12 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
     },
     {
       accessorKey: "createdOn",
+      meta: { label: getColumnName("createdOn") },
       header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={TABLE_KEY}
+        <TableCNColumnHeader
           className="w-[7rem]"
           column={column}
-          title={getColumnName("createdOn")}
+          label={getColumnName("createdOn")}
         />
       ),
       cell: ({ row }) => (
@@ -121,8 +111,10 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
   // Community deployments expose a single read-only Central space, so row actions are omitted.
   if (showActions) {
     columns.push(
-      createDTActionsColumn<SpacesTableDto>({
-        renderCell: (row) => <SpaceRowActions rowId={row.id || "rowId"} row={row} />,
+      getRowActionsColumn<SpacesTableDto>({
+        actions: ({ row }) => (
+          <SpaceRowActions rowId={row.original.id || "rowId"} row={row.original} />
+        ),
       }),
     );
   }

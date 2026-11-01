@@ -1,4 +1,5 @@
 import type { KeyValueLookupType } from "@avplatform/ui/types";
+import { InitialTableState } from "@tanstack/react-table";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -18,6 +19,11 @@ export const columnVisibilityState = {
   openIssues: true,
   reviewDate: true,
   approvalDate: true,
+};
+
+export const AGENT_RISK_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnVisibility: columnVisibilityState,
 };
 
 // Get the column display name for the given column key.

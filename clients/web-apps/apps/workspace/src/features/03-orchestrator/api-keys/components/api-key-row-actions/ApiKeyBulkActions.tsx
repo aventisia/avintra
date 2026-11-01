@@ -1,7 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useShowAlertHandler, useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
 import { Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
 
 import { deleteApiKeys } from "../../apis/api-key.apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -17,6 +23,7 @@ interface ApiKeyBulkActionsProps {
 export function ApiKeyBulkActions({ table }: ApiKeyBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -32,25 +39,28 @@ export function ApiKeyBulkActions({ table }: ApiKeyBulkActionsProps) {
   >("delete-multiple", selectedRowIds, deleteApiKeys, DATA_QUERY_KEY);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  deleteApiKeysMutation(selectedRowIds);
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "API keys" : "API key"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={Trash2}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                deleteApiKeysMutation(selectedRowIds);
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "API keys" : "API key"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

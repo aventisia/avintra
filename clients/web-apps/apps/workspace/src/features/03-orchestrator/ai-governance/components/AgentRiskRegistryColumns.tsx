@@ -1,10 +1,10 @@
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { AlertTriangleIcon } from "lucide-react";
 
-import { AI_GOVERNANCE_TABLE_KEY } from "../constants";
+import { getColumnName } from "../constants/registry-columns";
 import { AgentRiskRegistryRowDto } from "../dtos/agent-risk-registry-row-dto";
 import { RiskLifecycleStatus } from "../enums/lifecycle-state-enum";
 import { AgentRiskTier } from "../enums/risk-tier-enum";
@@ -67,6 +67,12 @@ const renderDate = (date: string) =>
     <span className="text-muted-foreground">-</span>
   );
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<AgentRiskRegistryRowDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 /**
  * Builds columns for the Agent Risk Registry table.
  * The agent name is clickable and opens the Agent Risk Registry wizard.
@@ -84,9 +90,8 @@ export const buildAgentRiskRegistryColumns = (
 ): ColumnDef<AgentRiskRegistryRowDto>[] => [
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Agent name" />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <button
@@ -115,27 +120,20 @@ export const buildAgentRiskRegistryColumns = (
   },
   {
     accessorKey: "compositeTier",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={AI_GOVERNANCE_TABLE_KEY}
-        column={column}
-        title="Composite risk tier"
-      />
-    ),
+    meta: { label: getColumnName("compositeTier") },
+    header: renderHeader("compositeTier"),
     cell: ({ row }) => renderTier(row.original.compositeTier),
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Status" />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => renderStatus(row.original.status),
   },
   {
     accessorKey: "openIssues",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Open issues" />
-    ),
+    meta: { label: getColumnName("openIssues") },
+    header: renderHeader("openIssues"),
     cell: ({ row }) =>
       row.original.openIssues > 0 ? (
         <Badge variant="destructive" className="tabular-nums">
@@ -147,16 +145,14 @@ export const buildAgentRiskRegistryColumns = (
   },
   {
     accessorKey: "reviewDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Reviewed on" />
-    ),
+    meta: { label: getColumnName("reviewDate") },
+    header: renderHeader("reviewDate"),
     cell: ({ row }) => renderDate(row.original.reviewDate),
   },
   {
     accessorKey: "approvalDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Approved on" />
-    ),
+    meta: { label: getColumnName("approvalDate") },
+    header: renderHeader("approvalDate"),
     cell: ({ row }) => renderDate(row.original.approvalDate),
   },
   {

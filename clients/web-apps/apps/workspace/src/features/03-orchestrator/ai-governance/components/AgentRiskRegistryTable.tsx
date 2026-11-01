@@ -1,20 +1,15 @@
-import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { AI_GOVERNANCE_TABLE_KEY } from "../constants";
-import { columnDisplayNames, columnVisibilityState } from "../constants/registry-columns";
+import { AGENT_RISK_PAGE_SIZE_OPTIONS, AI_GOVERNANCE_TABLE_KEY } from "../constants";
+import { AGENT_RISK_INITIAL_STATE } from "../constants/registry-columns";
 import { useAgentRiskRegistryRows } from "../hooks/useAgentRiskRegistryRows";
 import { usePendingApprovals } from "../hooks/usePendingApprovals";
 import { createEmptyAssessment, useAiGovernanceStore } from "../stores/ai-governance-store";
 import { buildAgentRiskRegistryColumns } from "./AgentRiskRegistryColumns";
+
+const PAGINATION_PROPS = { pageSizeOptions: AGENT_RISK_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders the Agent Risk Registry table - the first screen of the page.
@@ -28,11 +23,6 @@ export const AgentRiskRegistryTable = () => {
   const openIssues = useAiGovernanceStore((state) => state.openIssues);
   const updateAssessment = useAiGovernanceStore((state) => state.updateAssessment);
   const assessments = useAiGovernanceStore((state) => state.assessments);
-
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    AI_GOVERNANCE_TABLE_KEY,
-    columnVisibilityState,
-  );
 
   const { rows, isLoading } = useAgentRiskRegistryRows();
   const { rows: pendingApprovals } = usePendingApprovals();
@@ -84,10 +74,18 @@ export const AgentRiskRegistryTable = () => {
       });
     }
   });
-  const table = useDataTable(columns, rows, columnVisibility, sortState, false);
+
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: rows,
+    columns,
+    initialState: AGENT_RISK_INITIAL_STATE,
+    persistKey: AI_GOVERNANCE_TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
   if (isLoading) {
-    return <DataTableSkeleton />;
+    return <TableCNSkeleton columnCount={7} />;
   }
 
   return (
@@ -95,17 +93,6 @@ export const AgentRiskRegistryTable = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DTHeading heading="Agent risk registry" />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
-          <DTViewOptions
-            {...{
-              table,
-              columnDisplayNames,
-              tableKey: AI_GOVERNANCE_TABLE_KEY,
-            }}
-          />
         </div>
       </div>
 
@@ -134,10 +121,10 @@ export const AgentRiskRegistryTable = () => {
       )}
 
       <div className="flex flex-col gap-2">
-        <DataTable table={table} columnsLength={columns.length} />
+        <TableCN table={table} label="Agent risk registry" paginationProps={PAGINATION_PROPS}>
+          <TableCNToolbar table={table} searchPlaceholder="Search agents..." />
+        </TableCN>
       </div>
-
-      <DTPagination table={table} />
     </div>
   );
 };

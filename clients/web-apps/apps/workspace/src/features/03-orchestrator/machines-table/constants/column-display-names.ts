@@ -4,7 +4,7 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "selectRow", value: "Select row" },
+  { key: "select", value: "Select row" },
   { key: "name", value: "Name" },
   { key: "status", value: "Status" },
   { key: "flowVersionCount", value: "Agents" },

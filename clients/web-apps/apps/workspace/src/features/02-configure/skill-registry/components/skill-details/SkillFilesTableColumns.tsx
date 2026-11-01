@@ -1,13 +1,20 @@
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { DETAIL_TABLE_KEY } from "../../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../../constants/skill-files-column-display-names.constant";
 import { SkillFileDto } from "../../dtos/skill-file.dto";
 import { SkillTableDto } from "../../dtos/skill-table.dto";
 import { FileNameCell } from "./FileNameCell";
 import { SkillFilesTableRowAction } from "./SkillFilesTableRowAction";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<SkillFileDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the skill files table.
@@ -18,37 +25,28 @@ export const getSkillFilesTableColumns = (
 ): ColumnDef<SkillFileDto>[] => [
   {
     accessorKey: "fileName",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={getColumnName("fileName")}
-        enableHiding={false}
-      />
-    ),
+    meta: { label: getColumnName("fileName") },
+    enableHiding: false,
+    header: renderHeader("fileName"),
     cell: ({ row }) => <FileNameCell fileName={row.original.fileName} />,
   },
   {
     accessorKey: "fileType",
+    meta: { label: getColumnName("fileType") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={getColumnName("fileType")}
-        className="max-w-20"
-      />
+      <TableCNColumnHeader className="max-w-20" column={column} label={getColumnName("fileType")} />
     ),
     cell: ({ row }) => <span className="capitalize text-xs">{row.original.fileType || "-"}</span>,
   },
   {
     accessorKey: "createdBy",
+    meta: { label: getColumnName("createdBy") },
+    enableHiding: false,
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={getColumnName("createdBy")}
+      <TableCNColumnHeader
         className="max-w-16"
-        enableHiding={false}
+        column={column}
+        label={getColumnName("createdBy")}
       />
     ),
     cell: ({ row }) => (
@@ -59,13 +57,13 @@ export const getSkillFilesTableColumns = (
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
+    enableHiding: false,
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={DETAIL_TABLE_KEY}
-        column={column}
-        title={getColumnName("createdOn")}
+      <TableCNColumnHeader
         className="max-w-16"
-        enableHiding={false}
+        column={column}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
@@ -74,11 +72,13 @@ export const getSkillFilesTableColumns = (
       </div>
     ),
   },
-  createDTActionsColumn<SkillFileDto>({
+  getRowActionsColumn<SkillFileDto>({
     size: 48,
     minSize: 48,
     maxSize: 48,
     enableResizing: false,
-    renderCell: (row) => <SkillFilesTableRowAction row={row} skillId={skillId} skill={skill} />,
+    actions: ({ row }) => (
+      <SkillFilesTableRowAction row={row.original} skillId={skillId} skill={skill} />
+    ),
   }),
 ];
