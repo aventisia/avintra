@@ -1,6 +1,8 @@
 import { NotFoundPage } from "@avplatform/layout";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
+
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
@@ -62,6 +64,7 @@ import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
 import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
+import { MyNotificationsPage } from "./pages/MyNotificationsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -72,6 +75,10 @@ const routerConfig: RouteObject[] = [
       {
         path: DESKTOP_DOWNLOAD_ROUTE,
         element: <DesktopDownloadPage />,
+      },
+      {
+        path: NOTIFICATIONS_ROUTE,
+        element: <MyNotificationsPage />,
       },
       // build section
       {

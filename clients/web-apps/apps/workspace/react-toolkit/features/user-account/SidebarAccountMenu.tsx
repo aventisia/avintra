@@ -24,6 +24,7 @@ import { ROLE_SA } from "@/constants/roles";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
 import { AccountMenuAction } from "./AccountMenuAction";
@@ -56,12 +57,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
       })),
     );
 
-  const { unreadCount, toggleNotifications } = useUnreadNotificationsStore(
-    useShallow((state) => ({
-      unreadCount: state.unreadCount,
-      toggleNotifications: state.toggleOpen,
-    })),
-  );
+  const unreadCount = useUnreadNotificationsStore((state) => state.unreadCount);
   const { openAccountDialog } = useAccountDialogUrlState();
 
   const fullName =
@@ -155,7 +151,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
           <UserIcon />
           My account
         </AccountMenuAction>
-        <AccountMenuAction onClick={runAndCloseMenus(() => toggleNotifications(true))}>
+        <AccountMenuAction onClick={runAndCloseMenus(() => navigate(NOTIFICATIONS_ROUTE))}>
           <BellIcon />
           Notifications
           {unreadCount > 0 && (

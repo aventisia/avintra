@@ -38,15 +38,15 @@ const ProductCards = ({ platform }: { platform: Platform }) => {
   if (isLoading) {
     return (
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <Skeleton className="h-[19rem] rounded-xl" />
-        <Skeleton className="h-[19rem] rounded-xl" />
+        <Skeleton className="h-[19rem] rounded-lg" />
+        <Skeleton className="h-[19rem] rounded-lg" />
       </div>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-5 py-4">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface px-5 py-4">
         <p className="text-body-sm text-ink-2">Couldn't load the download links.</p>
         <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isRefetching}>
           Try again
