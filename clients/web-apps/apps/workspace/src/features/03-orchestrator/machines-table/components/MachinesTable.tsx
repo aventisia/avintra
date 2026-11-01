@@ -1,21 +1,23 @@
-import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  MACHINES_INITIAL_STATE,
+  MACHINES_PAGE_SIZE_OPTIONS,
+  MACHINES_ROW_LABELS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchMachines } from "../hooks/useFetchMachines";
 import { MachineStats } from "./MachineStats";
 import { machinesTableColumns } from "./MachinesTableColumns";
 import { MachinesBulkActions } from "./machine-row-actions/MachinesBulkActions";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: MACHINES_PAGE_SIZE_OPTIONS,
+  rowLabels: MACHINES_ROW_LABELS,
+};
 
 /**
  * Renders a table of machines.
@@ -26,57 +28,48 @@ export const MachinesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch machines data
   const { data } = useFetchMachines();
 
-  // Create a React table for machines data
-  const table = useDataTable(
-    machinesTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: machinesTableColumns,
+    initialState: MACHINES_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name", "status", "username", "operatingSystem"],
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
             </div>
-
-            <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["name", "status", "username", "operatingSystem"]}
-                placeholder="Search name, status, user or OS..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
           </div>
 
-          {/* Data table to render data */}
+          {/* Table with its toolbar, pagination footer, and bulk actions */}
           <div className="flex flex-col gap-2">
             <MachineStats data={data?.data} />
-            <DataTable table={table} columnsLength={machinesTableColumns.length} />
+            <TableCN
+              table={table}
+              label={TABLE_HEADING}
+              paginationProps={PAGINATION_PROPS}
+              actionBar={<MachinesBulkActions table={table} />}
+            >
+              <TableCNToolbar
+                table={table}
+                searchPlaceholder="Search name, status, user or OS..."
+              />
+            </TableCN>
           </div>
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} singularLabel="machine" pluralLabel="machines" />
-
-          {/* Bulk actions for data table */}
-          <MachinesBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the machines data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the machines data
+        <TableCNSkeleton columnCount={14} />
       )}
     </>
   );
