@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import type { Column, Table } from "@tanstack/react-table";
 import { useShallow } from "zustand/react/shallow";
 
@@ -34,12 +34,7 @@ export function AssignAllAgentCheckBox<TData, TValue>({
         className="mt-2 translate-y-[2px]"
         disabled={isReadOnly}
       />
-      <DTColumnHeader
-        tableKey={"agents-select-table"}
-        className="m-0"
-        column={column}
-        title="Name"
-      />
+      <TableCNColumnHeader className="m-0" column={column} label="Name" />
     </div>
   );
 }
