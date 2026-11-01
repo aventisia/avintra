@@ -213,13 +213,6 @@ public class OnPremInstanceValidationService : IOnPremInstanceValidationService
                 await _unitOfWork.OnPremInstanceDataRepo.InsertAsync(needToBeInserted);
             }
 
-            // Save all changes
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save OnPremInstanceValidation records.");
-                return serviceResponse;
-            }
-
             // Check if the current date is greater than the ContractStartDate (i.e., the contract has started)
             if (DateTimeOffset.UtcNow.Date < onPremTenant.ContractStartDate.Date)
             {
@@ -277,21 +270,14 @@ public class OnPremInstanceValidationService : IOnPremInstanceValidationService
             // Mark the entity for update
             _unitOfWork.OnPremInstanceRepo.Update(onPremInstance);
 
-            // Persist the changes to the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Failed to save OnPremInstance validation update.");
-                return serviceResponse;
-            }
-
             // Deduct consumed execution time from the tenant's allowed execution time
             onPremTenant.AvailableExecutionTime -= totalExecutionTime;
             _unitOfWork.OnPremTenantRepo.Update(onPremTenant);
 
-            // Persist tenant execution time update
+            // Persist the instance data, instance and tenant changes in a single save
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to save OnPremTenant execution time update.");
+                _logger.LogError("Failed to save OnPremInstance validation results.");
                 return serviceResponse;
             }
 

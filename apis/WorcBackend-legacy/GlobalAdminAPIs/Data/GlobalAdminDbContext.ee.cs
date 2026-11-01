@@ -46,6 +46,12 @@ public class GlobalAdminDbContext : DbContext
         builder.Entity<OnPremInstanceData>()
             .HasIndex(e => new { e.OnPremInstanceId, e.ValidatedOn })
             .IncludeProperties(e => new { e.ExecutionTime, e.ExecutedJobs });
+
+        // IMPORTANT NOTE: the service rejects a duplicate instance name per tenant before writing,
+        // but only this unique index closes the race between two concurrent inserts.
+        builder.Entity<OnPremInstance>()
+            .HasIndex(e => new { e.OnPremTenantId, e.Name })
+            .IsUnique();
     }
 
     // Define DbSet properties for your entities (tables in the database)

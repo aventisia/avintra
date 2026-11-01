@@ -26,10 +26,10 @@ export interface OnPremTenantDto {
   consumedExecutionTime: number;
 
   /** Contract start date  */
-  contractStartDate: Date | string;
+  contractStartDate: string;
 
   /** Contract renewal date  */
-  contractRenewalDate: Date | string;
+  contractRenewalDate: string;
 
   /** Indicates whether execution is disabled for this tenant */
   isExecutionDisabled: boolean;
@@ -55,11 +55,11 @@ export interface OnPremTenantDto {
   createdByUser?: string | null;
 
   /** Timestamp when the tenant was created  */
-  createdOn: Date | string;
+  createdOn: string;
 
   /** User who last modified the tenant */
   lastModifiedByUser?: string | null;
 
   /** Timestamp when the tenant was last modified  */
-  lastModifiedOn: Date | string;
+  lastModifiedOn: string;
 }

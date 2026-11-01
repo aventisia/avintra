@@ -6,7 +6,8 @@ import {
 } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
-import { appendAuthHeader } from "../../on-prem-tenant/utils/appendAuthHeader.ee";
+import { appendAuthHeader } from "@/utils/appendAuthHeader.ee";
+
 import { OnPremInstanceDto } from "../dtos/tenant-instance-dto.ee";
 import { OnpremInstanceStaticDto } from "../dtos/tenant-statistics-dto.ee";
 
@@ -58,7 +59,7 @@ const isTenantInstanceNameAvailable = (tenantId: string, postObj: CheckAvailabil
 /**
  * Inserts a new TenantInstance.
  */
-const insertTenantInstance = (newTenantInstance: OnPremInstanceDto) => {
+const createOnPremInstance = (newTenantInstance: OnPremInstanceDto) => {
   return axiosInstance
     .post<IHttpResponse<OnPremInstanceDto>>(`${baseAPIURL}`, newTenantInstance, appendAuthHeader())
     .then((res) => res.data);
@@ -89,7 +90,7 @@ const deleteTenantInstance = (id: string) => {
 /**
  * Deletes multiple TenantInstances by their IDs.
  */
-const deleteTenantInstances = (ids: string[]) => {
+const deleteMultipleOnPremInstances = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, appendAuthHeader())
     .then((res) => res.data);
@@ -108,13 +109,13 @@ const TenantInstanceOptimisticMutationFn = ({
 }: IOptimisticMutation<OnPremInstanceDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertTenantInstance(payload as OnPremInstanceDto);
+      return createOnPremInstance(payload as OnPremInstanceDto);
     case "update":
       return updateTenantInstance(payload as OnPremInstanceDto);
     case "delete":
       return deleteTenantInstance(payload as string);
     case "delete-multiple":
-      return deleteTenantInstances(payload as string[]);
+      return deleteMultipleOnPremInstances(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
@@ -124,10 +125,10 @@ export {
   getTenantInstances,
   getTenantInstanceById,
   isTenantInstanceNameAvailable,
-  insertTenantInstance,
+  createOnPremInstance,
   updateTenantInstance,
   deleteTenantInstance,
-  deleteTenantInstances,
+  deleteMultipleOnPremInstances,
   getTenantStatistics,
   TenantInstanceOptimisticMutationFn,
 };

@@ -6,7 +6,7 @@ export interface OnPremInstanceDataDto {
   id: string;
 
   /** Timestamp when the instance was validated */
-  validatedOn: Date | string;
+  validatedOn: string;
 
   /** Source that validated the instance */
   validatedBy: ValidationSourceTypesEnum;

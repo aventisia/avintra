@@ -148,11 +148,33 @@ public class OnPremTenantService : IOnPremTenantService
 
         try
         {
-            // Fetch OnPremTenant by ID from the repository
+            // Fetch OnPremTenant by ID and project it to the DTO in the database
             var onPremTenant = await _unitOfWork.OnPremTenantRepo
-                .GetByConditionAsync(w => w.Id == onPremTenantId)
-                .Include(i => i.OnPremInstances)
-                    .ThenInclude(i2 => i2.OnPremInstanceData)
+                .GetByConditionAsync(t => t.Id == onPremTenantId)
+                .AsNoTracking()
+                .Select(t => new OnPremTenantDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Type = t.Type,
+                    ExecutionTimeAllowed = t.ExecutionTimeAllowed,
+                    ConsumedExecutionTime = t.OnPremInstances
+                        .SelectMany(i => i.OnPremInstanceData)
+                        .Sum(d => (double?)d.ExecutionTime) ?? 0d,
+                    ContractStartDate = t.ContractStartDate,
+                    ContractRenewalDate = t.ContractRenewalDate,
+                    IsExecutionDisabled = t.IsExecutionDisabled,
+                    IsLoginDisabled = t.IsLoginDisabled,
+                    IsSsoAllowed = t.IsSsoAllowed,
+                    IsBrandingAllowed = t.IsBrandingAllowed,
+                    OurEmails = t.OurEmails,
+                    TenantEmails = t.TenantEmails,
+                    IsAnyInstanceFailed = t.OnPremInstances.Any(i => i.NoOfInvalidCheck != 0),
+                    CreatedByUser = t.CreatedByUser,
+                    CreatedOn = t.CreatedOn,
+                    LastModifiedByUser = t.LastModifiedByUser,
+                    LastModifiedOn = t.LastModifiedOn
+                })
                 .SingleOrDefaultAsync();
 
             // If OnPremTenant not found, return a 'not found' message
@@ -164,7 +186,7 @@ public class OnPremTenantService : IOnPremTenantService
             }
 
             // Return the OnPremTenant data mapped to a DTO
-            serviceResponse.Data = onPremTenant.Adapt<OnPremTenantDto>();
+            serviceResponse.Data = onPremTenant;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "OnPremTenant retrieved successfully.";
             _logger.LogInformation($"Successfully retrieved OnPremTenant with ID {onPremTenantId}. User: {_username}");

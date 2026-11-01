@@ -6,8 +6,9 @@ import {
 } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { appendAuthHeader } from "@/utils/appendAuthHeader.ee";
+
 import { OnPremTenantDto } from "../dtos/on-prem-tenant-dto.ee";
-import { appendAuthHeader } from "../utils/appendAuthHeader.ee";
 
 const baseAPIURL: string = `${import.meta.env.VITE_GLOBALADMIN_API_URL}/onprem-tenant`;
 
@@ -45,7 +46,7 @@ const isOnPremTenantNameAvailable = (postObj: CheckAvailabilityDto) => {
 /**
  * Inserts a new OnPremTenant.
  */
-const insertOnPremTenant = (newOnPremTenant: OnPremTenantDto) => {
+const createOnPremTenant = (newOnPremTenant: OnPremTenantDto) => {
   return axiosInstance
     .post<IHttpResponse<OnPremTenantDto>>(`${baseAPIURL}`, newOnPremTenant, appendAuthHeader())
     .then((res) => res.data);
@@ -72,7 +73,7 @@ const deleteOnPremTenant = (id: string) => {
 /**
  * Deletes multiple OnPremTenants by their IDs.
  */
-const deleteOnPremTenants = (ids: string[]) => {
+const deleteMultipleOnPremTenants = (ids: string[]) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, appendAuthHeader())
     .then((res) => res.data);
@@ -91,13 +92,13 @@ const OnPremTenantOptimisticMutationFn = ({
 }: IOptimisticMutation<OnPremTenantDto | string | string[]>) => {
   switch (crudAction) {
     case "create":
-      return insertOnPremTenant(payload as OnPremTenantDto);
+      return createOnPremTenant(payload as OnPremTenantDto);
     case "update":
       return updateOnPremTenant(payload as OnPremTenantDto);
     case "delete":
       return deleteOnPremTenant(payload as string);
     case "delete-multiple":
-      return deleteOnPremTenants(payload as string[]);
+      return deleteMultipleOnPremTenants(payload as string[]);
     default:
       throw new Error("Invalid action type");
   }
@@ -107,9 +108,9 @@ export {
   getOnPremTenants,
   getOnPremTenantById,
   isOnPremTenantNameAvailable,
-  insertOnPremTenant,
+  createOnPremTenant,
   updateOnPremTenant,
   deleteOnPremTenant,
-  deleteOnPremTenants,
+  deleteMultipleOnPremTenants,
   OnPremTenantOptimisticMutationFn,
 };

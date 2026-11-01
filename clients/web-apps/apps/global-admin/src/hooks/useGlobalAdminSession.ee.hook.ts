@@ -3,7 +3,7 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useEffect, useState } from "react";
 
-import { useGAAuthStore } from "@/features/global-admin/on-prem-tenant/stores/useGAAuthStore.ee";
+import { useGAAuthStore } from "@/stores/useGAAuthStore.ee";
 
 type AccessState = "pending" | "granted" | "denied";
 
