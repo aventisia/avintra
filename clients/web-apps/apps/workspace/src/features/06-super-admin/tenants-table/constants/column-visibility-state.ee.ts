@@ -1,6 +1,6 @@
 /** Column visibility initial state for the tenants table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
 
   // Core
   name: true,
