@@ -7,6 +7,7 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -56,6 +57,7 @@ import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
+import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -63,6 +65,10 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
+      {
+        path: DESKTOP_DOWNLOAD_ROUTE,
+        element: <DesktopDownloadPage />,
+      },
       // build section
       {
         path: "/agents",

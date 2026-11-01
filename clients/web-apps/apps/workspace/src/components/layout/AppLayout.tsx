@@ -10,7 +10,7 @@ import { HelpPanel } from "@/components/help/HelpPanel";
 import { ROLE_SA, ROLE_TA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
-import { DownloadDialog } from "@/features/desktop-download";
+import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
@@ -166,7 +166,7 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes(allowedRoutes);
+    setAllowedRoutes([...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
@@ -250,7 +250,6 @@ export const AppLayout = () => {
           </div>
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
           <UnreadNotifications />
-          <DownloadDialog />
           <AccountDialog />
         </div>
       )}
