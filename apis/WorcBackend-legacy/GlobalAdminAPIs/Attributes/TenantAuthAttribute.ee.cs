@@ -67,6 +67,12 @@ public class TenantAuthAttribute : Attribute, IAsyncActionFilter
             sendEmailOnFailure = true;
         }
 
+        if (instance != null && instance.OnPremTenantId != tenantId)
+        {
+            context.Result = new UnauthorizedObjectResult("Authentication failed: Tenant and instance do not match.");
+            sendEmailOnFailure = true;
+        }
+
         if (sendEmailOnFailure)
         {
             string tenantName = tenant != null ? tenant.Name : "Unknown";
@@ -94,8 +100,12 @@ public class TenantAuthAttribute : Attribute, IAsyncActionFilter
 
                 // Update the email type
                 emailRateLimiterService.UpdateEmailTimestamp(emailType);
-                return;
             }
+        }
+
+        if (sendEmailOnFailure)
+        {
+            return;
         }
 
         // Retrieve ICurrentOnPremTenantService from DI container

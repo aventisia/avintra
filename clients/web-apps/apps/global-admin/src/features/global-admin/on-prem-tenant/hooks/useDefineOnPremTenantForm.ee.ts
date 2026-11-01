@@ -139,6 +139,9 @@ export const useDefineOnPremTenantForm = ({ rowId }: UseDefineOnPremTenantFormOp
   const refineFormData = (formData: z.infer<typeof onPremTenantZodSchema>) => {
     return {
       ...formData,
+      contractStartDate: formData.contractStartDate.toISOString(),
+      contractRenewalDate: formData.contractRenewalDate.toISOString(),
+      createdOn: formData.createdOn.toISOString(),
       lastModifiedByUser: userSession?.email ?? "",
       lastModifiedOn: currDate.toISOString(),
     };

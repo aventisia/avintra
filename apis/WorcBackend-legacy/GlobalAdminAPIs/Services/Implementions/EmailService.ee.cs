@@ -171,8 +171,8 @@ public class EmailService : IEmailService
     {
         try
         {
-            // Gets the full path of the template file from the directory.
-            var file = new FileInfo(Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "EmailTemplates", templateFile));
+            // Gets the full path of the template file from the application base directory.
+            var file = new FileInfo(Path.Combine(AppContext.BaseDirectory, "StaticFiles", "EmailTemplates", templateFile));
 
             // Checks if the template file exists.
             if (!file.Exists)

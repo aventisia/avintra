@@ -47,8 +47,8 @@ public class OnPremInstanceDataService : IOnPremInstanceDataService
             var OnPremInstanceData = await _unitOfWork.OnPremInstanceDataRepo
                 .GetByConditionAsync(w =>
                     w.OnPremInstanceId == onPremInstanceId &&
-                    w.ValidatedOn.Date >= rangeStart.Date &&
-                    w.ValidatedOn.Date < rangeEndExclusive.Date
+                    w.ValidatedOn >= rangeStart &&
+                    w.ValidatedOn < rangeEndExclusive
                 )
                 .OrderByDescending(o => o.ValidatedOn)
                 .Select(d => new OnPremInstanceDataDto
@@ -79,19 +79,15 @@ public class OnPremInstanceDataService : IOnPremInstanceDataService
     }
 
     // Normalizes the optional start/end filters into a half-open [start, end + 1 day) range,
-    // preserving the original behaviour (inclusive calendar days; when either bound is missing
-    // the default window is the last 15 days) while keeping the comparisons index-friendly.
+    // preserving inclusive calendar days. Each bound defaults independently: a missing start is
+    // 15 days before the end date, a missing end is 15 days after the start date, and with both
+    // missing the window is the last 15 days.
     private static (DateTimeOffset Start, DateTimeOffset EndExclusive) NormalizeDateRange(DateTimeOffset? startDate, DateTimeOffset? endDate)
     {
-        if (!startDate.HasValue || !endDate.HasValue)
-        {
-            var today = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero);
-            startDate = today.AddDays(-15);
-            endDate = today;
-        }
+        var today = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero);
 
-        var start = startDate.Value;
-        var end = endDate.Value;
+        var start = startDate ?? endDate?.AddDays(-15) ?? today.AddDays(-15);
+        var end = endDate ?? (startDate.HasValue ? start.AddDays(15) : today);
 
         var startOfRange = new DateTimeOffset(start.Year, start.Month, start.Day, 0, 0, 0, start.Offset);
         var endOfRangeExclusive = new DateTimeOffset(end.Year, end.Month, end.Day, 0, 0, 0, end.Offset).AddDays(1);

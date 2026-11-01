@@ -59,7 +59,7 @@ pipeline {
                         env.BUILD_APACHECAMEL_API = reposToBuild.contains('apachecamel_api') ? 'true' : 'false'
                         env.BUILD_CORSAIR_API = reposToBuild.contains('corsair_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
-                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio')) ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('global-admin') || reposToBuild.contains('studio')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
@@ -70,7 +70,7 @@ pipeline {
                         // If AspNetToolkit changed, all .NET APIs need to be rebuilt
                         env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_GLOBALADMIN_API = hasChangesInPath('apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
+                        env.BUILD_GLOBALADMIN_API = (hasChangesInPath('apis/WorcBackend-legacy/GlobalAdminAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = hasChangesInPath('apis/apache-camel') ? 'true' : 'false'
                         env.BUILD_CORSAIR_API = hasChangesInPath('apis/corsair') ? 'true' : 'false'
