@@ -14,6 +14,7 @@ import { DownloadDialog } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
+import { AccountDialog } from "@/features/my-account";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
@@ -163,7 +164,7 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes([...allowedRoutes, "/account"]);
+    setAllowedRoutes(allowedRoutes);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
@@ -248,6 +249,7 @@ export const AppLayout = () => {
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
           <UnreadNotifications />
           <DownloadDialog />
+          <AccountDialog />
         </div>
       )}
       <WorkspaceCrudDialogProvider />

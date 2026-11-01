@@ -56,7 +56,6 @@ import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
-import MyAccountPage from "./pages/MyAccountPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -76,10 +75,6 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
-      },
-      {
-        path: "/account",
-        element: <MyAccountPage />,
       },
       // configure section
       {
