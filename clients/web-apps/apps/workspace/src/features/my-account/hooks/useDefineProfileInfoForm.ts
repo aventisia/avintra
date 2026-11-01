@@ -1,3 +1,4 @@
+import { toast } from "@avplatform/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -51,10 +52,10 @@ export const useDefineProfileInfoForm = () => {
           // stateOrProvince: profileInfoData?.stateOrProvince ?? "",
           // zipOrPostalCode: profileInfoData?.zipOrPostalCode ?? "",
         });
-      } catch (error) {
-        console.error(error);
-      } finally {
+        /* IMPORTANT NOTE: Stay loading on failure so Save stays off; the backend overwrites the hidden phone number and country with whatever is sent. */
         setIsLoading(false);
+      } catch {
+        toast.error("Couldn't load your profile. Close and reopen to try again.");
       }
     };
 

@@ -2,15 +2,16 @@ import { Switch } from "@avplatform/ui";
 import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { type CustomFormMessage } from "@avplatform/ui/types";
-import { CircleCheck, LoaderCircle } from "lucide-react";
 import { useEffect, useId } from "react";
 import { z } from "zod";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
+import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../../constants";
@@ -18,36 +19,12 @@ import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
 import { useFetchFolders } from "../../hooks/useFetchFolders.hook";
-import { getFieldInputClassName } from "../../utils/field-input.util";
-import { FormField } from "../folder-dialogs/FormField";
 import { FlowTypePicker } from "./FlowTypePicker";
 
 const FLOW_NAME_MAX_LENGTH = 255;
 const FLOW_DESCRIPTION_MAX_LENGTH = 500;
 
 const EYEBROWS = { create: "New agent", update: "Edit agent", read: "Agent" } as const;
-
-const AvailabilityHint = ({ message }: { message: CustomFormMessage | null }) => {
-  if (!message) return null;
-
-  const isChecking = message.type === "Gray";
-
-  return (
-    <span
-      className={cn(
-        "flex items-center gap-1.5 pt-1.5 text-[12px]",
-        isChecking ? "text-muted-foreground" : "text-ok",
-      )}
-    >
-      {isChecking ? (
-        <LoaderCircle className="size-3.5 shrink-0 animate-spin" />
-      ) : (
-        <CircleCheck className="size-3.5 shrink-0" />
-      )}
-      {message.message}
-    </span>
-  );
-};
 
 /**
  * Create, edit or view an agent's name, type and description in the card dialog style.

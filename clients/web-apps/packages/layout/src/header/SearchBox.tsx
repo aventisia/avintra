@@ -8,19 +8,26 @@ import {
 } from "@avplatform/ui/command";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { SearchIcon } from "lucide-react";
+import { type LucideIcon, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+type SearchBoxAction = {
+  label: string;
+  Icon: LucideIcon;
+  onSelect: () => void;
+};
 
 interface SearchBoxProps {
   className?: string;
   placeholder?: string;
+  actions?: SearchBoxAction[];
 }
 
 const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform);
 
-/** Header search button that opens a page palette, also on ⌘K / Ctrl+K. */
-const SearchBox = ({ className, placeholder = "Go to page…" }: SearchBoxProps) => {
+/** Header search button that opens a page and action palette, also on ⌘K / Ctrl+K. */
+const SearchBox = ({ className, placeholder = "Go to page…", actions }: SearchBoxProps) => {
   const [open, setOpen] = useState(false);
   const sections = useBaseLayoutStore((state) => state.sidebarMenuSections);
   const navigate = useNavigate();
@@ -36,9 +43,9 @@ const SearchBox = ({ className, placeholder = "Go to page…" }: SearchBoxProps)
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const goTo = (route: string) => {
+  const run = (onSelect: () => void) => {
     setOpen(false);
-    navigate(route);
+    onSelect();
   };
 
   return (
@@ -65,14 +72,14 @@ const SearchBox = ({ className, placeholder = "Go to page…" }: SearchBoxProps)
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder={placeholder} />
         <CommandList className="max-h-[360px]">
-          <CommandEmpty>No pages match.</CommandEmpty>
+          <CommandEmpty>Nothing matches.</CommandEmpty>
           {sections?.map((section) => (
             <CommandGroup key={section.sectionName} heading={section.sectionName}>
               {section.menuItems.flatMap((item) => [
                 <CommandItem
                   key={item.route}
                   value={`${section.sectionName} ${item.name} ${item.route}`}
-                  onSelect={() => goTo(item.route)}
+                  onSelect={() => run(() => navigate(item.route))}
                   className="gap-2.5"
                 >
                   <item.Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground" />
@@ -82,7 +89,7 @@ const SearchBox = ({ className, placeholder = "Go to page…" }: SearchBoxProps)
                   <CommandItem
                     key={sub.route}
                     value={`${section.sectionName} ${item.name} ${sub.name} ${sub.route}`}
-                    onSelect={() => goTo(sub.route)}
+                    onSelect={() => run(() => navigate(sub.route))}
                     className="pl-[34px]"
                   >
                     {item.name} · {sub.name}
@@ -91,6 +98,21 @@ const SearchBox = ({ className, placeholder = "Go to page…" }: SearchBoxProps)
               ])}
             </CommandGroup>
           ))}
+          {actions && actions.length > 0 && (
+            <CommandGroup heading="Actions">
+              {actions.map(({ label, Icon, onSelect }) => (
+                <CommandItem
+                  key={label}
+                  value={`Actions ${label}`}
+                  onSelect={() => run(onSelect)}
+                  className="gap-2.5"
+                >
+                  <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground" />
+                  {label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
         </CommandList>
       </CommandDialog>
     </>

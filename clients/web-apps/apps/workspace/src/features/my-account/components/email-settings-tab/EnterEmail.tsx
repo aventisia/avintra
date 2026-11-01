@@ -1,24 +1,24 @@
-import { SubmitButton } from "@avplatform/ui/buttons";
-// import { DefaultTenantsEnum } from "@avplatform/ui/enums/default-tenants-enum";
 import { VerificationCodeRequestTypesEnum } from "@avplatform/ui/enums";
-import { Form, InputField } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useId } from "react";
+import { createPortal } from "react-dom";
 import type { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
+
+import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { useCreateCodeMutationForEmailUpdate } from "../../hooks/useCreateCodeMutationForEmailUpdate";
 import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";
+import type { AccountTabProps } from "../../types/account-tab.type";
 import type { updateEmailZodSchema } from "../../types/create-account-zod-schema";
-import { InputDivElement } from "../InputDivElement";
+import { AccountInfoRow } from "../account-dialog/AccountInfoRow";
 
-export const EnterEmail = () => {
-  // Get user session
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({
-      userSession: state.userSession,
-    })),
-  );
-  // Define form
+export const EnterEmail = ({ footerSlot }: AccountTabProps) => {
+  const currentEmail = useUserSessionStore((state) => state.userSession?.email);
   const {
     form,
     isSubmitting,
@@ -29,74 +29,70 @@ export const EnterEmail = () => {
     availabilityMessage,
     setAvailabilityMessage,
   } = useDefineEmailUpdateForm();
-
-  // Get mutation to create verification code
   const { createCodeMutation, isCodePending } = useCreateCodeMutationForEmailUpdate();
+  const fieldId = useId();
+  const formId = `${fieldId}-form`;
+  const emailId = `${fieldId}-email`;
 
-  // Define submit handler
-  const onSubmit = (formData: z.infer<typeof updateEmailZodSchema>) => {
-    // Stash the update email data
+  const emailError = form.formState.errors.email?.message;
+  const isBusy = isSubmitting || isCodePending;
+
+  const handleSubmit = form.handleSubmit((formData: z.infer<typeof updateEmailZodSchema>) => {
     setUpdateProfileEmailData({
       email: formData.email,
     });
 
-    // Create verification code
     createCodeMutation({
       email: formData.email,
       requestType: VerificationCodeRequestTypesEnum.UpdateEmail,
     });
 
-    // Reset the availability message
     setAvailabilityMessage(null);
-  };
+  });
 
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      disabled={isSubmitting || isCodePending}
-    >
-      <div className="box flex flex-col p-5">
-        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
-          Email settings
-        </div> */}
-        <div>
-          <div className="inline-flex gap-1 text-body text-muted-foreground">
-            Your current email address is
-            <p className="font-medium text-ink">{userSession?.email}</p>
-          </div>
-          <InputDivElement
-            headingForInput={"Email"}
-            // isRequired={
-            //   userSession?.tenantName == DefaultTenantsEnum.IndividualUsers
-            // }
-            messageForInput={"New email"}
+    <>
+      <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-4">
+        <AccountInfoRow label="Current email" value={currentEmail} />
+        <fieldset disabled={isBusy}>
+          <FormField
+            htmlFor={emailId}
+            label="New email"
+            error={emailError}
+            hint={<AvailabilityHint message={availabilityMessage} />}
           >
-            <InputField
-              name="email"
+            <input
+              id={emailId}
               type="email"
-              className="border-input text-sm"
-              {...{
-                onChangeCapture: (e) => handleInputChange(e.currentTarget.value),
-                nonErrorMessage: availabilityMessage,
-                isRequired: false,
-                disabled: false,
-                placeholder: "Email",
-              }}
+              autoComplete="email"
+              placeholder="name@company.com"
+              aria-invalid={Boolean(emailError)}
+              aria-describedby={emailError ? `${emailId}-error` : undefined}
+              {...form.register("email", {
+                onChange: (event) => handleInputChange(event.target.value),
+              })}
+              className={cn(getFieldInputClassName(Boolean(emailError)), "h-11")}
             />
-          </InputDivElement>
-        </div>
-        <div className="flex pt-5 md:justify-end">
-          {
-            <SubmitButton
-              className="text-sm"
-              primaryText="Verify"
-              isPending={isSubmitting || isCodePending}
-              disabled={!isAvailable || isCheckPending}
-            />
-          }
-        </div>
-      </div>
-    </Form>
+          </FormField>
+        </fieldset>
+      </form>
+
+      {footerSlot &&
+        createPortal(
+          <>
+            <StatusLine tone="idle">We'll email a 6-digit code to confirm it</StatusLine>
+            <CardDialogButton
+              type="submit"
+              form={formId}
+              variant="primary"
+              disabled={!isAvailable || isCheckPending || isBusy}
+              isBusy={isBusy}
+            >
+              {isBusy ? "Sending" : "Send code"}
+            </CardDialogButton>
+          </>,
+          footerSlot,
+        )}
+    </>
   );
 };
