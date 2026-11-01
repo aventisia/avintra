@@ -13,5 +13,7 @@ export const agentSelectTableColumns: ColumnDef<SelectAgentTableDto>[] = [
     accessorKey: "id",
     header: ({ column, table }) => <AssignAllAgentCheckBox table={table} column={column} />,
     cell: ({ row }) => <AssignAgentCheckBox row={row} />,
+    enableSorting: false,
+    enableHiding: false,
   },
 ];
