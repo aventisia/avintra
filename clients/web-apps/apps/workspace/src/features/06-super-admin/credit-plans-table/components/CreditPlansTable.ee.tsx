@@ -32,6 +32,7 @@ export const CreditPlansTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: creditPlansTableColumns,
+    getRowId: (row) => row.id ?? "",
     initialState: CREDIT_PLANS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["serviceType"],

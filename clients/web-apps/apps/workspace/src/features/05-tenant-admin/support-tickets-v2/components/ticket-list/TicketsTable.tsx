@@ -23,6 +23,7 @@ export const TicketsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: ticketTableColumns,
+    getRowId: (row) => row.id ?? "",
     initialState: TICKETS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["title", "ticketNumber"],

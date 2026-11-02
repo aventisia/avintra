@@ -55,6 +55,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
   const { table } = useTableCN({
     data: notifications,
     columns,
+    getRowId: (row) => row.id,
     initialState: NOTIFICATIONS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["title", "message"],

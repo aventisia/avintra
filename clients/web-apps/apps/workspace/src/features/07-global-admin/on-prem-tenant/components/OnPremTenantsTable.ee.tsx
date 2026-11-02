@@ -32,6 +32,7 @@ export const OnPremTenantsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: onPremTenantsTableColumns,
+    getRowId: (row) => row.id,
     initialState: ON_PREM_TENANTS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],
