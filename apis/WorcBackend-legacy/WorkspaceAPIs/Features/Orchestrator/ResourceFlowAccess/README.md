@@ -21,8 +21,8 @@ only; it does not carry a space.
 
 - Restricted or open is stored on the resource (`Tool.IsResourceAccessRestricted`,
   `Queue.IsResourceAccessRestricted`, `ConfigStore.IsResourceAccessRestricted`,
-  `VaultCredential.IsResourceAccessRestricted`, and
-  `KnowledgeBase.IsResourceAccessRestricted`), not inferred from the rows. A restricted
+  `VaultCredential.IsResourceAccessRestricted`, `KnowledgeBase.IsResourceAccessRestricted`,
+  and `Skill.IsResourceAccessRestricted`), not inferred from the rows. A restricted
   resource is usable only by the flows listed; a restricted resource with no rows is
   usable by no flow.
 - Saving a non-empty list restricts the resource. Saving an empty list is the only way to

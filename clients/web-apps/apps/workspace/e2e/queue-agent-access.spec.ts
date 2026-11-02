@@ -76,14 +76,12 @@ const openAssignAgentsDialog = async (page: Page, queueName: string) => {
   return dialog;
 };
 
-const pickAgent = async (dialog: Locator, name: string) =>
-  expect(async () => {
-    const picker = dialog.getByRole("combobox", { name: "Search agents" });
-    const option = dialog.getByRole("option", { name: new RegExp(name) });
-    await picker.click();
-    await option.click({ timeout: 2000 });
-    await expect(option).toHaveAttribute("aria-selected", "true");
-  }).toPass({ timeout: 15000 });
+const pickAgent = async (dialog: Locator, name: string) => {
+  const option = dialog.getByRole("option", { name: new RegExp(name) });
+  await expect(option).toBeVisible({ timeout: 15000 });
+  await option.click();
+  await expect(option).toHaveAttribute("aria-selected", "true");
+};
 
 test.beforeAll(async () => {
   api = await request.newContext();
@@ -127,6 +125,7 @@ test("AC1 and AC6: the shared dialog opens restricted-empty for an open queue an
   await expect(openDialog.getByRole("radio", { name: /Any agent/ })).not.toBeChecked();
   await expect(openDialog.getByRole("combobox", { name: "Search agents" })).toBeVisible();
   await expect(openDialog.getByText("No agents allowed yet")).toBeVisible();
+  await expect(openDialog.getByText("Open to every agent")).toBeVisible();
   await expect(openDialog.getByRole("button", { name: "Save changes" })).toBeDisabled();
 
   await page.keyboard.press("Escape");
