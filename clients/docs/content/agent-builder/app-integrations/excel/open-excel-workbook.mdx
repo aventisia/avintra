@@ -2,13 +2,15 @@ import { Callout, Steps } from "nextra/components";
 
 # Open Excel Workbook
 
-The **Open Excel Workbook** node allows you to open or access an existing Excel workbook within a current Excel application instance on your desktop. This is particularly useful when you need to perform operations on spreadsheets without manually opening each file. You can even choose to open the workbook in read-only mode for viewing purposes.
+The **Open Excel Workbook** node allows you to open or access an existing Excel workbook within the Excel application instance you pass to it, normally the **ExcelInstance** output of **Launch Excel Application**. This is particularly useful when you need to perform operations on spreadsheets without manually opening each file. You can even choose to open the workbook in read-only mode for viewing purposes.
+
+The node works inside the instance it is given: it does not start an Excel of its own and does not reach into another Excel that is already open.
 
 ## Configuration Options
 
 | Field Name                   | Description                                                                                                   | Input Type | Required? | Default Value |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Excel Instance**           | The existing Excel application instance you want to use.                                                      | Text       | Yes       | _(empty)_     |
+| **Excel Instance**           | The Excel application instance to work in, normally the **ExcelInstance** output of **Launch Excel Application**. | Text       | Yes       | _(empty)_     |
 | **Workbook Name**            | The name of the Excel workbook you wish to open or access (e.g., Report.xlsx).                                | Text       | Yes       | _(empty)_     |
 | **Open as ReadOnly**         | Set this to true if you want to open the workbook in read-only mode, preventing any changes from being saved. | Switch     | No        | _(empty)_     |
 | **Read Protection Password** | If the workbook is read-protected, enter the password required to open it.                                    | Password   | No        | _(empty)_     |
@@ -26,7 +28,7 @@ Add **Open Excel Workbook** node into your flow.
 
 ### Step 2
 
-In the **Excel Instance** field, specify the existing Excel application instance you want to work with.
+In the **Excel Instance** field, specify the Excel application instance to work in, usually the **ExcelInstance** output of **Launch Excel Application**.
 
 ### Step 3
 
