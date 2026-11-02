@@ -35,6 +35,7 @@ export const MachinesTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: machinesTableColumns,
+    getRowId: (row) => row.id,
     initialState: MACHINES_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name", "status", "username", "operatingSystem"],

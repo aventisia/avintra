@@ -37,6 +37,7 @@ export const SaNotificationsTable = () => {
   const { table } = useTableCN({
     data: notifications,
     columns,
+    getRowId: (row) => row.id,
     initialState: SA_NOTIFICATIONS_INITIAL_STATE,
     persistKey: SA_TABLE_KEY,
     searchColumns: ["title", "message"],

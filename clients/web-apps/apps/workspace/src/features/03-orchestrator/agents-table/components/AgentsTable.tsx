@@ -43,6 +43,7 @@ export const AgentsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: agentsTableColumns,
+    getRowId: (row) => row.id,
     initialState: AGENTS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],

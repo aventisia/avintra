@@ -30,6 +30,7 @@ export const RolesTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: RolesTableColumns,
+    getRowId: (row) => row.id,
     initialState: ROLES_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["fullName"],

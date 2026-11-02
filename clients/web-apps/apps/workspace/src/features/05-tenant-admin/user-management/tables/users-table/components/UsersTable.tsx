@@ -54,6 +54,7 @@ export const UsersTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns,
+    getRowId: (row) => row.id ?? "",
     initialState: USERS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["firstName"],
