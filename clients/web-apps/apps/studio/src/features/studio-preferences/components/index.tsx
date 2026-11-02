@@ -6,6 +6,7 @@ import { POPOVER_HEADING } from "../constants";
 import { useSetStudioPreferences } from "../hooks/useSetStudioPreferences";
 import { StudioPreferencesForm } from "./StudioPreferencesForm";
 import { StudioPreferencesTrigger } from "./StudioPreferencesTrigger";
+import { StudioThemeSelect } from "./StudioThemeSelect";
 
 interface StudioPreferencesProps {
   className?: string;
@@ -21,6 +22,7 @@ export const StudioPreferences = ({ className }: StudioPreferencesProps) => {
       <PopoverContent align="end" variant={"responsive"} className={cn(className)}>
         <PopoverDefaultHeader heading={POPOVER_HEADING} />
         <ScrollArea className="grow px-1.5 py-3">
+          <StudioThemeSelect />
           <StudioPreferencesForm />
         </ScrollArea>
       </PopoverContent>

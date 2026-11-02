@@ -1,6 +1,10 @@
 import { cn } from "@avplatform/ui/lib";
 
-import { resolveAssetSrc } from "@/utils/resolve-asset-src.util";
+import {
+  BUNDLED_ICON_DARK_CLASS,
+  isBundledAssetSrc,
+  resolveAssetSrc,
+} from "@/utils/resolve-asset-src.util";
 
 interface NodeImageProps extends React.HTMLAttributes<HTMLImageElement> {
   src?: string;
@@ -12,7 +16,11 @@ export const NodeImage = ({ className, src, ...props }: NodeImageProps) => {
   return (
     <img
       src={resolveAssetSrc(src, basePath)}
-      className={cn("h-7 w-7 opacity-80", className)}
+      className={cn(
+        "h-7 w-7 opacity-80",
+        isBundledAssetSrc(src) && BUNDLED_ICON_DARK_CLASS,
+        className,
+      )}
       draggable={false}
       {...props}
     />
