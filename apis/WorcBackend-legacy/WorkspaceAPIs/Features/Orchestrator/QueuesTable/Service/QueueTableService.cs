@@ -501,6 +501,7 @@ public class QueueTableService : IQueueTableService
             newQueue.CreatedByUserId = _userId;
             newQueue.LastModifiedByUserId = _userId;
             newQueue.EnvType = _currentTenantService.CurrentEnvType;
+            newQueue.IsResourceAccessRestricted = true;
 
             // Insert queue 
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
