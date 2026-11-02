@@ -31,6 +31,8 @@ interface ModelConfigFieldProps {
   showJsonOutput?: boolean;
   specialty?: "stt" | "tts";
   hideByok?: boolean;
+  /** Hides the voice, language, and speed pickers when the caller renders its own. */
+  hideVoiceConfig?: boolean;
 }
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -55,6 +57,7 @@ const ModelConfigField = ({
   showJsonOutput = true,
   specialty,
   hideByok = false,
+  hideVoiceConfig = false,
 }: ModelConfigFieldProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -361,7 +364,7 @@ const ModelConfigField = ({
         : isVoiceRealtime
           ? "Realtime Model"
           : undefined;
-  const showInlineVoiceConfig = isTts || isRealtime;
+  const showInlineVoiceConfig = (isTts || isRealtime) && !hideVoiceConfig;
   const voiceConfigName = isRealtime
     ? "__VoiceConfig__TextToSpeech"
     : name.replace("__ModelConfig__", "__VoiceConfig__");
@@ -460,7 +463,7 @@ const ModelConfigField = ({
 
       {enableModelSetup && <div className="space-y-3.5">{modelAdvancedSettings}</div>}
 
-      {currentModel?.voices?.length ? (
+      {!hideVoiceConfig && currentModel?.voices?.length ? (
         <SelectField
           size="sm"
           name={fieldNames.voice}

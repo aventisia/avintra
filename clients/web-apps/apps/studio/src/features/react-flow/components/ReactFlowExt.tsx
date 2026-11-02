@@ -29,10 +29,10 @@ import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stor
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { VoiceAgentStudio } from "@/features/voice-builder";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
-import { VoicePlatformAssistantUI } from "@/react-toolkit/features/voice-platform-assistant-ui/components/VoicePlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -342,6 +342,15 @@ export const ReactFlowExt = () => {
     ],
   );
 
+  if (isVoiceAgentFlow) {
+    return (
+      <VoiceAgentStudio
+        isLoading={isLoading || isVersionTransitioning}
+        modelLabel={chatModelLabel}
+      />
+    );
+  }
+
   // Render ReactFlow component
   return (
     <ResizablePanelGroup orientation="horizontal" className="!bg-bg p-1.5">
@@ -404,37 +413,23 @@ export const ReactFlowExt = () => {
         <>
           <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
           <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
-            {isVoiceAgentFlow ? (
-              <VoicePlatformAssistantUI
-                flowVersionId={currentFlow.versionId}
-                mode="temporary"
-                allowNewSession
-                title="Voice test"
-                badge="Test mode"
-                description={testPanelDescription}
-                initialMessages={voiceIntroMessages}
-                onRequestComplete={handleChatRequestComplete}
-                defaultActions={testPanelActions}
-              />
-            ) : (
-              <AvPlatformAssistantUI
-                flowVersionId={currentFlow.versionId}
-                mode="temporary"
-                allowNewSession
-                readOnly={isTestChatDisabled}
-                readOnlyMessage={
-                  isTestChatDisabled
-                    ? "Testing is unavailable while this agent is published."
-                    : undefined
-                }
-                title="Test chat"
-                badge="Test mode"
-                description={testPanelDescription}
-                initialMessages={voiceIntroMessages}
-                onRequestComplete={handleChatRequestComplete}
-                defaultActions={testPanelActions}
-              />
-            )}
+            <AvPlatformAssistantUI
+              flowVersionId={currentFlow.versionId}
+              mode="temporary"
+              allowNewSession
+              readOnly={isTestChatDisabled}
+              readOnlyMessage={
+                isTestChatDisabled
+                  ? "Testing is unavailable while this agent is published."
+                  : undefined
+              }
+              title="Test chat"
+              badge="Test mode"
+              description={testPanelDescription}
+              initialMessages={voiceIntroMessages}
+              onRequestComplete={handleChatRequestComplete}
+              defaultActions={testPanelActions}
+            />
           </ResizablePanel>
         </>
       )}

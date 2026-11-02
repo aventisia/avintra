@@ -9,6 +9,7 @@ import { AgentHistoryPage } from "./pages/AgentHistoryPage";
 import { ExecutionLogsPage } from "./pages/ExecutionLogsPage";
 import { FlowPage } from "./pages/FlowPage";
 import { UiBuilderPage } from "./pages/UiBuilderPage";
+import { VoiceConversationsPage } from "./pages/VoiceConversationsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +45,10 @@ const router = createBrowserRouter(
         {
           path: "/ui-builder",
           element: <UiBuilderPage />,
+        },
+        {
+          path: "/agent-conversations",
+          element: <VoiceConversationsPage />,
         },
         {
           path: "/page-not-found",

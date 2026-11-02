@@ -19,6 +19,7 @@ import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { UiBuilderVersions, useIsUiBuilderRoute } from "@/features/ui-builder";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useIsVoiceConversationsRoute } from "@/features/voice-conversations";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import AgentName from "./AgentName";
@@ -38,7 +39,8 @@ const AppHeader: React.FC = () => {
   const isAgentHistory = useIsVersionHistoryRoute();
   const isUiBuilder = useIsUiBuilderRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
-  const isCanvas = !isAgentHistory && !isExecutionLog;
+  const isVoiceConversations = useIsVoiceConversationsRoute();
+  const isCanvas = !isAgentHistory && !isExecutionLog && !isVoiceConversations;
   const isPublished = useReactFlowExtStore((state) => state.isPublished);
   const flowType = useReactFlowExtStore((state) => state.flowType);
 
