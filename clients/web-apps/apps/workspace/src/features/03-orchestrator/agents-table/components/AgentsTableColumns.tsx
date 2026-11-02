@@ -1,20 +1,27 @@
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
-import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
+import { cn } from "@avplatform/ui/lib";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
+import { formatDistanceToNow } from "date-fns";
 
+import { AgentAvatar } from "@/components/AgentAvatar";
+import { PersonAvatar } from "@/components/PersonAvatar";
+import {
+  AGENT_PLATFORMS,
+  AGENT_TYPES,
+} from "@/features/01-build/flows-table/constants/agent-attributes.constant";
+import { getAgentPlatform } from "@/features/01-build/flows-table/utils/agent-attributes.util";
+import { getFlowTypeLabel } from "@/features/01-build/flows-table/utils/flow-type-label.util";
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { TableActions } from "./table-actions/TableActions";
 
-const flowTypeLabelOverrides: Record<string, string> = {
-  Agent: "Automation agent",
-  ChatAgent: "Chat agent",
-};
+const EMPTY_VALUE = <span className="text-muted-foreground">-</span>;
 
 const renderHeader =
   (columnKey: string) =>
@@ -22,121 +29,173 @@ const renderHeader =
     <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
   );
 
+const getLabelMeta = (columnKey: string) => ({ label: getColumnName(columnKey) });
+
+const STATUS_BADGE: Record<
+  "Deployed" | "Disabled" | "Published",
+  { variant: BadgeProps["variant"]; className?: string }
+> = {
+  // `completed` renders a status dot; Deployed keeps its green tokens without one.
+  Deployed: { variant: "outline", className: "border-ok/35 text-ok" },
+  Published: { variant: "default" },
+  Disabled: { variant: "secondary" },
+};
+
 /**
- * Array of table columns for the agents table.
- * Each column object contains an accessorKey, header component, and cell component.
+ * Columns of the published agents table. Cells mirror the Agents page: the type-tinted
+ * agent glyph with a highlighted name, icon platform labels, and avatar creators.
  */
-export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
+export const agentsTableColumns = ({
+  searchText,
+}: {
+  searchText: string;
+}): ColumnDef<AgentsTableDto>[] => [
   getTableCNSelectColumn<AgentsTableDto>({
     enableHiding: true,
-    meta: { label: getColumnName("select") },
+    meta: getLabelMeta("select"),
   }),
   {
     accessorKey: "name",
-    meta: { label: getColumnName("name") },
+    meta: getLabelMeta("name"),
     header: renderHeader("name"),
-    cell: ({ row }) => (
-      <FlowVersionNavLink
-        to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
-        flowName={row.original.name ?? "NAME_NOT_FOUND"}
-        flowVersionNumber={`v${row.original.versionNumber}`}
-      />
-    ),
-  },
-  {
-    accessorKey: "type",
-    meta: { label: getColumnName("type") },
-    header: renderHeader("type"),
     cell: ({ row }) => {
-      const typeValue = String(row.getValue("type"));
+      const agent = row.original;
+      const agentType = AGENT_TYPES.find(
+        (option) => option.value === (agent.type as FlowTypesEnum),
+      );
       return (
-        <div className="w-auto truncate font-medium">
-          {flowTypeLabelOverrides[typeValue] || typeValue}
+        <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
+          <AgentAvatar
+            size="sm"
+            Icon={agentType?.icon}
+            className={cn(
+              "size-[30px] rounded-md",
+              agentType?.tint,
+              agent.isDisabled && "opacity-50 grayscale",
+            )}
+          />
+          <a
+            href={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${agent.refId}&v=${agent.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            draggable={false}
+            title={`View ${agent.name} v${agent.versionNumber} in Agent Builder`}
+            className={cn(
+              "min-w-0 truncate rounded-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
+              agent.isDisabled ? "text-muted-foreground" : "text-ink",
+            )}
+          >
+            <HighlightedText text={agent.name ?? "NAME_NOT_FOUND"} query={searchText} />
+          </a>
+          <span
+            className="shrink-0 font-mono text-[11.5px] tabular-nums text-muted-foreground"
+            title={
+              agent.lastModifiedOn
+                ? `Updated ${formatDistanceToNow(agent.lastModifiedOn, { addSuffix: true })} (${formatDate(agent.lastModifiedOn, true)})`
+                : undefined
+            }
+          >
+            v{agent.versionNumber}
+          </span>
         </div>
       );
     },
   },
   {
+    accessorKey: "type",
+    meta: {
+      ...getLabelMeta("type"),
+      variant: "multiSelect",
+      options: AGENT_TYPES.map(({ value, label, icon }) => ({ value, label, icon })),
+    },
+    header: renderHeader("type"),
+    cell: ({ row }) => (
+      <span className="text-ink-2">
+        {AGENT_TYPES.find((option) => option.value === (row.getValue("type") as FlowTypesEnum))
+          ?.label ?? getFlowTypeLabel(String(row.getValue("type")))}
+      </span>
+    ),
+  },
+  {
+    id: "supportedPlatform",
+    accessorFn: (row) => getAgentPlatform(row),
+    meta: {
+      ...getLabelMeta("supportedPlatform"),
+      variant: "multiSelect",
+      options: AGENT_PLATFORMS,
+    },
+    header: renderHeader("supportedPlatform"),
+    cell: ({ row }) => {
+      const platform = AGENT_PLATFORMS.find(
+        (option) => option.value === getAgentPlatform(row.original),
+      );
+      if (!platform) return EMPTY_VALUE;
+      return (
+        <span className="inline-flex items-center gap-1.5 text-ink-2">
+          <platform.icon className="size-3.5 text-muted-foreground" />
+          {platform.label}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "machineCount",
-    meta: { label: getColumnName("machineCount") },
+    meta: getLabelMeta("machineCount"),
     header: renderHeader("machineCount"),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-mono tabular-nums">
-        {row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent
+      <div className="w-auto truncate font-mono tabular-nums text-ink-2">
+        {row.original.type === FlowTypesEnum.Agent || row.original.type === FlowTypesEnum.ChatAgent
           ? row.getValue("machineCount")
           : "NA"}
       </div>
     ),
   },
   {
-    accessorKey: "supportedPlatform",
-    meta: { label: getColumnName("supportedPlatform") },
-    header: renderHeader("supportedPlatform"),
+    accessorKey: "status",
+    meta: getLabelMeta("status"),
+    header: renderHeader("status"),
     cell: ({ row }) => {
-      const supportedPlatform = row.original?.supportedPlatform;
-      let platform = "Cloud & Windows";
-      if (supportedPlatform == "windows") {
-        platform = "Windows";
+      const { isDisabled, machineCount } = row.original;
+      let status: "Disabled" | "Deployed" | "Published" = "Published";
+      if (isDisabled) {
+        status = "Disabled";
+      } else if ((machineCount ?? 0) > 0) {
+        status = "Deployed";
       }
+      const { variant, className } = STATUS_BADGE[status];
       return (
-        <div className="w-auto truncate font-medium">
-          <Badge className="" variant={"outline"}>
-            {platform}
-          </Badge>
-        </div>
+        <Badge variant={variant} className={className}>
+          {status}
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "status",
-    meta: { label: getColumnName("status") },
-    header: renderHeader("status"),
+    accessorKey: "createdBy",
+    meta: getLabelMeta("createdBy"),
+    header: renderHeader("createdBy"),
     cell: ({ row }) => {
-      const { isDisabled, machineCount } = row.original;
-
-      const statusVariant: {
-        Deployed: BadgeProps["variant"];
-        Disabled: BadgeProps["variant"];
-        Published: BadgeProps["variant"];
-      } = {
-        Deployed: "completed",
-        Disabled: "secondary",
-        Published: "default",
-      };
-
-      let status: "Disabled" | "Deployed" | "Published" = "Published";
-      const count = machineCount ?? 0; // fallback to 0 if undefined
-
-      if (isDisabled) {
-        status = "Disabled";
-      } else if (count > 0) {
-        status = "Deployed";
-      } else {
-        status = "Published";
-      }
-
-      return <Badge variant={statusVariant[status]}>{status}</Badge>;
+      const name = row.getValue("createdBy") as string | null;
+      if (!name) return EMPTY_VALUE;
+      return (
+        <span className="inline-flex min-w-0 items-center gap-2">
+          <PersonAvatar name={name} />
+          <span className="max-w-[12rem] truncate text-ink-2">{name}</span>
+        </span>
+      );
     },
   },
   {
-    accessorKey: "createdBy",
-    meta: { label: getColumnName("createdBy") },
-    header: renderHeader("createdBy"),
-    cell: ({ row }) => (
-      <div className="w-auto truncate max-w-72 font-medium">{row.getValue("createdBy")}</div>
-    ),
-  },
-  {
     accessorKey: "createdOn",
-    meta: { label: getColumnName("createdOn") },
+    meta: getLabelMeta("createdOn"),
     header: renderHeader("createdOn"),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-mono tabular-nums">
+      <span
+        className="font-mono text-[12.5px] tabular-nums text-ink-2"
+        title={formatDate(row.getValue("createdOn"), true)}
+      >
         {formatDate(row.getValue("createdOn"))}
-      </div>
+      </span>
     ),
   },
   getRowActionsColumn<AgentsTableDto>({
