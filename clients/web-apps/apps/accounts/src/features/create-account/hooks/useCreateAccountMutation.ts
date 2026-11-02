@@ -1,5 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
-import { setUserSessionLocally } from "@avplatform/ui/utils";
+import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -28,6 +28,7 @@ export const useCreateAccountMutation = () => {
       setCreateAccountData(null);
 
       // Set authenticated user locally
+      markFreshLogin();
       setUserSessionLocally(httpResponse.data);
 
       // Redirect to workspace app
