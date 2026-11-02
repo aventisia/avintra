@@ -1,5 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { Cloud, MessagesSquare, Monitor, Workflow } from "lucide-react";
+import { Cloud, MessagesSquare, Mic, Monitor, Workflow } from "lucide-react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
@@ -18,6 +18,12 @@ export const AGENT_TYPES = [
     label: "Chat agent",
     icon: MessagesSquare,
     tint: "bg-[color-mix(in_srgb,#0d9488_10%,var(--surface))] text-[color-mix(in_srgb,#0d9488_75%,var(--ink))] ring-[color-mix(in_srgb,#0d9488_25%,transparent)]",
+  },
+  {
+    value: FlowTypesEnum.VoiceAgent,
+    label: "Voice agent",
+    icon: Mic,
+    tint: "bg-[color-mix(in_srgb,#c026d3_10%,var(--surface))] text-[color-mix(in_srgb,#c026d3_75%,var(--ink))] ring-[color-mix(in_srgb,#c026d3_25%,transparent)]",
   },
 ];
 

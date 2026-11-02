@@ -6,6 +6,11 @@ import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsEx
 import { useFetchVersionHistoryList } from "@/features/version-history/hooks/useFetchVersionHistoryList";
 import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import {
+  VOICE_CONVERSATIONS_PATH,
+  useIsVoiceConversationsRoute,
+} from "@/features/voice-conversations";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 export const StudioViewSwitch = () => {
   const withQueryParams = useCarryParams(["f", "v", "return"]);
@@ -13,12 +18,24 @@ export const StudioViewSwitch = () => {
   const { data } = useFetchVersionHistoryList();
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+  const isVoiceConversations = useIsVoiceConversationsRoute();
+  const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
 
-  const views = [
-    { label: "Canvas", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
-    { label: "Runs", path: "/execution-log", isActive: isExecutionLog },
-    { label: "Versions", path: "/agent-history", isActive: isAgentHistory },
-  ];
+  const views = isVoiceAgent
+    ? [
+        { label: "Build", path: "/agent", isActive: !isAgentHistory && !isVoiceConversations },
+        {
+          label: "Conversations",
+          path: VOICE_CONVERSATIONS_PATH,
+          isActive: isVoiceConversations,
+        },
+        { label: "Versions", path: "/agent-history", isActive: isAgentHistory },
+      ]
+    : [
+        { label: "Canvas", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
+        { label: "Runs", path: "/execution-log", isActive: isExecutionLog },
+        { label: "Versions", path: "/agent-history", isActive: isAgentHistory },
+      ];
 
   const openView = (path: string) => {
     if (path === "/agent-history" && !data?.data?.length) {

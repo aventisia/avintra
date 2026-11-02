@@ -27,6 +27,10 @@ export type { ConversationMessageLike } from "./lib/conversation-messages";
 export { createVoiceSfx } from "./lib/voice-sfx";
 export type { VoiceSfx } from "./lib/voice-sfx";
 
+export { VoiceCallView } from "./components/voice/voice-call-view";
+export { VoiceCaptions } from "./components/voice/voice-captions";
+export type { VoiceCallScriptTurn, VoiceCaptionTurn } from "./types/voice-call.type";
+
 export { useHasPendingToolCalls, useToolCallCoordinatorStore } from "./stores/tool-call-store";
 export type { ToolCallEntry } from "./stores/tool-call-store";
 

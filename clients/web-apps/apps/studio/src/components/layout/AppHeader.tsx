@@ -20,6 +20,7 @@ import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useIsVoiceConversationsRoute } from "@/features/voice-conversations";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import AgentName from "./AgentName";
@@ -40,6 +41,8 @@ const AppHeader: React.FC = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+  const isVoiceConversations = useIsVoiceConversationsRoute();
+  const isReadOnlyView = isAgentHistory || isExecutionLog || isVoiceConversations;
   const serverBranding = useBrandingStore((state) => state.branding);
   const headerLabel =
     serverBranding?.appName ||
@@ -47,8 +50,10 @@ const AppHeader: React.FC = () => {
       ? "Agent Builder"
       : undefined);
 
-  // ChatAgent flows hide search, flow settings, and studio preferences.
+  // ChatAgent flows hide search, flow settings, and studio preferences; VoiceAgent flows have no canvas to search.
   const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
+  const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
+  const hidesCanvasTools = isChatAgent || isVoiceAgent;
 
   // Persistent watcher for the publish alert dialog close. The Publish button does not own
   // the dialog lifecycle, so this header component watches the alert dialog
@@ -93,21 +98,23 @@ const AppHeader: React.FC = () => {
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
 
           {/* Version selector */}
-          {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
+          {!isReadOnlyView ? <FlowVersions /> : <ViewOnlyVersionSelector />}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex min-w-0 shrink-0 items-center justify-center gap-2">
           <StudioViewSwitch />
           {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}{" "}
         </div>
-        {!isAgentHistory && !isExecutionLog ? (
+        {!isReadOnlyView ? (
           <div className="flex min-w-0 items-center justify-end">
             <div className="mr-2 flex min-w-0 items-center gap-1 text-ink">
               <PresenceAvatars />
 
-              {!isChatAgent && <SearchCommandTrigger />}
+              {!hidesCanvasTools && <SearchCommandTrigger />}
 
-              {!isChatAgent && import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
+              {!hidesCanvasTools && import.meta.env.MODE !== "production" ? (
+                <SettingsTrigger />
+              ) : null}
 
               {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
               <Chat className="mt-0 mlg:mt-4" />
@@ -121,7 +128,7 @@ const AppHeader: React.FC = () => {
           </div>
         ) : (
           <div className="flex min-w-0 items-center justify-end gap-1">
-            {!isChatAgent && <SearchCommandTrigger />}
+            {!hidesCanvasTools && <SearchCommandTrigger />}
             <Badge variant="outline" className="shrink-0">
               View only
             </Badge>
