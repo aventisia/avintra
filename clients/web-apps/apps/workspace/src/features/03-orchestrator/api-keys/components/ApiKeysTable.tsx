@@ -36,6 +36,7 @@ export const ApiKeysTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns,
+    getRowId: (row) => row.id,
     initialState: API_KEYS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],
