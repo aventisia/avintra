@@ -4,7 +4,7 @@ using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
-[DisplayName("Launch Excel Application"), Description("Launches a new Excel application instance or opens an existing Excel document.")]
+[DisplayName("Launch Excel Application"), Description("Launches a dedicated new Excel application instance and optionally opens an Excel document in it.")]
 [NodeMetadata(icon: "/assets/Excel.svg")]
 public class LaunchExcelNode : BaseNode
 {
@@ -87,21 +87,8 @@ public class LaunchExcelNode : BaseNode
             var launchMode = LaunchMode.Get(context);
             var makeVisible = MakeInstanceVisible.Get(context);
 
-            try
-            {
-                excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel);
-                if (makeVisible)
-                    excelApp.Visible = true;
-            }
-            catch (OfficeAutomationException)
-            {
-                throw;
-            }
-            catch
-            {
-                excelApp = OfficeAutomationHelper.CreateApplication(OfficeApplication.Excel);
-                excelApp.Visible = makeVisible;
-            }
+            excelApp = OfficeAutomationHelper.CreateApplication(OfficeApplication.Excel);
+            excelApp.Visible = makeVisible;
 
             switch (launchMode)
             {
