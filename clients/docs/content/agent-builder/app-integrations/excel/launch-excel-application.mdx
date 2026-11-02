@@ -4,6 +4,8 @@ import { Callout, Steps } from "nextra/components";
 
 The **Launch Excel Application** node allows you to open an existing Excel document or create a new one directly from your flow. This can be useful for starting Excel processing automatically as part of your task or automation. You can specify whether to open Excel visibly or in the background and apply additional options like opening a document as read-only or using specific protection passwords.
 
+The node always starts a **dedicated new Excel instance** for your flow. It never uses an Excel instance that is already open on your desktop, so your own workbooks are left untouched. To work with an Excel you already have open, use the **Attach to Running Excel Workbook** node.
+
 ## Configuration Options
 
 | Field Name                    | Description                                                                                                      | Input Type | Required? | Default Value |
@@ -12,8 +14,6 @@ The **Launch Excel Application** node allows you to open an existing Excel docum
 | **Document Path**             | The path to the Excel document to open. Required if **Launch Mode** is **Open Existing**.                        | Text       | No        | _(empty)_     |
 | **Make Instance Visible**     | If true, the Excel application will be visible.                                                                  | Switch     | No        | true          |
 | **Open as ReadOnly**          | If true, opens the document in read-only mode. Applicable if **Launch Mode** is **Open Existing**.               | Switch     | No        | _(empty)_     |
-| **Nest Under New Process**    | If true, launches Excel in a new process.                                                                        | Switch     | No        | _(empty)_     |
-| **Use Machine Locale**        | If true, utilizes the machine's locale settings for Excel operations.                                            | Switch     | No        | _(empty)_     |
 | **Read Protection Password**  | Optional password to protect the document from modification. Applicable if **Launch Mode** is **Open Existing**. | Password   | No        | _(empty)_     |
 | **Write Protection Password** | Optional password to prevent the document from being saved. Applicable if **Launch Mode** is **Open Existing**.  | Password   | No        | _(empty)_     |
 
@@ -55,10 +55,6 @@ Decide if you want the Excel application to be visible by toggling the **Make In
 
 ### Step 6
 
-If needed, enable options like **Nest Under New Process** or **Use Machine Locale** as required for your specific use-case.
-
-### Step 7
-
 Once configured, the node will output **ExcelInstance** and **WorkbookInstance** for further flow use.
 
 </Steps>
@@ -66,6 +62,13 @@ Once configured, the node will output **ExcelInstance** and **WorkbookInstance**
 <Callout type="info" title="Tip">
   You don't need to fill out all fields. Depending on your chosen **Launch
   Mode**, some fields are automatically irrelevant and won't need your input.
+</Callout>
+
+<Callout type="info" title="Dedicated Excel instance">
+  Opening a file that is also open in your own Excel leaves two copies open, one
+  in each Excel. Excel may offer the flow's copy as read-only or ask about saving
+  changes to the file. That is Excel's normal behaviour for the same file open
+  twice.
 </Callout>
 
 ## Input/Output Examples

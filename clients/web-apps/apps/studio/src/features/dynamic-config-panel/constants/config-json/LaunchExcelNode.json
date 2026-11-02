@@ -1,7 +1,7 @@
 {
   "name": "LaunchExcelNode",
   "label": "Launch Excel Application",
-  "description": "Launches a new Excel application instance or opens an existing Excel document.",
+  "description": "Launches a dedicated new Excel application instance and optionally opens an Excel document in it.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["windows"],
