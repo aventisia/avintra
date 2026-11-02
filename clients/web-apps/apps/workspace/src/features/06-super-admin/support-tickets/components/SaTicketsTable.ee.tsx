@@ -61,6 +61,7 @@ export const SaTicketsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: saTicketTableColumns,
+    getRowId: (row) => row.id ?? "",
     initialState: SA_TICKETS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["title", "ticketNumber"],

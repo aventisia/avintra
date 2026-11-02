@@ -86,9 +86,10 @@ export const JobsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: jobsTableColumns,
+    getRowId: (row) => row.id,
     initialState: JOBS_INITIAL_STATE,
     persistKey: TABLE_KEY,
-    searchColumns: ["flowName", "flowVersionNumber", "status"],
+    searchColumns: ["job", "status"],
   });
 
   useEffect(() => {

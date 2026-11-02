@@ -32,6 +32,7 @@ export const SubPlansTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: subPlansTableColumns,
+    getRowId: (row) => row.id ?? "",
     initialState: SUB_PLANS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],

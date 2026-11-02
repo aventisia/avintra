@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import {
   TABLE_CN_ACTIONS_COLUMN_ID,
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
   TableCNColumnHeader,
   TableCNSkeleton,
   getTableCNSelectColumn,
@@ -31,7 +36,6 @@ const UPLOADED_ITEMS_QUERY_KEYS = {
 
 const UPLOADED_ITEMS_INITIAL_STATE: InitialTableState = {
   pagination: { pageIndex: 0, pageSize: 50 },
-  columnVisibility: { select: false },
   columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
 };
 
@@ -78,7 +82,7 @@ export function UploadedItemsTable({
     const extraKeys = dataKeys.filter((k) => !schemaKeys.includes(k));
 
     const baseColumns: ColumnDef<any>[] = [
-      getTableCNSelectColumn<any>({ enableHiding: true }),
+      getTableCNSelectColumn<any>(),
       ...generateDTColumns(colData),
       ...extraKeys.map((key) => {
         const label = key.charAt(0).toUpperCase() + key.slice(1);
@@ -168,9 +172,41 @@ export function UploadedItemsTable({
     persistKey: "uploaded-items",
   });
 
+  // Get showAlert handler
+  const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // Remove the selected rows from the upload list
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const removeSelectedRows = () => {
+    const selected = new Set(selectedRows.map((row) => JSON.stringify(row.original)));
+    setUploadedData((prev) => prev?.filter((item) => !selected.has(JSON.stringify(item))));
+    table.toggleAllRowsSelected(false);
+  };
+
   return isProcessiong ? (
     <TableCNSkeleton columnCount={Math.max(columns.length, 1)} />
   ) : (
-    <UploadedItemsDT table={table} />
+    <UploadedItemsDT
+      table={table}
+      actionBar={
+        <TableCNActionBar table={table}>
+          <TableCNActionBarSelection table={table} />
+          <TableCNActionBarSeparator />
+          <TableCNActionBarItem
+            icon={Trash2Icon}
+            tone="destructive"
+            onClick={() =>
+              showDefaultAlertDialog({
+                confirmActionFn: removeSelectedRows,
+                alertType: "delete-multiple",
+                additionalText: `${selectedRows.length} ${selectedRows.length > 1 ? "items" : "item"}`,
+              })
+            }
+          >
+            Remove
+          </TableCNActionBarItem>
+        </TableCNActionBar>
+      }
+    />
   );
 }

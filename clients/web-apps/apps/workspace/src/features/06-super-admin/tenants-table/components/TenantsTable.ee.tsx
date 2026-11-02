@@ -35,6 +35,7 @@ export const TenantsTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns: tenantsTableColumns,
+    getRowId: (row) => row.id ?? "",
     initialState: TENANTS_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],

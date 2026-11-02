@@ -31,7 +31,7 @@ export const BillingHistoryTable = () => {
     columns: billingHistoryTableColumns,
     initialState: BILLING_HISTORY_INITIAL_STATE,
     persistKey: TABLE_KEY,
-    searchColumns: ["invoice"],
+    searchColumns: ["name", "type", "paymentStatus"],
   });
 
   // Return the rendered TableCN component.
