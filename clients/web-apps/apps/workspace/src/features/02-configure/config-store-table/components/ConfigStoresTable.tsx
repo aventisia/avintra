@@ -40,6 +40,7 @@ export const ConfigStoresTable = () => {
   const { table } = useTableCN({
     data: data?.data ?? [],
     columns,
+    getRowId: (row) => row.id ?? "",
     initialState: CONFIG_STORES_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: ["name"],

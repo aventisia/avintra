@@ -1,4 +1,4 @@
-import { DotSeparator, EmptyState } from "@avplatform/ui";
+import { Checkbox, DotSeparator, EmptyState } from "@avplatform/ui";
 import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
@@ -20,6 +20,7 @@ import { useTableTab } from "../hooks/useTableTab";
 import { getVaultCredentialAppIcon } from "../vault-credential-config/constants/vault-credential-app-icon-mapper.constant";
 import { vaultCredentialTableColumns } from "./VaultCredentialTableColumns";
 import { VaultCredentialTableSkeleton } from "./VaultCredentialTableSkeleton";
+import { VaultCredentialBulkActions } from "./vault-credential-row-actions/VaultCredentialBulkActions";
 import { VaultCredentialRowActions } from "./vault-credential-row-actions/VaultCredentialRowActions";
 
 const PAGINATION_PROPS = {
@@ -75,6 +76,11 @@ export const VaultCredentialTable = () => {
                   className="flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3.5 py-2.5 transition-colors hover:border-line-strong"
                 >
                   <div className="flex items-center space-x-4">
+                    <Checkbox
+                      checked={row.getIsSelected()}
+                      onCheckedChange={(value) => row.toggleSelected(!!value)}
+                      aria-label={`Select ${row.original.name ?? "credential"}`}
+                    />
                     <div>
                       <img
                         src={
@@ -172,6 +178,8 @@ export const VaultCredentialTable = () => {
 
           <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
+
+          <VaultCredentialBulkActions table={table} />
         </div>
       ) : (
         <VaultCredentialTableSkeleton />

@@ -50,7 +50,7 @@ export function SaNotificationBulkActions({ table }: SaNotificationBulkActionsPr
         <TableCNActionBarItem
           icon={Trash2}
           tone="destructive"
-          disabled={locked}
+          disabled={locked || selectedRowIds.length === 0}
           onClick={() => {
             showCustomAlertDialog({
               confirmActionFn: () => {
