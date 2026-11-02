@@ -1,4 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
+import { clearLocalStorageKeepingOnboarding, markFreshLogin } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +27,8 @@ export const useInsertSubscriptionMutation = () => {
 
       // Free Plan - No Razorpay needed
       if (variables.amount === 0) {
-        localStorage.clear();
+        clearLocalStorageKeepingOnboarding();
+        markFreshLogin();
         navigate("/redirect?url=" + import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview");
       }
     },

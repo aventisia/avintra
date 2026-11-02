@@ -1,5 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
-import { setUserSessionLocally } from "@avplatform/ui/utils";
+import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +19,7 @@ export const useValidateEntraTokenMutation = () => {
       if (message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
+        markFreshLogin();
         const userSession = setUserSessionLocally(data);
 
         const redirect = getSameOriginRedirectPath(
