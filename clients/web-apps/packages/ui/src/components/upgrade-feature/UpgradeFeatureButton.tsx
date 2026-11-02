@@ -15,6 +15,7 @@ type UpgradeFeatureButtonProps = {
   /** Full description shown in the upgrade dialog. */
   description?: string;
   pricingUrl?: string;
+  upgradePath?: string;
   size?: ButtonProps["size"];
   variant?: ButtonProps["variant"];
   className?: string;
@@ -27,6 +28,7 @@ export const UpgradeFeatureButton = ({
   title,
   description,
   pricingUrl,
+  upgradePath,
   size = "sm",
   variant = "outline",
   className,
@@ -62,6 +64,7 @@ export const UpgradeFeatureButton = ({
         title={title}
         description={description}
         pricingUrl={pricingUrl}
+        upgradePath={upgradePath}
       />
     </>
   );

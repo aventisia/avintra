@@ -30,6 +30,7 @@ export const DateRangeFilter = () => {
     (state) => state.userSession?.deploymentType === "Community",
   );
   const isStarterPlan = useUserSessionStore((state) => state.userSession?.planType === "Starter");
+  const useTenantOverview = isStarterPlan && !isCommunityDeployment;
 
   const hydratedRef = useRef(false);
   const today = useMemo(() => new Date(), []);
@@ -215,7 +216,8 @@ export const DateRangeFilter = () => {
       <UpgradeDialog
         open={showUpgrade}
         onOpenChange={setShowUpgrade}
-        pricingUrl={UPGRADE_PRICING_URL}
+        pricingUrl={useTenantOverview ? undefined : UPGRADE_PRICING_URL}
+        upgradePath={useTenantOverview ? "/tenant/overview" : undefined}
       />
     </>
   );
