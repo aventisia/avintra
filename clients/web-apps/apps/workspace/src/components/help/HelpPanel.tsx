@@ -129,7 +129,7 @@ export const HelpPanel = () => {
       </div>
 
       {showIndex ? (
-        <ScrollArea className="min-h-0 flex-1" viewportClassName="px-2.5 py-3">
+        <ScrollArea className="min-h-0 flex-1" viewportClassName="px-2.5 py-3 [&>div]:!block">
           {(Object.keys(SECTION_LABELS) as HelpSection[]).map((section) => {
             const sectionGuides = getAllGuides().filter(
               (candidate) => candidate.section === section && isGuideAllowed(candidate),
@@ -160,7 +160,10 @@ export const HelpPanel = () => {
         </ScrollArea>
       ) : (
         <>
-          <ScrollArea className="min-h-0 flex-1" viewportClassName="px-4 pb-5 pt-4">
+          <ScrollArea
+            className="min-h-0 flex-1"
+            viewportClassName="px-4 pb-5 pt-4 break-words [&>div]:!block"
+          >
             <h2 className="text-heading text-ink">{guide.title}</h2>
             <p className="mb-4 mt-1 text-body-sm text-muted-foreground">{guide.summary}</p>
             <MarkdownViewer textValue={guide.content} compact />

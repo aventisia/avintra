@@ -32,7 +32,7 @@ const getQueueUrl = (queueId: string, queueName: string, queueType?: string) =>
 
 /**
  * Agent card of the Agents grid view: the type-tinted glyph, name (opens the Agent Builder),
- * type, version, description, and a footer with platform, access level, AI model, folder and
+ * type, version, description, and a footer with AI model, access level, platform, folder and
  * queues, plus the same actions as the table row.
  */
 export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
@@ -53,10 +53,15 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
   const name = <HighlightedText text={flow.name ?? "NAME_NOT_FOUND"} query={searchText} />;
 
   const footerMeta = [
-    platform && (
-      <span key="platform" className={cn(META_CLASS_NAME, "shrink-0")}>
-        <platform.icon className="size-3.5" />
-        {platform.label}
+    firstModel && (
+      <span
+        key="model"
+        className={cn(META_CLASS_NAME, "max-w-[60%] shrink-0")}
+        title={flow.aiModels?.join(", ")}
+      >
+        <Cpu className="size-3.5 shrink-0" />
+        <span className="truncate">{firstModel}</span>
+        {otherModels.length > 0 && <span className="shrink-0">+{otherModels.length}</span>}
       </span>
     ),
     flow.accessLevel && (
@@ -64,11 +69,10 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
         {getAccessLevelLabel(flow.accessLevel)}
       </span>
     ),
-    firstModel && (
-      <span key="model" className={META_CLASS_NAME} title={flow.aiModels?.join(", ")}>
-        <Cpu className="size-3.5 shrink-0" />
-        <span className="truncate">{firstModel}</span>
-        {otherModels.length > 0 && <span className="shrink-0">+{otherModels.length}</span>}
+    platform && (
+      <span key="platform" className={META_CLASS_NAME} title={platform.label}>
+        <platform.icon className="size-3.5 shrink-0" />
+        <span className="truncate">{platform.label}</span>
       </span>
     ),
   ].filter(Boolean);

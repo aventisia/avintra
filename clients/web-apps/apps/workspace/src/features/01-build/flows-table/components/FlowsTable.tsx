@@ -203,7 +203,7 @@ export const FlowsTable = () => {
             <TableCNToolbar
               table={table}
               searchPlaceholder="Search agents and folders..."
-              withViewOptions={false}
+              withViewOptions={view === "table"}
             >
               <CountToggle
                 Icon={Archive}
