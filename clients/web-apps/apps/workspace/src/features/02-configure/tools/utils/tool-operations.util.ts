@@ -26,6 +26,13 @@ type ToolOperation = {
 type ParsedSchemaOperation = Record<string, unknown>;
 
 /**
+ * Formats an operation id for display: "openai.get.models" becomes
+ * "OPENAI_GET_MODELS". Display only; stored ids keep their original form.
+ */
+export const formatOperationName = (operationId: string): string =>
+  operationId.toUpperCase().replace(/\./g, "_");
+
+/**
  * Stable identity key for an operation inside a parsed schema. Verification is
  * preserved across edits only when both the identifier and the method/path match.
  */
