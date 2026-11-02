@@ -98,6 +98,7 @@ Apply every item to each touched file:
 7. Non-trivial logic is decomposed and self-documenting; the only inline comments are `IMPORTANT NOTE:`s.
 8. New or touched non-component modules use the dot suffixes.
 9. `interface` appears only in `.dto.ts` files; `type` everywhere else.
+10. Feature, `.apis.ts`, and DTO names match the backend controller, service, and DTO names for the same domain, differing only in casing.
 
 ## Artifact contents
 

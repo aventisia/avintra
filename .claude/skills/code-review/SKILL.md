@@ -34,6 +34,8 @@ Logic flaws, race conditions, unhandled exceptions or promises, data loss, missi
 
 One responsibility per file. Components, models, utilities, services, and integrations live in separate files inside clear domain boundaries, following the feature-folder layout the area `AGENTS.md` defines. Flag oversized files and logic crammed into one file.
 
+A feature carries the same name on the frontend and the backend: the `src/features/<feature>/` folder, its `.apis.ts` and DTO files, and the backend controller, service, and DTOs name the domain identically, differing only in casing (kebab-case, camelCase, PascalCase). Flag every mismatch (`machines` vs `RunnerController`, `job-schedules` vs `TriggersController`) as an issue, naming both sides and the name to converge on.
+
 ### 3. Code Reuse
 
 New logic written where an existing method, hook, helper, utility, or library already does the job, and copy-pasted patterns. Name the existing abstraction to reuse.
