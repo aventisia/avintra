@@ -20,7 +20,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
     : FLOW_TYPE_OPTIONS;
 
   return (
-    <fieldset disabled={isLocked}>
+    <fieldset disabled={isLocked} className="min-w-0">
       <legend className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-2">
         Type
         {isLocked && (

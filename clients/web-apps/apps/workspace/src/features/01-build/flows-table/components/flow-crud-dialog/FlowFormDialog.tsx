@@ -131,7 +131,7 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
       }
     >
       <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-4">
-        <fieldset disabled={isReadMode} className="space-y-4">
+        <fieldset disabled={isReadMode} className="min-w-0 space-y-4">
           <FormField
             htmlFor={nameId}
             label="Name"
