@@ -1,5 +1,5 @@
 import { ToolDto } from "../../dtos/index";
-import { normalizeToolOperations } from "../../utils/tool-operations.util";
+import { formatOperationName, normalizeToolOperations } from "../../utils/tool-operations.util";
 
 type OperationListProps = {
   tool: ToolDto;
@@ -37,7 +37,7 @@ export const OperationList = ({ tool, showTitle }: OperationListProps) => {
             <div key={operation.operationId} className="rounded border p-3 bg-muted/30">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-foreground truncate">
-                  {operation.operationId}
+                  {formatOperationName(operation.operationId)}
                 </div>
                 {(operation.description || operation.summary) && (
                   <div className="text-xs text-muted-foreground mt-1">
