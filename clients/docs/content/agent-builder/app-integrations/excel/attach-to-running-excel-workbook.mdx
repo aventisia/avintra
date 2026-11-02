@@ -4,6 +4,8 @@ import { Callout, Steps } from "nextra/components";
 
 The **Attach to Running Excel Workbook** node allows you to connect to an open instance of Microsoft Excel running on your computer. If a specific workbook is not open, this node can open it for you. This is particularly useful for automating tasks in Excel without the need to manually open files or create new Excel instances.
 
+This is the explicit, and only, way to work with an Excel you already have open. The **Launch Excel Application** node always starts its own dedicated new instance instead.
+
 - Quickly access and manipulate data in an existing Excel workbook.
 - Automate the process of opening frequently used workbooks.
 - Integrate Excel data into broader workflows without manual intervention.
@@ -28,7 +30,7 @@ Add **Attach to Running Excel Workbook** node into your flow.
 
 ### Step 2
 
-In the **Excel Application** field, specify the running Excel application instance you wish to connect to.
+In the **Excel Application** field, specify the running Excel application instance you wish to connect to, that is, the Excel you already have open.
 
 ### Step 3
 
