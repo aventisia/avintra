@@ -11,7 +11,6 @@ import { toast } from "sonner";
 
 import { ROLE_OM } from "@/constants/roles";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
-import { getDialogHeadingDescription as getConfigStoreDialogHeadingDescription } from "@/features/02-configure/config-store-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
 import { getDialogHeadingDescription as getSkillsDialogHeadingDescription } from "@/features/02-configure/skill-registry/constants";
@@ -63,9 +62,9 @@ const QueueCrudDialogContent = lazy(() =>
     (m) => ({ default: m.QueueCrudDialogContent }),
   ),
 );
-const ConfigStoreCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/config-store-table/components/config-store-crud-dialog/ConfigStoreCrudDialogContent").then(
-    (m) => ({ default: m.ConfigStoreCrudDialogContent }),
+const ConfigStoreFormDialog = lazy(() =>
+  import("@/features/02-configure/config-store-table/components/config-store-crud-dialog/ConfigStoreFormDialog").then(
+    (m) => ({ default: m.ConfigStoreFormDialog }),
   ),
 );
 const KBCrudDialogContent = lazy(() =>
@@ -197,9 +196,7 @@ const crudDialogRegistry: CrudDialogRegistry = {
     Content: QueueCrudDialogContent,
   },
   configstore: {
-    maxWidth: "!max-w-[36rem]",
-    getHeader: getConfigStoreDialogHeadingDescription,
-    Content: ConfigStoreCrudDialogContent,
+    Dialog: ConfigStoreFormDialog,
   },
   knowledgeBase: {
     maxWidth: "!max-w-[36rem]",
