@@ -8,7 +8,7 @@ export default defineConfig(({ mode }): UserConfig => {
   const globalAdminApiTarget =
     process.env.VITE_GLOBALADMIN_API_TARGET ??
     env.VITE_GLOBALADMIN_API_TARGET ??
-    "http://localhost:4002";
+    "http://localhost:4004";
   const accountsApiTarget =
     process.env.VITE_ACCOUNTS_API_TARGET ?? env.VITE_ACCOUNTS_API_TARGET ?? "http://localhost:4000";
   const config: UserConfig = {

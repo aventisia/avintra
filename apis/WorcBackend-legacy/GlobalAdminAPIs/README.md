@@ -22,10 +22,10 @@ From this directory, so the service finds its own `.env.local`:
 dotnet run
 ```
 
-The API listens on port `4002` and serves everything under `/api`, with Swagger at `/swagger`. Startup loads one
+The API listens on port `4004` and serves everything under `/api`, with Swagger at `/swagger`. Startup loads one
 committed `appsettings.json`, the shared `serilogsettings.json` linked from `AspNetToolkit/`, an optional
 `appsettings.<Environment>.json`, and — in `Localhost` only — the gitignored `.env.local` next to this file, before
-Kestrel binds. `dotnet run` applies `Properties/launchSettings.json` first, whose `https://localhost:4002` wins over
+Kestrel binds. `dotnet run` applies `Properties/launchSettings.json` first, whose `https://localhost:4004` wins over
 `.env.local`; pass `--no-launch-profile` to let the file's `ASPNETCORE_URLS` decide the address.
 
 Values are validated in **every** environment, `Localhost` included: a missing or blank required variable ends startup
@@ -119,7 +119,7 @@ Adapted files — the only four:
 | ---- | ------ |
 | `Services/Implementions/EmailService.cs` | namespace `AspNetToolkit.Services` → `GlobalAdminAPIs.Services` (the old name collides with `AspNetToolkit`) |
 | `Extensions/AppServicesExtension.cs` | dropped the stray `using AspNetToolkit.Services;` |
-| `Properties/launchSettings.json` | port `4004` → `4002` |
+| `Properties/launchSettings.json` | port `4004` → `4002` → `4004` (source value restored) |
 | `appsettings.Localhost.json` | `AppBaseUrl` `localhost:4004` → `localhost:4002` |
 
 Those per-environment setting files, together with this project's separate `serilogsettings.json`, are no longer in the

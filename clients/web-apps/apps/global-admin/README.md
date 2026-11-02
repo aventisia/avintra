@@ -16,7 +16,7 @@ npm install
 npx turbo run dev --filter=global-admin
 ```
 
-The app runs on port `3003` by default and is served from `/global-admin/`. In development it proxies `/global-admin/api` to `http://localhost:4002` and `/accounts/api` to `http://localhost:4000`.
+The app runs on port `3003` by default and is served from `/global-admin/`. In development it proxies `/global-admin/api` to `http://localhost:4004` and `/accounts/api` to `http://localhost:4000`.
 
 ## Access
 
@@ -53,4 +53,4 @@ Per-environment defaults live in `.env.<environment>`. Local overrides should go
 ## Deploying under /global-admin
 
 - **Web files** - Jenkins rsyncs the build to `/var/www/aventisia.com/clients/global-admin/`.
-- **Routing** - `deploy/nginx/sites-available/aventisia.worc` serves `/global-admin/` from that directory and proxies `/global-admin/api/` to `http://globaladmin-apis:4002/api/`. The API service, container name, and network alias stay `globaladmin`; only the public path is `global-admin`.
+- **Routing** - `deploy/nginx/sites-available/aventisia.worc` serves `/global-admin/` from that directory and proxies `/global-admin/api/` to `http://globaladmin-apis:4004/api/`. The API service, container name, and network alias stay `globaladmin`; only the public path is `global-admin`.
