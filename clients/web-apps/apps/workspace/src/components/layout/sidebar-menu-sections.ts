@@ -225,15 +225,6 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
     menuItems: [
       {
         permissions: ["TA"],
-        Icon: BookOpenCheckIcon,
-        name: "Get started",
-        route: "/tenant/get-started",
-        hub: "admin",
-        type: ["Commercial", "Enterprise", "Community"],
-        hideWhenOnboardingComplete: true,
-      },
-      {
-        permissions: ["TA"],
         Icon: IdCardIcon,
         name: "Tenant",
         route: "/tenant/overview",
@@ -412,7 +403,6 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
 export function getSidebarMenuBasedOnPermissions(
   userRoles: string[],
   deploymentType: DeploymentType,
-  isOnboardingComplete = false,
 ): SidebarMenuSectionType<HubId>[] {
   return sidebarMenuSections
     .map((section) => {
@@ -420,9 +410,7 @@ export function getSidebarMenuBasedOnPermissions(
       const filteredMenuItems = section.menuItems.filter(
         (item) =>
           (!item.permissions || item.permissions.some((role) => userRoles.includes(role))) &&
-          item.type?.includes(deploymentType) &&
-          // Hide the Get Started item once the user has completed onboarding.
-          !(item.hideWhenOnboardingComplete && isOnboardingComplete),
+          item.type?.includes(deploymentType),
       );
 
       // Only return the section if it has at least one visible menu item

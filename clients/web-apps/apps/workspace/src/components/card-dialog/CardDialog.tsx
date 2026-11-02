@@ -1,8 +1,9 @@
-import { Dialog, DialogPortal, DialogPrimitive } from "@avplatform/ui/dialog";
+import { DialogPrimitive } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { X } from "lucide-react";
-import { MotionConfig, motion } from "motion/react";
-import { type ReactNode, useRef } from "react";
+import type { ReactNode } from "react";
+
+import { CardDialogFrame } from "./CardDialogFrame";
 
 type CardDialogProps = {
   isOpen: boolean;
@@ -38,76 +39,53 @@ export const CardDialog = ({
   isDismissLocked = false,
   isOutsideClickLocked = false,
 }: CardDialogProps) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-
   const requestClose = () => {
     if (!isDismissLocked) onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && requestClose()}>
-      <DialogPortal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-scrim data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content
-          ref={contentRef}
-          aria-describedby={undefined}
-          onOpenAutoFocus={(event) => {
-            const autofocusTarget =
-              contentRef.current?.querySelector<HTMLElement>("[data-autofocus]");
-            if (!autofocusTarget) return;
-            event.preventDefault();
-            autofocusTarget.focus();
-          }}
-          onPointerDown={(event) => {
-            if (event.target === event.currentTarget && !isOutsideClickLocked) requestClose();
-          }}
-          className="fixed inset-0 z-50 flex items-start justify-center px-4 pb-4 pt-[max(4.5rem,12vh)] outline-none data-[state=closed]:duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+    <CardDialogFrame
+      isOpen={isOpen}
+      onClose={requestClose}
+      isOutsideClickLocked={isOutsideClickLocked}
+      aria-describedby={undefined}
+      className="items-start px-4 pb-4 pt-[max(4.5rem,12vh)]"
+      panelClassName={cn(
+        "max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] rounded-lg bg-popover ring-1 ring-line",
+        widthClassName,
+      )}
+    >
+      <header className="flex items-start gap-4 px-6 pb-4 pt-6">
+        {mark}
+        <div className="mt-1 min-w-0 flex-1">
+          <p
+            className={cn(
+              "text-[11px] font-semibold uppercase tracking-[0.1em] text-primary",
+              eyebrowClassName,
+            )}
+          >
+            {eyebrow}
+          </p>
+          <DialogPrimitive.Title className="truncate text-heading text-ink">
+            {title}
+          </DialogPrimitive.Title>
+        </div>
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={requestClose}
+          disabled={isDismissLocked}
+          className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
         >
-          <MotionConfig reducedMotion="user">
-            <motion.section
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", duration: 0.5, bounce: 0.16 }}
-              className={cn(
-                "relative flex max-h-[calc(100dvh_-_max(4.5rem,12vh)_-_1rem)] flex-col overflow-hidden rounded-lg bg-popover text-ink ring-1 ring-line",
-                widthClassName,
-              )}
-            >
-              <header className="flex items-start gap-4 px-6 pb-4 pt-6">
-                {mark}
-                <div className="mt-1 min-w-0 flex-1">
-                  <p
-                    className={cn(
-                      "text-[11px] font-semibold uppercase tracking-[0.1em] text-primary",
-                      eyebrowClassName,
-                    )}
-                  >
-                    {eyebrow}
-                  </p>
-                  <DialogPrimitive.Title className="truncate text-heading text-ink">
-                    {title}
-                  </DialogPrimitive.Title>
-                </div>
-                <button
-                  type="button"
-                  aria-label="Close"
-                  onClick={requestClose}
-                  disabled={isDismissLocked}
-                  className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
-                >
-                  <X className="size-4" />
-                </button>
-              </header>
+          <X className="size-4" />
+        </button>
+      </header>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-5 pt-1">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-5 pt-1">{children}</div>
 
-              <footer className="flex items-center justify-between gap-4 border-t border-line bg-sunken/70 px-6 py-3.5">
-                {footer}
-              </footer>
-            </motion.section>
-          </MotionConfig>
-        </DialogPrimitive.Content>
-      </DialogPortal>
-    </Dialog>
+      <footer className="flex items-center justify-between gap-4 border-t border-line bg-sunken/70 px-6 py-3.5">
+        {footer}
+      </footer>
+    </CardDialogFrame>
   );
 };

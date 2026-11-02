@@ -51,7 +51,6 @@ const guides: HelpGuideContent[] = [
   // Build
   {
     id: "get-started",
-    routes: ["/tenant/get-started"],
     title: "Get started",
     summary:
       "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",

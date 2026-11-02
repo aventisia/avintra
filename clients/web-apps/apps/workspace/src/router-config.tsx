@@ -41,7 +41,6 @@ import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
-import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
 import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
@@ -274,10 +273,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "overview",
             element: <TenantPage />,
-          },
-          {
-            path: "get-started",
-            element: <GetStartedPageLazy />,
           },
           {
             path: "preferences",
