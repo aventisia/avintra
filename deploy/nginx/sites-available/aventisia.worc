@@ -88,7 +88,7 @@ server
 
 	# ----------------- /global-admin -----------------
 	location /global-admin/api/ {
-		proxy_pass http://globaladmin-apis:4002/api/;
+		proxy_pass http://globaladmin-apis:4004/api/;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 

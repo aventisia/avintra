@@ -18,11 +18,11 @@ WORKDIR /app
 COPY --from=build /Publish .
 
 # Set port environment variable
-ENV ASPNETCORE_URLS=http://+:4002
+ENV ASPNETCORE_URLS=http://+:4004
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Expose port
-EXPOSE 4002
+EXPOSE 4004
 
 # Start the application
 ENTRYPOINT ["dotnet", "GlobalAdminAPIs.dll"]
