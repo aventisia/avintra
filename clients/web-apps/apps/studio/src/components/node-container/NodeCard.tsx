@@ -4,6 +4,7 @@ import { CheckIcon, XIcon } from "lucide-react";
 
 import { CustomNodeType } from "@/types/custom-node-type";
 
+import { NodeHeading } from "./node-header/NodeHeading";
 import { NodeRunState } from "./useNodeRunState";
 
 const nodeKindLookup: Partial<Record<CustomNodeType, string>> = {
@@ -30,16 +31,32 @@ const runStateLabel: Record<NodeRunState, string> = {
   failed: "Failed",
 };
 
+export type NodeShape = "square" | "circle" | "wide";
+
+const shapeClass: Record<NodeShape, string> = {
+  square: "size-16 rounded-lg",
+  circle: "size-16 rounded-full",
+  wide: "h-16 w-48 rounded-lg",
+};
+
 interface NodeCardProps extends React.HTMLAttributes<HTMLDivElement> {
   runState: NodeRunState;
   selected?: boolean;
+  shape?: NodeShape;
 }
 
-/** 220×60 Ink step card frame; border follows the run state, selection adds the select ring. */
-export const NodeCard = ({ runState, selected, className, ...props }: NodeCardProps) => (
+/** Ink step card frame in the node's legacy shape; border follows the run state, selection adds the select ring. */
+export const NodeCard = ({
+  runState,
+  selected,
+  shape = "square",
+  className,
+  ...props
+}: NodeCardProps) => (
   <div
     className={cn(
-      "custom-drag-handle relative flex h-[60px] w-[220px] rounded-md border border-line-strong bg-surface text-ink",
+      "custom-drag-handle relative flex border border-line-strong bg-surface text-ink",
+      shapeClass[shape],
       runState === "running" && "border-live",
       runState === "failed" && "border-bad",
       selected && "shadow-select",
@@ -54,24 +71,56 @@ interface NodeCardContentProps {
   kind: React.ReactNode;
   title: string;
   runState: NodeRunState;
+  shape?: NodeShape;
 }
 
-export const NodeCardContent = ({ glyph, kind, title, runState }: NodeCardContentProps) => (
-  <>
-    <span className="grid size-7 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-sunken text-ink-2 [&>div]:contents [&_img]:size-4 [&_svg]:size-4 [&_svg]:text-ink-2">
-      {glyph}
-    </span>
-    <span className="grid min-w-0 flex-1 text-left">
-      <span className="truncate font-mono text-label uppercase text-muted-foreground">{kind}</span>
-      <span className="truncate text-[13.5px] font-semibold leading-[18px] text-ink" title={title}>
-        {title}
+export const NodeCardContent = ({
+  glyph,
+  kind,
+  title,
+  runState,
+  shape = "square",
+}: NodeCardContentProps) =>
+  shape === "wide" ? (
+    <>
+      <span className="grid size-7 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-sunken text-ink-2 [&>div]:contents [&_img]:size-4 [&_svg]:size-4 [&_svg]:text-ink-2">
+        {glyph}
       </span>
-    </span>
-    <NodeStateMark state={runState} />
-  </>
-);
+      <span className="grid min-w-0 flex-1 text-left">
+        <span className="truncate font-mono text-label uppercase text-muted-foreground">
+          {kind}
+        </span>
+        <span
+          className="truncate text-[13.5px] font-semibold leading-[18px] text-ink"
+          title={title}
+        >
+          {title}
+        </span>
+      </span>
+      <NodeStateMark state={runState} />
+    </>
+  ) : (
+    <>
+      <span className="grid place-items-center text-ink-2 [&>div]:contents [&_img]:size-7 [&_svg]:size-6 [&_svg]:text-ink-2">
+        {glyph}
+      </span>
+      <NodeHeading className="left-1/2 -translate-x-1/2">{title}</NodeHeading>
+      {runState !== "idle" && (
+        <NodeStateMark
+          state={runState}
+          className="absolute -right-1.5 -top-1.5 size-4 bg-surface"
+        />
+      )}
+    </>
+  );
 
-export const NodeStateMark = ({ state }: { state: NodeRunState }) => (
+export const NodeStateMark = ({
+  state,
+  className,
+}: {
+  state: NodeRunState;
+  className?: string;
+}) => (
   <span
     role="img"
     aria-label={runStateLabel[state]}
@@ -81,6 +130,7 @@ export const NodeStateMark = ({ state }: { state: NodeRunState }) => (
       state === "success" && "bg-ok text-surface",
       state === "failed" && "bg-bad text-on-bad",
       state === "running" && "text-live",
+      className,
     )}
   >
     {state === "running" && <LoadingSpinner className="size-3.5" />}

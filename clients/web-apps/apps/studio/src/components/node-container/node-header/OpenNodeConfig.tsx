@@ -23,7 +23,7 @@ export const OpenNodeConfig = ({ nodeId, nodeData, children }: OpenNodeConfigPro
   return (
     // Do not use DialogTrigger to open the dialog. It creats focus issue due to multiple DialogTriggers
     <button
-      className="relative flex h-full w-full items-center gap-2.5 rounded-md px-2.5 outline-none focus-visible:shadow-focus"
+      className="relative flex h-full w-full items-center justify-center gap-2.5 rounded-[inherit] px-2.5 outline-none focus-visible:shadow-focus"
       onDoubleClick={() => {
         // Always open (never toggle): double-clicking another node while the
         // panel is open must switch content, not close the panel.
