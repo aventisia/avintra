@@ -21,11 +21,6 @@ type SidebarMenuItemType<THub extends string = string> = {
   subMenuItems?: SidebarSubMenuItemType[];
   type?: DeploymentType[];
   /**
-   * When true, the item is hidden once the user has completed the Get Started
-   * onboarding guide. Used for the Tenant Admin "Get Started" menu item.
-   */
-  hideWhenOnboardingComplete?: boolean;
-  /**
    * Id of the hub that holds the item: the sidebar shows one entry for the hub instead of
    * the item, and the hub's pages list its items in their own menu.
    */

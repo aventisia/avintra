@@ -7,6 +7,7 @@ export * from "./error-message-list";
 export * from "./ip-formatter";
 export * from "./mutation-error";
 export * from "./model-capability.util";
+export * from "./onboarding.util";
 export * from "./redirect-util";
 export * from "./regex-list";
 export * from "./route-match.util";

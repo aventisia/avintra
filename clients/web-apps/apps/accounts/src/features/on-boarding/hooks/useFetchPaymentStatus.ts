@@ -1,4 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
+import { clearLocalStorageKeepingOnboarding, markFreshLogin } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -67,7 +68,8 @@ export const useFetchPaymentStatus = () => {
 
           if (countdownValue < 0) {
             clearInterval(countdownInterval);
-            localStorage.clear(); // Clear payment info from LS
+            clearLocalStorageKeepingOnboarding();
+            markFreshLogin();
 
             setTimeout(() => {
               window.location.assign(import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview");

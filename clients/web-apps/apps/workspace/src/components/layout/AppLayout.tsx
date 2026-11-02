@@ -7,8 +7,9 @@ import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
 import { HelpPanel } from "@/components/help/HelpPanel";
-import { ROLE_SA, ROLE_TA } from "@/constants/roles";
+import { ROLE_SA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
+import { GetStartedDialog } from "@/features/05-tenant-admin/get-started";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
@@ -25,7 +26,6 @@ import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notificatio
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
-import { useOnboardingStore } from "@/stores/onboarding-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppHeader from "./AppHeader";
@@ -95,13 +95,6 @@ export const AppLayout = () => {
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();
 
-  const { isOnboardingComplete, rehydrateOnboarding } = useOnboardingStore(
-    useShallow((state) => ({
-      isOnboardingComplete: state.isComplete,
-      rehydrateOnboarding: state.rehydrateForUser,
-    })),
-  );
-
   // Establish websocket connection and expose ref
   const { connection, isReady } = useWebSocket({
     url: getWebSocketUrl({
@@ -154,7 +147,6 @@ export const AppLayout = () => {
     const filteredSidebarMenu = getSidebarMenuBasedOnPermissions(
       selectedRoles,
       userSession?.deploymentType,
-      isOnboardingComplete,
     );
     // Set the sidebar menu sections
     setSidebarMenuSections(filteredSidebarMenu);
@@ -171,7 +163,6 @@ export const AppLayout = () => {
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
-    isOnboardingComplete,
     isPending,
     selectedRoles,
     setAllowedRoutes,
@@ -180,25 +171,12 @@ export const AppLayout = () => {
     userSession,
   ]);
 
-  // Re-hydrate the onboarding progress for the current user once a session is available.
-  useEffect(() => {
-    if (isPending || !userSession) return;
-    rehydrateOnboarding();
-  }, [isPending, rehydrateOnboarding, userSession]);
-
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
     if (location?.pathname == "/") {
-      // First-run redirect: a Tenant Admin who has not yet completed the Get
-      // Started guide is sent to it before the normal landing page.
-      const isTenantAdmin = userSession?.userRoles?.includes(ROLE_TA);
-      if (isTenantAdmin && !isOnboardingComplete) {
-        navigate("/tenant/get-started");
-        return;
-      }
       navigate(landingUrl);
     }
-  }, [isOnboardingComplete, landingUrl, location?.pathname, navigate, userSession]);
+  }, [landingUrl, location?.pathname, navigate]);
 
   // Routes protection by getting allowed routes form side bar menu section
   useEffect(() => {
@@ -252,6 +230,7 @@ export const AppLayout = () => {
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
           <UnreadNotificationsPoller />
           <AccountDialog />
+          <GetStartedDialog />
         </div>
       )}
       <WorkspaceCrudDialogProvider />
