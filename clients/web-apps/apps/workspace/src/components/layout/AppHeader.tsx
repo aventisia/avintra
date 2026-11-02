@@ -9,15 +9,17 @@ import {
   useUserSessionStore,
 } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { BellIcon, CircleHelpIcon, DownloadIcon, UserIcon } from "lucide-react";
+import { BellIcon, CircleHelpIcon, DownloadIcon, RocketIcon, UserIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
+import { ROLE_TA } from "@/constants/roles";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { AppLogo } from "./AppLogo";
 import { SpaceSelector } from "./SpaceSelector";
@@ -35,6 +37,7 @@ const AppHeader: React.FC = () => {
     useShallow((state) => ({ isHelpOpen: state.isOpen, toggleHelp: state.toggleOpen })),
   );
   const { openAccountDialog } = useAccountDialogUrlState();
+  const openGetStartedGuide = useOnboardingStore((state) => state.openGuide);
   const navigate = useNavigate();
 
   return (
@@ -66,6 +69,9 @@ const AppHeader: React.FC = () => {
             Icon: BellIcon,
             onSelect: () => navigate(NOTIFICATIONS_ROUTE),
           },
+          ...(userSession?.userRoles?.includes(ROLE_TA)
+            ? [{ label: "Get started guide", Icon: RocketIcon, onSelect: openGetStartedGuide }]
+            : []),
           ...(IS_TAURI
             ? []
             : [

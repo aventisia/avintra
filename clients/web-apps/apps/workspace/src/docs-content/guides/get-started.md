@@ -1,6 +1,6 @@
 Welcome to your new tenant! This **Get Started** guide walks you through the five steps to set up your workspace and build your first agent. Follow them in order.
 
-> **Tip:** You can reopen this guide any time from the **Tenant Admin → Get Started** page, or by clicking the **ⓘ** help button on most pages.
+> **Tip:** A tenant admin sees this checklist each time they sign in until they mark it complete or choose **Don't show again**; **Remind me later** hides it for a week. Reopen it any time by searching **Get started** (**Ctrl K** or **⌘K**).
 
 ## Step 1 — Invite users
 

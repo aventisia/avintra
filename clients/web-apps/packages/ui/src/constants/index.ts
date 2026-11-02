@@ -47,6 +47,15 @@ const SESSION_EXPIRED_LS_KEY = "sessionExpired";
 const USER_NAME_LS_KEY = "userName";
 
 /**
+ * Session storage key holding when the tab last signed in; the workspace consumes it to show
+ * the Get Started guide once per sign-in, never on a refresh-token restore.
+ */
+const FRESH_LOGIN_SESSION_KEY = "freshLogin";
+
+/** Prefix of the per-user local storage key that holds the Get Started guide choices. */
+const ONBOARDING_LS_KEY_PREFIX = "onboarding:";
+
+/**
  * The amount of time, in milliseconds, before a request times out.
  * This constant is used to set the maximum duration for HTTP requests.
  */
@@ -98,6 +107,8 @@ export {
   USER_PREFERENCES_LS_KEY,
   SESSION_EXPIRED_LS_KEY,
   USER_NAME_LS_KEY,
+  FRESH_LOGIN_SESSION_KEY,
+  ONBOARDING_LS_KEY_PREFIX,
   REQUEST_TIMEOUT,
   BRANDING_BOOT_TIMEOUT,
   INVALID_CREDS,
