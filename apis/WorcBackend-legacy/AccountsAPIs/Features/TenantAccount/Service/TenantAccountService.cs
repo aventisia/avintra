@@ -29,7 +29,10 @@ public partial class TenantAccountService : ITenantAccountService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-        _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email") ?? string.Empty;
+        // IMPORTANT NOTE: the JWT bearer maps the "email" claim to ClaimTypes.Email, so both names are read.
+        _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email")
+            ?? httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+            ?? string.Empty;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _loginWithExternalAuthService = loginWithExternalAuthService;

@@ -7,6 +7,13 @@ import { useSearchParams } from "react-router-dom";
 import { useCompleteSsoAdminConsentMutation } from "./useCompleteSsoAdminConsentMutation";
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
 
+const getConsentErrorMessage = (error: unknown): string => {
+  const message = (error as { response?: { data?: { message?: string } } })?.response?.data
+    ?.message;
+
+  return message ?? "The identity provider connection could not be completed.";
+};
+
 export const SsoRedirectMain = () => {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
@@ -17,7 +24,7 @@ export const SsoRedirectMain = () => {
   const grantedTenantId = searchParams.get("tenant");
 
   const { validateEntraTokenMutation } = useValidateEntraTokenMutation();
-  const { completeSsoAdminConsentMutation } = useCompleteSsoAdminConsentMutation();
+  const { completeSsoAdminConsentMutation, consentError } = useCompleteSsoAdminConsentMutation();
 
   useEffect(() => {
     if (error) return;
@@ -34,7 +41,14 @@ export const SsoRedirectMain = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, state, error, adminConsent, grantedTenantId]);
 
-  const isFailed = Boolean(error);
+  const consentErrorMessage = consentError ? getConsentErrorMessage(consentError) : null;
+  const failureMessage = error
+    ? (errorDescription ?? "The identity provider returned an error.")
+    : consentErrorMessage;
+  const isFailed = Boolean(failureMessage);
+  const backHref = error
+    ? import.meta.env.VITE_ACCOUNTS_PATH + "login"
+    : import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview";
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-between p-3 pb-3 lg:w-[100%]">
@@ -43,12 +57,17 @@ export const SsoRedirectMain = () => {
       </div>
       {isFailed ? (
         <div className="-mt-4 flex flex-col items-center gap-3 text-center text-md">
-          <p className="font-medium text-destructive">We could not sign you in.</p>
-          <p className="max-w-md text-sm text-muted-foreground">
-            {errorDescription ?? "The identity provider returned an error."}
+          <p className="font-medium text-destructive">
+            {consentErrorMessage
+              ? "We could not connect single sign-on."
+              : "We could not sign you in."}
           </p>
-          <a className="text-sm font-medium text-primary underline-offset-4 hover:underline" href="/login">
-            Back to login
+          <p className="max-w-md text-sm text-muted-foreground">{failureMessage}</p>
+          <a
+            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            href={backHref}
+          >
+            {consentErrorMessage ? "Back to preferences" : "Back to login"}
           </a>
         </div>
       ) : (
