@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { UserMinus2Icon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 
 import { useRemoveUserMutation } from "@/features/share-access/hooks/useRemoveUserMutation";
 
@@ -23,22 +23,20 @@ export const RemoveUserAction = ({ id }: RemoveUserActionProps) => {
     <DropdownMenuItem
       className={cn(
         buttonVariants({ variant: "dropdownCautionItem" }),
-        "group h-7 !px-[0.3rem] text-xs",
+        "group h-7 !px-[0.3rem] text-xs text-bad focus:bg-hover focus:text-bad data-[highlighted]:bg-hover data-[highlighted]:text-bad",
       )}
       onClick={() => {
         showCustomAlertDialog({
           confirmActionFn: () => {
             mutate(id);
           },
-          title: "Remove User",
+          title: "Remove user",
           confirmBtnText: "Remove",
           description: "Are you sure you want to remove this user's access to the Agent?",
         });
       }}
     >
-      <UserMinus2Icon
-        className={cn("mb-[2px] text-destructive group-focus:text-white", "h-3.5 w-3.5")}
-      />
+      <Trash2Icon className={cn("mb-[2px] text-bad", "h-3.5 w-3.5")} />
       Remove
     </DropdownMenuItem>
   );

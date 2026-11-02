@@ -51,23 +51,21 @@ const SubMenuItems = ({ items }: SubMenuItemsProps) => {
     }
   }
 
-  // Render the submenu items
   return (
-    <AccordionContent className="ml-[2rem] flex flex-col p-0 py-1">
-      {items.map((item, index) => (
-        <NavLink
-          key={index}
-          to={item.route}
-          className={({ isActive }) => {
-            return isActive ? "active group" : "";
-          }}
-          onClick={closeNavbarOnSheet}
-        >
-          <li className="flex h-9 cursor-pointer items-center border-l-[3px] border-slate-100 pl-5 pr-3.5 text-sm capitalize hover:border-slate-400 group-[.active]:border-primary">
-            {item.name}
-          </li>
-        </NavLink>
-      ))}
+    <AccordionContent className="p-0">
+      <div className="my-0.5 ml-4 grid gap-0.5 border-l border-line pl-[9px]">
+        {items.map((item, index) => (
+          <NavLink
+            key={index}
+            to={item.route}
+            onClick={closeNavbarOnSheet}
+            className="group relative flex h-[26px] items-center rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
+          >
+            <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
+            <span className="truncate">{item.name}</span>
+          </NavLink>
+        ))}
+      </div>
     </AccordionContent>
   );
 };

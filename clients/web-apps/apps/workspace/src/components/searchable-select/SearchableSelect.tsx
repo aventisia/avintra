@@ -31,7 +31,7 @@ interface SearchableSelectProps {
 const sizeClasses: Record<FormFieldSizeType, string> = {
   xs: "h-7 text-2xs px-2",
   sm: "h-8 text-xs px-2.5",
-  base: "h-10 text-sm px-3",
+  base: "h-control-md text-sm px-3",
 };
 
 export const SearchableSelect = ({
@@ -90,10 +90,10 @@ export const SearchableSelect = ({
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-pop")}
       >
         <Command>
-          <div className="mb-1.5 rounded-lg bg-slate-100">
+          <div className="mb-1.5 rounded-lg bg-sunken">
             <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>

@@ -1,50 +1,37 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { ConfigStoreTypesEnum } from "@avplatform/ui/enums/config-store-types-enum";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { ConfigStoresTableDto } from "../dtos/config-stores-table-dto";
 import { ConfigStoreRowActions } from "./config-store-row-actions/ConfigStoreRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<ConfigStoresTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the config stores table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const configStoresTableColumns = (): ColumnDef<ConfigStoresTableDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<ConfigStoresTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </p>
       </div>
@@ -52,9 +39,8 @@ export const configStoresTableColumns = (): ColumnDef<ConfigStoresTableDto>[] =>
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {getEnumValueByKey(ConfigStoreTypesEnum, row.getValue("type"))}
@@ -63,35 +49,36 @@ export const configStoresTableColumns = (): ColumnDef<ConfigStoresTableDto>[] =>
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
-  createDTActionsColumn<ConfigStoresTableDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<ConfigStoresTableDto>({
+    actions: ({ row }) => (
       <ConfigStoreRowActions
-        rowId={row.id || "rowId"}
-        accessLevel={row.accessLevel}
-        name={row.name}
-        isTenantWideAccess={row.isTenantWideAccess || false}
-        isResourceAccessRestricted={row.isResourceAccessRestricted}
+        rowId={row.original.id || "rowId"}
+        accessLevel={row.original.accessLevel}
+        name={row.original.name}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.original.isResourceAccessRestricted}
       />
     ),
   }),

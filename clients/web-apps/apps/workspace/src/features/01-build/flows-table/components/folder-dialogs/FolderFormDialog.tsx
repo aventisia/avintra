@@ -1,4 +1,5 @@
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
@@ -8,7 +9,9 @@ import { useEffect, useId, useState } from "react";
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import {
@@ -21,11 +24,8 @@ import { useMoveFlowToFolder } from "../../hooks/useMoveFlowToFolder.hook";
 import { useSaveFolder } from "../../hooks/useSaveFolder.hook";
 import { FolderColor } from "../../types/folder-color.type";
 import { MovableAgent } from "../../types/movable-agent.type";
-import { getFieldInputClassName } from "../../utils/field-input.util";
-import { FolderGlyph } from "../folder/FolderGlyph";
 import { FolderMark } from "../folder/FolderMark";
 import { FolderColorPicker } from "./FolderColorPicker";
-import { FormField } from "./FormField";
 
 type FolderFormDialogProps = {
   isOpen: boolean;
@@ -44,14 +44,14 @@ type AgentToMoveCalloutProps = {
 };
 
 const AgentToMoveCallout = ({ agent, folderName, folderColor }: AgentToMoveCalloutProps) => (
-  <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-indigo-50 via-indigo-50/40 to-white px-3.5 py-3 ring-1 ring-indigo-600/10">
+  <div className="flex items-center gap-3 rounded-md bg-sunken px-3.5 py-3 ring-1 ring-line">
     <AgentAvatar size="md" />
-    <ArrowRight className="size-4 shrink-0 text-indigo-300" />
+    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
     <FolderMark color={folderColor} size="sm" />
-    <p className="min-w-0 text-[12.5px] leading-5 text-indigo-900/70">
-      <span className="font-semibold text-indigo-900">{agent.name}</span> moves into{" "}
-      <span className="font-semibold text-indigo-900">{folderName || "this folder"}</span> once it
-      is created.
+    <p className="min-w-0 text-[12.5px] leading-5 text-ink-2">
+      <span className="font-semibold text-ink">{agent.name}</span> moves into{" "}
+      <span className="font-semibold text-ink">{folderName || "this folder"}</span> once it is
+      created.
     </p>
   </div>
 );
@@ -135,16 +135,10 @@ export const FolderFormDialog = ({
       onClose={onClose}
       isDismissLocked={isSaving}
       isOutsideClickLocked={isDirty}
-      mark={
-        <FolderMark
-          color={color}
-          size="lg"
-          className="shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)]"
-        />
-      }
+      mark={<FolderMark color={color} size="lg" />}
       eyebrow={isEditing ? "Edit folder" : "New folder"}
       title={
-        <span className={cn(!trimmedName && "text-slate-300")}>
+        <span className={cn(!trimmedName && "text-muted-foreground")}>
           {trimmedName || (isEditing ? folder?.name : "Untitled folder")}
         </span>
       }
@@ -186,7 +180,7 @@ export const FolderFormDialog = ({
             <FolderGlyph
               className={cn(
                 "pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 transition-colors",
-                trimmedName ? color.glyph : "text-slate-300",
+                trimmedName ? color.glyph : "text-muted-foreground",
               )}
             />
             <input
@@ -232,7 +226,7 @@ export const FolderFormDialog = ({
         )}
 
         <p className="flex gap-2 text-[12px] leading-5 text-muted-foreground">
-          <Info className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
+          <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
           Folders only organize the list. Moving an agent into a folder doesn’t change who can see
           or edit it.
         </p>

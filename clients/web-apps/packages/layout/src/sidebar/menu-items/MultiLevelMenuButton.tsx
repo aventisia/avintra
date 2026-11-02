@@ -17,12 +17,10 @@ interface MultiLevelMenuButtonProps {
  */
 const MultiLevelMenuButton = ({ Icon, name }: MultiLevelMenuButtonProps) => {
   return (
-    <AccordionTrigger className="mx-3 h-9 overflow-hidden rounded-lg pr-1.5 hover:bg-slate-100 hover:no-underline">
-      <div className="flex items-center">
-        <div className="mr-1 flex h-9 w-[2.5rem] items-center justify-center">
-          <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color]" />
-        </div>
-        <span className="whitespace-nowrap text-sm font-medium capitalize">{name}</span>
+    <AccordionTrigger className="h-8 gap-[9px] rounded-sm px-2 py-0 text-body-sm font-normal text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink hover:no-underline focus-visible:shadow-focus focus-visible:outline-none motion-reduce:transition-none [&>svg]:text-muted-foreground">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground" />
+        <span className="truncate">{name}</span>
       </div>
     </AccordionTrigger>
   );

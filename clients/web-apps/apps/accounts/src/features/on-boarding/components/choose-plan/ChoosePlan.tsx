@@ -22,7 +22,7 @@ import { PlanTabSkeleton } from "./PlanTabSkeleton";
 const PLAN_INTERVALS = ["monthly", "yearly"] as const;
 
 export const ChoosePlan = () => {
-  useDocumentTitle("Choose Plan");
+  useDocumentTitle("Choose plan");
 
   const [searchParams] = useSearchParams();
   const [selectedPlanName, setSelectedPlanName] = useState("");
@@ -91,7 +91,7 @@ export const ChoosePlan = () => {
         className="w-full"
       >
         <div className="flex items-center justify-between w-full">
-          <h2 className="text-2xl font-medium text-foreground">Choose Plan</h2>
+          <h2 className="text-title text-ink">Choose a plan</h2>
           <div className="flex gap-2 items-center">
             {storedCountryData !== "India" && (
               <Select
@@ -100,7 +100,7 @@ export const ChoosePlan = () => {
                 onValueChange={(value: string) => setCurrency(value)}
               >
                 <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select Currency" />
+                  <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="USD">USD ($)</SelectItem>

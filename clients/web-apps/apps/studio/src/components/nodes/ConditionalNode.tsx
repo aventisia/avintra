@@ -1,8 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
-import { buttonVariants } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
-import { PlusIcon } from "@heroicons/react/24/outline";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
+import { PlusIcon } from "lucide-react";
 import { memo } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
@@ -34,25 +32,15 @@ export const ConditionalNode = memo(
         {showPlusIcon || isAgentHistory || isExecutionLog ? null : (
           <NodeToolbar offset={5} position={Position.Right}>
             <Button
-              className={cn(
-                buttonVariants({ variant: "outline", size: "icon5" }),
-                "group z-10 rounded-full opacity-50",
-                "hover:bg-primary hover:opacity-100 mt-1",
-                "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
-                "nodrag nopan",
-              )}
+              variant="outline"
+              size="icon5"
+              className="nodrag nopan mt-1 rounded-full"
               onClick={() => addConditionalBranch(data, id)}
             >
-              <PlusIcon
-                className={cn(
-                  "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
-                  "group-hover:text-white group-hover:opacity-100",
-                  "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
-                )}
-              />
+              <PlusIcon className="size-3.5 stroke-[2.5]" />
             </Button>
           </NodeToolbar>
-        )}{" "}
+        )}
       </>
     );
   },

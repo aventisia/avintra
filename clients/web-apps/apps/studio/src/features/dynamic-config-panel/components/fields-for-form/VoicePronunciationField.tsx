@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Input, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -241,7 +241,7 @@ export const VoicePronunciationField = ({
 
       <div className="flex flex-col gap-1.5 mb-4">
         {rows.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No terms added"
             secondaryMessage="Add a term and how it should be spoken."
             Icon={CircleOffIcon}

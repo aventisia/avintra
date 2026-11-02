@@ -1,8 +1,8 @@
+import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { useFetchProjectTemplates } from "../hooks/useFetchProjectTemplates";
 import { TemplateCard } from "./TemplateCard";
 import { TemplateCardSkeleton } from "./TemplateCardSkelton";
@@ -28,12 +28,9 @@ const LibraryTemplates = ({
 
     const checkCategory = (templateType: string) => {
       if (selectedCategory === "All templates") return true;
-      if (selectedCategory === "Automation Agent")
-        return templateType === ProjectTemplateTypesEnum.Agent;
-      if (selectedCategory === "Chat Agent")
-        return templateType === ProjectTemplateTypesEnum.ChatAgent;
-      if (selectedCategory === "Voice Agent")
-        return templateType === ProjectTemplateTypesEnum.VoiceAgent;
+      if (selectedCategory === "Automation agent") return ["Agent"].includes(templateType);
+      if (selectedCategory === "Chat agent") return ["ChatAgent"].includes(templateType);
+      if (selectedCategory === "Voice agent") return ["VoiceAgent"].includes(templateType);
       return templateType.includes(selectedCategory);
     };
 
@@ -80,13 +77,12 @@ const LibraryTemplates = ({
           currentItems.map((item) => <TemplateCard key={item.id} template={item} />)
         ) : (
           // Empty state when no templates found
-          <div className="col-span-2 py-6 text-center md:col-span-3 lg:col-span-4">
-            <div className="mb-4 text-gray-400">
-              <Search className="mx-auto h-12 w-12" />
-            </div>
-            <h3 className="mb-2 text-lg font-medium text-gray-900">No templates found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-          </div>
+          <EmptyState
+            Icon={Search}
+            primaryMessage="No templates found"
+            secondaryMessage="Try adjusting your search or filter criteria"
+            className="col-span-2 py-6 md:col-span-3 lg:col-span-4"
+          />
         )}
       </div>
 

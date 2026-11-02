@@ -19,10 +19,10 @@ const PaymentMethodsDialog = () => {
       <DialogContent className="!max-w-[35rem] space-y-2 px-1">
         <DialogHeader className="border-b px-4 py-4 pb-2">
           <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">Add Payment Method</h2>
+            <h2 className="text-heading">Add payment method</h2>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
               <X className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Add Payment Method</span>
+              <span className="sr-only">Add payment method</span>
             </DialogPrimitive.Close>
           </DialogTitle>
         </DialogHeader>

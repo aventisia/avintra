@@ -99,6 +99,7 @@ export const BillingForm = () => {
       </ScrollArea>
       <div className="flex w-full justify-between">
         <Button
+          size="lg"
           type="button"
           variant={"outline"}
           onClick={() => {
@@ -107,7 +108,7 @@ export const BillingForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={false} primaryText="Continue" />
+        <SubmitButton size="lg" isPending={false} primaryText="Continue" />
       </div>
     </Form>
   );

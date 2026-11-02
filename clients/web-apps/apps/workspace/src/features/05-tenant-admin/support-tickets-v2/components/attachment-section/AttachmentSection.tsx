@@ -1,3 +1,4 @@
+import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DownloadIcon, PaperclipIcon, Trash2Icon } from "lucide-react";
@@ -50,7 +51,7 @@ export const AttachmentSection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Attachments ({attachments.length})</h2>
+        <h2 className="text-heading">Attachments ({attachments.length})</h2>
         {!isClosed && (
           <Button
             type="button"
@@ -59,13 +60,13 @@ export const AttachmentSection = ({
             onClick={() => setUploadDialogOpen(true)}
           >
             <PaperclipIcon className="mr-2 h-4 w-4" />
-            Add Attachment
+            Add attachment
           </Button>
         )}
       </div>
 
       {attachments.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No attachments yet.</p>
+        <EmptyState primaryMessage="No attachments yet" className="py-6" />
       ) : (
         <div className="space-y-2">
           {attachments.map((attachment) => (
@@ -107,7 +108,7 @@ export const AttachmentSection = ({
                     onClick={() => deleteMutation.mutate(attachment.id || "")}
                     disabled={deleteMutation.isPending}
                   >
-                    <Trash2Icon className="h-4 w-4 text-destructive" />
+                    <Trash2Icon className="h-4 w-4 text-bad" />
                   </Button>
                 )}
               </div>

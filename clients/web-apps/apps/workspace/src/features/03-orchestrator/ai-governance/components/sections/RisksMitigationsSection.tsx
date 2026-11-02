@@ -31,10 +31,10 @@ const InfoLabel = ({ children, info }: { children: React.ReactNode; info?: strin
 );
 
 const severityBadgeClass: Record<RiskSeverity, string> = {
-  [RiskSeverity.Low]: "bg-emerald-500/15 text-emerald-600",
-  [RiskSeverity.Medium]: "bg-amber-500/15 text-amber-600",
-  [RiskSeverity.High]: "bg-red-500/15 text-red-600",
-  [RiskSeverity.Critical]: "bg-red-600/20 text-red-700",
+  [RiskSeverity.Low]: "border-ok/35 text-ok",
+  [RiskSeverity.Medium]: "border-warn/35 text-warn",
+  [RiskSeverity.High]: "border-bad/35 text-bad",
+  [RiskSeverity.Critical]: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
@@ -98,7 +98,7 @@ export const RisksMitigationsSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 03"
-      title="Risks & Mitigations"
+      title="Risks & mitigations"
       description="Capture the key risks around the agent and the mitigation plan for each. Severity is computed automatically from likelihood and impact."
     >
       <div className="space-y-3">
@@ -120,7 +120,7 @@ export const RisksMitigationsSection = () => {
               <button
                 type="button"
                 onClick={() => removeRow(index)}
-                className="text-muted-foreground hover:text-destructive"
+                className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
                 aria-label="Remove risk"
               >
                 <Trash2Icon className="h-4 w-4" />
@@ -161,7 +161,7 @@ export const RisksMitigationsSection = () => {
                 </label>
                 <span
                   className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-xs font-bold",
+                    "inline-flex rounded-sm border px-2.5 py-1 text-xs font-bold",
                     severityBadgeClass[row.severity],
                   )}
                 >
@@ -190,7 +190,7 @@ export const RisksMitigationsSection = () => {
             </div>
 
             <Field
-              label="Mitigation Plan"
+              label="Mitigation plan"
               required
               info="Describe the concrete actions taken or planned to reduce the likelihood and/or impact of this risk."
             >
@@ -206,7 +206,7 @@ export const RisksMitigationsSection = () => {
 
         <Button variant="outline" onClick={addRow}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add Risk
+          Add risk
         </Button>
       </div>
     </SectionLayout>

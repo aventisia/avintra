@@ -1,25 +1,25 @@
+import type { BadgeProps } from "@avplatform/ui/badge";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 
-import { JobStatusEnum } from "..";
+import { JobStatusEnum } from "../enums/job-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "selectRow", value: "Select Row" },
-  { key: "flowName", value: "Agent" },
+  { key: "select", value: "Select row" },
+  { key: "job", value: "Job" },
   { key: "status", value: "Status" },
-  { key: "startTimeStamp", value: "Started At" },
-  { key: "endTimeStamp", value: "Ended At" },
+  { key: "startTimeStamp", value: "Started at" },
+  { key: "endTimeStamp", value: "Ended at" },
   { key: "duration", value: "Duration" },
   { key: "creditsConsumed", value: "Credits" },
   { key: "remarks", value: "Remarks" },
-  { key: "isFlowVersionPublished", value: "Is Published" },
+  { key: "isFlowVersionPublished", value: "Is published" },
   { key: "retryCount", value: "Retry #" },
-  { key: "triggerType", value: "Trigger Type" },
+  { key: "triggerType", value: "Trigger type" },
   { key: "priority", value: "Priority" },
-  { key: "createdByName", value: "Created By" },
-  { key: "createdAt", value: "Created At" },
-  { key: "executionLocation", value: "Execution Location" },
-  { key: "remarks", value: "Remarks" },
+  { key: "createdByName", value: "Created by" },
+  { key: "createdAt", value: "Created at" },
+  { key: "executionLocation", value: "Execution location" },
   { key: "flowVersionId", value: "Agent ID" },
   { key: "id", value: "Job ID" },
 ];
@@ -30,17 +30,16 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-// TODO: We need to set the color for each status in the html to avoid tailwind css purging the unused classes
-export const statusColor: { [key in JobStatusEnum]: string } = {
-  [JobStatusEnum.Completed]: "bg-green-200 text-green-700",
-  [JobStatusEnum.Running]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Aborted]: "bg-orange-200 text-orange-600",
-  [JobStatusEnum.Canceled]: "bg-orange-200 text-orange-600",
-  [JobStatusEnum.Cleanup]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Paused]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Resumed]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Retrying]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Created]: "bg-slate-200 text-slate-600",
-  [JobStatusEnum.Failed]: "bg-red-200 text-red-600",
-  [JobStatusEnum.Killed]: "bg-orange-200 text-orange-600",
+export const statusVariant: { [key in JobStatusEnum]: BadgeProps["variant"] } = {
+  [JobStatusEnum.Completed]: "completed",
+  [JobStatusEnum.Running]: "running",
+  [JobStatusEnum.Aborted]: "failed",
+  [JobStatusEnum.Canceled]: "secondary",
+  [JobStatusEnum.Cleanup]: "running",
+  [JobStatusEnum.Paused]: "queued",
+  [JobStatusEnum.Resumed]: "running",
+  [JobStatusEnum.Retrying]: "running",
+  [JobStatusEnum.Created]: "queued",
+  [JobStatusEnum.Failed]: "failed",
+  [JobStatusEnum.Killed]: "failed",
 };

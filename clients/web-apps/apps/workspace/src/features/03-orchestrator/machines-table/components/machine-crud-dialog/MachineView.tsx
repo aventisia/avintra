@@ -1,4 +1,4 @@
-import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
+import { CopyableText, EmptyState, LoadingSpinner, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import {
@@ -11,7 +11,6 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { BanIcon, CheckCircleIcon, MonitorCogIcon, MonitorIcon, NetworkIcon } from "lucide-react";
@@ -21,7 +20,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMachine } from "../../apis/machines-table-apis";
-import { statusColor } from "../../constants/column-display-names";
+import { statusVariant } from "../../constants/column-display-names";
 import type { MachineRecordDto } from "../../dtos/machine-record.dto";
 import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
 
@@ -72,7 +71,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
   if (!machine) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <NoContentMessage
+        <EmptyState
           className="-mt-20"
           Icon={MonitorIcon}
           primaryMessage="Machine record is not available."
@@ -88,7 +87,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
       <ViewDefaultCard>
         {/* Machine profile section */}
         <div className="flex flex-col gap-1">
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Machine Profile</p>
+          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Machine profile</p>
           <CopyableText
             title={`Machine Name: ${machine.name}`}
             textClassName="truncate max-w-[24rem] text-base font-medium leading-tight"
@@ -113,17 +112,17 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
 
         {/* OS Unique Id, Hostname, Username, and User section */}
         <div className="grid grid-cols-2 gap-2">
-          <ViewFieldWithCopy textClassName="font-mono" label="OS Unique Id" value={machine.osID} />
+          <ViewFieldWithCopy textClassName="font-mono" label="OS unique ID" value={machine.osID} />
           <ViewField label="Hostname" value={machine.hostname} />
           <ViewField label="Username" value={machine.username} />
-          <ViewField label="Linked User Account" value={machine.linkedUserAccount} />
+          <ViewField label="Linked user account" value={machine.linkedUserAccount} />
         </div>
       </ViewDefaultCard>
 
       {/* Agents section */}
       <ViewInfoRowsCard
         title="Agents"
-        className="border-primary-100"
+        className="border-line"
         icon={<NewAgentIcon className="size-3.5 text-primary" />}
       >
         {machine.machineFlowVersions && machine.machineFlowVersions.length > 0 ? (
@@ -155,7 +154,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
             ))}
           </div>
         ) : (
-          <ViewInfoRow label="Assigned Agents" value="No agents assigned" />
+          <ViewInfoRow label="Assigned agents" value="No agents assigned" />
         )}
       </ViewInfoRowsCard>
 
@@ -166,12 +165,10 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
       >
         <ViewInfoRow
           label="Status"
-          value={
-            <Badge className={cn("font-mono", statusColor[machine.status])}>{machine.status}</Badge>
-          }
+          value={<Badge variant={statusVariant[machine.status]}>{machine.status}</Badge>}
         />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Last Checked In" value={formatDate(machine.lastCheckedIn, true)} />
+        <ViewInfoRow label="Last checked in" value={formatDate(machine.lastCheckedIn, true)} />
       </ViewInfoRowsCard>
     </ViewContainer>
   );

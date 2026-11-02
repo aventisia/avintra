@@ -11,8 +11,8 @@ export const billingInfoSchema = z
 
     addressLine1: z
       .string()
-      .min(1, { message: reqError("Address Line 1") })
-      .max(255, { message: maxLenError("Address Line 1", 255) }),
+      .min(1, { message: reqError("Address line 1") })
+      .max(255, { message: maxLenError("Address line 1", 255) }),
     addressLine2: z.string().optional(),
 
     state: z.string().optional(),
@@ -27,10 +27,10 @@ export const billingInfoSchema = z
 
     postalCode: z
       .string()
-      .min(1, { message: reqError("Pin Code") })
-      .max(10, { message: maxLenError("Pin Code", 10) })
+      .min(1, { message: reqError("Pin code") })
+      .max(10, { message: maxLenError("Pin code", 10) })
       .regex(numericRegex, {
-        message: numericError("Pin Code"),
+        message: numericError("Pin code"),
       }),
 
     country: z

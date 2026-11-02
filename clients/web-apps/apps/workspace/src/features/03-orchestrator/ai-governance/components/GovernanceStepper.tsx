@@ -7,9 +7,9 @@ import { useAiGovernanceStore, useSelectedAssessment } from "../stores/ai-govern
 import { computeAgentRiskTier } from "../utils/tiering-engine";
 
 const tierBadgeClass: Record<AgentRiskTier, string> = {
-  [AgentRiskTier.Low]: "bg-emerald-500/15 text-emerald-400",
-  [AgentRiskTier.Medium]: "bg-amber-500/15 text-amber-400",
-  [AgentRiskTier.High]: "bg-red-500/15 text-red-400",
+  [AgentRiskTier.Low]: "bg-ok/10 text-ok",
+  [AgentRiskTier.Medium]: "bg-warn/10 text-warn",
+  [AgentRiskTier.High]: "bg-bad/10 text-bad",
 };
 
 const tierLabel: Record<AgentRiskTier, string> = {
@@ -41,22 +41,22 @@ export const GovernanceStepper = () => {
     : null;
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-r border-border bg-muted/30 p-5">
+    <aside className="flex w-72 shrink-0 flex-col border-r border-border bg-sunken p-5">
       <div className="mb-6">
         <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Agent Risk Registry
+          Agent risk registry
         </div>
       </div>
 
       {/* Agent card */}
-      <div className="mb-6 rounded-lg border border-border bg-primary/5 p-4">
+      <div className="mb-6 rounded-lg border border-line bg-surface p-4">
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Evaluating</div>
         <div className="mt-1 truncate text-sm font-semibold">
           {assessment?.agentName || "Untitled Agent"}
         </div>
         <div
           className={cn(
-            "mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide",
+            "mt-3 inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-[11px] font-bold tracking-wide",
             tier ? tierBadgeClass[tier] : "bg-muted text-muted-foreground",
           )}
         >
@@ -87,7 +87,7 @@ export const GovernanceStepper = () => {
                   isActive ? "bg-primary-foreground/20" : "bg-muted",
                 )}
               >
-                {isComplete ? <CheckIcon className="h-3 w-3 text-emerald-500" /> : section.id + 1}
+                {isComplete ? <CheckIcon className="h-3 w-3 text-ok" /> : section.id + 1}
               </span>
               <span className="truncate">{section.title}</span>
               <span className="ml-auto text-[9.5px] font-normal text-muted-foreground/70">

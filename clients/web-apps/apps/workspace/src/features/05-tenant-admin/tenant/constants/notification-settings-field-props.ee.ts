@@ -3,14 +3,14 @@ import { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@avplatform
 // Low Credit
 const lowCreditsProps: SwitchFieldProps = {
   name: "lowCredits",
-  label: "Low Credit",
+  label: "Low credit",
   description: "Notify tenant admins when the credit balance falls below the configured threshold",
 };
 
 // Low Credit Threshold
 const lowCreditThresholdProps: InputFieldProps = {
   name: "lowCreditThreshold",
-  label: "Low Credit Threshold",
+  label: "Low credit threshold",
   description:
     "Credit balance below which the low-credit notification is sent. Must be greater than 0. Defaults to 1000.",
   type: "number",
@@ -26,7 +26,7 @@ const subscriptionProps: SwitchFieldProps = {
 // Subscription Reminder Days
 const subscriptionRenewalReminderDaysProps: InputFieldProps = {
   name: "subscriptionRenewalReminderDays",
-  label: "Subscription Reminder Days",
+  label: "Subscription reminder days",
   description:
     "Days before renewal to start sending reminders. Must be greater than 0. Defaults to 7.",
   type: "number",
@@ -35,14 +35,14 @@ const subscriptionRenewalReminderDaysProps: InputFieldProps = {
 // Publish Agent
 const publishAgentProps: SwitchFieldProps = {
   name: "publishAgent",
-  label: "Publish Agent",
+  label: "Publish agent",
   description: "Notify orchestrator managers when an agent is published and ready for use",
 };
 
 // Agent Risk Assessment Approval
 const agentRiskAssessmentApprovalProps: SwitchFieldProps = {
   name: "agentRiskAssessmentApproval",
-  label: "Agent Risk Assessment Approval",
+  label: "Agent risk assessment approval",
   description:
     "Notify the designated approver when an agent risk assessment is submitted for approval",
 };
@@ -50,8 +50,8 @@ const agentRiskAssessmentApprovalProps: SwitchFieldProps = {
 // Delivery Channel
 const deliveryChannelProps: Omit<SelectFieldProps, "selectOptions"> = {
   name: "deliveryChannel",
-  label: "Delivery Channel",
-  description: "How notifications are delivered. Defaults to Both.",
+  label: "Delivery channel",
+  description: "How notifications are delivered. Defaults to both.",
   placeholder: "Select delivery channel",
 };
 

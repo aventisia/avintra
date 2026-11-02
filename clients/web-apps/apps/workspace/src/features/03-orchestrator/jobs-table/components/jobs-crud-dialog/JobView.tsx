@@ -1,4 +1,4 @@
-import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
+import { CopyableText, EmptyState, LoadingSpinner, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import {
@@ -13,7 +13,6 @@ import {
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
-import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -22,14 +21,13 @@ import {
   CircleGaugeIcon,
   ExternalLinkIcon,
   FileJsonIcon,
-  FlagIcon,
   LogsIcon,
   MessageSquareTextIcon,
   ZapIcon,
 } from "lucide-react";
 
 import { getJob } from "../../apis/jobs-table-apis";
-import { statusColor } from "../../constants/column-display-names";
+import { statusVariant } from "../../constants/column-display-names";
 import type { JobRecordDto } from "../../dtos/job-record-dto";
 import { JobStatusEnum } from "../../enums/job-status-enum";
 import { formatSecondsToCompactDuration } from "../../utils/format-time-utils";
@@ -85,7 +83,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
   if (!job) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <NoContentMessage
+        <EmptyState
           className="-mt-20"
           Icon={BriefcaseIcon}
           primaryMessage="Job record is not available."
@@ -106,7 +104,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       <ViewDefaultCard>
         {/* Job profile section */}
         <div className="flex flex-col gap-1">
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Job Profile</p>
+          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Job profile</p>
           <CopyableText
             textClassName="truncate max-w-[24rem] text-base font-medium leading-tight"
             value={`${job.flowName}_${job.flowVersionNumber}_${job.id}`}
@@ -149,37 +147,31 @@ export const JobView = ({ rowId }: JobViewProps) => {
           />
           <ViewField label="Type" value={mapAgentType(job.flowType)} />
           <ViewFieldWithCopy textClassName="font-mono" label="Agent ID" value={job.flowVersionId} />
-          <ViewField label="Is Published" value={job.isFlowVersionPublished ? "Yes" : "No"} />
-          <ViewField label="Retry Count" value={`#${String(job.retryCount)}`} />
-          <ViewField label="Created By" value={job.createdByName} />
-          <ViewField label="Created At" value={formatDate(job.createdAt, true)} />
+          <ViewField label="Is published" value={job.isFlowVersionPublished ? "Yes" : "No"} />
+          <ViewField label="Retry count" value={`#${String(job.retryCount)}`} />
+          <ViewField label="Created by" value={job.createdByName} />
+          <ViewField label="Created at" value={formatDate(job.createdAt, true)} />
         </div>
       </ViewDefaultCard>
 
       {/* Execution section - primary accent only here */}
       <ViewInfoRowsCard
         title="Execution"
-        className="border-primary-100"
+        className="border-line"
         icon={<ActivityIcon className="size-3.5 text-primary" />}
       >
         <ViewInfoRow
           label="Status"
           value={
-            <Badge
-              className={cn(
-                "inline-flex items-center gap-1.5",
-                statusColor[job.status as JobStatusEnum],
-              )}
-            >
-              <FlagIcon className="size-3" />
+            <Badge variant={statusVariant[job.status as JobStatusEnum]}>
               <span className="truncate">{job.status}</span>
             </Badge>
           }
         />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Started At" value={formatDate(job.startTimeStamp, true)} />
+        <ViewInfoRow label="Started at" value={formatDate(job.startTimeStamp, true)} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Ended At" value={formatDate(job.endTimeStamp, true)} />
+        <ViewInfoRow label="Ended at" value={formatDate(job.endTimeStamp, true)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
           label="Duration"
@@ -187,7 +179,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
         />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
-          label="Credits Consumed"
+          label="Credits consumed"
           value={
             typeof job.creditsConsumed === "number"
               ? job.creditsConsumed.toLocaleString(undefined, { maximumFractionDigits: 2 })
@@ -196,7 +188,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
         />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
-          label="Execution Location"
+          label="Execution location"
           valueClassName="text-right"
           value={
             <span
@@ -224,7 +216,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {/* Job input data section - hidden if empty */}
       {job.jobInputData && (
         <ViewInfoRowsCard
-          title="Input Data"
+          title="Input data"
           icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
           action={createCopyJsonAction(jsonToString(job.jobInputData))}
         >
@@ -240,7 +232,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {/* Job output data section - hidden if empty */}
       {job.jobOutputData && (
         <ViewInfoRowsCard
-          title="Output Data"
+          title="Output data"
           icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
           action={createCopyJsonAction(jsonToString(job.jobOutputData))}
         >
@@ -256,7 +248,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {/* Last node log section - hidden if empty */}
       {job.lastNodeLog && (
         <ViewInfoRowsCard
-          title="Last Node Log"
+          title="Last node log"
           icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
           action={
             <a

@@ -1,5 +1,4 @@
 import { Separator } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
@@ -52,10 +51,10 @@ const Overview = () => {
   return (
     <>
       <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
-        <div className="space-y-4 rounded-lg border p-6 shadow-sm">
+        <div className="space-y-4 rounded-lg border bg-surface p-6">
           {isPaymentProcessing ? (
-            <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-700">
-              <InfoIcon className="h-4 w-4 text-orange-400" />
+            <div className="flex items-center gap-3 rounded-lg bg-warn/10 px-3 py-2 text-[0.85rem] text-warn">
+              <InfoIcon className="h-4 w-4 text-warn" />
               Your account will be updated shortly.
             </div>
           ) : null}
@@ -63,12 +62,12 @@ const Overview = () => {
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold">{data?.data.currentPlan.planName} </h1>
+                <h1 className="text-heading">{data?.data.currentPlan.planName} </h1>
                 {!isStarterPlan && <BillingFrequency currentPlan={data?.data.currentPlan} />}
               </div>
 
               <p className="text-sm text-muted-foreground">
-                <span className="text-xl font-semibold text-accent-foreground">
+                <span className="font-mono text-xl font-semibold tabular-nums text-ink">
                   {formatCurrency(currentPlan.price ?? 0, currentPlan?.currency ?? "USD")}
                 </span>{" "}
                 /{currentPlan.frequency.toLowerCase() == "monthly" ? "month" : "year"}
@@ -76,21 +75,14 @@ const Overview = () => {
             </div>
 
             <div className="flex items-center gap-1">
-              <Badge className="border-2 text-sm font-normal" variant={"outline"}>
-                <p>
-                  Available Credits:
-                  <span
-                    className={cn(
-                      "ml-1 font-semibold",
-                      currentPlan.availableCredits < 0 && "text-destructive",
-                    )}
-                  >
-                    {currentPlan.availableCredits.toLocaleString("en-US", {
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                </p>
-              </Badge>
+              <span className="inline-flex h-control-sm items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 font-mono text-code tabular-nums text-ink-2">
+                <span className={cn("text-ink", currentPlan.availableCredits < 0 && "text-bad")}>
+                  {currentPlan.availableCredits.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+                credits
+              </span>
               {!isStarterPlan && (
                 <Tooltip content="Add credits">
                   <Button
@@ -105,7 +97,8 @@ const Overview = () => {
                     }
                     variant={"default"}
                     size={"icon6"}
-                    className="rounded-full border-2"
+                    className="rounded-md border-2"
+                    aria-label="Add credits"
                   >
                     <PlusIcon className="h-5 w-5 font-normal" />
                   </Button>
@@ -135,7 +128,7 @@ const Overview = () => {
 
           <div className="!mt-5 flex justify-end space-x-4">
             <Button variant={"outline"} onClick={() => setOpen(true)}>
-              Cancel Plan
+              Cancel plan
             </Button>
             <Button disabled={isPaymentProcessing} onClick={() => setUpgradePlanDialogOpen(true)}>
               Upgrade

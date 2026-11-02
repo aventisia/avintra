@@ -1,43 +1,25 @@
-import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
 
-import { TICKET_STATUS_COLOR } from "@/features/05-tenant-admin/support-tickets-v2/constants/constants";
+import { TICKET_STATUS_VARIANT } from "@/features/05-tenant-admin/support-tickets-v2/constants/constants";
 import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
-import { TABLE_KEY } from "../constants";
 import { SaTicketRowActions } from "./ticket-row-actions/SaTicketRowActions.ee";
 
+const renderHeader =
+  (label: string, className?: string) =>
+  ({ column }: HeaderContext<TicketTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={label} className={className} />
+  );
+
 export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
-  {
-    accessorKey: "selectRow",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        onClick={(e) => e.stopPropagation()}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<TicketTableDto>({ enableHiding: true }),
   {
     id: "ticket",
     cell: ({ row }) => {
@@ -69,19 +51,14 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     accessorKey: "ticketNumber",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="hidden"
-        column={column}
-        title="Ticket Number"
-      />
-    ),
+    meta: { label: "Ticket number" },
+    header: renderHeader("Ticket number", "hidden"),
     cell: ({ row }) => <div className="hidden">{row.getValue("ticketNumber")}</div>,
   },
   {
     accessorKey: "requestType",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Type" />,
+    meta: { label: "Type" },
+    header: renderHeader("Type"),
     cell: ({ row }) => {
       const type = row.getValue("requestType") as string;
       return <div>{type === "ChangeRequest" ? "Change Request" : "Service Request"}</div>;
@@ -89,7 +66,8 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Status" />,
+    meta: { label: "Status" },
+    header: renderHeader("Status"),
     filterFn: (row, columnId, filterValue) => {
       const status = row.getValue(columnId);
 
@@ -107,46 +85,45 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
+      return <Badge variant={TICKET_STATUS_VARIANT[status] ?? "secondary"}>{status}</Badge>;
     },
   },
   {
     accessorKey: "agentName",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent" />,
+    meta: { label: "Agent" },
+    header: renderHeader("Agent"),
     cell: ({ row }) => <div>{row.getValue("agentName") || "-"}</div>,
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created By" />
-    ),
+    meta: { label: "Created by" },
+    header: renderHeader("Created by"),
     cell: ({ row }) => <div>{row.getValue("createdBy")}</div>,
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created On" />
-    ),
+    meta: { label: "Created on" },
+    header: renderHeader("Created on"),
     cell: ({ row }) => {
       const date = row.getValue("createdOn") as string;
-      return <div>{date ? formatDate(date) : "-"}</div>;
+      return <div className="font-mono tabular-nums">{date ? formatDate(date) : "-"}</div>;
     },
   },
   {
     accessorKey: "commentCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Total Comments" />
-    ),
-    cell: ({ row }) => <div>{row.getValue("commentCount")}</div>,
+    meta: { label: "Total comments" },
+    header: renderHeader("Total comments"),
+    cell: ({ row }) => <div className="font-mono tabular-nums">{row.getValue("commentCount")}</div>,
   },
   {
     accessorKey: "attachmentCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Total Attachments" />
+    meta: { label: "Total attachments" },
+    header: renderHeader("Total attachments"),
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{row.getValue("attachmentCount")}</div>
     ),
-    cell: ({ row }) => <div>{row.getValue("attachmentCount")}</div>,
   },
-  createDTActionsColumn<TicketTableDto>({
-    renderCell: (row) => <SaTicketRowActions rowId={row.id || ""} />,
+  getRowActionsColumn<TicketTableDto>({
+    actions: ({ row }) => <SaTicketRowActions rowId={row.original.id || ""} />,
   }),
 ];

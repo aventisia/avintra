@@ -1,4 +1,4 @@
-import { ClockIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, RocketIcon } from "lucide-react";
 import React from "react";
 import { useLocation } from "react-router-dom";
 
@@ -26,13 +26,13 @@ const ComingSoon: React.FC = () => {
     <div className="container mx-auto max-w-2xl px-4 py-16">
       <div className="flex flex-col items-center space-y-8 text-center">
         <div
-          className="flex items-center justify-center rounded-full bg-blue-50 p-6"
+          className="flex items-center justify-center rounded-lg bg-sunken p-6"
           aria-hidden="true"
         >
-          <RocketLaunchIcon className="h-16 w-16 text-primary" />
+          <RocketIcon className="h-16 w-16 text-primary" />
         </div>
         <div
-          className="flex items-center justify-center space-x-4 text-gray-500"
+          className="flex items-center justify-center space-x-4 text-muted-foreground"
           aria-live="polite"
         >
           <ClockIcon className="h-5 w-5" aria-hidden="true" />
@@ -40,9 +40,9 @@ const ComingSoon: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900">{pageName} Page is Coming Soon</h1>
+          <h1 className="text-title text-ink">{pageName} Page is Coming Soon</h1>
 
-          <p className="mx-auto max-w-md text-lg text-gray-600">
+          <p className="mx-auto max-w-md text-lg text-ink-2">
             We're currently working on developing the {pageName.toLowerCase()} feature. Stay tuned
             for exciting updates!
           </p>

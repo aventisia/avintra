@@ -1,19 +1,17 @@
-import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  BILLING_HISTORY_INITIAL_STATE,
+  BILLING_HISTORY_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchBillingHistory } from "../hooks/useFetchBillingHistory.ee";
 import { billingHistoryTableColumns } from "./BillingHistoryTableColumns.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: BILLING_HISTORY_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of credits.
@@ -24,50 +22,35 @@ export const BillingHistoryTable = () => {
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch models data
   const { data, isLoading } = useFetchBillingHistory();
 
-  const table = useDataTable(
-    billingHistoryTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: billingHistoryTableColumns,
+    initialState: BILLING_HISTORY_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name", "type", "paymentStatus"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {/* Remove the ! operator once we have the actual data */}
       {!isLoading ? (
         <div className="space-y-4 pb-4">
-          {/* Crud ops dialog */}
           {/* Table toolbar */}
-          <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+          <h2 className="text-heading text-ink">{TABLE_HEADING}</h2>
 
-            <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["invoice"]}
-                placeholder="Search History..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
-          </div>
-
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={billingHistoryTableColumns.length} />
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          {/* Data table with its search, view options and pagination footer */}
+          <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+            <TableCNToolbar table={table} searchPlaceholder="Search history..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the models data
-        <DataTableSkeleton />
+        // Show the table skeleton while fetching the history
+        <TableCNSkeleton columnCount={6} />
       )}
     </>
   );

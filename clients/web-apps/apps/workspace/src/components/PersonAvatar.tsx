@@ -1,13 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 
-const PERSON_TINTS = [
-  "bg-indigo-100 text-indigo-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-800",
-  "bg-rose-100 text-rose-700",
-  "bg-sky-100 text-sky-700",
-  "bg-violet-100 text-violet-700",
-];
+// Hues skip yellow-green, which loses contrast on light surfaces.
+const AVATAR_HUES = [250, 285, 320, 350, 15, 160, 190, 215];
 
 const getInitials = (name: string) =>
   name
@@ -18,20 +12,27 @@ const getInitials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const getPersonTint = (name: string) => {
-  const hash = [...name].reduce((total, character) => total + character.charCodeAt(0), 0);
-  return PERSON_TINTS[hash % PERSON_TINTS.length];
+const getAvatarColors = (name: string) => {
+  const hash = [...name.toLowerCase()].reduce(
+    (acc, char) => (acc * 31 + char.charCodeAt(0)) | 0,
+    0,
+  );
+  const hue = `hsl(${AVATAR_HUES[Math.abs(hash) % AVATAR_HUES.length]} 65% 55%)`;
+  return {
+    backgroundColor: `color-mix(in srgb, ${hue} 14%, var(--surface))`,
+    color: `color-mix(in srgb, ${hue} 80%, var(--ink))`,
+  };
 };
 
 /**
- * Round initials avatar tinted by the name, so a person keeps the same color everywhere.
+ * Round initials avatar, tinted by a colour derived from the name.
  */
 export const PersonAvatar = ({ name, className }: { name: string; className?: string }) => (
   <span
     aria-hidden="true"
+    style={getAvatarColors(name)}
     className={cn(
       "grid size-6 shrink-0 place-items-center rounded-full text-[0.625rem] font-semibold",
-      getPersonTint(name),
       className,
     )}
   >

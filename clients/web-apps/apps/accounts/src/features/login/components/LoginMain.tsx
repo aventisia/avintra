@@ -43,14 +43,10 @@ export const LoginMain = () => {
             {/* Step 3 - 2FA step */}
             {stepNo === 3 && <TwoFA />}
             {/* App footer */}
-            {IS_TAURI ? <TauriAppFooter /> : <MinimalFooter />}{" "}
+            {IS_TAURI ? <TauriAppFooter /> : <MinimalFooter />}
           </LeftContainer>
 
-          <RightContainer
-            heading="Your AI-Powered Journey Starts Here"
-            subHeading="Enter your gateway to affordable, scalable, and practical automation."
-            imgSrc="agentbuilder.svg"
-          />
+          <RightContainer />
         </PageContainer>
       )}
     </>

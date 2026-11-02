@@ -1,23 +1,19 @@
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+
 import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
-
-import { HelpButton } from "@/components/help/HelpButton";
-
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+  CONVERSATIONS_INITIAL_STATE,
+  CONVERSATIONS_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchConversationsList } from "../hooks/useFetchConversationsList";
 import { ConversationsStats } from "./ConversationsStats";
 import { conversationsTableColumns } from "./ConversationsTableColumns";
 import { DateRangeFilter } from "./DateRangeFilter";
+
+const PAGINATION_PROPS = { pageSizeOptions: CONVERSATIONS_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders a table of Conversations.
@@ -28,51 +24,43 @@ export const ConversationsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch conversations data
   const { data } = useFetchConversationsList();
 
-  // Create a React table for conversations data
-  const table = useDataTable(
-    conversationsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: conversationsTableColumns,
+    initialState: CONVERSATIONS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="conversations" />
             </div>
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
+          </div>
+
+          {/* Table with its toolbar, statistics strip and pagination footer */}
+          <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+            {/* Search beside the page-level date-range filter */}
+            <TableCNToolbar table={table} searchPlaceholder="Search...">
               <DateRangeFilter />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
-          </div>
+            </TableCNToolbar>
 
-          {/* Data table to render data */}
-          <div className="flex flex-col gap-2">
+            {/* Statistics strip reads the fetched data, not the table instance */}
             <ConversationsStats data={data?.data} />
-            <DataTable table={table} columnsLength={conversationsTableColumns.length} />
-          </div>
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the conversations data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the conversations data
+        <TableCNSkeleton columnCount={6} withSearch />
       )}
     </>
   );

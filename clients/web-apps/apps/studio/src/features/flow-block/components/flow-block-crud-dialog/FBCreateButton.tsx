@@ -43,7 +43,7 @@ export const FBCreateButton: React.FC = () => {
       {isBlockCreated ? (
         <SimpleCMItem
           size="sm"
-          content="Update Block"
+          content="Update block"
           Icon={PencilIcon}
           onClick={() => {
             setGroupId(selectedNode?.id || "");
@@ -64,7 +64,7 @@ export const FBCreateButton: React.FC = () => {
       ) : (
         <SimpleCMItem
           size="sm"
-          content="Convert to a Block"
+          content="Convert to a block"
           Icon={CombineIcon}
           onClick={() => {
             setGroupId(selectedNode?.id || "");

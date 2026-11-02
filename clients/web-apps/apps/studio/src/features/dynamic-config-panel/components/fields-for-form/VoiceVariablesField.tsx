@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Input, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -224,7 +224,7 @@ export const VoiceVariablesField = ({
 
       <div className="flex flex-col gap-1.5 mb-4">
         {rows.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No variables added"
             secondaryMessage="Add a name and value pair to fill placeholders."
             Icon={CircleOffIcon}

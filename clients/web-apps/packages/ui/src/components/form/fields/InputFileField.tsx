@@ -73,12 +73,12 @@ export const InputFileField = ({
             <div className="relative w-full">
               <label
                 htmlFor={Id}
-                className="block h-10 w-full cursor-pointer rounded-md border bg-transparent px-4 py-2 text-left text-sm font-normal text-slate-700"
+                className="flex h-8 w-full cursor-pointer items-center rounded-md border border-line-strong bg-surface px-[11px] text-left text-body font-normal text-ink"
               >
                 <span>
-                  <p>{files?.item(0)?.name ?? "Select File"}</p>
-                  <p className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-primary-500 hover:underline focus:outline-none">
-                    Browse File
+                  <p>{files?.item(0)?.name ?? "Select file"}</p>
+                  <p className="absolute right-3 top-1/2 -translate-y-1/2 text-body-sm font-medium text-primary-text hover:underline focus:outline-none">
+                    Browse files
                   </p>
                 </span>{" "}
               </label>

@@ -6,7 +6,7 @@ import {
 } from "@assistant-ui/react";
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { ArchiveIcon, MoreHorizontalIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { ArchiveIcon, MoreHorizontalIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import type { FC } from "react";
 
 export const ThreadList: FC = () => {
@@ -31,7 +31,7 @@ const ThreadListNew: FC = () => {
         className="aui-thread-list-new h-9 justify-start gap-2 rounded-lg px-3 text-sm hover:bg-muted data-[active=true]:bg-muted data-[active]:bg-muted"
       >
         <PlusIcon className="size-4" />
-        New Thread
+        New thread
       </Button>
     </ThreadListPrimitive.New>
   );
@@ -59,7 +59,7 @@ const ThreadListItem: FC = () => {
     <ThreadListItemPrimitive.Root className="aui-thread-list-item group flex h-9 items-center gap-2 rounded-lg transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none data-[active=true]:bg-muted data-[active]:bg-muted">
       <ThreadListItemPrimitive.Trigger className="aui-thread-list-item-trigger flex h-full min-w-0 flex-1 items-center px-3 text-start text-sm">
         <span className="aui-thread-list-item-title min-w-0 flex-1 truncate">
-          <ThreadListItemPrimitive.Title fallback="New Chat" />
+          <ThreadListItemPrimitive.Title fallback="New chat" />
         </span>
       </ThreadListItemPrimitive.Trigger>
       <ThreadListItemMore />
@@ -83,7 +83,7 @@ const ThreadListItemMore: FC = () => {
       <ThreadListItemMorePrimitive.Content
         side="bottom"
         align="start"
-        className="aui-thread-list-item-more-content z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+        className="aui-thread-list-item-more-content z-50 min-w-32 overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-pop"
       >
         <ThreadListItemPrimitive.Archive asChild>
           <ThreadListItemMorePrimitive.Item className="aui-thread-list-item-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
@@ -93,7 +93,7 @@ const ThreadListItemMore: FC = () => {
         </ThreadListItemPrimitive.Archive>
         <ThreadListItemPrimitive.Delete asChild>
           <ThreadListItemMorePrimitive.Item className="aui-thread-list-item-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-destructive text-sm outline-none hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive">
-            <TrashIcon className="size-4" />
+            <Trash2Icon className="size-4" />
             Delete
           </ThreadListItemMorePrimitive.Item>
         </ThreadListItemPrimitive.Delete>

@@ -89,11 +89,11 @@ export const RadioCardGroupField = ({
                   key={item.value}
                   className={cn(
                     "flex items-center",
-                    disabled ? "bg-slate-300" : "bg-white",
+                    disabled ? "bg-sunken" : "bg-surface",
                     size === "xs" && "gap-1.5 p-1",
                     size === "sm" && "gap-1.5 p-2",
                     size === "base" && "gap-2.5 p-3",
-                    "has-[[data-state=checked]]:border-1 relative w-full items-start rounded-lg border border-input shadow-sm shadow-black/5 has-[[data-state=checked]]:border-primary",
+                    "relative w-full items-start rounded-lg border border-line-strong transition-colors duration-[120ms] ease-out has-[[data-state=checked]]:border-indicator has-[[data-state=checked]]:bg-selected",
                   )}
                 >
                   <div className="flex items-center gap-2">

@@ -13,13 +13,11 @@ function ViewOnlyVersionSelector() {
     <Button
       variant={"ghost"}
       size={"xs"}
-      className={
-        "group h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-white/10 pl-3 pr-2.5 font-bold text-white/80 hover:bg-white/20 hover:text-white/80"
-      }
+      className="max-w-[15rem] gap-1 px-1.5 font-mono font-normal text-muted-foreground disabled:bg-transparent"
       disabled
     >
       <span className="min-w-0 truncate">v{versionNumber} </span>
-      <ChevronDownIcon className={"h-3 w-3 shrink-0 min-w-3 transition-all group-hover:mt-0.5"} />
+      <ChevronDownIcon className="size-3 shrink-0" />
     </Button>
   );
 }

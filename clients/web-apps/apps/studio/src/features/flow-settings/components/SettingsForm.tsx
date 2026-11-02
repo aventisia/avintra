@@ -48,7 +48,7 @@ export const SettingsForm = () => {
     >
       <InputField
         name="maxExecutionTimeInMinutes"
-        label="Max Execution Time (in minutes)"
+        label="Max execution time (in minutes)"
         description="The maximum time an agent is expected to run before it can be safely terminated."
         type="number"
       />

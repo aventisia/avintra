@@ -1,27 +1,25 @@
 import { DeploymentType, SidebarMenuItemType, SidebarMenuSectionType } from "@avplatform/ui/types";
-import {
-  BanknotesIcon,
-  IdentificationIcon,
-  QuestionMarkCircleIcon,
-  QueueListIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
 import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
   BadgeDollarSignIcon,
+  BanknoteIcon,
   BellIcon,
   BookOpenCheckIcon,
   CheckCheckIcon,
+  CircleHelpIcon,
   Cpu,
   FolderCogIcon,
+  IdCardIcon,
   KeySquareIcon,
   LibraryIcon,
+  ListIcon,
   Mic,
   MonitorPlayIcon,
   PuzzleIcon,
   Shield,
   ShieldCheck,
+  UsersIcon,
   Wallet,
   Workflow,
   WrenchIcon,
@@ -32,15 +30,16 @@ import { EnvironmentToggle } from "@/features/02-configure/components/Environmen
 
 import NewAgentIcon from "../NewAgentIcon";
 import NewChatIcon from "../NewChatIcon";
+import type { HubId } from "./sidebar-hub.type";
 
-const sidebarMenuSections: SidebarMenuSectionType[] = [
+const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
   {
     // sectionInternalName: build
-    sectionName: "build",
+    sectionName: "Build",
     menuItems: [
       {
         Icon: NewAgentIcon,
-        name: "agents",
+        name: "Agents",
         route: "/agents",
         permissions: ["TD"],
         type: ["Commercial", "Enterprise", "Community"],
@@ -56,39 +55,41 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
   },
   {
     // sectionInternalName: configure
-    sectionName: "configure",
+    sectionName: "Configure",
     menuItems: [
       {
         permissions: ["OM", "TD"],
-        Icon: QueueListIcon,
-        name: "queues",
+        Icon: ListIcon,
+        name: "Queues",
         route: "/configure/queues",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM", "TD"],
         Icon: AiOutlineThunderbolt,
-        name: "triggers",
+        name: "Triggers",
         route: "/configure/triggers",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
         subMenuItems: [
           {
-            name: "time",
+            name: "Time",
             route: "/configure/triggers/time",
             permissions: ["OM", "TD"],
           },
           {
-            name: "email",
+            name: "Email",
             route: "/configure/triggers/email",
             permissions: ["OM", "TD"],
           },
           {
-            name: "message",
+            name: "Message",
             route: "/configure/triggers/message",
             permissions: ["OM", "TD"],
           },
           {
-            name: "webhook",
+            name: "Webhook",
             route: "/configure/triggers/webhook",
             permissions: ["OM", "TD"],
           },
@@ -97,8 +98,9 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       {
         permissions: ["OM", "TD"],
         Icon: FolderCogIcon,
-        name: "Key Store",
+        name: "Key store",
         route: "/configure/configstore",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -106,27 +108,31 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: Shield,
         name: "Vault",
         route: "/configure/vault",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM", "TD"],
         Icon: BookOpenCheckIcon,
-        name: "knowledge bases",
+        name: "Knowledge bases",
         route: "/configure/knowledge-base",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM", "TD"],
         Icon: PuzzleIcon,
-        name: "skills",
+        name: "Skills",
         route: "/configure/skill-registry",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM", "TD"],
         Icon: WrenchIcon,
-        name: "tools",
+        name: "Tools",
         route: "/configure/tools",
+        hub: "configure",
         type: ["Commercial", "Enterprise", "Community"],
       },
     ],
@@ -146,15 +152,17 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       {
         permissions: ["OM"],
         Icon: ShieldCheck,
-        name: "Agent Risk Registry",
+        name: "Agent risk registry",
         route: "/orchestrator/agent-risk-registry",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM"],
         Icon: DesktopIcon,
-        name: "machines",
+        name: "Machines",
         route: "/orchestrator/machines",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -162,6 +170,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: MonitorPlayIcon,
         name: "Jobs",
         route: "/orchestrator/jobs",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -169,13 +178,15 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: NewChatIcon,
         name: "Conversations",
         route: "/orchestrator/conversations",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["OM"],
         Icon: KeySquareIcon,
-        name: "API Keys",
+        name: "API keys",
         route: "/orchestrator/api-keys",
+        hub: "operations",
         type: ["Commercial", "Enterprise", "Community"],
       },
     ],
@@ -187,64 +198,70 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       {
         permissions: ["TU"],
         Icon: NewAgentIcon,
-        name: "agents",
+        name: "Agents",
         route: "/assist/agents",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TU"],
-        Icon: QueueListIcon,
-        name: "queues",
+        Icon: ListIcon,
+        name: "Queues",
         route: "/assist/queues",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TU"],
         Icon: NewChatIcon,
-        name: "chats",
+        name: "Chats",
         route: "/assist/chats",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TU"],
         Icon: Mic,
-        name: "voice",
+        name: "Voice",
         route: "/assist/voice",
-        type: ["Commercial", "Enterprise"],
+        type: ["Commercial", "Enterprise", "Community"],
       },
     ],
   },
   {
     // sectionInternalName: tenantAdmin
-    sectionName: "Tenant Admin",
+    sectionName: "Tenant admin",
     menuItems: [
       {
         permissions: ["TA"],
         Icon: BookOpenCheckIcon,
-        name: "Get Started",
+        name: "Get started",
         route: "/tenant/get-started",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
         hideWhenOnboardingComplete: true,
       },
       {
         permissions: ["TA"],
-        Icon: IdentificationIcon,
-        name: "tenant",
+        Icon: IdCardIcon,
+        name: "Tenant",
         route: "/tenant/overview",
+        hub: "admin",
         type: ["Commercial"],
       },
       {
         permissions: ["TA"],
         Icon: UsersIcon,
-        name: "users",
+        name: "Users",
         route: "/tenant/users",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TA"],
         Icon: FolderCogIcon,
-        name: "spaces",
+        name: "Spaces",
         route: "/tenant/spaces",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       // Add integrations only if not production
@@ -253,17 +270,19 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
             {
               permissions: ["TA"],
               Icon: Workflow,
-              name: "integrations",
+              name: "Integrations",
               route: "/tenant/integrations",
+              hub: "admin",
               type: ["Commercial", "Enterprise", "Community"],
             },
-          ] as SidebarMenuItemType[])
+          ] as SidebarMenuItemType<HubId>[])
         : []),
       {
         permissions: ["TA"],
         Icon: Cpu,
         name: "Models",
         route: "/tenant/model-providers",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -271,6 +290,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: Wallet,
         name: "Usage",
         route: "/tenant/usage",
+        hub: "admin",
         type: ["Commercial"],
       },
       {
@@ -278,48 +298,54 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/tenant/approvals",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       // Add notifications menu item for tenant admin
       {
         permissions: ["TA"],
         Icon: BellIcon,
-        name: "notifications",
+        name: "Notifications",
         route: "/tenant/notifications",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TA"],
         Icon: ArchiveIcon,
-        name: "archive",
+        name: "Archive",
         route: "/tenant/archive",
+        hub: "admin",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
         permissions: ["TA"],
-        Icon: IdentificationIcon,
-        name: "preferences",
+        Icon: IdCardIcon,
+        name: "Preferences",
         route: "/tenant/preferences", // Only applicabe in case of enterprise and community deployment
+        hub: "admin",
         type: ["Enterprise", "Community"],
       },
       {
         permissions: ["TA"],
-        Icon: QuestionMarkCircleIcon,
-        name: "support",
+        Icon: CircleHelpIcon,
+        name: "Support",
         route: "/tenant/support/tickets",
+        hub: "admin",
         type: ["Commercial"],
       },
     ],
   },
   {
     // sectionInternalName: superAdmin
-    sectionName: "Multi-Tenant Admin",
+    sectionName: "Multi-tenant admin",
     menuItems: [
       {
         permissions: ["SA"],
-        Icon: IdentificationIcon,
-        name: "tenants",
+        Icon: IdCardIcon,
+        name: "Tenants",
         route: "/sa/tenants",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
@@ -327,55 +353,61 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: CheckCheckIcon,
         name: "Approvals",
         route: "/sa/approvals",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
         permissions: ["SA"],
         Icon: BellIcon,
-        name: "notifications",
+        name: "Notifications",
         route: "/sa/notifications",
+        hub: "multi-tenant",
         type: ["Commercial", "Enterprise"],
       },
 
       {
         permissions: ["SA"],
         Icon: BadgeDollarSignIcon,
-        name: "subscription plans",
+        name: "Subscription plans",
         route: "/sa/subscription-plans",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       {
         permissions: ["SA"],
-        Icon: BanknotesIcon,
-        name: "Credit Plans",
+        Icon: BanknoteIcon,
+        name: "Credit plans",
         route: "/sa/credit-plans",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
       // {
       //   permissions: ["SA"],
       //   Icon: ChartPieIcon,
-      //   name: "Tenants Consumption",
+      //   name: "Tenants consumption",
       //   route: "/sa/tenants-consumption",
       //   type: ["Commercial"],
       // },
       {
         permissions: ["SA"],
-        Icon: QuestionMarkCircleIcon,
-        name: "support",
+        Icon: CircleHelpIcon,
+        name: "Support",
         route: "/sa/support/tickets",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
     ],
   },
   {
     // sectionInternalName: globalAdmin
-    sectionName: "Global Admin",
+    sectionName: "Global admin",
     menuItems: [
       {
         permissions: ["SA"],
-        Icon: IdentificationIcon,
-        name: "On-prem Tenants",
+        Icon: IdCardIcon,
+        name: "On-prem tenants",
         route: "/ga/on-prem-tenants",
+        hub: "multi-tenant",
         type: ["Commercial"],
       },
     ],
@@ -389,7 +421,7 @@ export function getSidebarMenuBasedOnPermissions(
   userRoles: string[],
   deploymentType: DeploymentType,
   isOnboardingComplete = false,
-): SidebarMenuSectionType[] {
+): SidebarMenuSectionType<HubId>[] {
   return sidebarMenuSections
     .map((section) => {
       // Filter menuItems based on item-level permissions (if present)
@@ -409,7 +441,7 @@ export function getSidebarMenuBasedOnPermissions(
         menuItems: filteredMenuItems,
       };
     })
-    .filter((section): section is SidebarMenuSectionType => section !== null);
+    .filter((section): section is SidebarMenuSectionType<HubId> => section !== null);
 }
 
 export function flattenMenuRoutes(sections: SidebarMenuSectionType[]): string[] {

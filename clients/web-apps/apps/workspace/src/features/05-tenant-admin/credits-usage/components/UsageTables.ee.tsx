@@ -1,11 +1,6 @@
-import {
-  DTPagination,
-  DTSearchBox,
-  DataTable,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import { type InitialTableState } from "@tanstack/react-table";
 import { useMemo } from "react";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary.ee";
@@ -15,67 +10,82 @@ import { usageUsersColumns } from "./usage-tables/usage-users-columns.ee";
 const USERS_TABLE_KEY = "usage-users";
 const AGENTS_TABLE_KEY = "usage-agents";
 
-/** Initial column visibility: hide nothing by default. */
-const columnVisibilityState = {};
+/** Page sizes offered by both tables, unchanged from the legacy tables. */
+const USAGE_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const USAGE_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+};
+
+// Both tables share one page, so each keeps its paging out of the other's URL keys.
+const USERS_QUERY_KEYS = { page: "usersPage", perPage: "usersPerPage", sort: "usersSort" };
+const AGENTS_QUERY_KEYS = { page: "agentsPage", perPage: "agentsPerPage", sort: "agentsSort" };
+
+const USERS_PAGINATION_PROPS = {
+  pageSizeOptions: USAGE_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "user", plural: "users" },
+};
+
+const AGENTS_PAGINATION_PROPS = {
+  pageSizeOptions: USAGE_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "agent", plural: "agents" },
+};
 
 const UsageTables = () => {
   const { data } = useFetchCreditUsageSummary();
   const users = useMemo(() => data?.data.users ?? [], [data]);
   const agents = useMemo(() => data?.data.agents ?? [], [data]);
 
-  const { columnVisibility: userColumnVisibility, sortState: userSortState } =
-    getDataTablePreferences(USERS_TABLE_KEY, columnVisibilityState);
-  const { columnVisibility: agentColumnVisibility, sortState: agentSortState } =
-    getDataTablePreferences(AGENTS_TABLE_KEY, columnVisibilityState);
+  const { table: usersTable } = useTableCN({
+    data: users,
+    columns: usageUsersColumns,
+    initialState: USAGE_INITIAL_STATE,
+    queryKeys: USERS_QUERY_KEYS,
+    persistKey: USERS_TABLE_KEY,
+    searchColumns: ["fullName"],
+  });
 
-  const userColumns = useMemo(() => usageUsersColumns(USERS_TABLE_KEY), []);
-  const agentColumns = useMemo(() => usageAgentsColumns(AGENTS_TABLE_KEY), []);
-
-  const usersTable = useDataTable(userColumns, users, userColumnVisibility, userSortState, false);
-  const agentsTable = useDataTable(
-    agentColumns,
-    agents,
-    agentColumnVisibility,
-    agentSortState,
-    false,
-  );
+  const { table: agentsTable } = useTableCN({
+    data: agents,
+    columns: usageAgentsColumns,
+    initialState: USAGE_INITIAL_STATE,
+    queryKeys: AGENTS_QUERY_KEYS,
+    persistKey: AGENTS_TABLE_KEY,
+    searchColumns: ["agentName"],
+  });
 
   return (
-    <div className="space-y-4 rounded-lg border bg-white p-4">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-base font-medium">Usage by Users &amp; Agents</p>
-        <div className="flex items-center gap-2">
-          <DTSearchBox
-            table={usersTable}
-            searchColumns={["fullName"]}
-            placeholder="Search users..."
-          />
-          <DTSearchBox
-            table={agentsTable}
-            searchColumns={["agentName"]}
-            placeholder="Search agents..."
-          />
-        </div>
-      </div>
+    <div className="space-y-4 rounded-lg border bg-surface p-4">
+      <p className="text-base font-medium">Usage by Users &amp; Agents</p>
 
       <Tabs defaultValue="users">
-        <TabsList className="grid w-full grid-cols-2 rounded-none border-b bg-white px-3 text-base">
-          <TabsTrigger value="users" className="rounded-none data-[state=active]:border-b-black">
+        <TabsList className="grid w-full grid-cols-2 rounded-none border-b bg-transparent px-3 text-base">
+          <TabsTrigger value="users" className="rounded-none">
             Users
           </TabsTrigger>
-          <TabsTrigger value="agents" className="rounded-none data-[state=active]:border-b-black">
+          <TabsTrigger value="agents" className="rounded-none">
             Agents
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="space-y-4 pt-2">
-          <DataTable table={usersTable} columnsLength={userColumns.length} />
-          <DTPagination table={usersTable} singularLabel="user" pluralLabel="users" />
+          <TableCN table={usersTable} paginationProps={USERS_PAGINATION_PROPS}>
+            <TableCNToolbar
+              table={usersTable}
+              searchPlaceholder="Search users..."
+              withViewOptions={false}
+            />
+          </TableCN>
         </TabsContent>
 
         <TabsContent value="agents" className="space-y-4 pt-2">
-          <DataTable table={agentsTable} columnsLength={agentColumns.length} />
-          <DTPagination table={agentsTable} singularLabel="agent" pluralLabel="agents" />
+          <TableCN table={agentsTable} paginationProps={AGENTS_PAGINATION_PROPS}>
+            <TableCNToolbar
+              table={agentsTable}
+              searchPlaceholder="Search agents..."
+              withViewOptions={false}
+            />
+          </TableCN>
         </TabsContent>
       </Tabs>
     </div>

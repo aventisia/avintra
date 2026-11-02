@@ -3,7 +3,7 @@ import { InputFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 // trigger Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Trigger Id",
+  label: "Trigger ID",
   disabled: true,
 };
 
@@ -11,7 +11,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   description:
     "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
@@ -19,7 +19,7 @@ const nameProps: InputFieldProps = {
 
 const webhookUrlProps: InputFieldProps = {
   name: "webhookUrl",
-  label: "Webhook Url",
+  label: "Webhook URL",
 
   // description: "Webhook URL will be active after trigger creation",
   description: "Webhook URL is auto-generated after trigger creation",
@@ -27,19 +27,19 @@ const webhookUrlProps: InputFieldProps = {
 
 const callbackUrlProps: InputFieldProps = {
   name: "callbackUrl",
-  label: "Callback Url",
+  label: "Callback URL",
   description: "Optional URL that the webhook calls back to after processing.",
 };
 
 const expectedPayloadSchemaProps: InputFieldProps = {
   name: "expectedPayloadSchema",
-  label: "Input Arguments Schema",
+  label: "Input arguments schema",
   description: "The expected input arguments schema that the webhook payload should conform to.",
 };
 
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Trigger",
+  label: "Disable trigger",
   description: "Disable the trigger when it's not needed or should be temporarily turned off.",
 };
 

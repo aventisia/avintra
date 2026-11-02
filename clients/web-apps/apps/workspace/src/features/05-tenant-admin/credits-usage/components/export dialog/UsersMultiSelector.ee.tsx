@@ -96,7 +96,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
             {selectedItems.map((item) => (
               <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
                 {/* <Avatar className={cn("flex h-5 w-5")}>
-                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-secondary text-white">
+                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-primary-foreground">
                   {`${item.firstName?.charAt(0)}${item.lastName?.charAt(0)}`}
                 </AvatarFallback>
               </Avatar> */}
@@ -152,7 +152,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -161,7 +161,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
               </div>
             )}
             {isError && (
-              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+              <div className="p-4 text-center text-sm text-bad">Error loading results</div>
             )}
             {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
                   >
                     <Avatar className={cn("flex h-7 w-7")}>
-                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
+                      <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-primary-foreground">
                         {`${result.firstName?.charAt(0)}${result.lastName?.charAt(0)}`}
                       </AvatarFallback>
                     </Avatar>

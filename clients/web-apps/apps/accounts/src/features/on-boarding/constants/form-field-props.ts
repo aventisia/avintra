@@ -4,29 +4,33 @@ import { enumToArray } from "@avplatform/ui/utils";
 
 // Pin Code
 const pinCodeProps: InputFieldProps = {
-  label: "Pin Code",
+  className: "h-control-lg",
+  label: "Pin code",
   name: "postalCode",
   isRequired: true,
 };
 
 // Address Line 1
 const addressLine1Props: InputFieldProps = {
+  className: "h-control-lg",
   name: "addressLine1",
-  label: "Address Line 1",
+  label: "Address line 1",
   type: "text",
   isRequired: true,
 };
 
 // Address Line 2
 const addressLine2Props: InputFieldProps = {
+  className: "h-control-lg",
   name: "addressLine2",
-  label: "Address Line 2",
+  label: "Address line 2",
   type: "text",
   isRequired: false,
 };
 
 // State
 const stateProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "state",
   label: "State/Province",
   isRequired: false,
@@ -34,6 +38,7 @@ const stateProps: InputFieldProps = {
 
 // City
 const cityProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "city",
   label: "City",
   type: "text",
@@ -42,6 +47,7 @@ const cityProps: InputFieldProps = {
 
 // Gst Number
 const gstNumberProps: InputFieldProps = {
+  className: "h-control-lg",
   name: "gstNumber",
   label: "GST Number",
   type: "text",
@@ -56,6 +62,7 @@ const gstRegistrationProps: SwitchFieldProps = {
 
 // Country
 const countryProps: SelectFieldProps = {
+  className: "h-control-lg",
   name: "country",
   label: "Country",
   selectOptions: enumToArray(CountriesEnum),

@@ -19,7 +19,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Unique Name",
+  label: "Unique name",
   isRequired: true,
   description:
     "A **unique** name for your knowledge base.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Cannot be changed** after creation.",
@@ -36,7 +36,7 @@ const descriptionProps: TextareaFieldProps = {
 // Vector Store
 const vectorStoreProps: SelectFieldProps = {
   name: "vectorStore",
-  label: "Vector Store",
+  label: "Vector store",
   description: "Select the vector database used for storing embeddings.",
   isRequired: true,
   selectOptions: enumToArray(VectorStoreEnum),
@@ -45,7 +45,7 @@ const vectorStoreProps: SelectFieldProps = {
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 export { idProps, nameProps, descriptionProps, vectorStoreProps, isDisabledProps };

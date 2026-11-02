@@ -1,3 +1,4 @@
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
@@ -6,6 +7,7 @@ import {
   CheckCircle2Icon,
   CircleIcon,
   CpuIcon,
+  InfoIcon,
   KeyRoundIcon,
   PlayCircleIcon,
   ShieldCheckIcon,
@@ -33,14 +35,14 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     step: 1,
     title: "Invite users",
     description:
-      "Invite the people who will work in your tenant. Invitations can only be sent by the Tenant Admin — there is no self-sign-up for new members.",
+      "Invite the people who will work in your tenant. Invitations can only be sent by the tenant admin — there is no self-sign-up for new members.",
     route: "/tenant/users",
     guideId: "users",
     Icon: UsersIcon,
   },
   {
     step: 2,
-    title: "Define Spaces",
+    title: "Define spaces",
     description:
       "Create spaces to organize users and resources the way you work — for example by team or project. Use the information button on each page to learn what a feature is for and how to set it up.",
     route: "/tenant/spaces",
@@ -49,7 +51,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     step: 3,
-    title: "Save credentials in the Vault",
+    title: "Save credentials in the vault",
     description:
       "Store the credentials for the applications you want to use. Secrets are encrypted at rest and access is audited.",
     route: "/configure/vault",
@@ -58,7 +60,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     step: 4,
-    title: "Enable Models",
+    title: "Enable models",
     description:
       "Connect and enable the AI models your agents will use by setting up a model provider and its API key.",
     route: "/tenant/model-providers",
@@ -82,7 +84,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
  * create an agent), each linking to the relevant feature page and its help guide.
  */
 const GetStartedPage = () => {
-  useDocumentTitle("Get Started");
+  useDocumentTitle("Get started");
   const navigate = useNavigate();
 
   const { isComplete, markComplete } = useOnboardingStore(
@@ -93,30 +95,25 @@ const GetStartedPage = () => {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-3xl font-semibold tracking-wide">Get Started</h2>
-          <HelpButton guideId="get-started" />
+          <h2 className="text-title text-ink">Get started</h2>
         </div>
-        {isComplete ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-            <CheckCircle2Icon className="h-4 w-4" />
-            Setup complete
-          </span>
-        ) : null}
+        {isComplete ? <Badge variant="completed">Setup complete</Badge> : null}
       </div>
 
       <p className="mb-8 max-w-3xl text-base text-muted-foreground">
         Complete these five steps to set up your workspace and build your first agent. Each step
-        opens the relevant page — use the <span className="font-medium">ⓘ</span> information button
-        on any page to learn what a feature does and how to set it up.
+        opens the relevant page — use the{" "}
+        <InfoIcon className="inline size-5 align-text-bottom" aria-label="info" /> information
+        button on any page to learn what a feature does and how to set it up.
       </p>
 
       <ol className="space-y-4">
         {ONBOARDING_STEPS.map(({ step, title, description, route, guideId, Icon }) => (
           <li
             key={step}
-            className="group flex items-start gap-4 rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="group flex items-start gap-4 rounded-lg border border-line bg-surface p-5"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-2">
               <Icon className="h-6 w-6" />
             </div>
 
@@ -125,7 +122,7 @@ const GetStartedPage = () => {
                 <span className="text-sm font-semibold text-muted-foreground">Step {step}</span>
                 <HelpButton guideId={guideId} tooltip={`Help: ${title}`} />
               </div>
-              <h3 className="mt-0.5 text-lg font-semibold text-foreground">{title}</h3>
+              <h3 className="mt-0.5 text-heading text-ink">{title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
             </div>
 
@@ -137,10 +134,10 @@ const GetStartedPage = () => {
         ))}
       </ol>
 
-      <div className="mt-8 flex items-center justify-between rounded-xl border border-border bg-muted/30 p-5">
+      <div className="mt-8 flex items-center justify-between rounded-lg border border-line bg-sunken p-5">
         <div className="flex items-center gap-3">
           {isComplete ? (
-            <CheckCircle2Icon className="h-6 w-6 text-primary" />
+            <CheckCircle2Icon className="h-6 w-6 text-ok" />
           ) : (
             <CircleIcon className="h-6 w-6 text-muted-foreground" />
           )}

@@ -85,8 +85,8 @@ export const DateRangeFilter = () => {
   //  Presets
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     {
       label: isCommunityDeployment ? "Last 1 day" : "Last 7 days",
       value: isCommunityDeployment ? 1 : 7,
@@ -126,8 +126,8 @@ export const DateRangeFilter = () => {
           setShowRangePicker(open);
         }}
       >
-        <PopoverTrigger disabled={isCurrentTab}>
-          <Button disabled={isCurrentTab} size="xs" variant="outline">
+        <PopoverTrigger asChild disabled={isCurrentTab}>
+          <Button disabled={isCurrentTab} variant="outline">
             <CalendarDays className="mr-2 h-3.5 w-3.5" />
             {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
             {format(selectedRange.to!, "MMM d, yyyy")}
@@ -149,7 +149,7 @@ export const DateRangeFilter = () => {
                     variant={isSelected ? "default" : "outline"}
                     onClick={() => setSelectedRange(range)}
                     className={`justify-start border-none shadow-none ${
-                      isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                      isSelected ? "bg-selected text-primary-text" : ""
                     }`}
                   >
                     {preset.label}

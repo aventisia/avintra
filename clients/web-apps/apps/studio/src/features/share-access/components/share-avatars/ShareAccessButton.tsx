@@ -11,9 +11,9 @@ export const ShareAccessButton: React.FC<Props> = ({ onClick }) => (
     <Tooltip.Trigger asChild>
       <Avatar
         onClick={onClick}
-        className="-ml-4 h-8 w-8 cursor-pointer border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary hover:z-10 hover:border-slate-200"
+        className="-ml-4 h-8 w-8 cursor-pointer border-2 border-surface !bg-sunken text-xs font-bold capitalize tracking-wider text-ink-2 hover:z-10 hover:border-line-strong"
       >
-        <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+        <AvatarFallback className="bg-sunken text-xs font-bold capitalize text-ink-2">
           <PlusIcon className="h-4 w-4" />
         </AvatarFallback>
       </Avatar>
@@ -22,10 +22,10 @@ export const ShareAccessButton: React.FC<Props> = ({ onClick }) => (
       <Tooltip.Content
         side="bottom"
         sideOffset={4}
-        className="z-50 rounded-md border border-secondary bg-secondary px-3 py-1.5 text-xs text-white shadow-md"
+        className="z-50 rounded-md bg-ink px-3 py-1.5 text-xs text-bg shadow-pop"
       >
-        Share Access
-        <Tooltip.Arrow className="fill-secondary" />
+        Share access
+        <Tooltip.Arrow className="fill-ink" />
       </Tooltip.Content>
     </Tooltip.Portal>
   </Tooltip.Root>

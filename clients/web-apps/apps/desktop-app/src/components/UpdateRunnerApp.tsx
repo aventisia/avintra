@@ -76,28 +76,28 @@ export function UpdateRunnerApp({
       subtitle="A newer version of the Avintra Runner App is available. We recommend updating to the latest version for the best experience."
     >
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50/60 p-4 text-sm">
+        <div className="flex flex-col gap-3 rounded-md border border-line bg-sunken p-4 text-body-sm">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Current version</span>
-            <span className="font-medium text-foreground">
+            <span className="font-mono text-code text-ink">
               {currentVersion ? `v${currentVersion}` : "Unknown"}
             </span>
           </div>
-          <div className="border-t border-border" />
+          <div className="border-t border-line" />
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Latest version</span>
-            <span className="font-medium text-foreground">{`v${latestVersion}`}</span>
+            <span className="font-mono text-code text-ink">{`v${latestVersion}`}</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <Button type="button" onClick={handleUpdate} className="w-full h-11 text-md">
+          <Button type="button" onClick={handleUpdate} size="lg" className="w-full">
             <span className="inline-flex items-center gap-1.5">
-              Update Now
+              Update now
               <Lucide icon="ArrowRight" className="h-4 w-4" />
             </span>
           </Button>
-          <Button type="button" variant="outline" onClick={onSkip} className="w-full h-11 text-md">
+          <Button type="button" variant="outline" onClick={onSkip} size="lg" className="w-full">
             Skip for now
           </Button>
         </div>

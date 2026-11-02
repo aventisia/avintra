@@ -13,11 +13,11 @@ export const idProps: InputFieldProps = {
 
 export const requestTypeProps: SelectFieldProps = {
   name: "requestType",
-  label: "Request Type",
+  label: "Request type",
   isRequired: true,
   selectOptions: [
-    { value: "ServiceRequest", label: "Service Request" },
-    { value: "ChangeRequest", label: "Change Request" },
+    { value: "ServiceRequest", label: "Service request" },
+    { value: "ChangeRequest", label: "Change request" },
   ],
 };
 
@@ -38,7 +38,7 @@ export const descriptionProps: TextareaFieldProps = {
 
 export const requiredByProps: InputFieldProps = {
   name: "requiredBy",
-  label: "Required By",
+  label: "Required by",
   type: "date",
   // Disable selection of dates before today (the current date).
   min: new Date().toISOString().slice(0, 10),
@@ -53,28 +53,28 @@ export const agentRefIdProps: SelectFieldProps = {
 
 export const changeSummaryProps: TextareaFieldProps = {
   name: "changeSummary",
-  label: "Change Summary",
+  label: "Change summary",
   placeholder: "Summary of the change (max 500 chars)",
   className: "min-h-[4rem]",
 };
 
 export const changeReasonProps: TextareaFieldProps = {
   name: "changeReason",
-  label: "Change Reason",
+  label: "Change reason",
   placeholder: "Reason for the change (max 500 chars)",
   className: "min-h-[4rem]",
 };
 
 export const expectedBehaviorProps: TextareaFieldProps = {
   name: "expectedBehavior",
-  label: "Expected Behavior",
+  label: "Expected behavior",
   placeholder: "Expected behavior after change (max 500 chars)",
   className: "min-h-[4rem]",
 };
 
 export const requestedTimelineProps: InputFieldProps = {
   name: "requestedTimeline",
-  label: "Requested Timeline",
+  label: "Requested timeline",
   type: "date",
   // Disable selection of dates before today (the current date).
   min: new Date().toISOString().slice(0, 10),
@@ -82,6 +82,6 @@ export const requestedTimelineProps: InputFieldProps = {
 
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this ticket if it's no longer relevant",
 };

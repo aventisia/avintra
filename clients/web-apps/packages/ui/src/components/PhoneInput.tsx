@@ -80,7 +80,10 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
           variant="outline"
           role="combobox"
           disabled={disabled}
-          className={cn("gap-1.5 pl-[0.8rem] pr-3 font-normal", value ? "w-max" : "w-[10rem]")}
+          className={cn(
+            "gap-1.5 pl-[11px] pr-2 text-body font-normal disabled:border-line disabled:bg-sunken",
+            value ? "w-max" : "w-[10rem]",
+          )}
         >
           {value ? (
             <>
@@ -90,10 +93,10 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
           ) : (
             "Select country"
           )}
-          <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-max border-input p-0" align="start">
+      <PopoverContent className="w-max p-0" align="start">
         <Command>
           <CommandInput placeholder="Search country..." />
           <CommandList>
@@ -110,15 +113,15 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
                     >
                       <CheckIcon
                         className={cn(
-                          "ml-auto h-4 w-4",
+                          "ml-auto h-4 w-4 text-primary-text",
                           option.value === value ? "opacity-100" : "opacity-0",
                         )}
                       />
                       <FlagComponent country={option.value} countryName={option.label} />
-                      <span className="flex-1 text-sm">
+                      <span className="flex-1 text-body-sm">
                         {option.label}{" "}
                         {option.value && (
-                          <span className="text-foreground/50 text-sm">
+                          <span className="font-mono text-code text-muted-foreground">
                             ({`+${RPNInput.getCountryCallingCode(option.value)}`})
                           </span>
                         )}

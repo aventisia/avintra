@@ -69,6 +69,7 @@ export const UserInfoForm = () => {
 
       <div className="flex w-full justify-between">
         <Button
+          size="lg"
           variant={"outline"}
           type="button"
           onClick={() => {
@@ -77,7 +78,7 @@ export const UserInfoForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={isCreationPending} primaryText="Continue" />
+        <SubmitButton size="lg" isPending={isCreationPending} primaryText="Continue" />
       </div>
     </Form>
   );

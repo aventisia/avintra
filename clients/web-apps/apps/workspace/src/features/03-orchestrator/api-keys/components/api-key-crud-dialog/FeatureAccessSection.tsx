@@ -14,23 +14,23 @@ export const FeatureAccessSection = ({ disabled }: FeatureAccessSectionProps) =>
   const { control } = useFormContext();
 
   return (
-    <div className="max-w-xl mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-        <h3 className="text-md font-medium leading-5 text-slate-900">Feature Access</h3>
-        <p className="mt-0.5 text-xs text-slate-500">
+    <div className="overflow-hidden rounded-lg border border-line bg-surface">
+      <div className="border-b border-line bg-sunken px-5 py-4">
+        <h3 className="text-heading text-ink">Feature access</h3>
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Enable or disable specific features for this key.
         </p>
       </div>
 
-      <ul className="divide-y divide-slate-200">
+      <ul className="divide-y divide-line">
         {API_KEY_PERMISSION_ITEMS.map((item) => (
           <li
             key={item.id}
-            className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-slate-50"
+            className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-hover"
           >
             <div className="flex flex-col gap-0.5 pr-4">
-              <span className="text-sm font-medium text-slate-900">{item.label}</span>
-              <span className="text-xs text-slate-500">{item.description}</span>
+              <span className="text-sm font-medium text-ink">{item.label}</span>
+              <span className="text-xs text-muted-foreground">{item.description}</span>
             </div>
 
             <Controller

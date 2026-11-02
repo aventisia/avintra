@@ -11,7 +11,7 @@ const NotificationSettingsPanel = () => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base">Notification Settings</CardTitle>
+        <CardTitle className="text-base">Notification settings</CardTitle>
         <CardDescription>
           Enable or disable how notifications are delivered to recipients in this tenant.
         </CardDescription>

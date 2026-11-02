@@ -56,7 +56,7 @@ export const ValidationApprovalSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 06"
-      title="Validation & Approval"
+      title="Validation & approval"
       description="Confirm the information provided is accurate, select an approver, and submit for approval."
     >
       <div className="space-y-6">
@@ -102,7 +102,7 @@ export const ValidationApprovalSection = () => {
                     })
                   }
                 >
-                  Edit Approval Request
+                  Edit approval request
                 </Button>
               </div>
             </div>
@@ -110,7 +110,7 @@ export const ValidationApprovalSection = () => {
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-[11px] font-semibold text-muted-foreground">
-                  Select Approver
+                  Select approver
                 </label>
                 <div className="relative">
                   <input
@@ -120,7 +120,7 @@ export const ValidationApprovalSection = () => {
                     onChange={(e) => setApproverSearch(e.target.value)}
                   />
                   {showApproverDropdown && (
-                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md">
+                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-pop">
                       {approvers.length === 0 && (
                         <div className="p-2 text-xs text-muted-foreground">No users found</div>
                       )}
@@ -162,14 +162,14 @@ export const ValidationApprovalSection = () => {
                   })
                 }
               >
-                Submit for Approval
+                Submit for approval
               </Button>
             </div>
           )}
 
           {approval.isSubmitted && approval.decision === "pending" && (
             <div className="mt-4 space-y-3 border-t border-border pt-3">
-              <Field label="Decision Notes">
+              <Field label="Decision notes">
                 <textarea
                   className="w-full rounded-lg border border-border bg-background p-3 text-sm"
                   placeholder="Notes accompanying the decision"
@@ -214,7 +214,7 @@ export const ValidationApprovalSection = () => {
                       })
                     }
                   >
-                    Request Changes
+                    Request changes
                   </Button>
                 </div>
               ) : (

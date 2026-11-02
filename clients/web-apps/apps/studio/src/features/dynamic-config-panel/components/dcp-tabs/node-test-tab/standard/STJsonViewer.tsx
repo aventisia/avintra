@@ -11,7 +11,7 @@ const STJsonViewer = ({ label, jsonData, className }: STJsonViewerProps) => {
     <div className={cn("relative rounded-lg border", className)}>
       {/* Label*/}
       <div className="absolute -top-3 left-2.5">
-        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+        <span className="rounded-full bg-fill px-1.5 py-1 text-xs font-medium text-ink-2">
           {label}
         </span>
       </div>

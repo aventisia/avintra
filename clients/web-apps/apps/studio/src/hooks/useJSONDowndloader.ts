@@ -38,7 +38,7 @@ export const useJsonDownload = (): UseJsonDownloadProps => {
       // Clean up
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success("Exported Successfully");
+      toast.success("Exported successfully");
     } catch (error: unknown) {
       console.error("Error downloading JSON:", error);
     } finally {

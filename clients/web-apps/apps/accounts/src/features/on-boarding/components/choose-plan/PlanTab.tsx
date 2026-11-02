@@ -45,7 +45,7 @@ export default function PlanTab({ data, planFrequency }: PlanTabProps) {
       </ScrollArea>
 
       <div className="flex justify-end w-full">
-        <Button className="mt-5" onClick={handleProceed} disabled={!planId}>
+        <Button size="lg" className="mt-5" onClick={handleProceed} disabled={!planId}>
           Next
         </Button>
       </div>

@@ -7,6 +7,7 @@ import { NodeDataType } from "@/types/node-data-type";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionToSelect } from "./ActionToSelect";
+import { NoActionsMessage } from "./NoActionsMessage";
 
 interface ActionsListProps {
   items: NodeDataType[] | undefined;
@@ -40,9 +41,7 @@ const ActionsList = ({
   );
 
   if (!items || items.length === 0) {
-    return (
-      <div className="p-4 text-center text-sm text-muted-foreground">No actions available.</div>
-    );
+    return <NoActionsMessage />;
   }
 
   return (
@@ -75,11 +74,10 @@ const ActionsList = ({
               setShowDialog(false);
             }}
             onKeyDown={(e) => handleRightPaneKeyDown(e, idx, action)}
+            title={action.description}
             className={cn(
-              "mb-1 w-full rounded-lg p-1 text-left outline-none transition-colors",
-              isFocused
-                ? "bg-accent text-accent-foreground"
-                : "hover:bg-accent hover:text-accent-foreground",
+              "w-full rounded-md text-left outline-none transition-colors focus-visible:shadow-focus",
+              isFocused ? "bg-hover" : "hover:bg-hover",
               (isDisabled || (isChatAiNode && !isChatAgent)) && "cursor-not-allowed opacity-50",
             )}
           >

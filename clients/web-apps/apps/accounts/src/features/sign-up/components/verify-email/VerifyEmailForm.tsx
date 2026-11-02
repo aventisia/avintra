@@ -52,7 +52,7 @@ export const VerifyEmailForm = () => {
 
       {/* Submit button */}
       <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
+        className="!mt-5 h-control-lg w-full"
         primaryText="Verify code"
         isPending={isSubmitting || isCreationPending}
       />

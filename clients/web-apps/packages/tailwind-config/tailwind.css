@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,46 +6,140 @@
 
 @layer base {
   :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(244, 47%, 20%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(222.2 84% 4.9%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(222.2 84% 4.9%);
-    --primary: rgb(79, 70, 229);
-    --primary-foreground: hsl(210 40% 98%);
-    --secondary: rgb(30, 27, 75);
-    --secondary-foreground: hsl(210 40% 98%);
-    --muted: hsl(210 40% 96.1%);
-    --muted-foreground: hsl(215.4 16.3% 46.9%);
-    --accent: hsl(226, 100%, 97%);
-    --accent-foreground: hsl(222.2 47.4% 11.2%);
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(210 40% 98%);
-    --border: hsl(214.3 31.8% 91.4%);
-    --input: hsl(214.3 31.8% 91.4%);
-    --ring: rgba(78, 70, 229, 0.2);
+    --primary-50: #e8e8fd;
+    --primary-100: #cbc9f8;
+    --primary-200: #a9a9f4;
+    --primary-300: #8486f1;
+    --primary-400: #6765ec;
+    --primary-500: #4f46e5;
+    --primary-600: #4c3fd9;
+    --primary-700: #4132cd;
+    --primary-800: #3924c2;
+    --primary-900: #2d00b2;
+
+    --secondary-50: #e6e8ef;
+    --secondary-100: #c0c3d8;
+    --secondary-200: #989dbd;
+    --secondary-300: #747aa4;
+    --secondary-400: #595e91;
+    --secondary-500: #3f4483;
+    --secondary-600: #3a3d78;
+    --secondary-700: #31336d;
+    --secondary-800: #292960;
+    --secondary-900: #1e1b4b;
+
+    --bg: #f7f7f9;
+    --surface: #ffffff;
+    --sunken: #f2f2f5;
+    --hover: #f0f0f3;
+    --fill: #e9e9ee;
+    --selected: #e8e8fd;
+    --line: #e5e5ea;
+    --line-strong: #868594;
+    --ink: #12111f;
+    --ink-2: #3a3946;
+    --muted-ink: #62616e;
+    --primary-base: #4f46e5;
+    --primary-hover: #4132cd;
+    --on-primary: #ffffff;
+    --primary-text: #4c3fd9;
+    --secondary-base: #1e1b4b;
+    --secondary-hover: #292960;
+    --on-secondary: #ffffff;
+    --indicator: #4f46e5;
+    --focus: #4f46e5;
+    --live: #4c3fd9;
+    --ok: #0d7040;
+    --warn: #9a5a00;
+    --bad: #c42419;
+    --bad-hover: #a81e15;
+    --on-bad: #ffffff;
+    --scrim: rgba(18, 17, 31, 0.4);
+    --canvas-grid: #e4e4ea;
+
+    --shadow-pop: 0 0 0 1px #e5e5ea, 0 12px 32px rgba(18, 17, 31, 0.12);
+    --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #4f46e5;
+    --shadow-select: 0 0 0 2px #4f46e5, 0 0 0 6px rgba(79, 70, 229, 0.16);
+
     --radius: 0.5rem;
 
     --banner-height: 3.5rem;
     --header-padding: 0.375rem;
-    --header-height: 3.5rem;
+    --header-height: 3rem;
     --sidebar-max-width: 14rem;
-    --sidebar-min-width: 4.296rem;
-    --icon-color: #2a2f3c;
+    --sidebar-min-width: 3.5rem;
+    --icon-color: var(--ink-2);
     --popover-height: 70vh;
   }
 
-  /* TODO: Add dark mode support lator */
+  .dark {
+    --bg: #09090d;
+    --surface: #111117;
+    --sunken: #0d0d12;
+    --hover: #17171f;
+    --fill: #1c1c24;
+    --selected: #191832;
+    --line: #22222b;
+    --line-strong: #646472;
+    --ink: #ededf2;
+    --ink-2: #bdbdc8;
+    --muted-ink: #8e8e99;
+    --primary-hover: #6765ec;
+    --primary-text: #a9a9f4;
+    --secondary-base: #292960;
+    --secondary-hover: #31336d;
+    --on-secondary: #ededf2;
+    --indicator: #6765ec;
+    --focus: #8486f1;
+    --live: #8486f1;
+    --ok: #3ccb7f;
+    --warn: #f0b044;
+    --bad: #ff6b63;
+    --bad-hover: #ff8c86;
+    --on-bad: #1f0402;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --canvas-grid: #17171f;
+
+    --shadow-pop: 0 0 0 1px #22222b, 0 16px 40px rgba(0, 0, 0, 0.55);
+    --shadow-focus: 0 0 0 2px #09090d, 0 0 0 4px #8486f1;
+    --shadow-select: 0 0 0 2px #4f46e5, 0 0 0 6px rgba(79, 70, 229, 0.28);
+
+    color-scheme: dark;
+  }
+
+  /* IMPORTANT NOTE: A custom property that references var() resolves where it is declared, so the
+  shadcn aliases are redeclared on `.dark` to pick up the dark Ink values in dark subtrees. */
+  :root,
+  .dark {
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink);
+    --primary: var(--primary-base);
+    --primary-foreground: var(--on-primary);
+    --secondary: var(--secondary-base);
+    --secondary-foreground: var(--on-secondary);
+    --muted: var(--sunken);
+    --muted-foreground: var(--muted-ink);
+    --accent: var(--hover);
+    --accent-foreground: var(--ink);
+    --destructive: var(--bad);
+    --destructive-foreground: var(--on-bad);
+    --border: var(--line);
+    --input: var(--line-strong);
+    --ring: var(--focus);
+  }
 }
 
 @layer base {
   *,
   *::after,
   *::before {
-    @apply border-border m-0 box-border p-0 font-sans tracking-[0.01rem];
+    @apply border-border m-0 box-border p-0 font-sans;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-body;
   }
 }

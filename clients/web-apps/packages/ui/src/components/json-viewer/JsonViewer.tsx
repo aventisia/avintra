@@ -134,7 +134,7 @@ export const JsonViewer = ({
             showTooltip
             aria-label={copiedAriaLabel}
             onClick={handleCopyJson}
-            className="text-muted-foreground/60 size-6 hover:text-primary opacity-60 hover:opacity-100"
+            className="text-muted-foreground/60 size-6 hover:text-primary-text opacity-60 hover:opacity-100"
             iconClassName="size-3.5"
           />
         </div>
@@ -142,7 +142,7 @@ export const JsonViewer = ({
 
       {parseError ? (
         <div className="min-w-0 px-1 py-2">
-          <p className="text-xs font-medium text-destructive">Invalid JSON</p>
+          <p className="text-xs font-medium text-bad">Invalid JSON</p>
           <pre className="mt-1 whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
             {jsonData}
           </pre>
@@ -177,7 +177,7 @@ const renderCopiedButton = (props: unknown) => {
       showTooltip={false}
       aria-label={copied ? "Copied" : "Copy"}
       onClick={onClick}
-      className="text-muted-foreground/60 size-3.5 hover:text-primary ml-1 inline-flex opacity-60 hover:opacity-100"
+      className="text-muted-foreground/60 size-3.5 hover:text-primary-text ml-1 inline-flex opacity-60 hover:opacity-100"
       iconClassName="size-2.5"
     />
   );

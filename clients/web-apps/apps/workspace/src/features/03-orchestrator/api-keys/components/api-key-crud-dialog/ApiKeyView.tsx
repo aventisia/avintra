@@ -1,4 +1,4 @@
-import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
+import { CopyableText, EmptyState, LoadingSpinner, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import {
   AuditTrailCard,
@@ -41,7 +41,7 @@ export const ApiKeyView = ({ rowId }: ApiKeyViewProps) => {
   if (!apiKey) {
     return (
       <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <NoContentMessage
+        <EmptyState
           className="-mt-20"
           Icon={KeyIcon}
           primaryMessage="API key record is not available."
@@ -71,29 +71,25 @@ export const ApiKeyView = ({ rowId }: ApiKeyViewProps) => {
         <div className="flex flex-wrap items-center gap-2.5">
           {(() => {
             const status = getApiKeyStatus(apiKey.expiresAt, apiKey.isRevoked);
-            return (
-              <Badge className={status.className} variant={status.variant}>
-                {status.label}
-              </Badge>
-            );
+            return <Badge variant={status.variant}>{status.label}</Badge>;
           })()}
         </div>
 
         <div className="grid grid-cols-2 gap-2">
           <ViewField
-            label="Secret Key"
+            label="Secret key"
             className="font-mono"
             value={apiKey.keyPrefix ?? FALLBACK_VALUE}
           />
-          <ViewField label="Expires At" value={formatDate(apiKey.expiresAt, true)} />
-          <ViewField label="Last Used" value={formatDate(apiKey.lastUsedAt, true)} />
+          <ViewField label="Expires at" value={formatDate(apiKey.expiresAt, true)} />
+          <ViewField label="Last used" value={formatDate(apiKey.lastUsedAt, true)} />
         </div>
       </ViewDefaultCard>
 
       <ViewDefaultCard>
         <div className="flex items-center gap-1.5">
           <ShieldCheckIcon className="size-3.5 text-muted-foreground" />
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Feature Access</p>
+          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Feature access</p>
         </div>
         <div className="grid grid-cols-1">
           {API_KEY_PERMISSION_ITEMS.map((item, index) => {

@@ -1,8 +1,9 @@
+import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
-import { Undo2, X } from "lucide-react";
+import { MetaLine } from "@avplatform/ui/meta-line";
+import { Trash2, Undo2 } from "lucide-react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
-import { MetaLine } from "@/components/MetaLine";
 
 import type { ResourceFlowDraft } from "../../../hooks/useResourceFlowDraft.hook";
 import type { FlowAccessAgent, FlowAccessChange } from "../../../types/flow-access.type";
@@ -25,7 +26,7 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
     <div
       className={cn(
         "group flex items-center gap-3 px-3.5 py-2.5 transition-colors",
-        isRemoved ? "bg-slate-50/80" : "hover:bg-slate-50/70",
+        isRemoved ? "bg-sunken" : "hover:bg-hover",
       )}
     >
       <AgentAvatar size="lg" className={cn("transition", isRemoved && "opacity-40 grayscale")} />
@@ -33,21 +34,17 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
         <div className="flex items-center gap-2">
           <p
             className={cn(
-              "truncate text-[13.5px] font-medium text-slate-900",
-              isRemoved && "text-slate-400 line-through decoration-slate-300",
+              "truncate text-[13.5px] font-medium text-ink",
+              isRemoved && "text-muted-foreground line-through decoration-line-strong",
             )}
           >
             {agent.name}
           </p>
-          {change === "added" && (
-            <span className="shrink-0 rounded-full bg-emerald-50 px-1.5 py-px text-[10.5px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">
-              New
-            </span>
-          )}
+          {change === "added" && <Badge className="shrink-0">New</Badge>}
           {isRemoved && (
-            <span className="shrink-0 rounded-full bg-rose-50 px-1.5 py-px text-[10.5px] font-semibold text-rose-600 ring-1 ring-rose-600/15">
+            <Badge variant="destructive" className="shrink-0">
               Removing
-            </span>
+            </Badge>
           )}
         </div>
         <MetaLine
@@ -63,7 +60,7 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
         <button
           type="button"
           onClick={() => draft.add(agent)}
-          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-lg bg-popover px-2 text-[12px] font-medium text-slate-600 ring-1 ring-border transition hover:text-slate-900 hover:ring-slate-300"
+          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-surface px-2 text-[12px] font-medium text-ink-2 ring-1 ring-line-strong transition hover:text-ink hover:ring-line-strong"
         >
           <Undo2 className="size-3.5" />
           Undo
@@ -74,9 +71,9 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
           aria-label={`Remove ${agent.name}`}
           title={`Remove ${agent.name}`}
           onClick={() => draft.remove(agent.id)}
-          className="grid size-7 shrink-0 place-items-center rounded-lg text-slate-400 opacity-0 transition hover:bg-rose-50 hover:text-rose-600 focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+          className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-bad/10 hover:text-bad focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
         >
-          <X className="size-4" />
+          <Trash2 className="size-4" />
         </button>
       )}
     </div>

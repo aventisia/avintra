@@ -1,23 +1,23 @@
+import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import { useMemo } from "react";
+
 import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
-
-import { HelpButton } from "@/components/help/HelpButton";
-
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+  API_KEYS_INITIAL_STATE,
+  API_KEYS_PAGE_SIZE_OPTIONS,
+  API_KEYS_ROW_LABELS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchApiKeys } from "../hooks/useFetchApiKeys.hook";
 import { getApiKeysTableColumns } from "./ApiKeysTableColumns";
 import { ApiKeyBulkActions } from "./api-key-row-actions/ApiKeyBulkActions";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: API_KEYS_PAGE_SIZE_OPTIONS,
+  rowLabels: API_KEYS_ROW_LABELS,
+};
 
 /**
  * Renders a table of API keys.
@@ -26,58 +26,50 @@ export const ApiKeysTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch API keys data
   const { data } = useFetchApiKeys();
 
   // Build table columns
-  const apiKeysTableColumns = getApiKeysTableColumns();
+  const columns = useMemo(() => getApiKeysTableColumns(), []);
 
-  // Create a React table for API keys data
-  const table = useDataTable(
-    apiKeysTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns,
+    getRowId: (row) => row.id,
+    initialState: API_KEYS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading and create action */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="api-keys" />
             </div>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["name"]}
-                placeholder="Search API keys..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton buttonText="Create" entity="apiKey" />
             </div>
           </div>
 
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={apiKeysTableColumns.length} />
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} singularLabel="key" pluralLabel="keys" />
-
-          {/* Bulk actions for data table */}
-          <ApiKeyBulkActions table={table} />
+          {/* Table with its toolbar, pagination footer, and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<ApiKeyBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search API keys..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the API keys data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the API keys data
+        <TableCNSkeleton columnCount={12} />
       )}
     </>
   );

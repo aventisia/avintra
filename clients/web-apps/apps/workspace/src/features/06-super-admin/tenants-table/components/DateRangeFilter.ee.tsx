@@ -73,8 +73,8 @@ export const DateRangeFilter = () => {
   //  Presets
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     { label: "Last 7 days", value: 7 },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
@@ -123,7 +123,7 @@ export const DateRangeFilter = () => {
                   variant={isSelected ? "default" : "outline"}
                   onClick={() => setSelectedRange(range)}
                   className={`justify-start border-none shadow-none ${
-                    isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                    isSelected ? "bg-selected text-primary-text" : ""
                   }`}
                 >
                   {preset.label}

@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { SlidersHorizontalIcon } from "lucide-react";
 
 import { POPOVER_HEADING } from "../constants";
 
@@ -13,11 +13,11 @@ export const StudioPreferencesTrigger = () => {
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
           "hidden md:flex",
-          "hover:bg-white/10",
-          "aria-[expanded=true]:bg-white/10",
+          "hover:bg-hover",
+          "aria-[expanded=true]:bg-hover",
         )}
       >
-        <AdjustmentsHorizontalIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
+        <SlidersHorizontalIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
       </PopoverTrigger>
     </Tooltip>
   );

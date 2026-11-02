@@ -1,4 +1,4 @@
-import { BellIcon } from "@heroicons/react/24/outline";
+import { BellIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
@@ -17,7 +17,7 @@ export const UNBellIcon = () => {
   // Return Bell icon with red dot if there are any unread notifications
   return (
     <div className="relative flex h-5 w-5 items-center justify-center">
-      <BellIcon className="h-5 w-5 text-white/80" />
+      <BellIcon className="h-5 w-5 text-ink-2" />
       {unreadCount > 0 ? (
         <span className="absolute right-0.5 top-[0.08rem] block h-2 w-2 rounded-full bg-destructive" />
       ) : null}

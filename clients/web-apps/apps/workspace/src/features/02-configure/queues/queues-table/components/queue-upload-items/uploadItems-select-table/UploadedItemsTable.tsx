@@ -1,20 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { DTColumnHeader, DataTableSkeleton } from "@avplatform/ui/data-table";
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TABLE_CN_ACTIONS_COLUMN_ID,
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+  TableCNColumnHeader,
+  TableCNSkeleton,
+  getTableCNSelectColumn,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { useQueryClient } from "@tanstack/react-query";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, InitialTableState } from "@tanstack/react-table";
 import { CircleCheckIcon, CircleXIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { InputSchemaField, QueuesTableDto } from "../../../dtos/queues-table-dto";
 import { useTableTab } from "../../../hooks/useTableTab";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
 import UploadedItemsDT from "./UploadedItemsDT";
+
+// The dialog keeps its own page/sort parameters so it cannot disturb the queues page.
+const UPLOADED_ITEMS_QUERY_KEYS = {
+  page: "uploadItemsPage",
+  perPage: "uploadItemsPerPage",
+  sort: "uploadItemsSort",
+};
+
+const UPLOADED_ITEMS_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
+};
 
 export function UploadedItemsTable({
   uploadedData,
@@ -59,52 +82,27 @@ export function UploadedItemsTable({
     const extraKeys = dataKeys.filter((k) => !schemaKeys.includes(k));
 
     const baseColumns: ColumnDef<any>[] = [
-      {
-        accessorKey: "rowId",
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
-            className="translate-y-[2px]"
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-            className="translate-y-[2px]"
-          />
-        ),
-        enableSorting: false,
-      },
+      getTableCNSelectColumn<any>(),
       ...generateDTColumns(colData),
-      ...extraKeys.map((key) => ({
-        accessorKey: key,
-        header: ({ column }: any) => (
-          <DTColumnHeader
-            tableKey={"uploaded-items-table"}
-            column={column}
-            title={key.charAt(0).toUpperCase() + key.slice(1)}
-          />
-        ),
-        cell: (info: any) => (
-          <div className="w-auto truncate font-medium">{String(info.getValue() ?? "")}</div>
-        ),
-      })),
+      ...extraKeys.map((key) => {
+        const label = key.charAt(0).toUpperCase() + key.slice(1);
+        return {
+          accessorKey: key,
+          meta: { label },
+          header: ({ column }: any) => <TableCNColumnHeader column={column} label={label} />,
+          cell: (info: any) => (
+            <div className="w-auto truncate font-medium">{String(info.getValue() ?? "")}</div>
+          ),
+        };
+      }),
     ];
 
     // Only add status column if the first row contains it
     if (uploadedData?.length > 0 && "Status" in uploadedData[0]) {
       baseColumns.push({
         id: "status",
-        header: ({ column }) => (
-          <DTColumnHeader tableKey={"uploaded-items-table"} column={column} title={"Status"} />
-        ),
+        meta: { label: "Status" },
+        header: ({ column }) => <TableCNColumnHeader column={column} label="Status" />,
         cell: ({ row }) => {
           const status = row.original as any;
           const t = status?.Status;
@@ -113,13 +111,13 @@ export function UploadedItemsTable({
           if (t === "Failed") {
             return (
               <Tooltip content={r}>
-                <CircleXIcon className="h-4 w-4 text-red-500" />
+                <CircleXIcon className="h-4 w-4 text-bad" />
               </Tooltip>
             );
           }
 
           if (t === "Success") {
-            return <CircleCheckIcon className="h-4 w-4 text-green-500" />;
+            return <CircleCheckIcon className="h-4 w-4 text-ok" />;
           }
 
           return <div className="text-sm text-muted-foreground">Pending</div>;
@@ -127,76 +125,88 @@ export function UploadedItemsTable({
       });
     }
 
-    baseColumns.push({
-      id: "actions",
-      cell: ({ row }) => (
-        <Button
-          type="button"
-          onClick={() => {
-            const rowData = row.original;
-            setUploadedData((prev) =>
-              prev?.filter((r) => JSON.stringify(r) !== JSON.stringify(rowData)),
-            );
-          }}
-          variant={"caution"}
-          size={"xs"}
-        >
-          <Trash2Icon className="h-4 w-4" />
-        </Button>
-      ),
-    });
+    baseColumns.push(
+      getRowActionsColumn<any>({
+        actions: ({ row }) => (
+          <Button
+            type="button"
+            onClick={() => {
+              const rowData = row.original;
+              setUploadedData((prev) =>
+                prev?.filter((r) => JSON.stringify(r) !== JSON.stringify(rowData)),
+              );
+            }}
+            variant={"caution"}
+            size={"xs"}
+          >
+            <Trash2Icon className="h-4 w-4" />
+          </Button>
+        ),
+      }),
+    );
 
     return baseColumns;
   }, [colData, uploadedData, setUploadedData]);
 
   function generateDTColumns<TData>(fields: InputSchemaField[]): ColumnDef<TData>[] {
-    return fields.map((field) => ({
-      accessorKey: field.name as keyof TData,
-      header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={"uploaded-items-table"}
-          column={column}
-          title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
-        />
-      ),
-      cell: (info) => <div className="w-auto truncate font-medium">{String(info.getValue())}</div>,
-    }));
-  }
-  //  columns visibility
-  const columnVisibility = useMemo(() => {
-    const dataKeys = (uploadedData?.[0] ? Object.keys(uploadedData[0]) : []).filter(
-      (k) => k !== "Status" && k !== "Remark",
-    );
-
-    return {
-      rowId: false,
-
-      ...generateColumnVisibilityState(colData),
-      ...Object.fromEntries(dataKeys.map((k) => [k, true])),
-      Status: Object.keys(uploadedData[0] || [])?.includes("Status") ? true : false,
-    };
-  }, [colData, uploadedData]);
-
-  /** Generate column visibility state with all fields visible */
-  function generateColumnVisibilityState(fields: InputSchemaField[]): Record<string, boolean> {
-    const visibilityState: Record<string, boolean> = {};
-
-    fields.forEach((field) => {
-      visibilityState[field.name] = true;
+    return fields.map((field) => {
+      const label = field.name.charAt(0).toUpperCase() + field.name.slice(1);
+      return {
+        accessorKey: field.name as keyof TData,
+        meta: { label },
+        header: ({ column }) => <TableCNColumnHeader column={column} label={label} />,
+        cell: (info) => (
+          <div className="w-auto truncate font-medium">{String(info.getValue())}</div>
+        ),
+      };
     });
-
-    return visibilityState;
   }
+
+  // Create a TableCN table; page, size, and sorting live in the dialog's own URL keys
+  const { table } = useTableCN({
+    data: uploadedData ?? [],
+    columns,
+    getRowId: (_row, index) => String(index),
+    initialState: UPLOADED_ITEMS_INITIAL_STATE,
+    queryKeys: UPLOADED_ITEMS_QUERY_KEYS,
+    persistKey: "uploaded-items",
+  });
+
+  // Get showAlert handler
+  const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // Remove the selected rows from the upload list
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const removeSelectedRows = () => {
+    const selected = new Set(selectedRows.map((row) => JSON.stringify(row.original)));
+    setUploadedData((prev) => prev?.filter((item) => !selected.has(JSON.stringify(item))));
+    table.toggleAllRowsSelected(false);
+  };
 
   return isProcessiong ? (
-    <DataTableSkeleton />
+    <TableCNSkeleton columnCount={Math.max(columns.length, 1)} />
   ) : (
-    <>
-      <UploadedItemsDT
-        columns={columns}
-        columnsVisibilityState={columnVisibility}
-        data={uploadedData || []}
-      />
-    </>
+    <UploadedItemsDT
+      table={table}
+      actionBar={
+        <TableCNActionBar table={table}>
+          <TableCNActionBarSelection table={table} />
+          <TableCNActionBarSeparator />
+          <TableCNActionBarItem
+            icon={Trash2Icon}
+            tone="destructive"
+            onClick={() =>
+              showDefaultAlertDialog({
+                confirmActionFn: removeSelectedRows,
+                alertType: "delete-multiple",
+                additionalText: `${selectedRows.length} ${selectedRows.length > 1 ? "items" : "item"}`,
+              })
+            }
+          >
+            Remove
+          </TableCNActionBarItem>
+        </TableCNActionBar>
+      }
+    />
   );
 }

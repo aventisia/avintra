@@ -8,11 +8,7 @@ import {
   SimpleDDMenuItem,
 } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import {
-  ArrowTopRightOnSquareIcon,
-  EllipsisHorizontalIcon,
-  PlayIcon,
-} from "@heroicons/react/24/solid";
+import { EllipsisIcon, ExternalLinkIcon, PlayIcon } from "lucide-react";
 
 interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
   machineId: string;
@@ -77,20 +73,20 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
           "data-[state=open]:bg-muted",
         )}
       >
-        <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+        <EllipsisIcon className="h-4 w-4 text-[--icon-color]" />
         <span className="sr-only">Open menu</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={cn("w-fit flex flex-col min-w-28", className)}>
         <SimpleDDMenuItem
           content="View"
-          Icon={ArrowTopRightOnSquareIcon}
+          Icon={ExternalLinkIcon}
           onClick={() => handleViewFlowVersionAction()}
         />
         <DropdownMenuItem
           className={cn(buttonVariants({ variant: "dropdownItem" }), "h-8")}
           onClick={() => handleExecuteFlowVersionAction()}
         >
-          <PlayIcon className="size-4 text-green-500/80" />
+          <PlayIcon className="size-4 text-ok" />
           Execute
         </DropdownMenuItem>
       </DropdownMenuContent>

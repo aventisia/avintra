@@ -1,18 +1,18 @@
-import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { Badge, type BadgeProps } from "@avplatform/ui/badge";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { AlertTriangleIcon } from "lucide-react";
 
-import { AI_GOVERNANCE_TABLE_KEY } from "../constants";
+import { getColumnName } from "../constants/registry-columns";
 import { AgentRiskRegistryRowDto } from "../dtos/agent-risk-registry-row-dto";
 import { RiskLifecycleStatus } from "../enums/lifecycle-state-enum";
 import { AgentRiskTier } from "../enums/risk-tier-enum";
 
 const tierBadgeClass: Record<AgentRiskTier, string> = {
-  [AgentRiskTier.Low]: "bg-emerald-500/15 text-emerald-600",
-  [AgentRiskTier.Medium]: "bg-amber-500/15 text-amber-600",
-  [AgentRiskTier.High]: "bg-red-500/15 text-red-600",
+  [AgentRiskTier.Low]: "border-ok/35 text-ok",
+  [AgentRiskTier.Medium]: "border-warn/35 text-warn",
+  [AgentRiskTier.High]: "border-bad/35 text-bad",
 };
 
 const tierLabel: Record<AgentRiskTier, string> = {
@@ -21,16 +21,16 @@ const tierLabel: Record<AgentRiskTier, string> = {
   [AgentRiskTier.High]: "High",
 };
 
-const statusBadgeClass: Record<string, string> = {
-  [RiskLifecycleStatus.NotAssessed]: "bg-muted text-muted-foreground",
-  [RiskLifecycleStatus.InAssessment]: "bg-slate-500/15 text-slate-600",
-  [RiskLifecycleStatus.Submitted]: "bg-amber-500/15 text-amber-600",
-  [RiskLifecycleStatus.InReview]: "bg-blue-500/15 text-blue-600",
-  [RiskLifecycleStatus.Approved]: "bg-emerald-500/15 text-emerald-600",
-  [RiskLifecycleStatus.ApprovedWithExceptions]: "bg-yellow-500/15 text-yellow-600",
-  [RiskLifecycleStatus.Monitored]: "bg-cyan-500/15 text-cyan-600",
-  [RiskLifecycleStatus.ActionRequired]: "bg-red-500/15 text-red-600",
-  [RiskLifecycleStatus.Retired]: "bg-muted text-muted-foreground",
+const statusBadgeVariant: Record<string, BadgeProps["variant"]> = {
+  [RiskLifecycleStatus.NotAssessed]: "secondary",
+  [RiskLifecycleStatus.InAssessment]: "draft",
+  [RiskLifecycleStatus.Submitted]: "queued",
+  [RiskLifecycleStatus.InReview]: "review",
+  [RiskLifecycleStatus.Approved]: "completed",
+  [RiskLifecycleStatus.ApprovedWithExceptions]: "review",
+  [RiskLifecycleStatus.Monitored]: "outline",
+  [RiskLifecycleStatus.ActionRequired]: "failed",
+  [RiskLifecycleStatus.Retired]: "secondary",
 };
 
 const statusLabel: Record<string, string> = {
@@ -55,13 +55,23 @@ const renderTier = (tier: AgentRiskTier | null) =>
   );
 
 const renderStatus = (status: RiskLifecycleStatus) => (
-  <Badge variant="outline" className={statusBadgeClass[status] ?? "bg-muted text-muted-foreground"}>
+  <Badge variant={statusBadgeVariant[status] ?? "secondary"}>
     {statusLabel[status] ?? status.charAt(0).toUpperCase() + status.slice(1)}
   </Badge>
 );
 
 const renderDate = (date: string) =>
-  date ? formatDate(new Date(date)) : <span className="text-muted-foreground">-</span>;
+  date ? (
+    <span className="font-mono tabular-nums">{formatDate(new Date(date))}</span>
+  ) : (
+    <span className="text-muted-foreground">-</span>
+  );
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<AgentRiskRegistryRowDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Builds columns for the Agent Risk Registry table.
@@ -80,9 +90,8 @@ export const buildAgentRiskRegistryColumns = (
 ): ColumnDef<AgentRiskRegistryRowDto>[] => [
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Agent Name" />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <button
@@ -111,48 +120,39 @@ export const buildAgentRiskRegistryColumns = (
   },
   {
     accessorKey: "compositeTier",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={AI_GOVERNANCE_TABLE_KEY}
-        column={column}
-        title="Composite Risk Tier"
-      />
-    ),
+    meta: { label: getColumnName("compositeTier") },
+    header: renderHeader("compositeTier"),
     cell: ({ row }) => renderTier(row.original.compositeTier),
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Status" />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => renderStatus(row.original.status),
   },
   {
     accessorKey: "openIssues",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Open Issues" />
-    ),
+    meta: { label: getColumnName("openIssues") },
+    header: renderHeader("openIssues"),
     cell: ({ row }) =>
       row.original.openIssues > 0 ? (
-        <Badge variant="outline" className="bg-red-500/15 text-red-600">
+        <Badge variant="destructive" className="tabular-nums">
           {row.original.openIssues}
         </Badge>
       ) : (
-        <span className="text-muted-foreground">0</span>
+        <span className="font-mono tabular-nums text-muted-foreground">0</span>
       ),
   },
   {
     accessorKey: "reviewDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Reviewed On" />
-    ),
+    meta: { label: getColumnName("reviewDate") },
+    header: renderHeader("reviewDate"),
     cell: ({ row }) => renderDate(row.original.reviewDate),
   },
   {
     accessorKey: "approvalDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Approved On" />
-    ),
+    meta: { label: getColumnName("approvalDate") },
+    header: renderHeader("approvalDate"),
     cell: ({ row }) => renderDate(row.original.approvalDate),
   },
   {

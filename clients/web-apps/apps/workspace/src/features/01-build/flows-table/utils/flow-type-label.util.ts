@@ -1,7 +1,7 @@
 const FLOW_TYPE_LABELS: Record<string, string> = {
-  Agent: "Automation Agent",
-  ChatAgent: "Chat Agent",
-  VoiceAgent: "Voice Agent",
+  Agent: "Automation agent",
+  ChatAgent: "Chat agent",
+  VoiceAgent: "Voice agent",
 };
 
 /**

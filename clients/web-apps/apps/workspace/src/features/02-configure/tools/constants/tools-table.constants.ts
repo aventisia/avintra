@@ -1,3 +1,4 @@
+import { InitialTableState } from "@tanstack/react-table";
 import { Library } from "lucide-react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
@@ -16,13 +17,12 @@ export type ToolTableColumnKey =
   | "actions";
 
 export const COLUMN_VISIBILITY_STATE: Partial<Record<ToolTableColumnKey, boolean>> = {
-  id: false,
   baseUrl: false,
   isVerified: true,
 };
 
 export const COLUMN_DISPLAY_NAMES: Record<ToolTableColumnKey, string> = {
-  id: "Id",
+  id: "ID",
   name: "Name",
   description: "Description",
   type: "Type",
@@ -30,14 +30,22 @@ export const COLUMN_DISPLAY_NAMES: Record<ToolTableColumnKey, string> = {
   authenticationType: "Authentication",
   isActive: "Active",
   isVerified: "Verified",
-  isTenantWideAccess: "Tenant Wide",
-  createdOn: "Created On",
+  isTenantWideAccess: "Tenant wide",
+  createdOn: "Created on",
   actions: "Actions",
 };
 
 export const TABLE_HEADING = "Tools";
 
 export const TABLE_KEY: string = "tools";
+
+/** Page sizes offered by the tools table, unchanged from the legacy table. */
+export const TOOLS_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+export const TOOLS_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnVisibility: COLUMN_VISIBILITY_STATE,
+};
 
 export const DETAIL_TABLE_KEY = "tool-details";
 
@@ -55,11 +63,11 @@ export const TABLE_VIEW_TABS = [
 export const getDialogHeadingDescription = (crudAction: "create" | "read" | "update") => {
   switch (crudAction) {
     case "create":
-      return { heading: "Create Tool", description: "" };
+      return { heading: "Create tool", description: "" };
     case "read":
       return { heading: "Tool", description: "" };
     case "update":
-      return { heading: "Edit Tool", description: "" };
+      return { heading: "Edit tool", description: "" };
     default:
       return { heading: "", description: "" };
   }

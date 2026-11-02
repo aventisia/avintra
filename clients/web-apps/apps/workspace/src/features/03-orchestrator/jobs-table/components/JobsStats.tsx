@@ -65,14 +65,18 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Total Jobs */}
       <StatsCard
         icon={<MonitorPlayIcon className="size-7" />}
-        title="Total Jobs"
+        title="Total jobs"
         content={stats.jobs}
         footer={
           <>
-            <span className="font-medium text-xs">{stats.completed}</span> Completed,{" "}
-            <span className="font-medium text-xs">{stats.failed}</span> Failed,{" "}
-            <span className="font-medium text-xs">{stats.aborted}</span> Aborted,{" "}
-            <span className="font-medium text-xs">{stats.killed}</span> Killed
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.completed}</span>{" "}
+            Completed,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.failed}</span>{" "}
+            Failed,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.aborted}</span>{" "}
+            Aborted,{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.killed}</span>{" "}
+            Killed
           </>
         }
       />
@@ -80,7 +84,7 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Active Agents */}
       <StatsCard
         icon={<NewAgentIcon className="size-7 " />}
-        title="Total Agents"
+        title="Total agents"
         content={stats.agents}
         footer="Distinct agents that have executed jobs"
       />
@@ -88,11 +92,13 @@ export const JobsStats = ({ data }: StatsProps) => {
       {/* Execution Time */}
       <StatsCard
         icon={<Clock10Icon className="size-7" />}
-        title="Execution Time"
+        title="Execution time"
         content={stats.totalExecutionLabel}
         footer={
           <>
-            Avg. <span className="font-medium text-xs">{stats.avgLabel}</span> per job
+            Avg.{" "}
+            <span className="font-mono text-xs font-medium tabular-nums">{stats.avgLabel}</span> per
+            job
           </>
         }
       />

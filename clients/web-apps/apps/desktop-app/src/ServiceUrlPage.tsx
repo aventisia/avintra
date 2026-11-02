@@ -75,7 +75,7 @@ export default function ServiceUrlPage({ onContinue }: ServiceUrlPageProps) {
             autoFocus
             value={serviceUrl}
             disabled={isLoading}
-            className="h-11 text-md"
+            className="h-control-lg font-mono text-body"
             placeholder="https://avintra.aventisia.com"
             onChange={(e) => {
               setServiceUrl(e.target.value);
@@ -83,10 +83,10 @@ export default function ServiceUrlPage({ onContinue }: ServiceUrlPageProps) {
             }}
             onKeyDown={(e) => e.key === "Enter" && handleContinue()}
           />
-          {error && <span className="text-xs mt-1 ml-0.5 text-destructive">{error}</span>}
+          {error && <span className="text-hint text-bad">{error}</span>}
         </div>
 
-        <Button className="w-full h-11 text-md" onClick={handleContinue} disabled={isLoading}>
+        <Button size="lg" className="w-full" onClick={handleContinue} disabled={isLoading}>
           {isLoading ? (
             <span className="inline-flex items-center gap-2">
               <LoadingSpinner className="h-4 w-4 text-primary-foreground" />

@@ -14,7 +14,7 @@ import { enumToArray } from "@avplatform/ui/utils";
 // Tenant Id
 export const idProps: InputFieldProps = {
   name: "id",
-  label: "Tenant Id",
+  label: "Tenant ID",
   disabled: true,
 };
 
@@ -55,7 +55,7 @@ export const currencyProps: SelectFieldProps = {
 
 export const effectiveOnProps: DateTimePickerFieldProps = {
   name: "effectiveDate",
-  label: "Contract Effective Date",
+  label: "Contract effective date",
   isRequired: true,
   description: "When the contract takes effect.",
   granularity: "minute",
@@ -65,7 +65,7 @@ export const effectiveOnProps: DateTimePickerFieldProps = {
 // Expires On
 export const renewsOnProps: DateTimePickerFieldProps = {
   name: "renewalDate",
-  label: "Contract Renewal Date",
+  label: "Contract renewal date",
   isRequired: true,
   description: "When the contract renews.",
   granularity: "minute",
@@ -75,7 +75,7 @@ export const renewsOnProps: DateTimePickerFieldProps = {
 // Is TwoFA Enabled
 export const isTwoFAEnabledProps: SwitchFieldProps = {
   name: "isTwoFAEnabled",
-  label: "Require Two-Factor Authentication (2FA)",
+  label: "Require two-factor authentication (2FA)",
   description:
     "If enabled, all users will need an additional verification step (e.g., one time password via email or code from an authenticator app) to log in, enhancing security",
 };
@@ -83,44 +83,44 @@ export const isTwoFAEnabledProps: SwitchFieldProps = {
 // Is Change Request Enabled
 export const isChangeRequestEnabledProps: SwitchFieldProps = {
   name: "isChangeRequestEnabled",
-  label: "Enable Change Requests",
-  description: "If enabled, Tenant Admins can create Change Request tickets",
+  label: "Enable change requests",
+  description: "If enabled, tenant admins can create change request tickets",
 };
 
 // Is Password Enabled
 export const isPwdEnabledProps: SwitchFieldProps = {
   name: "isPwdEnabled",
-  label: "Enable Password Login",
+  label: "Enable password login",
   description: "If disabled, users cannot log in using their password",
 };
 
 // Is SSO Enabled
 export const isSSOEnabledProps: SwitchFieldProps = {
   name: "isSSOEnabled",
-  label: "Enable Single Sign-On (SSO)",
+  label: "Enable single sign-on (SSO)",
   description: "If enabled, users can log in using an external authentication provider",
 };
 
 // SSO Config JSON
 export const ssoConfigJsonProps: TextareaFieldProps = {
   name: "ssoConfigJson",
-  label: "Single Sign-On (SSO) Configuration",
+  label: "Single sign-on (SSO) configuration",
   description:
-    "Read-only. The Single Sign-On configuration is managed by the Tenant Admin and is hidden from the Super Admin view.",
+    "Read-only. The single sign-on configuration is managed by the tenant admin and is hidden from the super admin view.",
   className: "min-h-[12.5rem]",
 };
 
 // Is Password Never Expires Enabled
 export const isPwdNeverExpiresEnabledProps: SwitchFieldProps = {
   name: "isPwdNeverExpiresEnabled",
-  label: "Passwords Never Expire",
+  label: "Passwords never expire",
   description: "Enabling this removes password expiration",
 };
 
 // Days Before Password Expires
 export const daysBeforePwdExpiresProps: InputFieldProps = {
   name: "daysBeforePwdExpires",
-  label: "Days Before Password Expires",
+  label: "Days before password expires",
   type: "number",
   description: "The number of days before passwords expire.",
 };
@@ -128,14 +128,14 @@ export const daysBeforePwdExpiresProps: InputFieldProps = {
 // Is Idle Session Timeout Enabled
 export const isIdleSessionTimeoutEnabledProps: SwitchFieldProps = {
   name: "isIdleSessionTimeoutEnabled",
-  label: "Enable Idle Session Timeout",
+  label: "Enable idle session timeout",
   description: "If enabled, user sessions will automatically time out after a period of inactivity",
 };
 
 // Idle Session Timeout Minutes
 export const idleSessionTimeoutMinutesProps: InputFieldProps = {
   name: "idleSessionTimeoutMinutes",
-  label: "Idle Session Timeout (in Minutes)",
+  label: "Idle session timeout (in minutes)",
   type: "number",
   description: "The inactivity period in minutes before timeout.",
 };
@@ -143,7 +143,7 @@ export const idleSessionTimeoutMinutesProps: InputFieldProps = {
 // Database Option
 export const dbOptionProps: RadioGroupFieldProps = {
   name: "dbOption",
-  label: "Database Options:",
+  label: "Database options:",
   selectOptions: [
     {
       value: DatabaseOptionsEnum.Shared,
@@ -159,7 +159,7 @@ export const dbOptionProps: RadioGroupFieldProps = {
     },
     {
       value: DatabaseOptionsEnum.DedicatedServer,
-      label: "Dedicated Server (Premium)",
+      label: "Dedicated server (premium)",
       description:
         "Tenants have their own dedicated database server. Provides the highest performance and complete isolation, but comes at a higher cost.",
     },
@@ -169,7 +169,7 @@ export const dbOptionProps: RadioGroupFieldProps = {
 // Database Name Prefix
 export const dbNamePrefixProps: InputFieldProps = {
   name: "dbNamePrefix",
-  label: "Database Name Prefix",
+  label: "Database name prefix",
   description:
     "Add a specific prefix for your database. This option allows you to customize the schema name for better organization and identification",
 };
@@ -177,7 +177,7 @@ export const dbNamePrefixProps: InputFieldProps = {
 // Database User Id
 export const dbUserIdProps: InputFieldProps = {
   name: "dbUserId",
-  label: "User Id",
+  label: "User ID",
   description: "Enter a username of the dedicated account to access the database.",
 };
 
@@ -209,6 +209,6 @@ export const dbPortProps: InputFieldProps = {
 // Is Disabled
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };

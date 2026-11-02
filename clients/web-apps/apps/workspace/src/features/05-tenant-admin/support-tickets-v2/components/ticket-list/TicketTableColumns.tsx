@@ -1,43 +1,33 @@
-import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { cn } from "@avplatform/ui/lib";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
 
-import { TICKET_STATUS_COLOR, TICKET_TABLE_KEY } from "../../constants/constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
+import { getColumnName } from "../../constants/column-display-names";
+import { TICKET_STATUS_VARIANT } from "../../constants/constants";
 import { TicketTableDto } from "../../dtos/TicketDto";
 import { TicketRowActions } from "../ticket-row-actions/TicketRowActions";
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<TicketTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
-  {
-    accessorKey: "selectRow",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        onClick={(e) => e.stopPropagation()}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<TicketTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     id: "ticket",
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Ticket" />,
+    enableSorting: false,
     cell: ({ row }) => {
       const ticketNumber = row.original.ticketNumber;
       const createdOn = row.original.createdOn;
@@ -58,7 +48,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
               </span>
             </NavLink>
             <div className="w-auto truncate text-2xs font-light">
-              {ticketNumber} opened {timeAgo} by {createdBy}
+              <span className="font-mono">{ticketNumber}</span> opened {timeAgo} by {createdBy}
             </div>
           </div>
         </div>
@@ -67,21 +57,20 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     accessorKey: "ticketNumber",
+    meta: { label: getColumnName("ticketNumber") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TICKET_TABLE_KEY}
+      <TableCNColumnHeader
         className="hidden"
         column={column}
-        title="Ticket Number"
+        label={getColumnName("ticketNumber")}
       />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("ticketNumber")}</div>,
   },
   {
     accessorKey: "requestType",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Type" />
-    ),
+    meta: { label: getColumnName("requestType") },
+    header: renderHeader("requestType"),
     cell: ({ row }) => {
       const type = row.getValue("requestType") as string;
       return <div>{type === "ChangeRequest" ? "Change Request" : "Service Request"}</div>;
@@ -89,46 +78,43 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Status" />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
+      return <Badge variant={TICKET_STATUS_VARIANT[status] ?? "secondary"}>{status}</Badge>;
     },
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created By" />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => <div>{row.getValue("createdBy")}</div>,
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created On" />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
     cell: ({ row }) => {
       const date = row.getValue("createdOn") as string;
-      return <div>{date ? formatDate(date) : "-"}</div>;
+      return <div className="font-mono tabular-nums">{date ? formatDate(date) : "-"}</div>;
     },
   },
   {
     accessorKey: "commentCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Comments" />
-    ),
-    cell: ({ row }) => <div>{row.getValue("commentCount")}</div>,
+    meta: { label: getColumnName("commentCount") },
+    header: renderHeader("commentCount"),
+    cell: ({ row }) => <div className="font-mono tabular-nums">{row.getValue("commentCount")}</div>,
   },
   {
     accessorKey: "attachmentCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Total Attachments" />
+    meta: { label: getColumnName("attachmentCount") },
+    header: renderHeader("attachmentCount"),
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{row.getValue("attachmentCount")}</div>
     ),
-    cell: ({ row }) => <div>{row.getValue("attachmentCount")}</div>,
   },
-  createDTActionsColumn<TicketTableDto>({
-    renderCell: (row) => <TicketRowActions rowId={row.id || ""} />,
+  getRowActionsColumn<TicketTableDto>({
+    actions: ({ row }) => <TicketRowActions rowId={row.original.id || ""} />,
   }),
 ];

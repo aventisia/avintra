@@ -8,7 +8,12 @@ export const DCPTabsListWrapper = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex h-14 pt-1 items-center justify-between px-4", className)}>
+    <div
+      className={cn(
+        "flex h-10 items-end justify-between gap-4 border-b border-line px-4",
+        className,
+      )}
+    >
       {children}
     </div>
   );

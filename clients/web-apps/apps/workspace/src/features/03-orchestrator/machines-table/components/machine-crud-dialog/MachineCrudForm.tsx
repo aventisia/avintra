@@ -96,7 +96,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
       <AsyncMultiSelectField<ISelectOption>
         fetcher={(query) => searchFlowVersions(query).then((res) => res.data ?? [])}
         name="flowVersionIds"
-        label="Machine Agents"
+        label="Machine agents"
         queryKeyBase={["machine-form-flow-versions", rowId, currentSpace?.id ?? ""]}
         getItemId={(item) => item.value}
         getItemLabel={(item) => item.label}

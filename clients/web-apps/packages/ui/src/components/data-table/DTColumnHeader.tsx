@@ -1,10 +1,5 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronUpDownIcon,
-  EyeSlashIcon,
-} from "@heroicons/react/24/outline";
 import { type Column } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react";
 
 import { Button } from "@/ui/components/buttons";
 import { setDataTablePreferences } from "@/ui/components/data-table/dt-preferences-utils";
@@ -51,31 +46,35 @@ export const DTColumnHeader = <TData, TValue>({
     <div className={cn("flex items-center space-x-2", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-2 h-6 gap-1 px-2 font-mono text-[10.5px]/[14px] font-medium uppercase tracking-[0.07em] text-current data-[state=open]:bg-hover"
+          >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ml-2 h-4 w-4" />
+              <ArrowDown className="h-3 w-3" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ml-2 h-4 w-4" />
+              <ArrowUp className="h-3 w-3" />
             ) : (
-              <ChevronUpDownIcon className="ml-2 h-4 w-4" />
+              <ChevronsUpDown className="h-3 w-3" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => handleSorting(false)}>
-            <ArrowUpIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+            <ArrowUp className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
             Asc
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleSorting(true)}>
-            <ArrowDownIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+            <ArrowDown className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
             Desc
           </DropdownMenuItem>
           {enableHiding && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleHideColumn}>
-                <EyeSlashIcon className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+                <EyeOff className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
                 Hide
               </DropdownMenuItem>
             </>

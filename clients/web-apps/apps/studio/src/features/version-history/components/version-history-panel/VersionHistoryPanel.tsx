@@ -15,7 +15,7 @@ export const VersionHistoryPanel = () => {
   return (
     <Panel id={PANEL_ID} width="w-[21rem]" className="rounded-none" closeOnEscape={false}>
       <PanelHeader>
-        <PanelTitle className="text-[1rem] font-medium">Change History</PanelTitle>
+        <PanelTitle className="text-[1rem] font-medium">Change history</PanelTitle>
       </PanelHeader>
       <PanelContent>
         <ScrollArea className="h-[calc(100vh-8rem)]">

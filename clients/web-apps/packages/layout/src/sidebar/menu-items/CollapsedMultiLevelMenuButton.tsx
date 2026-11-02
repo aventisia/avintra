@@ -70,32 +70,24 @@ const CollapsedMultiLevelMenuButton = ({
     >
       <HoverCardTrigger
         onClick={handleHoverCardTriggerClick}
-        className="group flex h-9 cursor-pointer items-center"
+        className="group mx-auto my-0.5 flex size-9 cursor-pointer items-center justify-center"
       >
         <div
-          className={`mx-4 flex h-9 w-9 items-center rounded-lg group-hover:bg-slate-100 ${
-            isSubMenuOpened ? "bg-slate-100" : ""
+          className={`flex size-9 items-center justify-center rounded-sm text-muted-foreground transition-colors duration-[120ms] ease-out group-hover:bg-hover group-hover:text-ink motion-reduce:transition-none ${
+            isSubMenuOpened ? "bg-hover text-ink" : ""
           }`}
         >
-          <div className="flex h-8 w-12 items-center justify-center">
-            <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color]" />
-          </div>
-          <span className={`whitespace-nowrap capitalize ${sidebarExpand ? "block" : "hidden"}`}>
-            {name}
-          </span>
+          <Icon className="size-4 stroke-[1.75]" />
+          <span className={`whitespace-nowrap ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
         </div>
       </HoverCardTrigger>
-      <HoverCardContent className="absolute -top-[2.45rem] left-[2.15rem] rounded-r-lg border bg-white shadow-sm">
-        <div className="rounded-rt-lg h-9 border-b border-slate-100 px-3 py-1.5">
-          <span className="whitespace-nowrap rounded-r-lg px-3 text-sm font-medium capitalize">
-            {name}
-          </span>
-        </div>
-        <ul className="ml-3 py-1">
+      <HoverCardContent className="absolute -top-[2.45rem] left-[2.15rem] w-auto rounded-md border border-line bg-surface p-1 text-ink shadow-pop">
+        <div className="px-2 pb-1.5 pt-1 text-label uppercase text-muted-foreground">{name}</div>
+        <ul className="grid gap-0.5">
           {subMenuItems.map((subMenuItem, index) => (
             <li
               key={index}
-              className="flex h-9 cursor-pointer items-center whitespace-nowrap border-l-[3px] border-slate-100 pl-3 pr-3.5 text-sm font-normal capitalize hover:border-slate-400"
+              className="flex h-control-sm cursor-pointer items-center whitespace-nowrap rounded-sm px-2 text-body-sm text-ink-2 hover:bg-hover hover:text-ink"
             >
               {subMenuItem.name}
             </li>

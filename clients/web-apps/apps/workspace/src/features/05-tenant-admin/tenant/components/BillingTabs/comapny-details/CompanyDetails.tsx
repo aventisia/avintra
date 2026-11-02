@@ -27,9 +27,9 @@ const CompanyDetails = () => {
     <>
       <div className="rounded-lg border">
         <div className="flex items-center justify-between border-b p-4">
-          <p className="text-base font-medium">Billing Details</p>
+          <p className="text-heading text-ink">Billing details</p>
           <Button
-            className="flex items-center gap-1.5 bg-primary-50 text-primary"
+            className="flex items-center gap-1.5 bg-selected text-primary-text"
             variant={"ghost"}
             size={"sm"}
             onClick={() => setOpen(true)}
@@ -40,15 +40,15 @@ const CompanyDetails = () => {
 
         <div className="space-y-4 p-4">
           <div className="space-y-2">
-            {/* <p className="text-base font-medium">Company Details</p> */}
+            {/* <p className="text-base font-medium">Company details</p> */}
             {isIndividualUser ? null : (
               <div className="flex items-center gap-4 text-md">
-                <p className="basis-32 text-muted-foreground">Company Name</p>
+                <p className="basis-32 text-muted-foreground">Company name</p>
                 <p>{data?.data.organizationName ?? "--"}</p>
               </div>
             )}
             <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Billing Email</p>
+              <p className="basis-32 text-muted-foreground">Billing email</p>
               <p>{data?.data.billingEmail ?? "--"} </p>
             </div>
             <div className="flex items-center gap-4 text-md">
@@ -60,9 +60,9 @@ const CompanyDetails = () => {
           <Separator />
 
           <div className="space-y-2">
-            <p className="text-base font-medium">Billing Address</p>
+            <p className="text-base font-medium">Billing address</p>
             <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Primary Address</p>
+              <p className="basis-32 text-muted-foreground">Primary address</p>
               <p>
                 {[
                   data?.data.addressLine1,
@@ -85,10 +85,10 @@ const CompanyDetails = () => {
             <>
               <Separator />
               <div className="space-y-2">
-                <p className="text-base font-medium">Tax Details</p>
+                <p className="text-base font-medium">Tax details</p>
 
                 <div className="flex items-center gap-4 text-md">
-                  <p className="basis-32 text-muted-foreground">GST Number</p>
+                  <p className="basis-32 text-muted-foreground">GST number</p>
                   <p>{data?.data.gstNumber}</p>
                 </div>
               </div>

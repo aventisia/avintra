@@ -37,7 +37,7 @@ const PaymentMethodOptions = () => {
               htmlFor="netBanking"
               className="flex w-full items-center justify-between text-md"
             >
-              Net Banking
+              Net banking
               <img src={NetBankingIcon} alt="" />
             </Label>
           </div>

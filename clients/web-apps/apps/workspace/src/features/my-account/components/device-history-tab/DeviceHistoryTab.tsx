@@ -1,132 +1,131 @@
 import { LoadingSpinner, Skeleton } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
-import { XCircleIcon } from "lucide-react";
+import { MetaLine } from "@avplatform/ui/meta-line";
+import { formatDistanceToNow } from "date-fns";
+import { LogOutIcon, MonitorSmartphoneIcon } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { pluralize } from "@/utils/pluralize.util";
+
+import type { ActiveSessionDto } from "../../dtos/active-session-dto";
 import useGetDeviceHistory from "../../hooks/useGetDeviceHistory";
 import { useTerminateSessionMutation } from "../../hooks/useTerminateSessionMutation";
-import DeviceHistoryTable from "./DeviceHistoryTable";
+import type { AccountTabProps } from "../../types/account-tab.type";
 
-export const DeviceHistoryTab = () => {
+type SessionRowProps = {
+  session: ActiveSessionDto;
+  browserImage?: string;
+  isCurrent: boolean;
+  isSigningOut: boolean;
+  onSignOut: () => void;
+};
+
+const SessionRow = ({
+  session,
+  browserImage,
+  isCurrent,
+  isSigningOut,
+  onSignOut,
+}: SessionRowProps) => {
+  const isEnded = new Date(session.sessionExpiresOn) < new Date();
+
+  return (
+    <li className="flex items-center gap-3 px-3.5 py-3">
+      <span className="grid size-9 shrink-0 place-items-center rounded-md bg-sunken ring-1 ring-inset ring-line">
+        {browserImage ? (
+          <img alt="" src={browserImage} className="size-5" />
+        ) : (
+          <MonitorSmartphoneIcon className="size-5 text-ink-2" />
+        )}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="truncate text-[13px] font-semibold text-ink">
+            {session.browserType} on {session.operatingSystem}
+          </span>
+          {isCurrent && <Badge variant="completed">This device</Badge>}
+        </div>
+        <MetaLine
+          className="text-[12px] text-muted-foreground"
+          items={[
+            isEnded ? "Ended" : "Active",
+            `Signed in ${formatDistanceToNow(new Date(session.loggedInOn), { addSuffix: true })}`,
+            <span key="device" className="font-mono" title={session.deviceId}>
+              {session.deviceId}
+            </span>,
+          ]}
+        />
+      </div>
+      <Button
+        variant="caution"
+        size="xs"
+        onClick={onSignOut}
+        disabled={isSigningOut}
+        aria-label={`Sign out ${session.browserType} on ${session.operatingSystem}`}
+      >
+        {isSigningOut ? (
+          <LoadingSpinner className="size-3.5" />
+        ) : (
+          <LogOutIcon className="size-3.5" />
+        )}
+        <span className="hidden sm:inline">Sign out</span>
+      </Button>
+    </li>
+  );
+};
+
+export const DeviceHistoryTab = ({ footerSlot }: AccountTabProps) => {
   const [currTermination, setCurrTermination] = useState<string>("");
 
   const { isLoading, activeSessions, currentSession, getImageSourceOfBrowser } =
     useGetDeviceHistory();
   const { mutate: terminateSession, isPending } = useTerminateSessionMutation();
+
+  const isCurrentSession = (session: ActiveSessionDto) =>
+    session.refreshToken === currentSession?.refreshToken;
+  const sortedSessions = [...activeSessions].sort(
+    (a, b) => Number(isCurrentSession(b)) - Number(isCurrentSession(a)),
+  );
+
   return (
-    <div className="box box--stacked flex flex-col p-5">
-      {/* <div className="mb-6 flex items-center border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
-        Device History
-      </div> */}
-      <div>
-        <div className="text-sm text-slate-500">
-          Access and control your currently connected devices.
+    <>
+      {isLoading ? (
+        <div className="space-y-2">
+          <Skeleton className="h-14" />
+          <Skeleton className="h-14" />
         </div>
-        <div className="mt-5 rounded-lg border border-slate-200/80">
-          <div className="overflow-auto xl:overflow-visible">
-            <DeviceHistoryTable>
-              <DeviceHistoryTable.Thead>
-                <DeviceHistoryTable.Tr>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
-                    Browser
-                  </DeviceHistoryTable.Td>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
-                    Device
-                  </DeviceHistoryTable.Td>
-                  {/* <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
-                    Location
-                  </DeviceHistoryTable.Td> */}
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
-                    Status
-                  </DeviceHistoryTable.Td>
-                  <DeviceHistoryTable.Td className="dark:bg-darkmode-400 whitespace-nowrap border-slate-200/80 bg-slate-50 py-4 text-sm font-medium text-slate-500 first:rounded-tl-lg last:rounded-tr-lg">
-                    Terminate
-                  </DeviceHistoryTable.Td>
-                </DeviceHistoryTable.Tr>
-              </DeviceHistoryTable.Thead>
-              <DeviceHistoryTable.Tbody>
-                {(isLoading && (
-                  <DeviceHistoryTable.Tr className="[&_td]:last:border-b-0">
-                    <DeviceHistoryTable.Td colSpan={4}>
-                      <Skeleton className="h-12" />
-                    </DeviceHistoryTable.Td>
-                  </DeviceHistoryTable.Tr>
-                )) ||
-                  activeSessions.map((session, index) => (
-                    <DeviceHistoryTable.Tr
-                      key={session.refreshToken.slice(0, 8).padEnd(index)}
-                      className="[&_td]:last:border-b-0"
-                    >
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
-                        <div className="flex items-center whitespace-nowrap">
-                          <div className="image-fit h-4 w-4 zoom-in">
-                            {(getImageSourceOfBrowser(session.browserType) && (
-                              <img
-                                alt="browser"
-                                className="rounded-full shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]"
-                                src={getImageSourceOfBrowser(session.browserType)}
-                              />
-                            )) || (
-                              <Lucide
-                                icon="Dog"
-                                className="h-5 w-5 rounded-full bg-orange-300 shadow-[0px_0px_0px_2px_#fff,_1px_1px_5px_rgba(0,0,0,0.32)] dark:shadow-[0px_0px_0px_2px_#3f4865,_1px_1px_5px_rgba(0,0,0,0.32)]"
-                              />
-                            )}
-                          </div>
-                          <div className="ml-2 max-w-36 truncate">
-                            {session.browserType} on {session.operatingSystem}
-                          </div>
-                        </div>
-                      </DeviceHistoryTable.Td>
+      ) : sortedSessions.length === 0 ? (
+        <p className="text-body-sm text-muted-foreground">No devices are signed in.</p>
+      ) : (
+        <ul className="divide-y divide-line overflow-hidden rounded-md ring-1 ring-line">
+          {sortedSessions.map((session) => (
+            <SessionRow
+              key={session.id}
+              session={session}
+              browserImage={getImageSourceOfBrowser(session.browserType)}
+              isCurrent={isCurrentSession(session)}
+              isSigningOut={isPending && currTermination === session.id}
+              onSignOut={() => {
+                setCurrTermination(session.id);
+                terminateSession([session.id]);
+              }}
+            />
+          ))}
+        </ul>
+      )}
 
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
-                        <div className="flex max-w-md items-center truncate whitespace-nowrap">
-                          <Lucide icon="Smartphone" className="mr-1 h-4 w-4 stroke-[1.3]" />
-                          <p className="max-w-48 truncate">{session.deviceId}</p>
-                          {session.refreshToken === currentSession?.refreshToken && (
-                            <div className="bg-primary/10 border-primary/10 ml-3 flex items-center rounded-md border px-1.5 py-px text-xs font-medium text-primary">
-                              <span className="-mt-px">Current</span>
-                            </div>
-                          )}
-                        </div>
-                      </DeviceHistoryTable.Td>
-
-                      {/* <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4">
-                        <div className="whitespace-nowrap">
-                          {session.location}
-                        </div>
-                      </DeviceHistoryTable.Td> */}
-
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 border-dashed border-slate-300/70 py-4 text-sm">
-                        <div className="whitespace-nowrap">
-                          {session.sessionExpiresOn < new Date() ? "Ended" : "Active"}
-                        </div>
-                      </DeviceHistoryTable.Td>
-                      <DeviceHistoryTable.Td className="dark:bg-darkmode-600 flex items-center justify-center border-dashed border-slate-300/70 py-4">
-                        <Button
-                          onClick={() => {
-                            setCurrTermination(session.id);
-                            terminateSession([session.id]);
-                          }}
-                          variant="caution"
-                          size="icon7"
-                          disabled={isPending && currTermination == session.id}
-                        >
-                          {isPending && currTermination == session.id ? (
-                            <LoadingSpinner className="h-4 w-4" />
-                          ) : (
-                            <XCircleIcon className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </DeviceHistoryTable.Td>
-                    </DeviceHistoryTable.Tr>
-                  ))}
-              </DeviceHistoryTable.Tbody>
-            </DeviceHistoryTable>
-          </div>
-        </div>
-      </div>
-    </div>
+      {footerSlot &&
+        createPortal(
+          <StatusLine tone="idle">
+            {isLoading
+              ? "Loading devices"
+              : `${activeSessions.length} signed-in ${pluralize(activeSessions.length, "device")}`}
+          </StatusLine>,
+          footerSlot,
+        )}
+    </>
   );
 };

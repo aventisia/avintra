@@ -1,9 +1,9 @@
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { cn } from "@avplatform/ui/lib";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { HighlightedText } from "@/components/HighlightedText";
 import { Kbd } from "@/components/Kbd";
 import { PersonAvatar } from "@/components/PersonAvatar";
 
@@ -63,7 +63,7 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
             <>
               <PersonAvatar name={person.name} className="size-8 text-[11px]" />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium text-slate-800">
+                <span className="block truncate text-[13px] font-medium text-ink">
                   <HighlightedText text={person.name} query={debouncedQuery} />
                 </span>
                 <span className="mt-0.5 block truncate text-[11.5px] text-muted-foreground">
@@ -71,16 +71,16 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
                 </span>
               </span>
               {isShared ? (
-                <span className="shrink-0 text-[11.5px] font-medium text-slate-400">
+                <span className="shrink-0 text-[11.5px] font-medium text-muted-foreground">
                   Has access
                 </span>
               ) : (
                 <span
                   className={cn(
-                    "grid size-[18px] shrink-0 place-items-center rounded-[5px] transition-colors",
+                    "grid size-[18px] shrink-0 place-items-center rounded-sm transition-colors",
                     pickState === "invited"
-                      ? "bg-primary text-white"
-                      : "bg-popover text-transparent shadow-[inset_0_0_0_1.5px_rgb(203,213,225)]",
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-surface text-transparent ring-[1.5px] ring-inset ring-line-strong",
                   )}
                 >
                   <Check className="size-3" strokeWidth={3.5} />
@@ -93,7 +93,7 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
       empty={
         !trimmedQuery ? (
           <li className="px-3 py-7 text-center">
-            <p className="text-[13px] font-medium text-slate-700">Find people to add</p>
+            <p className="text-[13px] font-medium text-ink-2">Find people to add</p>
             <p className="mt-1 text-[12px] text-muted-foreground">
               Type a name or email. Only people in {spaceName} are listed.
             </p>
@@ -111,12 +111,12 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
             ))}
           </>
         ) : isError ? (
-          <li className="px-3 py-7 text-center text-[13px] text-rose-600">
+          <li className="px-3 py-7 text-center text-[13px] text-bad">
             Couldn’t search people. Try again in a moment.
           </li>
         ) : (
           <li className="px-3 py-7 text-center">
-            <p className="text-[13px] font-medium text-slate-700">
+            <p className="text-[13px] font-medium text-ink-2">
               No one in {spaceName} matches “{trimmedQuery}”
             </p>
             <p className="mt-1 text-[12px] text-muted-foreground">
@@ -141,7 +141,7 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
             close
           </span>
           {draft.added.length > 0 && (
-            <span className="ml-auto tabular-nums">{draft.added.length} to add</span>
+            <span className="ml-auto font-mono tabular-nums">{draft.added.length} to add</span>
           )}
         </>
       }

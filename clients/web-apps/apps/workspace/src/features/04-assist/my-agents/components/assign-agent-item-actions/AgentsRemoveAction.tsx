@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { Trash2Icon } from "lucide-react";
 
 import { useRemoveAssignedAgentsMutation } from "../../hooks/useRemoveAssignedAgentsMutation";
 
@@ -24,7 +24,7 @@ export const AgentsRemoveAction = ({ agentId, machineIds }: AgentsRemoveActionPr
         removeAgents({ agentId, machineIds });
       }}
     >
-      <TrashIcon className={cn("mb-[2px] text-destructive group-focus:text-white", "h-4 w-4")} />
+      <Trash2Icon className={cn("mb-[2px] text-destructive", "h-4 w-4")} />
       Remove
     </DropdownMenuItem>
   );

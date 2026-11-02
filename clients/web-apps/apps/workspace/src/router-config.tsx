@@ -1,6 +1,8 @@
 import { NotFoundPage } from "@avplatform/layout";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
+
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
@@ -8,6 +10,7 @@ import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout.ee";
+import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -61,7 +64,8 @@ import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
-import MyAccountPage from "./pages/MyAccountPage";
+import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
+import { MyNotificationsPage } from "./pages/MyNotificationsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -69,6 +73,14 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
+      {
+        path: DESKTOP_DOWNLOAD_ROUTE,
+        element: <DesktopDownloadPage />,
+      },
+      {
+        path: NOTIFICATIONS_ROUTE,
+        element: <MyNotificationsPage />,
+      },
       // build section
       {
         path: "/agents",
@@ -81,10 +93,6 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
-      },
-      {
-        path: "/account",
-        element: <MyAccountPage />,
       },
       // configure section
       {

@@ -14,9 +14,9 @@ import { Field } from "./Field";
 import { SectionLayout } from "./SectionLayout";
 
 const tierColor: Record<AgentRiskTier, string> = {
-  [AgentRiskTier.Low]: "text-emerald-500",
-  [AgentRiskTier.Medium]: "text-amber-500",
-  [AgentRiskTier.High]: "text-red-500",
+  [AgentRiskTier.Low]: "text-ok",
+  [AgentRiskTier.Medium]: "text-warn",
+  [AgentRiskTier.High]: "text-bad",
 };
 
 const scoreToValue = (score: number): string => (score === 0 ? "" : String(score));
@@ -46,12 +46,12 @@ export const RiskTieringSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 02"
-      title="Agent Risk Tiering"
+      title="Agent risk tiering"
       description="The composite tier is the highest of the four sub-scores - a low score on one factor never dilutes a high score on another."
     >
       <div className="space-y-6">
         <Field
-          label="Scope / Autonomy"
+          label="Scope / autonomy"
           required
           hint="How autonomous is the agent in acting or deciding?"
           info="Score the degree of autonomy: 1 = advisory only, 3 = human-reviewed, 5 = fully autonomous. Higher autonomy carries higher risk."
@@ -65,7 +65,7 @@ export const RiskTieringSection = () => {
         </Field>
 
         <Field
-          label="Data Sensitivity"
+          label="Data sensitivity"
           required
           hint="How sensitive is the data the agent handles?"
           info="Score based on the highest class of data the agent processes: 1 = public, 3 = confidential, 5 = highly restricted / regulated."
@@ -79,7 +79,7 @@ export const RiskTieringSection = () => {
         </Field>
 
         <Field
-          label="Dependency Complexity"
+          label="Dependency complexity"
           required
           hint="How many and how complex are the external dependencies?"
           info="Score based on the number and complexity of external models/tools the agent depends on: 1 = none, 3 = mixed, 5 = complex multi-vendor."
@@ -93,7 +93,7 @@ export const RiskTieringSection = () => {
         </Field>
 
         <Field
-          label="Supervisory / Regulatory Impact"
+          label="Supervisory / regulatory impact"
           required
           hint="How significant is the regulatory impact of failure?"
           info="Score the regulatory consequence if the agent fails: 1 = none, 3 = moderate, 5 = high regulatory impact."
@@ -107,9 +107,9 @@ export const RiskTieringSection = () => {
         </Field>
 
         {/* Composite tier panel */}
-        <div className="rounded-lg border border-primary bg-gradient-to-br from-primary/15 to-primary/5 p-5">
-          <div className="mb-2.5 text-xs font-bold uppercase tracking-wider text-primary">
-            Composite Risk Tier
+        <div className="rounded-lg border border-line bg-surface p-5">
+          <div className="mb-2.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Composite risk tier
           </div>
           <div className="flex items-center gap-4">
             <div
@@ -127,7 +127,7 @@ export const RiskTieringSection = () => {
         </div>
 
         <Field
-          label="Tier Justification (optional)"
+          label="Tier justification (optional)"
           info="Optionally explain how the sub-scores were assigned, especially if the computed tier is adjusted or is being questioned."
         >
           <textarea

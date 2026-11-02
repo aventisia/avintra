@@ -1,5 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
-import { CommandEmpty } from "@avplatform/ui/command";
+import { EmptyState } from "@avplatform/ui";
 import { TextSearch } from "lucide-react";
 
 /**
@@ -7,13 +6,11 @@ import { TextSearch } from "lucide-react";
  */
 export const NoActionsMessage = () => {
   return (
-    <CommandEmpty className="h-full">
-      <NoContentMessage
-        className="-mt-5"
-        Icon={TextSearch}
-        primaryMessage="No actions found"
-        secondaryMessage="Try adjusting your search or filter criteria"
-      />
-    </CommandEmpty>
+    <EmptyState
+      className="py-8"
+      Icon={TextSearch}
+      primaryMessage="No actions found"
+      secondaryMessage="Try adjusting your search or filter criteria"
+    />
   );
 };

@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { IByokModelUsage, IByokProviderUsage } from "../dtos/byok-usage-dto.ee";
@@ -61,8 +61,8 @@ const ByokModelCharts = () => {
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
       {/* Model Provider selector */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg bg-white px-6 py-4">
-        <p className="text-sm font-medium">Model Provider</p>
+      <div className="mb-4 flex items-center gap-3 rounded-lg bg-surface px-6 py-4">
+        <p className="text-sm font-medium">Model provider</p>
         <Select
           value={activeProvider ?? ""}
           onValueChange={(value) => {
@@ -85,7 +85,7 @@ const ByokModelCharts = () => {
 
       {/* Per-model charts for the selected provider */}
       {activeProvider && (
-        <div className="grid grid-cols-2 gap-4 rounded-lg bg-white px-6 py-6">
+        <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
           {currentModels.map((model) => (
             <ModelChart
               key={model.model}
@@ -146,7 +146,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to first page</span>
-              <ChevronDoubleLeftIcon className="h-4 w-4" />
+              <ChevronsLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -173,7 +173,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to last page</span>
-              <ChevronDoubleRightIcon className="h-4 w-4" />
+              <ChevronsRightIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>

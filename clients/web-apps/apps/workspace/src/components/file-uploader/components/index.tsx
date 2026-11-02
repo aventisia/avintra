@@ -55,13 +55,13 @@ export const FileDropzone = ({ addFile, acceptedTypes }: DropzoneProps) => {
     <div
       {...getRootProps()}
       className={cn(
-        "flex h-full flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-colors cursor-pointer bg-white w-full min-h-[30vh]",
-        isDragActive ? "border-primary bg-primary/5" : "border-gray-300",
+        "flex h-full flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-colors cursor-pointer bg-surface w-full min-h-[30vh]",
+        isDragActive ? "border-primary bg-primary/5" : "border-line",
       )}
       onClick={open}
     >
       <input {...getInputProps()} />
-      <CloudUploadIcon size={56} className="text-gray-400 opacity-60 mb-4" />
+      <CloudUploadIcon size={56} className="text-muted-foreground opacity-60 mb-4" />
       <div className="text-sm text-center">
         {isDragActive ? (
           <p className="font-medium text-primary">Drop the files here...</p>
@@ -190,14 +190,14 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
     }, [clearAll, clearOnUnMount]);
 
     return (
-      <div className="flex flex-col h-full w-full bg-white">
+      <div className="flex flex-col h-full w-full bg-surface">
         <ScrollArea className="flex-1 p-4">
           <div className="flex flex-col gap-4">
             <FileDropzone addFile={addFile} acceptedTypes={acceptedTypes} />
 
             {files.length > 0 && (
               <div className="flex flex-col gap-2">
-                <h4 className="text-sm font-medium text-slate-700">Selected Files</h4>
+                <h4 className="text-sm font-medium text-ink-2">Selected files</h4>
                 <div className="flex flex-col gap-2">
                   {files.map((file) => {
                     const isUploading = file.status === "uploading";
@@ -211,7 +211,7 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
                         className="flex items-center justify-between rounded-xl bg-muted p-2"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="bg-white rounded-full flex items-center justify-center h-10 w-10 shadow-sm border border-indigo-100">
+                          <div className="bg-surface rounded-full flex items-center justify-center h-10 w-10 border border-line">
                             <FileTextIcon className="h-5 w-5 text-primary" />
                           </div>
                           <div className="flex flex-col">
@@ -220,11 +220,9 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {isUploading && `Uploading... ${file.progress}%`}
-                              {isDeleting && <span className="text-orange-500">Deleting...</span>}
-                              {isSuccess && (
-                                <span className="text-green-600">Uploaded successfully</span>
-                              )}
-                              {isError && <span className="text-red-500">Upload failed</span>}
+                              {isDeleting && <span className="text-warn">Deleting...</span>}
+                              {isSuccess && <span className="text-ok">Uploaded successfully</span>}
+                              {isError && <span className="text-bad">Upload failed</span>}
                               {file.status === "staged" && formatFileSize(file.size)}
                             </p>
                           </div>
@@ -259,14 +257,14 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
         </ScrollArea>
 
         {!hideFooter && (
-          <div className="flex justify-end gap-3 p-4 border-t mt-auto bg-gray-50/50">
+          <div className="flex justify-end gap-3 p-4 border-t mt-auto bg-sunken/50">
             {onCancel && (
               <Button variant="outline" onClick={onCancel} disabled={isPending}>
                 Cancel
               </Button>
             )}
             <Button onClick={handleUploadAll} disabled={isPending || stagedFiles.length === 0}>
-              {isPending ? "Uploading..." : "Upload Files"}
+              {isPending ? "Uploading..." : "Upload files"}
             </Button>
             {footer}
           </div>

@@ -1,8 +1,8 @@
+import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { TableCNActionBarItem } from "@avplatform/ui/table-cn";
 import { FolderInput } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 
-import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@/components/MenuParts";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
@@ -72,7 +72,7 @@ export const MoveSelectedAgentsMenu = ({
         >
           <AgentsRootMark size="xs" />
           Agents
-          <span className="ml-auto text-xs text-slate-400">Top level</span>
+          <span className="ml-auto text-xs text-muted-foreground">Top level</span>
         </MenuItem>
         {sortedFolders.length > 0 && <MenuSeparator />}
         {sortedFolders.map((folder) => (
@@ -87,7 +87,7 @@ export const MoveSelectedAgentsMenu = ({
           </MenuItem>
         ))}
         {skippedCount > 0 && (
-          <p className="px-2.5 pb-1 pt-2 text-xs text-slate-400">
+          <p className="px-2.5 pb-1 pt-2 text-xs text-muted-foreground">
             {skippedCount} selected {pluralize(skippedCount, "agent")} you cannot edit will stay
             where {skippedCount === 1 ? "it is" : "they are"}.
           </p>

@@ -15,9 +15,9 @@ type FolderColorPickerProps = {
  */
 export const FolderColorPicker = ({ selectedColor, registration }: FolderColorPickerProps) => (
   <fieldset>
-    <legend className="mb-1.5 text-[12.5px] font-semibold text-slate-700">
+    <legend className="mb-1.5 text-[12.5px] font-semibold text-ink-2">
       Color
-      <span aria-hidden="true" className="ml-1.5 font-normal text-slate-400">
+      <span aria-hidden="true" className="ml-1.5 font-normal text-muted-foreground">
         {selectedColor.label}
       </span>
     </legend>
@@ -36,7 +36,7 @@ export const FolderColorPicker = ({ selectedColor, registration }: FolderColorPi
             />
             <span
               className={cn(
-                "grid size-5 place-items-center rounded-full text-white ring-offset-2 transition-transform duration-150 peer-focus-visible:shadow-[0_0_0_7px_rgba(99,102,241,0.2)]",
+                "grid size-5 place-items-center rounded-full text-white ring-offset-2 transition-transform duration-150 peer-focus-visible:shadow-focus",
                 color.swatch,
                 isSelected ? "ring-2" : "hover:scale-110",
               )}

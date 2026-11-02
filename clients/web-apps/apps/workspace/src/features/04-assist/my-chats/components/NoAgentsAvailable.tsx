@@ -1,21 +1,14 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
+import { EmptyState } from "@avplatform/ui";
 
-// import { SlashIcon } from "lucide-react";
+import NewAgentIcon from "@/components/NewAgentIcon";
 
 export function NoAgentsAvailable({ includeChat = true }: { includeChat?: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-4*var(--header-height))] gap-4 text-center">
-      <div className="relative w-16 h-16 flex items-center justify-center opacity-65">
-        <NewAgentIcon className="text-gray-400 " />
-        {/* <SlashIcon className="absolute h-16 w-16  text-gray-400  rotate-90" /> */}
-      </div>
-      <div className="space-y-1.5">
-        <h3 className="text-lg font-medium text-foreground">No agents assigned</h3>
-        <p className="text-sm text-muted-foreground max-w-96 leading-relaxed">
-          You don't have any {includeChat ? "chat " : ""}agents assigned to you. Please contact your
-          administrator to request access.
-        </p>
-      </div>
-    </div>
+    <EmptyState
+      className="h-[calc(100vh-4*var(--header-height))]"
+      Icon={NewAgentIcon}
+      primaryMessage="No agents assigned"
+      secondaryMessage={`You don't have any ${includeChat ? "chat " : ""}agents assigned to you. Please contact your administrator to request access.`}
+    />
   );
 }

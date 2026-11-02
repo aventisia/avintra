@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import {
@@ -41,7 +41,7 @@ export const ConditionListField = ({
   });
 
   return (
-    <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+    <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
       <div className="mb-2 flex w-full items-center justify-between">
         <div className="flex items-center">
           <ConditionLabel label={`Group ${groupIndex + 1}`} className="text-[0.9rem]" />
@@ -56,7 +56,7 @@ export const ConditionListField = ({
                 onClick={() => removeGroup(groupIndex)}
                 className="gap-1"
               >
-                <TrashIcon className="h-3.5 w-3.5" />
+                <Trash2Icon className="h-3.5 w-3.5" />
                 Remove
               </Button>
             </>
@@ -104,7 +104,7 @@ export const ConditionListField = ({
             disabled={fields.length <= 1}
             onClick={() => remove(index)}
           >
-            <TrashIcon className="h-4 w-4" />
+            <Trash2Icon className="h-4 w-4" />
           </Button>
         </div>
       ))}

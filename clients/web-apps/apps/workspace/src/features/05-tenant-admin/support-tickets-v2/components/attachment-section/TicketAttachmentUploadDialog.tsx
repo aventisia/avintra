@@ -45,7 +45,7 @@ export const TicketAttachmentUploadDialog = ({
         side={"center"}
         className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
       >
-        <DialogDefaultHeader heading="Add Attachment" className="p-3 px-4" />
+        <DialogDefaultHeader heading="Add attachment" className="p-3 px-4" />
         <div className="flex-1 overflow-hidden">
           <TicketAddAttachmentForm
             ticketId={ticketId}

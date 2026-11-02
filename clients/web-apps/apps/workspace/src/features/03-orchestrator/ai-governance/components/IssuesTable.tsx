@@ -23,11 +23,11 @@ const ISSUE_STATUS_OPTIONS: SelectOption[] = [
   { value: "open", label: "Open" },
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
-  { value: "wont-fix", label: "Won't Fix" },
+  { value: "wont-fix", label: "Won't fix" },
 ];
 
 const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
-  { value: "model-output", label: "Model Output" },
+  { value: "model-output", label: "Model output" },
   { value: "data", label: "Data" },
   { value: "security", label: "Security" },
   { value: "compliance", label: "Compliance" },
@@ -36,10 +36,10 @@ const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
 ];
 
 const severityBadgeClass: Record<string, string> = {
-  low: "bg-emerald-500/15 text-emerald-600",
-  medium: "bg-amber-500/15 text-amber-600",
-  high: "bg-red-500/15 text-red-600",
-  critical: "bg-red-600/20 text-red-700",
+  low: "border-ok/35 text-ok",
+  medium: "border-warn/35 text-warn",
+  high: "border-bad/35 text-bad",
+  critical: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
@@ -76,7 +76,7 @@ const createEmptyIssue = (flowVersionId: string): AgentRiskIssueDto => ({
  * "Add Issue" button at the top.
  */
 export const IssuesTable = () => {
-  useDocumentTitle("Issues & Violations");
+  useDocumentTitle("Issues & violations");
 
   const selectedAgentId = useAiGovernanceStore((state) => state.selectedAgentId);
   const updateAssessment = useAiGovernanceStore((state) => state.updateAssessment);
@@ -152,7 +152,7 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "detectedOn",
-      header: "Detected On",
+      header: "Detected on",
       cell: ({ row, getValue }) => (
         <DateInput
           value={String(getValue() ?? "")}
@@ -174,7 +174,7 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "resolutionNotes",
-      header: "Resolution Notes",
+      header: "Resolution notes",
       cell: ({ row, getValue }) => (
         <textarea
           className="w-full rounded-lg border border-border bg-background p-2 text-sm"
@@ -191,7 +191,7 @@ export const IssuesTable = () => {
         <button
           type="button"
           onClick={() => removeIssue(row.index)}
-          className="text-muted-foreground hover:text-destructive"
+          className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
           aria-label="Remove issue"
         >
           <Trash2Icon className="h-4 w-4" />
@@ -214,7 +214,7 @@ export const IssuesTable = () => {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <button type="button" onClick={goToTable} className="text-muted-foreground">
-                  Agent Risk Registry
+                  Agent risk registry
                 </button>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -224,14 +224,14 @@ export const IssuesTable = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Issues & Violations</BreadcrumbPage>
+              <BreadcrumbPage>Issues & violations</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <Button variant="outline" onClick={addIssue}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add Issue
+          Add issue
         </Button>
       </div>
 

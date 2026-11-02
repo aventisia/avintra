@@ -32,17 +32,17 @@ const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
           name={memoryProviderFieldName}
           selectOptions={[
             {
-              label: "Memory Provider 1",
-              value: "Memory Provider 1",
+              label: "Memory provider 1",
+              value: "Memory provider 1",
               description: "",
             },
             {
-              label: "Memory Provider 2",
-              value: "Memory Provider 2",
+              label: "Memory provider 2",
+              value: "Memory provider 2",
               description: "",
             },
           ]}
-          label="Memory Provider"
+          label="Memory provider"
         />
       </div>
 

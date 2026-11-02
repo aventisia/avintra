@@ -32,8 +32,8 @@ export const UNDialogTrigger = ({ triggerSize = "icon8" }: UNDialogTriggerProps)
       <DialogTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: triggerSize }),
-          "hover:bg-white/10",
-          isOpen && "hidden bg-white/10 mlg:flex",
+          "hover:bg-hover",
+          isOpen && "hidden bg-hover mlg:flex",
         )}
         onClick={() => toggleOpen}
       >

@@ -20,7 +20,7 @@ export const VCBToggleCursor = () => {
 
   // Render cursor toggle button
   return (
-    <Tooltip content={panOnDrag ? "Move Mode" : "Select Mode"} side="right">
+    <Tooltip content={panOnDrag ? "Move mode" : "Select mode"} side="right">
       <Button
         size="icon6"
         className={cn("rounded-md")}

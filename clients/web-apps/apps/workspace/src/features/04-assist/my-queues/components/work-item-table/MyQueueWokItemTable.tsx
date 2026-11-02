@@ -7,22 +7,21 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
-import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { DTHeading } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 
-import { TABLE_HEADING } from "../../constants";
+import {
+  MY_QUEUES_INITIAL_STATE,
+  MY_QUEUES_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../../constants";
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
@@ -31,7 +30,9 @@ import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { TabValue } from "../../types/my-queue-types";
 import { buildTabs, generateColumnVisibility } from "../../utils/my-queue-utils";
 import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFilter";
-import { buildColumns, generateColumnsDisplayName } from "../my-queue-column";
+import { buildColumns } from "../my-queue-column";
+
+const PAGINATION_PROPS = { pageSizeOptions: MY_QUEUES_PAGE_SIZE_OPTIONS };
 
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -85,7 +86,6 @@ export const MyQueueWokItemTable = () => {
     () => buildColumns(inputSchema, isFifo, tabValue, isAgent),
     [inputSchema, isFifo, tabValue, isAgent],
   );
-  const columnsDisplayName = useMemo(() => generateColumnsDisplayName(inputSchema), [inputSchema]);
 
   const columnVisibility = useMemo(
     () => ({
@@ -96,8 +96,14 @@ export const MyQueueWokItemTable = () => {
     [inputSchema],
   );
 
-  // Initialize the table
-  const table = useDataTable(columns, tableData, columnVisibility, [], true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: tableData,
+    columns,
+    initialState: { ...MY_QUEUES_INITIAL_STATE, columnVisibility },
+    persistKey: TABLE_KEY,
+    searchColumns: ["rowId"],
+  });
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
@@ -120,7 +126,6 @@ export const MyQueueWokItemTable = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <HelpButton guideId="assist-queues" />
           <DTHeading heading={TABLE_HEADING} />
           <SearchableSelect
             options={queues.map((q) => ({
@@ -147,12 +152,6 @@ export const MyQueueWokItemTable = () => {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <DTSearchBox searchColumns={["rowId"]} table={table} />
-          <DTViewOptions
-            table={table}
-            tableKey="My_QUEUE"
-            columnDisplayNames={columnsDisplayName}
-          />
           <Tabs
             value={tabValue}
             onValueChange={(v) => {
@@ -171,10 +170,10 @@ export const MyQueueWokItemTable = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <DataTable table={table} columnsLength={columns.length} />
-        <DTPagination table={table} />
-      </div>
+      {/* Table with its toolbar and pagination footer */}
+      <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
+        <TableCNToolbar table={table} searchPlaceholder="Search..." />
+      </TableCN>
     </div>
   );
 };

@@ -29,8 +29,8 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
         {/* Published Agents */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-sm">
-            <p>Published Agents</p>
-            <p className="font-light">{agentsCount}</p>
+            <p>Published agents</p>
+            <p className="font-mono">{agentsCount}</p>
           </div>
         </div>
 
@@ -39,7 +39,7 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm">
               <p>Spaces</p>
-              <p className="font-light">{spaces.used}</p>
+              <p className="font-mono">{spaces.used}</p>
             </div>
           </div>
         )}
@@ -49,7 +49,7 @@ export const UsageDetails = ({ planUsage, className }: UsageDetailsProps) => {
           <div className="space-y-1">
             <div className="flex items-center justify-between text-sm">
               <p>Storage</p>
-              <p className="font-light">{`${storage.used} ${storage.unit}`}</p>
+              <p className="font-mono">{`${storage.used} ${storage.unit}`}</p>
             </div>
           </div>
         )}

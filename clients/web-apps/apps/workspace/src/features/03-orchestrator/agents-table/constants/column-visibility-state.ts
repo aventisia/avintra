@@ -1,6 +1,6 @@
 /** Column visibility initial state for the agents table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   flowId: false,
   name: true,
   type: true,
@@ -9,11 +9,4 @@ export const columnVisibilityState = {
   supportedPlatform: true,
   machineCount: true,
   status: true,
-};
-
-export const machineSelectTableColumnVisibilityState = {
-  id: true,
-  name: false,
-  versionNumber: true,
-  isAssigned: false,
 };

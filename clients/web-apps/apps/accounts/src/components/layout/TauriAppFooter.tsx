@@ -33,20 +33,22 @@ const TauriAppFooter = () => {
     <>
       {metadata ? (
         <div className="flex  items-center w-full justify-between text-sm px-6 pb-1 xs:pb-0">
-          <p className="text-slate-500">
+          <p className="text-muted-foreground">
             {`Version ${metadata?.app_version ? metadata?.app_version : "NA"}`}
           </p>
           <div className="flex items-center ">
             <p>
-              <span className="text-slate-500/80">User:</span>{" "}
-              <span className="text-slate-500">
+              <span className="text-muted-foreground">User:</span>{" "}
+              <span className="text-muted-foreground">
                 {metadata?.username ? metadata?.username : "NA"}
               </span>
             </p>
             <DotSeparator />
             <p>
-              <span className="text-slate-500/80">OS ID:</span>{" "}
-              <span className="text-slate-500">{metadata?.os_id ? metadata?.os_id : "NA"}</span>
+              <span className="text-muted-foreground">OS ID:</span>{" "}
+              <span className="text-muted-foreground">
+                {metadata?.os_id ? metadata?.os_id : "NA"}
+              </span>
             </p>
           </div>
         </div>

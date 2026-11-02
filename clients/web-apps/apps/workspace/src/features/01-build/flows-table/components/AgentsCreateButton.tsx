@@ -1,9 +1,9 @@
 import { LockedActionTooltip } from "@avplatform/ui/action-lock";
 import { SplitButton } from "@avplatform/ui/buttons";
 import { useCreateEntityAction } from "@avplatform/ui/data-table";
+import { MenuContent, MenuItem, MenuShortcut } from "@avplatform/ui/dropdown-menu";
 import { ChevronUp, FolderPlus, Option, Plus } from "lucide-react";
 
-import { MenuContent, MenuItem, MenuShortcut } from "@/components/MenuParts";
 import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { useFolderFormDialog } from "../hooks/useFolderFormDialog.hook";
@@ -23,6 +23,7 @@ export const AgentsCreateButton = () => {
       <SplitButton
         onClick={openCreateAgentDialog}
         disabled={locked}
+        size="default"
         menuLabel="More create options"
         menu={
           <MenuContent align="end">

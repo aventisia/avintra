@@ -1,9 +1,7 @@
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { FolderOpen, MoreHorizontal } from "lucide-react";
+import { MenuContent, MenuItem, MenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { FolderOpen, MoreHorizontal, SquarePenIcon, Trash2Icon } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
-
-import { MenuContent, MenuItem, MenuSeparator } from "@/components/MenuParts";
 
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
 import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";
@@ -23,7 +21,7 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         aria-label={`Actions for folder ${folder.name}`}
-        className="grid size-8 place-items-center rounded-lg text-slate-400 outline-none transition hover:bg-muted hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[state=open]:bg-muted data-[state=open]:text-slate-700"
+        className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink-2"
       >
         <MoreHorizontal className="size-4" />
       </DropdownMenu.Trigger>
@@ -33,12 +31,12 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
           Open
         </MenuItem>
         <MenuItem onSelect={() => openEditFolderDialog(folder.id)}>
-          <PencilSquareIcon />
+          <SquarePenIcon />
           Edit details
         </MenuItem>
         <MenuSeparator />
         <MenuItem isDestructive onSelect={() => openDialog({ kind: "delete", folder })}>
-          <TrashIcon />
+          <Trash2Icon />
           Delete folder
         </MenuItem>
       </MenuContent>

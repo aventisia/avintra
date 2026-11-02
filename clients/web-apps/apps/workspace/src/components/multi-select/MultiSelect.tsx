@@ -31,7 +31,7 @@ interface MultiSelectProps {
 const sizeClasses: Record<FormFieldSizeType, string> = {
   xs: "min-h-7 text-2xs px-1 py-1",
   sm: "min-h-8 text-xs px-1.5  py-1",
-  base: "min-h-10 text-sm px-3 py-1.5",
+  base: "min-h-control-md text-sm px-3 py-1",
 };
 
 const badgeSizeClasses: Record<FormFieldSizeType, string> = {
@@ -130,10 +130,10 @@ export const MultiSelect = ({
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2 shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2 shadow-pop")}
       >
         <Command>
-          <div className="mb-1.5 rounded-lg bg-slate-100">
+          <div className="mb-1.5 rounded-lg bg-sunken">
             <CommandInput
               className="h-9 text-xs"
               placeholder={searchPlaceholder}

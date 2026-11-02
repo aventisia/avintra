@@ -57,22 +57,22 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   const statusParts = [
     stats && stats.idle > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.idle}</span> idle
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.idle}</span> idle
       </>
     ),
     stats && stats.online > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.online}</span> online
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.online}</span> online
       </>
     ),
     stats && stats.offline > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.offline}</span> Offline
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.offline}</span> Offline
       </>
     ),
     stats && stats.running > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.running}</span> Running
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.running}</span> Running
       </>
     ),
   ].filter(Boolean) as JSX.Element[];
@@ -99,7 +99,8 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         content={data?.length}
         footer={
           <>
-            <span className="font-medium text-xs">{stats?.agents}</span> Agents
+            <span className="font-mono text-xs font-medium tabular-nums">{stats?.agents}</span>{" "}
+            Agents
           </>
         }
       />

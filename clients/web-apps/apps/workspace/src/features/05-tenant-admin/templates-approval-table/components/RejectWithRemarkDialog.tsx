@@ -46,13 +46,13 @@ const RejectWithRemarkDialog = () => {
   return (
     <Dialog open={showDialog} onOpenChange={() => setShowDialog(!showDialog)}>
       <DialogContent>
-        <DialogDefaultHeader heading="Reject Template" />
+        <DialogDefaultHeader heading="Reject template" />
 
         {/* Remarks input section */}
         <div className="space-y-2 p-3">
           <Label htmlFor="remarks" className="ml-1 flex items-center gap-0.5">
             <span>Remarks</span>
-            <span className="text-destructive">*</span>
+            <span className="text-bad">*</span>
           </Label>
 
           <Textarea

@@ -1,7 +1,6 @@
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
 import { getAgentTypeLabel } from "../utils/agent-type-label.util";
 
@@ -12,19 +11,24 @@ import { getAgentTypeLabel } from "../utils/agent-type-label.util";
 export const agentsAssistTableColumns: ColumnDef<AgentsAssistDto>[] = [
   {
     accessorKey: "name",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Name"} />,
+    meta: { label: "Name" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Name" />,
     cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "versionNumber",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
+    meta: { label: "Version number" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Version number" />,
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("versionNumber")}</div>
+      <div className="w-auto truncate font-mono font-medium tabular-nums">
+        {row.getValue("versionNumber")}
+      </div>
     ),
   },
   {
     accessorKey: "type",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
+    meta: { label: "Type" },
+    header: ({ column }) => <TableCNColumnHeader column={column} label="Type" />,
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{getAgentTypeLabel(row.original.type)}</div>
     ),

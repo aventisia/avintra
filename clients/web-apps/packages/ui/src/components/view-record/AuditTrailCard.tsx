@@ -23,16 +23,16 @@ export const AuditTrailCard = ({
 }: AuditTrailCardProps) => {
   return (
     <ViewInfoRowsCard
-      title="Audit Trail"
+      title="Audit trail"
       icon={<Clock3Icon className="size-3.5 text-muted-foreground" />}
     >
-      <ViewInfoRow label="Added By" value={createdBy} />
-      <Separator className="h-[0.5px]" />
-      <ViewInfoRow label="Added On" value={formatDate(createdOn, true)} />
-      <Separator className="h-[0.5px]" />
-      <ViewInfoRow label="Last Modified By" value={lastModifiedBy} />
-      <Separator className="h-[0.5px]" />
-      <ViewInfoRow label="Last Modified On" value={formatDate(lastModifiedOn, true)} />
+      <ViewInfoRow label="Added by" value={createdBy} />
+      <Separator />
+      <ViewInfoRow label="Added on" value={formatDate(createdOn, true)} />
+      <Separator />
+      <ViewInfoRow label="Last modified by" value={lastModifiedBy} />
+      <Separator />
+      <ViewInfoRow label="Last modified on" value={formatDate(lastModifiedOn, true)} />
     </ViewInfoRowsCard>
   );
 };

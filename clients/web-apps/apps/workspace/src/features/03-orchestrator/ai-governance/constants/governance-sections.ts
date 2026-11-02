@@ -11,10 +11,10 @@ export interface GovernanceSection {
 }
 
 export const GOVERNANCE_SECTIONS: GovernanceSection[] = [
-  { id: 0, title: "Agent Identity", ref: "Baseline" },
-  { id: 1, title: "Risk Tiering", ref: "Composite" },
-  { id: 2, title: "Risks & Mitigations", ref: "Register" },
-  { id: 3, title: "AI Models Used", ref: "Dependencies" },
-  { id: 4, title: "Third-Party Tools Used", ref: "Dependencies" },
-  { id: 5, title: "Validation & Approval", ref: "Lifecycle" },
+  { id: 0, title: "Agent identity", ref: "Baseline" },
+  { id: 1, title: "Risk tiering", ref: "Composite" },
+  { id: 2, title: "Risks & mitigations", ref: "Register" },
+  { id: 3, title: "AI models used", ref: "Dependencies" },
+  { id: 4, title: "Third-party tools used", ref: "Dependencies" },
+  { id: 5, title: "Validation & approval", ref: "Lifecycle" },
 ];

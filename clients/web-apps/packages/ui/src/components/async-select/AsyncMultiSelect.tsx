@@ -152,7 +152,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
       }}
     >
       {selectedItems.length > 0 && (
-        <div className="-mb-2 flex flex-wrap gap-1 rounded-t-md border border-b-0 bg-slate-50 px-1 py-1 pb-3">
+        <div className="-mb-2 flex flex-wrap gap-1 rounded-t-md border border-b-0 bg-sunken px-1 py-1 pb-3">
           {selectedItems.map((item) => {
             const itemId = getItemId(item);
 
@@ -160,7 +160,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
               <div
                 key={itemId}
                 className={cn(
-                  "inline-flex items-center gap-1 rounded-md border bg-background py-[0.15rem] pl-2 pr-1",
+                  "inline-flex items-center gap-1 rounded-sm border bg-surface py-[0.15rem] pl-2 pr-1",
                   size === "base" && "text-sm",
                   size === "sm" && "text-xs",
                   size === "xs" && "text-2xs",
@@ -171,7 +171,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
                   <Button
                     type="button"
                     variant={"ghost"}
-                    className="size-3.5 p-0 text-muted-foreground hover:bg-red-50 hover:text-destructive focus:bg-red-50 focus:text-destructive"
+                    className="size-3.5 p-0 text-muted-foreground hover:bg-transparent hover:text-bad focus-visible:text-bad"
                     onClick={() => removeSelectedItem(itemId)}
                   >
                     <XIcon className="stroke-[2.5]" />
@@ -240,12 +240,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
             type="button"
             variant="ghost"
             size={size === "base" ? "icon7" : size === "sm" ? "icon6" : "icon5"}
-            className={cn(
-              "absolute top-1/2 -translate-y-1/2",
-              size === "base" && "right-[0.36rem]",
-              size === "sm" && "right-[0.2rem]",
-              size === "xs" && "right-[0.17rem]",
-            )}
+            className={cn("absolute right-0.5 top-1/2 -translate-y-1/2")}
             onClick={handleClear}
           >
             <CircleXIcon
@@ -260,10 +255,10 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
         )}
       </div>
       {shouldShowDropdown && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg bg-surface text-ink shadow-pop">
           <div
             className={cn(
-              "border-b px-3 py-2 text-muted-foreground",
+              "border-b border-line px-3 py-2 text-muted-foreground",
               size === "base" && "px-3 py-2 text-xs",
               size === "sm" && "px-2.5 py-1.5 text-2xs",
               size === "xs" && "px-2.5 py-1.5 text-3xs",
@@ -299,9 +294,9 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
                       data-item
                       type="button"
                       className={cn(
-                        "flex w-full items-center rounded-md text-left transition-colors hover:bg-accent",
-                        isHighlighted && "bg-accent outline-none ring-1 ring-inset ring-ring",
-                        size === "base" && "px-2.5 py-1.5 text-sm",
+                        "flex w-full items-center rounded-sm text-left transition-colors duration-[120ms] ease-out hover:bg-hover",
+                        isHighlighted && "bg-hover outline-none ring-1 ring-inset ring-focus",
+                        size === "base" && "min-h-8 px-2 py-1 text-body-sm",
                         size === "sm" && "px-[0.55rem] py-[0.34rem] text-xs",
                         size === "xs" && "px-[0.45rem] py-[0.25rem] text-2xs",
                       )}

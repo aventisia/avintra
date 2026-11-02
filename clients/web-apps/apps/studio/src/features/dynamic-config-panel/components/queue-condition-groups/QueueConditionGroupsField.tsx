@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { ISelectOption } from "@avplatform/ui/types";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useController, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
@@ -82,8 +82,8 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
   }, [queueSelectField.value, data]);
 
   return (
-    <GroupedFieldsWrapper groupName="Configure Conditions">
-      <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+    <GroupedFieldsWrapper groupName="Configure conditions">
+      <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
         <FieldsLabelHeader />
 
         {fields.map((item, index) => (
@@ -111,7 +111,7 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
               disabled={fields.length <= 1}
               onClick={() => remove(index)}
             >
-              <TrashIcon className="h-4 w-4" />
+              <Trash2Icon className="h-4 w-4" />
             </Button>
           </div>
         ))}
@@ -124,7 +124,7 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
           className="mt-2 w-full gap-1 text-xs"
         >
           <PlusIcon className="h-4 w-4 stroke-2" />
-          Add Condition
+          Add condition
         </Button>
       </div>
     </GroupedFieldsWrapper>

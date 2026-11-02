@@ -1,10 +1,5 @@
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
 import { type Table } from "@tanstack/react-table";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 import { Button } from "@/ui/components/buttons";
 import {
@@ -43,7 +38,7 @@ export function DTPagination<TData>({
 
   return (
     <div className="flex items-center justify-end px-2 sm:justify-between">
-      <div className="hidden flex-1 text-sm text-muted-foreground sm:flex">
+      <div className="hidden flex-1 font-mono text-hint tabular-nums text-muted-foreground sm:flex">
         {isRowSelectionEnabled ? (
           <>
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -55,7 +50,7 @@ export function DTPagination<TData>({
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden items-center space-x-2 xs:flex">
-          <p className="text-sm font-medium">
+          <p className="text-body-sm text-muted-foreground">
             <span className="capitalize">{pluralLabel}</span> per page
           </p>
           <Select
@@ -76,7 +71,7 @@ export function DTPagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-[100px] items-center justify-center font-mono text-hint tabular-nums text-ink-2">
           Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
@@ -87,7 +82,7 @@ export function DTPagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <ChevronDoubleLeftIcon className="h-4 w-4" />
+            <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -96,7 +91,7 @@ export function DTPagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to previous page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -105,7 +100,7 @@ export function DTPagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -114,7 +109,7 @@ export function DTPagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <ChevronDoubleRightIcon className="h-4 w-4" />
+            <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { PlayIcon, SquareIcon } from "lucide-react";
 
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 
@@ -47,23 +47,18 @@ export const ExecutionAction = ({
           <Button
             variant="ghost"
             size="icon8"
-            className="hover:bg-white/10"
+            className="hover:bg-hover"
             onClick={() => {
               if (jobId) abortJobMutation(jobId);
             }}
           >
-            <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
+            <SquareIcon className="h-[1.1rem] w-[1.1rem] text-bad" />
           </Button>
         </Tooltip>
       ) : (
         <Tooltip content="Execute">
-          <Button
-            variant="ghost"
-            size="icon8"
-            className="hover:bg-white/10"
-            onClick={handleCreateJob}
-          >
-            <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
+          <Button variant="ghost" size="icon8" className="hover:bg-hover" onClick={handleCreateJob}>
+            <PlayIcon className="h-[1.125rem] w-[1.125rem] text-ok" />
           </Button>
         </Tooltip>
       )}

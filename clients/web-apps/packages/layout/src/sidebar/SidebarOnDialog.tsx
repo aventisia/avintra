@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
+import { MenuIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UpgradeCard } from "./UpgradeCard";
@@ -11,6 +11,8 @@ import { SidebarMenuItems } from "./menu-items";
 
 interface SidebarOnDialogProps {
   appLogo: React.ReactNode;
+  /** Rendered below the menu, such as the app's account menu. */
+  footer?: React.ReactNode;
   className?: string;
 }
 
@@ -21,6 +23,7 @@ interface SidebarOnDialogProps {
  *
  * @param {SidebarOnDialogProps} props - The properties for the SidebarOnDialog component.
  * @param {React.ReactNode} props.appLogo - The application logo to display at the top of the sidebar.
+ * @param {React.ReactNode} [props.footer] - Content rendered below the menu, such as the account menu.
  * @param {string} [props.className] - Additional class names to style the component.
  *
  * @returns {JSX.Element} The SidebarOnDialog component.
@@ -35,7 +38,7 @@ interface SidebarOnDialogProps {
  * <SidebarOnDialog className="custom-class" />
  * ```
  */
-const SidebarOnDialog = ({ appLogo, className }: SidebarOnDialogProps) => {
+const SidebarOnDialog = ({ appLogo, footer, className }: SidebarOnDialogProps) => {
   // Get state and actions from the base layout store
   const { sidebarOnDialogOpen, setSidebarOnDialogOpen, setSidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
@@ -56,21 +59,22 @@ const SidebarOnDialog = ({ appLogo, className }: SidebarOnDialogProps) => {
           variant="outline"
           size="icon8"
           className={cn(
-            "mr-3.5 flex h-8 w-8 rounded-lg border-none bg-transparent text-white/70 shadow-none hover:bg-white/10 hover:text-white/70 md:hidden",
+            "mr-2 flex size-control-md rounded-md border-none bg-transparent text-ink-2 shadow-none hover:bg-hover hover:text-ink md:hidden",
             className,
           )}
           onClick={() => setSidebarExpand(true)}
         >
-          <Bars3BottomLeftIcon className="h-7 w-7" />
+          <MenuIcon className="size-4" strokeWidth={1.75} />
         </Button>
       </DialogTrigger>
-      <DialogContent side="left" className="w-[--sidebar-max-width]">
+      <DialogContent side="left" className="w-[--sidebar-max-width] bg-bg">
         <ScrollArea className="my-2 h-[calc(100vh-1.1rem)]">
-          <div className="flex h-[--header-height] items-center px-[1.1rem]">{appLogo}</div>
+          <div className="flex h-[--header-height] items-center px-4">{appLogo}</div>
           <nav className="h-auto">
             <SidebarMenuItems />
             <UpgradeCard />
           </nav>
+          {footer}
         </ScrollArea>
       </DialogContent>
     </Dialog>

@@ -17,12 +17,16 @@ type StatsCardProps = {
  */
 export const StatsCard = ({ icon, title, content, footer }: StatsCardProps) => {
   return (
-    <div className="flex flex-row items-center rounded-lg border border-primary-100 bg-card p-3.5">
-      <div className="rounded-lg bg-primary-50 p-4 text-primary">{icon}</div>
-      <div className="mx-3.5 flex flex-col gap-1">
-        <h3 className="text-xs font-medium tracking-wide">{title}</h3>
-        <div className="text-xl font-semibold leading-none tracking-tight">{content}</div>
-        {footer && <div className="text-2xs text-muted-foreground">{footer}</div>}
+    <div className="flex flex-row items-center gap-3 rounded-lg border border-line bg-surface p-4">
+      <div className="grid place-items-center rounded-md border border-line bg-sunken p-3 text-ink-2">
+        {icon}
+      </div>
+      <div className="flex min-w-0 flex-col gap-1">
+        <h3 className="font-mono text-label uppercase text-muted-foreground">{title}</h3>
+        <div className="font-mono text-[28px] font-medium leading-8 tracking-[-0.02em] tabular-nums text-ink">
+          {content}
+        </div>
+        {footer && <div className="text-hint text-muted-foreground">{footer}</div>}
       </div>
     </div>
   );
