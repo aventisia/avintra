@@ -20,7 +20,7 @@ export const PolicySummary = ({ draft, mode, resourceType }: PolicySummaryProps)
 
   if (draft.isLoading) return <span />;
 
-  if (mode === "restricted" && count === 0) {
+  if (mode === "restricted" && count === 0 && !draft.wasOpenAccess) {
     return <StatusLine tone="warning">Add at least one agent to restrict access</StatusLine>;
   }
 
