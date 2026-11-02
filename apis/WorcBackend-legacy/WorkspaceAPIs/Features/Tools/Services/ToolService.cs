@@ -313,6 +313,7 @@ public class ToolService : IToolService
             toolToCreate.IsActive = true;
             toolToCreate.Type = ComponentTypeEnum.Custom;
             toolToCreate.EnvType = _currentTenantService.CurrentEnvType;
+            toolToCreate.IsResourceAccessRestricted = true;
             toolToCreate.CreatedByUserId = _currentUserId;
             toolToCreate.LastModifiedByUserId = _currentUserId;
             toolToCreate.CreatedOn = DateTimeOffset.UtcNow;
