@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { useThemeStore } from "@avplatform/ui/stores";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Edge,
@@ -64,6 +65,8 @@ import { ViewControls } from "./view-controls";
  * A custom extension of the ReactFlow component.
  */
 export const ReactFlowExt = () => {
+  const isDark = useThemeStore((state) => state.isDark);
+
   // Get ReactFlowExt store state & actions
   const {
     nodes,
@@ -362,6 +365,7 @@ export const ReactFlowExt = () => {
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <FlowBreadcrumbs />
           <ReactFlow
+            colorMode={isDark ? "dark" : "light"}
             fitView
             minZoom={0.1}
             panOnDrag={panOnDrag}
