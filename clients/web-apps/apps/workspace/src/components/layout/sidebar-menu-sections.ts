@@ -359,27 +359,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
     ],
   },
-  {
-    // sectionInternalName: globalAdmin
-    sectionName: "Global Admin",
-    menuItems: [
-      {
-        permissions: ["SA"],
-        Icon: IdentificationIcon,
-        name: "On-prem Tenants",
-        // IMPORTANT NOTE: GlobalAdmin is a separate app; an absolute URL makes the shared
-        // sidebar leave the Workspace router instead of resolving this path inside it.
-        route:
-          typeof window === "undefined"
-            ? `${import.meta.env.VITE_GLOBALADMIN_PATH}on-prem-tenants`
-            : new URL(
-                `${import.meta.env.VITE_GLOBALADMIN_PATH}on-prem-tenants`,
-                window.location.origin,
-              ).href,
-        type: ["Commercial"],
-      },
-    ],
-  },
 ];
 
 // TODO: Refactor this function to use a more efficient method of checking permissions

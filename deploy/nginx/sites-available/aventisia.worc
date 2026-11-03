@@ -86,15 +86,25 @@ server
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
-	# ----------------- /global-admin -----------------
+	# ----------------- /globaladmin -----------------
+	location /globaladmin/api/ {
+		proxy_pass http://globaladmin-apis:4004/api/;
+		include /etc/nginx/conf.d/common_api_config.conf;
+	}
+
+	location /globaladmin/ {
+		alias /usr/share/nginx/html/global-admin/;
+		try_files $uri $uri.html $uri/ /globaladmin/index.html =404;
+	}
+
+	# IMPORTANT NOTE: temporary rollout support for the old /global-admin paths; remove once clients have moved.
 	location /global-admin/api/ {
 		proxy_pass http://globaladmin-apis:4004/api/;
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
 	location /global-admin/ {
-		alias /usr/share/nginx/html/global-admin/;
-		try_files $uri $uri.html $uri/ /global-admin/index.html =404;
+		rewrite ^/global-admin(.*)$ /globaladmin$1 redirect;
 	}
 
 	# ----------------- Static files / downloads -----------------

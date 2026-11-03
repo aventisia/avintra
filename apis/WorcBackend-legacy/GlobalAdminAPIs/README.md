@@ -1,11 +1,14 @@
 # GlobalAdminAPIs
 
-Backend of the `global-admin` web app and of the platform's on-prem enforcement checks. It manages on-premises
-customers (tenants), their deployed instances, and the execution data those instances report; `AccountsAPIs` asks it
-for a deployment's metadata at startup and posts usage to it at runtime.
+Backend of the Global Admin web app and of the platform's on-prem enforcement checks. It serves
+`https://globaladmin.aventisia.com/api` in production and `https://uat-globaladmin.aventisia.com/api` in UAT, and is
+proxied as `/globaladmin/api` on the app host for local development. It manages on-premises customers (tenants),
+their deployed instances, and the execution data those instances report; `AccountsAPIs` asks it for a deployment's
+metadata at startup and posts usage to it at runtime.
 
 The tree is a **verbatim port** of `aventisia/GlobalAdminAPIs` `main` at commit `1eb5d9e56018f700dde5bdadea04728a0400a093`
-(82 files: 72 copied unchanged, 4 adapted, 6 not carried over — see [Provenance](#provenance)). Keep it that way:
+(82 files: 72 copied unchanged, 4 adapted, 6 not carried over — see [Provenance](#provenance)), except for seven
+security fixes listed under [Security fixes vs upstream](#security-fixes-vs-upstream). Keep everything else that way:
 the quirks listed in [Known quirks](#known-quirks) are production behavior, and "fixing" them changes what the
 external service used to answer.
 
@@ -60,8 +63,8 @@ The database name `GlobalAdminDb` is part of the connection string, so the deplo
 CRUD routes require the platform session token with the `SA` role (bearer token, or the `AccessToken` cookie). The
 token is signed with the Accounts secret and validated without issuer/audience checks, which is why `JWT_SECRET_KEY`
 must equal the Accounts value. `metadata` and `validate` take no token: they authenticate with the
-`X-OnPrem-Tenant-Id` and `X-OnPrem-Instance-Key` headers, which must name existing rows. Every other route is
-`/api` + the paths below.
+`X-OnPrem-Tenant-Id` and `X-OnPrem-Instance-Key` headers, which must name an existing instance that belongs to the
+named tenant. Every other route is `/api` + the paths below.
 
 ## Database
 
@@ -70,13 +73,20 @@ The service owns an empty database; no data is imported from the previous standa
 performance indexes) and are applied on startup by `SeedInitialData`. To create them by hand:
 
 ```sh
+cd apis/WorcBackend-legacy/GlobalAdminAPIs
+dotnet tool restore
 export ASPNETCORE_ENVIRONMENT=Localhost
-dotnet ef database update --project apis/WorcBackend-legacy/GlobalAdminAPIs
+dotnet ef database update
 ```
 
 `GlobalAdminDbContextDesignTimeFactory` loads `.env.local` in `Localhost`, then reads `appsettings.json` plus
-`POSTGRESQL_*` environment variables for the tooling. New migrations need the EF CLI (`dotnet-ef`); the source project
-pinned `9.0.1` in a tool manifest that is not carried over — any 8.x/9.x `dotnet ef` works.
+`POSTGRESQL_*` environment variables for the tooling. New migrations need the EF CLI (`dotnet-ef`); this project's
+tool manifest pins `8.0.7` to match the project's EF Core packages, so run `dotnet tool restore` once.
+
+Jenkins also runs `dotnet ef database update` against each target before deploying, in the
+`Database migration - Global Admin API` stage. That stage reads `POSTGRESQL_*` from the target's `/etc/environment`,
+so `POSTGRESQL_HOST` must be reachable from the Jenkins agent as well as from the target; the service still applies
+pending migrations on boot.
 
 ## Endpoints
 
@@ -108,6 +118,28 @@ documented members, `bool` bulk-delete results, no `[RequiredGuid]`/route constr
 (including `IOnPremInstancetRepo.cs` and `CurrentOnPremTenantServicec.cs`). Neither the warning-as-errors setting nor
 an `AspNetToolkit` project reference is part of this project.
 
+## Security fixes vs upstream
+
+These are the only intentional behavior deviations from the source tree. Do not revert them to "restore parity" —
+each closes a finding from the port's pentest (`PT-*` IDs are in `local-issues/154/`).
+
+- **F1 (`PT-TAUTH-01`)** — the header check rejects at once on every failure with one generic
+  `"Authentication failed."` message. The admin alert mail is best effort and never decides the rejection, so a
+  throttled alert can no longer let a bad header pair through, and unparseable GUIDs send no mail at all.
+- **F2 (`PT-TAUTH-02`)** — a request is rejected unless the instance belongs to the tenant named in the header,
+  checked in the filter and again in the validate service.
+- **F3 (`PT-METER-03`)** — `validate` rejects an empty `last7DayUsages`, ignores entries dated outside the 7-day
+  window (and rejects the request when none is left), clamps per-day increases and the remaining quota at zero, and
+  writes usage rows, instance and tenant in a single save.
+- **F4 (`PT-ALERT-04`)** — the alert throttle keys on the **last** `X-Forwarded-For` entry (the one nginx appends),
+  falls back to the socket peer address, and adds a 5-per-10-minutes burst cap on top of the 12-hour key.
+- **F5 (`PT-CRUD-05`)** — SA writes cannot set `OnPremTenantId`, `NoOfInvalidCheck`, `LastValidatedOn` or
+  `DeployedOn` on an instance, `CreatedByUser` on a tenant, or `OnPremInstanceId` on an instance-data row; the two
+  inserts that need a foreign key set it explicitly.
+- **F6 (`PT-DEP-06`)** — the image runs `Production`, so unhandled errors answer with the generic message instead of
+  a stack trace.
+- **F7 (`PT-MAIL-07`)** — tenant and instance names are HTML-encoded when substituted into the mail templates.
+
 ## Provenance
 
 Source tree provenance, verified before the port by matching every file against the Gitea tree API
@@ -126,7 +158,7 @@ Those per-environment setting files, together with this project's separate `seri
 tree: startup now uses one `appsettings.json` plus environment variables, as described under [Run](#run).
 
 Not carried over: the source's own `GlobalAdminAPIs.sln`, `Jenkinsfile`, `GlobalAdminAPIs.http`, `package-lock.json`,
-`.gitignore`, and `.config/dotnet-tools.json` (the monorepo equivalents govern).
+`.gitignore`, and `.config/dotnet-tools.json` (this project's own manifest pins `dotnet-ef` `8.0.7`).
 
 To re-check, normalize CRLF to LF in each ported file and compare its git blob SHA-1 with the API tree's: expect 72
 matches plus these four files matching apart from the lines above.
