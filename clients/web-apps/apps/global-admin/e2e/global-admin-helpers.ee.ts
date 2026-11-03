@@ -2,10 +2,11 @@ import { type APIRequestContext, type BrowserContext, expect, request } from "@p
 import { randomUUID } from "node:crypto";
 
 const ACCESS_TOKEN = process.env.E2E_ACCESS_TOKEN ?? "";
-const APP_PATH = "/global-admin";
+const APP_PATH = "/globaladmin";
+const API_PATH = `${APP_PATH}/api`;
 
 const apiBaseUrl = (baseURL: string) =>
-  `${process.env.E2E_GLOBALADMIN_API_URL ?? `${new URL(baseURL).origin}${APP_PATH}/api`}/`;
+  `${process.env.E2E_GLOBALADMIN_API_URL ?? `${new URL(baseURL).origin}${API_PATH}`}/`;
 
 /** Signs the browser in with the SA session token from E2E_ACCESS_TOKEN. */
 const authenticate = async (context: BrowserContext, baseURL: string) => {
