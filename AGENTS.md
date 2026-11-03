@@ -34,4 +34,4 @@ Mark a source file `.ee` when only Commercial/Enterprise paths reach it; shared 
 
 ## Lifecycle operations
 
-`commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked: run one only in a primary session with explicit authorization for that exact mutation, keeping its confirmations and the repository/login identity.
+`commit`, `create-issue`, `refine-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked: run one only in a primary session with explicit authorization for that exact mutation, keeping its confirmations and the repository/login identity.

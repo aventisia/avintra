@@ -19,7 +19,7 @@ Binds `orchestrator`, the only primary agent, and every subagent it launches.
 - Use reports from other locations only when supplied, and leave them unchanged.
 - Record identity, revision/base, approval state, scope, findings, evidence, and limitations; cite evidence by artifact path and section.
 - Keep AC and finding IDs stable across rounds.
-- The analyst's brief is the user's standing approval: revised in place until the user explicitly approves an exact revision, then frozen. Its checklist IDs are the ACs.
+- The analyst's brief is the user's standing approval: revised in place until the user explicitly approves an exact revision, then frozen. An issue brief that scout finds current per `.claude/skills/BRIEF.md` is already approved, and analyst adopts it as the approved `rev1`. Its checklist IDs are the ACs.
 - A saved proposal is frozen. One within the approved brief carries a brief-authorized receipt citing the brief revision. Any other is saved `NEEDS_APPROVAL`/`PENDING` until the user explicitly approves it, and architect then adds an approval receipt for the exact proposal path and revision to its report. Changed content needs a new proposal and approval; frozen proposals and approval history are never rewritten.
 - Each kind of state has one home: implementation slices in coder's report; attack attempts, PoCs, and security findings in pentester's; UI runs, screenshots, and UI findings in pilot's; independent evidence, blast radius, and merge safety in QA's.
 - After QA `CLEAR`, analyst writes `local-issues/<key>/final-brief.md` and `local-issues/<key>/pr-report.md` outside the round folders; each wrap-up rewrites both.

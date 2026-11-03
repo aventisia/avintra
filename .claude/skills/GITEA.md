@@ -4,7 +4,7 @@ Shared reference for skills that read or change Gitea issues and pull requests. 
 
 ## Authorization
 
-The mutating skills (`add-comment`, `close-issue`, `create-issue`, `create-pr`, `merge-pr`) run only on the user's explicit request in a primary session. QA success, a finished plan, or an agent handoff never authorizes them.
+The mutating skills (`add-comment`, `close-issue`, `create-issue`, `create-pr`, `merge-pr`, `refine-issue`) run only on the user's explicit request in a primary session. QA success, a finished plan, or an agent handoff never authorizes them.
 
 ## Resolve the target
 
