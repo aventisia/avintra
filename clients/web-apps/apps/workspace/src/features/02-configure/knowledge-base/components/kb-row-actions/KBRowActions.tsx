@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 import { ExternalLinkIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -37,7 +38,7 @@ export const KBRowActions = ({
 
   return (
     // Dropdown menu for config table row action
-    <DataTableRowActions className="w-36 min-w-36">
+    <TableCNRowActionsMenu ariaLabel="Open knowledge base actions" contentClassName="w-36 min-w-36">
       {actions?.read && (
         <SimpleDDMenuItem
           Icon={ExternalLinkIcon}
@@ -48,7 +49,9 @@ export const KBRowActions = ({
         />
       )}
       {/* Edit KB details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="knowledgeBase" />}
+      {actions?.update && (
+        <CrudRowAction rowId={rowId} crudAction="update" entity="knowledgeBase" />
+      )}
       {actions?.update && (
         <ResourceFlowAccessRowAction
           rowId={rowId}
@@ -76,6 +79,6 @@ export const KBRowActions = ({
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

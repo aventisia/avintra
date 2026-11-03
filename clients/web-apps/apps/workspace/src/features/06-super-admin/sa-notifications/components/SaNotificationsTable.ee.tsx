@@ -1,6 +1,12 @@
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { useMemo } from "react";
 
 import {
@@ -51,10 +57,10 @@ export const SaNotificationsTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={SA_TABLE_HEADING} />
+            <TableCNHeading heading={SA_TABLE_HEADING} />
 
             <div className="flex items-center gap-2">
-              <DTCreateButton entity="saNotification" />
+              <CrudCreateButton entity="saNotification" />
             </div>
           </div>
 

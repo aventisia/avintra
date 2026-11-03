@@ -1,7 +1,13 @@
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -65,7 +71,7 @@ export const SpacesTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex w-max flex-col gap-0.5">
               <div className="flex w-max items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
+                <TableCNHeading heading={TABLE_HEADING} />
               </div>
               <p className="ml-1 max-w-md text-sm text-muted-foreground">
                 A logical container that acts as a global filtering / scoping dimension across the
@@ -77,7 +83,7 @@ export const SpacesTable = () => {
               {isCommunityDeployment ? (
                 <UpgradeSpaceButton />
               ) : (
-                <DTCreateButton buttonText="Create space" entity="space" />
+                <CrudCreateButton buttonText="Create space" entity="space" />
               )}
             </div>
           </div>

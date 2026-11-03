@@ -11,6 +11,17 @@ interface CrudDialogContextValue {
 
 const CrudDialogContext = createContext<CrudDialogContextValue | null>(null);
 
+interface CrudDialogChromeValue {
+  /** Live `name` of the record in the mounted form, shown as the dialog title. */
+  recordName: string | undefined;
+  setRecordName: (name: string | undefined) => void;
+  /** Footer element that `CrudDialogActions` portals into. */
+  actionsSlot: HTMLElement | null;
+  setActionsSlot: (element: HTMLElement | null) => void;
+}
+
+const CrudDialogChromeContext = createContext<CrudDialogChromeValue | null>(null);
+
 interface CrudDialogProviderContextProps {
   children: React.ReactNode;
   onClose: () => void;
@@ -28,6 +39,8 @@ export function CrudDialogFormContextProvider({
   onClose,
 }: CrudDialogProviderContextProps) {
   const [isDirty, setIsDirtyState] = useState(false);
+  const [recordName, setRecordName] = useState<string>();
+  const [actionsSlot, setActionsSlot] = useState<HTMLElement | null>(null);
 
   const setIsDirty = useCallback((value: boolean) => {
     setIsDirtyState(value);
@@ -47,7 +60,38 @@ export function CrudDialogFormContextProvider({
     [isDirty, setIsDirty, onCloseConfirmed],
   );
 
-  return <CrudDialogContext.Provider value={value}>{children}</CrudDialogContext.Provider>;
+  const chrome = useMemo(
+    () => ({ recordName, setRecordName, actionsSlot, setActionsSlot }),
+    [recordName, actionsSlot],
+  );
+
+  return (
+    <CrudDialogContext.Provider value={value}>
+      <CrudDialogChromeContext.Provider value={chrome}>{children}</CrudDialogChromeContext.Provider>
+    </CrudDialogContext.Provider>
+  );
+}
+
+/**
+ * Header title and footer actions slot of the URL-driven CRUD dialog, or null outside one.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useCrudDialogChrome() {
+  return useContext(CrudDialogChromeContext);
+}
+
+/** Setter for the CRUD dialog title; throws outside a `CrudDialogFormContextProvider`. */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useCrudDialogRecordNameSetter() {
+  const ctx = useContext(CrudDialogChromeContext);
+
+  if (!ctx) {
+    throw new Error(
+      "useCrudDialogRecordNameSetter must be used inside a CrudDialogFormContextProvider",
+    );
+  }
+
+  return ctx.setRecordName;
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Switch } from "@avplatform/ui";
-import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { IconTile } from "@avplatform/ui/icon-tile";
 import { cn } from "@avplatform/ui/lib";
@@ -36,6 +36,7 @@ export const ConfigStoreFormDialog = ({
   crudAction,
   rowId,
   onClose,
+  banner,
 }: CrudCustomDialogProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
   const {
@@ -137,6 +138,7 @@ export const ConfigStoreFormDialog = ({
         </>
       }
     >
+      {banner}
       <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-4">
         <fieldset disabled={isReadMode} className="min-w-0 space-y-4">
           {isReadMode && (

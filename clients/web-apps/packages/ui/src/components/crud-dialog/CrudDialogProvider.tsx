@@ -1,30 +1,11 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ArrowLeftIcon } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useBlocker } from "react-router-dom";
 
-import { Button } from "@/ui/components/buttons";
-import { DialogContent, DialogDefaultHeader } from "@/ui/components/dialog";
-import { ScrollArea } from "@/ui/components/scroll";
 import { useShowAlertHandler } from "@/ui/hooks";
 import { type CrudEntityKey, type DialogCrudAction } from "@/ui/types";
 
 import { CrudDialogFormContextProvider, useCrudDialogIsDirty } from "./CrudDialogContext";
 import { useCrudDialogUrlState } from "./useCrudDialogUrlState";
-
-interface CrudSheetEntityConfig {
-  /** Tailwind class controlling the dialog max-width, e.g. "!max-w-[36rem]". */
-  maxWidth: string;
-  /** Returns the dialog heading/description for the current action. */
-  getHeader: (crudAction: DialogCrudAction) => { heading: string; description?: string };
-  /** Optional extra content rendered in the dialog header (e.g. a help button). */
-  headerExtras?: React.ReactNode;
-  /** Component that renders the dialog body. */
-  Content: React.FC<{
-    crudAction: DialogCrudAction;
-    rowId: string;
-  }>;
-}
 
 export interface CrudCustomDialogProps {
   isOpen: boolean;
@@ -32,14 +13,16 @@ export interface CrudCustomDialogProps {
   rowId: string;
   /** Closes the dialog, asking first when the form has unsaved changes. */
   onClose: () => void;
+  /** Returns to the dialog this one was opened from; set only when there is one. */
+  onGoBack?: () => void;
+  /** Banner to show above the dialog body, such as an environment warning. */
+  banner?: React.ReactNode;
 }
 
-interface CrudCustomDialogEntityConfig {
-  /** Renders the whole dialog in place of the default side sheet. */
+export interface CrudDialogEntityConfig {
+  /** Renders the whole dialog. */
   Dialog: React.FC<CrudCustomDialogProps>;
 }
-
-export type CrudDialogEntityConfig = CrudSheetEntityConfig | CrudCustomDialogEntityConfig;
 
 export type CrudDialogRegistry = Record<CrudEntityKey, CrudDialogEntityConfig>;
 
@@ -177,41 +160,14 @@ function CrudDialog({
     }
   }, [isDirty, onGoBack, showDefaultAlertDialog]);
 
-  if ("Dialog" in config) {
-    return (
-      <config.Dialog
-        isOpen={isDialogOpen}
-        crudAction={crudAction}
-        rowId={rowId}
-        onClose={() => handleOpenChange(false)}
-      />
-    );
-  }
-
-  const { maxWidth, getHeader, Content, headerExtras } = config;
-  const { heading, description } = getHeader(crudAction);
-
   return (
-    <DialogPrimitive.Root open={isDialogOpen} onOpenChange={handleOpenChange}>
-      <DialogContent side="right" className={maxWidth}>
-        <DialogDefaultHeader
-          heading={heading}
-          description={description}
-          className="border-b p-3.5 text-lg tracking-wide"
-        >
-          {headerExtras}
-          {back ? (
-            <Button variant="ghost" size="icon8" onClick={handleGoBack} aria-label="Go back">
-              <ArrowLeftIcon className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Back</span>
-            </Button>
-          ) : null}
-        </DialogDefaultHeader>
-        <ScrollArea className="h-[calc(100vh-4rem)] px-2.5 pb-0 pt-4">
-          {contentBanner}
-          <Content crudAction={crudAction} rowId={rowId} />
-        </ScrollArea>
-      </DialogContent>
-    </DialogPrimitive.Root>
+    <config.Dialog
+      isOpen={isDialogOpen}
+      crudAction={crudAction}
+      rowId={rowId}
+      onClose={() => handleOpenChange(false)}
+      onGoBack={back ? handleGoBack : undefined}
+      banner={contentBanner}
+    />
   );
 }

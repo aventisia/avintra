@@ -1,10 +1,15 @@
-import React, { useEffect, useRef } from "react";
-import { type FieldValues, FormProvider, type UseFormReturn } from "react-hook-form";
+import React, { useEffect, useId, useRef } from "react";
+import { type FieldValues, FormProvider, type UseFormReturn, useWatch } from "react-hook-form";
 import { useBlocker, useLocation, useNavigate } from "react-router-dom";
 
-import { useIsInsideCrudDialog } from "@/ui/components/data-table/CrudDialogContext";
+import {
+  useCrudDialogRecordNameSetter,
+  useIsInsideCrudDialog,
+} from "@/ui/components/crud-dialog/CrudDialogContext";
 import { useShowAlertHandler } from "@/ui/hooks";
 import { cn } from "@/ui/lib";
+
+import { FormIdProvider, useFormId } from "./FormIdContext";
 
 interface FormProps<T extends FieldValues> extends React.FormHTMLAttributes<HTMLFormElement> {
   /** Form methods from react-hook-form */
@@ -69,6 +74,20 @@ function DirtyFormBlocker({ isDirty, checkDirtyForm }: DirtyFormBlockerProps) {
   return null;
 }
 
+/** Shows the form's live `name` value as the CRUD dialog title. */
+function RecordNamePublisher() {
+  const setRecordName = useCrudDialogRecordNameSetter();
+  const name: unknown = useWatch({ name: "name" });
+
+  useEffect(() => {
+    setRecordName(typeof name === "string" ? name : undefined);
+  }, [name, setRecordName]);
+
+  useEffect(() => () => setRecordName(undefined), [setRecordName]);
+
+  return null;
+}
+
 /** Extended version of FormProvider, form, fieldset. It supports:
  * - Reset the form when unmounting
  * - "beforeunload" event listener to prevent leaving the page when the form is dirty
@@ -90,6 +109,8 @@ const Form = <T extends FieldValues>({
   // already registers its own useBlocker, so we avoid mounting the generic
   // DirtyFormBlocker while inside the dialog.
   const isInsideCrudDialog = useIsInsideCrudDialog();
+  const formId = useId();
+  const isNestedForm = useFormId() !== undefined;
 
   // ----------------Add beforeunload event listener
   useEffect(() => {
@@ -118,12 +139,16 @@ const Form = <T extends FieldValues>({
   // ----------------Return the form
   return (
     <FormProvider {...methods}>
-      <form className="w-full" onSubmit={onSubmit}>
-        <fieldset disabled={disabled} className={cn("flex w-full flex-col gap-3.5", className)}>
-          {children}
-        </fieldset>
-      </form>
-      {!isInsideCrudDialog && (
+      <FormIdProvider value={formId}>
+        <form id={formId} className="w-full" onSubmit={onSubmit}>
+          <fieldset disabled={disabled} className={cn("flex w-full flex-col gap-3.5", className)}>
+            {children}
+          </fieldset>
+        </form>
+      </FormIdProvider>
+      {isInsideCrudDialog ? (
+        !isNestedForm && <RecordNamePublisher />
+      ) : (
         <DirtyFormBlocker isDirty={formState.isDirty} checkDirtyForm={checkDirtyForm} />
       )}
     </FormProvider>

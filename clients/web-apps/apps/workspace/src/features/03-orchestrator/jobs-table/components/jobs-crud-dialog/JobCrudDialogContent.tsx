@@ -1,9 +1,9 @@
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
+import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { buildDialogCloseParams } from "@/ui/components/data-table/crud-dialog-url.util";
+import { buildDialogCloseParams } from "@/ui/components/crud-dialog/crud-dialog-url.util";
 
 import { decodePrefilledOption } from "../../utils/decode-prefilled-option.util";
 import { JobCreateForm } from "./JobCreateForm";

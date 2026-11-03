@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense } from "react";
 
 import { AgentsTable } from "@/features/03-orchestrator/agents-table/components/AgentsTable";
@@ -9,7 +9,7 @@ import { AgentsTable } from "@/features/03-orchestrator/agents-table/components/
  */
 export const PublishedAgentsPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <AgentsTable />
     </Suspense>
   );

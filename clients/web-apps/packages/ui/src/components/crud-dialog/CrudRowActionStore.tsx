@@ -4,13 +4,13 @@ import { useShallow } from "zustand/react/shallow";
 import { SimpleDDMenuItem } from "@/ui/components/dropdown-menu";
 import { useDTCrudDialogStore } from "@/ui/stores";
 
-interface DTEditRowActionStoreProps {
+interface CrudRowActionStoreProps {
   rowId: string;
   size?: "sm" | "md";
   crudAction: "update" | "read";
 }
 
-export const DTRowActionStore: React.FC<DTEditRowActionStoreProps> = ({
+export const CrudRowActionStore: React.FC<CrudRowActionStoreProps> = ({
   rowId,
   crudAction,
   size = "md",

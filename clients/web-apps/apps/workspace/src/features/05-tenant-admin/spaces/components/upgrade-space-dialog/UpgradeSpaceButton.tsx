@@ -7,7 +7,7 @@ const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefin
 /**
  * Spaces toolbar button for community deployments.
  *
- * Mirrors the shared DTCreateButton exactly (icon, size, styling, and label) so it sits
+ * Mirrors the shared CrudCreateButton exactly (icon, size, styling, and label) so it sits
  * identically in the toolbar, but its action opens the upgrade dialog instead of the
  * create-space dialog.
  */

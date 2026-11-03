@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { CLOSING_JOB_STATUSES, JobRowDeleteAction, JobStatusEnum } from "../..";
 
@@ -13,11 +14,11 @@ export const JobRowActions = ({ rowId, status }: JobRowActionsProps) => {
   const isEditable = status ? !CLOSING_JOB_STATUSES.includes(status) : true;
 
   return (
-    <DataTableRowActions>
-      <DTRowAction rowId={rowId} crudAction="read" entity="job" />
-      {isEditable && <DTRowAction rowId={rowId} crudAction="update" entity="job" />}
+    <TableCNRowActionsMenu ariaLabel="Open job actions">
+      <CrudRowAction rowId={rowId} crudAction="read" entity="job" />
+      {isEditable && <CrudRowAction rowId={rowId} crudAction="update" entity="job" />}
       <DropdownMenuSeparator />
       <JobRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

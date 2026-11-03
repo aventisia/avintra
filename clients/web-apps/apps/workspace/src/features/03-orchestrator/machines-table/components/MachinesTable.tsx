@@ -1,6 +1,11 @@
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
 import {
   MACHINES_INITIAL_STATE,
@@ -48,7 +53,7 @@ export const MachinesTable = () => {
           {/* Page heading */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
           </div>
 

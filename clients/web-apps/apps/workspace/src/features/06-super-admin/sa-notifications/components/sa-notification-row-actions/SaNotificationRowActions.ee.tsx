@@ -1,6 +1,7 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { NotificationStatusEnum } from "@avplatform/ui/enums";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { SaNotificationDeleteAction } from "./SaNotificationDeleteAction.ee";
 
@@ -18,11 +19,11 @@ export const SaNotificationRowActions = ({ rowId, status }: SaNotificationRowAct
   const isSent = status === NotificationStatusEnum.Sent;
 
   return (
-    <DataTableRowActions>
-      <DTRowAction rowId={rowId} crudAction="read" entity="saNotification" />
-      <DTRowAction rowId={rowId} crudAction="update" entity="saNotification" disabled={isSent} />
+    <TableCNRowActionsMenu ariaLabel="Open notification actions">
+      <CrudRowAction rowId={rowId} crudAction="read" entity="saNotification" />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="saNotification" disabled={isSent} />
       <DropdownMenuSeparator />
       <SaNotificationDeleteAction rowId={rowId} disabled={isSent} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };
