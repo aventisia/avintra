@@ -1,6 +1,12 @@
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
 import {
   SUB_PLANS_INITIAL_STATE,
@@ -46,11 +52,11 @@ export const SubPlansTable = () => {
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
 
             <div className="flex items-center gap-2">
-              <DTCreateButton buttonText="Create plan" entity="subscriptionPlan" />
+              <CrudCreateButton buttonText="Create plan" entity="subscriptionPlan" />
             </div>
           </div>
 

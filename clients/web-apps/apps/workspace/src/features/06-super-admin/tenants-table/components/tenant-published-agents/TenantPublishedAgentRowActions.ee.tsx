@@ -1,5 +1,5 @@
-import { DataTableRowActions } from "@avplatform/ui/data-table";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 import { CoinsIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -20,7 +20,10 @@ export const TenantPublishedAgentRowActions = ({
   );
 
   return (
-    <DataTableRowActions className="w-48 max-w-48">
+    <TableCNRowActionsMenu
+      ariaLabel="Open tenant published agent actions"
+      contentClassName="w-48 max-w-48"
+    >
       <SimpleDDMenuItem
         size="md"
         content="Set fixed credits"
@@ -30,6 +33,6 @@ export const TenantPublishedAgentRowActions = ({
           setShowFixedCreditsDialog(true);
         }}
       />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

@@ -1,8 +1,12 @@
 import { EmptyState } from "@avplatform/ui";
 import { CountToggle } from "@avplatform/ui/count-toggle";
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
+import {
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNSortMenu,
+  TableCNToolbar,
+} from "@avplatform/ui/table-cn";
 import { ViewModeToggle } from "@avplatform/ui/view-mode-toggle";
 import { Archive } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -189,7 +193,7 @@ export const FlowsTable = () => {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <DTHeading heading={TABLE_HEADING} />
+                  <TableCNHeading heading={TABLE_HEADING} />
                 </div>
                 <p className="mt-[5px] text-[13px] text-muted-foreground">
                   {getAgentsSubtitle((flows ?? []).length, folderSummaries.length)}

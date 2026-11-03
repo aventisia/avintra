@@ -1,7 +1,7 @@
 import { CopyableText } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTOpenViewCell } from "@avplatform/ui/data-table";
+import { CrudOpenViewCell } from "@avplatform/ui/crud-dialog";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -33,7 +33,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     meta: { label: getColumnName("job") },
     header: renderHeader("job"),
     cell: ({ row }) => (
-      <DTOpenViewCell
+      <CrudOpenViewCell
         rowId={row.original.id}
         cellContent={`${row.original.flowName}_${row.original.flowVersionNumber}_${row.getValue("id") ?? "ID_NOT_FOUND"}`}
         entity="job"

@@ -6,7 +6,6 @@ export * from "./collapsible";
 export * from "./CopyableText";
 export * from "./date-picker";
 export * from "./DotSeparator";
-export * from "./dynamic-data-table";
 export * from "./ErrorBoundary";
 export * from "./file-dropzone";
 export * from "./floating-label-input";

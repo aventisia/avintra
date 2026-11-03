@@ -1,7 +1,12 @@
 import { EmptyState } from "@avplatform/ui";
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCNHeading,
+  TableCNPagination,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { NavLink } from "react-router-dom";
 
@@ -60,11 +65,11 @@ export const SkillTable = () => {
           {/* Page heading and tabs */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
               <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">
-              {!isReadOnly && <DTCreateButton buttonText="Add" entity="skill" />}
+              {!isReadOnly && <CrudCreateButton buttonText="Add" entity="skill" />}
             </div>
           </div>
           {/* Search for the card list */}

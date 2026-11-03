@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the ApiKeysManagement component.
@@ -14,7 +14,7 @@ const ApiKeysTable = lazy(() =>
  */
 export const ApiKeysPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <ApiKeysTable />
     </Suspense>
   );

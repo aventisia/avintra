@@ -12,7 +12,7 @@ import {
 } from "./primitives/TableCNElements";
 
 type TableCNSkeletonProps = React.ComponentProps<"div"> & {
-  columnCount: number;
+  columnCount?: number;
   rowCount?: number;
   /** Placeholders for toolbar filters on the left. */
   filterCount?: number;
@@ -29,7 +29,7 @@ type TableCNSkeletonProps = React.ComponentProps<"div"> & {
  * Loading placeholder shaped like a TableCN toolbar, table, and pagination footer.
  */
 export const TableCNSkeleton = ({
-  columnCount,
+  columnCount = 6,
   rowCount = 10,
   filterCount = 0,
   cellWidths = ["auto"],

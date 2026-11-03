@@ -1,4 +1,4 @@
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
+import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 
 import { useFolderDialogStore } from "../stores/folder-dialog.store";
 import { MovableAgent } from "../types/movable-agent.type";

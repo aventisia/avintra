@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense } from "react";
 
 import { MachinesTable } from "@/features/03-orchestrator/machines-table/components/MachinesTable";
@@ -9,7 +9,7 @@ import { MachinesTable } from "@/features/03-orchestrator/machines-table/compone
  */
 export const MachinesPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <MachinesTable />
     </Suspense>
   );

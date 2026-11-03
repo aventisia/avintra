@@ -1,6 +1,12 @@
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { useMemo } from "react";
 
 import {
@@ -49,11 +55,11 @@ export const ApiKeysTable = () => {
           {/* Page heading and create action */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
 
             <div className="flex items-center gap-2">
-              <DTCreateButton buttonText="Create" entity="apiKey" />
+              <CrudCreateButton buttonText="Create" entity="apiKey" />
             </div>
           </div>
 

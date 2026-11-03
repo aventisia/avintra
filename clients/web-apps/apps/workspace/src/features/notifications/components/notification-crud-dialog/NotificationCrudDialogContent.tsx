@@ -1,4 +1,4 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { AudienceScopeEnum } from "@avplatform/ui/enums";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";

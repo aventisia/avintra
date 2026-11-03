@@ -8,8 +8,8 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
-import { DTPagination, DataTable } from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, useTableCN } from "@avplatform/ui/table-cn";
 import { ColumnDef } from "@tanstack/react-table";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -200,7 +200,11 @@ export const IssuesTable = () => {
     },
   ];
 
-  const table = useDataTable(columns, issues, {}, undefined, false);
+  const { table } = useTableCN({
+    data: issues,
+    columns,
+    queryKeys: { page: "issuesPage", perPage: "issuesPerPage", sort: "issuesSort" },
+  });
 
   if (!assessment || !selectedAgentId) {
     return null;
@@ -235,11 +239,7 @@ export const IssuesTable = () => {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <DataTable table={table} columnsLength={columns.length} />
-      </div>
-
-      <DTPagination table={table} />
+      <TableCN table={table} label="Issues" emptyMessage="No issues recorded." />
     </div>
   );
 };

@@ -1,6 +1,11 @@
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
 import { AGENT_RISK_PAGE_SIZE_OPTIONS, AI_GOVERNANCE_TABLE_KEY } from "../constants";
 import { AGENT_RISK_INITIAL_STATE } from "../constants/registry-columns";
@@ -92,7 +97,7 @@ export const AgentRiskRegistryTable = () => {
     <div className="space-y-4 pb-4 pt-[17px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <DTHeading heading="Agent risk registry" />
+          <TableCNHeading heading="Agent risk registry" />
         </div>
       </div>
 

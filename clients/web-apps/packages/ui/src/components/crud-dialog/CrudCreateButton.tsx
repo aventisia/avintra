@@ -8,12 +8,12 @@ import { type CrudEntityKey } from "@/ui/types";
 
 import { useCreateEntityAction } from "./useCreateEntityAction.hook";
 
-interface DTCreateButtonProps {
+interface CrudCreateButtonProps {
   buttonText?: string;
   entity: CrudEntityKey;
 }
 
-export const DTCreateButton: React.FC<DTCreateButtonProps> = ({
+export const CrudCreateButton: React.FC<CrudCreateButtonProps> = ({
   buttonText = "Create",
   entity,
 }) => {

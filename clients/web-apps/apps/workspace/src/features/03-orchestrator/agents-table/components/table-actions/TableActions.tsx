@@ -1,5 +1,5 @@
 import { Separator } from "@avplatform/ui";
-import { DataTableRowActions } from "@avplatform/ui/data-table";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
 import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
@@ -29,7 +29,7 @@ export const TableActions = ({
   isTenantWideAccess,
 }: TableActionsProps) => {
   return (
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open agent actions">
       {type == "ChatAgent" ? (
         <ResourceUserAccessRowAction
           rowId={rowId}
@@ -50,6 +50,6 @@ export const TableActions = ({
       <AgentConfigRowAction rowId={rowId} isDisabled={isDisabled} />
       <Separator />
       {isDisabled ? <EnableAgentRowAction rowId={rowId} /> : <AgentDisableAction rowId={rowId} />}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

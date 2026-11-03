@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { MachineRowDeleteAction } from "./MachineRowDeleteAction";
 
@@ -9,11 +10,11 @@ interface MachineRowActionsProps {
 
 export const MachineRowActions = ({ rowId }: MachineRowActionsProps) => {
   return (
-    <DataTableRowActions className="!max-w-10">
-      <DTRowAction rowId={rowId} crudAction="read" entity="machine" />
-      <DTRowAction rowId={rowId} crudAction="update" entity="machine" />
+    <TableCNRowActionsMenu ariaLabel="Open machine actions" contentClassName="!max-w-10">
+      <CrudRowAction rowId={rowId} crudAction="read" entity="machine" />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="machine" />
       <DropdownMenuSeparator />
       <MachineRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

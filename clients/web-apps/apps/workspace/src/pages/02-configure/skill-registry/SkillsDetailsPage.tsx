@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the SkillFilesTable component.
@@ -15,7 +15,7 @@ const SkillFilesTable = lazy(() =>
  */
 export const SkillDetailsPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <SkillFilesTable />
     </Suspense>
   );

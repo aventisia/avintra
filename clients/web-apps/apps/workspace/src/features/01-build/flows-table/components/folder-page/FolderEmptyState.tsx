@@ -1,4 +1,4 @@
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
+import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import { Plus } from "lucide-react";
 
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";

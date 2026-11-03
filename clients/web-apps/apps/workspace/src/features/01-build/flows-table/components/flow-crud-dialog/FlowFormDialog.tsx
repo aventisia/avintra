@@ -1,5 +1,5 @@
 import { Switch } from "@avplatform/ui";
-import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { useEffect, useId } from "react";

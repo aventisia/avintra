@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 const ToolsTable = lazy(() =>
@@ -12,7 +12,7 @@ const ToolsTable = lazy(() =>
  */
 export const ToolsPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <ToolsTable />
     </Suspense>
   );

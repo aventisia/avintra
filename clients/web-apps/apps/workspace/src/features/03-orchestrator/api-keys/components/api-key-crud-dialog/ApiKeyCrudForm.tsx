@@ -1,6 +1,6 @@
 import { CopyableText } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { DateTimePickerField } from "@avplatform/ui/form";
 import { useShowAlertHandler, useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
@@ -135,7 +135,7 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <CrudDialogActions>
           <SubmitButton
             className="min-w-[5rem]"
             primaryText={isCreate ? "Create" : "Save changes"}
@@ -143,7 +143,7 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
             isPending={isCreate ? isCreatePending : isUpdatePending}
             disabled={!isDirty || !isValid || (isCreate ? isCreatePending : isUpdatePending)}
           />
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

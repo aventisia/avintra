@@ -6,7 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import { DTCreateButton } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { NavLink } from "react-router-dom";
@@ -72,7 +72,7 @@ export const TenantInstanceTable = () => {
             </Breadcrumb>
 
             <div className="flex items-center gap-2">
-              <DTCreateButton buttonText="Create" entity="tenantInstance" />
+              <CrudCreateButton buttonText="Create" entity="tenantInstance" />
             </div>
           </div>
 

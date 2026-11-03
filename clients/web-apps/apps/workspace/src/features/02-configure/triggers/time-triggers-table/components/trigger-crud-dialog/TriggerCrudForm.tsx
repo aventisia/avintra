@@ -1,6 +1,6 @@
 import { TagInput } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import {
   DateTimePickerField,
   Form,
@@ -220,7 +220,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-10 flex w-full justify-end">
+        <CrudDialogActions>
           <SubmitButton
             className="min-w-[5rem]"
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
@@ -228,7 +228,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
             isPending={isPending}
             disabled={!isDirty || !isAvailable || isCheckPending}
           />
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

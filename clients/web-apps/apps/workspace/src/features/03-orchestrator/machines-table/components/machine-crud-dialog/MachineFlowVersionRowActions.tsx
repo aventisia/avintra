@@ -1,5 +1,5 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
+import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,

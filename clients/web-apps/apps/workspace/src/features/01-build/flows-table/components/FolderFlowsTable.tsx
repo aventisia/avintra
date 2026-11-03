@@ -1,6 +1,6 @@
 import { EmptyState } from "@avplatform/ui";
 import { CountToggle } from "@avplatform/ui/count-toggle";
-import { DTCreateButton } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
@@ -102,7 +102,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
             </div>
             <div className="flex items-center gap-2">
               <ViewModeToggle view={view} onChange={setView} />
-              {!showArchived && <DTCreateButton entity="flow" />}
+              {!showArchived && <CrudCreateButton entity="flow" />}
             </div>
           </div>
           <FolderHero summary={currentSummary} />

@@ -1,8 +1,14 @@
 import { UpgradeCreateButton } from "@avplatform/ui";
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -67,14 +73,14 @@ export const UsersTable = () => {
           {/* Page heading and create action */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
 
             <div className="flex items-center gap-2">
               {isStarterPlan ? (
                 <UpgradeCreateButton label="Invite" upgradePath="/tenant/overview" />
               ) : (
-                <DTCreateButton buttonText="Invite" entity="user" />
+                <CrudCreateButton buttonText="Invite" entity="user" />
               )}
             </div>
           </div>

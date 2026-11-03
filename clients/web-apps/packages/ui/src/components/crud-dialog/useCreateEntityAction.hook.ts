@@ -3,7 +3,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useActionLock } from "@/ui/components/action-lock";
 import { type CrudEntityKey } from "@/ui/types";
 
-import { useCrudDialogUrlState } from "../useCrudDialogUrlState";
+import { useCrudDialogUrlState } from "./useCrudDialogUrlState";
 
 /**
  * Opens an entity's create dialog; Ctrl+Alt+N opens the one of `hotkeyEntity`.

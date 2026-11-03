@@ -1,6 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTOpenViewCell } from "@avplatform/ui/data-table";
+import { CrudOpenViewCell } from "@avplatform/ui/crud-dialog";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
@@ -33,7 +33,11 @@ export const getApiKeysTableColumns = (): ColumnDef<ApiKeyDto>[] => [
     meta: { label: getColumnName("name") },
     header: renderHeader("name"),
     cell: ({ row }) => (
-      <DTOpenViewCell rowId={row.original.id} cellContent={row.getValue("name")} entity="apiKey" />
+      <CrudOpenViewCell
+        rowId={row.original.id}
+        cellContent={row.getValue("name")}
+        entity="apiKey"
+      />
     ),
   },
   {
