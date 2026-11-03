@@ -7,8 +7,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { deleteMultipleNotifications } from "../../apis/notification-apis";
 import { NotificationDto } from "../../dtos/notification.dto";
@@ -48,7 +48,7 @@ export function NotificationBulkActions({ table }: NotificationBulkActionsProps)
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

@@ -1,6 +1,6 @@
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { LogsIcon, X } from "lucide-react";
+import { ListDashesIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -59,7 +59,7 @@ export const NodeDetailPanel = () => {
     >
       <PanelContent className="flex flex-col overflow-hidden">
         <div className="flex h-10 shrink-0 items-center gap-2 border-b border-line pl-4 pr-2">
-          <LogsIcon className="size-3.5 text-muted-foreground" />
+          <ListDashesIcon className="size-3.5 text-muted-foreground" />
           <span className="text-body-sm font-semibold text-ink">Node log</span>
           <div className="ml-auto flex items-center gap-1">
             {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
@@ -67,7 +67,7 @@ export const NodeDetailPanel = () => {
               className="size-6 p-0 text-muted-foreground hover:text-ink"
               aria-label="Close panel"
             >
-              <X className="size-4" />
+              <XIcon className="size-4" />
             </PanelClose>
           </div>
         </div>

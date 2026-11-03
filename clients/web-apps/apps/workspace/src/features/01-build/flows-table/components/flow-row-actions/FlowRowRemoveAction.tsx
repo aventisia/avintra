@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 
 import { useRemoveFlowAccessMutation } from "../../hooks/useRemoveFlowAccessMutation";
 
@@ -22,7 +22,7 @@ export const FlowRowRemoveAction = ({ rowId }: FlowRowRemoveActionProps) => {
       <SimpleDDMenuItem
         children={
           <>
-            <Trash2Icon className={cn("", "h-4 w-4")} /> <>Remove</>
+            <TrashIcon className={cn("", "h-4 w-4")} /> <>Remove</>
           </>
         }
         className={cn(

@@ -1,5 +1,5 @@
 import { EmptyState } from "@avplatform/ui";
-import { FileWarningIcon } from "lucide-react";
+import { FileXIcon } from "@phosphor-icons/react";
 import { type ComponentType, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -52,7 +52,7 @@ const NoFilesState = () => (
   <EmptyState
     primaryMessage="No files available"
     secondaryMessage="Upload a file to get started"
-    Icon={FileWarningIcon}
+    Icon={FileXIcon}
   />
 );
 

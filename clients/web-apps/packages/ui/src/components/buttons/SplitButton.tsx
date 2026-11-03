@@ -1,5 +1,5 @@
+import { CaretDownIcon } from "@phosphor-icons/react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
@@ -85,7 +85,7 @@ export const SplitButton = forwardRef<HTMLButtonElement, SplitButtonProps>(
                 "before:absolute before:inset-y-2 before:left-0 before:w-px before:bg-primary-foreground/30",
               )}
             >
-              <ChevronDown
+              <CaretDownIcon
                 className={cn(
                   sizeClassNames.chevron,
                   "transition-transform duration-200 group-data-[state=open]:rotate-180",

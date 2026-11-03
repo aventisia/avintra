@@ -1,6 +1,6 @@
+import { XIcon } from "@phosphor-icons/react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
 import * as React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
@@ -139,7 +139,7 @@ const DialogDefaultHeader = ({
       {/* Close Dialog */}
       <Tooltip content={"Close"} shortcut="Esc">
         <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-          <X className="h-4 w-4" />
+          <XIcon className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </Tooltip>

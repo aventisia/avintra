@@ -1,5 +1,5 @@
+import { CheckIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { type Column, type Table } from "@tanstack/react-table";
-import { Check, Settings2 } from "lucide-react";
 
 import { Button } from "@/ui/components/buttons";
 import {
@@ -52,7 +52,7 @@ export const TableCNViewOptions = <TData,>({
           size="xs"
           className={cn("hidden lg:flex", TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME, className)}
         >
-          <Settings2 />
+          <SlidersHorizontalIcon />
           View
         </Button>
       </PopoverTrigger>
@@ -84,7 +84,7 @@ export const TableCNViewOptions = <TData,>({
                   className={TABLE_CN_COMMAND_ITEM_CLASS_NAME}
                 >
                   <span className="truncate">{getColumnLabel(column)}</span>
-                  <Check
+                  <CheckIcon
                     className={cn(
                       "ml-auto size-3.5 shrink-0 text-primary-text",
                       column.getIsVisible() ? "opacity-100" : "opacity-0",

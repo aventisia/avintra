@@ -1,7 +1,7 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { MetaLine } from "@avplatform/ui/meta-line";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 
 import { pluralize } from "@/utils/pluralize.util";
@@ -28,7 +28,7 @@ const TargetMark = ({ target }: { target: MoveTarget }) => {
   }
   return (
     <span className="grid size-7 shrink-0 place-items-center rounded-md border border-dashed border-primary/30 bg-selected text-primary-text">
-      <Plus className="size-4" />
+      <PlusIcon className="size-4" />
     </span>
   );
 };

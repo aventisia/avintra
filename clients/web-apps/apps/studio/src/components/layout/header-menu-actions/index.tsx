@@ -1,17 +1,17 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
 import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
-import { invoke } from "@tauri-apps/api/core";
 import {
-  ArrowLeftRightIcon,
-  BookCopyIcon,
-  DockIcon,
-  ExternalLinkIcon,
-  ImportIcon,
+  AppWindowIcon,
+  ArrowSquareInIcon,
+  ArrowSquareOutIcon,
+  ArrowsLeftRightIcon,
+  BooksIcon,
   KeyboardIcon,
   LockOpenIcon,
-  UploadIcon,
-} from "lucide-react";
+  UploadSimpleIcon,
+} from "@phosphor-icons/react";
+import { invoke } from "@tauri-apps/api/core";
 import { useShallow } from "zustand/react/shallow";
 
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
@@ -93,7 +93,7 @@ export const HeaderActionMenu: React.FC = () => {
         {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem
             size="md"
-            Icon={ExternalLinkIcon}
+            Icon={ArrowSquareOutIcon}
             content="Open UI inspector"
             onClick={openUIInspector}
           />
@@ -101,7 +101,7 @@ export const HeaderActionMenu: React.FC = () => {
 
         <SimpleDDMenuItem
           size="md"
-          Icon={ImportIcon}
+          Icon={ArrowSquareInIcon}
           content="Import"
           onClick={() => {
             setUpload(true);
@@ -110,7 +110,7 @@ export const HeaderActionMenu: React.FC = () => {
 
         <SimpleDDMenuItem
           size="md"
-          Icon={UploadIcon}
+          Icon={UploadSimpleIcon}
           content="Export"
           onClick={() => {
             void guardDirtyNodeConfig(exportFlow);
@@ -119,7 +119,7 @@ export const HeaderActionMenu: React.FC = () => {
 
         <SimpleDDMenuItem
           size="md"
-          Icon={BookCopyIcon}
+          Icon={BooksIcon}
           content="Save as template"
           onClick={() => void guardDirtyNodeConfig(() => setSATDialog(true))}
         />
@@ -128,7 +128,7 @@ export const HeaderActionMenu: React.FC = () => {
           <SimpleDDMenuItem
             onClick={() => setExportDialog(true)}
             size="md"
-            Icon={ArrowLeftRightIcon}
+            Icon={ArrowsLeftRightIcon}
             content="Add input/output"
           />
         ) : null}
@@ -148,7 +148,7 @@ export const HeaderActionMenu: React.FC = () => {
           <>
             <SimpleDDMenuItem
               size="md"
-              Icon={UploadIcon}
+              Icon={UploadSimpleIcon}
               content="Export (trimmed)"
               onClick={() => {
                 void guardDirtyNodeConfig(exportFlowTrimmed);
@@ -156,7 +156,7 @@ export const HeaderActionMenu: React.FC = () => {
             />
 
             <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
-            <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
+            <SimpleDDMenuItem size="md" Icon={AppWindowIcon} content="Archive" />
           </>
         ) : null}
       </DropdownMenuContent>

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Building2, ShieldCheck } from "lucide-react";
+import { BuildingsIcon, ShieldCheckIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 
 import type { AccessMode } from "../../types/access-mode.type";
@@ -24,7 +24,7 @@ export const ModeCard = ({
   onSelect,
   autoFocusTarget = false,
 }: ModeCardProps) => {
-  const Icon = mode === "open" ? Building2 : ShieldCheck;
+  const Icon = mode === "open" ? BuildingsIcon : ShieldCheckIcon;
 
   return (
     <button

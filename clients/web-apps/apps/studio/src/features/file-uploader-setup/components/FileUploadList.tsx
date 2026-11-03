@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { CircleXIcon, Trash2Icon } from "lucide-react";
+import { TrashIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { Progress } from "@/react-toolkit/ui/progress";
@@ -103,9 +103,9 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
                     }
                   >
                     {isUploading ? (
-                      <CircleXIcon className="h-5 w-5" />
+                      <XCircleIcon className="h-5 w-5" />
                     ) : (
-                      <Trash2Icon className="h-4 w-4" />
+                      <TrashIcon className="h-4 w-4" />
                     )}
                   </Button>
                 </div>

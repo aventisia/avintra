@@ -1,6 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@avplatform/ui/cards";
-import { Cpu, ListChecks, Tag } from "lucide-react";
+import { CpuIcon, ListChecksIcon, TagIcon } from "@phosphor-icons/react";
 import { NavLink } from "react-router-dom";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -77,12 +77,12 @@ export const AgentCard = ({ agent }: AgentCardProps) => {
         {/* Type and AI model badges */}
         <div className="flex flex-nowrap items-center gap-1.5 overflow-hidden">
           <Badge variant="outline" className="shrink-0 gap-1">
-            <Tag className="h-3 w-3" />
+            <TagIcon className="h-3 w-3" />
             <span className="leading-3">{getAgentTypeLabel(agent.type)}</span>
           </Badge>
           {visibleModels.map((model) => (
             <Badge key={model} variant="outline" className="min-w-0 gap-1">
-              <Cpu className="h-3 w-3 shrink-0" />
+              <CpuIcon className="h-3 w-3 shrink-0" />
               <span className="truncate leading-3">{model}</span>
             </Badge>
           ))}
@@ -98,7 +98,7 @@ export const AgentCard = ({ agent }: AgentCardProps) => {
       <div className="flex items-center justify-between gap-2 px-3.5 pb-2 pt-1">
         <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
           <span className="inline-flex shrink-0 items-center gap-1 text-3xs font-semibold uppercase tracking-wide text-muted-foreground">
-            <ListChecks className="h-3.5 w-3.5 text-primary" />
+            <ListChecksIcon className="h-3.5 w-3.5 text-primary" />
             Queues
           </span>
           {queues.length > 0 ? (

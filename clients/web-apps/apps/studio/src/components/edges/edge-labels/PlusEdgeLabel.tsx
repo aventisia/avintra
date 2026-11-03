@@ -1,6 +1,6 @@
 import { StopPropagationWrapper } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
@@ -32,7 +32,7 @@ export const PlusEdgeLabel = ({ edgeId }: PlusEdgeLabelProps) => {
           setShowDialog(true);
         }}
       >
-        <PlusIcon className="size-3.5 stroke-[2.5]" />
+        <PlusIcon weight="bold" className="size-3.5" />
       </Button>
     </StopPropagationWrapper>
   );

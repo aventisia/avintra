@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -44,7 +44,7 @@ export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

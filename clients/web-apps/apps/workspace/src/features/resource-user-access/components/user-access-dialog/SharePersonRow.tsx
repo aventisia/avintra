@@ -1,6 +1,6 @@
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
-import { Lock, Trash2, Undo2 } from "lucide-react";
+import { ArrowUUpLeftIcon, LockIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { PersonAvatar } from "@/components/PersonAvatar";
 
@@ -73,7 +73,7 @@ export const SharePersonRow = ({
           onClick={() => draft.restoreRow(row)}
           className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-surface px-2 text-[12px] font-medium text-ink-2 ring-1 ring-line-strong transition hover:text-ink hover:ring-line-strong"
         >
-          <Undo2 className="size-3.5" />
+          <ArrowUUpLeftIcon className="size-3.5" />
           Undo
         </button>
       ) : row.isYou ? (
@@ -83,7 +83,7 @@ export const SharePersonRow = ({
           className="inline-flex h-7 shrink-0 items-center gap-1 px-2 text-[12.5px] font-medium text-muted-foreground"
         >
           {draft.hasRoles ? getShareRoleLabel(row.role) : "You"}
-          <Lock className="size-3.5 text-muted-foreground" aria-hidden />
+          <LockIcon className="size-3.5 text-muted-foreground" aria-hidden />
         </span>
       ) : draft.hasRoles ? (
         <RoleMenu
@@ -100,7 +100,7 @@ export const SharePersonRow = ({
           onClick={() => draft.removeRow(row)}
           className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
         >
-          <Trash2 className="size-4" />
+          <TrashIcon className="size-4" />
         </button>
       )}
     </div>

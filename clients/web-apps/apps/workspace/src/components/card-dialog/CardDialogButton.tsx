@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { LoaderCircle } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
 const VARIANTS = {
@@ -30,7 +30,7 @@ export const CardDialogButton = forwardRef<HTMLButtonElement, CardDialogButtonPr
         className,
       )}
     >
-      {isBusy && <LoaderCircle className="size-4 animate-spin" />}
+      {isBusy && <CircleNotchIcon className="size-4 animate-spin" />}
       {children}
     </button>
   ),

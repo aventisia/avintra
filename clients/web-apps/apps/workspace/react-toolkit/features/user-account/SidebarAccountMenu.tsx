@@ -5,16 +5,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { getUserDisplayName } from "@avplatform/ui/utils";
-import { useMutation } from "@tanstack/react-query";
 import {
   BellIcon,
-  Building2Icon,
-  ChevronsUpDownIcon,
-  DownloadIcon,
-  Loader2,
-  LogOutIcon,
+  BuildingsIcon,
+  CaretUpDownIcon,
+  CircleNotchIcon,
+  DownloadSimpleIcon,
+  SignOutIcon,
   UserIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -117,7 +117,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
                 {userSession?.tenantName}
               </span>
             </span>
-            <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+            <CaretUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
           </>
         )}
       </PopoverTrigger>
@@ -140,7 +140,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
             title={userSession.tenantName}
             className="mx-1 mb-1 flex items-center gap-2 rounded-sm bg-sunken px-2 py-1.5 text-xs text-ink-2"
           >
-            <Building2Icon className="size-3.5 shrink-0 text-muted-foreground" />
+            <BuildingsIcon className="size-3.5 shrink-0 text-muted-foreground" />
             <span className="truncate">{userSession.tenantName}</span>
           </div>
         )}
@@ -160,7 +160,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
         </AccountMenuAction>
         {!IS_TAURI && (
           <AccountMenuAction onClick={runAndCloseMenus(() => navigate(DESKTOP_DOWNLOAD_ROUTE))}>
-            <DownloadIcon />
+            <DownloadSimpleIcon />
             Download desktop app
           </AccountMenuAction>
         )}
@@ -183,7 +183,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
         <ThemeSwitcher className="h-9 px-2" />
         <MenuSeparator />
         <AccountMenuAction onClick={() => mutate()} disabled={isPending}>
-          {isPending ? <Loader2 className="animate-spin" /> : <LogOutIcon />}
+          {isPending ? <CircleNotchIcon className="animate-spin" /> : <SignOutIcon />}
           {isPending ? "Logging out" : "Log out"}
         </AccountMenuAction>
       </PopoverContent>

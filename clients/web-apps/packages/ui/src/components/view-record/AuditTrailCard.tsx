@@ -1,6 +1,6 @@
 import { Separator } from "@avplatform/ui";
 import { formatDate } from "@avplatform/ui/utils";
-import { Clock3Icon } from "lucide-react";
+import { ClockIcon } from "@phosphor-icons/react";
 
 import { ViewInfoRow } from "./ViewInfoRow";
 import { ViewInfoRowsCard } from "./ViewInfoRowsCard";
@@ -24,7 +24,7 @@ export const AuditTrailCard = ({
   return (
     <ViewInfoRowsCard
       title="Audit trail"
-      icon={<Clock3Icon className="size-3.5 text-muted-foreground" />}
+      icon={<ClockIcon className="size-3.5 text-muted-foreground" />}
     >
       <ViewInfoRow label="Added by" value={createdBy} />
       <Separator />

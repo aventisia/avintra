@@ -1,7 +1,7 @@
 import { EmptyState } from "@avplatform/ui";
 import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { VariableIcon } from "lucide-react";
+import { BracketsRoundIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -33,7 +33,7 @@ export const VariableSelectorContent = () => {
       <CommandEmpty className="h-full">
         <EmptyState
           className="mt-5"
-          Icon={VariableIcon}
+          Icon={BracketsRoundIcon}
           primaryMessage="No variables found"
           secondaryMessage="Try a different search term or set a new variable."
         />

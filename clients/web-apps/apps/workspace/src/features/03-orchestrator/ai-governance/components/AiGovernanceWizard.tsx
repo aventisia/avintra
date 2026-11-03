@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { toast } from "@avplatform/ui/sonner";
-import { ArrowLeftIcon, ArrowRightIcon, SaveIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, FloppyDiskIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 
 import { GOVERNANCE_SECTIONS } from "../constants/governance-sections";
@@ -199,7 +199,7 @@ export const AiGovernanceWizard = () => {
           <Button onClick={handleNext} disabled={isSaving}>
             {isLast ? (
               <>
-                <SaveIcon className="mr-2 h-4 w-4" />
+                <FloppyDiskIcon className="mr-2 h-4 w-4" />
                 Save &amp; Finish
               </>
             ) : (

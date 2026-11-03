@@ -3,7 +3,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArchiveIcon, ArrowLeftIcon, SquarePenIcon } from "lucide-react";
+import { ArchiveIcon, ArrowLeftIcon, NotePencilIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -142,7 +142,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
           <div className="flex flex-row-reverse items-center gap-1 justify-center">
             <Tooltip content="New conversation">
               <Button variant="ghost" size="icon7" onClick={handleNewConversation}>
-                <SquarePenIcon className="h-4 w-4" />
+                <NotePencilIcon className="h-4 w-4" />
               </Button>
             </Tooltip>
 

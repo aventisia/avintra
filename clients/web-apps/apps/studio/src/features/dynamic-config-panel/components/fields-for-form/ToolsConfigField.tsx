@@ -4,7 +4,13 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { Grip, PencilIcon, Trash2, TriangleAlert, Wrench } from "lucide-react";
+import {
+  DotsNineIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+  WarningIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
@@ -244,7 +250,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           placeholder="Select tool"
           isLoading={isUsableToolsLoading}
           disabled={isUsableToolsLoading}
-          fallbackIcon={<Wrench className="h-4 w-4 shrink-0 text-muted-foreground" />}
+          fallbackIcon={<WrenchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />}
         />
 
         <VaultCredentialSelectField
@@ -314,7 +320,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
         {fields.length === 0 ? (
           <EmptyState
             primaryMessage="No tools added"
-            Icon={Grip}
+            Icon={DotsNineIcon}
             secondaryMessage="You have no tool configurations added."
           />
         ) : (
@@ -346,7 +352,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                       </h4>
                       {!toolConfigInfo && (
                         <Badge className="shrink-0 gap-1 rounded-full px-2 py-px text-[0.625rem] font-medium bg-destructive/10 text-destructive">
-                          <TriangleAlert className="h-3 w-3" />
+                          <WarningIcon className="h-3 w-3" />
                           Unavailable
                         </Badge>
                       )}
@@ -381,7 +387,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                     onClick={() => onEditClick(index)}
                     disabled={editingIndex !== null && editingIndex !== index}
                   >
-                    <PencilIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <PencilSimpleIcon className="h-3.5 w-3.5 text-muted-foreground" />
                   </Button>
                   <Button
                     type="button"
@@ -390,7 +396,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                     onClick={() => onDeleteClick(index)}
                     disabled={editingIndex === index}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <TrashIcon className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { ShieldCheckeredIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
-import { ShieldHalfIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAppLoaderStore } from "@/stores/app-loader-store";
@@ -26,7 +26,7 @@ export const TenantSwitchRowAction = ({ rowId }: TenantSwitchRowActionProps) => 
   return (
     <SimpleDDMenuItem
       content="Switch tenant"
-      Icon={ShieldHalfIcon}
+      Icon={ShieldCheckeredIcon}
       onClick={() => {
         mutate(rowId);
         showLoader("Switching tenant...");

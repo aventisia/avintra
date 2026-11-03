@@ -1,5 +1,11 @@
 import { IconProps } from "@avplatform/ui/types";
-import { EditIcon, EyeIcon, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import {
+  EyeIcon,
+  NotePencilIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+} from "@phosphor-icons/react";
 
 import { QueueWorkItemAccessTypesEnum } from "../enums/queue-work-item-access-enum";
 
@@ -47,7 +53,7 @@ export const ACCESS_MENU_CONFIG: Record<
 > = {
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
     label: "Full access",
-    Icon: ShieldCheck,
+    Icon: ShieldCheckIcon,
   },
   [QueueWorkItemAccessTypesEnum.View]: {
     label: "Can view",
@@ -55,15 +61,15 @@ export const ACCESS_MENU_CONFIG: Record<
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
     label: "Can create",
-    Icon: Plus,
+    Icon: PlusIcon,
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
     label: "Can edit",
-    Icon: EditIcon,
+    Icon: NotePencilIcon,
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
     label: "Can delete",
-    Icon: Trash2,
+    Icon: TrashIcon,
   },
 };
 

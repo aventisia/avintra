@@ -48,7 +48,6 @@
     "./json-viewer": "./src/components/json-viewer/index.ts",
     "./label": "./src/components/label/index.ts",
     "./lib": "./src/lib/index.ts",
-    "./lucide": "./src/components/Lucide/index.tsx",
     "./meta-line": "./src/components/meta-line/index.ts",
     "./multi-selector": "./src/components/multi-selector/index.ts",
     "./popover": "./src/components/popover/index.ts",
@@ -110,7 +109,6 @@
     "./utils/model-capability.util": "./src/utils/model-capability.util.ts",
     "./components/FlowVersionNavLink": "./src/components/FlowVersionNavLink.tsx",
     "./components/HorizontalScrollWrapper": "./src/components/HorizontalScrollWrapper.tsx",
-    "./components/Lucide": "./src/components/Lucide/index.tsx",
     "./components/collapsible": "./src/components/collapsible/index.tsx",
     "./components/date-picker": "./src/components/date-picker/index.ts",
     "./components/date-time-picker": "./src/components/date-picker/index.ts",
@@ -137,6 +135,7 @@
     "pregit": "prettier --write . && eslint --fix . && tsc -b"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
@@ -172,7 +171,6 @@
     "@tanstack/react-query": "^5.51.1",
     "@tanstack/react-table": "^8.19.3",
     "date-fns": "^4.1.0",
-    "lucide-react": "^0.428.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",

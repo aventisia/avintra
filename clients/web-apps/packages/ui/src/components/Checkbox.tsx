@@ -1,5 +1,5 @@
+import { CheckIcon, MinusIcon } from "@phosphor-icons/react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check, Minus } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -18,9 +18,9 @@ const Checkbox = React.forwardRef<
   >
     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
       {props.checked === "indeterminate" ? (
-        <Minus className="h-3 w-3 stroke-[3]" />
+        <MinusIcon weight="bold" className="h-3 w-3" />
       ) : (
-        <Check className="h-3 w-3 stroke-[3]" />
+        <CheckIcon weight="bold" className="h-3 w-3" />
       )}
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>

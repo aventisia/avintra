@@ -1,7 +1,7 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { cn } from "@avplatform/ui/lib";
-import { Check } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { Kbd } from "@/components/Kbd";
@@ -83,7 +83,7 @@ export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
                       : "bg-surface text-transparent ring-[1.5px] ring-inset ring-line-strong",
                   )}
                 >
-                  <Check className="size-3" strokeWidth={3.5} />
+                  <CheckIcon className="size-3" weight="bold" />
                 </span>
               )}
             </>

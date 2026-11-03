@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { CircleAlert } from "lucide-react";
+import { WarningCircleIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
 
@@ -61,7 +61,7 @@ export const FormField = ({
           className="overflow-hidden"
         >
           <span className="flex items-center gap-1.5 pt-1.5 text-[12px] text-bad">
-            <CircleAlert className="size-3.5 shrink-0" />
+            <WarningCircleIcon className="size-3.5 shrink-0" />
             {error}
           </span>
         </motion.p>

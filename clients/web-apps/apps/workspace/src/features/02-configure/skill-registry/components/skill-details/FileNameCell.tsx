@@ -1,4 +1,4 @@
-import { Check, Copy } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 /**
@@ -24,7 +24,11 @@ export function FileNameCell({ fileName }: { fileName: string }) {
         className="invisible shrink-0 rounded p-0.5 text-muted-foreground opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 hover:text-foreground"
         title={copied ? "Copied!" : "Copy file name"}
       >
-        {copied ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
+        {copied ? (
+          <CheckIcon className="h-3.5 w-3.5 text-ok" />
+        ) : (
+          <CopyIcon className="h-3.5 w-3.5" />
+        )}
       </button>
     </div>
   );

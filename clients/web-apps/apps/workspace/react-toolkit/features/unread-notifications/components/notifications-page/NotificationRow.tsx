@@ -2,8 +2,8 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { MetaLine } from "@avplatform/ui/meta-line";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { CheckIcon } from "@phosphor-icons/react";
 import { format, formatDistanceToNow } from "date-fns";
-import { CheckIcon } from "lucide-react";
 
 import { NOTIFICATION_SOURCE_LABELS } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import type { NotificationHistoryDto } from "@/react-toolkit/features/unread-notifications/dtos/notification-history.dto";

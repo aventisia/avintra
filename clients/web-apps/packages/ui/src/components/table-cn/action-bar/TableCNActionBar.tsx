@@ -1,5 +1,5 @@
+import { XIcon } from "@phosphor-icons/react";
 import { type Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
@@ -76,7 +76,7 @@ export const TableCNActionBarSelection = <TData,>({ table }: { table: Table<TDat
         onClick={() => table.toggleAllRowsSelected(false)}
         className="grid size-6 place-items-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-hover hover:text-ink-2 focus-visible:shadow-focus"
       >
-        <X className="size-3.5" />
+        <XIcon className="size-3.5" />
       </button>
     </Tooltip>
   </div>

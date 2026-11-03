@@ -1,6 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 
 import { CustomNodeType } from "@/types/custom-node-type";
 
@@ -84,7 +84,7 @@ export const NodeStateMark = ({ state }: { state: NodeRunState }) => (
     )}
   >
     {state === "running" && <LoadingSpinner className="size-3.5" />}
-    {state === "success" && <CheckIcon className="size-3" strokeWidth={3} />}
-    {state === "failed" && <XIcon className="size-3" strokeWidth={3} />}
+    {state === "success" && <CheckIcon className="size-3" weight="bold" />}
+    {state === "failed" && <XIcon className="size-3" weight="bold" />}
   </span>
 );

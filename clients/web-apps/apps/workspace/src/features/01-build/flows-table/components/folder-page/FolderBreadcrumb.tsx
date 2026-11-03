@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import { NavLink } from "react-router-dom";
 
 import { TABLE_HEADING } from "../../constants";
@@ -41,7 +41,7 @@ export const FolderBreadcrumb = ({ current, summaries }: FolderBreadcrumbProps) 
       >
         {TABLE_HEADING}
       </NavLink>
-      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+      <CaretRightIcon className="size-4 shrink-0 text-muted-foreground" />
       <FolderSwitcher current={current} summaries={summaries} />
     </nav>
   );

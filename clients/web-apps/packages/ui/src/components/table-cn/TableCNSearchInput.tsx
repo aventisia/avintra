@@ -1,5 +1,5 @@
+import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { type Table } from "@tanstack/react-table";
-import { Search, X } from "lucide-react";
 import * as React from "react";
 
 import { Input, type InputProps } from "@/ui/components/Input";
@@ -62,7 +62,7 @@ export const TableCNSearchInput = <TData,>({
 
   return (
     <div className={cn("relative w-full mmd:w-[14rem] lg:w-80", className)}>
-      <Search
+      <MagnifyingGlassIcon
         aria-hidden="true"
         className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
       />
@@ -83,7 +83,7 @@ export const TableCNSearchInput = <TData,>({
           onClick={clearSearch}
           className="absolute right-1.5 top-1/2 grid size-5 -translate-y-1/2 place-items-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-hover hover:text-ink-2 focus-visible:shadow-focus"
         >
-          <X className="size-3.5" />
+          <XIcon className="size-3.5" />
         </button>
       ) : (
         <kbd

@@ -8,7 +8,7 @@ import {
   useTableCN,
 } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { AlertCircleIcon, CheckCircleIcon, Clock3Icon } from "lucide-react";
+import { CheckCircleIcon, ClockIcon, WarningCircleIcon } from "@phosphor-icons/react";
 
 import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
@@ -120,7 +120,7 @@ export const VaultCredentialTable = () => {
                           <Tooltip
                             content={row.original.corsairStatusReason ?? "Connection failed"}
                           >
-                            <AlertCircleIcon
+                            <WarningCircleIcon
                               className="h-3.5 w-3.5 text-bad"
                               aria-label="Connection failed"
                             />
@@ -129,7 +129,7 @@ export const VaultCredentialTable = () => {
 
                         {row.original.corsairStatus === "Expired" && (
                           <Tooltip content="Connection expired; reconnect required">
-                            <AlertCircleIcon
+                            <WarningCircleIcon
                               className="h-3.5 w-3.5 text-bad"
                               aria-label="Connection expired"
                             />
@@ -138,7 +138,7 @@ export const VaultCredentialTable = () => {
 
                         {row.original.corsairStatus === "Pending" && (
                           <Tooltip content="Connection pending">
-                            <Clock3Icon
+                            <ClockIcon
                               className="h-3.5 w-3.5 text-warn"
                               aria-label="Connection pending"
                             />

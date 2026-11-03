@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { Upload } from "lucide-react";
+import { UploadSimpleIcon } from "@phosphor-icons/react";
 
 import { useExportVersionHistoryItem } from "@/features/version-history/hooks/useExportVersionHistoryItem";
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
@@ -15,5 +15,7 @@ export default function ExportAction({ id }: { id: string }) {
     exportVersionHistoryFlow(data);
   };
 
-  return <SimpleDDMenuItem Icon={Upload} size="sm" content="Export" onClick={handleExport} />;
+  return (
+    <SimpleDDMenuItem Icon={UploadSimpleIcon} size="sm" content="Export" onClick={handleExport} />
+  );
 }

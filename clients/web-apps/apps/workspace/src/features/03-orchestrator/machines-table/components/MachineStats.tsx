@@ -1,8 +1,8 @@
 import { StatsCard } from "@avplatform/ui/cards";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
+import { MonitorIcon } from "@phosphor-icons/react";
 import Enumerable from "linq";
-import { Monitor, MonitorCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
@@ -94,7 +94,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   return (
     <div className="mb-2 grid grid-cols-2 gap-4">
       <StatsCard
-        icon={<Monitor className="size-7" />}
+        icon={<MonitorIcon className="size-7" />}
         title="Machines"
         content={data?.length}
         footer={
@@ -105,7 +105,7 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
         }
       />
       <StatsCard
-        icon={<MonitorCheck className="size-7" />}
+        icon={<MonitorIcon className="size-7" />}
         title="Statuses"
         content={stats?.distinctStatuses ?? 0} // Display distinct statuses count
         footer={statusDescription}

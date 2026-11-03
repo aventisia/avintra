@@ -1,4 +1,4 @@
-import { type LucideIcon, Plus, XCircle } from "lucide-react";
+import { type Icon as PhosphorIcon, PlusIcon, XCircleIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -8,7 +8,7 @@ type TableCNFilterTriggerProps = React.ComponentProps<"button"> & {
   isActive: boolean;
   onClear: (event: React.MouseEvent) => void;
   /** Leading icon while the filter is empty. */
-  icon?: LucideIcon;
+  icon?: PhosphorIcon;
 };
 
 /**
@@ -16,7 +16,7 @@ type TableCNFilterTriggerProps = React.ComponentProps<"button"> & {
  * value after the title, and its leading icon clears the filter.
  */
 export const TableCNFilterTrigger = React.forwardRef<HTMLButtonElement, TableCNFilterTriggerProps>(
-  ({ title, isActive, onClear, icon: Icon = Plus, className, children, ...props }, ref) => (
+  ({ title, isActive, onClear, icon: Icon = PlusIcon, className, children, ...props }, ref) => (
     <button
       ref={ref}
       type="button"
@@ -36,7 +36,7 @@ export const TableCNFilterTrigger = React.forwardRef<HTMLButtonElement, TableCNF
           onClick={onClear}
           className="-ml-0.5 grid size-4 place-items-center rounded-full text-primary-text transition-colors hover:text-primary-hover"
         >
-          <XCircle className="size-3.5" />
+          <XCircleIcon className="size-3.5" />
         </span>
       ) : (
         <Icon aria-hidden="true" className="-ml-0.5 size-3.5 text-muted-foreground" />

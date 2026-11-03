@@ -1,6 +1,6 @@
 import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { LogsIcon, TriangleAlert } from "lucide-react";
+import { ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
 
 import { useFetchExecutionLogsList } from "../../hooks/useFetchExecutionLogsList.hook";
@@ -48,7 +48,7 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
     return (
       <EmptyState
         className="absolute inset-0"
-        Icon={TriangleAlert}
+        Icon={WarningIcon}
         primaryMessage="Could not load executions"
         secondaryMessage="Something went wrong while fetching the execution logs."
         action={
@@ -64,7 +64,7 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
     return (
       <EmptyState
         className="absolute inset-0"
-        Icon={LogsIcon}
+        Icon={ListDashesIcon}
         primaryMessage="No executions found for this flow version"
         secondaryMessage="Run this version to create its first execution log."
       />

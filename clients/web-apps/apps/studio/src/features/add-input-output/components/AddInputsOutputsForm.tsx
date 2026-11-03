@@ -1,8 +1,8 @@
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { applyFlowInputsToVariables } from "@avplatform/ui/utils";
+import { PlusIcon } from "@phosphor-icons/react";
 import { useViewport } from "@xyflow/react";
-import { Plus } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -101,7 +101,7 @@ const AddInputsOutputsForm = () => {
               size="sm"
               onClick={() => appendInput(inputDefault)}
             >
-              <Plus className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               Field
             </Button>
           </div>
@@ -118,7 +118,7 @@ const AddInputsOutputsForm = () => {
               size="sm"
               onClick={() => appendOutput(outputDefault)}
             >
-              <Plus className="h-4 w-4" />
+              <PlusIcon className="h-4 w-4" />
               Field
             </Button>
           </div>

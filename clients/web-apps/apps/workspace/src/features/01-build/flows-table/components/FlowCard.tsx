@@ -1,6 +1,6 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
-import { Archive, Cpu, ListChecks } from "lucide-react";
+import { ArchiveIcon, CpuIcon, ListChecksIcon } from "@phosphor-icons/react";
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -59,7 +59,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
         className={cn(META_CLASS_NAME, "max-w-[60%] shrink-0")}
         title={flow.aiModels?.join(", ")}
       >
-        <Cpu className="size-3.5 shrink-0" />
+        <CpuIcon className="size-3.5 shrink-0" />
         <span className="truncate">{firstModel}</span>
         {otherModels.length > 0 && <span className="shrink-0">+{otherModels.length}</span>}
       </span>
@@ -103,7 +103,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
             <span className="font-mono tabular-nums">v{flow.versionNumber}</span>
             {flow.isArchived ? (
               <span className="inline-flex items-center gap-1">
-                <Archive className="size-3" />
+                <ArchiveIcon className="size-3" />
                 Archived
               </span>
             ) : (
@@ -156,7 +156,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
                 "rounded-sm outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-focus",
               )}
             >
-              <ListChecks className="size-3.5 shrink-0" />
+              <ListChecksIcon className="size-3.5 shrink-0" />
               <span className="truncate">{firstQueue.name}</span>
               {otherQueues.length > 0 && <span className="shrink-0">+{otherQueues.length}</span>}
             </NavLink>

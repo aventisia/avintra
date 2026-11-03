@@ -8,7 +8,7 @@ import {
   TableCNToolbar,
 } from "@avplatform/ui/table-cn";
 import { ViewModeToggle } from "@avplatform/ui/view-mode-toggle";
-import { Archive } from "lucide-react";
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -210,7 +210,7 @@ export const FlowsTable = () => {
               withViewOptions={view === "table"}
             >
               <CountToggle
-                Icon={Archive}
+                Icon={ArchiveIcon}
                 label="Archived"
                 title={showArchived ? "Show active agents" : "Show archived agents"}
                 count={archivedCount}

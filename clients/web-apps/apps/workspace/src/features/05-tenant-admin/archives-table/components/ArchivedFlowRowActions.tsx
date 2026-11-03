@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 interface ArchivedFlowRowActionsProps {
   rowId: string;
@@ -18,7 +18,7 @@ export const ArchivedFlowRowActions = ({ rowId, refId }: ArchivedFlowRowActionsP
     <TableCNRowActionsMenu ariaLabel="Open archived flow actions">
       <SimpleDDMenuItem
         content="View"
-        Icon={ExternalLinkIcon}
+        Icon={ArrowSquareOutIcon}
         onClick={handleOpenArchivedFlowAction}
       />
     </TableCNRowActionsMenu>

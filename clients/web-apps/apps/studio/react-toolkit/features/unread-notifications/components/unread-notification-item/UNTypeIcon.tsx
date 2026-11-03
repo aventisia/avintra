@@ -1,6 +1,6 @@
 import { NotificationTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
-import { BellIcon, BellRingIcon, InfoIcon, TriangleAlertIcon } from "lucide-react";
+import { BellIcon, BellRingingIcon, InfoIcon, WarningIcon } from "@phosphor-icons/react";
 
 interface UNTypeIconProps {
   /** The notification type used to pick the icon. */
@@ -23,9 +23,9 @@ export const UNTypeIcon = ({ type, className }: UNTypeIconProps) => {
     type === NotificationTypesEnum.Information
       ? InfoIcon
       : type === NotificationTypesEnum.Warning
-        ? TriangleAlertIcon
+        ? WarningIcon
         : type === NotificationTypesEnum.Alert
-          ? BellRingIcon
+          ? BellRingingIcon
           : BellIcon;
 
   return (

@@ -4,7 +4,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { AgentModelDTO } from "../../dtos/agents-models-dto.ee";
@@ -114,7 +114,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
                   className="rounded-full"
                   onClick={() => onItemRemove(item.id)}
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </Badge>
             ))}
@@ -143,7 +143,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
           className="ml-1 h-6 w-6 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          {isOpen ? <CaretUpIcon className="h-4 w-4" /> : <CaretDownIcon className="h-4 w-4" />}
         </Button>
       </div>
 

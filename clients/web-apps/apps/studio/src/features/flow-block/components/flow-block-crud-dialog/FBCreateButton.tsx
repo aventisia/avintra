@@ -1,6 +1,6 @@
 import { SimpleCMItem } from "@avplatform/ui/context-menu";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
-import { CombineIcon, PencilIcon } from "lucide-react";
+import { IntersectSquareIcon, PencilSimpleIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
@@ -44,7 +44,7 @@ export const FBCreateButton: React.FC = () => {
         <SimpleCMItem
           size="sm"
           content="Update block"
-          Icon={PencilIcon}
+          Icon={PencilSimpleIcon}
           onClick={() => {
             setGroupId(selectedNode?.id || "");
             setFlowBlockObject(
@@ -65,7 +65,7 @@ export const FBCreateButton: React.FC = () => {
         <SimpleCMItem
           size="sm"
           content="Convert to a block"
-          Icon={CombineIcon}
+          Icon={IntersectSquareIcon}
           onClick={() => {
             setGroupId(selectedNode?.id || "");
             setFlowBlockObject(

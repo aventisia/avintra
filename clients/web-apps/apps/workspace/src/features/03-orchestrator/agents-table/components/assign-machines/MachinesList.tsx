@@ -7,7 +7,7 @@ import {
   CommandList,
 } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { MonitorIcon } from "lucide-react";
+import { MonitorIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 

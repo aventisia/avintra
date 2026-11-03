@@ -1,7 +1,7 @@
 import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
 import { DialogCrudAction } from "@avplatform/ui/types";
+import { BooksIcon } from "@phosphor-icons/react";
 import { InitialTableState } from "@tanstack/react-table";
-import { Library } from "lucide-react";
 
 import { QueryTabItem } from "@/components/QueryTab";
 
@@ -51,7 +51,7 @@ const TABLE_TAB_QUERY_PARAM = "tab";
  */
 const TABLE_VIEW_TABS = [
   { label: "All", value: "all" },
-  { label: "Library", value: "platform", icon: Library },
+  { label: "Library", value: "platform", icon: BooksIcon },
 ] as QueryTabItem[];
 
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {

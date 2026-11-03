@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 
 import { useRemoveUserMutation } from "@/features/share-access/hooks/useRemoveUserMutation";
 
@@ -36,7 +36,7 @@ export const RemoveUserAction = ({ id }: RemoveUserActionProps) => {
         });
       }}
     >
-      <Trash2Icon className={cn("mb-[2px] text-bad", "h-3.5 w-3.5")} />
+      <TrashIcon className={cn("mb-[2px] text-bad", "h-3.5 w-3.5")} />
       Remove
     </DropdownMenuItem>
   );

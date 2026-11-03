@@ -3,8 +3,8 @@ import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { Node } from "@xyflow/react";
-import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
@@ -53,7 +53,7 @@ const GenerateButton = ({
     return (
       <UpgradeFeatureButton
         label="Generate"
-        icon={<SparklesIcon className="h-4 w-4" />}
+        icon={<SparkleIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
         size="sm"
         className="flex items-center gap-2"
@@ -79,7 +79,7 @@ const GenerateButton = ({
       }}
     >
       {/* Icon with pulse animation while generating */}
-      <SparklesIcon className={cn("h-4 w-4", isPending && "animate-pulse")} />
+      <SparkleIcon className={cn("h-4 w-4", isPending && "animate-pulse")} />
 
       {/* Button text changes based on mutation state */}
       {isPending ? "Generating..." : isSuccess ? "Generated!" : "Generate"}

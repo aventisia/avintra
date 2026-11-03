@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCreateAccountStore } from "../../stores/create-account-store";
@@ -23,7 +23,7 @@ export const BackToCreateAccount = () => {
           className="min-w-[2rem]"
           onClick={() => setStepNo(1)}
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeftIcon className="h-4 w-4" />
         </Button>
         <h2 className="text-md ml-3 w-full truncate">{verifyEmailData?.email}</h2>
       </div>

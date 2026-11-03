@@ -2,7 +2,7 @@ import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 // Props for the TimezoneSelector component
@@ -89,9 +89,9 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
             )}
           </Button>
         </div>

@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
+import { FlaskIcon, InfoIcon, MagnifyingGlassIcon, PlayIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -87,7 +87,7 @@ export const DCPForm = () => {
         </div>
       ) : !isFormReady ? (
         <div className="flex h-full items-center justify-center gap-2 text-sm">
-          <SearchCodeIcon className="text-icon h-5 w-5" />
+          <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (
@@ -124,7 +124,7 @@ export const DCPForm = () => {
                           void flushNow();
                         }}
                       >
-                        <FlaskConical className="h-3.5 w-3.5" />
+                        <FlaskIcon className="h-3.5 w-3.5" />
                         <span> Test</span>
                       </DCPTabsTrigger>
                     </DCPTabsList>
@@ -140,7 +140,7 @@ export const DCPForm = () => {
                         flushNow();
                       }}
                     >
-                      <FlaskConical className="h-3.5 w-3.5" />
+                      <FlaskIcon className="h-3.5 w-3.5" />
                       <span> Test</span>
                     </DCPTabsTrigger>
                   </DCPTabsList>

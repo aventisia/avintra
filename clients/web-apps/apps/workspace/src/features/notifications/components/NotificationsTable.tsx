@@ -9,7 +9,7 @@ import {
   TableCNToolbar,
   useTableCN,
 } from "@avplatform/ui/table-cn";
-import { Mail, PlusIcon, Settings2 } from "lucide-react";
+import { EnvelopeIcon, PlusIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import NotificationSettingsPanel from "@/features/05-tenant-admin/tenant/components/BillingTabs/notifications/NotificationSettingsPanel";
@@ -83,7 +83,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
                   : "text-muted-foreground hover:bg-hover hover:text-ink",
               )}
             >
-              <Mail className="size-4 shrink-0" aria-hidden="true" />
+              <EnvelopeIcon className="size-4 shrink-0" aria-hidden="true" />
               Manual
             </button>
             <button
@@ -96,7 +96,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
                   : "text-muted-foreground hover:bg-hover hover:text-ink",
               )}
             >
-              <Settings2 className="size-4 shrink-0" aria-hidden="true" />
+              <SlidersHorizontalIcon className="size-4 shrink-0" aria-hidden="true" />
               Auto
             </button>
           </div>

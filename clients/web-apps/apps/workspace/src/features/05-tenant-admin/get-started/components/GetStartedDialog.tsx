@@ -1,7 +1,7 @@
 import { DialogPrimitive } from "@avplatform/ui/dialog";
 import { toast } from "@avplatform/ui/sonner";
 import { ONBOARDING_REMINDER_DAYS, isRouteWithin } from "@avplatform/ui/utils";
-import { CheckCircle2Icon, XIcon } from "lucide-react";
+import { CheckCircleIcon, XIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -124,7 +124,7 @@ export const GetStartedDialog = () => {
           {isCompleted ? (
             <>
               <span className="flex items-center gap-2 text-hint text-muted-foreground">
-                <CheckCircle2Icon className="size-4 text-ok" />
+                <CheckCircleIcon className="size-4 text-ok" />
                 Setup complete
               </span>
               <CardDialogButton variant="primary" className="ml-auto" onClick={closeGuide}>
@@ -147,7 +147,7 @@ export const GetStartedDialog = () => {
                   className={isAllExplored ? undefined : "ring-1 ring-inset ring-line"}
                   onClick={handleMarkComplete}
                 >
-                  <CheckCircle2Icon className="size-4" />
+                  <CheckCircleIcon className="size-4" />
                   Mark as complete
                 </CardDialogButton>
               </div>

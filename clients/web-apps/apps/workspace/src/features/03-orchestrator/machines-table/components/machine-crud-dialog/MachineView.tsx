@@ -12,8 +12,13 @@ import {
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { formatDate } from "@avplatform/ui/utils";
+import {
+  CheckCircleIcon,
+  MonitorIcon,
+  ProhibitIcon,
+  TreeStructureIcon,
+} from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { BanIcon, CheckCircleIcon, MonitorCogIcon, MonitorIcon, NetworkIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -102,9 +107,9 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
 
         {/* OS Type and Disabled status section */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <ViewBadge Icon={MonitorCogIcon} text={machine.operatingSystem} />
+          <ViewBadge Icon={MonitorIcon} text={machine.operatingSystem} />
           {machine.isDisabled ? (
-            <ViewBadge Icon={BanIcon} text="Disabled" viewStyle="disabled" />
+            <ViewBadge Icon={ProhibitIcon} text="Disabled" viewStyle="disabled" />
           ) : (
             <ViewBadge Icon={CheckCircleIcon} text="Enabled" viewStyle="enabled" />
           )}
@@ -161,7 +166,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
       {/* Connection section */}
       <ViewInfoRowsCard
         title="Connection"
-        icon={<NetworkIcon className="size-3.5 text-muted-foreground" />}
+        icon={<TreeStructureIcon className="size-3.5 text-muted-foreground" />}
       >
         <ViewInfoRow
           label="Status"

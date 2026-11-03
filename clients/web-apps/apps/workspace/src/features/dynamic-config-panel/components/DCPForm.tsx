@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
-import { SearchCodeIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -56,7 +56,7 @@ export const DCPForm = () => {
         </div>
       ) : !isFormReady ? (
         <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
-          <SearchCodeIcon className="text-icon h-5 w-5" />
+          <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (

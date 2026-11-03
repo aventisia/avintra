@@ -4,12 +4,11 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
-  CheckCircle2,
-  CornerUpRight,
-  MessageSquare,
-  Pencil,
-  // PlusCircle,
-} from "lucide-react";
+  ArrowBendUpRightIcon,
+  ChatIcon,
+  CheckCircleIcon,
+  PencilSimpleIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
@@ -54,19 +53,19 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
       // case QueueTransactionEventEnum.DescriptionUpdated:
       return (
         <div className={cn(baseStyles, "border-line text-muted-foreground")}>
-          <Pencil className="h-3.5 w-3.5" />
+          <PencilSimpleIcon className="h-3.5 w-3.5" />
         </div>
       );
     case QueueTransactionEventEnum.Closed:
       return (
         <div className={cn(baseStyles, "border-ok/35 bg-ok/10 text-ok")}>
-          <CheckCircle2 className="h-4 w-4" />
+          <CheckCircleIcon className="h-4 w-4" />
         </div>
       );
     case QueueTransactionEventEnum.QueueTransactionRouted:
       return (
         <div className={cn(baseStyles, "border-line text-ink-2")}>
-          <CornerUpRight className="h-3.5 w-3.5" />
+          <ArrowBendUpRightIcon className="h-3.5 w-3.5" />
         </div>
       );
     // case QueueTransactionEventEnum.QueueTransactionCreated:
@@ -80,7 +79,7 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
     default:
       return (
         <div className={cn(baseStyles, "border-line text-muted-foreground")}>
-          <MessageSquare className="h-3.5 w-3.5" />
+          <ChatIcon className="h-3.5 w-3.5" />
         </div>
       );
   }

@@ -1,5 +1,5 @@
 "use client";
-import { Search } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/ssr";
 import { useMemo, useState, useEffect } from "react";
 
 import { TemplateCard } from "./TemplateCard";
@@ -81,7 +81,7 @@ const LibraryTemplates = ({
           // Empty state when no templates found
           <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4 py-6 sm:py-8 md:py-10 text-center px-4">
             <div className="mb-3 sm:mb-4 text-gray-400">
-              <Search className="mx-auto h-10 w-10 sm:h-12 sm:w-12" />
+              <MagnifyingGlassIcon className="mx-auto h-10 w-10 sm:h-12 sm:w-12" />
             </div>
             <h3 className="mb-1.5 sm:mb-2 text-base sm:text-lg font-medium text-gray-900 dark:text-gray-400">
               No templates found

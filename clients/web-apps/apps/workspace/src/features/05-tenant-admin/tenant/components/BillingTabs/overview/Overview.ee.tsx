@@ -4,7 +4,7 @@ import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { needsDeferredProfile } from "@avplatform/ui/utils";
-import { InfoIcon, PlusIcon } from "lucide-react";
+import { InfoIcon, PlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";

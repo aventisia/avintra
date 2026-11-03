@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 
 import { useFetchTemplateDetails } from "../../hooks/useFetchTemplateDetails";
 import { useUpdateTemplateMutation } from "../../hooks/useUpdateTemplateMutation";

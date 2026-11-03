@@ -1,4 +1,4 @@
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheckIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { pluralize } from "@/utils/pluralize.util";
@@ -62,7 +62,7 @@ export const AccessPanels = ({ draft, mode }: AccessPanelsProps) => (
 
           {draft.rows.length === 0 ? (
             <AccessEmptyState
-              icon={ShieldCheck}
+              icon={ShieldCheckIcon}
               title="No agents allowed yet"
               description="Search above and pick the agents that should have access."
             />

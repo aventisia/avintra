@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
 import { InputField } from "@avplatform/ui/form";
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
 
 import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
@@ -34,7 +34,7 @@ const OutputFields = ({
           onClick={() => remove(index)}
           className="text-bad hover:bg-bad/10 hover:text-bad"
         >
-          <Trash2 className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
 

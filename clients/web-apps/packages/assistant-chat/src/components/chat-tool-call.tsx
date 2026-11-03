@@ -2,12 +2,12 @@ import type { ToolCallMessagePartStatus } from "@assistant-ui/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@avplatform/ui/collapsible";
 import { cn } from "@avplatform/ui/lib";
 import {
-  BanIcon,
+  CaretRightIcon,
   CheckIcon,
-  ChevronRightIcon,
-  LoaderCircleIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
+  CircleNotchIcon,
+  ProhibitIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { humanizeToolLabel } from "../lib/tool-labels";
@@ -61,11 +61,11 @@ export const ChatToolCall = ({
   const hasDetails = Boolean(argsValue) || resultText !== null;
 
   const StatusIcon = isRunning
-    ? LoaderCircleIcon
+    ? CircleNotchIcon
     : isErrored
-      ? TriangleAlertIcon
+      ? WarningIcon
       : isCancelled
-        ? BanIcon
+        ? ProhibitIcon
         : CheckIcon;
 
   return (
@@ -97,7 +97,7 @@ export const ChatToolCall = ({
           {humanizeToolLabel(toolName)}
         </span>
         {hasDetails && (
-          <ChevronRightIcon className="size-3.5 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]/tool:rotate-90" />
+          <CaretRightIcon className="size-3.5 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]/tool:rotate-90" />
         )}
       </CollapsibleTrigger>
 

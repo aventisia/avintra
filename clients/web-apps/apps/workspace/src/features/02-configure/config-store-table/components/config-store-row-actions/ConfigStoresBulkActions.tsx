@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { configStoreOptimisticMutationFn } from "../../apis/config-stores-table-apis";
 import { ConfigStoresTableDto } from "../../dtos/config-stores-table-dto";
@@ -46,7 +46,7 @@ export function ConfigStoresBulkActions({ table }: Readonly<ConfigStoresBulkActi
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

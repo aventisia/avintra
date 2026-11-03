@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { creditOptimisticMutationFn } from "../apis/credit-plans-table-apis.ee";
 import { CREDIT_PLANS_QUERY_KEY } from "../constants";
@@ -41,7 +41,7 @@ export function CreditsBulkActions({ table }: CreditBulkActionsProps) {
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

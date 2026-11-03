@@ -2,13 +2,13 @@ import { type ToolApprovalResponse, useAuiState } from "@assistant-ui/react";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
-  AlertCircleIcon,
-  BanIcon,
+  CaretDownIcon,
   CheckIcon,
-  ChevronDownIcon,
-  LoaderCircleIcon,
+  CircleNotchIcon,
+  ProhibitIcon,
+  WarningCircleIcon,
   XCircleIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -127,7 +127,7 @@ export const ToolApprovalRequest = ({
     >
       <div className="flex items-start gap-2 px-4 py-3">
         {state === "pending" ? (
-          <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-warn" />
+          <WarningCircleIcon className="mt-0.5 size-4 shrink-0 text-warn" />
         ) : state === "approved" ? (
           <CheckIcon className="mt-0.5 size-4 shrink-0 text-ok" />
         ) : (
@@ -170,7 +170,7 @@ export const ToolApprovalRequest = ({
             className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/40"
             aria-expanded={showArgs}
           >
-            <ChevronDownIcon
+            <CaretDownIcon
               className={cn("size-3.5 shrink-0 transition-transform", showArgs && "rotate-180")}
             />
             {showArgs ? "Hide arguments" : "View arguments"}
@@ -197,9 +197,9 @@ export const ToolApprovalRequest = ({
             disabled={submitting !== null || isRunning}
           >
             {submitting === "deny" ? (
-              <LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />
+              <CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />
             ) : (
-              <BanIcon className="mr-1.5 size-3.5" />
+              <ProhibitIcon className="mr-1.5 size-3.5" />
             )}
             Deny
           </Button>
@@ -210,7 +210,7 @@ export const ToolApprovalRequest = ({
             disabled={submitting !== null || isRunning}
           >
             {submitting === "approve" ? (
-              <LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />
+              <CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />
             ) : (
               <CheckIcon className="mr-1.5 size-3.5" />
             )}

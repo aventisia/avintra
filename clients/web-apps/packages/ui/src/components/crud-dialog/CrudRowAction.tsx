@@ -1,4 +1,4 @@
-import { ArrowUpRight, SquarePen } from "lucide-react";
+import { ArrowUpRightIcon, NotePencilIcon } from "@phosphor-icons/react";
 import React from "react";
 
 import { SimpleDDMenuItem } from "@/ui/components/dropdown-menu";
@@ -28,7 +28,7 @@ export const CrudRowAction: React.FC<CrudRowActionProps> = ({
     <SimpleDDMenuItem
       size={size}
       content={crudAction === "read" ? "View" : "Edit"}
-      Icon={crudAction === "read" ? ArrowUpRight : SquarePen}
+      Icon={crudAction === "read" ? ArrowUpRightIcon : NotePencilIcon}
       disabled={disabled}
       onClick={() => {
         openCrudDialog({

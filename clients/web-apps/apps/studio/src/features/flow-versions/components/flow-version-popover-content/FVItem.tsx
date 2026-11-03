@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
+import { EyeIcon, NotePencilIcon, RocketIcon } from "@phosphor-icons/react";
 import { format } from "date-fns";
-import { EyeIcon, RocketIcon, SquarePenIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { FlowVersionDto } from "../../dtos/flow-version-dto";
@@ -31,7 +31,7 @@ const FVItem = ({ flowVersion }: FVItemProps) => {
       {isPublished ? (
         <RocketIcon className="h-4 w-4 text-[--icon-color]" />
       ) : (
-        <SquarePenIcon className="h-4 w-4 text-[--icon-color]" />
+        <NotePencilIcon className="h-4 w-4 text-[--icon-color]" />
       )}
       {/* Content container */}
       <div className="flex grow flex-col gap-0">

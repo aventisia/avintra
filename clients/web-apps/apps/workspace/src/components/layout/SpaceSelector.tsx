@@ -1,5 +1,5 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { ChevronsUpDown } from "lucide-react";
+import { CaretUpDownIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -85,7 +85,7 @@ export const SpaceSelector = ({
                 <SelectValue placeholder="Select space" />
               </div>
             </div>
-            <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
+            <CaretUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
           </SelectTrigger>
         ) : (
           <SelectTrigger

@@ -1,7 +1,7 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { MetaLine } from "@avplatform/ui/meta-line";
-import { Check, LoaderCircle } from "lucide-react";
+import { CheckIcon, CircleNotchIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
@@ -41,7 +41,9 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
           <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
             {debouncedQuery ? "Matching agents" : "Recently created"}
           </span>
-          {isSearching && <LoaderCircle className="size-3.5 animate-spin text-muted-foreground" />}
+          {isSearching && (
+            <CircleNotchIcon className="size-3.5 animate-spin text-muted-foreground" />
+          )}
         </div>
       }
       options={results.map((agent) => {
@@ -81,7 +83,7 @@ export const AgentPicker = ({ draft }: { draft: ResourceFlowDraft }) => {
                     : "bg-surface text-transparent ring-[1.5px] ring-inset ring-line-strong",
                 )}
               >
-                <Check className="size-3" strokeWidth={3.5} />
+                <CheckIcon className="size-3" weight="bold" />
               </span>
             </>
           ),

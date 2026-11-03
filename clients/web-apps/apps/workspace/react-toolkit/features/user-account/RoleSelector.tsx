@@ -10,7 +10,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { ChevronRightIcon, ShieldCheckIcon } from "lucide-react";
+import { CaretRightIcon, ShieldCheckIcon } from "@phosphor-icons/react";
 import { type PointerEvent, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -89,7 +89,7 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
           <span className="font-mono text-2xs text-muted-foreground">
             {selectedRoles.length}/{assignedRoles.length}
           </span>
-          <ChevronRightIcon />
+          <CaretRightIcon />
         </AccountMenuAction>
       </PopoverTrigger>
       <PopoverContent

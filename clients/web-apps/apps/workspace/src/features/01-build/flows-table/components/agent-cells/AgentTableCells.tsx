@@ -1,8 +1,8 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
+import { ListChecksIcon } from "@phosphor-icons/react";
 import { formatDistanceToNow } from "date-fns";
-import { ListChecks } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
@@ -89,7 +89,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
           className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground"
           title={flow.queues?.map((queue) => queue.name).join(", ")}
         >
-          <ListChecks className="size-3" />
+          <ListChecksIcon className="size-3" />
           {queueCount} {pluralize(queueCount, "queue")}
         </span>
       )}

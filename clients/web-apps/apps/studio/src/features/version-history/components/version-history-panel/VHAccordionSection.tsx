@@ -1,5 +1,5 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@avplatform/ui/accordion";
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 import { DaySection } from "../../types/agent-history-type";
 import VHAccordionItem from "./VHAccordionItem";
@@ -16,7 +16,7 @@ export default function VHAccordionSection({ section, selectedEntry, onSelect }:
       {/* Date Header */}
       <AccordionTrigger className="group relative flex w-full items-center justify-start gap-3 rounded-lg py-2 [&>svg]:hidden">
         <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface">
-          <ChevronDown className="h-4 w-4 text-ink-2 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+          <CaretDownIcon className="h-4 w-4 text-ink-2 transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </div>
         <span className="text-body-sm font-semibold text-ink">{section.date}</span>
       </AccordionTrigger>

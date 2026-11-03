@@ -1,5 +1,5 @@
+import { ArrowsDownUpIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { type Column, type ColumnSort, type Table } from "@tanstack/react-table";
-import { ArrowDownUp, Plus, Trash2 } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/ui/components/buttons";
@@ -95,7 +95,7 @@ const SortRule = <TData,>({
         className="shrink-0 text-muted-foreground hover:bg-bad/10 hover:text-bad"
         onClick={onRemove}
       >
-        <Trash2 className="size-3.5" />
+        <TrashIcon className="size-3.5" />
       </Button>
     </li>
   );
@@ -134,7 +134,7 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
           size="xs"
           className={cn(TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME, sorting.length > 0 && "text-ink")}
         >
-          <ArrowDownUp />
+          <ArrowsDownUpIcon />
           Sort
           {sorting.length > 0 && (
             <span className="grid h-[1.125rem] min-w-[1.125rem] place-items-center rounded-sm bg-fill px-1 font-mono text-2xs font-medium tabular-nums text-ink-2">
@@ -180,7 +180,7 @@ export const TableCNSortMenu = <TData,>({ table, align = "end" }: TableCNSortMen
             onClick={onAddSort}
             disabled={!nextColumn}
           >
-            <Plus className="size-3.5" />
+            <PlusIcon className="size-3.5" />
             Add sort
           </Button>
           {sorting.length > 0 && (

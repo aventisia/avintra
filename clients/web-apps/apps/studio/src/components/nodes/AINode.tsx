@@ -1,6 +1,6 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { BrainIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { BrainCircuitIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
@@ -64,7 +64,7 @@ export const AINode = memo(
         selected={selected}
         nodeData={data}
         nodeId={id}
-        glyph={data.img ? <NodeImage src={data.img} /> : <BrainCircuitIcon />}
+        glyph={data.img ? <NodeImage src={data.img} /> : <BrainIcon />}
         kind={llm?.length ? `AI · ${llm.join(", ")}` : undefined}
       >
         <InputHandle position={targetPosition} id="main-in" />

@@ -1,6 +1,5 @@
 // import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-// import { CloudUploadIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useShallow } from "zustand/react/shallow";
 

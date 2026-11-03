@@ -5,10 +5,10 @@ import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { CircleNotchIcon, InfoIcon, PlayIcon, SquareIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
-import { InfoIcon, Loader2, PlayIcon, SquareIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -356,9 +356,9 @@ const ExecuteFlow = () => {
             disabled={isAborting}
           >
             {isAborting ? (
-              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
+              <CircleNotchIcon className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
             ) : (
-              <SquareIcon className="h-[1.1rem] w-[1.1rem] fill-current text-bad" />
+              <SquareIcon weight="fill" className="h-[1.1rem] w-[1.1rem] text-bad" />
             )}
           </Button>
         </Tooltip>
@@ -372,9 +372,9 @@ const ExecuteFlow = () => {
             disabled={isSaving}
           >
             {isStarting || executionState === "launching-executor" ? (
-              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
+              <CircleNotchIcon className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
             ) : (
-              <PlayIcon className="h-[1.1rem] w-[1.1rem] fill-current text-ok" />
+              <PlayIcon weight="fill" className="h-[1.1rem] w-[1.1rem] text-ok" />
             )}
           </Button>
         </Tooltip>

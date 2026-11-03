@@ -1,4 +1,9 @@
-import { AlertCircleIcon, CheckCircleIcon, FileTextIcon, Loader2Icon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  CircleNotchIcon,
+  FileTextIcon,
+  WarningCircleIcon,
+} from "@phosphor-icons/react";
 
 import type { FileQueueItem, FileUploadStatus } from "./file-upload.type";
 
@@ -41,8 +46,8 @@ export const getStatusColor = (status: FileUploadStatus): string =>
 
 const STATUS_ICONS: Record<FileUploadStatus, React.ReactNode> = {
   completed: <CheckCircleIcon className="h-4 w-4 text-ok" />,
-  failed: <AlertCircleIcon className="h-4 w-4 text-bad" />,
-  registering: <Loader2Icon className="h-4 w-4 text-live animate-spin" />,
+  failed: <WarningCircleIcon className="h-4 w-4 text-bad" />,
+  registering: <CircleNotchIcon className="h-4 w-4 text-live animate-spin" />,
   queued: <FileTextIcon className="h-4 w-4 text-muted-foreground" />,
 };
 

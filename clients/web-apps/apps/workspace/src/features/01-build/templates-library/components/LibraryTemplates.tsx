@@ -1,6 +1,6 @@
 import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { Search } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { useFetchProjectTemplates } from "../hooks/useFetchProjectTemplates";
@@ -77,7 +77,7 @@ const LibraryTemplates = ({
         ) : (
           // Empty state when no templates found
           <EmptyState
-            Icon={Search}
+            Icon={MagnifyingGlassIcon}
             primaryMessage="No templates found"
             secondaryMessage="Try adjusting your search or filter criteria"
             className="col-span-2 py-6 md:col-span-3 lg:col-span-4"

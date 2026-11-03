@@ -5,7 +5,7 @@ import {
   useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { type FC, type ReactNode, memo, useState } from "react";
 import remarkGfm from "remark-gfm";
 

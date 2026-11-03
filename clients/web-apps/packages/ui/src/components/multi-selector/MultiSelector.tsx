@@ -1,5 +1,5 @@
+import { CheckIcon, XIcon as RemoveIcon } from "@phosphor-icons/react";
 import { Command as CommandPrimitive } from "cmdk";
-import { Check, X as RemoveIcon } from "lucide-react";
 import React, {
   type KeyboardEvent,
   createContext,
@@ -206,10 +206,10 @@ const MultiSelectorTrigger = forwardRef<
                 <span className="sr-only">Remove {item} option</span>
                 <RemoveIcon
                   className={cn(
-                    size === "xs" && "h-3 w-3 stroke-[2.5]",
+                    size === "xs" && "h-3 w-3",
                     size === "sm" && "h-3.5 w-3.5",
                     size === "base" && "h-4 w-4",
-                    disabled ? "cursor-not-allowed" : "cursor-auto hover:stroke-bad",
+                    disabled ? "cursor-not-allowed" : "cursor-auto hover:text-bad",
                   )}
                 />
               </button>
@@ -327,7 +327,7 @@ const MultiSelectorItem = forwardRef<
     >
       {children}
       {isIncluded && (
-        <Check
+        <CheckIcon
           className={cn(
             size === "xs" && "h-3 w-3",
             size === "sm" && "h-3.5 w-3.5",

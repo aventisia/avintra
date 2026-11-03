@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from "lucide-react";
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { ServiceTypeEnum } from "@/features/06-super-admin/credit-plans-table/enums/service-type-enum.ee";
@@ -205,7 +205,7 @@ const ModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to first page</span>
-              <ChevronsLeftIcon className="h-4 w-4" />
+              <CaretDoubleLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -214,7 +214,7 @@ const ModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to previous page</span>
-              <ChevronLeftIcon className="h-4 w-4" />
+              <CaretLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -223,7 +223,7 @@ const ModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to next page</span>
-              <ChevronRightIcon className="h-4 w-4" />
+              <CaretRightIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -232,7 +232,7 @@ const ModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to last page</span>
-              <ChevronsRightIcon className="h-4 w-4" />
+              <CaretDoubleRightIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>

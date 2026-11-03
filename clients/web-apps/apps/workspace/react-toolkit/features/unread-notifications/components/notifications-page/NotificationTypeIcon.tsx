@@ -1,14 +1,14 @@
 import { NotificationTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
-import { BellIcon, BellRingIcon, InfoIcon, TriangleAlertIcon } from "lucide-react";
+import { BellIcon, BellRingingIcon, InfoIcon, WarningIcon } from "@phosphor-icons/react";
 
 const TYPE_STYLES = {
   [NotificationTypesEnum.Information]: {
     Icon: InfoIcon,
     className: "bg-selected text-primary-text",
   },
-  [NotificationTypesEnum.Warning]: { Icon: TriangleAlertIcon, className: "bg-warn/10 text-warn" },
-  [NotificationTypesEnum.Alert]: { Icon: BellRingIcon, className: "bg-bad/10 text-bad" },
+  [NotificationTypesEnum.Warning]: { Icon: WarningIcon, className: "bg-warn/10 text-warn" },
+  [NotificationTypesEnum.Alert]: { Icon: BellRingingIcon, className: "bg-bad/10 text-bad" },
 } as Record<string, { Icon: typeof BellIcon; className: string }>;
 
 const FALLBACK_STYLE = { Icon: BellIcon, className: "bg-sunken text-ink-2" };

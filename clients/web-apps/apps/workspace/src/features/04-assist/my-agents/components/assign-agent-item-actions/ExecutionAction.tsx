@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PlayIcon, SquareIcon } from "lucide-react";
+import { PlayIcon, SquareIcon } from "@phosphor-icons/react";
 
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 

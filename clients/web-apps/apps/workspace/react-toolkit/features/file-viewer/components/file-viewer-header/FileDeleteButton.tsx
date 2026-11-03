@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
-import { Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useLocalFileStore } from "../../stores/file-list-store";
@@ -28,7 +28,7 @@ export default function FileDeleteButton() {
 
   return (
     <Button variant="caution" size="icon7" className="ml-1" onClick={deleteFileHandler}>
-      <Trash2Icon className="size-4" />
+      <TrashIcon className="size-4" />
     </Button>
   );
 }

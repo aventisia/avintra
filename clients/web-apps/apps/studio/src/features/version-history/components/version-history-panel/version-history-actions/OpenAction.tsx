@@ -1,6 +1,6 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ExternalLink } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 import { useGetVersionHistoryItemData } from "@/features/version-history/hooks/useGetVersionHistoryItemData";
 
@@ -11,7 +11,7 @@ export default function OpenAction({ id }: { id: string }) {
 
   return (
     <SimpleDDMenuItem
-      Icon={ExternalLink}
+      Icon={ArrowSquareOutIcon}
       size="sm"
       content="Open in new tab"
       onClick={() => {

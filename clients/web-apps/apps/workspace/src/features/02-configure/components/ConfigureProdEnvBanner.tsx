@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { AlertTriangle } from "lucide-react";
+import { WarningIcon } from "@phosphor-icons/react";
 
 import { EnvironmentBadge } from "@/features/02-configure/components/EnvironmentBadge";
 
@@ -13,7 +13,7 @@ export const ConfigureProdEnvBanner = ({ className }: { className?: string }) =>
         className,
       )}
     >
-      <AlertTriangle className="h-4 w-4 shrink-0 text-warn" />
+      <WarningIcon className="h-4 w-4 shrink-0 text-warn" />
       <span className="text-xs font-medium tracking-wide">
         <span>You're in</span> <EnvironmentBadge /> <span>mode. Some actions are restricted.</span>
       </span>

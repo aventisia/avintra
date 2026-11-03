@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from "@/app/_components/ui/select";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from "lucide-react";
+  CaretLeftIcon,
+  CaretRightIcon,
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+} from "@phosphor-icons/react/ssr";
 
 type TemplatePaginationProps = {
   currentPage: number;
@@ -73,7 +73,7 @@ export const TemplatePagination = ({
           disabled={currentPage === 1}
         >
           <span className="sr-only">Go to first page</span>
-          <ChevronsLeftIcon className="h-4 w-4" />
+          <CaretDoubleLeftIcon className="h-4 w-4" />
         </Button>
 
         {/* Previous page button */}
@@ -84,7 +84,7 @@ export const TemplatePagination = ({
           disabled={currentPage === 1}
         >
           <span className="sr-only">Go to previous page</span>
-          <ChevronLeftIcon className="h-4 w-4" />
+          <CaretLeftIcon className="h-4 w-4" />
         </Button>
 
         {/* Next page button */}
@@ -95,7 +95,7 @@ export const TemplatePagination = ({
           disabled={currentPage === totalPages}
         >
           <span className="sr-only">Go to next page</span>
-          <ChevronRightIcon className="h-4 w-4" />
+          <CaretRightIcon className="h-4 w-4" />
         </Button>
 
         {/* Last page button (hidden on small screens) */}
@@ -106,7 +106,7 @@ export const TemplatePagination = ({
           disabled={currentPage === totalPages}
         >
           <span className="sr-only">Go to last page</span>
-          <ChevronsRightIcon className="h-4 w-4" />
+          <CaretDoubleRightIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

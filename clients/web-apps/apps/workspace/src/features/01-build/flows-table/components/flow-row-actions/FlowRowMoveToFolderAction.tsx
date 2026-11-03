@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { FolderInput } from "lucide-react";
+import { FolderOpenIcon } from "@phosphor-icons/react";
 
 import { useFolderDialogStore } from "../../stores/folder-dialog.store";
 
@@ -19,7 +19,7 @@ export const FlowRowMoveToFolderAction = ({
   return (
     <SimpleDDMenuItem
       content="Move to folder"
-      Icon={FolderInput}
+      Icon={FolderOpenIcon}
       onClick={() =>
         openDialog({ kind: "move", agent: { id: rowId, name, folderId: folderId ?? null } })
       }

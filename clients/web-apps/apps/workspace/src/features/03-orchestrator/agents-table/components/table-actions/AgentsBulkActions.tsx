@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { CircleNotchIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { CircleOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { AgentsTableDto } from "../../dtos/agents-table-dto";
@@ -47,7 +47,7 @@ export function AgentsBulkActions({ table }: Readonly<AgentsBulkActionsProps>) {
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={isProcessing ? Loader2 : CircleOff}
+          icon={isProcessing ? CircleNotchIcon : ProhibitIcon}
           onClick={handleDisable}
           disabled={isProcessing}
         >

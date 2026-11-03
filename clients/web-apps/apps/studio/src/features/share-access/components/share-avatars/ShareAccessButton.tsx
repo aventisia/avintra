@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
+import { PlusIcon } from "@phosphor-icons/react";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { PlusIcon } from "lucide-react";
 
 interface Props {
   onClick: () => void;

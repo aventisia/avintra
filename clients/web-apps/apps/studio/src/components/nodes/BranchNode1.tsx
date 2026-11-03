@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
+import { GitBranchIcon } from "@phosphor-icons/react";
 import { Node, NodeProps } from "@xyflow/react";
-import { GitBranchIcon } from "lucide-react";
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";

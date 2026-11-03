@@ -1,7 +1,7 @@
 import { Toggle } from "@avplatform/ui/toggle";
 import { Tooltip, TooltipProvider } from "@avplatform/ui/tooltip";
+import { InfoIcon } from "@phosphor-icons/react";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
-import { Info } from "lucide-react";
 import React from "react";
 
 import { permissionTypes, roles } from "../../constants/permissions-and-acesses";
@@ -47,7 +47,7 @@ const PermissionsGrid: React.FC<PermissionsGridProps> = ({
             <TooltipProvider delayDuration={100}>
               <Tooltip content={role.tooltip}>
                 <TooltipTrigger asChild>
-                  <Info size={14} />
+                  <InfoIcon size={14} />
                 </TooltipTrigger>
               </Tooltip>
             </TooltipProvider>

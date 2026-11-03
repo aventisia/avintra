@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Loader2, Sparkles } from "lucide-react";
+import { CircleNotchIcon, SparkleIcon } from "@phosphor-icons/react";
 
 import { DCPTabsFooterWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsFooterWrapper";
 
@@ -25,12 +25,12 @@ export function TestTabExecuteButton({
       >
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <CircleNotchIcon className="mr-2 h-4 w-4 animate-spin" />
             Executing
           </>
         ) : (
           <>
-            <Sparkles className="mr-2 h-4 w-4 text-primary-foreground" />
+            <SparkleIcon className="mr-2 h-4 w-4 text-primary-foreground" />
             Execute
           </>
         )}

@@ -4,9 +4,9 @@ import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { deepParse } from "@avplatform/ui/utils";
+import { RocketIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edge, Node, Viewport } from "@xyflow/react";
-import { RocketIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import { FlowActionType } from "@/features/collaboration/dtos/collaboration-dtos";

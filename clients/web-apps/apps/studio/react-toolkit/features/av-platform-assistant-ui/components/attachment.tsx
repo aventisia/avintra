@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { FileText, PlusIcon, XIcon } from "lucide-react";
+import { FileTextIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { type FC, PropsWithChildren, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -105,7 +105,7 @@ const AttachmentThumb: FC = () => {
         className="aui-attachment-tile-image object-cover"
       />
       <AvatarFallback delayMs={isImage ? 200 : 0}>
-        <FileText className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
+        <FileTextIcon className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
       </AvatarFallback>
     </Avatar>
   );
@@ -161,7 +161,7 @@ const AttachmentRemove: FC = () => {
         className="aui-attachment-tile-remove absolute top-1.5 right-1.5 size-3.5 rounded-full bg-surface text-muted-foreground opacity-100 hover:!bg-hover [&_svg]:text-ink hover:[&_svg]:text-destructive"
         side="top"
       >
-        <XIcon className="aui-attachment-remove-icon size-3 dark:stroke-[2.5px]" />
+        <XIcon className="aui-attachment-remove-icon size-3" />
       </TooltipIconButton>
     </AttachmentPrimitive.Remove>
   );
@@ -194,7 +194,7 @@ export const ComposerAddAttachment: FC = () => {
         className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
         aria-label="Add attachment"
       >
-        <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
+        <PlusIcon className="aui-attachment-add-icon size-5" />
       </TooltipIconButton>
     </ComposerPrimitive.AddAttachment>
   );

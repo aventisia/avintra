@@ -1,7 +1,7 @@
 import { EmptyState } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
-import { ArrowRight, FolderSearch, Search } from "lucide-react";
+import { ArrowRightIcon, FolderOpenIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useId, useState } from "react";
 
@@ -162,7 +162,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
                     transition={PANEL_TRANSITION}
                     className="flex min-w-0 items-center gap-1.5"
                   >
-                    <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
+                    <ArrowRightIcon className="size-3.5 shrink-0 text-muted-foreground" />
                     <LocationChip target={selectedTarget} newFolderColor={newFolderColor} />
                   </motion.span>
                 )}
@@ -186,7 +186,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
       }
     >
       <div className="relative flex h-control-lg items-center rounded-md bg-popover ring-1 ring-border transition-shadow focus-within:ring-focus">
-        <Search className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
+        <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
         <input
           data-autofocus
           role="combobox"
@@ -236,7 +236,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
 
       {!hasOtherFolders && !trimmedQuery && (
         <EmptyState
-          Icon={FolderSearch}
+          Icon={FolderOpenIcon}
           primaryMessage="No other folders yet"
           secondaryMessage="Type a name above to create a folder and move this agent into it."
           className={cn(

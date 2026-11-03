@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import {
@@ -56,7 +56,7 @@ export const ConditionListField = ({
                 onClick={() => removeGroup(groupIndex)}
                 className="gap-1"
               >
-                <Trash2Icon className="h-3.5 w-3.5" />
+                <TrashIcon className="h-3.5 w-3.5" />
                 Remove
               </Button>
             </>
@@ -70,7 +70,7 @@ export const ConditionListField = ({
           className="-mr-3 gap-1 text-xs text-primary hover:text-primary"
           onClick={() => append(defaultConditionObj)}
         >
-          <PlusIcon className="h-4 w-4 stroke-2" />
+          <PlusIcon className="h-4 w-4" />
           AND
         </Button>
       </div>
@@ -104,7 +104,7 @@ export const ConditionListField = ({
             disabled={fields.length <= 1}
             onClick={() => remove(index)}
           >
-            <Trash2Icon className="h-4 w-4" />
+            <TrashIcon className="h-4 w-4" />
           </Button>
         </div>
       ))}

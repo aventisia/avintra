@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 import { stripLeadingSlash } from "@/utils/strip-leading-slash";
 
@@ -9,7 +9,7 @@ const OpenTemplateRowAction = ({ accessPath }: { accessPath: string }) => {
     window.open(url, "_blank");
   };
 
-  return <SimpleDDMenuItem content="Open" Icon={ExternalLinkIcon} onClick={handleOpenTemplate} />;
+  return <SimpleDDMenuItem content="Open" Icon={ArrowSquareOutIcon} onClick={handleOpenTemplate} />;
 };
 
 export default OpenTemplateRowAction;

@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { Search, X } from "lucide-react";
+import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
@@ -71,12 +71,12 @@ export const ActionSelectorContent = () => {
           aria-label="Close"
           onClick={() => setShowDialog(false)}
         >
-          <X className="size-4" />
+          <XIcon className="size-4" />
         </Button>
       </div>
 
       <div className="relative flex shrink-0 items-center border-b border-line p-3">
-        <Search className="pointer-events-none absolute left-[22px] size-4 text-muted-foreground" />
+        <MagnifyingGlassIcon className="pointer-events-none absolute left-[22px] size-4 text-muted-foreground" />
         <Input
           ref={inputRef}
           type="search"

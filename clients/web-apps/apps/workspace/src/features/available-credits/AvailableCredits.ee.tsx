@@ -1,5 +1,5 @@
 import { LoadingSpinner } from "@avplatform/ui";
-import { Coins } from "lucide-react";
+import { CoinsIcon } from "@phosphor-icons/react";
 
 import { cn } from "@/ui/lib";
 
@@ -13,7 +13,7 @@ const AvailableCredits = () => {
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-1.5 gap-y-2 rounded-md border border-line p-2.5 text-[12.5px] text-ink-2">
       <span className="inline-flex items-center gap-1.5">
-        <Coins className="size-3.5 shrink-0 text-muted-foreground" />
+        <CoinsIcon className="size-3.5 shrink-0 text-muted-foreground" />
         Credits left
       </span>
       {isLoading ? (

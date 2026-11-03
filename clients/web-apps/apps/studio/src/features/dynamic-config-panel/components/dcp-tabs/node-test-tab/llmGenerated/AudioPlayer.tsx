@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { FileAudio, Pause, Play, Volume2, X } from "lucide-react";
+import { FileAudioIcon, PauseIcon, PlayIcon, SpeakerHighIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 export interface AudioPlayerProps {
@@ -144,7 +144,7 @@ const AudioPlayer = ({
 
         {/* File-type icon */}
         <div className="shrink-0 text-primary">
-          {isFile ? <FileAudio className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+          {isFile ? <FileAudioIcon className="h-5 w-5" /> : <SpeakerHighIcon className="h-5 w-5" />}
         </div>
 
         {/* Name + size — takes flexible space before the controls */}
@@ -167,9 +167,9 @@ const AudioPlayer = ({
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? (
-            <Pause className="h-3 w-3 fill-current" />
+            <PauseIcon weight="fill" className="h-3 w-3" />
           ) : (
-            <Play className="h-3 w-3 fill-current pl-px" />
+            <PlayIcon weight="fill" className="h-3 w-3 pl-px" />
           )}
         </button>
 
@@ -199,7 +199,7 @@ const AudioPlayer = ({
         {/* Remove button */}
         {onRemove && (
           <Button onClick={onRemove} variant={"caution"} size={"icon7"} aria-label="Remove audio">
-            <X className="h-4 w-4" />
+            <XIcon className="h-4 w-4" />
           </Button>
         )}
       </div>
@@ -215,7 +215,11 @@ const AudioPlayer = ({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary">
-            {isFile ? <FileAudio className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+            {isFile ? (
+              <FileAudioIcon className="h-5 w-5" />
+            ) : (
+              <SpeakerHighIcon className="h-5 w-5" />
+            )}
           </div>
           <div className="flex flex-col">
             <p className="truncate text-sm font-semibold text-foreground">
@@ -232,7 +236,7 @@ const AudioPlayer = ({
 
         {onRemove && (
           <Button variant={"caution"} onClick={onRemove} size={"icon7"}>
-            <X className="h-4 w-4" />
+            <XIcon className="h-4 w-4" />
           </Button>
         )}
       </div>
@@ -245,9 +249,9 @@ const AudioPlayer = ({
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95"
         >
           {isPlaying ? (
-            <Pause className="h-4 w-4 fill-current" />
+            <PauseIcon weight="fill" className="h-4 w-4" />
           ) : (
-            <Play className="h-4 w-4 fill-current pl-0.5" />
+            <PlayIcon weight="fill" className="h-4 w-4 pl-0.5" />
           )}
         </button>
 

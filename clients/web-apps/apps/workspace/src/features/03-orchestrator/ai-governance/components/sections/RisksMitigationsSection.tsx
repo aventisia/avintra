@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { FieldHelpPopover } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import {
   MITIGATION_STATUS_OPTIONS,
@@ -123,7 +123,7 @@ export const RisksMitigationsSection = () => {
                 className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
                 aria-label="Remove risk"
               >
-                <Trash2Icon className="h-4 w-4" />
+                <TrashIcon className="h-4 w-4" />
               </button>
             </div>
 

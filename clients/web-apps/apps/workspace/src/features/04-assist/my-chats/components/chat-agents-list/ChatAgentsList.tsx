@@ -1,7 +1,6 @@
 import { EmptyState } from "@avplatform/ui";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-// import { MessageCircleMoreIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 

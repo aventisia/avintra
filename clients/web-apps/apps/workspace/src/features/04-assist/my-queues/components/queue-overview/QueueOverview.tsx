@@ -1,6 +1,6 @@
 import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { TABLE_HEADING } from "../../constants";
@@ -39,7 +39,7 @@ export const QueueOverview = () => {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <CircleNotchIcon className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }

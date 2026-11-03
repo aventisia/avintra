@@ -10,7 +10,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { CircleOffIcon, Plus, X } from "lucide-react";
+import { PlusIcon, ProhibitIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { FieldPath, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
@@ -98,7 +98,7 @@ export function StringArrayField({
                 onClick={() => tryAdd(inputValue)}
                 disabled={disabled}
               >
-                <Plus className="h-3.5 w-3.5" />
+                <PlusIcon className="h-3.5 w-3.5" />
               </Button>
             </div>
 
@@ -113,7 +113,7 @@ export function StringArrayField({
           <EmptyState
             primaryMessage="No action added"
             secondaryMessage="You have no action added."
-            Icon={CircleOffIcon}
+            Icon={ProhibitIcon}
             className="mx-1"
           />
         ) : (
@@ -136,7 +136,7 @@ export function StringArrayField({
                 variant={"caution"}
                 size={"icon5"}
               >
-                <X className="h-3.5 w-3.5" />
+                <XIcon className="h-3.5 w-3.5" />
               </Button>
             </div>
           ))

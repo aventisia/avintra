@@ -1,13 +1,13 @@
 import { ConfigStoreTypesEnum } from "@avplatform/ui/enums/config-store-types-enum";
 import { cn } from "@avplatform/ui/lib";
 import { getEnumValueByKey } from "@avplatform/ui/utils";
-import { Braces, ToggleLeft, Type } from "lucide-react";
+import { BracketsCurlyIcon, TextTIcon, ToggleLeftIcon } from "@phosphor-icons/react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 const KEY_TYPE_META = {
-  TEXT: { icon: Type, description: "A plain text value" },
-  BOOLEAN: { icon: ToggleLeft, description: "True or false" },
-  JSON: { icon: Braces, description: "A structured JSON object" },
+  TEXT: { icon: TextTIcon, description: "A plain text value" },
+  BOOLEAN: { icon: ToggleLeftIcon, description: "True or false" },
+  JSON: { icon: BracketsCurlyIcon, description: "A structured JSON object" },
 } as const;
 
 type KeyTypePickerProps = {

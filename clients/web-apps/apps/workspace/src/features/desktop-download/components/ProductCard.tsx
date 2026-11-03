@@ -1,4 +1,4 @@
-import { CheckIcon } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 
 type ProductCardProps = {

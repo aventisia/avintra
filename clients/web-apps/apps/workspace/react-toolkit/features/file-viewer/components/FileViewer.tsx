@@ -1,8 +1,8 @@
 import { EmptyState, LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { FileXIcon, WarningIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { AlertTriangleIcon, FileWarningIcon } from "lucide-react";
 import { type ComponentType, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -75,7 +75,7 @@ const NoFilesState = () => (
   <EmptyState
     primaryMessage="No files available"
     secondaryMessage="Upload a file to get started"
-    Icon={FileWarningIcon}
+    Icon={FileXIcon}
   />
 );
 
@@ -225,7 +225,7 @@ export default function FileViewer({
                 aria-live="assertive"
               >
                 <div className="flex flex-col items-center gap-2 rounded-lg border border-warn/30 bg-background/90 px-5 py-6 text-center shadow-pop">
-                  <AlertTriangleIcon className="size-6 text-warn" />
+                  <WarningIcon className="size-6 text-warn" />
                   <p className="text-sm font-semibold text-foreground">Unable to load file</p>
                   <p className="text-xs text-muted-foreground">
                     {activeFile.error ?? "Try again to download the file."}

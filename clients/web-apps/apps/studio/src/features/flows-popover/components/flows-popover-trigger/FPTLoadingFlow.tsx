@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 
 /**
  * Renders a loading indicator for a flow.
@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 export const FPTLoadingFlow = () => {
   return (
     <>
-      <Loader2 className="h-3.5 w-3.5 animate-spin" />{" "}
+      <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />{" "}
       <span className="truncate text-xs">Loading flow...</span>
     </>
   );

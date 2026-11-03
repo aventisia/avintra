@@ -4,7 +4,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { formatDate } from "@avplatform/ui/utils";
-import { Clock, Download, Tag, User2 } from "lucide-react";
+import { ClockIcon, DownloadSimpleIcon, TagIcon, UserIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
@@ -53,7 +53,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-row items-center gap-1 text-sm text-muted-foreground">
               {/* Usage count */}
               <div className="flex items-center gap-1">
-                <Download className="h-4 w-4" />
+                <DownloadSimpleIcon className="h-4 w-4" />
                 <span className="leading-4">
                   {template?.usageCount?.toLocaleString("en-US", {
                     maximumFractionDigits: 2,
@@ -66,7 +66,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
 
               {/* Last updated */}
               <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
+                <ClockIcon className="h-4 w-4" />
                 <span className="leading-4">Updated on {formatDate(template?.lastModifiedOn)}</span>
               </div>
 
@@ -74,7 +74,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
 
               {/* Created by */}
               <div className="flex items-center gap-1">
-                <User2 className="h-4 w-4" />
+                <UserIcon className="h-4 w-4" />
                 <span className="leading-4">{template.createdBy || "Unknown"}</span>
               </div>
             </div>
@@ -86,7 +86,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
                 {transformTemplateType(template?.type)}
               </Badge>
               <Badge variant="outline" className="flex items-center gap-1 bg-sunken">
-                <Tag className="h-3 w-3" />
+                <TagIcon className="h-3 w-3" />
 
                 {template?.accessType == "Public" ? "Public" : "Tenant"}
               </Badge>
@@ -96,7 +96,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
                 ?.filter((tag) => tag.toLowerCase() !== template?.type?.toLowerCase()) //Filter tags that are similar to project type
                 ?.map((tag) => (
                   <Badge key={tag} variant="outline" className="flex items-center gap-1 bg-sunken">
-                    <Tag className="h-3 w-3" />
+                    <TagIcon className="h-3 w-3" />
                     {tag}
                   </Badge>
                 ))}

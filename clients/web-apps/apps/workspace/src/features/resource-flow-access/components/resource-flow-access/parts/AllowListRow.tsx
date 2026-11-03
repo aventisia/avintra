@@ -1,7 +1,7 @@
 import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
 import { MetaLine } from "@avplatform/ui/meta-line";
-import { Trash2, Undo2 } from "lucide-react";
+import { ArrowUUpLeftIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
 
@@ -62,7 +62,7 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
           onClick={() => draft.add(agent)}
           className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-surface px-2 text-[12px] font-medium text-ink-2 ring-1 ring-line-strong transition hover:text-ink hover:ring-line-strong"
         >
-          <Undo2 className="size-3.5" />
+          <ArrowUUpLeftIcon className="size-3.5" />
           Undo
         </button>
       ) : (
@@ -73,7 +73,7 @@ export const AllowListRow = ({ agent, change, draft }: AllowListRowProps) => {
           onClick={() => draft.remove(agent.id)}
           className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-bad/10 hover:text-bad focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
         >
-          <Trash2 className="size-4" />
+          <TrashIcon className="size-4" />
         </button>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Download } from "lucide-react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 import { useExportDialogStore } from "../store/export-dialog-store.ee";
 import { AvailableCredits } from "./AvailableCredits.ee";
@@ -33,7 +33,7 @@ const ChartsHeader = () => {
         >
           Export
           <span className="ml-2">
-            <Download className="h-4 w-4" />
+            <DownloadSimpleIcon className="h-4 w-4" />
           </span>
         </Button>
       </div>

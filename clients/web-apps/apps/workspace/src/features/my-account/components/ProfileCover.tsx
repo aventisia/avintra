@@ -33,7 +33,7 @@ export const ProfileCover = () => {
               variant="outline"
               className="hover:text-primary/50 hover:bg-primary/60 border-primary bg-theme-1/10 py-6 font-semibold text-primary transition-all delay-200"
             >
-              <Lucide icon="Image" className="mr-2.5 h-4 w-4 stroke-[1.3]" />
+              <ImageIcon className="mr-2.5 h-4 w-4" />
               Upload cover
             </Button>
           </div> */}

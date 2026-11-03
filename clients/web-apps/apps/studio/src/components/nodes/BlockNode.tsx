@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { toast } from "@avplatform/ui/sonner";
+import { ArrowSquareOutIcon, PackageIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
-import { BoxesIcon, ExternalLinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -127,7 +127,7 @@ export const BlockNode = memo(
           selected={selected}
           nodeData={data}
           nodeId={id}
-          glyph={<BoxesIcon />}
+          glyph={<PackageIcon />}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -153,7 +153,7 @@ export const BlockNode = memo(
               className="nodrag nopan"
               onClick={handleOpenSubFlow}
             >
-              <ExternalLinkIcon className="size-3.5" />
+              <ArrowSquareOutIcon className="size-3.5" />
               Open block
             </Button>
           </NodeToolbar>

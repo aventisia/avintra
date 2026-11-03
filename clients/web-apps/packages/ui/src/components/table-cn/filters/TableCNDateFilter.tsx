@@ -1,5 +1,5 @@
+import { CalendarIcon } from "@phosphor-icons/react";
 import { type Column } from "@tanstack/react-table";
-import { CalendarIcon } from "lucide-react";
 import type * as React from "react";
 import { type DateRange } from "react-day-picker";
 

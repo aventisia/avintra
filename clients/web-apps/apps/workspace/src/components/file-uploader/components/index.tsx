@@ -3,7 +3,13 @@
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { CloudUploadIcon, FileTextIcon, Loader2Icon, Trash2Icon, XIcon } from "lucide-react";
+import {
+  CircleNotchIcon,
+  CloudArrowUpIcon,
+  FileTextIcon,
+  TrashIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useShallow } from "zustand/react/shallow";
@@ -61,7 +67,7 @@ export const FileDropzone = ({ addFile, acceptedTypes }: DropzoneProps) => {
       onClick={open}
     >
       <input {...getInputProps()} />
-      <CloudUploadIcon size={56} className="text-muted-foreground opacity-60 mb-4" />
+      <CloudArrowUpIcon size={56} className="text-muted-foreground opacity-60 mb-4" />
       <div className="text-sm text-center">
         {isDragActive ? (
           <p className="font-medium text-primary">Drop the files here...</p>
@@ -238,9 +244,9 @@ export const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
                           aria-label={isSuccess ? "Delete file" : "Remove file"}
                         >
                           {isDeleting ? (
-                            <Loader2Icon className="h-4 w-4 animate-spin" />
+                            <CircleNotchIcon className="h-4 w-4 animate-spin" />
                           ) : isSuccess ? (
-                            <Trash2Icon className="h-4 w-4" /> // Show Trash if uploaded
+                            <TrashIcon className="h-4 w-4" /> // Show Trash if uploaded
                           ) : (
                             <XIcon className="h-4 w-4" /> // Show X to abort or clear
                           )}

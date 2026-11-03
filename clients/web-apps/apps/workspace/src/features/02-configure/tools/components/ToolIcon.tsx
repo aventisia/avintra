@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Wrench } from "lucide-react";
+import { WrenchIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { getToolIcon } from "../constants/tool-icon-mapper.constant";
@@ -39,5 +39,5 @@ export const ToolIcon = ({ name, iconUrl, className }: ToolIconProps) => {
     );
   }
 
-  return <Wrench className={cn("text-ink-2", className)} aria-hidden="true" />;
+  return <WrenchIcon className={cn("text-ink-2", className)} aria-hidden="true" />;
 };

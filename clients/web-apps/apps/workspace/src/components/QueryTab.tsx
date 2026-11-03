@@ -1,13 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { type LucideIcon } from "lucide-react";
+import { type Icon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export interface QueryTabItem {
   label: string;
   value: string;
-  icon?: LucideIcon;
+  icon?: Icon;
 }
 
 interface QueryTabsProps {

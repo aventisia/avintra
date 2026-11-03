@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { FormLabelExt } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type AppOption = {
@@ -156,9 +156,9 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
             )}
           </Button>
         </div>

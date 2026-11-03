@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ChevronDownIcon } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
@@ -17,7 +17,7 @@ function ViewOnlyVersionSelector() {
       disabled
     >
       <span className="min-w-0 truncate">v{versionNumber} </span>
-      <ChevronDownIcon className="size-3 shrink-0" />
+      <CaretDownIcon className="size-3 shrink-0" />
     </Button>
   );
 }

@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import { CaretDownIcon, CaretLeftIcon, CaretRightIcon, CaretUpIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -59,35 +59,35 @@ const ShortcutsDialog = () => {
       title: "Nodes/Edges",
       shortcuts: [
         {
-          keys: [<ChevronLeft size={16} />],
+          keys: [<CaretLeftIcon size={16} />],
           description: "Move the selected node to the left",
         },
         {
-          keys: [<ChevronRight size={16} />],
+          keys: [<CaretRightIcon size={16} />],
           description: "Move the selected node to the right",
         },
         {
-          keys: ["Shift", <ChevronLeft size={16} />],
+          keys: ["Shift", <CaretLeftIcon size={16} />],
           description: "Quickly move the selected node to the left",
         },
         {
-          keys: ["Shift", <ChevronRight size={16} />],
+          keys: ["Shift", <CaretRightIcon size={16} />],
           description: "Quickly move the selected node to the right",
         },
         {
-          keys: [<ChevronUp size={16} />],
+          keys: [<CaretUpIcon size={16} />],
           description: "Move the selected node up",
         },
         {
-          keys: [<ChevronDown size={16} />],
+          keys: [<CaretDownIcon size={16} />],
           description: "Move the selected node down",
         },
         {
-          keys: ["Shift", <ChevronUp size={16} />],
+          keys: ["Shift", <CaretUpIcon size={16} />],
           description: "Quickly move the selected node up",
         },
         {
-          keys: ["Shift", <ChevronDown size={16} />],
+          keys: ["Shift", <CaretDownIcon size={16} />],
           description: "Quickly move the selected node down",
         },
         {

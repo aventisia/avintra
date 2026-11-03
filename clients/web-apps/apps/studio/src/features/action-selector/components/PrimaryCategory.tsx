@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
@@ -58,7 +58,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
         </div>
 
         <ArrowRightIcon
-          className={`stroke-1.5 size-4 shrink-0 transition-colors ${
+          className={`size-4 shrink-0 transition-colors ${
             isDisabled
               ? "text-muted-foreground/60"
               : "text-muted-foreground group-hover:text-primary-text group-focus-visible:text-primary-text"

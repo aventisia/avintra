@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { FileAudio, Trash2 } from "lucide-react";
+import { FileAudioIcon, TrashIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 interface STTFilePreviewProps {
@@ -46,7 +46,7 @@ const STTFilePreview = ({ file, onRemove }: STTFilePreviewProps) => {
       <div className="flex items-center gap-3">
         {/* Icon badge */}
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10">
-          <FileAudio className="h-5 w-5 text-primary" />
+          <FileAudioIcon className="h-5 w-5 text-primary" />
         </div>
 
         {/* Name + size */}
@@ -66,7 +66,7 @@ const STTFilePreview = ({ file, onRemove }: STTFilePreviewProps) => {
           aria-label="Remove file"
           className="shrink-0 text-muted-foreground hover:bg-bad/10 hover:text-bad"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <TrashIcon className="h-3.5 w-3.5" />
         </Button>
       </div>
 

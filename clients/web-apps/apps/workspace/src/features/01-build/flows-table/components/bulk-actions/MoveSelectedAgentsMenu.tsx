@@ -1,6 +1,6 @@
 import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { TableCNActionBarItem } from "@avplatform/ui/table-cn";
-import { FolderInput } from "lucide-react";
+import { FolderOpenIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "radix-ui";
 
 import { pluralize } from "@/utils/pluralize.util";
@@ -52,7 +52,10 @@ export const MoveSelectedAgentsMenu = ({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <TableCNActionBarItem icon={FolderInput} disabled={disabled || movableAgents.length === 0}>
+        <TableCNActionBarItem
+          icon={FolderOpenIcon}
+          disabled={disabled || movableAgents.length === 0}
+        >
           Move to
         </TableCNActionBarItem>
       </DropdownMenu.Trigger>

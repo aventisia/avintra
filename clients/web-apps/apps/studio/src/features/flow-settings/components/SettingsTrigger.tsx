@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { Settings } from "lucide-react";
+import { GearIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
@@ -23,7 +23,7 @@ export const SettingsTrigger = () => {
           className="hover:bg-hover hidden md:flex"
           onClick={() => openPanel(PANEL_ID, "right")}
         >
-          <Settings className="h-[1.1rem] w-[1.1rem] text-ink-2" />
+          <GearIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         </Button>
       </Tooltip>
     </>

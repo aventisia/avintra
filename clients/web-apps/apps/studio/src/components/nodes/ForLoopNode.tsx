@@ -1,7 +1,7 @@
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, Position } from "@xyflow/react";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -144,7 +144,7 @@ export const ForLoopNode = memo(
             variant="default"
           >
             <Button variant="ghost" size="icon5" onClick={goPrev}>
-              <ChevronLeftIcon />
+              <CaretLeftIcon />
             </Button>
 
             {/*  Inline editable text-style input */}
@@ -175,7 +175,7 @@ export const ForLoopNode = memo(
             </div>
 
             <Button variant="ghost" size="icon5" onClick={goNext}>
-              <ChevronRightIcon />
+              <CaretRightIcon />
             </Button>
           </Badge>
         )}
@@ -186,7 +186,7 @@ export const ForLoopNode = memo(
             variant="default"
           >
             <Button variant="ghost" size="icon5" onClick={goLivePrev}>
-              <ChevronLeftIcon />
+              <CaretLeftIcon />
             </Button>
             <div className="flex items-center gap-1 text-xs">
               <input
@@ -206,7 +206,7 @@ export const ForLoopNode = memo(
               <p>{liveTotal}</p>
             </div>
             <Button variant="ghost" size="icon5" onClick={goLiveNext}>
-              <ChevronRightIcon />
+              <CaretRightIcon />
             </Button>
           </Badge>
         )}

@@ -1,5 +1,5 @@
+import { CheckIcon } from "@phosphor-icons/react";
 import { type Column } from "@tanstack/react-table";
-import { Check } from "lucide-react";
 import * as React from "react";
 
 import {
@@ -36,7 +36,7 @@ const OptionMark = ({ isSelected, multiple }: { isSelected: boolean; multiple: b
         : "border-line-strong bg-surface text-transparent",
     )}
   >
-    <Check className="size-3 stroke-[3]" />
+    <CheckIcon weight="bold" className="size-3" />
   </span>
 );
 

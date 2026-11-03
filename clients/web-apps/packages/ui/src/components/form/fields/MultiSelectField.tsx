@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 import * as React from "react";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
@@ -112,7 +112,7 @@ const MultiSelectField = ({
                                 size === "base" && "text-sm",
                               )}
                             >
-                              <Info className="h-4 w-4" />
+                              <InfoIcon className="h-4 w-4" />
                             </Tooltip>
                           )}
                         </div>

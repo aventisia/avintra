@@ -1,5 +1,5 @@
 import { EmptyState } from "@avplatform/ui";
-import { FileXIcon } from "lucide-react";
+import { FileXIcon } from "@phosphor-icons/react";
 
 interface UnsupportedViewerProps {
   /** The file extension (without leading dot) for a tailored message */

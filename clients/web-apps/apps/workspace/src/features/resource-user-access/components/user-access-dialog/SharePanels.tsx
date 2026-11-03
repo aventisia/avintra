@@ -1,4 +1,4 @@
-import { UsersRound } from "lucide-react";
+import { UsersIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 
 import {
@@ -56,7 +56,7 @@ export const SharePanels = ({ draft, spaceName }: SharePanelsProps) => {
 
             {draft.rows.length === 0 ? (
               <AccessEmptyState
-                icon={UsersRound}
+                icon={UsersIcon}
                 title="No one has access yet"
                 description={<>Search above to add people from {spaceName}.</>}
               />

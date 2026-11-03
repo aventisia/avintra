@@ -1,5 +1,5 @@
 import { MenuContent, MenuItem, MenuSeparator } from "@avplatform/ui/dropdown-menu";
-import { FolderOpen, MoreHorizontal, SquarePenIcon, Trash2Icon } from "lucide-react";
+import { DotsThreeIcon, FolderOpenIcon, NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
 
@@ -23,20 +23,20 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
         aria-label={`Actions for folder ${folder.name}`}
         className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink-2"
       >
-        <MoreHorizontal className="size-4" />
+        <DotsThreeIcon className="size-4" />
       </DropdownMenu.Trigger>
       <MenuContent align="end">
         <MenuItem onSelect={() => navigate(getFolderPagePath(folder.id))}>
-          <FolderOpen />
+          <FolderOpenIcon />
           Open
         </MenuItem>
         <MenuItem onSelect={() => openEditFolderDialog(folder.id)}>
-          <SquarePenIcon />
+          <NotePencilIcon />
           Edit details
         </MenuItem>
         <MenuSeparator />
         <MenuItem isDestructive onSelect={() => openDialog({ kind: "delete", folder })}>
-          <Trash2Icon />
+          <TrashIcon />
           Delete folder
         </MenuItem>
       </MenuContent>
