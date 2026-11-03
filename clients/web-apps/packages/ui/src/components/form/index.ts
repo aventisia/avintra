@@ -1,4 +1,5 @@
 // Form Components
+export * from "./crud-dialog-field-classes";
 export * from "./fields/async-select-field";
 export * from "./fields/AutosizeTextareaField";
 export * from "./fields/base-field-props";

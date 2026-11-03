@@ -134,15 +134,10 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
 
   // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} disabled={isReadMode}>
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {/* Type */}
         {crudAction === "create" ? (
           <SelectField {...typeProps} />
@@ -177,42 +172,9 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         description="Encrypts the work item data at rest in the database so it cannot be read in plain text."
         label="Store in encrypted format"
       />
-      {/* autor etry  */}
-      {/* <div className="flex flex-col gap-2">
-        <div className="ml-1 flex justify-between">
-          <label htmlFor="shouldRetryFailedItems" className="fm text-sm">
-            Failed items
-          </label>
-          <CheckboxField
-            name="shouldRetryFailedItems"
-            id="retryFailed"
-            label=""
-          />
-        </div>
-        <div className="ml-1 flex justify-between">
-          <label htmlFor="shouldRetryAbandonedItems" className="fm text-sm">
-            Abandoned items
-          </label>
-          <CheckboxField
-            name="shouldRetryAbandonedItems"
-            id="retryAbandoned"
-            label=""
-          />
-        </div>
-
-        {form.getValues("shouldRetryAbandonedItems") ||
-        form.getValues("shouldRetryFailedItems") ? (
-          <div className="mt-4">
-            <InputField
-              {...maxRetriesProps}
-              isRequired={crudAction === "create"}
-            />
-          </div>
-        ) : null}
-      </div> */}
       <InputField {...maxRetriesProps} isRequired />
       {/* additional options */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Input
           type="file"
           ref={fileInputRef}
@@ -224,7 +186,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         {/* Raw JSON Preview */}
 
         <div>
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-1.5 flex items-center justify-between">
             <FormLabelExt
               label="Work item schema"
               isRequired
@@ -244,7 +206,12 @@ The value must be a JSON array, e.g. \`[{"name":"requestId","type":"string","isR
 
 An example array is pre-filled below — edit or replace it as needed.`}
             />
-            <Button onClick={handleClick} type="button" variant={"link"}>
+            <Button
+              onClick={handleClick}
+              type="button"
+              variant="link"
+              className="h-auto p-0 text-[12.5px]"
+            >
               Browse file
             </Button>
           </div>
@@ -255,7 +222,7 @@ An example array is pre-filled below — edit or replace it as needed.`}
 
         {/* Disposition Statuses */}
         <div>
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-1.5 flex items-center justify-between">
             <FormLabelExt
               label="Disposition status"
               isRequired={form.watch("type") === "User"}

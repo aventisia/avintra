@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 interface CrudDialogContextValue {
   /** True when the currently mounted CRUD form has unsaved changes. */
@@ -15,6 +15,9 @@ interface CrudDialogChromeValue {
   /** Live `name` of the record in the mounted form, shown as the dialog title. */
   recordName: string | undefined;
   setRecordName: (name: string | undefined) => void;
+  /** True while a read-only record view (not a form) is mounted. */
+  isRecordView: boolean;
+  setIsRecordView: (isRecordView: boolean) => void;
   /** Footer element that `CrudDialogActions` portals into. */
   actionsSlot: HTMLElement | null;
   setActionsSlot: (element: HTMLElement | null) => void;
@@ -40,6 +43,7 @@ export function CrudDialogFormContextProvider({
 }: CrudDialogProviderContextProps) {
   const [isDirty, setIsDirtyState] = useState(false);
   const [recordName, setRecordName] = useState<string>();
+  const [isRecordView, setIsRecordView] = useState(false);
   const [actionsSlot, setActionsSlot] = useState<HTMLElement | null>(null);
 
   const setIsDirty = useCallback((value: boolean) => {
@@ -61,8 +65,15 @@ export function CrudDialogFormContextProvider({
   );
 
   const chrome = useMemo(
-    () => ({ recordName, setRecordName, actionsSlot, setActionsSlot }),
-    [recordName, actionsSlot],
+    () => ({
+      recordName,
+      setRecordName,
+      isRecordView,
+      setIsRecordView,
+      actionsSlot,
+      setActionsSlot,
+    }),
+    [recordName, isRecordView, actionsSlot],
   );
 
   return (
@@ -92,6 +103,33 @@ export function useCrudDialogRecordNameSetter() {
   }
 
   return ctx.setRecordName;
+}
+
+/**
+ * Marks the mounted content as a read-only record view titled `name`; throws outside a
+ * `CrudDialogFormContextProvider`.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useCrudDialogRecordView(name: string | undefined) {
+  const ctx = useContext(CrudDialogChromeContext);
+
+  if (!ctx) {
+    throw new Error("useCrudDialogRecordView must be used inside a CrudDialogFormContextProvider");
+  }
+
+  const { setRecordName, setIsRecordView } = ctx;
+
+  useEffect(() => {
+    setIsRecordView(true);
+    return () => {
+      setIsRecordView(false);
+      setRecordName(undefined);
+    };
+  }, [setIsRecordView, setRecordName]);
+
+  useEffect(() => {
+    setRecordName(name);
+  }, [name, setRecordName]);
 }
 
 /**
