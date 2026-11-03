@@ -19,16 +19,25 @@ export function useGlobalAdminSession() {
     let cancelled = false;
 
     const loadSession = async () => {
-      const session = await getMySession();
-      if (cancelled || !session?.data) return;
+      try {
+        const session = await getMySession();
+        if (cancelled) return;
 
-      const userSession = setUserSessionLocally(session.data);
-      setUserSession(userSession);
-      setToken(session.data.accessToken);
-      setAccess(hasGlobalAdminAccess(userSession) ? "granted" : "denied");
+        if (!session?.data) {
+          setAccess("denied");
+          return;
+        }
+
+        const userSession = setUserSessionLocally(session.data);
+        setUserSession(userSession);
+        setToken(session.data.accessToken);
+        setAccess(hasGlobalAdminAccess(userSession) ? "granted" : "denied");
+      } catch {
+        if (!cancelled) setAccess("denied");
+      }
     };
 
-    void loadSession().catch(() => undefined);
+    void loadSession();
 
     return () => {
       cancelled = true;
