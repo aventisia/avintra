@@ -7,88 +7,86 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { RecordSheetLoading, RecordSheetUnavailable } from "@avplatform/ui/record-sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import { WrenchIcon } from "@phosphor-icons/react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
-import { getToolById } from "../../apis/tools.apis";
+import { TABLE_HEADING } from "../../constants/tools-table.constants";
+import { useFetchToolDetails } from "../../hooks/useFetchToolDetails.hook";
+import { useTableTab } from "../../hooks/useTableTab.hook";
+import { getToolsListPath } from "../../utils/tool-details-path.util";
 import { getToolDisplayName } from "../../utils/tool-name-formatter";
-import { ToolIcon } from "../ToolIcon";
+import { normalizeToolOperations } from "../../utils/tool-operations.util";
 import { OperationList } from "./OperationList";
+import { ToolDetailsFacts } from "./ToolDetailsFacts";
+import { ToolDetailsHero } from "./ToolDetailsHero";
+import { ToolSpecification } from "./ToolSpecification";
 
-const TABLE_HEADING = "Tools";
-const DETAIL_QUERY_KEY = "tool";
-
+/**
+ * Tool page: banner, operations and specification tabs, and a details sidebar.
+ */
 export const ToolDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const toolName = searchParams.get("tool") ?? "Tool Details";
+  const { isPlatformTab } = useTableTab();
+  const { tool, isLoading } = useFetchToolDetails(id);
 
+  const toolName = getToolDisplayName(tool?.name ?? searchParams.get("tool") ?? "") || "Tool";
+  const toolsPath = getToolsListPath(isPlatformTab);
   useDocumentTitle(`${toolName} - ${TABLE_HEADING}`);
 
-  const { data, isLoading } = useQuery({
-    queryKey: [DETAIL_QUERY_KEY, id],
-    queryFn: () => getToolById(id ?? ""),
-    enabled: !!id,
-  });
-
-  const tool = data?.data;
-
-  if (isLoading) {
-    return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
-  }
-
-  if (!tool) {
-    return (
-      <div className="space-y-4 p-6">
-        <h1 className="text-title">{toolName}</h1>
-        <p className="text-sm text-muted-foreground">Tool not found.</p>
-      </div>
-    );
-  }
+  const operations = normalizeToolOperations(tool);
 
   return (
-    <div className="space-y-4 h-full pb-4 pt-[17px]">
-      <div className="flex items-center justify-between">
-        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <NavLink to="/configure/tools">{TABLE_HEADING}</NavLink>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="max-w-64 truncate capitalize">{toolName}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </h2>
-      </div>
+    <div className="space-y-4 pb-4 pt-[17px]">
+      <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <NavLink to={toolsPath}>{TABLE_HEADING}</NavLink>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="max-w-64 truncate">{toolName}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </h2>
 
-      <div className="grid h-[calc(100vh-2.7*var(--header-height))] grid-cols-1 gap-3">
-        <div className="space-y-4">
-          <div className="rounded-lg border bg-surface px-5 py-3.5">
-            <div className="flex items-center  gap-4">
-              <ToolIcon
-                name={tool.name}
-                iconUrl={tool.iconUrl}
-                className="h-12 w-12 flex-shrink-0 object-contain"
-              />
-              <div className="flex flex-col gap-2">
-                <h1 className="text-heading">{getToolDisplayName(tool.name)}</h1>
-                {tool.description && (
-                  <p className="text-sm text-muted-foreground">{tool.description}</p>
-                )}
-              </div>
+      {isLoading && <RecordSheetLoading label="Loading tool details..." />}
+      {!isLoading && !tool && <RecordSheetUnavailable Icon={WrenchIcon} recordLabel="Tool" />}
+      {tool && (
+        <>
+          <ToolDetailsHero tool={tool} operationCount={operations.length} />
+          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <Tabs defaultValue="operations" className="min-w-0">
+              <TabsList>
+                <TabsTrigger value="operations">
+                  Operations
+                  <span className="rounded-sm bg-sunken px-1.5 font-mono text-[11px] tabular-nums text-muted-foreground ring-1 ring-inset ring-line">
+                    {operations.length}
+                  </span>
+                </TabsTrigger>
+                {tool.openApiSpec && <TabsTrigger value="specification">Specification</TabsTrigger>}
+              </TabsList>
+              <TabsContent value="operations" className="mt-3">
+                <OperationList operations={operations} />
+              </TabsContent>
+              {tool.openApiSpec && (
+                <TabsContent value="specification" className="mt-3">
+                  <ToolSpecification spec={tool.openApiSpec} />
+                </TabsContent>
+              )}
+            </Tabs>
+            <div className="lg:sticky lg:top-4 lg:mt-12">
+              <ToolDetailsFacts tool={tool} />
             </div>
           </div>
-
-          <div className="rounded-lg border bg-surface px-5 py-3.5">
-            <OperationList tool={tool} showTitle />
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

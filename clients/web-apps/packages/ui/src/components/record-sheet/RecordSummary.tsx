@@ -145,7 +145,7 @@ export const RecordIdentifiers = ({ children }: { children: ReactNode }) => (
 
 export const RecordIdentifier = ({ label, value }: { label: string; value?: string | null }) => (
   <div className="flex min-w-0 items-center gap-3">
-    <dt className={cn("w-24 shrink-0", recordLabelClass)}>{label}</dt>
+    <dt className={cn("w-28 shrink-0", recordLabelClass)}>{label}</dt>
     <dd className="min-w-0 font-mono text-[12px] text-ink-2">
       {value ? <CopyableText value={value} /> : FALLBACK_VALUE}
     </dd>
