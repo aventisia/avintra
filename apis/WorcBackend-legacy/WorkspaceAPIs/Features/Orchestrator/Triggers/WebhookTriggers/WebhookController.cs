@@ -48,6 +48,8 @@ public class WebhookController : BaseApiController
         // ── 2. Load trigger (no tenant filter) ──────────────────────────────
         var trigger = await _dbContext.Triggers
             .Include(t => t.TriggerFlowVersions)
+                .ThenInclude(tfv => tfv.FlowVersion)
+                    .ThenInclude(fv => fv.Flow)
             .FirstOrDefaultAsync(t => t.Id == triggerId);
 
         if (trigger == null)
@@ -132,8 +134,9 @@ public class WebhookController : BaseApiController
         }
 
         // ── 8. Resolve agent (FlowVersion) ──────────────────────────────────
-        var flowVersionId = trigger.TriggerFlowVersions?.FirstOrDefault()?.FlowVersionId;
-        if (flowVersionId == null || flowVersionId == Guid.Empty)
+        var firstLinked = trigger.TriggerFlowVersions?.FirstOrDefault();
+        var flowVersionId = firstLinked?.FlowVersionId;
+        if (flowVersionId == null || flowVersionId == Guid.Empty || firstLinked?.FlowVersion == null)
         {
             _logger.LogWarning("Webhook fire rejected: no agent linked to trigger {TriggerId}.", triggerId);
             return PlainTextError(400, "No agent is linked to this webhook trigger.");
@@ -144,6 +147,7 @@ public class WebhookController : BaseApiController
         {
             Id = Guid.NewGuid(),
             TenantId = tenantId,
+            SpaceId = firstLinked?.FlowVersion?.SpaceId ?? firstLinked?.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
             FlowVersionId = flowVersionId.Value,
             TriggerType = TriggerTypesEnum.Webhook,
             RefId = triggerId,
