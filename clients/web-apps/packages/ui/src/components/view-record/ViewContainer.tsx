@@ -1,6 +1,8 @@
 import { cn } from "@avplatform/ui/lib";
 import type { ComponentPropsWithoutRef } from "react";
 
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
+
 /**
  * Props for the {@link ViewContainer} component.
  *
@@ -16,8 +18,13 @@ type ViewContainerProps = ComponentPropsWithoutRef<"div">;
  * connection metadata, or audit trail information.
  */
 export const ViewContainer = ({ children, className, ...props }: ViewContainerProps) => {
+  const isInDialog = useIsInsideCrudDialog();
+
   return (
-    <div className={cn("space-y-4 px-3 pb-4 pt-1", className)} {...props}>
+    <div
+      className={cn("space-y-4 px-3 pb-4 pt-1", isInDialog && "px-0 pb-1", className)}
+      {...props}
+    >
       {children}
     </div>
   );

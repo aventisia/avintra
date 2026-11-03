@@ -183,7 +183,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     form.reset({
       crudAction: CrudActionTypeConverter(crudAction),
       id: rowId,
-      name: queueData?.name,
+      name: queueData?.name ?? "",
       description: queueData?.description,
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
