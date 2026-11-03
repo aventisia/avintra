@@ -19,6 +19,7 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 import { PayloadTableHeading } from "./TableHeading";
+import { WorkItemBulkActions } from "./WorkItemBulkActions";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
 
 /**
@@ -84,7 +85,7 @@ export const WorkItemsTable = () => {
           <div className="flex items-center justify-between">
             <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["id"]} placeholder="Search..." />
+              <DTSearchBox table={table} searchColumns={["workItemId"]} placeholder="Search..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
             </div>
           </div>
@@ -92,6 +93,8 @@ export const WorkItemsTable = () => {
           <DataTable table={table} columnsLength={filteredColumns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
+          {/* Bulk actions for selected work items (edit access only) */}
+          {!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
         </div>
       ) : (
         // Show data table skeleton while fetching the WorkItems data

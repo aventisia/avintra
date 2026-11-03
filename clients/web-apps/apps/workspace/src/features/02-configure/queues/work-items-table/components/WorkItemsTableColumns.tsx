@@ -1,3 +1,4 @@
+import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
@@ -18,8 +19,33 @@ import { WorkItemRowActions } from "./WorkItemRowActions";
  */
 export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
   {
+    accessorKey: "selectRow",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    id: "workItemId",
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Work Item Id"} />
+    ),
     enableSorting: false,
     // Make the work item ID a link that opens the full work item detail
     // (JSON/form viewer and file viewer), matching the Assist experience.
