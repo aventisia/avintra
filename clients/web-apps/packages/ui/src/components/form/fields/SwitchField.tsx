@@ -2,6 +2,7 @@ import * as React from "react";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
 import { Switch } from "@/ui/components";
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
 import {
   FormControl,
   FormDescription,
@@ -11,6 +12,8 @@ import {
   FormMessage,
 } from "@/ui/components/form";
 import { cn } from "@/ui/lib";
+
+import { crudDialogFieldClasses } from "../crud-dialog-field-classes";
 
 interface SwitchFieldProps extends React.ComponentPropsWithoutRef<typeof Switch> {
   /** The name of the form field. */
@@ -40,6 +43,7 @@ const SwitchField = ({
 }: SwitchFieldProps) => {
   // Get the form context
   const { control } = useFormContext<FieldValues>();
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
 
   // Render the SwitchField component
   return (
@@ -53,6 +57,7 @@ const SwitchField = ({
             size === "xs" && "p-2.5 pt-1.5",
             size === "sm" && "p-2.5 pt-1.5",
             size === "base" && "p-4 pt-3.5",
+            isInDialog && crudDialogFieldClasses.switchItem,
           )}
         >
           <div
@@ -68,16 +73,22 @@ const SwitchField = ({
                 size === "xs" && "text-hint",
                 size === "sm" && "text-[13px]/[18px]",
                 size === "base" && "text-body-sm",
+                isInDialog && crudDialogFieldClasses.switchLabel,
               )}
             >
               {label}
             </FormLabel>
-            <FormDescription size={size}>{description}</FormDescription>
+            <FormDescription
+              size={size}
+              className={cn(isInDialog && crudDialogFieldClasses.switchDescription)}
+            >
+              {description}
+            </FormDescription>
           </div>
 
           <FormControl>
             <Switch
-              size={size}
+              size={isInDialog ? "sm" : size}
               disabled={disabled}
               checked={field.value}
               onCheckedChange={field.onChange}

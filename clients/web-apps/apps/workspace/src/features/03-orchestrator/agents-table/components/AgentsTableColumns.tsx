@@ -5,9 +5,8 @@ import { cn } from "@avplatform/ui/lib";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
-import { formatDistanceToNow } from "date-fns";
 
-import { AgentAvatar } from "@/components/AgentAvatar";
+import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
 import { PersonAvatar } from "@/components/PersonAvatar";
 import {
   AGENT_PLATFORMS,
@@ -60,20 +59,9 @@ export const agentsTableColumns = ({
     header: renderHeader("name"),
     cell: ({ row }) => {
       const agent = row.original;
-      const agentType = AGENT_TYPES.find(
-        (option) => option.value === (agent.type as FlowTypesEnum),
-      );
       return (
         <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
-          <AgentAvatar
-            size="sm"
-            Icon={agentType?.icon}
-            className={cn(
-              "size-[30px] rounded-md",
-              agentType?.tint,
-              agent.isDisabled && "opacity-50 grayscale",
-            )}
-          />
+          <AgentTypeAvatar type={agent.type} isMuted={agent.isDisabled} />
           <a
             href={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${agent.refId}&v=${agent.id}`}
             target="_blank"
@@ -81,22 +69,13 @@ export const agentsTableColumns = ({
             draggable={false}
             title={`View ${agent.name} v${agent.versionNumber} in Agent Builder`}
             className={cn(
-              "min-w-0 truncate rounded-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
+              AGENT_NAME_LINK_CLASS,
               agent.isDisabled ? "text-muted-foreground" : "text-ink",
             )}
           >
             <HighlightedText text={agent.name ?? "NAME_NOT_FOUND"} query={searchText} />
           </a>
-          <span
-            className="shrink-0 font-mono text-[11.5px] tabular-nums text-muted-foreground"
-            title={
-              agent.lastModifiedOn
-                ? `Updated ${formatDistanceToNow(agent.lastModifiedOn, { addSuffix: true })} (${formatDate(agent.lastModifiedOn, true)})`
-                : undefined
-            }
-          >
-            v{agent.versionNumber}
-          </span>
+          <AgentVersion versionNumber={agent.versionNumber} lastModifiedOn={agent.lastModifiedOn} />
         </div>
       );
     },
