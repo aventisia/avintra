@@ -5,8 +5,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -38,7 +38,7 @@ export function TriggerBulkActions({ table }: Readonly<TriggerBulkActionsProps>)
       <TableCNActionBarSelection table={table} />
       <TableCNActionBarSeparator />
       <TableCNActionBarItem
-        icon={Trash2}
+        icon={TrashIcon}
         tone="destructive"
         onClick={() => {
           // Show alert dialog to confirm delete

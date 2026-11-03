@@ -6,7 +6,7 @@ import {
   DialogPrimitive,
   DialogTitle,
 } from "@avplatform/ui/dialog";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 
 import { usePaymentMethodsDialogStore } from "@/features/05-tenant-admin/tenant/store/payment-methods/payment-methods-dialog-store.ee";
 
@@ -21,7 +21,7 @@ const PaymentMethodsDialog = () => {
           <DialogTitle className="justify-between">
             <h2 className="text-heading">Add payment method</h2>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
+              <XIcon className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Add payment method</span>
             </DialogPrimitive.Close>
           </DialogTitle>

@@ -3,8 +3,8 @@ import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
+import { TrashIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2Icon } from "lucide-react";
 import React from "react";
 
 import { removeResourceUserAccess } from "../../apis/resource-user-access.apis";
@@ -37,7 +37,7 @@ export const RemoveResourceRowAction: React.FC<RemoveResourceRowActionProps> = (
     <SimpleDDMenuItem
       children={
         <>
-          <Trash2Icon className={cn("", "h-4 w-4")} /> <>Remove</>
+          <TrashIcon className={cn("", "h-4 w-4")} /> <>Remove</>
         </>
       }
       className={cn(

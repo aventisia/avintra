@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import {
@@ -69,7 +69,7 @@ export const UpgradeDialog = ({
           aria-label="Close upgrade dialog"
           onClick={() => onOpenChange(false)}
         >
-          <X aria-hidden="true" className="h-4 w-4" />
+          <XIcon aria-hidden="true" className="h-4 w-4" />
         </Button>
         <AlertDialogHeader className="pr-7">
           <AlertDialogTitle className="break-words">{title}</AlertDialogTitle>

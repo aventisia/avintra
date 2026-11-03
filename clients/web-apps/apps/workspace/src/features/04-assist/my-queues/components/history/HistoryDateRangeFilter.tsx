@@ -1,8 +1,8 @@
 import { Calendar } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export type DateRange = {
@@ -69,7 +69,7 @@ const HistoryDateRangeFilter = ({ value, onChange }: HistoryDateRangeFilterProps
     <Popover open={showRangePicker} onOpenChange={setShowRangePicker}>
       <PopoverTrigger>
         <Button variant={"outline"} className="flex items-center" size="sm">
-          <CalendarDays className="mr-2 h-4 w-4" />
+          <CalendarDotsIcon className="mr-2 h-4 w-4" />
           {format(value?.from || "", "MMM d, yyyy")} - {format(value?.to || "", "MMM d, yyyy")}
         </Button>
       </PopoverTrigger>

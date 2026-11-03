@@ -1,4 +1,4 @@
-import { LayoutGrid, List } from "lucide-react";
+import { ListIcon, SquaresFourIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/ui/components/buttons";
 
@@ -23,7 +23,7 @@ export const ViewModeToggle = ({ view, onChange }: ViewModeToggleProps) => {
         aria-pressed={view === "grid"}
         onClick={() => onChange("grid")}
       >
-        <LayoutGrid className="h-4 w-4" />
+        <SquaresFourIcon className="h-4 w-4" />
       </Button>
       <Button
         variant={view === "table" ? "secondary" : "ghost"}
@@ -33,7 +33,7 @@ export const ViewModeToggle = ({ view, onChange }: ViewModeToggleProps) => {
         aria-pressed={view === "table"}
         onClick={() => onChange("table")}
       >
-        <List className="h-4 w-4" />
+        <ListIcon className="h-4 w-4" />
       </Button>
     </div>
   );

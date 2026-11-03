@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Lock } from "lucide-react";
+import { LockIcon } from "@phosphor-icons/react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 import { AGENT_TYPES } from "../../constants/agent-attributes.constant";
@@ -25,7 +25,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
         Type
         {isLocked && (
           <span className="flex items-center gap-1 font-normal text-muted-foreground">
-            <Lock className="size-3" />
+            <LockIcon className="size-3" />
             Can’t be changed after creation
           </span>
         )}

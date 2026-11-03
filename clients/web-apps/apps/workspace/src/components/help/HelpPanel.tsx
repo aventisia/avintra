@@ -3,7 +3,7 @@ import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { isRouteWithin } from "@avplatform/ui/utils";
-import { ArrowLeftIcon, ArrowUpRightIcon, LibraryBigIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowUpRightIcon, BooksIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useLocation } from "react-router-dom";
@@ -112,7 +112,7 @@ export const HelpPanel = () => {
               onClick={() => toggleIndex(true)}
               className={ICON_BUTTON_CLASS_NAME}
             >
-              <LibraryBigIcon className="size-4" strokeWidth={1.75} />
+              <BooksIcon className="size-4" />
             </button>
           </Tooltip>
         )}

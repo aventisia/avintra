@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon } from "@phosphor-icons/react";
 
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 

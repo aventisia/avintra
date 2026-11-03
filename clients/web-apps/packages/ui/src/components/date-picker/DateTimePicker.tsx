@@ -1,6 +1,6 @@
+import { CalendarIcon } from "@phosphor-icons/react";
 import { format, toDate } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import type { Locale } from "react-day-picker";
 

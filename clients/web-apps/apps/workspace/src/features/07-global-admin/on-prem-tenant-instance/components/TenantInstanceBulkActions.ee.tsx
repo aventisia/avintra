@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 import { TenantInstanceOptimisticMutationFn } from "../apis/tenant-instance-apis.ee";
@@ -46,7 +46,7 @@ export function TenantInstanceBulkActions({ table }: TenantInstanceBulkActionsPr
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

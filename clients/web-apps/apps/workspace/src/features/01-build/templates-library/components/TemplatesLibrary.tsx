@@ -2,7 +2,7 @@ import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { cn } from "@avplatform/ui/lib";
-import { SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -56,7 +56,7 @@ const TemplateLibrary = () => {
                 className="absolute inset-y-0 end-0 rounded-none rounded-e-md focus-visible:ring-[3px]"
                 aria-label="Search"
               >
-                <SearchIcon size={18} aria-hidden="true" />
+                <MagnifyingGlassIcon size={18} aria-hidden="true" />
               </Button>
             </div>
 

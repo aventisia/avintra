@@ -14,7 +14,7 @@ import {
   SelectField,
 } from "@avplatform/ui/form";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { CircleAlertIcon, XCircleIcon } from "lucide-react";
+import { WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { Controller } from "react-hook-form";
 
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
@@ -80,7 +80,7 @@ export const SaveAsTemplateForm = () => {
         {!areAllTemplatesApproved(validationStatus) && (
           <Alert
             variant="warning"
-            icon={CircleAlertIcon}
+            icon={WarningCircleIcon}
             title="Ensure all child agents blocks and AI nodes are published and approved as templates."
             children={
               <>

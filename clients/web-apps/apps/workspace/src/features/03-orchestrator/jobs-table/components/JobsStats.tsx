@@ -1,5 +1,5 @@
 import { StatsCard } from "@avplatform/ui/cards";
-import { Clock10Icon, MonitorPlayIcon } from "lucide-react";
+import { ClockIcon, MonitorPlayIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -91,7 +91,7 @@ export const JobsStats = ({ data }: StatsProps) => {
 
       {/* Execution Time */}
       <StatsCard
-        icon={<Clock10Icon className="size-7" />}
+        icon={<ClockIcon className="size-7" />}
         title="Execution time"
         content={stats.totalExecutionLabel}
         footer={

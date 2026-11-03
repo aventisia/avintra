@@ -1,7 +1,7 @@
 import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
@@ -46,7 +46,7 @@ export const SkillRowActions = ({
     <TableCNRowActionsMenu ariaLabel="Open skill actions" contentClassName="w-36 min-w-36">
       {actions?.read && (
         <SimpleDDMenuItem
-          Icon={ExternalLinkIcon}
+          Icon={ArrowSquareOutIcon}
           onClick={(e) => {
             e.stopPropagation();
             navigate(

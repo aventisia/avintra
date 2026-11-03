@@ -1,7 +1,7 @@
 import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { DownloadSimpleIcon, PaperclipIcon, TrashIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DownloadIcon, PaperclipIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -98,7 +98,7 @@ export const AttachmentSection = ({
                     )
                   }
                 >
-                  <DownloadIcon className="h-4 w-4" />
+                  <DownloadSimpleIcon className="h-4 w-4" />
                 </Button>
                 {!isClosed && (
                   <Button
@@ -108,7 +108,7 @@ export const AttachmentSection = ({
                     onClick={() => deleteMutation.mutate(attachment.id || "")}
                     disabled={deleteMutation.isPending}
                   >
-                    <Trash2Icon className="h-4 w-4 text-bad" />
+                    <TrashIcon className="h-4 w-4 text-bad" />
                   </Button>
                 )}
               </div>

@@ -9,7 +9,7 @@ import {
 } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
-import { VariableIcon } from "lucide-react";
+import { BracketsRoundIcon } from "@phosphor-icons/react";
 import * as React from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -108,7 +108,7 @@ const ConfigPanelAutosizeTextareaField = ({
             setOpenState(true);
           }}
         >
-          <VariableIcon className="h-3 w-3 stroke-[2.4]" />
+          <BracketsRoundIcon weight="bold" className="h-3 w-3" />
           Variables
         </PopoverTrigger>
         <FormField

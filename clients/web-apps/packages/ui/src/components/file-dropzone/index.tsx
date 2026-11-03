@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
-import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { UploadCloud } from "lucide-react";
+import { XCircleIcon } from "@phosphor-icons/react";
+import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { type DropzoneOptions, useDropzone } from "react-dropzone";
 
 export type FileUploadDropzoneProps = DropzoneOptions & {
@@ -27,7 +27,7 @@ export const FileUploadDropzone = ({ description, ...props }: FileUploadDropzone
         >
           <div className="flex flex-col items-center justify-center pb-2 pt-5">
             {isDragReject ? <p className="text-bad">This file type not allowed</p> : null}
-            <UploadCloud
+            <CloudArrowUpIcon
               className={cn("h-10 w-10 text-muted-foreground", isDragReject && "text-bad")}
             />
             <p className="mb-2 text-body-sm text-muted-foreground">
@@ -56,7 +56,7 @@ export const FileUploadDropzone = ({ description, ...props }: FileUploadDropzone
                     <p className="font-mono text-hint tabular-nums text-muted-foreground">
                       ({(file.size / 1024).toFixed(2)} KB)
                     </p>
-                    <CrossCircledIcon className="h-5 w-5 text-bad hover:cursor-pointer" />
+                    <XCircleIcon className="h-5 w-5 text-bad hover:cursor-pointer" />
                   </span>
                 </section>
               </li>

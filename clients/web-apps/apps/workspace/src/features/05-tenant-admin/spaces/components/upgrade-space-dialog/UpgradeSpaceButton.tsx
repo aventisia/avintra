@@ -1,5 +1,5 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
 const UPGRADE_PRICING_URL = MARKETING_URL ? `${MARKETING_URL}/pricing` : undefined;

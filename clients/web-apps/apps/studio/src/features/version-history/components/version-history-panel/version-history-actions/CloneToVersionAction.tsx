@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { Copy } from "lucide-react";
+import { CopyIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCloneToVersionMutation } from "@/features/version-history/hooks/useCloneToVersionMutation";
@@ -24,6 +24,11 @@ export default function CloneToVersionAction({ id }: { id: string }) {
   };
 
   return (
-    <SimpleDDMenuItem Icon={Copy} size="sm" content="Clone to new version" onClick={handleClone} />
+    <SimpleDDMenuItem
+      Icon={CopyIcon}
+      size="sm"
+      content="Clone to new version"
+      onClick={handleClone}
+    />
   );
 }

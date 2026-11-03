@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { Check } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useUpgradePlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/upgrade-plan-dialog.store.ee";
@@ -160,7 +160,7 @@ export default ChoosePlanOptions;
 export const CheckMark = () => {
   return (
     <div className="mt-1 rounded-full bg-ok p-[2px]">
-      <Check className="h-3 w-3 text-bg" />
+      <CheckIcon className="h-3 w-3 text-bg" />
     </div>
   );
 };

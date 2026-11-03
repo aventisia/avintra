@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
@@ -210,7 +210,7 @@ const PanelClose = React.forwardRef<HTMLButtonElement, PanelCloseProps>(
         className={cn(className)}
         aria-label="Close panel"
       >
-        {children || <X className="h-4 w-4" />}
+        {children || <XIcon className="h-4 w-4" />}
       </Button>
     );
   },

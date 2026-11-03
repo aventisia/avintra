@@ -7,9 +7,9 @@ import {
   TableCNActionBarSeparator,
   exportTableCNToCsv,
 } from "@avplatform/ui/table-cn";
+import { DownloadSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Download, Trash2Icon } from "lucide-react";
 
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants";
@@ -69,13 +69,13 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
         disabled={locked}
         onMoved={() => table.resetRowSelection()}
       />
-      <TableCNActionBarItem icon={Download} onClick={exportSelected}>
+      <TableCNActionBarItem icon={DownloadSimpleIcon} onClick={exportSelected}>
         Export
       </TableCNActionBarItem>
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2Icon}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={confirmDelete}

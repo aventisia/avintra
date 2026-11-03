@@ -10,19 +10,19 @@ import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import {
-  CornerDownLeftIcon,
-  CornerDownRightIcon,
-  type LucideIcon,
-  SearchIcon,
-  SearchXIcon,
-} from "lucide-react";
+  ArrowBendDownLeftIcon,
+  ArrowBendDownRightIcon,
+  MagnifyingGlassIcon,
+  MagnifyingGlassMinusIcon,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
 import type { ComponentType, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 type SearchBoxAction = {
   label: string;
-  Icon: LucideIcon;
+  Icon: PhosphorIcon;
   onSelect: () => void;
 };
 
@@ -68,7 +68,7 @@ const PaletteItem = ({
     <span className="truncate text-xs text-muted-foreground group-aria-selected/item:hidden">
       {hint}
     </span>
-    <CornerDownLeftIcon
+    <ArrowBendDownLeftIcon
       className="hidden size-4 shrink-0 text-muted-foreground group-aria-selected/item:block"
       aria-hidden="true"
     />
@@ -111,7 +111,7 @@ const SearchBox = ({
           className,
         )}
       >
-        <SearchIcon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+        <MagnifyingGlassIcon className="size-4 shrink-0" aria-hidden="true" />
         <span className="flex-1 truncate text-left">{placeholder}</span>
         <Kbd>{IS_MAC ? "⌘" : "Ctrl"}</Kbd>
         <Kbd>K</Kbd>
@@ -126,7 +126,7 @@ const SearchBox = ({
             </div>
             <CommandList className="max-h-[min(440px,60vh)] scroll-py-2 p-2">
               <CommandEmpty className="flex flex-col items-center gap-2 py-10 text-body-sm text-muted-foreground">
-                <SearchXIcon className="size-6" strokeWidth={1.5} aria-hidden="true" />
+                <MagnifyingGlassMinusIcon className="size-6" aria-hidden="true" />
                 No pages or actions match.
               </CommandEmpty>
               {sections?.map((section) => (
@@ -148,7 +148,7 @@ const SearchBox = ({
                       <PaletteItem
                         key={sub.route}
                         value={`${section.sectionName} ${item.name} ${sub.name} ${sub.route}`}
-                        Icon={CornerDownRightIcon}
+                        Icon={ArrowBendDownRightIcon}
                         label={sub.name}
                         hint={item.name}
                         onSelect={() => run(() => navigate(sub.route))}

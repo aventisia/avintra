@@ -1,7 +1,7 @@
 import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { Button } from "@avplatform/ui/buttons";
 import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
-import { DownloadIcon } from "lucide-react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 
@@ -106,7 +106,7 @@ export const SkillFilesTable = () => {
                 </LockedActionTooltip>
               )}
               <Button size="xs" variant="outline" onClick={handleDownload}>
-                <DownloadIcon className="h-3.5 w-3.5 mr-1" />
+                <DownloadSimpleIcon className="h-3.5 w-3.5 mr-1" />
                 Download
               </Button>
             </div>

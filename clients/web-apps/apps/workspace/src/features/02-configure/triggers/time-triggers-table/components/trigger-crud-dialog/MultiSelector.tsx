@@ -3,7 +3,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchAgentsDto } from "../../dtos/search-agent-dto";
@@ -113,7 +113,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   className="rounded-full"
                   onClick={() => onItemRemove(item.id)}
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </Badge>
             ))}
@@ -143,9 +143,9 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? (
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+            <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
           )}
         </Button>
       </div>

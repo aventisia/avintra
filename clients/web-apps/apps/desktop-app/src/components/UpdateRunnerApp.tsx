@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 import { useRunnerProvisioning } from "../hooks/useRunnerProvisioning";
@@ -94,7 +94,7 @@ export function UpdateRunnerApp({
           <Button type="button" onClick={handleUpdate} size="lg" className="w-full">
             <span className="inline-flex items-center gap-1.5">
               Update now
-              <Lucide icon="ArrowRight" className="h-4 w-4" />
+              <ArrowRightIcon className="h-4 w-4" />
             </span>
           </Button>
           <Button type="button" variant="outline" onClick={onSkip} size="lg" className="w-full">

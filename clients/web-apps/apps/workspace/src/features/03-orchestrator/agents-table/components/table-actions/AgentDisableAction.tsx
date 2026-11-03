@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { Ban } from "lucide-react";
+import { ProhibitIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useDisableAgentStore } from "../../stores/disable-agent-store";
@@ -27,7 +27,7 @@ export const AgentDisableAction = ({ rowId }: AgentDisableActionProps) => {
         setOpen(true);
       }}
     >
-      <Ban className={cn("", "h-4 w-4")} />
+      <ProhibitIcon className={cn("", "h-4 w-4")} />
       Disable
     </DropdownMenuItem>
   );

@@ -3,7 +3,7 @@ import { ToolCallMessagePartComponent, ToolCallMessagePartStatus } from "@assist
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { PencilIcon, PlayIcon, XIcon } from "lucide-react";
+import { PencilSimpleIcon, PlayIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
@@ -160,11 +160,11 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
                   Cancel
                 </Button>
                 <Button variant="outline" size="xs" onClick={handleStartEdit}>
-                  <PencilIcon className="mr-1.5 size-3" />
+                  <PencilSimpleIcon className="mr-1.5 size-3" />
                   Edit
                 </Button>
                 <Button variant="default" size="xs" onClick={handleExecute}>
-                  <PlayIcon className="mr-1.5 size-3 fill-current" />
+                  <PlayIcon weight="fill" className="mr-1.5 size-3" />
                   Execute
                 </Button>
               </div>

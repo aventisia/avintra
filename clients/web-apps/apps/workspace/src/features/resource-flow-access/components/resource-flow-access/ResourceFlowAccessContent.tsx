@@ -1,6 +1,6 @@
 import { DialogPrimitive } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
-import { Info, LoaderCircle, X } from "lucide-react";
+import { CircleNotchIcon, InfoIcon, XIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 
@@ -55,7 +55,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
           aria-label="Close"
           className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-hover hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus"
         >
-          <X className="size-4" />
+          <XIcon className="size-4" />
         </DialogPrimitive.Close>
       </header>
 
@@ -90,7 +90,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
             <AccessPanels draft={draft} mode={mode} />
 
             <p className="mt-5 flex gap-2 text-[12px] leading-5 text-muted-foreground">
-              <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+              <InfoIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
               Access applies to every version of an agent, including ones created and published
               later.
             </p>
@@ -114,7 +114,7 @@ export const ResourceFlowAccessContent = ({ draft }: { draft: ResourceFlowDraft 
             disabled={!canSave}
             className="inline-flex h-control-md items-center gap-2 rounded-md bg-primary px-4 text-button text-primary-foreground outline-none transition hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:bg-fill disabled:text-muted-foreground"
           >
-            {draft.isSaving && <LoaderCircle className="size-4 animate-spin" />}
+            {draft.isSaving && <CircleNotchIcon className="size-4 animate-spin" />}
             {draft.isSaving ? "Saving" : "Save changes"}
           </button>
         </div>

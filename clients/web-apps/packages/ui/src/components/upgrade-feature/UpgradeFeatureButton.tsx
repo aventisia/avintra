@@ -1,4 +1,4 @@
-import { Lock } from "lucide-react";
+import { LockIcon } from "@phosphor-icons/react";
 import { type ReactNode, useState } from "react";
 
 import { Button, type ButtonProps } from "@/ui/components/buttons";
@@ -49,7 +49,7 @@ export const UpgradeFeatureButton = ({
             {icon}
           </span>
           <span>{label}</span>
-          <Lock aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0", lockIconClassName)} />
+          <LockIcon aria-hidden="true" className={cn("h-3.5 w-3.5 shrink-0", lockIconClassName)} />
         </Button>
       </Tooltip>
 

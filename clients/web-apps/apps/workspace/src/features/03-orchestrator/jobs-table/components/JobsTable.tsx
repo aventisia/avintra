@@ -10,7 +10,12 @@ import {
   useTableCN,
 } from "@avplatform/ui/table-cn";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { CalendarClock, Download, History, Play } from "lucide-react";
+import {
+  CalendarDotsIcon,
+  ClockCounterClockwiseIcon,
+  DownloadSimpleIcon,
+  PlayIcon,
+} from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -29,9 +34,9 @@ import {
 } from "..";
 
 const tabs = [
-  { label: "Current", value: "Current", icon: Play },
-  { label: "Scheduled", value: "Scheduled", icon: CalendarClock },
-  { label: "History", value: "History", icon: History },
+  { label: "Current", value: "Current", icon: PlayIcon },
+  { label: "Scheduled", value: "Scheduled", icon: CalendarDotsIcon },
+  { label: "History", value: "History", icon: ClockCounterClockwiseIcon },
 ];
 
 const PAGINATION_PROPS = {
@@ -151,7 +156,7 @@ export const JobsTable = () => {
                   className="gap-2 text-sm tracking-wide"
                   onClick={() => exportTableCNToCsv(table, { fileName: TABLE_KEY })}
                 >
-                  <Download className="h-4 w-4" />
+                  <DownloadSimpleIcon className="h-4 w-4" />
                   Export
                 </Button>
               )}

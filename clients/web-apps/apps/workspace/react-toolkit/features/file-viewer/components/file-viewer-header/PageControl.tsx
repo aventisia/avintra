@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 
 import { usePageControls } from "../../stores/pdf-previewer-store";
 
@@ -47,7 +47,7 @@ const PageControl = () => {
         title="Previous page"
         aria-label="Previous page"
       >
-        <ChevronLeftIcon className="h-4 w-4" />
+        <CaretLeftIcon className="h-4 w-4" />
       </Button>
 
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -72,7 +72,7 @@ const PageControl = () => {
         title="Next page"
         aria-label="Next page"
       >
-        <ChevronRightIcon className="h-4 w-4" />
+        <CaretRightIcon className="h-4 w-4" />
       </Button>
     </div>
   );

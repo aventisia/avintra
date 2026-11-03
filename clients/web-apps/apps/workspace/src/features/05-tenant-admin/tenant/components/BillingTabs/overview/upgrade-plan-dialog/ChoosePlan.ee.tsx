@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { RadioGroup } from "@avplatform/ui/radio-group";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { ArrowLeft, Check, InfoIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon, InfoIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -122,7 +122,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
                 className="p-1.5"
                 size={"icon9"}
               >
-                <ArrowLeft className="mt-[2px] h-5 w-5" />
+                <ArrowLeftIcon className="mt-[2px] h-5 w-5" />
               </Button>
               <h2 className="text-heading">Choose plan</h2>
             </>
@@ -212,7 +212,7 @@ export default ChoosePlan;
 export const CheckMark = () => {
   return (
     <div className="mt-[2px] rounded-full bg-ok p-[2px]">
-      <Check className="h-3 w-3 text-bg" />
+      <CheckIcon className="h-3 w-3 text-bg" />
     </div>
   );
 };

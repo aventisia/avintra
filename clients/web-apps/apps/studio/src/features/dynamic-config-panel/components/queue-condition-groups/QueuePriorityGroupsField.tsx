@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { ISelectOption } from "@avplatform/ui/types";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useController, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
@@ -107,7 +107,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
               disabled={fields.length <= 1}
               onClick={() => remove(index)}
             >
-              <Trash2Icon className="h-4 w-4" />
+              <TrashIcon className="h-4 w-4" />
             </Button>
           </div>
         ))}
@@ -119,7 +119,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
           onClick={() => append(defaultPriorityObj)}
           className="mt-2 w-full gap-1 text-xs"
         >
-          <PlusIcon className="h-4 w-4 stroke-2" />
+          <PlusIcon className="h-4 w-4" />
           Add field
         </Button>
       </div>

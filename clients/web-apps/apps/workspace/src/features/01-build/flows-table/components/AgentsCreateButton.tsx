@@ -2,7 +2,7 @@ import { LockedActionTooltip } from "@avplatform/ui/action-lock";
 import { SplitButton } from "@avplatform/ui/buttons";
 import { useCreateEntityAction } from "@avplatform/ui/crud-dialog";
 import { MenuContent, MenuItem, MenuShortcut } from "@avplatform/ui/dropdown-menu";
-import { ChevronUp, FolderPlus, Option, Plus } from "lucide-react";
+import { CaretUpIcon, FolderPlusIcon, OptionIcon, PlusIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -31,19 +31,19 @@ export const AgentsCreateButton = () => {
               <NewAgentIcon />
               Create agent
               <MenuShortcut>
-                <ChevronUp className="-mt-1" />
-                <Option />
+                <CaretUpIcon className="-mt-1" />
+                <OptionIcon />
                 <span className="ml-1">N</span>
               </MenuShortcut>
             </MenuItem>
             <MenuItem onSelect={() => openCreateFolderDialog()}>
-              <FolderPlus />
+              <FolderPlusIcon />
               Create folder
             </MenuItem>
           </MenuContent>
         }
       >
-        <Plus className="size-4" />
+        <PlusIcon className="size-4" />
         Create
       </SplitButton>
     </LockedActionTooltip>

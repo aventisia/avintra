@@ -2,8 +2,8 @@ import { Calendar, UpgradeDialog } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -128,7 +128,7 @@ export const DateRangeFilter = () => {
       >
         <PopoverTrigger asChild disabled={isCurrentTab}>
           <Button disabled={isCurrentTab} variant="outline">
-            <CalendarDays className="mr-2 h-3.5 w-3.5" />
+            <CalendarDotsIcon className="mr-2 h-3.5 w-3.5" />
             {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
             {format(selectedRange.to!, "MMM d, yyyy")}
           </Button>

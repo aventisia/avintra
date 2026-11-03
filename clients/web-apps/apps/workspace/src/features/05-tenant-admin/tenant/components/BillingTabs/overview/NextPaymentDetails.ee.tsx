@@ -1,7 +1,7 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { formatDate } from "@avplatform/ui/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon } from "@phosphor-icons/react";
 
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";
 import { CurrentPlanDto } from "@/features/05-tenant-admin/tenant/dtos/current-plan-dto.ee";

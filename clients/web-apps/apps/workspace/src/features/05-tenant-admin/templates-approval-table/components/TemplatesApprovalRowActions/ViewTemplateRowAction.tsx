@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowUpRightIcon } from "lucide-react";
+import { ArrowUpRightIcon } from "@phosphor-icons/react";
 
 import { useViewTemplate } from "../../hooks/useViewTemplate";
 

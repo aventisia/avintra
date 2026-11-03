@@ -3,7 +3,7 @@ import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircle } from "lucide-react";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 const PaymentProcessingLoader = ({
@@ -51,7 +51,7 @@ const PaymentProcessingLoader = ({
           </div>
         ) : (
           <div className="flex flex-col items-center gap-5">
-            <CheckCircle className="h-12 w-12 text-ok" />
+            <CheckCircleIcon className="h-12 w-12 text-ok" />
             <div className="flex flex-col gap-1 items-center">
               <p className="text-2xl font-semibold text-ok">Payment successful</p>
               <p className="text-base  text-muted-foreground">

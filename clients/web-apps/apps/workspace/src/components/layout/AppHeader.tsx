@@ -9,7 +9,13 @@ import {
   useUserSessionStore,
 } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { BellIcon, CircleHelpIcon, DownloadIcon, RocketIcon, UserIcon } from "lucide-react";
+import {
+  BellIcon,
+  DownloadSimpleIcon,
+  QuestionIcon,
+  RocketIcon,
+  UserIcon,
+} from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -77,7 +83,7 @@ const AppHeader: React.FC = () => {
             : [
                 {
                   label: "Download desktop app",
-                  Icon: DownloadIcon,
+                  Icon: DownloadSimpleIcon,
                   onSelect: () => navigate(DESKTOP_DOWNLOAD_ROUTE),
                 },
               ]),
@@ -98,7 +104,7 @@ const AppHeader: React.FC = () => {
             onClick={() => toggleHelp()}
             className="text-ink-2 aria-pressed:bg-hover aria-pressed:text-ink"
           >
-            <CircleHelpIcon className="size-[18px]" strokeWidth={1.75} />
+            <QuestionIcon className="size-[18px]" />
           </Button>
         </Tooltip>
       </div>

@@ -1,5 +1,5 @@
 "use client";
-import { SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/ssr";
 import { useState } from "react";
 import LibraryTemplates from "./LibraryTemplates";
 import { Input } from "@/app/_components/ui";
@@ -62,7 +62,7 @@ const TemplatesLibrary = () => {
               className="absolute inset-y-0 end-1  sm:end-0 rounded-none rounded-e-lg focus-visible:ring-[3px]"
               aria-label="Search"
             >
-              <SearchIcon size={18} aria-hidden="true" />
+              <MagnifyingGlassIcon size={18} aria-hidden="true" />
             </Button>
           </div>
 

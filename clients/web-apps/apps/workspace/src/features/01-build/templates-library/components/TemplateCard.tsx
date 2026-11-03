@@ -2,7 +2,7 @@ import { Separator } from "@avplatform/ui";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@avplatform/ui/cards";
-import { Copy, Tag } from "lucide-react";
+import { CopyIcon, TagIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -73,7 +73,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           </CardTitle>
           {/* Type badge */}
           <Badge variant="outline" className="flex w-fit items-center gap-1 bg-sunken py-1">
-            <Tag className="h-3 w-3" />
+            <TagIcon className="h-3 w-3" />
             <span className="leading-3">{transformTemplateType(template?.type)}</span>
           </Badge>
         </CardContent>
@@ -98,7 +98,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {/* Usage count with clipboard copy button */}
           {template.type !== "Prompt" && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Copy className="h-4 w-4" />
+              <CopyIcon className="h-4 w-4" />
               <p>{template.usagesCount}</p>
             </div>
           )}

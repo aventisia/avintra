@@ -20,8 +20,8 @@ import {
 import { toast } from "@avplatform/ui/sonner";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
+import { CircleNotchIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
@@ -210,7 +210,7 @@ export const ModelProviderSetupDialog = () => {
             </div>
             <DialogPrimitive.Close asChild>
               <Button variant="ghost" size="icon8">
-                <X className="h-5 w-5" />
+                <XIcon className="h-5 w-5" />
                 <span className="sr-only">Close</span>
               </Button>
             </DialogPrimitive.Close>
@@ -297,13 +297,13 @@ export const ModelProviderSetupDialog = () => {
 
               {isProvidersLoading ? (
                 <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <CircleNotchIcon className="h-4 w-4 animate-spin" />
                   Loading models...
                 </div>
               ) : (
                 <>
                   <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       value={modelSearch}
                       onChange={(e) => setModelSearch(e.target.value)}

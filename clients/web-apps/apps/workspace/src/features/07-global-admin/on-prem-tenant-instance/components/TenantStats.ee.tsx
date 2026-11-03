@@ -1,5 +1,5 @@
 import { StatsCard } from "@avplatform/ui/cards";
-import { BadgeCheckIcon, ClockIcon, UsersIcon } from "lucide-react";
+import { ClockIcon, SealCheckIcon, UsersIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
@@ -39,7 +39,7 @@ export const TenantStats = () => {
       />
       <StatsCard
         key={"Total Executed Jobs"}
-        icon={<BadgeCheckIcon className="size-6" />}
+        icon={<SealCheckIcon className="size-6" />}
         title={"Total executed jobs"}
         content={formatNumber(data?.data.totalExecutedJobs ?? 0)}
       />

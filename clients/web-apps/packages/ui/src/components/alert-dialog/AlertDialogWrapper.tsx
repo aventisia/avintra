@@ -1,4 +1,4 @@
-import { CircleHelp, TriangleAlert } from "lucide-react";
+import { QuestionIcon, WarningIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -83,7 +83,7 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
       <AlertDialogContent className="w-[min(28rem,calc(100vw-2rem))] max-w-none gap-0 overflow-hidden bg-popover p-0 ring-1 ring-line">
         <AlertDialogHeader className="flex-row items-start gap-4 space-y-0 px-6 pb-4 pt-6 text-left sm:text-left">
           <IconTile
-            Icon={isDestructive ? TriangleAlert : CircleHelp}
+            Icon={isDestructive ? WarningIcon : QuestionIcon}
             size="lg"
             className={cn(
               "size-12 rounded-lg [&>svg]:size-6",

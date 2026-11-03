@@ -1,29 +1,29 @@
 import { DeploymentType, SidebarMenuItemType, SidebarMenuSectionType } from "@avplatform/ui/types";
-import { DesktopIcon } from "@radix-ui/react-icons";
 import {
   ArchiveIcon,
-  BadgeDollarSignIcon,
-  BanknoteIcon,
   BellIcon,
-  BookOpenCheckIcon,
-  CheckCheckIcon,
-  CircleHelpIcon,
-  Cpu,
-  FolderCogIcon,
-  IdCardIcon,
-  KeySquareIcon,
-  LibraryIcon,
+  BookOpenTextIcon,
+  BooksIcon,
+  ChecksIcon,
+  CpuIcon,
+  CurrencyCircleDollarIcon,
+  DesktopIcon,
+  FlowArrowIcon,
+  FolderSimpleUserIcon,
+  IdentificationCardIcon,
+  LightningIcon,
   ListIcon,
+  MoneyIcon,
   MonitorPlayIcon,
-  PuzzleIcon,
-  Shield,
-  ShieldCheck,
+  PasswordIcon,
+  PuzzlePieceIcon,
+  QuestionIcon,
+  ShieldCheckIcon,
+  ShieldIcon,
   UsersIcon,
-  Wallet,
-  Workflow,
+  WalletIcon,
   WrenchIcon,
-} from "lucide-react";
-import { AiOutlineThunderbolt } from "react-icons/ai";
+} from "@phosphor-icons/react";
 
 import { EnvironmentToggle } from "@/features/02-configure/components/EnvironmentToggle";
 
@@ -44,7 +44,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
-        Icon: LibraryIcon,
+        Icon: BooksIcon,
         name: "Library",
         route: "/library",
         permissions: ["TD"],
@@ -66,7 +66,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM", "TD"],
-        Icon: AiOutlineThunderbolt,
+        Icon: LightningIcon,
         name: "Triggers",
         route: "/configure/triggers",
         hub: "configure",
@@ -96,7 +96,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM", "TD"],
-        Icon: FolderCogIcon,
+        Icon: FolderSimpleUserIcon,
         name: "Key store",
         route: "/configure/configstore",
         hub: "configure",
@@ -104,7 +104,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM", "TD"],
-        Icon: Shield,
+        Icon: ShieldIcon,
         name: "Vault",
         route: "/configure/vault",
         hub: "configure",
@@ -112,7 +112,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM", "TD"],
-        Icon: BookOpenCheckIcon,
+        Icon: BookOpenTextIcon,
         name: "Knowledge bases",
         route: "/configure/knowledge-base",
         hub: "configure",
@@ -120,7 +120,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM", "TD"],
-        Icon: PuzzleIcon,
+        Icon: PuzzlePieceIcon,
         name: "Skills",
         route: "/configure/skill-registry",
         hub: "configure",
@@ -150,7 +150,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM"],
-        Icon: ShieldCheck,
+        Icon: ShieldCheckIcon,
         name: "Agent risk registry",
         route: "/orchestrator/agent-risk-registry",
         hub: "operations",
@@ -182,7 +182,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["OM"],
-        Icon: KeySquareIcon,
+        Icon: PasswordIcon,
         name: "API keys",
         route: "/orchestrator/api-keys",
         hub: "operations",
@@ -225,7 +225,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
     menuItems: [
       {
         permissions: ["TA"],
-        Icon: IdCardIcon,
+        Icon: IdentificationCardIcon,
         name: "Tenant",
         route: "/tenant/overview",
         hub: "admin",
@@ -241,7 +241,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
-        Icon: FolderCogIcon,
+        Icon: FolderSimpleUserIcon,
         name: "Spaces",
         route: "/tenant/spaces",
         hub: "admin",
@@ -252,7 +252,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         ? ([
             {
               permissions: ["TA"],
-              Icon: Workflow,
+              Icon: FlowArrowIcon,
               name: "Integrations",
               route: "/tenant/integrations",
               hub: "admin",
@@ -262,7 +262,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         : []),
       {
         permissions: ["TA"],
-        Icon: Cpu,
+        Icon: CpuIcon,
         name: "Models",
         route: "/tenant/model-providers",
         hub: "admin",
@@ -270,7 +270,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
-        Icon: Wallet,
+        Icon: WalletIcon,
         name: "Usage",
         route: "/tenant/usage",
         hub: "admin",
@@ -278,7 +278,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
-        Icon: CheckCheckIcon,
+        Icon: ChecksIcon,
         name: "Approvals",
         route: "/tenant/approvals",
         hub: "admin",
@@ -303,7 +303,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
-        Icon: IdCardIcon,
+        Icon: IdentificationCardIcon,
         name: "Preferences",
         route: "/tenant/preferences", // Only applicabe in case of enterprise and community deployment
         hub: "admin",
@@ -311,7 +311,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
-        Icon: CircleHelpIcon,
+        Icon: QuestionIcon,
         name: "Support",
         route: "/tenant/support/tickets",
         hub: "admin",
@@ -325,7 +325,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
     menuItems: [
       {
         permissions: ["SA"],
-        Icon: IdCardIcon,
+        Icon: IdentificationCardIcon,
         name: "Tenants",
         route: "/sa/tenants",
         hub: "multi-tenant",
@@ -333,7 +333,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["SA"],
-        Icon: CheckCheckIcon,
+        Icon: ChecksIcon,
         name: "Approvals",
         route: "/sa/approvals",
         hub: "multi-tenant",
@@ -350,7 +350,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
 
       {
         permissions: ["SA"],
-        Icon: BadgeDollarSignIcon,
+        Icon: CurrencyCircleDollarIcon,
         name: "Subscription plans",
         route: "/sa/subscription-plans",
         hub: "multi-tenant",
@@ -358,7 +358,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["SA"],
-        Icon: BanknoteIcon,
+        Icon: MoneyIcon,
         name: "Credit plans",
         route: "/sa/credit-plans",
         hub: "multi-tenant",
@@ -373,7 +373,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       // },
       {
         permissions: ["SA"],
-        Icon: CircleHelpIcon,
+        Icon: QuestionIcon,
         name: "Support",
         route: "/sa/support/tickets",
         hub: "multi-tenant",
@@ -387,7 +387,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
     menuItems: [
       {
         permissions: ["SA"],
-        Icon: IdCardIcon,
+        Icon: IdentificationCardIcon,
         name: "On-prem tenants",
         route: "/ga/on-prem-tenants",
         hub: "multi-tenant",
