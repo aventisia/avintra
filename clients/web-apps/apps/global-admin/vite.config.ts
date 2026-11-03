@@ -12,7 +12,7 @@ export default defineConfig(({ mode }): UserConfig => {
   const accountsApiTarget =
     process.env.VITE_ACCOUNTS_API_TARGET ?? env.VITE_ACCOUNTS_API_TARGET ?? "http://localhost:4000";
   const config: UserConfig = {
-    base: "/globaladmin/",
+    base: "/",
     resolve: {
       alias: [
         {
