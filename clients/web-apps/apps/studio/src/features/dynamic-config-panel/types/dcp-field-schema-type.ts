@@ -21,7 +21,6 @@ import { DCPControlType, RenderIfType } from "..";
  * @property minLength - Minimum length for string fields.
  * @property maxLength - Maximum length for string fields.
  * @property showTokenCount - If true, show the token count in the prompt field footer.
- * @property showVariables - If true, show variable chips/helpers in the prompt field footer.
  * @property showJsonOutput - If true, show the JSON output toggle in the model settings.
  * @property specialty - Forces the model list to a speech specialty (stt/tts) regardless of node name.
  * @property hideByok - If true, hides the BYOK switch on the model config field.
@@ -45,7 +44,6 @@ export type DCPFieldSchemaType = {
   minLength?: number;
   maxLength?: number;
   showTokenCount?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
-  showVariables?: boolean; // Not a html attribute (only required by Prompt field V2 footer)
   showJsonOutput?: boolean; // Not a html attribute (only required by the model config field)
   specialty?: "stt" | "tts"; // Not a html attribute (forces the model list to a speech specialty)
   hideByok?: boolean; // Not a html attribute (hides the BYOK switch on the model config field)
