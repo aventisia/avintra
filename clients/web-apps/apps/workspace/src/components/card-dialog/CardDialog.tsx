@@ -1,6 +1,6 @@
 import { DialogPrimitive } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 
 import { CardDialogFrame } from "./CardDialogFrame";
@@ -77,7 +77,7 @@ export const CardDialog = ({
           disabled={isDismissLocked}
           className="-mr-2 -mt-1 grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-40"
         >
-          <X className="size-4" />
+          <XIcon className="size-4" />
         </button>
       </header>
 

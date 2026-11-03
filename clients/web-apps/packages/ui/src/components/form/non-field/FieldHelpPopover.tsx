@@ -1,5 +1,5 @@
+import { InfoIcon } from "@phosphor-icons/react";
 import { Popover, PopoverContent, PopoverPortal, PopoverTrigger } from "@radix-ui/react-popover";
-import { Info } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -29,7 +29,7 @@ const FieldHelpPopover = ({ content, className }: FieldHelpPopoverProps) => {
             className,
           )}
         >
-          <Info className="h-3.5 w-3.5" />
+          <InfoIcon className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
       <PopoverPortal>

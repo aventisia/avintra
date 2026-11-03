@@ -1,4 +1,4 @@
-import { CheckIcon, ChevronsUpDown } from "lucide-react";
+import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
 import * as React from "react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
@@ -93,7 +93,7 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
           ) : (
             "Select country"
           )}
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+          <CaretUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-max p-0" align="start">

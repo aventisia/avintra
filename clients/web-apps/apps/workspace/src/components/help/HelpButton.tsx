@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 
 import { useHelpPanelStore } from "./help-panel.store";
 
@@ -30,7 +30,7 @@ const HelpButton = ({ guideId, tooltip = "Help", className }: HelpButtonProps) =
         onClick={() => openGuide(guideId)}
         className={cn("text-muted-foreground", className)}
       >
-        <InfoIcon className="size-4" strokeWidth={1.75} />
+        <InfoIcon className="size-4" />
       </Button>
     </Tooltip>
   );

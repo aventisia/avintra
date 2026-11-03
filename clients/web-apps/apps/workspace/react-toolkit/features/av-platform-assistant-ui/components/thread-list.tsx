@@ -6,7 +6,7 @@ import {
 } from "@assistant-ui/react";
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { ArchiveIcon, MoreHorizontalIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { ArchiveIcon, DotsThreeIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import type { FC } from "react";
 
 export const ThreadList: FC = () => {
@@ -76,7 +76,7 @@ const ThreadListItemMore: FC = () => {
           size="icon6"
           className="aui-thread-list-item-more mr-2 size-7 p-0 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:bg-accent data-[state=open]:opacity-100 group-data-[active=true]:opacity-100 group-data-[active]:opacity-100"
         >
-          <MoreHorizontalIcon className="size-4" />
+          <DotsThreeIcon className="size-4" />
           <span className="sr-only">More options</span>
         </Button>
       </ThreadListItemMorePrimitive.Trigger>
@@ -93,7 +93,7 @@ const ThreadListItemMore: FC = () => {
         </ThreadListItemPrimitive.Archive>
         <ThreadListItemPrimitive.Delete asChild>
           <ThreadListItemMorePrimitive.Item className="aui-thread-list-item-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-destructive text-sm outline-none hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive">
-            <Trash2Icon className="size-4" />
+            <TrashIcon className="size-4" />
             Delete
           </ThreadListItemMorePrimitive.Item>
         </ThreadListItemPrimitive.Delete>

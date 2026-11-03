@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
 
 import { deleteMachines } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -45,7 +45,7 @@ export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={Trash2}
+          icon={TrashIcon}
           tone="destructive"
           disabled={locked}
           onClick={() => {

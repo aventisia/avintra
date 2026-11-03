@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { MonitorIcon } from "lucide-react";
+import { MonitorIcon } from "@phosphor-icons/react";
 
 import { iconMapper } from "@/components/icon-mapper";
 import { NodeDataType } from "@/types/node-data-type";

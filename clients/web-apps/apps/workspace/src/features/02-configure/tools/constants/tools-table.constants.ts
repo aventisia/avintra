@@ -1,5 +1,5 @@
+import { BooksIcon } from "@phosphor-icons/react";
 import { InitialTableState } from "@tanstack/react-table";
-import { Library } from "lucide-react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
@@ -57,7 +57,7 @@ export const DETAIL_DATA_QUERY_KEY = ["tool-details"];
 
 export const TABLE_VIEW_TABS = [
   { label: "All", value: "all" },
-  { label: "Library", value: "library", icon: Library },
+  { label: "Library", value: "library", icon: BooksIcon },
 ] as const;
 
 export const getDialogHeadingDescription = (crudAction: "create" | "read" | "update") => {

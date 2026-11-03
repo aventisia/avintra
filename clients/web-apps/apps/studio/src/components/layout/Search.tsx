@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useSearchStore } from "@/features/search/stores/serach-store";
@@ -21,7 +21,7 @@ const SearchCommandTrigger = () => {
           className="hover:bg-hover"
           onClick={() => setOpen(true)}
         >
-          <SearchIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
+          <MagnifyingGlassIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         </Button>
       </Tooltip>
     </div>

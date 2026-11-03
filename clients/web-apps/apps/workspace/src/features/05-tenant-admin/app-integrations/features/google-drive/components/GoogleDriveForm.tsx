@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { toast } from "@avplatform/ui/sonner";
-import { Copy } from "lucide-react";
+import { CopyIcon } from "@phosphor-icons/react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
@@ -58,7 +58,7 @@ const GoogleDriveForm = () => {
                       toast.success("Redirect URL copied to clipboard");
                     }}
                   >
-                    <Copy />
+                    <CopyIcon />
                   </Button>
                 </div>
                 <InputField {...clientIdProps} />

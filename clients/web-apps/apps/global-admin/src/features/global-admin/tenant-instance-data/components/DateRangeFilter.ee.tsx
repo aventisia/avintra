@@ -2,8 +2,8 @@ import { Calendar } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useDateRangePickerStore } from "../date-range-store.ee";
@@ -60,7 +60,7 @@ export const DateRangeFilter = () => {
           "data-[state=open]:border-primary data-[state=open]:ring-[3px] data-[state=open]:ring-ring",
         )}
       >
-        <CalendarDays className="h-4 w-4 text-[--icon-color]" />{" "}
+        <CalendarDotsIcon className="h-4 w-4 text-[--icon-color]" />{" "}
         {format(dateRange?.from || "", "MMM d, yyyy")} -{" "}
         {format(dateRange?.to || "", "MMM d, yyyy")}
       </PopoverTrigger>

@@ -1,6 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { AsyncSingleSelectField, Form } from "@avplatform/ui/form";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 

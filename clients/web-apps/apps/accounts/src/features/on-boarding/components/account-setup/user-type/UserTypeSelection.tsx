@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { RadioGroup } from "@avplatform/ui/radio-group";
-import { Building2, User } from "lucide-react";
+import { BuildingsIcon, UserIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
@@ -41,7 +41,7 @@ export default function UserTypeSelection() {
           className="flex flex-col items-center justify-center space-y-2 text-center py-14"
         >
           <div className="bg-sunken p-2 rounded-lg">
-            <User
+            <UserIcon
               className={`w-7 h-7 ${
                 userType === "individual" ? "text-primary" : "text-muted-foreground"
               }`}
@@ -59,7 +59,7 @@ export default function UserTypeSelection() {
           className="flex flex-col items-center justify-center space-y-2 text-center py-14"
         >
           <div className="bg-sunken p-2 rounded-lg">
-            <Building2
+            <BuildingsIcon
               className={`w-7 h-7 ${
                 userType === "organization" ? "text-primary" : "text-muted-foreground"
               }`}

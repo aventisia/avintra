@@ -6,7 +6,7 @@ import {
 } from "@assistant-ui/react-markdown";
 import { useCopyToClipboard } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { type FC, type ReactNode, memo } from "react";
 import remarkGfm from "remark-gfm";
 

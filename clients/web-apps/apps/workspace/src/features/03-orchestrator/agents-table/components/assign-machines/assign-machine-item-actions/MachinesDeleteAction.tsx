@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useRemoveMachineMutation } from "../../../hooks/useRemoveMachineMutation";
@@ -33,7 +33,7 @@ export const MachinesDeleteAction = ({ id }: MachinesDeleteActionProps) => {
         mutate({ flowVersionId, machineIds: [id] });
       }}
     >
-      <Trash2Icon className="mb-[2px] h-4 w-4" />
+      <TrashIcon className="mb-[2px] h-4 w-4" />
       Remove
     </DropdownMenuItem>
   );

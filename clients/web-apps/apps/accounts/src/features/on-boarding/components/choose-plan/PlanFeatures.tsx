@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { CircleCheck } from "lucide-react";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 
 /**
  * Formats a number as a string with commas in US format and upto two decimal places.
@@ -103,7 +103,7 @@ export const PlanFeatures = ({
       <ul className="mt-2 space-y-2 text-sm">
         {featuresList.map((feature, index) => (
           <li key={index} className="flex items-center gap-2">
-            <CircleCheck className="h-4 w-4 text-ok" /> {feature}
+            <CheckCircleIcon className="h-4 w-4 text-ok" /> {feature}
           </li>
         ))}
       </ul>

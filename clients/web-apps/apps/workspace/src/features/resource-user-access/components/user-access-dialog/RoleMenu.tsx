@@ -1,5 +1,5 @@
 import { MenuContent, MenuItem, MenuSeparator } from "@avplatform/ui/dropdown-menu";
-import { Check, ChevronDown, Trash2 } from "lucide-react";
+import { CaretDownIcon, CheckIcon, TrashIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "radix-ui";
 
 import { USER_ACCESS_ROLES } from "../../constants/user-access-roles.constant";
@@ -25,7 +25,7 @@ export const RoleMenu = ({ role, personName, onChange, onRemove }: RoleMenuProps
         className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-[12.5px] font-medium text-ink-2 outline-none transition hover:bg-hover hover:text-ink focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink"
       >
         {getShareRoleLabel(role)}
-        <ChevronDown className="size-3.5 text-muted-foreground" />
+        <CaretDownIcon className="size-3.5 text-muted-foreground" />
       </button>
     </DropdownMenu.Trigger>
     <MenuContent align="end" className="w-max">
@@ -41,12 +41,12 @@ export const RoleMenu = ({ role, personName, onChange, onRemove }: RoleMenuProps
               {option.description}
             </span>
           </span>
-          {option.value === role && <Check className="mt-0.5" />}
+          {option.value === role && <CheckIcon className="mt-0.5" />}
         </MenuItem>
       ))}
       <MenuSeparator />
       <MenuItem isDestructive onSelect={onRemove}>
-        <Trash2 />
+        <TrashIcon />
         Remove access
       </MenuItem>
     </MenuContent>

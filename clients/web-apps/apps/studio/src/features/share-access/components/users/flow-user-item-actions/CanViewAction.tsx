@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon } from "@phosphor-icons/react";
 
 import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
 import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";

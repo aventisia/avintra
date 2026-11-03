@@ -1,5 +1,12 @@
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CaretUpDownIcon,
+  CheckIcon,
+  EyeSlashIcon,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
 import { type Column, type SortDirection } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, Check, ChevronsUpDown, EyeOff, type LucideIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -13,15 +20,15 @@ import { cn } from "@/ui/lib";
 import { TABLE_CN_PANEL_CLASS_NAME } from "./constants/table-cn-class-names.constant";
 
 const SortIcon = ({ direction }: { direction: false | SortDirection }) => {
-  if (direction === "asc") return <ArrowUp className="size-3" />;
-  if (direction === "desc") return <ArrowDown className="size-3" />;
+  if (direction === "asc") return <ArrowUpIcon className="size-3" />;
+  if (direction === "desc") return <ArrowDownIcon className="size-3" />;
   return (
-    <ChevronsUpDown className="size-3 text-muted-foreground/50 transition-colors group-hover/header:text-muted-foreground" />
+    <CaretUpDownIcon className="size-3 text-muted-foreground/50 transition-colors group-hover/header:text-muted-foreground" />
   );
 };
 
 type HeaderMenuItemProps = {
-  icon: LucideIcon;
+  icon: PhosphorIcon;
   label: string;
   isActive?: boolean;
   onSelect: () => void;
@@ -31,7 +38,7 @@ const HeaderMenuItem = ({ icon: Icon, label, isActive = false, onSelect }: Heade
   <DropdownMenuItem onSelect={onSelect} className="text-ink-2 focus:text-ink">
     <Icon className="size-4 text-muted-foreground" />
     {label}
-    {isActive && <Check className="ml-auto size-4 text-primary-text" />}
+    {isActive && <CheckIcon className="ml-auto size-4 text-primary-text" />}
   </DropdownMenuItem>
 );
 
@@ -83,13 +90,13 @@ export const TableCNColumnHeader = <TData, TValue>({
         {canSort && (
           <>
             <HeaderMenuItem
-              icon={ArrowUp}
+              icon={ArrowUpIcon}
               label="Sort ascending"
               isActive={sortDirection === "asc"}
               onSelect={() => onSortDirectionChange("asc")}
             />
             <HeaderMenuItem
-              icon={ArrowDown}
+              icon={ArrowDownIcon}
               label="Sort descending"
               isActive={sortDirection === "desc"}
               onSelect={() => onSortDirectionChange("desc")}
@@ -99,7 +106,7 @@ export const TableCNColumnHeader = <TData, TValue>({
         {canSort && canHide && <DropdownMenuSeparator className="bg-line" />}
         {canHide && (
           <HeaderMenuItem
-            icon={EyeOff}
+            icon={EyeSlashIcon}
             label="Hide column"
             onSelect={() => column.toggleVisibility(false)}
           />

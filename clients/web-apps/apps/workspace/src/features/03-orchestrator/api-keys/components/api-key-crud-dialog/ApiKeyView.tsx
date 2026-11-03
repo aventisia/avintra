@@ -8,8 +8,8 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { formatDate } from "@avplatform/ui/utils";
+import { KeyIcon, ShieldCheckIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { KeyIcon, ShieldCheckIcon } from "lucide-react";
 
 import { getApiKey } from "../../apis/api-key.apis";
 import { API_KEY_PERMISSION_ITEMS } from "../../constants/api-key-permissions.constant";

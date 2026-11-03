@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
+import { PlusIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
-import { PlusIcon } from "lucide-react";
 import { memo } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
@@ -37,7 +37,7 @@ export const ConditionalNode = memo(
               className="nodrag nopan mt-1 rounded-full"
               onClick={() => addConditionalBranch(data, id)}
             >
-              <PlusIcon className="size-3.5 stroke-[2.5]" />
+              <PlusIcon weight="bold" className="size-3.5" />
             </Button>
           </NodeToolbar>
         )}

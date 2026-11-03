@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { XIcon } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -68,7 +68,6 @@ const Banner = React.forwardRef<HTMLDivElement, BannerProps>(
               >
                 <XIcon
                   size={16}
-                  strokeWidth={1.75}
                   className="text-secondary-foreground opacity-60"
                   aria-hidden="true"
                 />

@@ -1,4 +1,4 @@
-import { MoreHorizontal } from "lucide-react";
+import { DotsThreeIcon } from "@phosphor-icons/react";
 import type * as React from "react";
 
 import {
@@ -32,7 +32,7 @@ export const TableCNRowActionsMenu = ({
         "data-[state=open]:bg-hover data-[state=open]:text-ink",
       )}
     >
-      <MoreHorizontal className="size-4" />
+      <DotsThreeIcon className="size-4" />
     </DropdownMenuTrigger>
     <DropdownMenuContent
       align="end"

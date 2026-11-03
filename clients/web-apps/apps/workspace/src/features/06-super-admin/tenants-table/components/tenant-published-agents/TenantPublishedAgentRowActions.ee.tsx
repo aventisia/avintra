@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
-import { CoinsIcon } from "lucide-react";
+import { CoinsIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useTenantPublishedAgentsStore } from "../../stores/tenant-published-agents-store.ee";

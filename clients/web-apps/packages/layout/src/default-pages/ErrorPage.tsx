@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { TriangleAlertIcon } from "lucide-react";
+import { WarningIcon } from "@phosphor-icons/react";
 import { useRouteError } from "react-router-dom";
 
 interface ErrorPageProps {
@@ -65,7 +65,7 @@ const ErrorPage = ({ appLogo, minimalFooter }: ErrorPageProps) => {
       </div>
 
       <div className="-mt-4 flex grow flex-col items-center justify-center gap-3 text-body text-ink-2 mlg:flex-row">
-        <TriangleAlertIcon className="size-10 text-muted-foreground" strokeWidth={1.75} />
+        <WarningIcon className="size-10 text-muted-foreground" />
         <h2 className="text-heading font-semibold text-bad">Error!</h2>
         <Separator orientation="vertical" className="hidden h-10 w-px bg-line mlg:flex" />
         {error.statusText || error.message ? (

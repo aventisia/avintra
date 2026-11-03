@@ -3,7 +3,7 @@ import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRightIcon, InfoIcon } from "@phosphor-icons/react";
 import { useEffect, useId, useState } from "react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
@@ -46,7 +46,7 @@ type AgentToMoveCalloutProps = {
 const AgentToMoveCallout = ({ agent, folderName, folderColor }: AgentToMoveCalloutProps) => (
   <div className="flex items-center gap-3 rounded-md bg-sunken px-3.5 py-3 ring-1 ring-line">
     <AgentAvatar size="md" />
-    <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+    <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
     <FolderMark color={folderColor} size="sm" />
     <p className="min-w-0 text-[12.5px] leading-5 text-ink-2">
       <span className="font-semibold text-ink">{agent.name}</span> moves into{" "}
@@ -226,7 +226,7 @@ export const FolderFormDialog = ({
         )}
 
         <p className="flex gap-2 text-[12px] leading-5 text-muted-foreground">
-          <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+          <InfoIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
           Folders only organize the list. Moving an agent into a folder doesn’t change who can see
           or edit it.
         </p>

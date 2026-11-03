@@ -1,6 +1,6 @@
 import { Input, LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 import { SetupCard } from "./components/SetupCard";
@@ -95,7 +95,7 @@ export default function ServiceUrlPage({ onContinue }: ServiceUrlPageProps) {
           ) : (
             <span className="inline-flex items-center gap-1.5">
               Continue
-              <Lucide icon="ArrowRight" className="h-4 w-4" />
+              <ArrowRightIcon className="h-4 w-4" />
             </span>
           )}
         </Button>

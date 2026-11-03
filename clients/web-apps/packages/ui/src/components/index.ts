@@ -15,7 +15,6 @@ export * from "./input-group";
 export * from "./Input";
 export * from "./json-viewer";
 export * from "./LoadingSpinner";
-export * from "./Lucide";
 export * from "./EmptyState";
 export * from "./PhoneInput";
 export * from "./Separator";

@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { MessagesSquareIcon } from "lucide-react";
+import { ChatsIcon } from "@phosphor-icons/react";
 
 interface ChatAssistantProps {
   className?: string;
@@ -15,7 +15,7 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
           className,
         )}
       >
-        <MessagesSquareIcon className="h-6 w-6" />
+        <ChatsIcon className="h-6 w-6" />
       </PopoverTrigger>
       <PopoverContent
         align="end"

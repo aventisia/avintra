@@ -1,7 +1,7 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
+import { PlugIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PlugIcon } from "lucide-react";
 import React from "react";
 
 import { createOAuthConnectLink } from "../../apis/vault-credentials.apis";

@@ -1,7 +1,7 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
+import { PulseIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ActivityIcon } from "lucide-react";
 import React from "react";
 
 import { testCorsairCredential } from "../../apis/vault-credentials.apis";
@@ -36,7 +36,7 @@ export const VaultCredentialRowTestConnectionAction: React.FC<
     <SimpleDDMenuItem
       size="md"
       content="Test connection"
-      Icon={ActivityIcon}
+      Icon={PulseIcon}
       disabled={isPending}
       onClick={() => mutate(rowId)}
     />

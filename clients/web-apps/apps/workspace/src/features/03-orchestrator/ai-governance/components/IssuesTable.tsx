@@ -10,8 +10,8 @@ import {
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCN, useTableCN } from "@avplatform/ui/table-cn";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusIcon, Trash2Icon } from "lucide-react";
 
 import { SelectOption } from "../constants/dropdown-options";
 import { AgentRiskIssueDto } from "../dtos/agent-risk-issue-dto";
@@ -194,7 +194,7 @@ export const IssuesTable = () => {
           className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
           aria-label="Remove issue"
         >
-          <Trash2Icon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </button>
       ),
     },

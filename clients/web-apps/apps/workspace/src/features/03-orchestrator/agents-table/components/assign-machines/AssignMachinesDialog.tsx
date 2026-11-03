@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAssignMachineStore } from "../../stores/assign-machine-store";

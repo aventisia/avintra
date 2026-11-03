@@ -1,4 +1,4 @@
-import { TriangleAlert } from "lucide-react";
+import { WarningIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useMatch, useNavigate } from "react-router-dom";
 
@@ -103,7 +103,7 @@ export const FolderDeleteDialog = ({
       footer={
         <>
           <p className="flex min-w-0 items-center gap-2 text-[12.5px] text-muted-foreground">
-            <TriangleAlert className="size-4 shrink-0 text-warn" />
+            <WarningIcon className="size-4 shrink-0 text-warn" />
             <span className="truncate">The folder can’t be restored</span>
           </p>
           <div className="flex shrink-0 items-center gap-2">

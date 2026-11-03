@@ -8,8 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
+import { CurrencyCircleDollarIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { BadgeDollarSignIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -95,7 +95,7 @@ export function PlanFilter<TData>({ table, data, columnId }: PlanFilterProps<TDa
       <DropdownMenuTrigger
         className={cn(buttonVariants({ variant: "outline", size: "xs" }), "hidden gap-2 lg:flex")}
       >
-        <BadgeDollarSignIcon className="h-4 w-4" />
+        <CurrencyCircleDollarIcon className="h-4 w-4" />
         Plan
       </DropdownMenuTrigger>
 

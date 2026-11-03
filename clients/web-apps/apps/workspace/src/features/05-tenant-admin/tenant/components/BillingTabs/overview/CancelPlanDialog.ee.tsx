@@ -11,7 +11,7 @@ import {
 import { Label } from "@avplatform/ui/label";
 import { RadioGroup, RadioGroupItem } from "@avplatform/ui/radio-group";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { AlertTriangleIcon, X } from "lucide-react";
+import { WarningIcon, XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCancelPlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/cancel-plan-dialog-store.ee";
@@ -34,14 +34,14 @@ const CancelPlanDialog = () => {
           <DialogTitle className="justify-between">
             <h2 className="text-heading">Cancel plan</h2>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
+              <XIcon className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Cancel plan</span>
             </DialogPrimitive.Close>
           </DialogTitle>
         </DialogHeader>
 
         <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-bad/10 px-3 py-2 text-[0.85rem] text-bad">
-          <AlertTriangleIcon className="h-5 w-5 text-bad" />
+          <WarningIcon className="h-5 w-5 text-bad" />
           Warning: This action will permanently delete your account
         </div>
         <div className="mt-2 space-y-4 px-6 pb-4 pt-1.5 text-md">

@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PlayIcon, SquareIcon } from "lucide-react";
+import { PlayIcon, SquareIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";

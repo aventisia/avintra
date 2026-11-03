@@ -6,8 +6,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { ProhibitIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { CircleOff } from "lucide-react";
 
 import { disableUsers } from "../../apis/users-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -62,7 +62,7 @@ export function UsersBulkActions({ table }: UsersBulkActionsProps) {
       <TableCNActionBarSeparator />
       <LockedActionTooltip>
         <TableCNActionBarItem
-          icon={CircleOff}
+          icon={ProhibitIcon}
           onClick={disableSelectedUsersHandler}
           disabled={locked}
         >

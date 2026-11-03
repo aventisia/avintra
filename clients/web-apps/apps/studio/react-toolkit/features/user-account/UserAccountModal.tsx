@@ -9,8 +9,8 @@ import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { getUserDisplayName } from "@avplatform/ui/utils";
+import { CircleNotchIcon, SignOutIcon, UserIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, LogOutIcon, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -109,9 +109,9 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           onClick={() => mutate()}
         >
           {isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[--icon-color]" />
+            <CircleNotchIcon className="h-4 w-4 animate-spin text-[--icon-color]" />
           ) : (
-            <LogOutIcon className="h-4 w-4" />
+            <SignOutIcon className="h-4 w-4" />
           )}
           Logout
         </Button>

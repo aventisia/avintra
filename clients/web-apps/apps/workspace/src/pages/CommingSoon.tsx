@@ -1,4 +1,4 @@
-import { ClockIcon, RocketIcon } from "lucide-react";
+import { ClockIcon, RocketIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useLocation } from "react-router-dom";
 

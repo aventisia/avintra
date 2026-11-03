@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { CopyPlus } from "lucide-react";
+import { CopySimpleIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCloneToAgentMutation } from "@/features/version-history/hooks/useCloneToAgentMutation";
@@ -24,7 +24,7 @@ export default function CloneToAgentAction({ id }: { id: string }) {
 
   return (
     <SimpleDDMenuItem
-      Icon={CopyPlus}
+      Icon={CopySimpleIcon}
       size="sm"
       content="Clone to new agent"
       onClick={handleClone}
