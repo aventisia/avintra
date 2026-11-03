@@ -1,6 +1,6 @@
 import { LockedActionTooltip } from "@avplatform/ui/action-lock";
 import { SplitButton } from "@avplatform/ui/buttons";
-import { useCreateEntityAction } from "@avplatform/ui/data-table";
+import { useCreateEntityAction } from "@avplatform/ui/crud-dialog";
 import { MenuContent, MenuItem, MenuShortcut } from "@avplatform/ui/dropdown-menu";
 import { ChevronUp, FolderPlus, Option, Plus } from "lucide-react";
 

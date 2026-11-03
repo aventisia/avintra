@@ -1,6 +1,7 @@
-// TableCN data table (port of tablecn); coexists with the legacy `data-table` during migration
+// TableCN data table (port of tablecn)
 export { TableCN } from "./TableCN";
 export { TableCNColumnHeader } from "./TableCNColumnHeader";
+export { TableCNHeading } from "./TableCNHeading";
 export { TableCNPagination, type TableCNPaginationProps } from "./TableCNPagination";
 export { TableCNSearchInput } from "./TableCNSearchInput";
 export { TableCNSkeleton } from "./TableCNSkeleton";

@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 import { useParams } from "react-router-dom";
 
@@ -19,7 +19,7 @@ export const QueuesWorkItemsPage = () => {
   const { qid } = useParams();
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <TriggersTable key={qid} />
     </Suspense>
   );

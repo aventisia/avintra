@@ -1,5 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { useEffect } from "react";
@@ -66,7 +66,7 @@ export const JobUpdateForm = ({ rowId }: JobUpdateFormProps) => {
 
       {isClosingStatusEnabled && <TextareaField {...remarksProps} />}
 
-      <div className="!mt-5 flex w-full justify-end">
+      <CrudDialogActions>
         <SubmitButton
           className="min-w-[5rem]"
           primaryText="Save changes"
@@ -74,7 +74,7 @@ export const JobUpdateForm = ({ rowId }: JobUpdateFormProps) => {
           isPending={isPending}
           disabled={!isDirty || !isValid || isPending}
         />
-      </div>
+      </CrudDialogActions>
     </Form>
   );
 };

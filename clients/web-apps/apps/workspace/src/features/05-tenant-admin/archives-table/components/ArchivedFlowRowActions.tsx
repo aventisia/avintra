@@ -1,5 +1,5 @@
-import { DataTableRowActions } from "@avplatform/ui/data-table";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 import { ExternalLinkIcon } from "lucide-react";
 
 interface ArchivedFlowRowActionsProps {
@@ -15,12 +15,12 @@ export const ArchivedFlowRowActions = ({ rowId, refId }: ArchivedFlowRowActionsP
 
   return (
     // Dropdown menu for Archived flow table row actions
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open archived flow actions">
       <SimpleDDMenuItem
         content="View"
         Icon={ExternalLinkIcon}
         onClick={handleOpenArchivedFlowAction}
       />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

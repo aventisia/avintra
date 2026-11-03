@@ -1,6 +1,11 @@
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
 import {
   TABLE_HEADING,
@@ -45,7 +50,7 @@ export const TemplatesApprovalTable = ({ isSuperAdmin = false }: { isSuperAdmin?
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table heading */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <TableCNHeading heading={TABLE_HEADING} />
           </div>
 
           {/* Main table with its toolbar and pagination footer */}

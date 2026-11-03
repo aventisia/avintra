@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the SpacesTable component.
@@ -14,7 +14,7 @@ const SpacesTable = lazy(() =>
  */
 export const SpacesPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <SpacesTable />
     </Suspense>
   );

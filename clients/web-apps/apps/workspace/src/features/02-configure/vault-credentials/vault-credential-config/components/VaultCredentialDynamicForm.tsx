@@ -1,6 +1,6 @@
 import { CopyableText, LoadingSpinner, Separator } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { Info } from "lucide-react";
@@ -281,7 +281,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
         )}
 
         {isType && !isReadOnly && (
-          <div className="!mt-5 flex w-full justify-end">
+          <CrudDialogActions>
             <SubmitButton
               className="min-w-[5rem]"
               primaryText={action === "create" ? "Save" : "Save changes"}
@@ -289,7 +289,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
               isPending={isSubmitting}
               disabled={!isDirty || !isAvailable || isCheckPending}
             />
-          </div>
+          </CrudDialogActions>
         )}
       </Form>
     </>

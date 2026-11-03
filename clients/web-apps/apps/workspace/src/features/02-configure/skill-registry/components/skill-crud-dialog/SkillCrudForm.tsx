@@ -1,5 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
@@ -102,7 +102,7 @@ export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <CrudDialogActions>
           <SubmitButton
             className="min-w-[5rem]"
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
@@ -110,7 +110,7 @@ export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
             isPending={isPending}
             disabled={!isDirty || !isAvailable || isCheckPending}
           />
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

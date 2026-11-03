@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import {
   AutherCard,
@@ -230,7 +230,7 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
 
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <CrudDialogActions>
           <Button
             type="submit"
             disabled={!isDirty || !isAvailable || isCheckPending}
@@ -238,7 +238,7 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
           >
             {crudAction === "create" ? "Create tenant" : "Save changes"}
           </Button>
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

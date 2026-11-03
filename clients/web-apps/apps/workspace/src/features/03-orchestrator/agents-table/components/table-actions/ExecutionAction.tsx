@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
+import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { PlayIcon, SquareIcon } from "lucide-react";

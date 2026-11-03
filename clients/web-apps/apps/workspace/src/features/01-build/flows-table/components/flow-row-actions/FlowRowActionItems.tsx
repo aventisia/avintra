@@ -1,4 +1,4 @@
-import { DTRowAction } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { RemoveResourceRowAction } from "@/features/resource-user-access/components/common-row-actions/RemoveResourceRowAction";
@@ -38,8 +38,8 @@ export const FlowRowActionItems = ({
     <>
       <FlowRowOpenAction rowId={rowId} />
       {actions?.read && <FlowRowExportAction rowId={rowId} />}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="flow" />}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="flow" />}
+      {actions?.read && <CrudRowAction rowId={rowId} crudAction="read" entity="flow" />}
+      {actions?.update && <CrudRowAction rowId={rowId} crudAction="update" entity="flow" />}
       {actions?.update && (
         <FlowRowMoveToFolderAction rowId={rowId} name={name} folderId={folderId} />
       )}

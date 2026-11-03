@@ -1,6 +1,10 @@
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCNPagination, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCNHeading,
+  TableCNPagination,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
 import { NoAgentsAvailable } from "@/features/04-assist/my-chats/components/NoAgentsAvailable";
 
@@ -49,7 +53,7 @@ export const AgentsAssistTable = () => {
           {/* Page heading */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
           </div>
 

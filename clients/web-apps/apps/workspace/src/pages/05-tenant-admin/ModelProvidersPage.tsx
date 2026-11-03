@@ -1,5 +1,5 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the ModelProviders component.
@@ -17,7 +17,7 @@ export const ModelProvidersPage = () => {
   useDocumentTitle("Models");
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <ModelProviders />
     </Suspense>
   );

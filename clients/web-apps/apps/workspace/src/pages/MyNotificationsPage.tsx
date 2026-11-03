@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 const Notifications = lazy(() =>
@@ -8,7 +8,7 @@ const Notifications = lazy(() =>
 );
 
 export const MyNotificationsPage = () => (
-  <Suspense fallback={<DataTableSkeleton />}>
+  <Suspense fallback={<TableCNSkeleton />}>
     <Notifications />
   </Suspense>
 );

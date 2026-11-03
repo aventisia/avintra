@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { LoadingSpinner } from "@/ui/components";
 import { buttonVariants } from "@/ui/components/buttons";
+import { useSubmitTargetFormId } from "@/ui/components/form/FormIdContext";
 import { cn } from "@/ui/lib";
 
 /** SubmitButton props interface */
@@ -31,9 +32,12 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
     },
     ref,
   ) => {
+    const formId = useSubmitTargetFormId();
+
     return (
       <button
         type="submit"
+        form={formId}
         className={cn("gap-2", buttonVariants({ variant, size }), className)}
         ref={ref}
         {...props}

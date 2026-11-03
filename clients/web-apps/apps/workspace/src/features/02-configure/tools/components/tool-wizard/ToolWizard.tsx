@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { toast } from "@avplatform/ui/sonner";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQueryClient } from "@tanstack/react-query";
