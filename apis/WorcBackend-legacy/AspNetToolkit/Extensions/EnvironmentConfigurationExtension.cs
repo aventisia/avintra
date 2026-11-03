@@ -284,9 +284,14 @@ public static class EnvironmentConfigurationExtension
 
         // CORS origins configuration
         var EXTRA_CORS_ORIGINS = Environment.GetEnvironmentVariable("EXTRA_CORS_ORIGINS") ?? string.Empty;
-        var CORS_ORIGINS = string.IsNullOrEmpty(EXTRA_CORS_ORIGINS)
-                            ? $"https://{APP_BASE_URL}"
-                            : $"https://{APP_BASE_URL};{EXTRA_CORS_ORIGINS}";
+        var CONFIGURED_CORS_ORIGINS = config["EnvironmentConfig:CorsOrigins"] ?? string.Empty;
+        var CORS_ORIGINS = string.Join(
+            ';',
+            new[] { $"https://{APP_BASE_URL}", CONFIGURED_CORS_ORIGINS, EXTRA_CORS_ORIGINS }
+                .SelectMany(origins => origins.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                .Select(origin => origin.Trim())
+                .Where(origin => origin.Length > 0)
+                .Distinct());
 
         // Allowed hosts configuration
         var EXTRA_ALLOWED_HOSTS = Environment.GetEnvironmentVariable("EXTRA_ALLOWED_HOSTS") ?? string.Empty;
