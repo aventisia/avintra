@@ -93,7 +93,7 @@ server
 	}
 
 	location /globaladmin/ {
-		alias /usr/share/nginx/html/global-admin/;
+		alias /usr/share/nginx/html/globaladmin/;
 		try_files $uri $uri.html $uri/ /globaladmin/index.html =404;
 	}
 
