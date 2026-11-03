@@ -23,6 +23,7 @@ import {
 } from "../constants/tools-table.constants";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
+import { getToolDetailsPath } from "../utils/tool-details-path.util";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
 import { ToolIcon } from "./ToolIcon";
 import { toolsTableColumns } from "./ToolsTableColumns";
@@ -83,9 +84,7 @@ export const ToolsTable = () => {
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
-                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
-                    row.getValue("name"),
-                  )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
+                  to={getToolDetailsPath(row.original.id ?? "", row.original.name, isPlatformTab)}
                 >
                   <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3.5 py-2.5 transition-colors hover:border-line-strong">
                     {/* Left: Icon with centered content */}

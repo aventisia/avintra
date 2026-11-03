@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 import { FALLBACK_VALUE } from "@/ui/constants";
 
@@ -40,3 +40,9 @@ export const formatDate = (value?: Date | string | number | null, withTime: bool
   // .NET default DateTime sentinel should not be shown in the UI.
   return formattedDate === "01 Jan 0001 12:00:00 AM" ? FALLBACK_VALUE : formattedDate;
 };
+
+/**
+ * Distance from now with a direction, for example "3 hours ago" or "in 2 days".
+ */
+export const formatRelativeTime = (value: Date | string) =>
+  formatDistanceToNow(new Date(value), { addSuffix: true });

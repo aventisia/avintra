@@ -47,6 +47,21 @@ export const RecordListItem = ({
 }) => <li className={cn("flex items-center gap-3 p-3", className)}>{children}</li>;
 
 /**
+ * Bordered box for a section's free-form content, for example remarks or a JSON payload.
+ */
+export const RecordPanel = ({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <div className={cn("rounded-lg bg-popover px-4 py-3 ring-1 ring-line", className)}>
+    {children}
+  </div>
+);
+
+/**
  * Dashed placeholder for a section with nothing to list.
  */
 export const RecordEmpty = ({ mark, children }: { mark?: ReactNode; children: ReactNode }) => (

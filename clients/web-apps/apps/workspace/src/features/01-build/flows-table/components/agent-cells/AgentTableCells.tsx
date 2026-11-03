@@ -3,7 +3,12 @@ import { cn } from "@avplatform/ui/lib";
 import { ListChecksIcon } from "@phosphor-icons/react";
 import { NavLink } from "react-router-dom";
 
-import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
+import {
+  AGENT_NAME_LINK_CLASS,
+  AgentPublishedMark,
+  AgentTypeAvatar,
+  AgentVersion,
+} from "@/components/AgentIdentity";
 import { PersonAvatar } from "@/components/PersonAvatar";
 import { pluralize } from "@/utils/pluralize.util";
 
@@ -55,12 +60,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
         </NavLink>
       )}
       <AgentVersion versionNumber={flow.versionNumber} lastModifiedOn={flow.lastModifiedOn} />
-      {!flow.isArchived && flow.isPublished && (
-        <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="size-1.5 rounded-full bg-ok" />
-          Published
-        </span>
-      )}
+      {!flow.isArchived && flow.isPublished && <AgentPublishedMark />}
       {queueCount > 0 && (
         <span
           className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground"

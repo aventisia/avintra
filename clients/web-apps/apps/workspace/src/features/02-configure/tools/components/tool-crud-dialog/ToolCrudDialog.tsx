@@ -1,16 +1,17 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
+import { Navigate } from "react-router-dom";
 
+import { getToolDetailsPath } from "../../utils/tool-details-path.util";
 import { ToolWizard } from "../tool-wizard/ToolWizard";
-import { ToolCrudForm } from "./ToolCrudForm";
 
-interface ToolCrudDialogContentProps {
+type ToolCrudDialogContentProps = {
   crudAction: DialogCrudAction;
   rowId: string;
-}
+};
 
 export const ToolCrudDialogContent = ({ crudAction, rowId }: ToolCrudDialogContentProps) => {
   if (crudAction === "read") {
-    return <ToolCrudForm rowId={rowId} crudAction={crudAction} />;
+    return <Navigate to={getToolDetailsPath(rowId)} replace />;
   }
   return <ToolWizard crudAction={crudAction} rowId={rowId} />;
 };

@@ -43,12 +43,3 @@ export const getSaDialogHeadingDescription = (crudAction: DialogCrudAction) => {
       return { heading: "", description: "" };
   }
 };
-
-/**
- * Formats a PascalCase enum value into a human-friendly label.
- * e.g. "SelectedUsers" -> "Selected Users", "AllUsers" -> "All Users".
- */
-export const formatEnumLabel = (value?: string | null): string => {
-  if (!value) return "";
-  return value.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
-};

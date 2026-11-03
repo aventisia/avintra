@@ -2,24 +2,8 @@ import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { ManualToolOperation } from "../../dtos";
+import { getHttpMethodBadgeClass } from "../../utils/http-method-badge.util";
 import { MethodForm } from "./method-form/MethodForm";
-
-const methodBadgeClass = (method: string): string => {
-  switch (method) {
-    case "GET":
-      return "bg-ok/10 text-ok";
-    case "POST":
-      return "bg-selected text-primary-text";
-    case "PUT":
-      return "bg-warn/10 text-warn";
-    case "PATCH":
-      return "bg-selected text-primary-text";
-    case "DELETE":
-      return "bg-bad/10 text-bad";
-    default:
-      return "bg-primary/10 text-primary";
-  }
-};
 
 type ManualMethodsEditorProps = {
   operations: ManualToolOperation[];
@@ -83,7 +67,7 @@ export const ManualMethodsEditor = ({
               <div className="rounded border bg-muted/30 p-2">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${methodBadgeClass(operation.method)}`}
+                    className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${getHttpMethodBadgeClass(operation.method)}`}
                   >
                     {operation.method}
                   </span>

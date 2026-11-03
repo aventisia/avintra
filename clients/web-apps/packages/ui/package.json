@@ -117,7 +117,6 @@
     "./components/floating-label-input": "./src/components/floating-label-input/index.tsx",
     "./components/input-group": "./src/components/input-group/index.tsx",
     "./components/view-record": "./src/components/view-record/index.tsx",
-    "./components/view-record/ViewDefaultCard": "./src/components/view-record/ViewDefaultCard.tsx",
     "./components/form/fields/AsyncMultiSelectField": "./src/components/form/fields/async-select-field/AsyncMultiSelectField.tsx",
     "./components/form/fields/AsyncSingleSelectField": "./src/components/form/fields/async-select-field/AsyncSingleSelectField.tsx",
     "./components/form/fields/DateTimePickerField": "./src/components/form/fields/DateTimePickerField.tsx",
