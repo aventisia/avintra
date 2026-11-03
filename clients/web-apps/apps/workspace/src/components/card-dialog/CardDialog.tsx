@@ -11,6 +11,8 @@ type CardDialogProps = {
   mark: ReactNode;
   eyebrow: ReactNode;
   title: ReactNode;
+  /** Rendered after the title, outside the dialog's accessible name, for example a copy button. */
+  titleAccessory?: ReactNode;
   children: ReactNode;
   footer: ReactNode;
   eyebrowClassName?: string;
@@ -32,6 +34,7 @@ export const CardDialog = ({
   mark,
   eyebrow,
   title,
+  titleAccessory,
   children,
   footer,
   eyebrowClassName,
@@ -66,9 +69,12 @@ export const CardDialog = ({
           >
             {eyebrow}
           </p>
-          <DialogPrimitive.Title className="truncate text-heading text-ink">
-            {title}
-          </DialogPrimitive.Title>
+          <div className="flex min-w-0 items-center gap-1">
+            <DialogPrimitive.Title className="min-w-0 truncate text-heading text-ink">
+              {title}
+            </DialogPrimitive.Title>
+            {titleAccessory}
+          </div>
         </div>
         <button
           type="button"

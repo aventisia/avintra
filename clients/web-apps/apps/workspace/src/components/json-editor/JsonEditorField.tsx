@@ -1,4 +1,5 @@
-import { FormControl, FormLabelExt } from "@avplatform/ui/form";
+import { useIsInsideCrudDialog } from "@avplatform/ui/crud-dialog";
+import { FormControl, FormLabelExt, crudDialogFieldClasses } from "@avplatform/ui/form";
 import { FormField } from "@avplatform/ui/form";
 import { FormItem } from "@avplatform/ui/form";
 import { FormMessage } from "@avplatform/ui/form";
@@ -39,6 +40,7 @@ const JsonEditorField = ({
   size = "base",
 }: JsonEditorFieldProps) => {
   const { control } = useFormContext<FieldValues>();
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
 
   return (
     <>
@@ -58,7 +60,7 @@ const JsonEditorField = ({
                 value={field.value}
                 onChange={field.onChange}
                 disabled={disabled}
-                className={cn(className)}
+                className={cn(isInDialog && crudDialogFieldClasses.jsonEditor, className)}
               />
             </FormControl>
 

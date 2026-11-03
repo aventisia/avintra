@@ -14,6 +14,7 @@ export const idProps: InputFieldProps = {
 export const nameProps: InputFieldProps = {
   name: "name",
   label: "Unique name",
+  placeholder: "e.g. invoice-requests",
   isRequired: true,
   description:
     "A **unique**, descriptive name for the queue.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
@@ -57,12 +58,13 @@ export const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
   description: "A short summary of what the queue is used for.",
+  placeholder: "What is this queue used for?",
   className: "min-h-[6rem]",
 };
 
 export const maxRetriesProps: InputFieldProps = {
   name: "maximumRetryAttempts",
-  label: "Max of retries",
+  label: "Max retries",
   description: "The maximum number of times an item can be retried.",
   type: "number",
   min: 0,

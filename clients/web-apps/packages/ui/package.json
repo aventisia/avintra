@@ -52,6 +52,7 @@
     "./multi-selector": "./src/components/multi-selector/index.ts",
     "./popover": "./src/components/popover/index.ts",
     "./radio-group": "./src/components/radio-group/index.ts",
+    "./record-sheet": "./src/components/record-sheet/index.ts",
     "./scroll": "./src/components/scroll/index.ts",
     "./select": "./src/components/select/index.ts",
     "./sonner": "./src/components/sonner/index.ts",

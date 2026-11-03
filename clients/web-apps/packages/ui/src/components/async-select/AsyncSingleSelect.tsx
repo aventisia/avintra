@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/ui/components/Input";
 import { LoadingSpinner } from "@/ui/components/LoadingSpinner";
 import { Button } from "@/ui/components/buttons";
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
+import { crudDialogFieldClasses } from "@/ui/components/form/crud-dialog-field-classes";
 import { ScrollArea } from "@/ui/components/scroll";
 import { cn } from "@/ui/lib";
 
@@ -38,6 +40,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
@@ -160,6 +163,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
           className={cn(
             "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground",
             size === "base" && "left-2.5 size-4",
+            isInDialog && crudDialogFieldClasses.searchIcon,
             size === "sm" && "left-2 size-3.5",
             size === "xs" && "left-[0.45rem] size-3",
           )}
@@ -172,6 +176,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
           disabled={disabled}
           className={cn(
             size === "base" && "pl-8 pr-8",
+            isInDialog && crudDialogFieldClasses.searchInput,
             size === "sm" && "pl-7 pr-7",
             size === "xs" && "pl-[1.36rem] pr-[1.36rem]",
           )}

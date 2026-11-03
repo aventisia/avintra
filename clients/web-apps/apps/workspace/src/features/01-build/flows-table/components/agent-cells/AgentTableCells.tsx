@@ -1,11 +1,9 @@
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
-import { formatDate } from "@avplatform/ui/utils";
 import { ListChecksIcon } from "@phosphor-icons/react";
-import { formatDistanceToNow } from "date-fns";
 import { NavLink } from "react-router-dom";
 
-import { AgentAvatar } from "@/components/AgentAvatar";
+import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
 import { PersonAvatar } from "@/components/PersonAvatar";
 import { pluralize } from "@/utils/pluralize.util";
 
@@ -34,10 +32,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
   const linkProps = {
     draggable: false,
     title: `Open ${flow.name} v${flow.versionNumber} in Agent Builder`,
-    className: cn(
-      "min-w-0 truncate rounded-sm font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
-      flow.isArchived ? "text-muted-foreground" : "text-ink",
-    ),
+    className: cn(AGENT_NAME_LINK_CLASS, flow.isArchived ? "text-muted-foreground" : "text-ink"),
   };
   const name = (
     <>
@@ -46,19 +41,10 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
     </>
   );
   const queueCount = flow.queues?.length ?? 0;
-  const agentType = AGENT_TYPES.find((option) => option.value === flow.type);
 
   return (
     <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
-      <AgentAvatar
-        size="sm"
-        Icon={agentType?.icon}
-        className={cn(
-          "size-[30px] rounded-md",
-          agentType?.tint,
-          flow.isArchived && "opacity-50 grayscale",
-        )}
-      />
+      <AgentTypeAvatar type={flow.type} isMuted={flow.isArchived} />
       {isExternal ? (
         <a href={href} {...linkProps}>
           {name}
@@ -68,16 +54,7 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
           {name}
         </NavLink>
       )}
-      <span
-        className="shrink-0 font-mono text-[11.5px] tabular-nums text-muted-foreground"
-        title={
-          flow.lastModifiedOn
-            ? `Updated ${formatDistanceToNow(flow.lastModifiedOn, { addSuffix: true })} (${formatDate(flow.lastModifiedOn, true)})`
-            : undefined
-        }
-      >
-        v{flow.versionNumber}
-      </span>
+      <AgentVersion versionNumber={flow.versionNumber} lastModifiedOn={flow.lastModifiedOn} />
       {!flow.isArchived && flow.isPublished && (
         <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
           <span className="size-1.5 rounded-full bg-ok" />

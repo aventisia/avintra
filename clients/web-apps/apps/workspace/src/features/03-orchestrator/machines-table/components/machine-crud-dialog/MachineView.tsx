@@ -1,48 +1,69 @@
-import { CopyableText, EmptyState, LoadingSpinner, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
-import {
-  ViewBadge,
-  ViewContainer,
-  ViewField,
-  ViewFieldWithCopy,
-  ViewInfoRow,
-  ViewInfoRowsCard,
-} from "@avplatform/ui/components/view-record";
-import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
+import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
+import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
+import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
+import { cn } from "@avplatform/ui/lib";
+import {
+  RecordEmpty,
+  RecordFact,
+  RecordFactGrid,
+  RecordIdentifier,
+  RecordIdentifiers,
+  RecordList,
+  RecordListItem,
+  RecordSection,
+  RecordSheet,
+  RecordSheetLoading,
+  RecordSheetUnavailable,
+  RecordStatusHero,
+  RecordSummary,
+  type RecordTone,
+} from "@avplatform/ui/record-sheet";
+import type { IconProps } from "@avplatform/ui/types";
 import { formatDate } from "@avplatform/ui/utils";
 import {
-  CheckCircleIcon,
+  DesktopIcon,
+  LinuxLogoIcon,
   MonitorIcon,
-  ProhibitIcon,
-  TreeStructureIcon,
+  TerminalWindowIcon,
+  UserCircleIcon,
+  WindowsLogoIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import type { ComponentType } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import NewAgentIcon from "@/components/NewAgentIcon";
+import { AgentAvatar } from "@/components/AgentAvatar";
+import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
+import { PersonAvatar } from "@/components/PersonAvatar";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMachine } from "../../apis/machines-table-apis";
-import { statusVariant } from "../../constants/column-display-names";
 import type { MachineRecordDto } from "../../dtos/machine-record.dto";
 import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
 
-/**
- * MachineView component displays the details of a machine in a read-only view.
- * It fetches the machine data from the API using the rowId from the crud dialog store.
- * If the machine data is not found, it displays a message indicating that the record is not available.
- * Otherwise, it renders the machine details including profile, OS type, connection status,
- * assigned flow versions/agents with their metadata, and audit trail.
- * The component uses various UI components such as CopyableText, Badge, and ViewInfoRowsCard to present the information in a structured manner.
- *
- * @returns {JSX.Element} The rendered MachineView component.
- */
-interface MachineViewProps {
-  rowId: string;
-}
+const STATUS_TONES: Record<MachineStatusEnum, RecordTone> = {
+  [MachineStatusEnum.Online]: "ok",
+  [MachineStatusEnum.Running]: "live",
+  [MachineStatusEnum.Idle]: "neutral",
+  [MachineStatusEnum.Offline]: "neutral",
+  [MachineStatusEnum.Stopped]: "bad",
+};
 
+const OS_ICONS: Record<OsTypesEnum, ComponentType<IconProps>> = {
+  [OsTypesEnum.Windows]: WindowsLogoIcon,
+  [OsTypesEnum.Linux]: LinuxLogoIcon,
+};
+
+type MachineViewProps = {
+  rowId: string;
+};
+
+/**
+ * Read-only machine record: connection status, host facts, identifiers and assigned agents.
+ */
 export const MachineView = ({ rowId }: MachineViewProps) => {
   // Get the currently selected space so the query refetches when the space changes
   // (query key includes the space id — without it the cached agents list from the
@@ -53,7 +74,6 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
     })),
   );
 
-  // Fetch the machine data from the API
   const { data: response, isLoading } = useQuery({
     queryKey: ["machine", rowId, currentSpace?.id ?? ""],
     queryFn: () => getMachine(rowId),
@@ -61,120 +81,101 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
   });
 
   const machine = response?.data as MachineRecordDto | undefined;
+  useCrudDialogRecordView(machine?.name);
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-4rem)] flex-col text-sm gap-3 items-center justify-center">
-        <LoadingSpinner className="size-8 text-primary" />
-        Loading machine details...
-      </div>
-    );
-  }
+  if (isLoading) return <RecordSheetLoading label="Loading machine details..." />;
+  if (!machine) return <RecordSheetUnavailable Icon={MonitorIcon} recordLabel="Machine" />;
 
-  // If the machine data is not found, display a message indicating that the record is not available
-  if (!machine) {
-    return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
-        <EmptyState
-          className="-mt-20"
-          Icon={MonitorIcon}
-          primaryMessage="Machine record is not available."
-          secondaryMessage="Try refreshing the page and opening this record again."
-        />
-      </div>
-    );
-  }
+  const agents = machine.machineFlowVersions ?? [];
+  const OsIcon = OS_ICONS[machine.operatingSystem] ?? DesktopIcon;
+  const lastCheckedIn = formatDate(machine.lastCheckedIn, true);
+  const hasCheckedIn = lastCheckedIn !== FALLBACK_VALUE;
 
-  // Render the machine details in a read-only view
   return (
-    <ViewContainer>
-      <ViewDefaultCard>
-        {/* Machine profile section */}
-        <div className="flex flex-col gap-1">
-          <p className="text-2xs uppercase tracking-wide text-muted-foreground">Machine profile</p>
-          <CopyableText
-            title={`Machine Name: ${machine.name}`}
-            textClassName="truncate max-w-[24rem] text-base font-medium leading-tight"
-            value={machine.name}
+    <RecordSheet>
+      <RecordSummary>
+        <RecordStatusHero
+          Icon={OsIcon}
+          tone={STATUS_TONES[machine.status] ?? "neutral"}
+          title={machine.status}
+          description={
+            hasCheckedIn
+              ? `Last checked in ${formatDistanceToNow(new Date(machine.lastCheckedIn), { addSuffix: true })}`
+              : "Never checked in"
+          }
+          detail={hasCheckedIn && lastCheckedIn}
+          isMuted={machine.isDisabled}
+          aside={
+            machine.isDisabled ? (
+              <Badge variant="destructive">Disabled</Badge>
+            ) : (
+              <Badge variant="outline" className="border-ok/35 text-ok">
+                Enabled
+              </Badge>
+            )
+          }
+        />
+        <RecordFactGrid>
+          <RecordFact Icon={DesktopIcon} label="Hostname" value={machine.hostname} />
+          <RecordFact Icon={TerminalWindowIcon} label="Username" value={machine.username} />
+          <RecordFact Icon={OsIcon} label="Operating system" value={machine.operatingSystem} />
+          <RecordFact
+            Icon={UserCircleIcon}
+            label="Linked account"
+            value={machine.linkedUserAccount}
+            prefix={<PersonAvatar name={machine.linkedUserAccount} className="size-5 text-[9px]" />}
           />
-          <CopyableText
-            className="mt-0.5 w-full"
-            textClassName="font-mono max-w-[24rem] text-sm font-medium text-muted-foreground"
-            value={machine.id ?? FALLBACK_VALUE}
-          />
-        </div>
+        </RecordFactGrid>
+        <RecordIdentifiers>
+          <RecordIdentifier label="Machine ID" value={machine.id} />
+          <RecordIdentifier label="OS unique ID" value={machine.osID} />
+        </RecordIdentifiers>
+      </RecordSummary>
 
-        {/* OS Type and Disabled status section */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <ViewBadge Icon={MonitorIcon} text={machine.operatingSystem} />
-          {machine.isDisabled ? (
-            <ViewBadge Icon={ProhibitIcon} text="Disabled" viewStyle="disabled" />
-          ) : (
-            <ViewBadge Icon={CheckCircleIcon} text="Enabled" viewStyle="enabled" />
-          )}
-        </div>
-
-        {/* OS Unique Id, Hostname, Username, and User section */}
-        <div className="grid grid-cols-2 gap-2">
-          <ViewFieldWithCopy textClassName="font-mono" label="OS unique ID" value={machine.osID} />
-          <ViewField label="Hostname" value={machine.hostname} />
-          <ViewField label="Username" value={machine.username} />
-          <ViewField label="Linked user account" value={machine.linkedUserAccount} />
-        </div>
-      </ViewDefaultCard>
-
-      {/* Agents section */}
-      <ViewInfoRowsCard
-        title="Agents"
-        className="border-line"
-        icon={<NewAgentIcon className="size-3.5 text-primary" />}
-      >
-        {machine.machineFlowVersions && machine.machineFlowVersions.length > 0 ? (
-          <div className="flex flex-col gap-2.5 py-1">
-            {machine.machineFlowVersions.map((flowVersion, index) => (
-              <div key={flowVersion.value} className="flex flex-col gap-1.5">
-                {index > 0 && <Separator className="h-[0.5px]" />}
-                <div className="flex flex-row items-center gap-1.5 justify-between">
-                  <FlowVersionNavLink
-                    to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.value}`}
+      <RecordSection title="Agents" count={agents.length}>
+        {agents.length > 0 ? (
+          <RecordList>
+            {agents.map((flowVersion) => (
+              <RecordListItem
+                key={flowVersion.value}
+                className="text-body-sm transition-colors duration-[120ms] ease-out hover:bg-hover"
+              >
+                <AgentTypeAvatar type={flowVersion.flowType} />
+                <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                  <a
+                    href={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.value}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title={`View ${flowVersion.label} in Agent Builder`}
-                    flowName={flowVersion.label}
-                    flowVersionNumber={`v${flowVersion.versionNumber}`}
+                    draggable={false}
+                    title={`View ${flowVersion.flowName ?? flowVersion.label} v${flowVersion.versionNumber} in Agent Builder`}
+                    className={cn(AGENT_NAME_LINK_CLASS, "text-ink")}
+                  >
+                    {flowVersion.flowName ?? flowVersion.label}
+                  </a>
+                  <AgentVersion
+                    versionNumber={flowVersion.versionNumber}
+                    lastModifiedOn={flowVersion.lastModifiedOn}
                   />
-                  {flowVersion.flowId && machine.id && (
-                    <MachineFlowVersionRowActions
-                      machineId={machine.id}
-                      machineName={machine.name}
-                      flowId={flowVersion.flowId}
-                      flowVersionId={flowVersion.value}
-                      flowVersionLabel={flowVersion.label}
-                      flowVersionPlatform={flowVersion.supportedPlatform}
-                    />
-                  )}
                 </div>
-              </div>
+                {flowVersion.flowId && machine.id && (
+                  <MachineFlowVersionRowActions
+                    machineId={machine.id}
+                    machineName={machine.name}
+                    flowId={flowVersion.flowId}
+                    flowVersionId={flowVersion.value}
+                    flowVersionLabel={flowVersion.label}
+                    flowVersionPlatform={flowVersion.supportedPlatform}
+                  />
+                )}
+              </RecordListItem>
             ))}
-          </div>
+          </RecordList>
         ) : (
-          <ViewInfoRow label="Assigned agents" value="No agents assigned" />
+          <RecordEmpty mark={<AgentAvatar size="md" />}>
+            No agents assigned to this machine
+          </RecordEmpty>
         )}
-      </ViewInfoRowsCard>
-
-      {/* Connection section */}
-      <ViewInfoRowsCard
-        title="Connection"
-        icon={<TreeStructureIcon className="size-3.5 text-muted-foreground" />}
-      >
-        <ViewInfoRow
-          label="Status"
-          value={<Badge variant={statusVariant[machine.status]}>{machine.status}</Badge>}
-        />
-        <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Last checked in" value={formatDate(machine.lastCheckedIn, true)} />
-      </ViewInfoRowsCard>
-    </ViewContainer>
+      </RecordSection>
+    </RecordSheet>
   );
 };

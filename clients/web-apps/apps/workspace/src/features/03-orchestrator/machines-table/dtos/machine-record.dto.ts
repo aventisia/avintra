@@ -1,3 +1,4 @@
+import type { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import type { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import type { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 import type { ISelectOption } from "@avplatform/ui/types";
@@ -9,11 +10,20 @@ export interface MachineFlowVersionDto extends ISelectOption {
   /** The identifier of the parent flow. */
   flowId: string;
 
+  /** The name of the parent flow. */
+  flowName?: string;
+
+  /** The type of the parent flow. */
+  flowType?: FlowTypesEnum;
+
   /** The version number of the flow version. */
   versionNumber: number;
 
   /** Comma-separated platforms the agent supports (for example "cloud" or "windows"). */
   supportedPlatform?: string;
+
+  /** When the flow version was last modified. */
+  lastModifiedOn?: string;
 }
 
 /**

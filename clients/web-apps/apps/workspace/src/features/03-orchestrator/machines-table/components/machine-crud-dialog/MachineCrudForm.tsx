@@ -82,7 +82,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
 
   // Return the form
   return (
-    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       {/* Machine Id */}
       <InputField {...idProps} />
 

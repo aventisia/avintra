@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/ui/components/Input";
 import { LoadingSpinner } from "@/ui/components/LoadingSpinner";
 import { Button } from "@/ui/components/buttons";
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
+import { crudDialogFieldClasses } from "@/ui/components/form/crud-dialog-field-classes";
 import { ScrollArea } from "@/ui/components/scroll";
 import { cn } from "@/ui/lib";
 
@@ -38,6 +40,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
@@ -152,7 +155,12 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
       }}
     >
       {selectedItems.length > 0 && (
-        <div className="-mb-2 flex flex-wrap gap-1 rounded-t-md border border-b-0 bg-sunken px-1 py-1 pb-3">
+        <div
+          className={cn(
+            "-mb-2 flex flex-wrap gap-1 rounded-t-md border border-b-0 bg-sunken px-1 py-1 pb-3",
+            isInDialog && crudDialogFieldClasses.chipTray,
+          )}
+        >
           {selectedItems.map((item) => {
             const itemId = getItemId(item);
 
@@ -164,6 +172,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
                   size === "base" && "text-sm",
                   size === "sm" && "text-xs",
                   size === "xs" && "text-2xs",
+                  isInDialog && crudDialogFieldClasses.chip,
                 )}
               >
                 <span className="max-w-56 truncate">{getItemLabel(item)}</span>
@@ -187,6 +196,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
           className={cn(
             "pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
             size === "base" && "left-2.5 size-4",
+            isInDialog && crudDialogFieldClasses.searchIcon,
             size === "sm" && "left-2 size-3.5",
             size === "xs" && "left-[0.45rem] size-3",
           )}
@@ -199,6 +209,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
           disabled={disabled}
           className={cn(
             size === "base" && "pl-8 pr-8",
+            isInDialog && crudDialogFieldClasses.searchInput,
             size === "sm" && "pl-7 pr-7",
             size === "xs" && "pl-[1.36rem] pr-[1.36rem]",
           )}
