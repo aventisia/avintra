@@ -1,4 +1,4 @@
-import { DTRowActionStore } from "@avplatform/ui/data-table";
+import { CrudRowActionStore } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuContent, DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { DropdownMenu } from "@avplatform/ui/dropdown-menu";
 
@@ -26,10 +26,10 @@ export const FlowListItemActions = ({ flowId }: FlowListItemActionsProps) => {
         <FLIOpenAction flowId={flowId} />
 
         {/* Opens crud dialog to view the flow details */}
-        <DTRowActionStore rowId={flowId} crudAction="read" size="sm" />
+        <CrudRowActionStore rowId={flowId} crudAction="read" size="sm" />
 
         {/* Opens crud dialog to update flow details */}
-        <DTRowActionStore rowId={flowId} crudAction="update" size="sm" />
+        <CrudRowActionStore rowId={flowId} crudAction="update" size="sm" />
 
         {/* DropdownMenuSeparator component */}
         <DropdownMenuSeparator />

@@ -1,6 +1,5 @@
 // -------------------- Hooks --------------------
 export * from "./useCheckAvailability";
-export * from "./useDataTable";
 export * from "./useDocumentTitle";
 export * from "./useBranding";
 export * from "./useBrandLogo";

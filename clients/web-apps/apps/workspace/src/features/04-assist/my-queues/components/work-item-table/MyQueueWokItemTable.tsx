@@ -7,9 +7,8 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
-import { DTHeading } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { TableCN, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import { TableCN, TableCNHeading, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -126,7 +125,7 @@ export const MyQueueWokItemTable = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <DTHeading heading={TABLE_HEADING} />
+          <TableCNHeading heading={TABLE_HEADING} />
           <SearchableSelect
             options={queues.map((q) => ({
               value: q.id,

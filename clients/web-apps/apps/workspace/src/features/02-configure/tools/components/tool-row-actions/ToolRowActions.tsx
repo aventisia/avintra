@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { ResourceFlowAccessRowAction } from "@/features/resource-flow-access/components/common-row-actions/ResourceFlowAccessRowAction";
@@ -33,11 +34,11 @@ export const ToolRowActions = ({
   const { queryKey } = useTableTab();
 
   return (
-    <DataTableRowActions className="w-36 min-w-36">
-      <DTRowAction rowId={rowId} crudAction="read" entity="tool" />
+    <TableCNRowActionsMenu ariaLabel="Open tool actions" contentClassName="w-36 min-w-36">
+      <CrudRowAction rowId={rowId} crudAction="read" entity="tool" />
 
       {!isPlatformTool && actions?.update && (
-        <DTRowAction rowId={rowId} crudAction="update" entity="tool" />
+        <CrudRowAction rowId={rowId} crudAction="update" entity="tool" />
       )}
 
       {!isPlatformTool && actions?.update && (
@@ -66,6 +67,6 @@ export const ToolRowActions = ({
       {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

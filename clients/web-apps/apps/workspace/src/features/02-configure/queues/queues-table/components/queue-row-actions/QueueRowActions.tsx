@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { ResourceFlowAccessRowAction } from "@/features/resource-flow-access/components/common-row-actions/ResourceFlowAccessRowAction";
@@ -34,10 +35,10 @@ export const QueueRowActions = ({
 
   return (
     // Dropdown menu for Queue table row action */}
-    <DataTableRowActions className="w-36 min-w-36">
-      {isProd && <DTRowAction rowId={rowId} crudAction="read" entity="queue" />}
+    <TableCNRowActionsMenu ariaLabel="Open queue actions" contentClassName="w-36 min-w-36">
+      {isProd && <CrudRowAction rowId={rowId} crudAction="read" entity="queue" />}
       {/* Edit Queue details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
+      {actions?.update && <CrudRowAction rowId={rowId} crudAction="update" entity="queue" />}
 
       {actions?.update && (
         <ResourceFlowAccessRowAction
@@ -70,6 +71,6 @@ export const QueueRowActions = ({
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

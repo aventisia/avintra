@@ -1,5 +1,5 @@
 import { NotFoundPage } from "@avplatform/layout";
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the Integrations component.
@@ -21,7 +21,7 @@ export const AppIntegrationsPage = () => {
   }
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <AppIntegrationsComponent />
     </Suspense>
   );

@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 const DesktopDownload = lazy(() =>
@@ -8,7 +8,7 @@ const DesktopDownload = lazy(() =>
 );
 
 export const DesktopDownloadPage = () => (
-  <Suspense fallback={<DataTableSkeleton />}>
+  <Suspense fallback={<TableCNSkeleton />}>
     <DesktopDownload />
   </Suspense>
 );

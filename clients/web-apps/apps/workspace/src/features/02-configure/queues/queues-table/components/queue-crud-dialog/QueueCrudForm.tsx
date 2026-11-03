@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import {
   AutherCard,
   Form,
@@ -300,7 +300,7 @@ Disposition statuses are always terminal (end) states.`}
       )}
       {/* Submit button */}
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <CrudDialogActions>
           <SubmitButton
             className="min-w-[5rem]"
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
@@ -308,7 +308,7 @@ Disposition statuses are always terminal (end) states.`}
             isPending={isPending}
             disabled={!isDirty || !isValid || !isAvailable || isCheckPending}
           />
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

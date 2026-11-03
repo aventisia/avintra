@@ -4,9 +4,9 @@ import React from "react";
 import { SimpleDDMenuItem } from "@/ui/components/dropdown-menu";
 import { type CrudEntityKey } from "@/ui/types";
 
-import { useCrudDialogUrlState } from "../useCrudDialogUrlState";
+import { useCrudDialogUrlState } from "./useCrudDialogUrlState";
 
-interface DTEditRowActionProps {
+interface CrudRowActionProps {
   rowId: string;
   size?: "sm" | "md";
   crudAction: "update" | "read";
@@ -15,7 +15,7 @@ interface DTEditRowActionProps {
   disabled?: boolean;
 }
 
-export const DTRowAction: React.FC<DTEditRowActionProps> = ({
+export const CrudRowAction: React.FC<CrudRowActionProps> = ({
   rowId,
   crudAction,
   size = "md",

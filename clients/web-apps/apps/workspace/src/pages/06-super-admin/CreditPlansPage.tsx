@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the CreditPlansTable component.
@@ -16,7 +16,7 @@ const CreditPlansTable = lazy(() =>
  */
 export const CreditPlansPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <CreditPlansTable />
     </Suspense>
   );

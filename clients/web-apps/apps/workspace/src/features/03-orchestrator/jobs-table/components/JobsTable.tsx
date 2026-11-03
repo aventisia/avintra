@@ -1,8 +1,9 @@
 import { Button } from "@avplatform/ui/buttons";
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
   TableCN,
+  TableCNHeading,
   TableCNSkeleton,
   TableCNToolbar,
   exportTableCNToCsv,
@@ -113,7 +114,7 @@ export const JobsTable = () => {
           {/* Page heading, tabs and create action */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
+              <TableCNHeading heading={TABLE_HEADING} />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
                 <TabsList>
                   {tabs.map((tab) => {
@@ -129,7 +130,7 @@ export const JobsTable = () => {
               </Tabs>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <DTCreateButton buttonText="Create job" entity="job" />
+              <CrudCreateButton buttonText="Create job" entity="job" />
             </div>
           </div>
 

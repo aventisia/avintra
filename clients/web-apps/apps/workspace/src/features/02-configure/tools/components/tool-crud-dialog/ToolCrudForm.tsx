@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type DialogCrudAction } from "@avplatform/ui/types";
@@ -143,7 +143,7 @@ export const ToolCrudForm = ({
       )}
 
       {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
+        <CrudDialogActions>
           <Button type="submit" disabled={isMutating} className="min-w-[5rem]">
             {isMutating
               ? crudAction === "create"
@@ -153,7 +153,7 @@ export const ToolCrudForm = ({
                 ? "Create"
                 : "Save changes"}
           </Button>
-        </div>
+        </CrudDialogActions>
       )}
     </Form>
   );

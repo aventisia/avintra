@@ -1,9 +1,14 @@
 import { Button } from "@avplatform/ui/buttons";
-import { DTHeading } from "@avplatform/ui/data-table";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import {
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 import { Mail, PlusIcon, Settings2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -66,7 +71,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
       {/* Persistent toolbar: heading, help and switch on the left, create on the right */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-2">
-          <DTHeading heading="Notifications" />
+          <TableCNHeading heading="Notifications" />
           <div className="ml-1 inline-flex shrink-0 items-center gap-1 rounded-lg bg-muted px-1.5 py-1.5">
             <button
               type="button"

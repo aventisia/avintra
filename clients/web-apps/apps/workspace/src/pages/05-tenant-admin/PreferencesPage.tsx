@@ -1,5 +1,5 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the Billings component.
@@ -20,7 +20,7 @@ export const PreferencesPage = () => {
   useDocumentTitle("Preferences");
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <div className="space-y-4 py-4">
         <p className="text-lg font-medium">Preferences</p>
 
