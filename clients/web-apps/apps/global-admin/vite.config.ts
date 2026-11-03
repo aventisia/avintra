@@ -12,7 +12,7 @@ export default defineConfig(({ mode }): UserConfig => {
   const accountsApiTarget =
     process.env.VITE_ACCOUNTS_API_TARGET ?? env.VITE_ACCOUNTS_API_TARGET ?? "http://localhost:4000";
   const config: UserConfig = {
-    base: "/global-admin/",
+    base: "/globaladmin/",
     resolve: {
       alias: [
         {
@@ -25,11 +25,11 @@ export default defineConfig(({ mode }): UserConfig => {
     server: {
       ...resolveDevServerOptions(env, 3003),
       proxy: {
-        "/global-admin/api": {
+        "/globaladmin/api": {
           target: globalAdminApiTarget,
           changeOrigin: true,
           secure: false,
-          rewrite: (url) => url.replace(/^\/global-admin\/api/, "/api"),
+          rewrite: (url) => url.replace(/^\/globaladmin\/api/, "/api"),
         },
         "/accounts/api": {
           target: accountsApiTarget,
