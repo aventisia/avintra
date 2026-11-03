@@ -1,4 +1,4 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { type IHttpResponse, TrueFalseResultDto } from "@avplatform/ui/dtos";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";

@@ -1,4 +1,4 @@
-import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useState } from "react";
 

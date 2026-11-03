@@ -1,7 +1,8 @@
-import { DTCreateButton, DTHeading } from "@avplatform/ui/data-table";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
   TableCN,
+  TableCNHeading,
   TableCNSkeleton,
   TableCNSortMenu,
   TableCNToolbar,
@@ -67,10 +68,10 @@ export const ConfigStoresTable = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
+                <TableCNHeading heading={TABLE_HEADING} />
               </div>
               <div className="flex items-center gap-2">
-                <DTCreateButton entity="configstore" />
+                <CrudCreateButton entity="configstore" />
               </div>
             </div>
             {/* Table with its toolbar, pagination footer, and bulk actions */}

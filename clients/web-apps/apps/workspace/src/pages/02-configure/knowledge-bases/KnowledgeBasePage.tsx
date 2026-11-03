@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the KnowledgeBaseTable component.
@@ -14,7 +14,7 @@ const KnowledgeBaseTable = lazy(() =>
  */
 export const KnowledgeBasePage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <KnowledgeBaseTable />
     </Suspense>
   );

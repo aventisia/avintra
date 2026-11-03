@@ -1,6 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
@@ -109,7 +109,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
       <SwitchField {...isDisabledProps} />
 
       {/* Submit button */}
-      <div className="!mt-5 flex w-full justify-end">
+      <CrudDialogActions>
         <SubmitButton
           className="min-w-[5rem]"
           primaryText="Save changes"
@@ -117,7 +117,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
           isPending={isPending}
           disabled={!isDirty || !isValid || isPending}
         />
-      </div>
+      </CrudDialogActions>
     </Form>
   );
 };

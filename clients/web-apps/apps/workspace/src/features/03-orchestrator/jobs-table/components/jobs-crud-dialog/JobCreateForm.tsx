@@ -1,6 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncSingleSelectField } from "@avplatform/ui/components/form/fields/AsyncSingleSelectField";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { type ISelectOption } from "@avplatform/ui/types";
@@ -181,7 +181,7 @@ export const JobCreateForm = ({
         <InputField {...existingJobIdProps} />
       </div>
 
-      <div className="!mt-5 flex w-full justify-end">
+      <CrudDialogActions>
         <SubmitButton
           className="min-w-[5rem]"
           primaryText="Create"
@@ -189,7 +189,7 @@ export const JobCreateForm = ({
           isPending={isPending}
           disabled={!isDirty || !isValid || isPending}
         />
-      </div>
+      </CrudDialogActions>
     </Form>
   );
 };

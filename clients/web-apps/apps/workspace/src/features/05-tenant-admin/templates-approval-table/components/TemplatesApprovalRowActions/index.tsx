@@ -1,5 +1,5 @@
-import { DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import ApproveTemplateRowAction from "./ApproveTemplateRowAction";
 import OpenTemplateRowAction from "./OpenTemplateRowAction";
@@ -29,7 +29,7 @@ export const PendingTemplatesRowActions = ({
   accessPath = "",
 }: PendingTemplatesRowActionsProps) => {
   return (
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open templates approval actions">
       {/* Opens the original flow in a new tab (AgentBuilder) */}
       {import.meta.env.MODE !== "production" && <OpenTemplateRowAction accessPath={accessPath} />}
 
@@ -43,6 +43,6 @@ export const PendingTemplatesRowActions = ({
 
       {/* Rejects the template with optional remarks */}
       <RejectTemplateRowAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

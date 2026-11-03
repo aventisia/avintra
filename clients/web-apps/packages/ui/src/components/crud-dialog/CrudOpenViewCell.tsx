@@ -1,13 +1,14 @@
-import { useCrudDialogUrlState } from "@/ui/components/data-table";
 import { type CrudEntityKey } from "@/ui/types";
 
-interface DTOpenViewCellProps {
+import { useCrudDialogUrlState } from "./useCrudDialogUrlState";
+
+interface CrudOpenViewCellProps {
   rowId: string;
   cellContent: string;
   entity: CrudEntityKey;
 }
 
-export const DTOpenViewCell = ({ rowId, cellContent, entity }: DTOpenViewCellProps) => {
+export const CrudOpenViewCell = ({ rowId, cellContent, entity }: CrudOpenViewCellProps) => {
   const { openCrudDialog } = useCrudDialogUrlState();
 
   const handleOpenRead = () => {

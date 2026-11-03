@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, FormMessage, InputField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
@@ -101,7 +101,7 @@ export const RoleCrudForm = ({ rowId, crudAction }: RoleCrudFormProps) => {
           {errors.rolePermissions.message}
         </FormMessage>
       )}
-      <div className="!mt-5 flex justify-end">
+      <CrudDialogActions>
         {!isReadMode && (
           <Button
             type="submit"
@@ -111,7 +111,7 @@ export const RoleCrudForm = ({ rowId, crudAction }: RoleCrudFormProps) => {
             {crudAction === "create" ? "Submit" : "Save"}
           </Button>
         )}
-      </div>
+      </CrudDialogActions>
     </Form>
   );
 };

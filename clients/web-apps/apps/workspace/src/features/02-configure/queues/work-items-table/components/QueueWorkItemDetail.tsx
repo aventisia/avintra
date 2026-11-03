@@ -7,7 +7,7 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { CopyButton } from "@avplatform/ui/buttons";
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { useMemo, useState } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
@@ -65,7 +65,7 @@ export const QueueWorkItemDetail = () => {
   };
 
   if (isLoading) {
-    return <DataTableSkeleton />;
+    return <TableCNSkeleton />;
   }
 
   if (!workItem) {
