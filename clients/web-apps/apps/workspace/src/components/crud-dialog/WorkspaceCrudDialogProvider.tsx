@@ -348,40 +348,56 @@ export function WorkspaceCrudDialogProvider() {
 
   const isBlockedCreate = env === "prod" && crudAction === "create" && isConfigureEntity;
 
+  const isStarterInviteCreate =
+    entity === "user" &&
+    crudAction === "create" &&
+    userSession?.planType === "Starter" &&
+    userSession?.deploymentType !== "Community";
+
   // Hold a Prod update dialog until the session (and therefore the user's role) is
   // known. Deciding while the session is null would briefly render the edit form
   // for every user and then close it.
   const isPendingProdEditAuth = isProdUpdate && !userSession;
+  const isPendingInviteAuth = entity === "user" && crudAction === "create" && !userSession;
   const isBlockedProdEdit =
     isProdUpdate && !!userSession && !userSession.userRoles.includes(ROLE_OM);
-  const isBlockedAction = isBlockedCreate || isBlockedProdEdit;
+  const isBlockedAction = isBlockedCreate || isBlockedProdEdit || isStarterInviteCreate;
 
   // The Configure dialog warning is only needed in Prod mode.
   const showEnvBanner = env === "prod" && isConfigureEntity;
 
-  // Warn once per blocked attempt, then strip the dialog params from the URL.
-  const notifiedRef = useRef(false);
+  const notifiedRef = useRef<string | null>(null);
   useEffect(() => {
     if (!isBlockedAction) {
-      notifiedRef.current = false;
+      notifiedRef.current = null;
       return;
     }
 
-    if (!notifiedRef.current) {
-      notifiedRef.current = true;
+    const blockKey = `${entity}:${crudAction}:${isBlockedCreate}:${isStarterInviteCreate}`;
+    if (notifiedRef.current !== blockKey) {
+      notifiedRef.current = blockKey;
       toast.warning(
-        isBlockedCreate
-          ? "Creating resources is not available in PROD mode"
-          : "Your role does not allow editing resources in PROD mode",
+        isStarterInviteCreate
+          ? "Inviting users is not available on the Starter plan"
+          : isBlockedCreate
+            ? "Creating resources is not available in PROD mode"
+            : "Your role does not allow editing resources in PROD mode",
       );
     }
 
     closeCrudDialog();
-  }, [isBlockedAction, isBlockedCreate, closeCrudDialog]);
+  }, [
+    isBlockedAction,
+    isBlockedCreate,
+    isStarterInviteCreate,
+    closeCrudDialog,
+    entity,
+    crudAction,
+  ]);
 
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      {isBlockedAction || isPendingProdEditAuth ? null : (
+      {isBlockedAction || isPendingProdEditAuth || isPendingInviteAuth ? null : (
         <CrudDialogProvider
           registry={crudDialogRegistry}
           contentBanner={showEnvBanner ? <ConfigureProdEnvBanner className="mx-2" /> : undefined}

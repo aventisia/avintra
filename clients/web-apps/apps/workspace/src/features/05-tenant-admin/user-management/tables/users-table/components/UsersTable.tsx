@@ -1,3 +1,4 @@
+import { UpgradeCreateButton } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -9,6 +10,8 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useShallow } from "zustand/react/shallow";
 
 import { HelpButton } from "@/components/help/HelpButton";
 
@@ -45,6 +48,14 @@ export const UsersTable = () => {
 
   const columns = usersTableColumns(spaceIdToName);
 
+  const { deploymentType, planType } = useUserSessionStore(
+    useShallow((state) => ({
+      deploymentType: state.userSession?.deploymentType,
+      planType: state.userSession?.planType,
+    })),
+  );
+  const isStarterPlan = planType === "Starter" && deploymentType !== "Community";
+
   // Create a React table for users data
   const table = useDataTable(columns, data?.data || [], columnVisibility, sortState, true);
 
@@ -67,7 +78,11 @@ export const UsersTable = () => {
                 placeholder="Search users..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Invite" entity="user" />
+              {isStarterPlan ? (
+                <UpgradeCreateButton label="Invite" upgradePath="/tenant/overview" />
+              ) : (
+                <DTCreateButton buttonText="Invite" entity="user" />
+              )}
             </div>
           </div>
 

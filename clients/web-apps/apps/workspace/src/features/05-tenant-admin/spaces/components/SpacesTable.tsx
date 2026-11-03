@@ -1,3 +1,4 @@
+import { UpgradeCreateButton } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -21,7 +22,9 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSpaces } from "../hooks/useFetchSpaces";
 import { getSpacesTableColumns } from "./SpacesTableColumns";
-import { UpgradeSpaceButton } from "./upgrade-space-dialog/UpgradeSpaceButton";
+
+const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
+const UPGRADE_PRICING_URL = `${MARKETING_URL ?? "https://aventisia.com"}/pricing`;
 
 /**
  * Renders a table of spaces.
@@ -43,6 +46,7 @@ export const SpacesTable = () => {
   // Community deployments and Starter plans are limited to the single Central space
   const isCommunityDeployment = deploymentType === "Community";
   const isLimitedPlan = isCommunityDeployment || planType === "Starter";
+  const useTenantOverview = planType === "Starter" && !isCommunityDeployment;
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
@@ -81,7 +85,11 @@ export const SpacesTable = () => {
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search spaces..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               {isLimitedPlan ? (
-                <UpgradeSpaceButton />
+                useTenantOverview ? (
+                  <UpgradeCreateButton label="Create Space" upgradePath="/tenant/overview" />
+                ) : (
+                  <UpgradeCreateButton label="Create Space" pricingUrl={UPGRADE_PRICING_URL} />
+                )
               ) : (
                 <DTCreateButton buttonText="Create Space" entity="space" />
               )}
