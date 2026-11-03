@@ -156,12 +156,12 @@ public class OnPremInstanceValidationService : IOnPremInstanceValidationService
             {
                 // Check if the OnPremInstanceValidation already exists for this day
                 var existingValidation = last7DaysData
-                    .FirstOrDefault(w => w.ValidatedOn.Date == data.Date && w.OnPremInstanceId == _currentOnPremTenantService.CurrentOnPremInstanceId);
+                    .FirstOrDefault(w => w.ValidatedOn.Date == data.Date.Date && w.OnPremInstanceId == _currentOnPremTenantService.CurrentOnPremInstanceId);
 
                 if (existingValidation != null)
                 {
                     // Skip if the last validated date is the same as the data date
-                    if (lastValidatedDate == data.Date)
+                    if (lastValidatedDate == data.Date.Date)
                         continue;
 
                     // Update the total execution time by considering the difference from the previous validation record
