@@ -15,7 +15,7 @@ using WorkspaceAPIs.Data;
 namespace WorkspaceAPIs.Data.Migrations
 {
     [DbContext(typeof(WorkspaceDbContext))]
-    [Migration("20261101164844_AddPlatformTools")]
+    [Migration("20261103113554_AddPlatformTools")]
     partial class AddPlatformTools
     {
         /// <inheritdoc />
