@@ -2,27 +2,31 @@ import { type APIRequestContext, type BrowserContext, expect, request } from "@p
 import { randomUUID } from "node:crypto";
 
 const ACCESS_TOKEN = process.env.E2E_ACCESS_TOKEN ?? "";
-const APP_PATH = "/global-admin";
+const APP_PATH = "";
+const API_PATH = "/api";
 
 const apiBaseUrl = (baseURL: string) =>
-  `${process.env.E2E_GLOBALADMIN_API_URL ?? `${new URL(baseURL).origin}${APP_PATH}/api`}/`;
+  `${process.env.E2E_GLOBALADMIN_API_URL ?? `${new URL(baseURL).origin}${API_PATH}`}/`;
 
-/** Signs the browser in with the SA session token from E2E_ACCESS_TOKEN. */
+/** Signs the browser in with the SA session token from E2E_ACCESS_TOKEN on the app and Accounts origins. */
 const authenticate = async (context: BrowserContext, baseURL: string) => {
   if (!ACCESS_TOKEN) throw new Error("E2E_ACCESS_TOKEN must be an SA session token");
 
-  const origin = new URL(baseURL).origin;
+  const appOrigin = new URL(baseURL).origin;
+  const accountsOrigin = process.env.E2E_ACCOUNTS_ORIGIN;
+  const origins =
+    accountsOrigin && accountsOrigin !== appOrigin ? [appOrigin, accountsOrigin] : [appOrigin];
 
-  await context.addCookies([
-    {
+  await context.addCookies(
+    origins.map((url) => ({
       name: "AccessToken",
       value: ACCESS_TOKEN,
-      url: origin,
+      url,
       httpOnly: true,
-      secure: origin.startsWith("https:"),
-      sameSite: "Lax",
-    },
-  ]);
+      secure: url.startsWith("https:"),
+      sameSite: url.startsWith("https:") ? ("None" as const) : ("Lax" as const),
+    })),
+  );
 };
 
 /** Creates a Global Admin API context authenticated with the same token. */

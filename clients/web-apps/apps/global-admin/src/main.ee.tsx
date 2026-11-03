@@ -1,5 +1,4 @@
 import { AlertDialogWrapper } from "@avplatform/ui/alert-dialog";
-import { bootstrapBranding } from "@avplatform/ui/branding";
 import { SonnerToaster } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import "@avplatform/ui/styles/sonner.css";
@@ -30,6 +29,4 @@ const renderApp = () => {
   );
 };
 
-void bootstrapBranding()
-  .catch(() => undefined)
-  .finally(renderApp);
+renderApp();
