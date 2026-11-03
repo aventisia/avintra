@@ -1,4 +1,5 @@
 import type { BadgeProps } from "@avplatform/ui/badge";
+import type { RecordTone } from "@avplatform/ui/record-sheet";
 
 /**
  * Represents the computed display status of an API key.
@@ -6,6 +7,7 @@ import type { BadgeProps } from "@avplatform/ui/badge";
 export type ApiKeyStatus = {
   label: string;
   variant: BadgeProps["variant"];
+  tone: RecordTone;
 };
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -19,11 +21,11 @@ const EXPIRING_SOON_DAYS = 30;
  */
 export const getApiKeyStatus = (expiresAt: string | null, isRevoked: boolean): ApiKeyStatus => {
   if (isRevoked) {
-    return { label: "Revoked", variant: "destructive" };
+    return { label: "Revoked", variant: "destructive", tone: "bad" };
   }
 
   if (!expiresAt) {
-    return { label: "Active", variant: "completed" };
+    return { label: "Active", variant: "completed", tone: "ok" };
   }
 
   const expiry = new Date(expiresAt);
@@ -31,12 +33,12 @@ export const getApiKeyStatus = (expiresAt: string | null, isRevoked: boolean): A
   const diffMs = expiry.getTime() - now.getTime();
 
   if (diffMs < 0) {
-    return { label: "Expired", variant: "secondary" };
+    return { label: "Expired", variant: "secondary", tone: "neutral" };
   }
 
   if (diffMs < ONE_DAY_MS * EXPIRING_SOON_DAYS) {
-    return { label: "Expiring soon", variant: "review" };
+    return { label: "Expiring soon", variant: "review", tone: "warn" };
   }
 
-  return { label: "Active", variant: "completed" };
+  return { label: "Active", variant: "completed", tone: "ok" };
 };

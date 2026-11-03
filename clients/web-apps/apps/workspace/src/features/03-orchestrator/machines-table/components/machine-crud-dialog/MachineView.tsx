@@ -123,7 +123,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
             Icon={UserCircleIcon}
             label="Linked account"
             value={machine.linkedUserAccount}
-            prefix={<PersonAvatar name={machine.linkedUserAccount} className="size-5 text-[9px]" />}
+            prefix={<PersonAvatar name={machine.linkedUserAccount} size="sm" />}
           />
         </RecordFactGrid>
         <RecordIdentifiers>
