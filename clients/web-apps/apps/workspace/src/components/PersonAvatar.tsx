@@ -27,12 +27,25 @@ const getAvatarColors = (name: string) => {
 /**
  * Round initials avatar, tinted by a colour derived from the name.
  */
-export const PersonAvatar = ({ name, className }: { name: string; className?: string }) => (
+const SIZE_CLASSES = {
+  sm: "size-5 text-[9px]",
+  md: "size-6 text-[0.625rem]",
+};
+
+type PersonAvatarProps = {
+  name: string;
+  /** `sm` sits inline with a record fact or detail value. */
+  size?: keyof typeof SIZE_CLASSES;
+  className?: string;
+};
+
+export const PersonAvatar = ({ name, size = "md", className }: PersonAvatarProps) => (
   <span
     aria-hidden="true"
     style={getAvatarColors(name)}
     className={cn(
-      "grid size-6 shrink-0 place-items-center rounded-full text-[0.625rem] font-semibold",
+      "grid shrink-0 place-items-center rounded-full font-semibold",
+      SIZE_CLASSES[size],
       className,
     )}
   >

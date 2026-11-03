@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
+import { AgentPublishedMark } from "@/components/AgentIdentity";
 
 import { AGENT_PLATFORMS, AGENT_TYPES } from "../constants/agent-attributes.constant";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
@@ -107,12 +108,7 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
                 Archived
               </span>
             ) : (
-              flow.isPublished && (
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-ok" />
-                  Published
-                </span>
-              )
+              flow.isPublished && <AgentPublishedMark />
             )}
           </span>
         </div>

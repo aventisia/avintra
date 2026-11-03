@@ -30,7 +30,7 @@ export const AgentTypeAvatar = ({ type, isMuted }: AgentTypeAvatarProps) => {
 };
 
 type AgentVersionProps = {
-  versionNumber?: number;
+  versionNumber?: number | string;
   lastModifiedOn?: Date | string;
 };
 
@@ -47,5 +47,15 @@ export const AgentVersion = ({ versionNumber, lastModifiedOn }: AgentVersionProp
     }
   >
     v{versionNumber}
+  </span>
+);
+
+/**
+ * Green dot and "Published" label shown beside a published agent's version.
+ */
+export const AgentPublishedMark = () => (
+  <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+    <span className="size-1.5 rounded-full bg-ok" />
+    Published
   </span>
 );
