@@ -587,7 +587,7 @@ reachable from both the agent and the target."""
                                         echo "Deploying Global Admin App to ${targetServers.size()} server(s)..."
 
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/global-admin/dist/* admin@${server}:/var/www/aventisia.com/clients/global-admin/"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/global-admin/dist/* admin@${server}:/var/www/aventisia.com/clients/globaladmin/"
                                             echo "Successfully deployed Global Admin App to ${server}"
                                         }
                                     }
