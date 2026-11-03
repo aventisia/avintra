@@ -79,60 +79,11 @@ namespace WorkspaceAPIs.Data.Migrations
                 table: "ai_TenantPlatformTools",
                 columns: new[] { "TenantId", "PlatformToolId" },
                 unique: true);
-
-            migrationBuilder.Sql(
-                """
-                INSERT INTO "ai_PlatformTools" ("Id", "Name", "Description", "OpenApiSpec", "ParsedSchema", "IsDisabled", "IsPopular")
-                SELECT
-                    "Id",
-                    "Name",
-                    "Description",
-                    "OpenApiSpec",
-                    CASE
-                        WHEN "ParsedSchema" IS NULL OR "AuthenticationType" IS NULL THEN "ParsedSchema"
-                        ELSE jsonb_set("ParsedSchema", '{x-camel-auth-type}', to_jsonb("AuthenticationType"), true)
-                    END,
-                    "IsDisabled",
-                    FALSE
-                FROM "ai_Tools"
-                WHERE "Type" = 'Platform';
-                """);
-
-            migrationBuilder.Sql(
-                """
-                DELETE FROM "ai_Tools" WHERE "Type" = 'Platform';
-                """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // IMPORTANT NOTE: BaseUrl is not stored on ai_PlatformTools, so a rollback restores
-            // platform rows with an empty base URL; this migration is effectively forward-only.
-            migrationBuilder.Sql(
-                """
-                INSERT INTO "ai_Tools" ("Id", "TenantId", "SpaceId", "EnvType", "Name", "Description", "Type", "BaseUrl", "OpenApiSpec", "ParsedSchema", "AuthenticationType", "IsTenantWideAccess", "IsActive", "IsVerified", "CreatedOn", "LastModifiedOn", "IsDisabled")
-                SELECT
-                    "Id",
-                    '00000000-0000-0000-0000-000000000000',
-                    NULL,
-                    'Dev',
-                    "Name",
-                    "Description",
-                    'Platform',
-                    '',
-                    "OpenApiSpec",
-                    "ParsedSchema",
-                    "ParsedSchema"->>'x-camel-auth-type',
-                    TRUE,
-                    TRUE,
-                    TRUE,
-                    NOW(),
-                    NOW(),
-                    "IsDisabled"
-                FROM "ai_PlatformTools";
-                """);
-
             migrationBuilder.DropTable(
                 name: "ai_TenantPlatformTools");
 
