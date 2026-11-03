@@ -2,7 +2,7 @@ import { Skeleton } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { DownloadIcon, MonitorIcon, ServerCogIcon } from "lucide-react";
+import { DownloadSimpleIcon, HardDrivesIcon, MonitorIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { PLATFORM_LABELS, RUNNER_INSTALL_SECTION_ID } from "../constants/desktop-download.constant";
@@ -80,7 +80,7 @@ const ProductCards = ({ platform }: { platform: Platform }) => {
               rel="noreferrer"
               className={cn(buttonVariants(), "gap-1.5")}
             >
-              <DownloadIcon className="size-4" />
+              <DownloadSimpleIcon className="size-4" />
               Download for Windows
             </a>
           ) : (
@@ -89,7 +89,7 @@ const ProductCards = ({ platform }: { platform: Platform }) => {
         }
       />
       <ProductCard
-        icon={<ServerCogIcon />}
+        icon={<HardDrivesIcon />}
         audience="For unattended runs"
         name="Runner app"
         pitch="A Windows service with no window that runs published agents in the background."

@@ -6,7 +6,7 @@ import {
   DialogPrimitive,
   DialogTitle,
 } from "@avplatform/ui/dialog";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 
 import { useUpgradePlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/upgrade-plan-dialog.store.ee";
 
@@ -38,7 +38,7 @@ const UpgradePlanDialog = () => {
                   : "Upgrade"}
             </span>
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
+              <XIcon className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
           </DialogTitle>

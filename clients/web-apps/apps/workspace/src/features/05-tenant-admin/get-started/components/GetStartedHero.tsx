@@ -1,6 +1,6 @@
 import { DialogPrimitive } from "@avplatform/ui/dialog";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { CheckCircle2Icon, RocketIcon, SearchIcon } from "lucide-react";
+import { CheckCircleIcon, MagnifyingGlassIcon, RocketIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 
 import type { GetStartedStep } from "../constants/get-started-steps.constant";
@@ -56,7 +56,7 @@ export const GetStartedHero = ({
       />
 
       <span className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-inset ring-white/25 backdrop-blur-sm">
-        <RocketIcon className="size-5" strokeWidth={1.8} />
+        <RocketIcon className="size-5" />
       </span>
 
       <p className="mt-5 text-label uppercase text-white/70 md:mt-7">
@@ -108,7 +108,7 @@ export const GetStartedHero = ({
           </svg>
           <span className="absolute inset-0 grid place-items-center text-button tabular-nums">
             {isAllExplored ? (
-              <CheckCircle2Icon className="size-5" strokeWidth={2} />
+              <CheckCircleIcon className="size-5" />
             ) : (
               `${exploredCount}/${stepCount}`
             )}
@@ -125,7 +125,7 @@ export const GetStartedHero = ({
       </div>
 
       <p className="mt-6 hidden items-center gap-2 text-hint text-white/60 md:flex">
-        <SearchIcon className="size-3.5 shrink-0" />
+        <MagnifyingGlassIcon className="size-3.5 shrink-0" />
         Search “Get started” to reopen this guide.
       </p>
     </div>

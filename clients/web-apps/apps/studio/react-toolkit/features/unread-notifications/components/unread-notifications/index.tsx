@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { Dialog, DialogClose, DialogContent } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UNDialogContent } from "@/react-toolkit/features/unread-notifications/components/unread-notifications/UNDialogContent";
@@ -48,7 +48,7 @@ export const UnreadNotifications = ({
         <div className="flex items-center justify-end border-b px-3.5 py-3">
           <Tooltip content={"Close"} shortcut="Esc">
             <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5" />
+              <XIcon className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </DialogClose>
           </Tooltip>

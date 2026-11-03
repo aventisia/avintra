@@ -6,7 +6,7 @@ import {
   CollapsibleTrigger,
 } from "@avplatform/ui/components/collapsible";
 import { cn } from "@avplatform/ui/lib";
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -110,7 +110,7 @@ export function ChatAgentListItem({
               className="w-8 h-8  ml-1 flex-shrink-0 text-muted-foreground hover:text-ink-2 hover:bg-hover"
               onClick={(e) => e.stopPropagation()}
             >
-              <ChevronDown
+              <CaretDownIcon
                 className={cn(
                   "w-4 h-4 transition-transform duration-200",
                   isExpanded && "rotate-180",

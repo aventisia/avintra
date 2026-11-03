@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
@@ -22,7 +22,7 @@ export const DeleteCMItem = React.forwardRef<
     )}
     {...props}
   >
-    <Trash2
+    <TrashIcon
       className={cn(
         "shrink-0 text-bad",
         size === "sm" && "h-3.5 w-3.5",

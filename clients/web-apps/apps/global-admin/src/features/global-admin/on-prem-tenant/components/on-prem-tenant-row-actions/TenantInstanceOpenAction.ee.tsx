@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 import { useNavigateToTenant } from "../../hooks/useNavigateToTenant.ee";
 
@@ -15,7 +15,7 @@ export const TenantInstanceOpenAction = ({ rowId, cellValue }: TenantInstanceOpe
   return (
     <SimpleDDMenuItem
       content="Open"
-      Icon={ExternalLinkIcon}
+      Icon={ArrowSquareOutIcon}
       onClick={() => handleOpenTenant(rowId, cellValue)}
     />
   );

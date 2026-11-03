@@ -1,11 +1,11 @@
-import { type Table } from "@tanstack/react-table";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  type LucideIcon,
-} from "lucide-react";
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
+import { type Table } from "@tanstack/react-table";
 import * as React from "react";
 
 import {
@@ -29,7 +29,7 @@ const withPageSize = (pageSizeOptions: number[], pageSize: number) =>
 
 type PageButtonProps = React.ComponentProps<"button"> & {
   label: string;
-  icon: LucideIcon;
+  icon: PhosphorIcon;
 };
 
 const PageButton = ({ label, icon: Icon, className, ...props }: PageButtonProps) => (
@@ -137,26 +137,26 @@ export const TableCNPagination = <TData,>({
         <div className="flex items-center gap-0.5">
           <PageButton
             label="Go to first page"
-            icon={ChevronsLeft}
+            icon={CaretDoubleLeftIcon}
             className="hidden lg:grid"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           />
           <PageButton
             label="Go to previous page"
-            icon={ChevronLeft}
+            icon={CaretLeftIcon}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           />
           <PageButton
             label="Go to next page"
-            icon={ChevronRight}
+            icon={CaretRightIcon}
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           />
           <PageButton
             label="Go to last page"
-            icon={ChevronsRight}
+            icon={CaretDoubleRightIcon}
             className="hidden lg:grid"
             onClick={() => table.setPageIndex(pageCount - 1)}
             disabled={!table.getCanNextPage()}

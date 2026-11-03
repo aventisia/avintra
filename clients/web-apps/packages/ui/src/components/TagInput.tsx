@@ -1,4 +1,4 @@
-import { X as RemoveIcon } from "lucide-react";
+import { XIcon as RemoveIcon } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, forwardRef, useState } from "react";
 
 import { Input, type InputProps } from "@/ui/components";
@@ -55,7 +55,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               <RemoveIcon
                 className={cn(
                   "h-4 w-4",
-                  disabled ? "cursor-not-allowed" : "cursor-auto hover:stroke-bad",
+                  disabled ? "cursor-not-allowed" : "cursor-auto hover:text-bad",
                 )}
               />
             </button>

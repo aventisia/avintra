@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 
 interface ConditionLabelProps {
   label: React.ReactNode;

@@ -2,14 +2,14 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import {
-  BoxesIcon,
-  ExpandIcon,
-  GroupIcon,
+  ArrowsInIcon,
+  ArrowsOutIcon,
+  ArrowsSplitIcon,
   MonitorIcon,
-  Repeat2Icon,
-  ShrinkIcon,
-  SplitIcon,
-} from "lucide-react";
+  PackageIcon,
+  RepeatIcon,
+  SelectionPlusIcon,
+} from "@phosphor-icons/react";
 import React from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
@@ -51,15 +51,15 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     : 0;
 
   const customIconMapper: { [key: string]: JSX.Element } = {
-    ConditionalNodeIcon: <SplitIcon className="rotate-180" />,
-    LoopNodeIcon: <Repeat2Icon />,
-    BlockNodeIcon: <BoxesIcon />,
+    ConditionalNodeIcon: <ArrowsSplitIcon className="rotate-180" />,
+    LoopNodeIcon: <RepeatIcon />,
+    BlockNodeIcon: <PackageIcon />,
   };
 
   const isCollapsedGroup = nodeData?.isGroupHead && !nodeData?.isExpanded;
 
   const glyph = isCollapsedGroup ? (
-    <GroupIcon />
+    <SelectionPlusIcon />
   ) : glyphOverride ? (
     glyphOverride
   ) : nodeData.iconUrl ? (
@@ -109,9 +109,9 @@ const BaseNode: React.FC<BaseNodeProps> = ({
                 onClick={() => toggleGroupExpand(nodeData?.groupId || "")}
               >
                 {nodeData?.isExpanded ? (
-                  <ShrinkIcon className="h-3.5 w-3.5" />
+                  <ArrowsInIcon className="h-3.5 w-3.5" />
                 ) : (
-                  <ExpandIcon className="h-3.5 w-3.5" />
+                  <ArrowsOutIcon className="h-3.5 w-3.5" />
                 )}
               </Button>
             </Tooltip>

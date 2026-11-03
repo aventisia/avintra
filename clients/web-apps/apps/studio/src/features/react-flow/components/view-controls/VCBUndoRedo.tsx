@@ -2,7 +2,7 @@ import { Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { Redo2, Undo2 } from "lucide-react";
+import { ArrowUUpLeftIcon, ArrowUUpRightIcon } from "@phosphor-icons/react";
 
 import { useUndoRedoControls } from "@/hooks/useUndoRedoControls";
 
@@ -27,7 +27,7 @@ export const VCBUndoRedo = () => {
           onClick={() => undo()}
           disabled={!canUndo}
         >
-          <Undo2 className="h-4 w-4 text-[--icon-color]" />
+          <ArrowUUpLeftIcon className="h-4 w-4 text-[--icon-color]" />
         </Button>
       </Tooltip>
 
@@ -43,7 +43,7 @@ export const VCBUndoRedo = () => {
           onClick={() => redo()}
           disabled={!canRedo}
         >
-          <Redo2 className="h-4 w-4 text-[--icon-color]" />
+          <ArrowUUpRightIcon className="h-4 w-4 text-[--icon-color]" />
         </Button>
       </Tooltip>
     </VCBContainer>

@@ -13,9 +13,9 @@ import {
   useTableCN,
 } from "@avplatform/ui/table-cn";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { CheckCircleIcon, TrashIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ColumnDef, InitialTableState } from "@tanstack/react-table";
-import { CircleCheckIcon, CircleXIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -111,13 +111,13 @@ export function UploadedItemsTable({
           if (t === "Failed") {
             return (
               <Tooltip content={r}>
-                <CircleXIcon className="h-4 w-4 text-bad" />
+                <XCircleIcon className="h-4 w-4 text-bad" />
               </Tooltip>
             );
           }
 
           if (t === "Success") {
-            return <CircleCheckIcon className="h-4 w-4 text-ok" />;
+            return <CheckCircleIcon className="h-4 w-4 text-ok" />;
           }
 
           return <div className="text-sm text-muted-foreground">Pending</div>;
@@ -139,7 +139,7 @@ export function UploadedItemsTable({
             variant={"caution"}
             size={"xs"}
           >
-            <Trash2Icon className="h-4 w-4" />
+            <TrashIcon className="h-4 w-4" />
           </Button>
         ),
       }),
@@ -193,7 +193,7 @@ export function UploadedItemsTable({
           <TableCNActionBarSelection table={table} />
           <TableCNActionBarSeparator />
           <TableCNActionBarItem
-            icon={Trash2Icon}
+            icon={TrashIcon}
             tone="destructive"
             onClick={() =>
               showDefaultAlertDialog({

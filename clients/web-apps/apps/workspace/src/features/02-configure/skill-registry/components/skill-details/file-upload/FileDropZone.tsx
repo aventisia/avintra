@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { CloudUploadIcon } from "lucide-react";
+import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { useDropzone } from "react-dropzone";
 
 import { ACCEPTED_FILE_TYPES } from "./file-upload.constant";
@@ -34,7 +34,7 @@ export const FileDropZone = ({ onDrop }: FileDropZoneProps) => {
           <span className="text-sm text-primary">Drop files here...</span>
         ) : (
           <>
-            <CloudUploadIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
+            <CloudArrowUpIcon className="text-muted-foreground size-8 opacity-50" />
             <span className="text-sm font-medium text-ink-2 block">
               Drag & Drop or{" "}
               <Button

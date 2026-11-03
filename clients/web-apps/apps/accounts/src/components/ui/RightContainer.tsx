@@ -1,21 +1,21 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import type { LucideIcon } from "lucide-react";
 import {
+  ArrowsSplitIcon,
   CheckIcon,
-  KeyRoundIcon,
+  EnvelopeIcon,
+  KeyIcon,
+  LightningIcon,
   LockIcon,
-  MailIcon,
+  type Icon as PhosphorIcon,
   PlusIcon,
-  SparklesIcon,
-  SplitIcon,
+  SparkleIcon,
   UserIcon,
-  ZapIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 type FlowStepStatus = "done" | "running" | "waiting" | "draft";
 
-type FlowStep = { kind: string; title: string; state: FlowStepStatus; Icon: LucideIcon };
+type FlowStep = { kind: string; title: string; state: FlowStepStatus; Icon: PhosphorIcon };
 
 type PanelCopy = { kicker: string; title: string; description: string };
 
@@ -33,13 +33,13 @@ const panels: Record<"login" | "create-account", Panel> = {
     description:
       "Build a flow once. It runs step by step, and stops for you when a decision needs a person.",
     steps: [
-      { kind: "Trigger", title: "Invoice received", state: "done", Icon: ZapIcon },
-      { kind: "AI action", title: "Check the totals", state: "done", Icon: SparklesIcon },
-      { kind: "Condition", title: "Over $5,000?", state: "done", Icon: SplitIcon },
+      { kind: "Trigger", title: "Invoice received", state: "done", Icon: LightningIcon },
+      { kind: "AI action", title: "Check the totals", state: "done", Icon: SparkleIcon },
+      { kind: "Condition", title: "Over $5,000?", state: "done", Icon: ArrowsSplitIcon },
     ],
     branches: {
       yes: { kind: "Review", title: "You approve", state: "waiting", Icon: UserIcon },
-      no: { kind: "Action", title: "Pay invoice", state: "draft", Icon: ZapIcon },
+      no: { kind: "Action", title: "Pay invoice", state: "draft", Icon: LightningIcon },
     },
   },
   "create-account": {
@@ -48,9 +48,9 @@ const panels: Record<"login" | "create-account", Panel> = {
     description:
       "Pick a trigger, add AI actions, and keep a person in the loop wherever you need one.",
     steps: [
-      { kind: "Trigger", title: "New CRM lead", state: "done", Icon: ZapIcon },
-      { kind: "AI action", title: "Draft a follow-up", state: "done", Icon: SparklesIcon },
-      { kind: "Condition", title: "Deal over $10k?", state: "done", Icon: SplitIcon },
+      { kind: "Trigger", title: "New CRM lead", state: "done", Icon: LightningIcon },
+      { kind: "AI action", title: "Draft a follow-up", state: "done", Icon: SparkleIcon },
+      { kind: "Condition", title: "Deal over $10k?", state: "done", Icon: ArrowsSplitIcon },
     ],
     branches: {
       yes: { kind: "Review", title: "Rep reviews", state: "draft", Icon: UserIcon },
@@ -66,8 +66,8 @@ const resetPwdCopy: PanelCopy = {
 };
 
 const resetPwdSteps = [
-  { title: "Enter your email", Icon: MailIcon },
-  { title: "Enter the code", Icon: KeyRoundIcon },
+  { title: "Enter your email", Icon: EnvelopeIcon },
+  { title: "Enter the code", Icon: KeyIcon },
   { title: "Set a new password", Icon: LockIcon },
 ];
 
@@ -82,7 +82,7 @@ const FlowStepState = ({ state }: { state: FlowStepStatus }) => {
   if (state === "done")
     return (
       <span className="grid size-5 place-items-center rounded-full bg-ok text-bg">
-        <CheckIcon className="size-3" strokeWidth={3} />
+        <CheckIcon className="size-3" weight="bold" />
       </span>
     );
   if (state === "running") return <LoadingSpinner className="size-5 text-live" />;

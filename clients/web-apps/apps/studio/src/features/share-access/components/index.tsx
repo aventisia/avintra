@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { ArrowLeftIcon, UserPlusIcon } from "lucide-react";
+import { ArrowLeftIcon, UserPlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";

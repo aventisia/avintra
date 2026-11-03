@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { SparklesIcon } from "lucide-react";
+import { SparkleIcon } from "@phosphor-icons/react";
 
 type PromptActionButtonProps = {
   /** Button label when idle. */
@@ -45,7 +45,7 @@ const PromptActionButton = ({
       </>
     ) : (
       <>
-        <SparklesIcon className="h-4 w-4" />
+        <SparkleIcon className="h-4 w-4" />
         {label}
       </>
     )}

@@ -13,7 +13,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
-import { Check, ChevronDown, X } from "lucide-react";
+import { CaretDownIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 interface MultiSelectProps {
@@ -111,7 +111,7 @@ export const MultiSelect = ({
                     )}
                   >
                     {o.label}
-                    <X
+                    <XIcon
                       className="h-3 w-3 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -124,7 +124,7 @@ export const MultiSelect = ({
             </div>
           </ScrollArea>
 
-          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
+          <CaretDownIcon className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
         </Button>
       </PopoverTrigger>
 
@@ -164,7 +164,7 @@ export const MultiSelect = ({
                   >
                     <div className="flex w-full items-center justify-between">
                       {option.label}
-                      <Check className="h-3.5 w-3.5 opacity-0" />
+                      <CheckIcon className="h-3.5 w-3.5 opacity-0" />
                     </div>
                   </CommandItem>
                 ))}

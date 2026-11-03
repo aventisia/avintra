@@ -1,5 +1,5 @@
 import { isBodyCapableMethod } from "@avplatform/ui/utils";
-import { Trash2Icon } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
@@ -185,7 +185,7 @@ export const MethodForm = ({
                   aria-label="Remove header"
                   className="rounded p-1 text-bad hover:bg-bad/10"
                 >
-                  <Trash2Icon className="h-3.5 w-3.5" />
+                  <TrashIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))
@@ -241,7 +241,7 @@ export const MethodForm = ({
                   aria-label="Remove parameter"
                   className="rounded p-1 text-bad hover:bg-bad/10"
                 >
-                  <Trash2Icon className="h-3.5 w-3.5" />
+                  <TrashIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))

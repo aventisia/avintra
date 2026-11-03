@@ -4,7 +4,7 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
@@ -77,9 +77,9 @@ const Sidebar = ({ className }: SidebarProps) => {
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
-            <ChevronLeftIcon className="h-3 w-3" />
+            <CaretLeftIcon className="h-3 w-3" />
           ) : (
-            <ChevronRightIcon className="h-3 w-3" />
+            <CaretRightIcon className="h-3 w-3" />
           )}
         </Button>
       </Tooltip>

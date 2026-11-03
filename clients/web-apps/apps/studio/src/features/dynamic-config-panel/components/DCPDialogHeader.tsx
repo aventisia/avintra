@@ -1,7 +1,7 @@
 import { Input } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
+import { ArrowSquareOutIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -81,7 +81,7 @@ const DCPDialogHeader = () => {
         aria-label={label}
         title={label}
       >
-        <SquareArrowOutUpRightIcon className="size-3.5" />
+        <ArrowSquareOutIcon className="size-3.5" />
       </a>
     );
   };
@@ -142,7 +142,7 @@ const DCPDialogHeader = () => {
             >
               <span className="truncate">{nodeLabel}</span>
               {!isAgentHistory && (
-                <PencilIcon className="size-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100" />
+                <PencilSimpleIcon className="size-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100" />
               )}
             </div>
           )}
@@ -152,7 +152,7 @@ const DCPDialogHeader = () => {
       <div className="flex shrink-0 items-center gap-0.5">
         {renderInfoLink()}
         <Button variant="ghost" size="icon7" onClick={handleClose} aria-label="Close panel">
-          <X className="size-4" />
+          <XIcon className="size-4" />
         </Button>
       </div>
     </PanelHeader>

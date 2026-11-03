@@ -5,7 +5,13 @@ import {
 } from "@assistant-ui/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@avplatform/ui/collapsible";
 import { cn } from "@avplatform/ui/lib";
-import { AlertCircleIcon, CheckIcon, ChevronDownIcon, LoaderIcon, XCircleIcon } from "lucide-react";
+import {
+  CaretDownIcon,
+  CheckIcon,
+  SpinnerIcon,
+  WarningCircleIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { memo, useCallback, useRef, useState } from "react";
 
 const ANIMATION_DURATION = 200;
@@ -72,10 +78,10 @@ function ToolFallbackRoot({
 type ToolStatus = ToolCallMessagePartStatus["type"];
 
 const statusIconMap: Record<ToolStatus, React.ElementType> = {
-  running: LoaderIcon,
+  running: SpinnerIcon,
   complete: CheckIcon,
   incomplete: XCircleIcon,
-  "requires-action": AlertCircleIcon,
+  "requires-action": WarningCircleIcon,
 };
 
 function ToolFallbackTrigger({
@@ -131,7 +137,7 @@ function ToolFallbackTrigger({
           </span>
         )}
       </span>
-      <ChevronDownIcon
+      <CaretDownIcon
         data-slot="tool-fallback-trigger-chevron"
         className={cn(
           "aui-tool-fallback-trigger-chevron size-4 shrink-0",

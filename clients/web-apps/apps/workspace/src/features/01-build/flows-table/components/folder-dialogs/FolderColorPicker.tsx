@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Check } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 import { FOLDER_COLORS } from "../../constants/folder-colors.constant";
@@ -41,7 +41,7 @@ export const FolderColorPicker = ({ selectedColor, registration }: FolderColorPi
                 isSelected ? "ring-2" : "hover:scale-110",
               )}
             >
-              {isSelected && <Check className="size-3.5" strokeWidth={3} />}
+              {isSelected && <CheckIcon className="size-3.5" weight="bold" />}
             </span>
           </label>
         );

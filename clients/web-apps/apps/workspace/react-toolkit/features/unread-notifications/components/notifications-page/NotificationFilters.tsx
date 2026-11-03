@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format } from "date-fns";
-import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 
@@ -87,7 +87,7 @@ const DateRangeFilter = ({
     >
       <PopoverTrigger asChild>
         <Button variant="outline" className="h-9 gap-1.5 font-normal">
-          <CalendarDaysIcon className="size-3.5 text-muted-foreground" />
+          <CalendarDotsIcon className="size-3.5 text-muted-foreground" />
           {from || to ? `${formatDay(from)} – ${formatDay(to)}` : "Any date"}
         </Button>
       </PopoverTrigger>

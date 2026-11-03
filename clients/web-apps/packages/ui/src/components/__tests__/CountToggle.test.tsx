@@ -1,4 +1,4 @@
-import { Archive } from "lucide-react";
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
@@ -7,7 +7,7 @@ import { CountToggle } from "../count-toggle/CountToggle";
 const render = (props: { count: number; pressed: boolean }) =>
   renderToStaticMarkup(
     <CountToggle
-      Icon={Archive}
+      Icon={ArchiveIcon}
       label="Archived"
       count={props.count}
       pressed={props.pressed}

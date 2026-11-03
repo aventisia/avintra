@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { LoaderCircle, Search } from "lucide-react";
+import { CircleNotchIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { Popover } from "radix-ui";
 import {
   type KeyboardEvent,
@@ -93,7 +93,7 @@ export const PickerShell = ({
           ref={anchorRef}
           className="relative flex h-11 items-center rounded-md bg-surface ring-1 ring-line-strong transition-shadow focus-within:shadow-focus focus-within:ring-focus"
         >
-          <Search className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
           <input
             data-autofocus
             role="combobox"
@@ -114,7 +114,11 @@ export const PickerShell = ({
             className="h-full w-full bg-transparent pl-10 pr-12 text-[13.5px] text-ink outline-none placeholder:text-muted-foreground"
           />
           <span className="pointer-events-none absolute right-3 flex items-center text-muted-foreground">
-            {isOpen && isFetching ? <LoaderCircle className="size-4 animate-spin" /> : <Kbd>↓</Kbd>}
+            {isOpen && isFetching ? (
+              <CircleNotchIcon className="size-4 animate-spin" />
+            ) : (
+              <Kbd>↓</Kbd>
+            )}
           </span>
         </div>
       </Popover.Anchor>

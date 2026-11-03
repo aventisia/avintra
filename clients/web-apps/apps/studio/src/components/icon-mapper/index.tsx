@@ -1,25 +1,24 @@
 import {
-  BrainCircuit,
-  Cable,
-  CalendarCheck,
-  ChevronsLeftRightEllipsis,
-  CircleAlert,
-  Combine,
-  DatabaseZap,
-  FileCheck,
-  Globe,
-  Keyboard,
-  ListCheck,
-  MailCheck,
-  MonitorCheck,
-  MonitorCog,
-  MousePointerClick,
-  Puzzle,
-  SquareFunction,
-  TimerReset,
-  Webhook,
-  Wrench,
-} from "lucide-react";
+  BracketsAngleIcon,
+  BrainIcon,
+  CalendarCheckIcon,
+  CursorClickIcon,
+  DatabaseIcon,
+  EnvelopeOpenIcon,
+  FileTextIcon,
+  FunctionIcon,
+  GlobeIcon,
+  IntersectSquareIcon,
+  KeyboardIcon,
+  ListChecksIcon,
+  MonitorIcon,
+  PlugsConnectedIcon,
+  PuzzlePieceIcon,
+  TimerIcon,
+  WarningCircleIcon,
+  WebhooksLogoIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
 
 import {
   BlockNodeIcon,
@@ -35,22 +34,24 @@ import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
 export const iconMapper: { [key: string]: JSX.Element } = {
   // Nodes Categories L1
-  AppIntegrationsIcon: <NodesCategoryL1Icon Icon={Cable} className="h-5 w-5 text-primary" />,
-  DataTransformationsIcon: (
-    <NodesCategoryL1Icon Icon={DatabaseZap} className="h-5 w-5 text-primary" />
+  AppIntegrationsIcon: (
+    <NodesCategoryL1Icon Icon={PlugsConnectedIcon} className="h-5 w-5 text-primary" />
   ),
-  CustomNodesIcon: <NodesCategoryL1Icon Icon={Puzzle} className="h-5 w-5 text-primary" />,
-  WrenchIcon: <NodesCategoryL1Icon Icon={Wrench} className="h-5 w-5 text-primary" />,
+  DataTransformationsIcon: (
+    <NodesCategoryL1Icon Icon={DatabaseIcon} className="h-5 w-5 text-primary" />
+  ),
+  CustomNodesIcon: <NodesCategoryL1Icon Icon={PuzzlePieceIcon} className="h-5 w-5 text-primary" />,
+  WrenchIcon: <NodesCategoryL1Icon Icon={WrenchIcon} className="h-5 w-5 text-primary" />,
   AutomationEssentialsIcon: (
-    <NodesCategoryL1Icon Icon={SquareFunction} className="h-5 w-5 text-primary" />
+    <NodesCategoryL1Icon Icon={FunctionIcon} className="h-5 w-5 text-primary" />
   ),
   UIAutomationAndUserActionsIcon: (
-    <NodesCategoryL1Icon Icon={Keyboard} className="h-5 w-5 text-primary" />
+    <NodesCategoryL1Icon Icon={KeyboardIcon} className="h-5 w-5 text-primary" />
   ),
   IntelligentAutomationIcon: (
-    <NodesCategoryL1Icon Icon={BrainCircuit} className="h-5 w-5 text-primary" />
+    <NodesCategoryL1Icon Icon={BrainIcon} className="h-5 w-5 text-primary" />
   ),
-  BLockIcon: <NodesCategoryL1Icon Icon={Combine} />,
+  BLockIcon: <NodesCategoryL1Icon Icon={IntersectSquareIcon} />,
 
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,
@@ -63,17 +64,17 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   BlockNodeIcon: <BlockNodeIcon />,
 
   // Trigger Nodes
-  ManualTriggerIcon: <TriggerNodeIcon Icon={MousePointerClick} />,
-  ScheduleTriggerIcon: <TriggerNodeIcon Icon={CalendarCheck} />,
-  IntervalTriggerIcon: <TriggerNodeIcon Icon={TimerReset} />,
-  FileSystemEventTrigger: <TriggerNodeIcon Icon={FileCheck} />,
-  EmailTriggerIcon: <TriggerNodeIcon Icon={MailCheck} />,
-  DatabaseEventTriggerIcon: <TriggerNodeIcon Icon={DatabaseZap} />,
-  FormSubmissionTriggerIcon: <TriggerNodeIcon Icon={ListCheck} />,
-  SystemEventTriggerIcon: <TriggerNodeIcon Icon={MonitorCheck} />,
-  ServiceEventTriggerIcon: <TriggerNodeIcon Icon={MonitorCog} />,
-  WebhookTriggerIcon: <TriggerNodeIcon Icon={Webhook} />,
-  HttpTriggerIcon: <TriggerNodeIcon Icon={Globe} />,
-  ErrorDetectionTriggerIcon: <TriggerNodeIcon Icon={CircleAlert} />,
-  CustomTriggerIcon: <TriggerNodeIcon Icon={ChevronsLeftRightEllipsis} />,
+  ManualTriggerIcon: <TriggerNodeIcon Icon={CursorClickIcon} />,
+  ScheduleTriggerIcon: <TriggerNodeIcon Icon={CalendarCheckIcon} />,
+  IntervalTriggerIcon: <TriggerNodeIcon Icon={TimerIcon} />,
+  FileSystemEventTrigger: <TriggerNodeIcon Icon={FileTextIcon} />,
+  EmailTriggerIcon: <TriggerNodeIcon Icon={EnvelopeOpenIcon} />,
+  DatabaseEventTriggerIcon: <TriggerNodeIcon Icon={DatabaseIcon} />,
+  FormSubmissionTriggerIcon: <TriggerNodeIcon Icon={ListChecksIcon} />,
+  SystemEventTriggerIcon: <TriggerNodeIcon Icon={MonitorIcon} />,
+  ServiceEventTriggerIcon: <TriggerNodeIcon Icon={MonitorIcon} />,
+  WebhookTriggerIcon: <TriggerNodeIcon Icon={WebhooksLogoIcon} />,
+  HttpTriggerIcon: <TriggerNodeIcon Icon={GlobeIcon} />,
+  ErrorDetectionTriggerIcon: <TriggerNodeIcon Icon={WarningCircleIcon} />,
+  CustomTriggerIcon: <TriggerNodeIcon Icon={BracketsAngleIcon} />,
 };

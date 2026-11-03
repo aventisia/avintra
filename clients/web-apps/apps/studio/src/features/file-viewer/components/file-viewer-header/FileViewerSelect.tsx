@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
-import { FileIcon, ImageIcon } from "lucide-react";
+import { FileIcon, ImageIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useLocalFileStore } from "../../stores/file-list-store";

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Building2, type LucideIcon, TriangleAlert } from "lucide-react";
+import { BuildingsIcon, type Icon as PhosphorIcon, WarningIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
@@ -34,7 +34,7 @@ type WarningLineProps = {
  */
 export const WarningLine = ({ children, className }: WarningLineProps) => (
   <p className={cn("mt-2 flex items-center gap-1.5 text-[12px] text-warn", className)}>
-    <TriangleAlert className="size-3.5 shrink-0" />
+    <WarningIcon className="size-3.5 shrink-0" />
     {children}
   </p>
 );
@@ -50,7 +50,7 @@ type OpenAccessCalloutProps = {
 export const OpenAccessCallout = ({ title, description }: OpenAccessCalloutProps) => (
   <div className="flex items-start gap-3 rounded-lg bg-sunken px-4 py-3.5 ring-1 ring-line">
     <span className="grid size-8 shrink-0 place-items-center rounded-md bg-surface text-ink-2 ring-1 ring-line">
-      <Building2 className="size-4" />
+      <BuildingsIcon className="size-4" />
     </span>
     <div>
       <p className="text-[13px] font-semibold text-ink">{title}</p>
@@ -60,7 +60,7 @@ export const OpenAccessCallout = ({ title, description }: OpenAccessCalloutProps
 );
 
 type AccessEmptyStateProps = {
-  icon: LucideIcon;
+  icon: PhosphorIcon;
   title: string;
   description: ReactNode;
 };

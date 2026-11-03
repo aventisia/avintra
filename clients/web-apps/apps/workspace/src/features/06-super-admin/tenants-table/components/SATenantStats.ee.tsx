@@ -1,5 +1,5 @@
 import { StatsCard } from "@avplatform/ui/cards";
-import { ClockIcon, CoinsIcon, UsersIcon } from "lucide-react";
+import { ClockIcon, CoinsIcon, UsersIcon } from "@phosphor-icons/react";
 import { Fragment, useMemo } from "react";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto.ee";

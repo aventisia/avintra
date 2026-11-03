@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { ConditionLabel, ConditionListField, DCPFieldSchemaType, defaultConditionObj } from "../..";
@@ -29,7 +29,7 @@ export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
           onClick={() => appendGroup([[defaultConditionObj]])}
           className="gap-1 text-xs text-primary hover:text-primary"
         >
-          <PlusIcon className="h-4 w-4 stroke-2" />
+          <PlusIcon className="h-4 w-4" />
           OR
         </Button>
       </div>

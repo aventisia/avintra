@@ -2,7 +2,7 @@ import { FolderGlyph } from "@avplatform/ui/folder-glyph";
 import { cn } from "@avplatform/ui/lib";
 import { MetaLine } from "@avplatform/ui/meta-line";
 import { formatDate } from "@avplatform/ui/utils";
-import { SquarePenIcon, Trash2Icon } from "lucide-react";
+import { NotePencilIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { pluralize } from "@/utils/pluralize.util";
 
@@ -61,7 +61,7 @@ export const FolderHero = ({
             onClick={() => openEditFolderDialog(folder.id)}
             className="inline-flex h-8 items-center gap-1.5 rounded-md bg-surface px-3 text-[12.5px] font-medium text-ink-2 ring-1 ring-line-strong outline-none transition hover:bg-hover hover:text-ink focus-visible:ring-2 focus-visible:ring-focus active:scale-[0.98]"
           >
-            <SquarePenIcon className="size-3.5" />
+            <NotePencilIcon className="size-3.5" />
             Edit
           </button>
           <button
@@ -71,7 +71,7 @@ export const FolderHero = ({
             onClick={() => openDialog({ kind: "delete", folder })}
             className="grid size-8 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
           >
-            <Trash2Icon className="size-4" />
+            <TrashIcon className="size-4" />
           </button>
         </div>
       </div>

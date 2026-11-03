@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 
 type FeatureListProps = {
   features: string[];
@@ -10,7 +10,7 @@ export const FeatureList = ({ features }: FeatureListProps) => {
       {features.map((label, idx) => (
         <li key={idx} className="flex items-start gap-2">
           <div className="rounded-full bg-ok p-[2px]">
-            <Check className="h-3 w-3 text-bg" />
+            <CheckIcon className="h-3 w-3 text-bg" />
           </div>
           <span>{label}</span>
         </li>

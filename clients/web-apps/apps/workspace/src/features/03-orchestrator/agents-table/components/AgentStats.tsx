@@ -1,9 +1,9 @@
 import { StatsCard } from "@avplatform/ui/cards";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { MonitorIcon } from "@phosphor-icons/react";
+import { RobotIcon } from "@phosphor-icons/react";
 import Enumerable from "linq";
-import { Monitor } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BsRobot } from "react-icons/bs";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -45,13 +45,13 @@ export const AgentStats = ({ data }: StatsProps) => {
       />
       <StatsCard
         key={"Total Machines"}
-        icon={<Monitor className="size-7" />}
+        icon={<MonitorIcon className="size-7" />}
         title={"Total machines"}
         content={stats?.totalMachineCount ?? 0}
       />
       <StatsCard
         key={"Total Active Machines"}
-        icon={<BsRobot className="size-7" />}
+        icon={<RobotIcon className="size-7" />}
         title={"Total active machines"}
         content={stats?.active ?? 0}
       />

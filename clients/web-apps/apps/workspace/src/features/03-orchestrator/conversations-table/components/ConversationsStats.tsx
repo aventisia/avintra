@@ -1,5 +1,5 @@
 import { StatsCard } from "@avplatform/ui/cards";
-import { MessageCircleMoreIcon } from "lucide-react";
+import { ChatCircleDotsIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -51,7 +51,7 @@ export const ConversationsStats = ({ data }: StatsProps) => {
 
       {/* Total exchanges */}
       <StatsCard
-        icon={<MessageCircleMoreIcon className="size-7" />}
+        icon={<ChatCircleDotsIcon className="size-7" />}
         title="Total exchanges"
         content={stats.totalExchanges}
       />
