@@ -99,7 +99,7 @@ Verify with: <existing commands that check the behavior: typecheck, lint, build,
 ```
 
 - **Checklist**: AC IDs stay stable across revisions; strike a dropped item through (`~~AC3~~`) rather than renumbering.
-- **Route**: **Full loop** (start the `orchestrator` agent on the issue) when the change reaches a risky surface listed in `AGENT-LOOP.md`, changes a contract, schema, or migration, or leaves real design alternatives open. **Light** otherwise: one session implements from the brief and checks every AC with the pointers' Verify with commands.
+- **Route**: **Full loop** (start the `orchestrator` agent on the issue) when the change reaches a risky surface listed in `AGENT-LOOP.md`, changes a contract, schema, or migration, or leaves real design alternatives open. **Light** otherwise: `/implement-issue` takes it to a reviewed change in one session.
 - **Original report**: each combined issue adds a `### #<number> <title>` subsection after the main report.
 
 ## Review
