@@ -141,7 +141,14 @@ const Form = <T extends FieldValues>({
     <FormProvider {...methods}>
       <FormIdProvider value={formId}>
         <form id={formId} className="w-full" onSubmit={onSubmit}>
-          <fieldset disabled={disabled} className={cn("flex w-full flex-col gap-3.5", className)}>
+          <fieldset
+            disabled={disabled}
+            className={cn(
+              "flex w-full flex-col gap-3.5",
+              isInsideCrudDialog && !isNestedForm && "gap-4",
+              className,
+            )}
+          >
             {children}
           </fieldset>
         </form>
