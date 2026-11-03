@@ -16,11 +16,11 @@ npm install
 npx turbo run dev --filter=global-admin
 ```
 
-The app runs on port `3003` by default and is served from `/globaladmin/`. In development the dev server proxies `/globaladmin/api` to `http://localhost:4004` and `/accounts/api` to `http://localhost:4000`; published builds call the Global Admin API at `https://uat-globaladmin.aventisia.com/api` (staging) or `https://globaladmin.aventisia.com/api` (production).
+The app runs on port `3003` by default and is served from the root path. In development the dev server proxies `/globaladmin/api` to `http://localhost:4004` and `/accounts/api` to `http://localhost:4000`; published builds are served from the root of the Global Admin host (`https://uat-globaladmin.aventisia.com` in staging, `https://globaladmin.aventisia.com` in production) and call its `/api`.
 
 ## Access
 
-Signing in goes through the Accounts app. The app reads the Accounts session and only renders for a user whose token carries the `SA` role in a `Commercial` deployment; anyone else is sent to the Workspace app. The Workspace sidebar no longer links here, so the entry point is `/globaladmin/` on the app host.
+Signing in goes through the Accounts app. The app reads the Accounts session and only renders for a user whose token carries the `SA` role in a `Commercial` deployment; anyone else is sent to the Workspace app. The Workspace sidebar no longer links here, so the entry point is the root of the Global Admin host.
 
 ## Available Scripts
 
@@ -50,8 +50,7 @@ Signing in goes through the Accounts app. The app reads the Accounts session and
 
 Per-environment defaults live in `.env.<environment>`: `VITE_GLOBALADMIN_API_URL` is `https://uat-globaladmin.aventisia.com/api` in `staging`, `https://globaladmin.aventisia.com/api` in `production`, and `/globaladmin/api` (the dev proxy) in `development`. Local overrides should go in `.env.<environment>.local`, which is ignored by git.
 
-## Deploying under /globaladmin
+## Deploying
 
-- **Web files** - Jenkins rsyncs the build to `/var/www/aventisia.com/clients/globaladmin/`, matching the public path.
-- **Routing** - `deploy/nginx/sites-available/aventisia.worc` serves `/globaladmin/` from that directory, and published builds call the Global Admin API cross-origin at the environment's `VITE_GLOBALADMIN_API_URL`, authenticated with the `Authorization: Bearer` header. `deploy/nginx/common_headers.conf` allows both API hosts in `connect-src`, and the API's `CorsOrigins` allows the Accounts app host of each environment. Both files are shared by the two environments, so each allows the other's host until the API is split per environment.
-- **Rollout** - the old `/global-admin/` page paths return a temporary `302` to `/globaladmin/`, and the old `/global-admin/api/` proxy is kept until a later change removes it. The API service, container name, and network alias stay `globaladmin`; the public web path and its deploy directory both lost their hyphen. The old `/var/www/aventisia.com/clients/global-admin/` directory stays until removed by hand.
+- **Web files** - Jenkins rsyncs the build to `/var/www/aventisia.com/clients/globaladmin/`, which the Global Admin host serves at its root: `https://uat-globaladmin.aventisia.com` in staging, `https://globaladmin.aventisia.com` in production.
+- **Sign-in** - published builds read the Accounts session and API from the app host (`https://uat-avintra.aventisia.com` in staging, `https://avintra.aventisia.com` in production) as absolute URLs, because the app runs on its own host. The Accounts API therefore needs `EXTRA_CORS_ORIGINS` (semicolon-separated) to carry `https://uat-globaladmin.aventisia.com;https://globaladmin.aventisia.com`, and its session cookie stays `SameSite=None; Secure` so the browser sends it cross-site. The Global Admin API is called same-origin and authenticated with the `Authorization: Bearer` header.
