@@ -15,6 +15,11 @@
       {
         "label": "main",
         "title": "AvintraDesktopApp",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 640,
+        "center": true,
         "resizable": true,
         "fullscreen": false,
         "userAgent": "AvintraDesktopApp/0.2.36"

@@ -8,6 +8,10 @@ mod websocket;
 // Import PendingUpdate (the wrapper) instead of the raw UpdateState
 use updater_commands::PendingUpdate;
 
+// IMPORTANT NOTE: keep in sync with width/height in tauri.conf.json.
+const MAIN_WINDOW_WIDTH: f64 = 1280.0;
+const MAIN_WINDOW_HEIGHT: f64 = 800.0;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Initialize the websocket server
@@ -52,7 +56,20 @@ pub fn run() {
                 let current_title = window.title().unwrap_or_default();
                 let new_title = format!("{current_title} v{version}");
                 let _ = window.set_title(&new_title);
-                let _ = window.maximize();
+                let small_screen = window
+                    .current_monitor()
+                    .ok()
+                    .flatten()
+                    .map(|monitor| {
+                        let scale = monitor.scale_factor();
+                        let size = monitor.work_area().size;
+                        size.width as f64 / scale < MAIN_WINDOW_WIDTH
+                            || size.height as f64 / scale < MAIN_WINDOW_HEIGHT
+                    })
+                    .unwrap_or(true);
+                if small_screen {
+                    let _ = window.maximize();
+                }
             } else {
                 eprintln!("Warning: main window not found during setup");
             }
