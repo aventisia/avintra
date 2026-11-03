@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 
 import { GOVERNANCE_SECTIONS } from "../constants/governance-sections";
 import { AgentRiskTier } from "../enums/risk-tier-enum";

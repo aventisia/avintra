@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { FileSearchIcon } from "lucide-react";
+import { FileMagnifyingGlassIcon } from "@phosphor-icons/react";
 
 interface NotFoundWithLayoutPageProps {
   appLogo: React.ReactNode;
@@ -36,7 +36,7 @@ const NotFoundWithLayoutPage = ({ appLogo, minimalFooter }: NotFoundWithLayoutPa
         </a>
       </div>
       <div className="-mt-4 flex grow flex-col items-center justify-center gap-3 text-body text-muted-foreground mlg:flex-row">
-        <FileSearchIcon className="size-10 text-muted-foreground" strokeWidth={1.75} />
+        <FileMagnifyingGlassIcon className="size-10 text-muted-foreground" />
         <h2 className="text-title font-semibold text-ink">404</h2>
         <Separator orientation="vertical" className="hidden h-10 w-px bg-line mlg:flex" />
         <p>Page not found</p>

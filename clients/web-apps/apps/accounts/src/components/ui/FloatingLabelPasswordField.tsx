@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { FloatingLabelInputField } from "@avplatform/ui/form";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { useId, useMemo, useState } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 

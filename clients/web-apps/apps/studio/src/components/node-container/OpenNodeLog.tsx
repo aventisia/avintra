@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { RepeatIcon } from "lucide-react";
+import { RepeatIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 

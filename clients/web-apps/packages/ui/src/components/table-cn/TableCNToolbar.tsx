@@ -1,5 +1,5 @@
+import { XIcon } from "@phosphor-icons/react";
 import { type Column, type Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
 import type * as React from "react";
 
 import { Button } from "@/ui/components/buttons";
@@ -100,7 +100,7 @@ export const TableCNToolbar = <TData,>({
             onClick={() => table.resetColumnFilters(true)}
           >
             Reset
-            <X className="size-3.5" />
+            <XIcon className="size-3.5" />
           </Button>
         )}
       </div>

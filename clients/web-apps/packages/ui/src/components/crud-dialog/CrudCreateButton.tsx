@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 import { LockedActionTooltip } from "@/ui/components/action-lock";
 import { Button } from "@/ui/components/buttons";
@@ -26,7 +26,7 @@ export const CrudCreateButton: React.FC<CrudCreateButtonProps> = ({
       onClick={() => openCreateDialog(entity)}
       disabled={locked}
     >
-      <Plus className="h-4 w-4" />
+      <PlusIcon className="h-4 w-4" />
       {buttonText}
     </Button>
   );

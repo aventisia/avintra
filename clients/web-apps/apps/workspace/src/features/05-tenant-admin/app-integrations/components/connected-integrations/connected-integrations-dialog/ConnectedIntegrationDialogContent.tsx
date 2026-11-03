@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
-import { CircleAlert, Link } from "lucide-react";
+import { LinkIcon, WarningCircleIcon } from "@phosphor-icons/react";
 
 import { useConnectedIntegrationsDialogStore } from "@/features/05-tenant-admin/app-integrations/store/connected-integration-dialog";
 
@@ -12,7 +12,7 @@ const ConnectedIntegrationDialogContent = () => {
       <div className="space-y-3 px-6 py-4">
         {/* Warning */}
         <div className="flex hidden items-center gap-2 rounded-md bg-bad/10 px-2 py-1.5 text-xs text-bad">
-          <CircleAlert className="h-6 w-6" />
+          <WarningCircleIcon className="h-6 w-6" />
           <p>
             Oops! It seems segment is currently not syncing. Please check your connection settings
             or disconnect and reconnect.
@@ -45,7 +45,7 @@ const ConnectedIntegrationDialogContent = () => {
       <Separator />
       <div className="px-6 py-3 text-right">
         <Button variant={"destructive"} onClick={() => setOpen(false)}>
-          <Link className="mr-1.5 h-4 w-4" />
+          <LinkIcon className="mr-1.5 h-4 w-4" />
           Disconnect
         </Button>
       </div>

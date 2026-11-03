@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { toast } from "@avplatform/ui/sonner";
+import { ArrowSquareOutIcon, RobotIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
-import { BotIcon, ExternalLinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -129,7 +129,7 @@ export const CallAgentNode = memo(
           selected={selected}
           nodeData={data}
           nodeId={id}
-          glyph={<BotIcon />}
+          glyph={<RobotIcon />}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -155,7 +155,7 @@ export const CallAgentNode = memo(
               className="nodrag nopan"
               onClick={handleOpenSubFlow}
             >
-              <ExternalLinkIcon className="size-3.5" />
+              <ArrowSquareOutIcon className="size-3.5" />
               Open agent
             </Button>
           </NodeToolbar>

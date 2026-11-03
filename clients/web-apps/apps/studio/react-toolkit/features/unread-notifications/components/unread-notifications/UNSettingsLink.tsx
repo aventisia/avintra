@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { SettingsIcon } from "lucide-react";
+import { GearIcon } from "@phosphor-icons/react";
 
 /**
  * Renders a button that represents a link to the notification settings.
@@ -8,7 +8,7 @@ import { SettingsIcon } from "lucide-react";
 export const UNSettingsLink = () => {
   return (
     <Button variant="ghost" size="icon8">
-      <SettingsIcon className="h-5 w-5" />
+      <GearIcon className="h-5 w-5" />
       <span className="sr-only">Settings</span>
     </Button>
   );

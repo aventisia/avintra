@@ -8,8 +8,8 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { formatDate } from "@avplatform/ui/utils";
+import { BellIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { BellIcon } from "lucide-react";
 
 import { getSaNotification } from "../../apis/sa-notification-apis.ee";
 import { formatEnumLabel } from "../../constants/sa-notifications-table.constant.ee";

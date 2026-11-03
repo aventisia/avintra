@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { FileSearchIcon } from "lucide-react";
+import { FileMagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 /**
@@ -33,7 +33,7 @@ const NotFoundPage = () => {
           : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
       )}
     >
-      <FileSearchIcon className="size-10 text-muted-foreground" strokeWidth={1.75} />
+      <FileMagnifyingGlassIcon className="size-10 text-muted-foreground" />
       <h2 className="text-title font-semibold text-ink">404</h2>
       <Separator orientation="vertical" className="hidden h-10 w-px bg-line mlg:flex" />
       <p className="text-body text-muted-foreground">Page not found</p>

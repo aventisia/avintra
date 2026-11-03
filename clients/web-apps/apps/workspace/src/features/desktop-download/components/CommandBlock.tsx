@@ -1,7 +1,7 @@
 import { CopyButton } from "@avplatform/ui/buttons";
 import { useCopyToClipboard } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
-import { TerminalIcon } from "lucide-react";
+import { TerminalIcon } from "@phosphor-icons/react";
 
 const PLACEHOLDER_PATTERN = /(<[A-Z_]+>)/;
 

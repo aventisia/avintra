@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 /**
@@ -27,7 +27,7 @@ export const FPCreateButton: React.FC = () => {
         })
       }
     >
-      <PlusIcon className="h-5 w-5 stroke-2 text-primary-text" />
+      <PlusIcon className="h-5 w-5 text-primary-text" />
     </Button>
   );
 };

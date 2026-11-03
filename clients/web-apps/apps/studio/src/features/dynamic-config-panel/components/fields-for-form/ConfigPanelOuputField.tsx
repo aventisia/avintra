@@ -4,7 +4,7 @@ import { FormControl, FormField, FormItem } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InfoIcon, VariableIcon } from "lucide-react";
+import { BracketsRoundIcon, InfoIcon } from "@phosphor-icons/react";
 import * as React from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -102,7 +102,7 @@ const ConfigPanelOuputField = ({
                     setOpenState(true);
                   }}
                 >
-                  <VariableIcon className="h-4 w-4" />
+                  <BracketsRoundIcon className="h-4 w-4" />
                 </PopoverTrigger>
 
                 {description ? (

@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { TextareaField } from "@avplatform/ui/form";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { BookCopyIcon } from "lucide-react";
+import { BooksIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -153,7 +153,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
               setTemplateId(selectedTemplate || "");
             }}
           >
-            <BookCopyIcon className="mr-1 size-3.5" />
+            <BooksIcon className="mr-1 size-3.5" />
             Save
           </Button>
         </Tooltip>

@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ChevronDownIcon, Loader2 } from "lucide-react";
+import { CaretDownIcon, CircleNotchIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
@@ -34,9 +34,9 @@ export const FlowVersionsTrigger = () => {
       >
         <span className="min-w-0 truncate">v{versionNumber}</span>
         {isVersionTransitioning ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <ChevronDownIcon className="size-3 shrink-0" />
+          <CaretDownIcon className="size-3 shrink-0" />
         )}
       </PopoverTrigger>
     </Tooltip>

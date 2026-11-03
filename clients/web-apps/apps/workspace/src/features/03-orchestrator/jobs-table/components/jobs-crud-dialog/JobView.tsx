@@ -14,17 +14,17 @@ import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { formatDate } from "@avplatform/ui/utils";
-import { useQuery } from "@tanstack/react-query";
 import {
-  ActivityIcon,
+  ArrowSquareOutIcon,
   BriefcaseIcon,
-  CircleGaugeIcon,
-  ExternalLinkIcon,
-  FileJsonIcon,
-  LogsIcon,
-  MessageSquareTextIcon,
-  ZapIcon,
-} from "lucide-react";
+  ChatTextIcon,
+  FileCodeIcon,
+  GaugeIcon,
+  LightningIcon,
+  ListDashesIcon,
+  PulseIcon,
+} from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 
 import { getJob } from "../../apis/jobs-table-apis";
 import { statusVariant } from "../../constants/column-display-names";
@@ -118,12 +118,12 @@ export const JobView = ({ rowId }: JobViewProps) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <ViewBadge
             title={`Trigger: ${job.triggerType}`}
-            Icon={ZapIcon}
+            Icon={LightningIcon}
             text={`Trigger: ${job.triggerType}`}
           />
           <ViewBadge
             title={`Priority: ${job.priority}`}
-            Icon={CircleGaugeIcon}
+            Icon={GaugeIcon}
             text={`Priority: ${job.priority}`}
           />
         </div>
@@ -156,7 +156,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       <ViewInfoRowsCard
         title="Execution"
         className="border-line"
-        icon={<ActivityIcon className="size-3.5 text-primary" />}
+        icon={<PulseIcon className="size-3.5 text-primary" />}
       >
         <ViewInfoRow
           label="Status"
@@ -203,7 +203,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {job.remarks && (
         <ViewInfoRowsCard
           title="Remarks"
-          icon={<MessageSquareTextIcon className="size-3.5 text-muted-foreground" />}
+          icon={<ChatTextIcon className="size-3.5 text-muted-foreground" />}
         >
           <div className="px-0.5 py-1.5">
             <p className="text-xs whitespace-pre-wrap text-foreground">{job.remarks}</p>
@@ -215,7 +215,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {job.jobInputData && (
         <ViewInfoRowsCard
           title="Input data"
-          icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+          icon={<FileCodeIcon className="size-3.5 text-muted-foreground" />}
           action={createCopyJsonAction(jsonToString(job.jobInputData))}
         >
           <JsonViewer
@@ -231,7 +231,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {job.jobOutputData && (
         <ViewInfoRowsCard
           title="Output data"
-          icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+          icon={<FileCodeIcon className="size-3.5 text-muted-foreground" />}
           action={createCopyJsonAction(jsonToString(job.jobOutputData))}
         >
           <JsonViewer
@@ -247,7 +247,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {job.lastNodeLog && (
         <ViewInfoRowsCard
           title="Last node log"
-          icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
+          icon={<ListDashesIcon className="size-3.5 text-muted-foreground" />}
           action={
             <a
               href={executionLogUrl}
@@ -256,7 +256,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
               title="View full execution log"
               className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
             >
-              <ExternalLinkIcon className="size-3.5 -mt-[0.135rem]" />
+              <ArrowSquareOutIcon className="size-3.5 -mt-[0.135rem]" />
               Full log
             </a>
           }

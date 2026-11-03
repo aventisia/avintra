@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { ArrowRightIcon, CheckIcon } from "lucide-react";
+import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 
 import type { GetStartedStep } from "../constants/get-started-steps.constant";
@@ -51,7 +51,7 @@ export const GetStartedStepItem = ({
             )}
           >
             {isExplored ? (
-              <CheckIcon className="size-4" strokeWidth={2.5} />
+              <CheckIcon className="size-4" weight="bold" />
             ) : (
               <step.Icon className="size-4 shrink-0" />
             )}

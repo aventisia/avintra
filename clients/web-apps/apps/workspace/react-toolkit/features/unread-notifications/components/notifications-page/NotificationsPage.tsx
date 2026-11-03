@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { BellOffIcon, CheckCheckIcon, SearchXIcon } from "lucide-react";
+import { BellSlashIcon, ChecksIcon, MagnifyingGlassMinusIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import {
@@ -65,20 +65,20 @@ const NotificationList = ({
   if (items.length === 0) {
     const empty = isFiltered
       ? {
-          Icon: SearchXIcon,
+          Icon: MagnifyingGlassMinusIcon,
           primary: "No notifications match these filters",
           secondary: "Try another type, source or date range.",
           action: { label: "Clear filters", onClick: onClearFilters },
         }
       : view === "unread"
         ? {
-            Icon: CheckCheckIcon,
+            Icon: ChecksIcon,
             primary: "You're all caught up",
             secondary: "New notifications show up here until you mark them as read.",
             action: { label: "See all notifications", onClick: onShowAll },
           }
         : {
-            Icon: BellOffIcon,
+            Icon: BellSlashIcon,
             primary: "No notifications yet",
             secondary:
               "Announcements from your admins and updates on tickets, credits and agents show up here.",

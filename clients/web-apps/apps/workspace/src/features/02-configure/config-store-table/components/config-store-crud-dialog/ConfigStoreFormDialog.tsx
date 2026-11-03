@@ -3,7 +3,7 @@ import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/c
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { IconTile } from "@avplatform/ui/icon-tile";
 import { cn } from "@avplatform/ui/lib";
-import { KeyRound } from "lucide-react";
+import { KeyIcon } from "@phosphor-icons/react";
 import { useEffect, useId } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -109,7 +109,7 @@ export const ConfigStoreFormDialog = ({
       onClose={onClose}
       isDismissLocked={isSaving}
       isOutsideClickLocked={isDirty}
-      mark={<IconTile Icon={KeyRound} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
+      mark={<IconTile Icon={KeyIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
       eyebrow={EYEBROWS[crudAction]}
       title={
         <span className={cn(!trimmedName && "text-muted-foreground")}>

@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX, TriangleAlert } from "lucide-react";
+import { CheckCircleIcon, WarningIcon, XCircleIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 import { useFormField } from "@/ui/components/form";
@@ -46,9 +46,9 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
         )}
         {...props}
       >
-        {messageType === "Yellow" && <TriangleAlert className="h-3.5 w-3.5" />}
-        {messageType === "Red" && <CircleX className="h-3.5 w-3.5" />}
-        {messageType === "Green" && <CircleCheck className="h-3.5 w-3.5" />}
+        {messageType === "Yellow" && <WarningIcon className="h-3.5 w-3.5" />}
+        {messageType === "Red" && <XCircleIcon className="h-3.5 w-3.5" />}
+        {messageType === "Green" && <CheckCircleIcon className="h-3.5 w-3.5" />}
         {errorMessage}
       </p>
     );

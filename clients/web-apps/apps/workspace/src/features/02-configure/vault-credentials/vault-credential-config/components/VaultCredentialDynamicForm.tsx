@@ -3,7 +3,7 @@ import { SubmitButton } from "@avplatform/ui/buttons";
 import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { type CrudActionType } from "@avplatform/ui/types";
-import { Info } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -255,7 +255,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
 
         {isType && !isReadOnly && isOAuthCredential && (
           <div className="flex items-start gap-2 rounded-lg border bg-selected px-3 py-2 text-sm text-ink">
-            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <InfoIcon className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
               After saving, a browser window will open where you can sign in and grant access to
               your {isType} account. Complete the consent flow in your browser before the credential

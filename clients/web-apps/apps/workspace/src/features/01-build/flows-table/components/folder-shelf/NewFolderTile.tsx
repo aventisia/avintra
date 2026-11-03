@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { FolderPlus } from "lucide-react";
+import { FolderPlusIcon } from "@phosphor-icons/react";
 
 import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { MovableAgent } from "../../types/movable-agent.type";
@@ -42,7 +42,7 @@ export const NewFolderTile = ({ draggedAgent, isFirstFolder }: NewFolderTileProp
       )}
     >
       <span className="grid size-8 shrink-0 place-items-center rounded-md bg-popover ring-1 ring-border transition group-hover/drop:ring-focus/30 group-data-[drop-active=true]/drop:rotate-6 group-data-[drop-active=true]/drop:scale-110">
-        <FolderPlus className="size-4" />
+        <FolderPlusIcon className="size-4" />
       </span>
       <span className="min-w-0">
         <span className="block text-[13.5px] font-semibold">{title}</span>

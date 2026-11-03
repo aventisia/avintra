@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { XIcon } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useTemplateApprovalStore } from "../../stores/template-approval-store";

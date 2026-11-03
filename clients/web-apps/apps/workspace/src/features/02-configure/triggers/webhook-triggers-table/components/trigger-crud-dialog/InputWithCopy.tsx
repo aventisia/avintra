@@ -6,7 +6,7 @@ import {
 } from "@avplatform/ui/components/input-group";
 import { FormLabelExt } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 export default function InputWithCopy({

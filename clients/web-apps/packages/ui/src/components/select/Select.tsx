@@ -1,5 +1,5 @@
+import { CaretDownIcon, CaretUpIcon, CheckIcon } from "@phosphor-icons/react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -30,7 +30,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown
+      <CaretDownIcon
         className={cn(
           "shrink-0 text-muted-foreground",
           size === "xs" && "h-3 w-3",
@@ -52,7 +52,7 @@ const SelectScrollUpButton = React.forwardRef<
     className={cn("flex cursor-default items-center justify-center py-1", className)}
     {...props}
   >
-    <ChevronUp className="h-4 w-4" />
+    <CaretUpIcon className="h-4 w-4" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -66,7 +66,7 @@ const SelectScrollDownButton = React.forwardRef<
     className={cn("flex cursor-default items-center justify-center py-1", className)}
     {...props}
   >
-    <ChevronDown className="h-4 w-4" />
+    <CaretDownIcon className="h-4 w-4" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
@@ -139,7 +139,7 @@ const SelectItem = React.forwardRef<
     <div className="flex w-full items-center gap-1 justify-between">
       <SelectPrimitive.ItemText className="grow">{children}</SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator className="text-primary-text">
-        <Check
+        <CheckIcon
           className={cn(
             size === "xs" && "h-3 w-3",
             size === "sm" && "h-3.5 w-3.5",

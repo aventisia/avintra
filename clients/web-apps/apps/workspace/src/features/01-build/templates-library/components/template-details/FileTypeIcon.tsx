@@ -1,14 +1,13 @@
 import {
-  File,
-  FileArchive,
-  FileAudio,
-  FileCode,
-  FileImage,
-  FileJson,
-  FileSpreadsheet,
-  FileText,
-  FileVideo,
-} from "lucide-react";
+  FileAudioIcon,
+  FileCodeIcon,
+  FileIcon,
+  FileImageIcon,
+  FileTextIcon,
+  FileVideoIcon,
+  FileXlsIcon,
+  FileZipIcon,
+} from "@phosphor-icons/react";
 
 interface FileTypeIconProps {
   fileType: string;
@@ -16,41 +15,41 @@ interface FileTypeIconProps {
 }
 
 const extensionIconMap: Record<string, React.ElementType> = {
-  pdf: FileText,
-  doc: FileText,
-  docx: FileText,
-  txt: FileText,
+  pdf: FileTextIcon,
+  doc: FileTextIcon,
+  docx: FileTextIcon,
+  txt: FileTextIcon,
 
-  xls: FileSpreadsheet,
-  xlsx: FileSpreadsheet,
-  csv: FileSpreadsheet,
+  xls: FileXlsIcon,
+  xlsx: FileXlsIcon,
+  csv: FileXlsIcon,
 
-  png: FileImage,
-  jpg: FileImage,
-  jpeg: FileImage,
-  gif: FileImage,
-  svg: FileImage,
+  png: FileImageIcon,
+  jpg: FileImageIcon,
+  jpeg: FileImageIcon,
+  gif: FileImageIcon,
+  svg: FileImageIcon,
 
-  zip: FileArchive,
-  rar: FileArchive,
-  tar: FileArchive,
-  gz: FileArchive,
+  zip: FileZipIcon,
+  rar: FileZipIcon,
+  tar: FileZipIcon,
+  gz: FileZipIcon,
 
-  js: FileCode,
-  ts: FileCode,
-  jsx: FileCode,
-  tsx: FileCode,
-  html: FileCode,
-  css: FileCode,
-  json: FileJson,
+  js: FileCodeIcon,
+  ts: FileCodeIcon,
+  jsx: FileCodeIcon,
+  tsx: FileCodeIcon,
+  html: FileCodeIcon,
+  css: FileCodeIcon,
+  json: FileCodeIcon,
 
-  mp3: FileAudio,
-  wav: FileAudio,
-  ogg: FileAudio,
+  mp3: FileAudioIcon,
+  wav: FileAudioIcon,
+  ogg: FileAudioIcon,
 
-  mp4: FileVideo,
-  mov: FileVideo,
-  avi: FileVideo,
+  mp4: FileVideoIcon,
+  mov: FileVideoIcon,
+  avi: FileVideoIcon,
 };
 
 export const FileTypeIcon: React.FC<FileTypeIconProps> = ({
@@ -58,7 +57,7 @@ export const FileTypeIcon: React.FC<FileTypeIconProps> = ({
   className = "h-7 w-7 text-muted-foreground stroke-1",
 }) => {
   const ext = fileType?.toLowerCase() || "";
-  const Icon = extensionIconMap[ext] || File; // fallback icon
+  const Icon = extensionIconMap[ext] || FileIcon; // fallback icon
 
   return <Icon className={className} />;
 };

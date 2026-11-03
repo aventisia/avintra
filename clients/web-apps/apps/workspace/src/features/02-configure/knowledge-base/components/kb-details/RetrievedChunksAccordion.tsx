@@ -7,7 +7,7 @@ import {
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon, ChevronRight } from "lucide-react";
+import { ArrowLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { Dispatch, SetStateAction } from "react";
 
 import { RetrievedChunkDto } from "../../apis/knowledge-base-file-apis";
@@ -35,7 +35,7 @@ export function RetrievedChunksAccordion({
           <AccordionItem key={`${item.similarity_score}-${index}`} value={`${index}`}>
             <AccordionTrigger className="group  flex w-full items-center justify-start gap-2 hover:!no-underline [&>svg]:hidden">
               <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-muted">
-                <ChevronRight className="h-3.5 w-3.5 text-primary transition-transform duration-200  group-data-[state=open]:rotate-90" />
+                <CaretRightIcon className="h-3.5 w-3.5 text-primary transition-transform duration-200  group-data-[state=open]:rotate-90" />
               </div>
               <p className="text-sm font-medium flex-1 text-left hover:underline hover:underline-offset-4">
                 {index + 1}. {(item.metadata?.doc_name as string) || "Unknown Source"}

@@ -5,8 +5,8 @@ import {
   TableCNActionBarSelection,
   TableCNActionBarSeparator,
 } from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { Trash2Icon } from "lucide-react";
 
 import { DATA_QUERY_KEY, JobsTableRowDto, jobOptimisticMutationFn } from "..";
 
@@ -36,7 +36,7 @@ export function JobsBulkActions({ table }: JobsBulkActionsProps) {
       <TableCNActionBarSelection table={table} />
       <TableCNActionBarSeparator />
       <TableCNActionBarItem
-        icon={Trash2Icon}
+        icon={TrashIcon}
         tone="destructive"
         onClick={() => {
           showDefaultAlertDialog({

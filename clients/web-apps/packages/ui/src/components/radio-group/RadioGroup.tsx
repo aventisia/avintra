@@ -1,5 +1,5 @@
+import { CircleIcon } from "@phosphor-icons/react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { Circle } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -33,9 +33,10 @@ const RadioGroupItem = React.forwardRef<
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <Circle
+        <CircleIcon
+          weight="fill"
           className={cn(
-            "fill-current text-current",
+            "text-current",
             size === "xs" && "h-1 w-1",
             size === "sm" && "h-[5px] w-[5px]",
             size === "base" && "h-1.5 w-1.5",

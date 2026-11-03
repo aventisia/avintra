@@ -1,4 +1,4 @@
-import { CircleXIcon, SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Input } from "@/ui/components/Input";
@@ -156,7 +156,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
       }}
     >
       <div className="relative">
-        <SearchIcon
+        <MagnifyingGlassIcon
           className={cn(
             "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground",
             size === "base" && "left-2.5 size-4",
@@ -216,7 +216,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
             className={cn("absolute right-0.5 top-1/2 -translate-y-1/2")}
             onClick={handleClear}
           >
-            <CircleXIcon
+            <XCircleIcon
               className={cn(
                 "text-muted-foreground",
                 size === "base" && "size-4",

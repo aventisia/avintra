@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { Check, X } from "lucide-react";
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 export interface Option {
@@ -126,7 +126,7 @@ export function MultiSelectCombobox({
                           if (!disabled) handleUnselect(val);
                         }}
                       >
-                        <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                        <XIcon className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                       </div>
                     </Badge>
                   );
@@ -150,7 +150,7 @@ export function MultiSelectCombobox({
                     <CommandItem key={option.value} onSelect={() => handleSelect(option.value)}>
                       <div className="flex w-full items-center justify-between">
                         {option.label}
-                        <Check
+                        <CheckIcon
                           className={cn("h-3.5 w-3.5", isSelected ? "opacity-100" : "opacity-0")}
                         />
                       </div>

@@ -28,24 +28,24 @@ import { cn } from "@avplatform/ui/lib";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  ArrowsClockwiseIcon,
+  CaretDownIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  CaretUpIcon,
   CheckIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
+  CircleNotchIcon,
   CopyIcon,
-  DownloadIcon,
-  LoaderCircleIcon,
-  Mic,
-  MoreHorizontalIcon,
-  PencilIcon,
-  Plus,
-  RefreshCwIcon,
-  SparklesIcon,
+  DotsThreeIcon,
+  DownloadSimpleIcon,
+  MicrophoneIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  SparkleIcon,
+  SpeakerHighIcon,
+  SpeakerXIcon,
   SquareIcon,
-  Volume2Icon,
-  VolumeXIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import type { FC, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -202,7 +202,7 @@ const ThreadHeader = ({
           aria-label="Start new chat"
           onClick={handleNewSession}
         >
-          <Plus className="size-4 text-[var(--icon-color)]" />
+          <PlusIcon className="size-4 text-[var(--icon-color)]" />
         </TooltipIconButton>
       </div>
     </div>
@@ -245,9 +245,9 @@ const SpeakerToggle: FC = () => {
       }}
     >
       {voice.speakReplies ? (
-        <Volume2Icon className={cn("size-4", voice.isPlaying && "text-primary")} />
+        <SpeakerHighIcon className={cn("size-4", voice.isPlaying && "text-primary")} />
       ) : (
-        <VolumeXIcon className="size-4 text-[var(--icon-color)]" />
+        <SpeakerXIcon className="size-4 text-[var(--icon-color)]" />
       )}
     </TooltipIconButton>
   );
@@ -419,11 +419,11 @@ const ComposerAction: FC = () => {
               onClick={toggleRecording}
             >
               {isTranscribing ? (
-                <LoaderCircleIcon className="size-4 animate-spin" />
+                <CircleNotchIcon className="size-4 animate-spin" />
               ) : isRecording ? (
-                <SquareIcon className="size-3 fill-current text-destructive" />
+                <SquareIcon weight="fill" className="size-3 text-destructive" />
               ) : (
-                <Mic className="size-4" />
+                <MicrophoneIcon className="size-4" />
               )}
             </TooltipIconButton>
             {isRecording && (
@@ -469,7 +469,7 @@ const ComposerAction: FC = () => {
               }
             }}
           >
-            <SquareIcon className="aui-composer-cancel-icon size-3 fill-current" />
+            <SquareIcon weight="fill" className="aui-composer-cancel-icon size-3" />
           </Button>
         </ComposerPrimitive.Cancel>
       </AuiIf>
@@ -560,12 +560,12 @@ const ChainOfThought: FC<{
         aria-expanded={isOpen}
       >
         {isOpen ? (
-          <ChevronUpIcon className="size-3.5 shrink-0" />
+          <CaretUpIcon className="size-3.5 shrink-0" />
         ) : (
-          <ChevronDownIcon className="size-3.5 shrink-0" />
+          <CaretDownIcon className="size-3.5 shrink-0" />
         )}
         {isRunning ? (
-          <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-primary" />
+          <CircleNotchIcon className="size-3.5 shrink-0 animate-spin text-primary" />
         ) : (
           <CheckIcon
             className={cn(
@@ -602,7 +602,7 @@ const SkillChip: FC<{ name?: string }> = ({ name }) => {
   if (!name) return null;
   return (
     <div className="aui-assistant-skill-chip my-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-muted-foreground text-xs">
-      <SparklesIcon className="size-3" />
+      <SparkleIcon className="size-3" />
       <span>Using skill: {name}</span>
     </div>
   );
@@ -707,7 +707,7 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
       {!readOnly && (
         <ActionBarPrimitive.Reload asChild>
           <TooltipIconButton tooltip="Refresh">
-            <RefreshCwIcon />
+            <ArrowsClockwiseIcon />
           </TooltipIconButton>
         </ActionBarPrimitive.Reload>
       )}
@@ -715,7 +715,7 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
       <ActionBarMorePrimitive.Root>
         <ActionBarMorePrimitive.Trigger asChild>
           <TooltipIconButton tooltip="More" className="data-[state=open]:bg-accent">
-            <MoreHorizontalIcon />
+            <DotsThreeIcon />
           </TooltipIconButton>
         </ActionBarMorePrimitive.Trigger>
         <ActionBarMorePrimitive.Content
@@ -725,7 +725,7 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
         >
           <ActionBarPrimitive.ExportMarkdown asChild>
             <ActionBarMorePrimitive.Item className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-              <DownloadIcon className="size-4" />
+              <DownloadSimpleIcon className="size-4" />
               Export as Markdown
             </ActionBarMorePrimitive.Item>
           </ActionBarPrimitive.ExportMarkdown>
@@ -771,7 +771,7 @@ const UserActionBar: FC = () => {
     >
       <ActionBarPrimitive.Edit asChild>
         <TooltipIconButton tooltip="Edit" className="aui-user-action-edit size-8 p-0">
-          <PencilIcon className="size-3.5 text-[var(--icon-color)] group-hover:text-primary" />
+          <PencilSimpleIcon className="size-3.5 text-[var(--icon-color)] group-hover:text-primary" />
         </TooltipIconButton>
       </ActionBarPrimitive.Edit>
     </ActionBarPrimitive.Root>
@@ -813,7 +813,7 @@ const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({ className, ...rest
     >
       <BranchPickerPrimitive.Previous asChild>
         <TooltipIconButton tooltip="Previous">
-          <ChevronLeftIcon />
+          <CaretLeftIcon />
         </TooltipIconButton>
       </BranchPickerPrimitive.Previous>
       <span className="aui-branch-picker-state font-medium">
@@ -821,7 +821,7 @@ const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({ className, ...rest
       </span>
       <BranchPickerPrimitive.Next asChild>
         <TooltipIconButton tooltip="Next">
-          <ChevronRightIcon />
+          <CaretRightIcon />
         </TooltipIconButton>
       </BranchPickerPrimitive.Next>
     </BranchPickerPrimitive.Root>

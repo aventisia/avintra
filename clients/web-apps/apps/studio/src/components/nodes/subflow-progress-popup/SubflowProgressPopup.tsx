@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 
 import { SubflowProgressNode } from "@/features/execute-flow/stores/live-execution-store";
 
@@ -12,7 +12,7 @@ export const SubflowProgressPopup = ({ node }: { node: SubflowProgressNode }) =>
   return (
     <div className="absolute left-1/2 top-full z-10 mt-2 w-56 -translate-x-1/2 rounded-md bg-surface p-2.5 shadow-pop">
       <div className="flex items-center gap-2">
-        <Loader2 className="size-4 shrink-0 animate-spin text-live" />
+        <CircleNotchIcon className="size-4 shrink-0 animate-spin text-live" />
         <span className="truncate text-xs font-semibold text-ink">{node.nodeName}</span>
       </div>
       <div className="mt-2 space-y-1 border-t border-line pt-2">

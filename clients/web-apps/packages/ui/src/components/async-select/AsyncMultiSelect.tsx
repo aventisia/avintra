@@ -1,4 +1,4 @@
-import { CircleXIcon, SearchIcon, XIcon } from "lucide-react";
+import { MagnifyingGlassIcon, XCircleIcon, XIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Input } from "@/ui/components/Input";
@@ -174,7 +174,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
                     className="size-3.5 p-0 text-muted-foreground hover:bg-transparent hover:text-bad focus-visible:text-bad"
                     onClick={() => removeSelectedItem(itemId)}
                   >
-                    <XIcon className="stroke-[2.5]" />
+                    <XIcon weight="bold" />
                   </Button>
                 )}
               </div>
@@ -183,7 +183,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
         </div>
       )}
       <div className="relative">
-        <SearchIcon
+        <MagnifyingGlassIcon
           className={cn(
             "pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
             size === "base" && "left-2.5 size-4",
@@ -243,7 +243,7 @@ export const AsyncMultiSelect = <TItem, TFilters = undefined>({
             className={cn("absolute right-0.5 top-1/2 -translate-y-1/2")}
             onClick={handleClear}
           >
-            <CircleXIcon
+            <XCircleIcon
               className={cn(
                 "text-muted-foreground",
                 size === "base" && "size-4",

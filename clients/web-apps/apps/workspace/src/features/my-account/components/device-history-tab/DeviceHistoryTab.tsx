@@ -2,8 +2,8 @@ import { LoadingSpinner, Skeleton } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { MetaLine } from "@avplatform/ui/meta-line";
+import { DevicesIcon, SignOutIcon } from "@phosphor-icons/react";
 import { formatDistanceToNow } from "date-fns";
-import { LogOutIcon, MonitorSmartphoneIcon } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -38,7 +38,7 @@ const SessionRow = ({
         {browserImage ? (
           <img alt="" src={browserImage} className="size-5" />
         ) : (
-          <MonitorSmartphoneIcon className="size-5 text-ink-2" />
+          <DevicesIcon className="size-5 text-ink-2" />
         )}
       </span>
       <div className="min-w-0 flex-1">
@@ -69,7 +69,7 @@ const SessionRow = ({
         {isSigningOut ? (
           <LoadingSpinner className="size-3.5" />
         ) : (
-          <LogOutIcon className="size-3.5" />
+          <SignOutIcon className="size-3.5" />
         )}
         <span className="hidden sm:inline">Sign out</span>
       </Button>

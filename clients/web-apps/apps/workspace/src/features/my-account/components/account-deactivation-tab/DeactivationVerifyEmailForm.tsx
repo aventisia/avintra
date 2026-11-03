@@ -1,8 +1,8 @@
 import { Button, ResendCodeButton, SubmitButton } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
 import { Form, InputField, InputOtpField } from "@avplatform/ui/form";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -84,7 +84,7 @@ export const DeactivationVerifyEmailForm = () => {
             type="reset"
             onClick={() => setStepNo(1)}
           >
-            <Lucide icon="ArrowLeft" className="h-6 w-6" />
+            <ArrowLeftIcon className="h-6 w-6" />
             <span className="ml-1">Cancel</span>
           </Button>
           <div className="me-2 flex flex-row flex-wrap items-center gap-2 text-sm">

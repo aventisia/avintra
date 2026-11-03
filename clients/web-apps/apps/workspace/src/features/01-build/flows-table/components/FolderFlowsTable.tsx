@@ -5,7 +5,7 @@ import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
 import { ViewModeToggle } from "@avplatform/ui/view-mode-toggle";
-import { Archive } from "lucide-react";
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -112,7 +112,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
             withViewOptions={view === "table"}
           >
             <CountToggle
-              Icon={Archive}
+              Icon={ArchiveIcon}
               label="Archived"
               title={showArchived ? "Show active agents" : "Show archived agents"}
               count={archivedCount}

@@ -10,7 +10,7 @@ import {
 } from "@avplatform/ui/dialog";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useAlertDialogStore } from "@avplatform/ui/stores";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import GoogleDriveForm from "@/features/05-tenant-admin/app-integrations/features/google-drive/components/GoogleDriveForm";
@@ -98,7 +98,7 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
             </div>
 
             <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
+              <XIcon className="h-5 w-5 text-[--icon-color]" />
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
           </DialogTitle>

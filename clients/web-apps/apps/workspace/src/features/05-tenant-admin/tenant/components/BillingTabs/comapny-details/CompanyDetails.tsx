@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { SquarePen } from "lucide-react";
+import { NotePencilIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails.ee";
@@ -34,7 +34,7 @@ const CompanyDetails = () => {
             size={"sm"}
             onClick={() => setOpen(true)}
           >
-            <SquarePen className="h-4 w-4" /> Edit
+            <NotePencilIcon className="h-4 w-4" /> Edit
           </Button>
         </div>
 

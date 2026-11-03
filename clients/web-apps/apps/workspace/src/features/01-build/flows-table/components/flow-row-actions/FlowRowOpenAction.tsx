@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 interface FlowRowOpenActionProps {
   rowId: string;
@@ -12,5 +12,7 @@ export const FlowRowOpenAction = ({ rowId }: FlowRowOpenActionProps) => {
   };
 
   // Return the component
-  return <SimpleDDMenuItem content="Open" Icon={ExternalLinkIcon} onClick={handleOpenFlowAction} />;
+  return (
+    <SimpleDDMenuItem content="Open" Icon={ArrowSquareOutIcon} onClick={handleOpenFlowAction} />
+  );
 };

@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarryParams } from "../../hooks/useForwardQueryParams";
@@ -21,7 +21,7 @@ export const ExecutionLogCloseButton = () => {
   return (
     <Tooltip content="Close">
       <Button variant={"ghost"} size={"icon8"} onClick={handleClose}>
-        <X className="h-4 w-4" />
+        <XIcon className="h-4 w-4" />
       </Button>
     </Tooltip>
   );

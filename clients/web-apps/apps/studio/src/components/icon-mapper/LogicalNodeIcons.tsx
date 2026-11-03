@@ -1,4 +1,11 @@
-import { ArrowRightCircle, BoxesIcon, Power, Repeat2Icon, Slash, SplitIcon } from "lucide-react";
+import {
+  ArrowCircleRightIcon,
+  ArrowsSplitIcon,
+  PackageIcon,
+  PowerIcon,
+  ProhibitIcon,
+  RepeatIcon,
+} from "@phosphor-icons/react";
 
 import NewAgentIcon from "./NewAgentIcon";
 
@@ -9,7 +16,7 @@ const IconContainer = ({ children }: React.PropsWithChildren) => {
 const ConditionalNodeIcon = () => {
   return (
     <IconContainer>
-      <SplitIcon className="h-5 w-5 rotate-180" />
+      <ArrowsSplitIcon className="h-5 w-5 rotate-180" />
     </IconContainer>
   );
 };
@@ -17,7 +24,7 @@ const ConditionalNodeIcon = () => {
 const LoopNodeIcon = () => {
   return (
     <IconContainer>
-      <Repeat2Icon className="h-5 w-5" />
+      <RepeatIcon className="h-5 w-5" />
     </IconContainer>
   );
 };
@@ -33,26 +40,26 @@ const CallAgentIcon = () => {
 const BlockNodeIcon = () => {
   return (
     <IconContainer>
-      <BoxesIcon className="h-5 w-5" />
+      <PackageIcon className="h-5 w-5" />
     </IconContainer>
   );
 };
 
 const BreakLoopNodeIcon = () => (
   <IconContainer>
-    <Slash className="h-5 w-5 " />
+    <ProhibitIcon className="h-5 w-5 " />
   </IconContainer>
 );
 
 const ContinueLoopNodeIcon = () => (
   <IconContainer>
-    <ArrowRightCircle className="h-5 w-5 " />
+    <ArrowCircleRightIcon className="h-5 w-5 " />
   </IconContainer>
 );
 
 const ExitFlowNodeIcon = () => (
   <IconContainer>
-    <Power className="h-5 w-5 " />
+    <PowerIcon className="h-5 w-5 " />
   </IconContainer>
 );
 

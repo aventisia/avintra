@@ -17,6 +17,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@phosphor-icons/react": "^2.1.10",
     "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-fs": "^2.4.5",
     "@tauri-apps/plugin-opener": "^2.5.5",

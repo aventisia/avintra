@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 

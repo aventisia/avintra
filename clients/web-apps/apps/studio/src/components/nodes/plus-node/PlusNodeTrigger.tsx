@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 export const PlusNodeTrigger = (props: React.ComponentPropsWithoutRef<"div">) => {
   return (
@@ -15,8 +15,8 @@ export const PlusNodeTrigger = (props: React.ComponentPropsWithoutRef<"div">) =>
         <PlusIcon
           className={cn(
             "h-6 w-6 text-muted-foreground",
-            "group-hover:stroke-[2] group-hover:text-primary",
-            "group-aria-[expanded=true]:stroke-[2] group-aria-[expanded=true]:text-primary",
+            "group-hover:text-primary",
+            "group-aria-[expanded=true]:text-primary",
           )}
         />
       </div>

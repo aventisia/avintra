@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
-import { Copy } from "lucide-react";
+import { CopyIcon } from "@phosphor-icons/react";
 
 import { useCloneToVersionMutation } from "@/features/version-history/hooks/useCloneToVersionMutation";
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
@@ -25,7 +25,7 @@ export default function CloneToVersionAction({ id }: { id: string }) {
 
   return (
     <SimpleDDMenuItem
-      Icon={Copy}
+      Icon={CopyIcon}
       size="sm"
       content="Clone to new version"
       disabled={detailQuery.isFetching || cloneToNewVersionMutation.isPending}

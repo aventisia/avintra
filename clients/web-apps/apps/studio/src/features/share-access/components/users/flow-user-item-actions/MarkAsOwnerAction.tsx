@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { UserCheck2Icon } from "lucide-react";
+import { UserCheckIcon } from "@phosphor-icons/react";
 
 import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
 import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";
@@ -22,7 +22,7 @@ export const MarkAsOwnerAction = ({ item }: MarkAsOwnerActionProps) => {
       onClick={() => handleClick()}
       size="sm"
       content="Mark as owner"
-      Icon={UserCheck2Icon}
+      Icon={UserCheckIcon}
     />
   );
 };

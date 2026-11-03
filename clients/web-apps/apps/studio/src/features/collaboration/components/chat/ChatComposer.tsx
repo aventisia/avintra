@@ -1,7 +1,7 @@
 import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { SendIcon } from "lucide-react";
+import { PaperPlaneTiltIcon } from "@phosphor-icons/react";
 import { FormEvent, useState } from "react";
 
 import { ChatRecipient } from "./ChatRecipientSelect";
@@ -46,7 +46,7 @@ export const ChatComposer = ({ recipient, onSend, className }: ChatComposerProps
         className="h-8 w-8 shrink-0"
         aria-label="Send message"
       >
-        <SendIcon className="h-3.5 w-3.5" />
+        <PaperPlaneTiltIcon className="h-3.5 w-3.5" />
       </Button>
     </form>
   );

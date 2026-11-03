@@ -1,15 +1,15 @@
 import { cn } from "@avplatform/ui/lib";
 import type { IconProps } from "@avplatform/ui/types";
 import {
-  BookOpenCheckIcon,
-  BoxesIcon,
-  FolderCogIcon,
+  BookOpenTextIcon,
+  FolderSimpleUserIcon,
+  LightningIcon,
   ListIcon,
-  PuzzleIcon,
-  Shield,
+  PackageIcon,
+  PuzzlePieceIcon,
+  ShieldIcon,
   WrenchIcon,
-} from "lucide-react";
-import { AiOutlineThunderbolt } from "react-icons/ai";
+} from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -17,15 +17,15 @@ import { ResourceTypeEnum } from "../../../resource-user-access/enums/resource-t
 
 const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> = {
   [ResourceTypeEnum.Queue]: ListIcon,
-  [ResourceTypeEnum.Trigger]: AiOutlineThunderbolt,
-  [ResourceTypeEnum.ConfigStore]: FolderCogIcon,
-  [ResourceTypeEnum.VaultCredential]: Shield,
-  [ResourceTypeEnum.KnowledgeBase]: BookOpenCheckIcon,
-  [ResourceTypeEnum.Skill]: PuzzleIcon,
+  [ResourceTypeEnum.Trigger]: LightningIcon,
+  [ResourceTypeEnum.ConfigStore]: FolderSimpleUserIcon,
+  [ResourceTypeEnum.VaultCredential]: ShieldIcon,
+  [ResourceTypeEnum.KnowledgeBase]: BookOpenTextIcon,
+  [ResourceTypeEnum.Skill]: PuzzlePieceIcon,
   [ResourceTypeEnum.Tool]: WrenchIcon,
   [ResourceTypeEnum.Flow]: NewAgentIcon,
   [ResourceTypeEnum.FlowVersion]: NewAgentIcon,
-  [ResourceTypeEnum.Space]: FolderCogIcon,
+  [ResourceTypeEnum.Space]: FolderSimpleUserIcon,
 };
 
 type ResourceMarkProps = {
@@ -37,7 +37,7 @@ type ResourceMarkProps = {
  * Sidebar icon of the resource whose agent access is being configured.
  */
 export const ResourceMark = ({ resourceType, className }: ResourceMarkProps) => {
-  const Icon = (resourceType && RESOURCE_ICONS[resourceType]) || BoxesIcon;
+  const Icon = (resourceType && RESOURCE_ICONS[resourceType]) || PackageIcon;
 
   return <Icon className={cn("text-[--icon-color]", className)} />;
 };

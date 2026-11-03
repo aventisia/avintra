@@ -1,4 +1,4 @@
-import { BellIcon } from "lucide-react";
+import { BellIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";

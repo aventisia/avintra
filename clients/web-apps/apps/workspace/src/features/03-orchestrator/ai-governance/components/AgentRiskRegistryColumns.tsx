@@ -1,8 +1,8 @@
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
+import { WarningIcon } from "@phosphor-icons/react";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
-import { AlertTriangleIcon } from "lucide-react";
 
 import { getColumnName } from "../constants/registry-columns";
 import { AgentRiskRegistryRowDto } from "../dtos/agent-risk-registry-row-dto";
@@ -164,7 +164,7 @@ export const buildAgentRiskRegistryColumns = (
         className="inline-flex items-center gap-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
         onClick={() => onOpenIssues(row.original.flowVersionId)}
       >
-        <AlertTriangleIcon className="h-4 w-4" />
+        <WarningIcon className="h-4 w-4" />
         Issues
       </button>
     ),

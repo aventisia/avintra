@@ -1,4 +1,4 @@
-import { Info, RotateCw } from "lucide-react";
+import { ArrowClockwiseIcon, InfoIcon } from "@phosphor-icons/react";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -82,7 +82,7 @@ const ResourceUserAccessCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKe
               Check your connection and try again.
             </p>
             <CardDialogButton className="mt-3" onClick={draft.retry}>
-              <RotateCw className="size-3.5" />
+              <ArrowClockwiseIcon className="size-3.5" />
               Retry
             </CardDialogButton>
           </div>
@@ -117,7 +117,7 @@ const ResourceUserAccessCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKe
 
             {draft.resourceType === ResourceTypeEnum.Flow && (
               <p className="mt-5 flex gap-2 text-[12px] leading-5 text-muted-foreground">
-                <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                <InfoIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
                 Sharing covers every version of this agent. Moving it to a folder doesn’t change who
                 has access.
               </p>

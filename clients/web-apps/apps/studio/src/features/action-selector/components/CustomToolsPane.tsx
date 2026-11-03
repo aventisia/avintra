@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon, Loader2Icon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon, CircleNotchIcon, PlusIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useMemo, useState } from "react";
 
 import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
@@ -93,7 +93,7 @@ export const CustomToolsPane = ({
 
         {isCatalogLoading ? (
           <div className="flex flex-1 items-center justify-center">
-            <Loader2Icon
+            <CircleNotchIcon
               className="h-4 w-4 animate-spin text-muted-foreground"
               aria-hidden="true"
             />

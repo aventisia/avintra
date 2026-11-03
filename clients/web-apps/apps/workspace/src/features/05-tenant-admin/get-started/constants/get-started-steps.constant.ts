@@ -1,5 +1,5 @@
 import type { IconProps } from "@avplatform/ui/types";
-import { Cpu, FolderCogIcon, Shield, UsersIcon } from "lucide-react";
+import { CpuIcon, FolderSimpleUserIcon, ShieldIcon, UsersIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -26,21 +26,21 @@ export const GET_STARTED_STEPS: GetStartedStep[] = [
     title: "Organise spaces",
     description: "Group people and resources by team or project.",
     route: "/tenant/spaces",
-    Icon: FolderCogIcon,
+    Icon: FolderSimpleUserIcon,
   },
   {
     step: 3,
     title: "Store credentials in the vault",
     description: "Keep app secrets encrypted, with every access audited.",
     route: "/configure/vault",
-    Icon: Shield,
+    Icon: ShieldIcon,
   },
   {
     step: 4,
     title: "Enable AI models",
     description: "Connect a model provider and choose the models your agents use.",
     route: "/tenant/model-providers",
-    Icon: Cpu,
+    Icon: CpuIcon,
   },
   {
     step: 5,

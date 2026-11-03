@@ -1,5 +1,5 @@
 import { useCrudDialogUrlState } from "@avplatform/ui/crud-dialog";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
 import { getFolderColor } from "../../utils/folder-color.util";
@@ -30,7 +30,7 @@ export const FolderEmptyState = ({ folder }: { folder: FoldersTableRowDto }) => 
         }
         className="mt-5 inline-flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-[13px] font-semibold text-primary-foreground outline-none transition hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 active:scale-[0.98]"
       >
-        <Plus className="size-4" />
+        <PlusIcon className="size-4" />
         Create agent here
       </button>
     </div>

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { MenuIcon } from "lucide-react";
+import { ListIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { UpgradeCard } from "./UpgradeCard";
@@ -64,7 +64,7 @@ const SidebarOnDialog = ({ appLogo, footer, className }: SidebarOnDialogProps) =
           )}
           onClick={() => setSidebarExpand(true)}
         >
-          <MenuIcon className="size-4" strokeWidth={1.75} />
+          <ListIcon className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent side="left" className="w-[--sidebar-max-width] bg-bg">

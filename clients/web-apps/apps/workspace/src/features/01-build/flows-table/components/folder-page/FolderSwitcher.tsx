@@ -1,6 +1,6 @@
 import { MenuContent, MenuItem, MenuLabel, MenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { ChevronsUpDown, FolderPlus } from "lucide-react";
+import { CaretUpDownIcon, FolderPlusIcon } from "@phosphor-icons/react";
 import { DropdownMenu } from "radix-ui";
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +36,7 @@ export const FolderSwitcher = ({ current, summaries }: FolderSwitcherProps) => {
       >
         <FolderMark color={getFolderColor(current.folder)} size="sm" />
         <span className="max-w-[18rem] truncate">{current.folder.name}</span>
-        <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+        <CaretUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
       </DropdownMenu.Trigger>
       <MenuContent align="start" className="w-64">
         <MenuLabel>Folders</MenuLabel>
@@ -74,7 +74,7 @@ export const FolderSwitcher = ({ current, summaries }: FolderSwitcherProps) => {
           All agents
         </MenuItem>
         <MenuItem onSelect={() => openCreateFolderDialog()}>
-          <FolderPlus />
+          <FolderPlusIcon />
           New folder
         </MenuItem>
       </MenuContent>

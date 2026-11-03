@@ -12,7 +12,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
-import { Check, ChevronDown } from "lucide-react";
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 interface SearchableSelectProps {
@@ -84,7 +84,7 @@ export const SearchableSelect = ({
               <span className="text-muted-foreground">{placeholder}</span>
             )}
           </span>
-          <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
+          <CaretDownIcon className={cn("ml-2 h-4 w-4 opacity-50")} />
         </Button>
       </PopoverTrigger>
 
@@ -121,7 +121,7 @@ export const SearchableSelect = ({
                   >
                     <div className="flex w-full items-center justify-between">
                       {option.label}
-                      <Check
+                      <CheckIcon
                         className={cn(
                           "h-3.5 w-3.5",
                           value === option.value ? "opacity-100" : "opacity-0",
