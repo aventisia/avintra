@@ -52,6 +52,6 @@ Per-environment defaults live in `.env.<environment>`: `VITE_GLOBALADMIN_API_URL
 
 ## Deploying under /globaladmin
 
-- **Web files** - Jenkins rsyncs the build to `/var/www/aventisia.com/clients/global-admin/` (the directory name is unchanged).
+- **Web files** - Jenkins rsyncs the build to `/var/www/aventisia.com/clients/globaladmin/`, matching the public path.
 - **Routing** - `deploy/nginx/sites-available/aventisia.worc` serves `/globaladmin/` from that directory, and published builds call the Global Admin API cross-origin at the environment's `VITE_GLOBALADMIN_API_URL`, authenticated with the `Authorization: Bearer` header. `deploy/nginx/common_headers.conf` allows both API hosts in `connect-src`, and the API's `CorsOrigins` allows the Accounts app host of each environment. Both files are shared by the two environments, so each allows the other's host until the API is split per environment.
-- **Rollout** - the old `/global-admin/` page paths return a temporary `302` to `/globaladmin/`, and the old `/global-admin/api/` proxy is kept until a later change removes it. The API service, container name, and network alias stay `globaladmin`; only the public web path lost its hyphen.
+- **Rollout** - the old `/global-admin/` page paths return a temporary `302` to `/globaladmin/`, and the old `/global-admin/api/` proxy is kept until a later change removes it. The API service, container name, and network alias stay `globaladmin`; the public web path and its deploy directory both lost their hyphen. The old `/var/www/aventisia.com/clients/global-admin/` directory stays until removed by hand.
