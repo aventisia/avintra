@@ -330,55 +330,87 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
                 return serviceResponse;
             }
 
-            // Create a new FlowVersionHistory record using the OLD values
-            // This preserves the previous state before any changes, which is crucial for versioning
-            var flowVersionHistory = new FlowVersionHistory
+            var historyReused = false;
+
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                FlowVersionId = flowVersion.Id,
-                ReactFlowObject = flowSilentUpdateDto.ReactFlowObject,
-                FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject,
-                InputOutputObject = flowSilentUpdateDto.InputOutputObject,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-                CreatedOn = DateTimeOffset.UtcNow
-            };
+                // IMPORTANT NOTE: serialize concurrent saves for the same flow version so both reuse
+                // the same unreferenced row instead of inserting duplicates, and the [Timestamp]
+                // concurrency token never turns last-write-wins into a conflict.
+                await _unitOfWork.AcquireAdvisoryLockAsync($"flow-version-history:{flowVersion.Id:N}");
 
-            // Insert the new history record into the repository
-            await _unitOfWork.FlowVersionHistoryRepo.InsertAsync(flowVersionHistory);
+                var latestHistory = await _unitOfWork.FlowVersionHistoryRepo
+                    .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
+                    .OrderByDescending(x => x.CreatedOn)
+                    .ThenByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
 
-            // Save changes to the database and check for failure
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("SaveChanges failed while inserting flow version history record.");
-                return serviceResponse;
-            }
+                // IMPORTANT NOTE: Job has no tenant query filter by design, so the executed check
+                // must carry the explicit tenant predicate.
+                var latestHistoryIsExecuted = latestHistory != null && await _unitOfWork.JobRepo
+                    .GetByConditionAsync(j => j.FlowVersionHistoryId == latestHistory.Id && j.TenantId == flowVersion.TenantId)
+                    .AnyAsync();
 
-            // Fetch all history records for this FlowVersion, ordered by newest first
-            var flowVersionHistories = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
-                .OrderByDescending(x => x.CreatedOn)
-                .AsNoTracking()
-                .ToListAsync();
+                if (latestHistory == null || latestHistoryIsExecuted)
+                {
+                    var flowVersionHistory = new FlowVersionHistory
+                    {
+                        FlowVersionId = flowVersion.Id,
+                        ReactFlowObject = flowSilentUpdateDto.ReactFlowObject,
+                        FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject,
+                        InputOutputObject = flowSilentUpdateDto.InputOutputObject,
+                        CreatedByUserId = _userId,
+                        LastModifiedByUserId = _userId,
+                        CreatedOn = DateTimeOffset.UtcNow
+                    };
 
-            // Keep only the latest 100 history records to avoid excessive data growth
-            if (flowVersionHistories.Count > 100)
-            {
-                var historiesToDelete = flowVersionHistories.Skip(100).ToList();
+                    await _unitOfWork.FlowVersionHistoryRepo.InsertAsync(flowVersionHistory);
+                }
+                else
+                {
+                    // Reuse the never-executed snapshot: content and last-modified change, CreatedOn stays.
+                    latestHistory.ReactFlowObject = flowSilentUpdateDto.ReactFlowObject;
+                    latestHistory.FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject;
+                    latestHistory.InputOutputObject = flowSilentUpdateDto.InputOutputObject;
+                    latestHistory.LastModifiedByUserId = _userId;
+                    latestHistory.LastModifiedOn = DateTimeOffset.UtcNow;
 
-                _unitOfWork.FlowVersionHistoryRepo.Delete(historiesToDelete);
+                    _unitOfWork.FlowVersionHistoryRepo.Update(latestHistory);
+                    historyReused = true;
+                }
 
-                // Save changes after deleting old records and check for failure
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogWarning("SaveChanges failed while deleting old flow version history records.");
-                    return serviceResponse;
+                    throw new InvalidOperationException("SaveChanges failed while writing the flow version history record.");
                 }
-            }
 
-            // Successfully created a new history record
+                // Fetch all history records for this FlowVersion, ordered by newest first
+                var flowVersionHistories = await _unitOfWork.FlowVersionHistoryRepo
+                    .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
+                    .OrderByDescending(x => x.CreatedOn)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                // Keep only the latest 100 history records to avoid excessive data growth
+                if (flowVersionHistories.Count > 100)
+                {
+                    var historiesToDelete = flowVersionHistories.Skip(100).ToList();
+
+                    _unitOfWork.FlowVersionHistoryRepo.Delete(historiesToDelete);
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        throw new InvalidOperationException("SaveChanges failed while deleting old flow version history records.");
+                    }
+                }
+            });
+
+            // Successfully wrote the history record
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = true;
-            serviceResponse.Message = "Flow version history record created successfully.";
+            serviceResponse.Message = historyReused
+                ? "Flow version history record updated successfully."
+                : "Flow version history record created successfully.";
 
             return serviceResponse;
         }
