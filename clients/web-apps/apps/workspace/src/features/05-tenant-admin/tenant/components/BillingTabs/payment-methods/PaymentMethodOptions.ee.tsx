@@ -1,63 +1,33 @@
-import { Button } from "@avplatform/ui/buttons";
 import { Label } from "@avplatform/ui/label";
 import { RadioGroup, RadioGroupItem } from "@avplatform/ui/radio-group";
-
-import { usePaymentMethodsDialogStore } from "@/features/05-tenant-admin/tenant/store/payment-methods/payment-methods-dialog-store.ee";
 
 import CardIcon from "../../../assets/payment-methods/add-payment-method/card.svg";
 import NetBankingIcon from "../../../assets/payment-methods/add-payment-method/net-banking.svg";
 import PaypalIcon from "../../../assets/payment-methods/add-payment-method/paypal.svg";
 import UPIIcon from "../../../assets/payment-methods/add-payment-method/upi.svg";
 
-const PaymentMethodOptions = () => {
-  const { setOpen } = usePaymentMethodsDialogStore();
-  return (
-    <div className="p-4 pt-2">
-      <p className="text-md">Choose payment method type</p>
+const PAYMENT_METHOD_OPTIONS = [
+  { value: "paypal", label: "Paypal", icon: PaypalIcon },
+  { value: "card", label: "Credit Card / Debit Card", icon: CardIcon },
+  { value: "netBanking", label: "Net banking", icon: NetBankingIcon },
+  { value: "upi", label: "UPI", icon: UPIIcon },
+];
 
-      <div className="mt-4 rounded-lg border">
-        <RadioGroup className="">
-          <div className="flex items-center gap-3 border-b p-4">
-            <RadioGroupItem value="paypal" id="paypal" />
-            <Label htmlFor="paypal" className="flex w-full items-center justify-between text-md">
-              Paypal
-              <img src={PaypalIcon} alt="" />
-            </Label>
-          </div>
-          <div className="flex items-center gap-3 border-b p-4">
-            <RadioGroupItem value="card" id="card" />
-            <Label htmlFor="card" className="flex w-full items-center justify-between text-md">
-              Credit Card / Debit Card
-              <img src={CardIcon} alt="" />
-            </Label>
-          </div>
-          <div className="flex items-center gap-3 border-b p-4">
-            <RadioGroupItem value="netBanking" id="netBanking" />
-            <Label
-              htmlFor="netBanking"
-              className="flex w-full items-center justify-between text-md"
-            >
-              Net banking
-              <img src={NetBankingIcon} alt="" />
-            </Label>
-          </div>
-          <div className="flex items-center gap-3 p-4">
-            <RadioGroupItem value="upi" id="upi" />
-            <Label htmlFor="upi" className="flex w-full items-center justify-between text-md">
-              UPI
-              <img src={UPIIcon} alt="" />
-            </Label>
-          </div>
-        </RadioGroup>
+const PaymentMethodOptions = () => (
+  <RadioGroup className="gap-0 divide-y divide-line overflow-hidden rounded-md ring-1 ring-line">
+    {PAYMENT_METHOD_OPTIONS.map(({ value, label, icon }) => (
+      <div key={value} className="flex items-center gap-3 bg-popover px-3.5 py-3">
+        <RadioGroupItem value={value} id={value} />
+        <Label
+          htmlFor={value}
+          className="flex w-full items-center justify-between text-[13px] font-medium text-ink"
+        >
+          {label}
+          <img src={icon} alt="" />
+        </Label>
       </div>
-
-      <div className="mt-5 flex justify-end">
-        <Button className="px-9 text-md" onClick={() => setOpen(false)}>
-          Add
-        </Button>
-      </div>
-    </div>
-  );
-};
+    ))}
+  </RadioGroup>
+);
 
 export default PaymentMethodOptions;

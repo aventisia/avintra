@@ -1,15 +1,8 @@
-import { Separator } from "@avplatform/ui";
-import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogPrimitive,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
-import { XIcon } from "@phosphor-icons/react";
+import { LinkBreakIcon } from "@phosphor-icons/react";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { useConnectedIntegrationsDialogStore } from "@/features/05-tenant-admin/app-integrations/store/connected-integration-dialog";
 
 import ConnectedIntegrationDialogContent from "./ConnectedIntegrationDialogContent";
@@ -20,33 +13,33 @@ const ConnectedIntegrationsDialog = () => {
   const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent className="w-full max-w-[38rem]">
-        <DialogHeader className="px-6 py-4 pb-2">
-          <DialogTitle className="justify-between">
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-accent p-2">
-                <img
-                  src={basePath + integrationInfo.icon}
-                  alt={integrationInfo.name}
-                  className="h-6 w-6"
-                />
-              </div>
-              <p>{integrationInfo.name}</p>
-            </div>
-
-            <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <XIcon className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          </DialogTitle>
-
-          <DialogDescription className="pr-4">{integrationInfo.description}</DialogDescription>
-        </DialogHeader>
-        <Separator />
-        <ConnectedIntegrationDialogContent />
-      </DialogContent>
-    </Dialog>
+    <CardDialog
+      isOpen={isOpen}
+      onClose={() => setOpen(false)}
+      mark={
+        <span className="inline-grid size-12 shrink-0 place-items-center rounded-lg bg-sunken ring-1 ring-inset ring-line">
+          <img src={basePath + integrationInfo.icon} alt="" className="size-6" />
+        </span>
+      }
+      eyebrow="Connected integration"
+      title={integrationInfo.name}
+      footer={
+        <>
+          <StatusLine tone="open">Connected</StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton data-autofocus onClick={() => setOpen(false)}>
+              Close
+            </CardDialogButton>
+            <CardDialogButton variant="danger" onClick={() => setOpen(false)}>
+              <LinkBreakIcon className="size-4" />
+              Disconnect
+            </CardDialogButton>
+          </div>
+        </>
+      }
+    >
+      <ConnectedIntegrationDialogContent description={integrationInfo.description} />
+    </CardDialog>
   );
 };
 

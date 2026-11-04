@@ -1,18 +1,11 @@
-import { Separator } from "@avplatform/ui";
-import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogPrimitive,
-  DialogTitle,
-  DialogWrapper,
-} from "@avplatform/ui/dialog";
+import { CrudDialogFormContextProvider, useCrudDialogChrome } from "@avplatform/ui/crud-dialog";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useAlertDialogStore } from "@avplatform/ui/stores";
-import { XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import GoogleDriveForm from "@/features/05-tenant-admin/app-integrations/features/google-drive/components/GoogleDriveForm";
 import OneDriveForm from "@/features/05-tenant-admin/app-integrations/features/one-drive/components/OneDriveForm";
 import OpenAIForm from "@/features/05-tenant-admin/app-integrations/features/open-ai/components/OpenAIForm";
@@ -21,7 +14,13 @@ import { useAvailableIntegrationsDialogStore } from "@/features/05-tenant-admin/
 
 // import GeminiForm from "@/features/05-tenant-admin/app-integrations/features/gemini/components/GeminiForm";
 
-const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
+const FormActionsSlot = () => {
+  const chrome = useCrudDialogChrome();
+
+  return <div ref={chrome?.setActionsSlot} className="flex items-center gap-2 [&>button]:h-9" />;
+};
+
+const IntegrationCard = () => {
   const { isOpen, setOpen, isFormDirty, integrationInfo } = useAvailableIntegrationsDialogStore();
   const { isAlertDialogOpen } = useAlertDialogStore(
     useShallow((state) => ({
@@ -32,6 +31,19 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
   const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  const handleClose = () => {
+    if (isAlertDialogOpen) return;
+
+    if (isFormDirty) {
+      showDefaultAlertDialog({
+        confirmActionFn: () => setOpen(false),
+        alertType: "unsaved",
+      });
+    } else {
+      setOpen(false);
+    }
+  };
 
   const renderIntegrationForm = () => {
     switch (integrationInfo.value) {
@@ -53,62 +65,56 @@ const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
 
       default:
         return (
-          <div className="h-28 p-6">
-            <p className="text-md italic text-muted-foreground">
-              Sorry, we don't have integrations for {integrationInfo.name} yet.
-            </p>
-          </div>
+          <p className="text-[13px] italic text-muted-foreground">
+            Sorry, we don't have integrations for {integrationInfo.name} yet.
+          </p>
         );
     }
   };
 
   return (
-    <DialogWrapper
-      open={isOpen}
-      onOpenChangeFn={() => {
-        // Return if alert dialog is open
-        if (isAlertDialogOpen) return;
-
-        // If form is dirty, show alert dialog
-        if (isFormDirty) {
-          showDefaultAlertDialog({
-            confirmActionFn: () => setOpen(!isOpen),
-            alertType: "unsaved",
-          });
-        }
-        // Toggle dialog open state
-        else {
-          setOpen(!isOpen);
-        }
-      }}
+    <CardDialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      isOutsideClickLocked={isFormDirty}
+      widthClassName="w-[min(36rem,calc(100vw-2rem))]"
+      mark={
+        <span className="inline-grid size-12 shrink-0 place-items-center rounded-lg bg-sunken ring-1 ring-inset ring-line">
+          <img src={basePath + integrationInfo.icon} alt="" className="size-6" />
+        </span>
+      }
+      eyebrow="Connect integration"
+      title={integrationInfo.name}
+      footer={
+        <>
+          <StatusLine tone={isFormDirty ? "pending" : "idle"}>
+            {isFormDirty ? "Unsaved changes" : "Not connected yet"}
+          </StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={handleClose}>Cancel</CardDialogButton>
+            <FormActionsSlot />
+          </div>
+        </>
+      }
     >
+      <p className="mb-4 text-[13px] leading-5 text-ink-2">{integrationInfo.description}</p>
+      {renderIntegrationForm()}
+    </CardDialog>
+  );
+};
+
+const AvailableIntegrationsDialog = ({ children }: React.PropsWithChildren) => {
+  const setOpen = useAvailableIntegrationsDialogStore((state) => state.setOpen);
+
+  return (
+    <>
       {children}
-      <DialogContent className="w-full max-w-[38rem]">
-        <DialogHeader className="px-6 py-4 pb-2">
-          <DialogTitle className="justify-between">
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-accent p-2">
-                <img
-                  src={basePath + integrationInfo.icon}
-                  alt={integrationInfo.name}
-                  className="h-6 w-6"
-                />
-              </div>
-              <p>{integrationInfo.name}</p>
-            </div>
-
-            <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <XIcon className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Close</span>
-            </DialogPrimitive.Close>
-          </DialogTitle>
-
-          <DialogDescription className="pr-4">{integrationInfo.description}</DialogDescription>
-        </DialogHeader>
-        <Separator />
-        {renderIntegrationForm()}
-      </DialogContent>
-    </DialogWrapper>
+      {/* IMPORTANT NOTE: The CRUD dialog context gives the integration forms card-dialog field
+      styles and lets their `CrudDialogActions` portal into this footer. */}
+      <CrudDialogFormContextProvider onClose={() => setOpen(false)}>
+        <IntegrationCard />
+      </CrudDialogFormContextProvider>
+    </>
   );
 };
 

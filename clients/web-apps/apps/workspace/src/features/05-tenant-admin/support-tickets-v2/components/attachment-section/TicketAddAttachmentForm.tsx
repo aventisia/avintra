@@ -1,9 +1,13 @@
-import { SubmitButton } from "@avplatform/ui/buttons";
-import { ScrollArea } from "@avplatform/ui/scroll";
+import { IconTile } from "@avplatform/ui/icon-tile";
 import { toast } from "@avplatform/ui/sonner";
+import { PaperclipIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { deleteFile, uploadFile } from "@/components/file-uploader/apis/file-upload-apis";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { TicketAttachmentDto } from "../../dtos/TicketDto";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
@@ -16,15 +20,17 @@ import {
 import type { FileQueueItem } from "./file-upload/types";
 
 /**
- * Form for uploading attachment files to a ticket.
+ * Card dialog for uploading attachment files to a ticket.
  * Each file is first uploaded to blob storage, then registered on the ticket.
  */
 export const TicketAddAttachmentForm = ({
+  isOpen,
   ticketId,
   api,
   queue,
   onCompleted,
 }: {
+  isOpen: boolean;
   ticketId: string;
   api: TicketDetailApiAdapter;
   queue: ReturnType<typeof useFileUploadQueue>;
@@ -120,48 +126,66 @@ export const TicketAddAttachmentForm = ({
     }
   };
 
+  const isBusy = isPending || isSubmitPending;
+  const fileCount = fileQueue.length;
+
   return (
-    <div className="flex flex-col justify-between h-full">
-      <ScrollArea className="h-[calc(40rem-7.5rem)] p-4 pt-3">
-        <div className="space-y-4 px-1">
-          {/* Drop zone — hidden while upload is in progress */}
-          {!isPending && <FileDropZone onDrop={onDrop} />}
+    <CardDialog
+      isOpen={isOpen}
+      onClose={onCompleted}
+      isDismissLocked={isBusy}
+      isOutsideClickLocked={fileCount > 0}
+      widthClassName="w-[min(42rem,calc(100vw-2rem))]"
+      mark={
+        <IconTile Icon={PaperclipIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />
+      }
+      eyebrow="Ticket"
+      title="Add attachments"
+      footer={
+        <>
+          <StatusLine tone={isBusy ? "pending" : "idle"}>
+            {isBusy
+              ? `Uploading ${completedCount} of ${totalCount}`
+              : fileCount > 0
+                ? `${fileCount} ${pluralize(fileCount, "file")} selected`
+                : "No files selected"}
+          </StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={onCompleted} disabled={isBusy}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="primary"
+              onClick={onSubmit}
+              disabled={isBusy || fileCount === 0}
+              isBusy={isBusy}
+            >
+              {isBusy ? "Uploading" : "Upload"}
+            </CardDialogButton>
+          </div>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        {!isPending && <FileDropZone onDrop={onDrop} />}
 
-          {/* Progress summary — visible only during upload */}
-          {fileQueue.length > 0 && isPending && (
-            <UploadProgressSummary
-              completedCount={completedCount}
-              totalCount={totalCount}
-              activeFileName={activeFile?.file.name}
-              activeStageMessage={activeFile?.stageMessage}
-            />
-          )}
-
-          {/* Queued / in-progress / completed files */}
-          <FileQueueList
-            files={fileQueue}
-            activeFileId={activeFileId}
-            isPending={isPending}
-            onRemove={handleRemoveFile}
-            onDeleteOrphan={handleDeleteOrphan}
+        {fileCount > 0 && isPending && (
+          <UploadProgressSummary
+            completedCount={completedCount}
+            totalCount={totalCount}
+            activeFileName={activeFile?.file.name}
+            activeStageMessage={activeFile?.stageMessage}
           />
-        </div>
-      </ScrollArea>
+        )}
 
-      {/* Footer actions */}
-      <div className="flex h-16 border-t px-4 justify-end gap-3 items-center">
-        <SubmitButton
-          size="sm"
-          type="submit"
-          isPending={isPending || isSubmitPending}
-          primaryText="Submit"
-          secondaryText={
-            activeFileId ? `Processing... (${completedCount}/${totalCount})` : "Processing..."
-          }
-          disabled={isPending || isSubmitPending || fileQueue.length === 0}
-          onClick={onSubmit}
+        <FileQueueList
+          files={fileQueue}
+          activeFileId={activeFileId}
+          isPending={isPending}
+          onRemove={handleRemoveFile}
+          onDeleteOrphan={handleDeleteOrphan}
         />
       </div>
-    </div>
+    </CardDialog>
   );
 };

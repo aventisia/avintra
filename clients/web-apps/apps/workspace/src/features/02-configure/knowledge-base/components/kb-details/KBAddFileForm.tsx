@@ -1,8 +1,13 @@
-import { SubmitButton } from "@avplatform/ui/buttons";
-import { Form, InputField } from "@avplatform/ui/form";
+import { Form, InputField, crudDialogFieldClasses } from "@avplatform/ui/form";
+import { IconTile } from "@avplatform/ui/icon-tile";
 import { cn } from "@avplatform/ui/lib";
-import { ScrollArea } from "@avplatform/ui/scroll";
+import { FilePlusIcon } from "@phosphor-icons/react";
 import { z } from "zod";
+
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { kbAddFilesSchema } from "../../constants/kb-add-files-zod-schema";
 import { chunkOverlapProps, chunkSizeProps } from "../../constants/kb-add-text-feild-props";
@@ -17,13 +22,7 @@ import {
 } from "./file-upload";
 
 /**
- * Form for uploading files to a knowledge base.
- *
- * Orchestrates:
- *  - Drag-and-drop file selection (FileDropZone)
- *  - Queued file list with per-file status (FileQueueList)
- *  - Sequential upload with progress tracking (useFileUploadQueue)
- *  - Chunk size / overlap configuration
+ * Card dialog that queues files, sets chunking, and uploads them to a knowledge base.
  */
 export const KBAddFileForm = ({
   knowledgeBaseId,
@@ -54,55 +53,71 @@ export const KBAddFileForm = ({
     submitFiles(data);
   };
 
+  const handleSubmit = form.handleSubmit(onSubmit);
+  const fileCount = fileQueue.length;
+
   return (
-    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 p-0 h-full">
-      <div className="flex flex-col justify-between h-full">
-        <ScrollArea className="h-[calc(40rem-7.5rem)] p-4 pt-3">
-          <div className="space-y-4 px-1">
-            {/* Drop zone — hidden while upload is in progress */}
-            {!isPending && <FileDropZone onDrop={onDrop} />}
-
-            {/* Progress summary — visible only during upload */}
-            {fileQueue.length > 0 && isPending && (
-              <UploadProgressSummary
-                completedCount={completedCount}
-                totalCount={totalCount}
-                activeFileName={activeFile?.file.name}
-                activeStageMessage={activeFile?.stageMessage}
-              />
-            )}
-
-            {/* Queued / in-progress / completed files */}
-            <FileQueueList
-              files={fileQueue}
-              activeFileId={activeFileId}
-              isPending={isPending}
-              onRemove={handleRemoveFile}
-            />
-
-            {/* Chunk configuration — hidden while uploading */}
-            <div className={cn("grid grid-cols-2 gap-4", isPending ? "hidden" : "grid")}>
-              <InputField {...chunkSizeProps} />
-              <InputField {...chunkOverlapProps} />
-            </div>
-            {!isPending && <FileUploadDisclaimer />}
+    <CardDialog
+      isOpen
+      onClose={onCompleted}
+      isDismissLocked={isPending}
+      isOutsideClickLocked={fileCount > 0}
+      widthClassName="w-[min(42rem,calc(100vw-2rem))]"
+      mark={
+        <IconTile Icon={FilePlusIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />
+      }
+      eyebrow="Add files"
+      title={knowledgeBaseName}
+      footer={
+        <>
+          <StatusLine tone={isPending ? "pending" : "idle"}>
+            {isPending
+              ? `Processing ${completedCount} of ${totalCount}`
+              : fileCount > 0
+                ? `${fileCount} ${pluralize(fileCount, "file")} selected`
+                : "No files selected"}
+          </StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={onCompleted} disabled={isPending}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={isPending || fileCount === 0}
+              isBusy={isPending}
+            >
+              {isPending ? "Processing" : "Upload"}
+            </CardDialogButton>
           </div>
-        </ScrollArea>
+        </>
+      }
+    >
+      <Form methods={form} onSubmit={handleSubmit}>
+        {!isPending && <FileDropZone onDrop={onDrop} />}
 
-        {/* Footer actions */}
-        <div className="flex h-16 border-t px-4 justify-end gap-3 items-center">
-          <SubmitButton
-            size="sm"
-            type="submit"
-            isPending={isPending}
-            primaryText="Submit"
-            secondaryText={
-              activeFileId ? `Processing... (${completedCount}/${totalCount})` : "Processing..."
-            }
-            disabled={isPending || fileQueue.length === 0}
+        {fileCount > 0 && isPending && (
+          <UploadProgressSummary
+            completedCount={completedCount}
+            totalCount={totalCount}
+            activeFileName={activeFile?.file.name}
+            activeStageMessage={activeFile?.stageMessage}
           />
+        )}
+
+        <FileQueueList
+          files={fileQueue}
+          activeFileId={activeFileId}
+          isPending={isPending}
+          onRemove={handleRemoveFile}
+        />
+
+        <div className={cn("grid grid-cols-2 gap-4", isPending ? "hidden" : "grid")}>
+          <InputField {...chunkSizeProps} className={crudDialogFieldClasses.input} />
+          <InputField {...chunkOverlapProps} className={crudDialogFieldClasses.input} />
         </div>
-      </div>
-    </Form>
+        {!isPending && <FileUploadDisclaimer className="px-0 leading-5 text-muted-foreground" />}
+      </Form>
+    </CardDialog>
   );
 };

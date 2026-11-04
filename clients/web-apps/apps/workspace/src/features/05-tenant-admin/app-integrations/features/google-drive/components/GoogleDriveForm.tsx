@@ -1,10 +1,8 @@
-import { LoadingSpinner, Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
+import { Button, SubmitButton } from "@avplatform/ui/buttons";
+import { CrudDialogActions } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { ScrollArea } from "@avplatform/ui/scroll";
 import { toast } from "@avplatform/ui/sonner";
 import { CopyIcon } from "@phosphor-icons/react";
-import { FormProvider } from "react-hook-form";
 import { z } from "zod";
 
 import { useAvailableIntegrationsDialogStore } from "@/features/05-tenant-admin/app-integrations/store/available-integrations-dialog";
@@ -39,60 +37,51 @@ const GoogleDriveForm = () => {
 
   return (
     <Form methods={form} onSubmit={form.handleSubmit(submitHandler)} disabled={isSubmitting}>
-      <FormProvider {...form}>
-        <ScrollArea className="h-[calc(100vh-28rem)]">
-          <div className="space-y-4 p-6">
-            <SelectField {...connectUsingProps} />
+      <SelectField {...connectUsingProps} />
 
-            {connectUsingValue === "OAuth2" && (
-              <>
-                <div className="relative">
-                  <InputField {...oAuthRedirectURLProps} />
-                  <Button
-                    variant={"ghost"}
-                    size={"icon6"}
-                    type="button"
-                    className="absolute bottom-2 right-2"
-                    onClick={() => {
-                      navigator.clipboard.writeText(form.getValues("oAuthRedirectURL"));
-                      toast.success("Redirect URL copied to clipboard");
-                    }}
-                  >
-                    <CopyIcon />
-                  </Button>
-                </div>
-                <InputField {...clientIdProps} />
-                <InputField {...clientSecretProps} />
-              </>
-            )}
-
-            {connectUsingValue === "service_account" && (
-              <>
-                <InputField {...regionProps} />
-                <InputField {...serviceAccountEmailProps} />
-                <InputField {...privateKeyProps} />
-                <SwitchField {...impersonateUserProps} />
-                {impersonateUserValue && <InputField {...emailProps} />}
-                <SwitchField {...httpRequestNodeProps} />
-                {httpRequestNodeValue && <InputField {...scopesProps} />}
-              </>
-            )}
+      {connectUsingValue === "OAuth2" && (
+        <>
+          <div className="relative">
+            <InputField {...oAuthRedirectURLProps} />
+            <Button
+              variant={"ghost"}
+              size={"icon6"}
+              type="button"
+              className="absolute bottom-2 right-2"
+              onClick={() => {
+                navigator.clipboard.writeText(form.getValues("oAuthRedirectURL"));
+                toast.success("Redirect URL copied to clipboard");
+              }}
+            >
+              <CopyIcon />
+            </Button>
           </div>
-        </ScrollArea>
-      </FormProvider>
+          <InputField {...clientIdProps} />
+          <InputField {...clientSecretProps} />
+        </>
+      )}
 
-      <Separator className="!mt-0.5" />
-      <div className="flex items-center justify-end px-6 pb-4">
-        <Button
-          size="xs"
-          type="submit"
-          // disabled={isSubmitting || isPending}
-          disabled={isSubmitting || !isDirty}
+      {connectUsingValue === "service_account" && (
+        <>
+          <InputField {...regionProps} />
+          <InputField {...serviceAccountEmailProps} />
+          <InputField {...privateKeyProps} />
+          <SwitchField {...impersonateUserProps} />
+          {impersonateUserValue && <InputField {...emailProps} />}
+          <SwitchField {...httpRequestNodeProps} />
+          {httpRequestNodeValue && <InputField {...scopesProps} />}
+        </>
+      )}
+
+      <CrudDialogActions>
+        <SubmitButton
           className="min-w-20"
-        >
-          {isSubmitting ? <LoadingSpinner className="h-4 w-4" /> : "Connect"}
-        </Button>
-      </div>
+          primaryText="Connect"
+          secondaryText="Connecting..."
+          isPending={isSubmitting}
+          disabled={!isDirty}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

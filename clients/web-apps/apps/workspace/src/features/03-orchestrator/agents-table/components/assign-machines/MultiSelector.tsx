@@ -83,7 +83,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex min-h-11 items-center justify-between gap-2 rounded-md bg-popover px-3.5 py-2 text-body-sm ring-1 ring-border transition-shadow focus-within:ring-focus">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
