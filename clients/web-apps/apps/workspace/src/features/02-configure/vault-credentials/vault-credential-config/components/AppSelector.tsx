@@ -6,6 +6,8 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { getVaultCredentialAppIcon } from "../constants/vault-credential-app-icon-mapper.constant";
+
 type AppOption = {
   label: string;
   value: string;
@@ -46,6 +48,8 @@ const POPULAR_VALUES = new Set([
 
 const POPULAR_LIMIT = 21;
 
+const DEFAULT_APP_ICON = "/brand-img/default-provider.svg";
+
 export const AppSelector: React.FC<AppSelectorProps> = ({
   options,
   selectedItem,
@@ -58,6 +62,10 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH?.replace(/\/$/, "") || "";
+  const iconSrc = (value: string) =>
+    `${basePath}${getVaultCredentialAppIcon(value) ?? DEFAULT_APP_ICON}`;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,6 +133,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
       )}
       onClick={() => !isItemSelected(option.value) && handleItemSelect(option)}
     >
+      <img src={iconSrc(option.value)} alt="" className="size-5 shrink-0" />
       <div className="flex flex-col">
         <p className="truncate text-sm font-medium">{option.label}</p>
       </div>
@@ -141,12 +150,21 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
           <Input
             ref={inputRef}
             type="text"
+            className={cn(selectedItem && !isOpen && "pl-9")}
             value={isOpen ? inputValue : selectedItem ? selectedItem?.label : ""}
             autoFocus={autoFocus}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={handleInputFocus}
             placeholder={selectedItem && isOpen ? selectedItem?.label : placeholder}
           />
+
+          {selectedItem && !isOpen && (
+            <img
+              src={iconSrc(selectedItem.value)}
+              alt=""
+              className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+            />
+          )}
 
           <Button
             type="button"
