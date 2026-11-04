@@ -60,6 +60,11 @@ export interface ToolDto {
 
   isDisabled?: boolean;
 
+  /**
+   * Whether this library tool is one of the curated popular tools.
+   */
+  isPopular?: boolean;
+
   createdBy?: string;
 
   createdOn?: string;

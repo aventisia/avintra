@@ -57,8 +57,6 @@ export const ToolsTable = () => {
   );
   const table = useDataTable(tableColumns, tableData, columnVisibility, sortState, true);
 
-  const isReadOnlyTab = isReadOnly;
-
   const rows = table.getRowModel().rows;
   const popularRows = isPlatformTab ? rows.filter((row) => isPopularTool(row.original)) : [];
   const otherRows = isPlatformTab ? rows.filter((row) => !isPopularTool(row.original)) : rows;
@@ -71,7 +69,6 @@ export const ToolsTable = () => {
       )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
     >
       <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
-        {/* Left: Icon with centered content */}
         <div className="flex items-center space-x-4">
           <div className="flex-shrink-0">
             <ToolIcon
@@ -81,7 +78,6 @@ export const ToolsTable = () => {
             />
           </div>
 
-          {/* Middle: Name and Description */}
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
               <div className="text-sm font-medium">
@@ -97,7 +93,6 @@ export const ToolsTable = () => {
           </div>
         </div>
 
-        {/* Right: Actions */}
         <ToolRowActions
           rowId={row.original.id ?? ""}
           name={row.original.name}
@@ -105,6 +100,7 @@ export const ToolsTable = () => {
           isTenantWideAccess={row.original.isTenantWideAccess}
           isResourceAccessRestricted={row.original.isResourceAccessRestricted}
           isPlatformTool={isPlatformTab}
+          isEnabled={row.original.isActive}
         />
       </div>
     </NavLink>
@@ -116,7 +112,6 @@ export const ToolsTable = () => {
         <ToolsTableSkeleton />
       ) : (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
@@ -139,7 +134,7 @@ export const ToolsTable = () => {
           ) : (
             <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
               <p className="text-sm text-muted-foreground">
-                No tools found. {isReadOnlyTab ? "" : "Please add a new tool."}
+                No tools found. {isReadOnly ? "" : "Please add a new tool."}
               </p>
             </div>
           )}

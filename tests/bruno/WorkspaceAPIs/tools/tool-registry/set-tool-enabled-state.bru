@@ -1,0 +1,25 @@
+meta {
+  name: Set library tool enabled state
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tools/{{TOOL_ID}}/enabled-state
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+body:json {
+  {
+    "isEnabled": true
+  }
+}
