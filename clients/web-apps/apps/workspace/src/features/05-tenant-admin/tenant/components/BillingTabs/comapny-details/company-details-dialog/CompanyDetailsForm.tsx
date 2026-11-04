@@ -1,11 +1,16 @@
-import { LoadingSpinner, Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { ScrollArea } from "@avplatform/ui/scroll";
+import {
+  Form,
+  InputField,
+  SelectField,
+  SwitchField,
+  crudDialogFieldClasses,
+} from "@avplatform/ui/form";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { createPortal } from "react-dom";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import {
   addressLine1Props,
   addressLine2Props,
@@ -22,7 +27,7 @@ import {
 import { companyDetailsZodSchema } from "@/features/05-tenant-admin/tenant/constants/company-details-zod-schema.ee";
 import { useCompanyDetailsForm } from "@/features/05-tenant-admin/tenant/hooks/useCompanyDetailsForm.ee";
 
-const CompanyDetailsForm = () => {
+const CompanyDetailsForm = ({ actionsSlot }: { actionsSlot: HTMLElement | null }) => {
   const { form, isSubmitting, isDirty, mutate, isPending } = useCompanyDetailsForm();
 
   const { userSession } = useUserSessionStore(
@@ -52,46 +57,41 @@ const CompanyDetailsForm = () => {
 
   const applyGST = form.watch("country") == "India";
 
-  return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(submitHandler)}
-      disabled={isSubmitting || isPending}
-    >
-      <ScrollArea className="h-[calc(100vh-16.5rem)]">
-        <div className="space-y-4 p-6">
-          {!isIndividualUser && <InputField {...organizationNameProps} disabled />}{" "}
-          <InputField autoFocus {...billingEmailProps} />
-          <InputField {...contactPersonProps} />
-          <InputField {...addressLine1Props} />
-          <InputField {...addressLine2Props} />
-          <div className="grid grid-cols-2 items-center gap-4">
-            <InputField {...cityProps} />
-            <InputField {...postalCodeProps} />
-          </div>
-          <div className="grid grid-cols-2 items-center gap-4">
-            <InputField {...stateProps} />
-            <SelectField {...countryProps} disabled />
-          </div>
-          {applyGST && <SwitchField {...isWillingToFileGstProps} />}
-          {/* Additional validation field */}
-          {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
-        </div>
-      </ScrollArea>
+  const isSaving = isSubmitting || isPending;
+  const inputClassName = crudDialogFieldClasses.input;
 
-      <Separator className="!mt-0.5" />
-      <div className="flex items-center justify-end px-6 pb-4">
-        <Button type="submit" disabled={isSubmitting || !isDirty || isPending}>
-          {isSubmitting || isPending ? (
-            <>
-              {" "}
-              <LoadingSpinner className="mr-1 h-4 w-4" /> Saving
-            </>
-          ) : (
-            "Save"
-          )}
-        </Button>
+  return (
+    <Form methods={form} onSubmit={form.handleSubmit(submitHandler)} disabled={isSaving}>
+      {!isIndividualUser && (
+        <InputField {...organizationNameProps} className={inputClassName} disabled />
+      )}
+      <InputField autoFocus {...billingEmailProps} className={inputClassName} />
+      <InputField {...contactPersonProps} className={inputClassName} />
+      <InputField {...addressLine1Props} className={inputClassName} />
+      <InputField {...addressLine2Props} className={inputClassName} />
+      <div className="grid grid-cols-2 items-start gap-4">
+        <InputField {...cityProps} className={inputClassName} />
+        <InputField {...postalCodeProps} className={inputClassName} />
       </div>
+      <div className="grid grid-cols-2 items-start gap-4">
+        <InputField {...stateProps} className={inputClassName} />
+        <SelectField {...countryProps} className={crudDialogFieldClasses.selectTrigger} disabled />
+      </div>
+      {applyGST && <SwitchField {...isWillingToFileGstProps} />}
+      {applyGST && isGSTRegistered && <InputField {...gstNumberProps} className={inputClassName} />}
+
+      {actionsSlot &&
+        createPortal(
+          <CardDialogButton
+            variant="primary"
+            disabled={!isDirty || isSaving}
+            isBusy={isSaving}
+            onClick={form.handleSubmit(submitHandler)}
+          >
+            {isSaving ? "Saving" : "Save changes"}
+          </CardDialogButton>,
+          actionsSlot,
+        )}
     </Form>
   );
 };

@@ -1,6 +1,4 @@
-import { Dialog, DialogPortal, DialogPrimitive } from "@avplatform/ui/dialog";
-import { MotionConfig } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useEnvironmentStore } from "@/stores/environment-store";
@@ -13,18 +11,16 @@ type ResourceFlowAccessDialogProps = {
   queryKey: unknown[];
 };
 
-/**
- * Mounts with the dialog content, so each opening starts from a fresh draft.
- */
-const FlowAccessPanel = ({ queryKey }: ResourceFlowAccessDialogProps) => {
+const FlowAccessPanel = ({ isOpen, queryKey }: { isOpen: boolean; queryKey: unknown[] }) => {
   const draft = useResourceFlowDraft(queryKey);
 
-  return <ResourceFlowAccessContent draft={draft} />;
+  return <ResourceFlowAccessContent isOpen={isOpen} draft={draft} />;
 };
 
 /**
  * Dialog assigning agents to a resource. An empty assignment leaves the resource open to
- * every agent; a non-empty one restricts it to exactly the listed agents.
+ * every agent; a non-empty one restricts it to exactly the listed agents. Each opening starts
+ * from a fresh draft.
  */
 const ResourceFlowAccessDialog = ({ queryKey }: ResourceFlowAccessDialogProps) => {
   const isProd = useEnvironmentStore((state) => state.env === "prod");
@@ -34,6 +30,14 @@ const ResourceFlowAccessDialog = ({ queryKey }: ResourceFlowAccessDialogProps) =
       setShowDialog: state.setShowDialog,
     })),
   );
+  const isOpen = showDialog && !isProd;
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  const [openCount, setOpenCount] = useState(isOpen ? 1 : 0);
+
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) setOpenCount((count) => count + 1);
+  }
 
   useEffect(() => {
     if (isProd && showDialog) {
@@ -41,24 +45,9 @@ const ResourceFlowAccessDialog = ({ queryKey }: ResourceFlowAccessDialogProps) =
     }
   }, [isProd, setShowDialog, showDialog]);
 
-  return (
-    <Dialog open={showDialog && !isProd} onOpenChange={setShowDialog}>
-      <DialogPortal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-scrim data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <DialogPrimitive.Content
-          aria-describedby={undefined}
-          className="fixed inset-0 z-50 flex items-start justify-center px-4 pb-4 pt-[max(4.5rem,12vh)] outline-none data-[state=closed]:duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
-          onPointerDown={(event) => {
-            if (event.target === event.currentTarget) setShowDialog(false);
-          }}
-        >
-          <MotionConfig reducedMotion="user">
-            <FlowAccessPanel queryKey={queryKey} />
-          </MotionConfig>
-        </DialogPrimitive.Content>
-      </DialogPortal>
-    </Dialog>
-  );
+  if (openCount === 0) return null;
+
+  return <FlowAccessPanel key={openCount} isOpen={isOpen} queryKey={queryKey} />;
 };
 
 export default ResourceFlowAccessDialog;
