@@ -1,5 +1,6 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
+import { SubPlanView } from "./SubPlanView.ee";
 import { SubPlansCrudForm } from "./SubPlansCrudForm.ee";
 
 interface SubPlansCrudDialogContentProps {
@@ -11,5 +12,7 @@ export const SubPlansCrudDialogContent = ({
   crudAction,
   rowId,
 }: SubPlansCrudDialogContentProps) => {
-  return <SubPlansCrudForm rowId={rowId} crudAction={crudAction as "create" | "update" | "read"} />;
+  if (crudAction === "read") return <SubPlanView rowId={rowId} />;
+
+  return <SubPlansCrudForm rowId={rowId} crudAction={crudAction} />;
 };

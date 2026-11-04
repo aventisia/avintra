@@ -20,6 +20,9 @@ interface FormProps<T extends FieldValues> extends React.FormHTMLAttributes<HTML
 
   /** If true, it will check for dirty form and prevent leaving the page */
   checkDirtyForm?: boolean;
+
+  /** CRUD dialog title for forms without a `name` field; defaults to the live `name` value. */
+  recordName?: string;
 }
 
 interface DirtyFormBlockerProps {
@@ -74,14 +77,14 @@ function DirtyFormBlocker({ isDirty, checkDirtyForm }: DirtyFormBlockerProps) {
   return null;
 }
 
-/** Shows the form's live `name` value as the CRUD dialog title. */
-function RecordNamePublisher() {
+function RecordNamePublisher({ recordName }: { recordName?: string }) {
   const setRecordName = useCrudDialogRecordNameSetter();
   const name: unknown = useWatch({ name: "name" });
+  const title = recordName ?? (typeof name === "string" ? name : undefined);
 
   useEffect(() => {
-    setRecordName(typeof name === "string" ? name : undefined);
-  }, [name, setRecordName]);
+    setRecordName(title);
+  }, [title, setRecordName]);
 
   useEffect(() => () => setRecordName(undefined), [setRecordName]);
 
@@ -98,6 +101,7 @@ const Form = <T extends FieldValues>({
   methods,
   disabled = false,
   checkDirtyForm = true,
+  recordName,
   className,
   children,
   onSubmit,
@@ -154,7 +158,7 @@ const Form = <T extends FieldValues>({
         </form>
       </FormIdProvider>
       {isInsideCrudDialog ? (
-        !isNestedForm && <RecordNamePublisher />
+        !isNestedForm && <RecordNamePublisher recordName={recordName} />
       ) : (
         <DirtyFormBlocker isDirty={formState.isDirty} checkDirtyForm={checkDirtyForm} />
       )}

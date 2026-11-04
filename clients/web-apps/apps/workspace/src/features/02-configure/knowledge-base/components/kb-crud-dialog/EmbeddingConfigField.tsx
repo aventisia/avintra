@@ -99,55 +99,46 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
     }));
   }, [providerValue]);
 
-  // Current provider
   const currentProvider = embeddingModelProviders.find((p) => p.value === providerValue);
 
-  // Render component
   return (
-    <div className="w-full space-y-3.5">
+    <>
       <SwitchField
-        size="sm"
         name={fieldNames.isByokEnabled}
         label="Bring your own API key"
-        description="Enable this if you want to use your own provider API key instead of the platform-hosted models."
+        description="Use your own provider API key instead of the platform-hosted models."
       />
-
-      <SelectField
+      <div className={isByokEnabled ? "grid grid-cols-2 gap-3" : undefined}>
+        <SelectField
+          isRequired
+          name={fieldNames.provider}
+          selectOptions={embeddingModelProviders.map((provider) => ({
+            value: provider.value,
+            label: provider.label ?? provider.value,
+          }))}
+          label="Embedding provider"
+        />
+        {isByokEnabled && (
+          <VaultCredentialSelectField
+            isRequired
+            name={fieldNames.credentialName}
+            label="Credential"
+            description={`The ${currentProvider?.label ?? ""} credential that holds your API key.`}
+            modelProvider={providerValue}
+          />
+        )}
+      </div>
+      <SearchableSelectField
         size="base"
         isRequired
-        name={fieldNames.provider}
-        selectOptions={embeddingModelProviders.map((provider) => ({
-          value: provider.value,
-          label: provider.label ?? provider.value,
-        }))}
-        label=" Provider"
+        name={fieldNames.model}
+        selectOptions={availableModels}
+        label="Embedding model"
+        primaryText="Models"
+        isLoading={false}
+        disabled={isByokEnabled && !credentialsValue}
       />
-
-      {isByokEnabled && (
-        <VaultCredentialSelectField
-          isRequired
-          name={fieldNames.credentialName}
-          size="base"
-          label={`${currentProvider?.label ?? ""} Credentials`}
-          modelProvider={providerValue}
-        />
-      )}
-
-      <div className="flex items-end gap-1">
-        <div className="flex-grow">
-          <SearchableSelectField
-            size="base"
-            isRequired
-            name={fieldNames.model}
-            selectOptions={availableModels}
-            label="Embedding model"
-            primaryText="Models"
-            isLoading={false}
-            disabled={isByokEnabled && !credentialsValue}
-          />
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 

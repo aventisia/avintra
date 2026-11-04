@@ -85,7 +85,7 @@ export const getNewTriggerAgents = () => {
  */
 export const geTriggerAgents = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${id}/agents`, {
+    .get<IHttpResponse<SearchAgentsDto | null>>(`${baseAPIURL}/${id}/agents`, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

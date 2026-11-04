@@ -7,7 +7,7 @@ import { DATA_QUERY_KEY } from "../constants";
 
 export const useFetchRoleById = (roleID: string) => {
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: [DATA_QUERY_KEY, roleID],
+    queryKey: [...DATA_QUERY_KEY, roleID],
     queryFn: () => getRole(roleID),
     enabled: !!roleID,
   });

@@ -1,6 +1,7 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
 import { QueueCrudForm } from "./QueueCrudForm";
+import { QueueView } from "./QueueView";
 
 interface QueueCrudDialogContentProps {
   crudAction: DialogCrudAction;
@@ -8,5 +9,7 @@ interface QueueCrudDialogContentProps {
 }
 
 export const QueueCrudDialogContent = ({ crudAction, rowId }: QueueCrudDialogContentProps) => {
-  return <QueueCrudForm rowId={rowId} crudAction={crudAction as "create" | "update" | "read"} />;
+  if (crudAction === "read") return <QueueView rowId={rowId} />;
+
+  return <QueueCrudForm rowId={rowId} crudAction={crudAction} />;
 };

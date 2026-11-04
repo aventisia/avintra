@@ -22,8 +22,7 @@ export const AgentsSelector = ({ onChange, id = "", crudAction }: AgentsSelector
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    //check crudAction to avoid form dirty in view mode
-    if (selectedItems.length && crudAction !== "read")
+    if (selectedItems.length)
       onChange(
         selectedItems.map((item) => {
           return {
@@ -33,7 +32,7 @@ export const AgentsSelector = ({ onChange, id = "", crudAction }: AgentsSelector
           };
         }),
       );
-  }, [crudAction, onChange, selectedItems]);
+  }, [onChange, selectedItems]);
 
   const { data: searchData, isLoading, isError } = useFetchAgentList(debouncedSearchTerm);
 
