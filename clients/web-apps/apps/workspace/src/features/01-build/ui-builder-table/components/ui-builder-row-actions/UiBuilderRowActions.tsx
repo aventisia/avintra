@@ -1,7 +1,7 @@
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
-import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
+import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 
 import { UiBuilderTableDto } from "../../dtos/ui-builder-table-dto";
 import { UiBuilderRowAssignUsersAction } from "./UiBuilderRowAssignUsersAction";

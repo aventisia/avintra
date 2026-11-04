@@ -1,7 +1,6 @@
+import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
+import { SearchedUser } from "@avplatform/ui/types";
 import { useState } from "react";
-
-import { WorkspaceUserDto } from "@/features/03-orchestrator/agents-table/dtos/workspace-user-dto";
-import { useDebounce } from "@/features/03-orchestrator/agents-table/hooks/useDebounce";
 
 import { useAssignUiBuilderUserMutation } from "./useAssignUiBuilderUserMutation";
 import { useSearchUiBuilderUserList } from "./useSearchUiBuilderUserList";
@@ -11,14 +10,14 @@ import { useSearchUiBuilderUserList } from "./useSearchUiBuilderUserList";
  */
 export const useSearchUiBuilderUserMultiSelect = (uiBuilderProjectId: string) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedItems, setSelectedItems] = useState<WorkspaceUserDto[]>([]);
+  const [selectedItems, setSelectedItems] = useState<SearchedUser[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const { data: searchData, isLoading, isError } = useSearchUiBuilderUserList(debouncedSearchTerm);
 
-  const handleItemSelect = (item: WorkspaceUserDto) => {
+  const handleItemSelect = (item: SearchedUser) => {
     if (!selectedItems.some((existing) => existing.id === item.id)) {
       setSelectedItems((previous) => [...previous, item]);
     }
