@@ -187,6 +187,7 @@ public static class AppServicesExtension
         services.AddScoped<IToolService, ToolService>();
         services.AddScoped<IToolCatalogService, ToolCatalogService>();
         services.AddScoped<IToolVerificationService, ToolVerificationService>();
+        services.AddScoped<IPlatformToolTenantService, PlatformToolTenantService>();
         services.AddScoped<ITenantTicketService, TenantTicketService>();
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();

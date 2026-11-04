@@ -150,6 +150,21 @@ public class ToolsController : BaseApiController
     }
 
     /// <summary>
+    /// Enables or disables a library tool for the current tenant.
+    /// </summary>
+    [HttpPost("{toolId}/enabled-state")]
+    [Authorize(Roles = "TA,OM")]
+    public async Task<ActionResult<ServiceResponse<ToolDto>>> SetToolEnabledState(Guid toolId, [FromBody] SetToolEnabledStateRequest request)
+    {
+        if (request.IsEnabled is null)
+        {
+            return ResultHelper(ServiceResponse<ToolDto>.Create("The isEnabled field is required.", 400));
+        }
+
+        return ResultHelper(await _toolService.SetToolEnabledStateAsync(toolId, request.IsEnabled.Value));
+    }
+
+    /// <summary>
     /// Retrieves all platform tools.
     /// </summary>
     [HttpGet("platform")]
