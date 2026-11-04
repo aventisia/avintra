@@ -27,19 +27,19 @@
       "required": true,
       "selectOptions": [
         {
-          "label": "Integer",
+          "label": "Whole number",
           "value": "Integer",
-          "description": "Converts the text to an integer value."
+          "description": "Whole numbers with no decimals, e.g. 123."
         },
         {
-          "label": "Double",
+          "label": "Decimal number",
           "value": "Double",
-          "description": "Converts the text to a double-precision floating-point value."
+          "description": "Numbers with decimals for general use, e.g. 123.45 (accurate to about 15-17 significant digits)."
         },
         {
-          "label": "Decimal",
+          "label": "Exact decimal number",
           "value": "Decimal",
-          "description": "Converts the text to a decimal value."
+          "description": "Numbers with decimals kept exactly up to 28-29 significant digits, e.g. 19.99 for money."
         }
       ]
     },
