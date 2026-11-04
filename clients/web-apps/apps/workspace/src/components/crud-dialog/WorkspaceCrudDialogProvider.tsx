@@ -33,8 +33,6 @@ import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescript
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
 import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
-import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
-import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
 import { getDialogHeadingDescription as getNotificationDialogHeadingDescription } from "@/features/notifications/constants/notifications-table.constant";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
@@ -131,16 +129,6 @@ const TicketCrudDialogContent = lazy(() =>
 const SaTicketCrudDialogContent = lazy(() =>
   import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent.ee").then(
     (m) => ({ default: m.SaTicketCrudDialogContent }),
-  ),
-);
-const OnPremTenantCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant/components/on-prem-tenant-crud-dialog/OnPremTenantCrudDialogContent.ee").then(
-    (m) => ({ default: m.OnPremTenantCrudDialogContent }),
-  ),
-);
-const TenantInstanceCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant-instance/components/tenant-instance-crud-dialog/TenantInstanceCrudDialogContent.ee").then(
-    (m) => ({ default: m.TenantInstanceCrudDialogContent }),
   ),
 );
 const UserCrudDialogContent = lazy(() =>
@@ -265,16 +253,6 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[40rem]",
     getHeader: getSaTicketDialogHeadingDescription,
     Content: SaTicketCrudDialogContent,
-  },
-  onPremTenant: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getOnPremTenantDialogHeadingDescription,
-    Content: OnPremTenantCrudDialogContent,
-  },
-  tenantInstance: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getTenantInstanceDialogHeadingDescription,
-    Content: TenantInstanceCrudDialogContent,
   },
   user: {
     maxWidth: "!max-w-[32rem]",

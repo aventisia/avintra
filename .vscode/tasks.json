@@ -123,12 +123,30 @@
       "isBackground": true
     },
     {
+      "label": "globaladmin_apis",
+      "type": "shell",
+      "command": "dotnet run",
+      "options": {
+        "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/GlobalAdminAPIs"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "global-admin",
+      "type": "shell",
+      "command": "npx turbo run dev --filter=global-admin",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/web-apps/apps/global-admin"
+      },
+      "isBackground": true
+    },
+    {
       "label": "Run Frontends",
-      "dependsOn": ["accounts", "workspace", "studio"]
+      "dependsOn": ["accounts", "workspace", "studio", "global-admin"]
     },
     {
       "label": "Run Backends",
-      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis", "apache_camel_apis", "corsair"]
+      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis", "apache_camel_apis", "corsair", "globaladmin_apis"]
     },
     {
       "label": "Run All",

@@ -25,7 +25,6 @@ import library from "./guides/library.md?raw";
 import machines from "./guides/machines.md?raw";
 import messageTriggers from "./guides/message-triggers.md?raw";
 import models from "./guides/models.md?raw";
-import onPremTenants from "./guides/on-prem-tenants.md?raw";
 import publishedAgents from "./guides/published-agents.md?raw";
 import queues from "./guides/queues.md?raw";
 import skills from "./guides/skills.md?raw";
@@ -323,15 +322,6 @@ const guides: HelpGuideContent[] = [
     section: "super-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
     content: creditPlans,
-  },
-  // Global Admin
-  {
-    id: "on-prem-tenants",
-    title: "On-prem Tenants",
-    summary: "View and manage on-premises tenant instances and their data.",
-    section: "global-admin",
-    docsSiteUrl: "https://docs.aventisia.com/workspace",
-    content: onPremTenants,
   },
 ];
 
