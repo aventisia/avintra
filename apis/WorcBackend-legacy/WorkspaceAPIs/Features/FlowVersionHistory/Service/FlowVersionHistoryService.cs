@@ -331,80 +331,94 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             }
 
             var historyReused = false;
+            var touchedHistories = new List<FlowVersionHistory>();
 
-            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            try
             {
-                // IMPORTANT NOTE: serialize concurrent saves for the same flow version so both reuse
-                // the same unreferenced row instead of inserting duplicates, and the [Timestamp]
-                // concurrency token never turns last-write-wins into a conflict.
-                await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersion.Id));
-
-                var latestHistory = await _unitOfWork.FlowVersionHistoryRepo
-                    .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
-                    .OrderByDescending(x => x.CreatedOn)
-                    .ThenByDescending(x => x.Id)
-                    .FirstOrDefaultAsync();
-
-                // IMPORTANT NOTE: Job also carries a tenant and space query filter, but background
-                // callers run without an ambient tenant, so the executed check keeps the explicit
-                // tenant predicate as defense in depth.
-                var latestHistoryIsExecuted = latestHistory != null && await _unitOfWork.JobRepo
-                    .GetByConditionAsync(j => j.FlowVersionHistoryId == latestHistory.Id && j.TenantId == flowVersion.TenantId)
-                    .AnyAsync();
-
-                if (latestHistory == null || latestHistoryIsExecuted)
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
                 {
-                    var flowVersionHistory = new FlowVersionHistory
+                    // IMPORTANT NOTE: serialize concurrent saves for the same flow version so both reuse
+                    // the same unreferenced row instead of inserting duplicates, and the [Timestamp]
+                    // concurrency token never turns last-write-wins into a conflict.
+                    await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersion.Id));
+
+                    var latestHistory = await _unitOfWork.FlowVersionHistoryRepo
+                        .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
+                        .OrderByDescending(x => x.CreatedOn)
+                        .ThenByDescending(x => x.Id)
+                        .FirstOrDefaultAsync();
+
+                    // IMPORTANT NOTE: Job also carries a tenant and space query filter, but background
+                    // callers run without an ambient tenant, so the executed check keeps the explicit
+                    // tenant predicate as defense in depth.
+                    var latestHistoryIsExecuted = latestHistory != null && await _unitOfWork.JobRepo
+                        .GetByConditionAsync(j => j.FlowVersionHistoryId == latestHistory.Id && j.TenantId == flowVersion.TenantId)
+                        .AnyAsync();
+
+                    if (latestHistory == null || latestHistoryIsExecuted)
                     {
-                        FlowVersionId = flowVersion.Id,
-                        ReactFlowObject = flowSilentUpdateDto.ReactFlowObject,
-                        FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject,
-                        InputOutputObject = flowSilentUpdateDto.InputOutputObject,
-                        CreatedByUserId = _userId,
-                        LastModifiedByUserId = _userId,
-                        CreatedOn = DateTimeOffset.UtcNow
-                    };
+                        var flowVersionHistory = new FlowVersionHistory
+                        {
+                            FlowVersionId = flowVersion.Id,
+                            ReactFlowObject = flowSilentUpdateDto.ReactFlowObject,
+                            FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject,
+                            InputOutputObject = flowSilentUpdateDto.InputOutputObject,
+                            CreatedByUserId = _userId,
+                            LastModifiedByUserId = _userId,
+                            CreatedOn = DateTimeOffset.UtcNow
+                        };
 
-                    await _unitOfWork.FlowVersionHistoryRepo.InsertAsync(flowVersionHistory);
-                }
-                else
-                {
-                    // Reuse the never-executed snapshot: content and last-modified change, CreatedOn stays.
-                    latestHistory.ReactFlowObject = flowSilentUpdateDto.ReactFlowObject;
-                    latestHistory.FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject;
-                    latestHistory.InputOutputObject = flowSilentUpdateDto.InputOutputObject;
-                    latestHistory.LastModifiedByUserId = _userId;
-                    latestHistory.LastModifiedOn = DateTimeOffset.UtcNow;
+                        await _unitOfWork.FlowVersionHistoryRepo.InsertAsync(flowVersionHistory);
+                        touchedHistories.Add(flowVersionHistory);
+                    }
+                    else
+                    {
+                        // Reuse the never-executed snapshot: content and last-modified change, CreatedOn stays.
+                        latestHistory.ReactFlowObject = flowSilentUpdateDto.ReactFlowObject;
+                        latestHistory.FlowVariablesObject = flowSilentUpdateDto.FlowVariablesObject;
+                        latestHistory.InputOutputObject = flowSilentUpdateDto.InputOutputObject;
+                        latestHistory.LastModifiedByUserId = _userId;
+                        latestHistory.LastModifiedOn = DateTimeOffset.UtcNow;
 
-                    _unitOfWork.FlowVersionHistoryRepo.Update(latestHistory);
-                    historyReused = true;
-                }
-
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    throw new InvalidOperationException("SaveChanges failed while writing the flow version history record.");
-                }
-
-                // Fetch all history records for this FlowVersion, ordered by newest first
-                var flowVersionHistories = await _unitOfWork.FlowVersionHistoryRepo
-                    .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
-                    .OrderByDescending(x => x.CreatedOn)
-                    .AsNoTracking()
-                    .ToListAsync();
-
-                // Keep only the latest 100 history records to avoid excessive data growth
-                if (flowVersionHistories.Count > 100)
-                {
-                    var historiesToDelete = flowVersionHistories.Skip(100).ToList();
-
-                    _unitOfWork.FlowVersionHistoryRepo.Delete(historiesToDelete);
+                        _unitOfWork.FlowVersionHistoryRepo.Update(latestHistory);
+                        touchedHistories.Add(latestHistory);
+                        historyReused = true;
+                    }
 
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        throw new InvalidOperationException("SaveChanges failed while deleting old flow version history records.");
+                        throw new InvalidOperationException("SaveChanges failed while writing the flow version history record.");
                     }
-                }
-            });
+
+                    // Fetch all history records for this FlowVersion, ordered by newest first
+                    var flowVersionHistories = await _unitOfWork.FlowVersionHistoryRepo
+                        .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
+                        .OrderByDescending(x => x.CreatedOn)
+                        .AsNoTracking()
+                        .ToListAsync();
+
+                    // Keep only the latest 100 history records to avoid excessive data growth
+                    if (flowVersionHistories.Count > 100)
+                    {
+                        var historiesToDelete = flowVersionHistories.Skip(100).ToList();
+
+                        _unitOfWork.FlowVersionHistoryRepo.Delete(historiesToDelete);
+                        touchedHistories.AddRange(historiesToDelete);
+
+                        if (!await _unitOfWork.SaveAsync())
+                        {
+                            throw new InvalidOperationException("SaveChanges failed while deleting old flow version history records.");
+                        }
+                    }
+                });
+            }
+            catch
+            {
+                // IMPORTANT NOTE: the rollback leaves these entries tracked on the shared context, and the
+                // caller's flow save would otherwise persist them outside the history lock.
+                touchedHistories.ForEach(_unitOfWork.FlowVersionHistoryRepo.Detach);
+                throw;
+            }
 
             // Successfully wrote the history record
             serviceResponse.StatusCode = 200;

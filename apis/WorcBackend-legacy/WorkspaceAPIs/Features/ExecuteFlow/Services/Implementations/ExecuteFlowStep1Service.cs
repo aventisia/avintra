@@ -56,7 +56,6 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 .GetByConditionAsync(w => w.Id == requestDto.FlowVersionId)
                 .IgnoreQueryFilters()
                 .Include(i => i.Flow)
-                .Include(i => i.FlowVersionHistories)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 

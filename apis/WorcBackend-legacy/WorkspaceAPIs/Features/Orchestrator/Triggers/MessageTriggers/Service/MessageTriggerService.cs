@@ -949,9 +949,6 @@ public class MessageTriggerService : IMessageTriggerService
                 .Where(x => x.Id == triggerGuid)
                 .Include(i => i.TriggerFlowVersions)
                     .ThenInclude(i2 => i2.FlowVersion)
-                        .ThenInclude(i3 => i3.FlowVersionHistories)
-                .Include(i => i.TriggerFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
                         .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();

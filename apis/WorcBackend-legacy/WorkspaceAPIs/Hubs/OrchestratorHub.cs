@@ -353,7 +353,6 @@ public class OrchestratorHub : Hub
                 .Where(w => w.Id == agentId && w.IsPublished)
                 .Include(i => i.Flow)
                 .Include(i => i.FlowVersionMachines)
-                .Include(i => i.FlowVersionHistories)
                 .SingleOrDefaultAsync();
 
             // If the agent is not found or not published, return an error

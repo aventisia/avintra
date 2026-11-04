@@ -154,11 +154,24 @@ public class WebhookController : BaseApiController
             Status = JobStatusEnum.Created,
             Priority = JobPriorityEnum.Normal,
             InputArgumentsJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
-            CreatedOn = DateTimeOffset.UtcNow
         };
 
-        _dbContext.Jobs.Add(job);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Database.ExecuteInTransactionAsync(async () =>
+        {
+            await _dbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(job.FlowVersionId));
+
+            job.CreatedOn = DateTimeOffset.UtcNow;
+
+            job.FlowVersionHistoryId = await _dbContext.FlowVersionHistories
+                .Where(h => h.FlowVersionId == job.FlowVersionId && h.TenantId == tenantId)
+                .OrderByDescending(h => h.CreatedOn)
+                .ThenByDescending(h => h.Id)
+                .Select(h => (Guid?)h.Id)
+                .FirstOrDefaultAsync();
+
+            _dbContext.Jobs.Add(job);
+            await _dbContext.SaveChangesAsync();
+        });
 
         // ── 10. Dispatch job execution ───────────────────────────────────────
         _ = Task.Run(async () =>
