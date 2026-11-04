@@ -6,6 +6,7 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import type { Row } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -21,13 +22,19 @@ import {
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,
 } from "../constants/tools-table.constants";
+import type { ToolDto } from "../dtos";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
+import { isPopularTool, sortPopularToolsFirst } from "../utils/popular-tools.util";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
 import { ToolIcon } from "./ToolIcon";
 import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
+
+const SectionHeading = ({ children }: { children: string }) => (
+  <div className="col-span-3 pt-1 text-sm font-medium text-muted-foreground">{children}</div>
+);
 
 /**
  * Renders a list of tools with Personal, Shared, and Platform tabs.
@@ -44,9 +51,64 @@ export const ToolsTable = () => {
   const { data, isLoading } = useFetchTools();
 
   const tableColumns = useMemo(() => toolsTableColumns(isPlatformTab), [isPlatformTab]);
-  const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
+  const tableData = useMemo(
+    () => (isPlatformTab ? sortPopularToolsFirst(data?.data ?? []) : (data?.data ?? [])),
+    [data?.data, isPlatformTab],
+  );
+  const table = useDataTable(tableColumns, tableData, columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
+
+  const rows = table.getRowModel().rows;
+  const popularRows = isPlatformTab ? rows.filter((row) => isPopularTool(row.original)) : [];
+  const otherRows = isPlatformTab ? rows.filter((row) => !isPopularTool(row.original)) : rows;
+
+  const renderToolCard = (row: Row<ToolDto>) => (
+    <NavLink
+      key={row.id}
+      to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
+        row.getValue("name"),
+      )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
+    >
+      <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+        {/* Left: Icon with centered content */}
+        <div className="flex items-center space-x-4">
+          <div className="flex-shrink-0">
+            <ToolIcon
+              name={row.getValue("name") as string}
+              iconUrl={row.original.iconUrl}
+              className="h-6 w-6 object-contain"
+            />
+          </div>
+
+          {/* Middle: Name and Description */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3">
+              <div className="text-sm font-medium">
+                {getToolDisplayName(row.getValue("name") as string)}
+              </div>
+              <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+              </span>
+            </div>
+            <span className="text-xs text-muted-foreground line-clamp-2">
+              {row.getValue("description") as string}
+            </span>
+          </div>
+        </div>
+
+        {/* Right: Actions */}
+        <ToolRowActions
+          rowId={row.original.id ?? ""}
+          name={row.original.name}
+          accessLevel={row.original.accessLevel}
+          isTenantWideAccess={row.original.isTenantWideAccess}
+          isResourceAccessRestricted={row.original.isResourceAccessRestricted}
+          isPlatformTool={isPlatformTab}
+        />
+      </div>
+    </NavLink>
+  );
 
   return (
     <>
@@ -67,54 +129,12 @@ export const ToolsTable = () => {
             </div>
           </div>
 
-          {table.getRowModel().rows?.length > 0 ? (
+          {rows.length > 0 ? (
             <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
-              {table.getRowModel().rows.map((row) => (
-                <NavLink
-                  key={row.id}
-                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
-                    row.getValue("name"),
-                  )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
-                >
-                  <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
-                    {/* Left: Icon with centered content */}
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <ToolIcon
-                          name={row.getValue("name") as string}
-                          iconUrl={row.original.iconUrl}
-                          className="h-6 w-6 object-contain"
-                        />
-                      </div>
-
-                      {/* Middle: Name and Description */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-3">
-                          <div className="text-sm font-medium">
-                            {getToolDisplayName(row.getValue("name") as string)}
-                          </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground line-clamp-2">
-                          {row.getValue("description") as string}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Right: Actions */}
-                    <ToolRowActions
-                      rowId={row.original.id ?? ""}
-                      name={row.original.name}
-                      accessLevel={row.original.accessLevel}
-                      isTenantWideAccess={row.original.isTenantWideAccess}
-                      isResourceAccessRestricted={row.original.isResourceAccessRestricted}
-                      isPlatformTool={isPlatformTab}
-                    />
-                  </div>
-                </NavLink>
-              ))}
+              {popularRows.length > 0 && <SectionHeading>Popular</SectionHeading>}
+              {popularRows.map(renderToolCard)}
+              {isPlatformTab && otherRows.length > 0 && <SectionHeading>All tools</SectionHeading>}
+              {otherRows.map(renderToolCard)}
             </div>
           ) : (
             <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
