@@ -18,7 +18,6 @@ import {
   contractRenewalDateProps,
   contractStartDateProps,
   executionTimeAllowedProps,
-  idProps,
   isBrandingAllowedProps,
   isExecutionDisabledProps,
   isLoginDisabledProps,
@@ -27,7 +26,7 @@ import {
   ourEmailsProps,
   tenantEmailsProps,
   typeProps,
-} from "../../constants/on-prem-tenant-field-props.ee";
+} from "../../constants/on-prem-tenant-field-props.constant.ee";
 import { onPremTenantZodSchema } from "../../constants/on-prem-tenant-zod-schema.ee";
 import { OnPremTenantDto } from "../../dtos/on-prem-tenant-dto.ee";
 import { useDefineOnPremTenantForm } from "../../hooks/useDefineOnPremTenantForm.ee";
@@ -40,7 +39,6 @@ interface OnPremTenantCrudFormProps {
 export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
 
-  // Define on-prem tenant form
   const {
     form,
     isDirty,
@@ -51,7 +49,6 @@ export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudForm
     refineFormData,
   } = useDefineOnPremTenantForm({ rowId, crudAction });
 
-  // Define optimistic mutation to crete or update the tenant
   const {
     mutate: mutateTenant,
     isPending,
@@ -62,84 +59,61 @@ export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudForm
     ON_PREM_TENANT_QUERY_KEY,
   );
 
-  // Define submit handler
   const onSubmit = (formData: z.infer<typeof onPremTenantZodSchema>) => {
-    // Create or update the tenant
     mutateTenant({
       payload: refineFormData(formData) as unknown as OnPremTenantDto,
       crudAction: crudAction,
     });
 
-    // Close the dialog
     onCloseConfirmed();
   };
 
-  // Close dialog when mutation is successful
   useEffect(() => {
     if (isSuccess) onCloseConfirmed();
   }, [isSuccess, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
+  const isCreating = crudAction === "create";
 
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* Tenant Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
 
-      {crudAction === "create" ? (
+      <div className="grid grid-cols-2 gap-3">
         <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
+        <InputField {...executionTimeAllowedProps} />
+      </div>
 
-      <InputField {...executionTimeAllowedProps} />
-
-      <DateTimePickerField {...contractStartDateProps} />
-
-      <DateTimePickerField {...contractRenewalDateProps} />
+      <div className="grid grid-cols-2 gap-3">
+        <DateTimePickerField {...contractStartDateProps} />
+        <DateTimePickerField {...contractRenewalDateProps} />
+      </div>
 
       <InputField {...ourEmailsProps} />
 
       <InputField {...tenantEmailsProps} />
 
-      {/* Disable Execution */}
-      {crudAction !== "create" && <SwitchField {...isExecutionDisabledProps} />}
-
-      {/* Disable Login */}
-      {crudAction !== "create" && <SwitchField {...isLoginDisabledProps} />}
-
-      {/* Allow Single Sign-On */}
-      {crudAction !== "create" && <SwitchField {...isSsoAllowedProps} />}
-
-      {/* Allow Custom Branding */}
-      {crudAction !== "create" && <SwitchField {...isBrandingAllowedProps} />}
-
-      {/* Submit button */}
-      {!isReadMode && (
-        <CrudDialogActions>
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText="Creating..."
-            isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </CrudDialogActions>
+      {!isCreating && (
+        <>
+          <SwitchField {...isSsoAllowedProps} />
+          <SwitchField {...isBrandingAllowedProps} />
+          <SwitchField {...isExecutionDisabledProps} />
+          <SwitchField {...isLoginDisabledProps} />
+        </>
       )}
+
+      <CrudDialogActions>
+        <SubmitButton
+          className="min-w-[5rem]"
+          primaryText={isCreating ? "Create tenant" : "Save changes"}
+          secondaryText={isCreating ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

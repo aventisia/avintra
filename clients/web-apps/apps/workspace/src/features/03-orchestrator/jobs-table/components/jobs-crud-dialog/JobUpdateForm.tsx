@@ -1,6 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
-import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
+import { Form, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { useEffect } from "react";
 
@@ -8,10 +8,9 @@ import { updateJob } from "../../apis/jobs-table-apis";
 import {
   closingStatusProps,
   enableClosingStatusProps,
-  idProps,
   priorityProps,
   remarksProps,
-} from "../../constants/job-form-field-props";
+} from "../../constants/job-form-field-props.constant";
 import { JobUpdateFormData } from "../../constants/job-update-zod-schema";
 import { DATA_QUERY_KEY } from "../../constants/variables";
 import { JobUpdateDto } from "../../dtos/job-update-dto";
@@ -55,20 +54,20 @@ export const JobUpdateForm = ({ rowId }: JobUpdateFormProps) => {
   }, [isSuccess, onCloseConfirmed]);
 
   return (
-    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
-      <InputField {...idProps} />
-
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <SelectField {...priorityProps} />
 
       <SwitchField {...enableClosingStatusProps} />
 
-      {isClosingStatusEnabled && <SelectField {...closingStatusProps} />}
-
-      {isClosingStatusEnabled && <TextareaField {...remarksProps} />}
+      {isClosingStatusEnabled && (
+        <>
+          <SelectField {...closingStatusProps} />
+          <TextareaField {...remarksProps} />
+        </>
+      )}
 
       <CrudDialogActions>
         <SubmitButton
-          className="min-w-[5rem]"
           primaryText="Save changes"
           secondaryText="Saving..."
           isPending={isPending}

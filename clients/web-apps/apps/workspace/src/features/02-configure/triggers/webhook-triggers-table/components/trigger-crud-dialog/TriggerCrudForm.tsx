@@ -9,9 +9,9 @@ import {
   FormMessage,
   InputField,
   SwitchField,
+  crudDialogFieldClasses,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -21,22 +21,24 @@ import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import {
+  agentLabelProps,
   callbackUrlProps,
-  idProps,
+  inputSchemaLabelProps,
   isDisabledProps,
   nameProps,
   webhookUrlProps,
-} from "../../constants/trigger-form-field-props.ts";
-import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
+} from "../../constants/trigger-form-field-props.constant.ts";
+import { triggerZodSchema } from "../../constants/trigger-zod-schema.constant.ts";
 import { WebhookTriggerDto } from "../../dtos/webhook-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
 import { useTableTab } from "../../hooks/useTableTab.ts";
+import { formatPayloadSchema } from "../../utils/format-payload-schema.util";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import InputWithCopy from "./InputWithCopy.tsx";
 
 interface TriggerCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
@@ -76,9 +78,6 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       payload: refineFormData(formData) as unknown as WebhookTriggerDto,
       crudAction: crudAction,
     });
-
-    // Close the dialog if not creating/updating the record
-    if (crudAction == "read") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
@@ -86,8 +85,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     if (crudAction === "update" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
+  const isUpdateMode = crudAction === "update";
 
   // Fetch trigger data when rowId changes
   useEffect(() => {
@@ -109,30 +107,21 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
           `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-flow/webhook`,
 
         callbackUrl: triggerData?.callbackUrl ?? "",
-        expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
+        expectedPayloadSchema: formatPayloadSchema(triggerData?.expectedPayloadSchema ?? ""),
         isDisabled: triggerData?.isDisabled ?? false,
       });
     }
   }, [isSuccess]);
 
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      // disabled={isReadMode}
-    >
-      {/* trigger Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
-        disabled={crudAction !== "create"}
+        disabled={isUpdateMode}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />
+
       <Controller
         control={form.control}
         name="webhookUrl"
@@ -141,51 +130,37 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         )}
       />
 
-      {/* Agents Selector */}
+      <InputField {...callbackUrlProps} />
+
+      <JsonEditorField name="expectedPayloadSchema" {...inputSchemaLabelProps} />
+
       <FormField
         name="agent"
         control={form.control}
         render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt
-              size={"base"}
-              label="Select agent"
-              description="Choose the agent that should be triggered by this event."
-              isRequired
-            />
-
+          <FormItem className={crudDialogFieldClasses.item}>
+            <FormLabelExt {...agentLabelProps} />
             <FormControl>
               <AgentsSelector
                 value={field.value ?? []}
                 onChange={field.onChange}
                 id={rowId}
                 crudAction={crudAction}
-                disabled={isReadMode}
               />
             </FormControl>
-
-            <FormMessage size={"base"} />
+            <FormMessage />
           </FormItem>
         )}
       />
 
-      <InputField {...callbackUrlProps} disabled={isReadMode} />
-      <pre>
-        <JsonEditorField name="inputSchema" label="Input arguments schema" disabled={isReadMode} />
-      </pre>
+      {isUpdateMode && <SwitchField size="sm" {...isDisabledProps} />}
 
-      {/* Is Disabled */}
-      {crudAction !== "create" && (
-        <SwitchField size="sm" disabled={isReadMode} {...isDisabledProps} />
-      )}
-
-      {/* Submit button */}
-      {!isReadMode && !isSuccess && (
+      {!isSuccess && (
         <CrudDialogActions>
           <SubmitButton
             className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+            primaryText={isUpdateMode ? "Save changes" : "Create trigger"}
+            secondaryText={isUpdateMode ? "Saving..." : "Creating..."}
             isPending={isPending}
             disabled={!isDirty || !isAvailable || isCheckPending}
           />

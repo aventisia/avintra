@@ -24,7 +24,7 @@ import {
   jobInputDataProps,
   priorityProps,
   triggerTypeProps,
-} from "../../constants/job-form-field-props";
+} from "../../constants/job-form-field-props.constant";
 import { DATA_QUERY_KEY } from "../../constants/variables";
 import { JobInsertDto } from "../../dtos/job-insert-dto";
 import { JobsTableRowDto } from "../../dtos/jobs-table-row-dto";
@@ -149,42 +149,37 @@ export const JobCreateForm = ({
   }, [executeOnCloud]);
 
   return (
-    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
-      <div className="space-y-3.5">
-        <SelectField {...triggerTypeProps} />
-
-        <SelectField {...priorityProps} />
-
-        <div ref={agentSelectWrapperRef}>
-          <AsyncSingleSelectField {...flowVersionIdProps} filters={flowVersionIdFilters} />
-        </div>
-
-        <SwitchField
-          {...executeOnCloudProps}
-          disabled={!isCloudSupported}
-          description={
-            isCloudSupported ? executeOnCloudProps.description : CLOUD_UNSUPPORTED_DESCRIPTION
-          }
-        />
-
-        {!executeOnCloud && (
-          <div ref={executionLocationWrapperRef}>
-            <AsyncSingleSelectField
-              {...executionLocationProps}
-              filters={executionLocationFilters}
-            />
-          </div>
-        )}
-
-        <JsonEditorField {...jobInputDataProps} />
-
-        <InputField {...existingJobIdProps} />
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
+      <div ref={agentSelectWrapperRef}>
+        <AsyncSingleSelectField {...flowVersionIdProps} filters={flowVersionIdFilters} />
       </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <SelectField {...triggerTypeProps} />
+        <SelectField {...priorityProps} />
+      </div>
+
+      <SwitchField
+        {...executeOnCloudProps}
+        disabled={!isCloudSupported}
+        description={
+          isCloudSupported ? executeOnCloudProps.description : CLOUD_UNSUPPORTED_DESCRIPTION
+        }
+      />
+
+      {!executeOnCloud && (
+        <div ref={executionLocationWrapperRef}>
+          <AsyncSingleSelectField {...executionLocationProps} filters={executionLocationFilters} />
+        </div>
+      )}
+
+      <JsonEditorField {...jobInputDataProps} />
+
+      <InputField {...existingJobIdProps} />
 
       <CrudDialogActions>
         <SubmitButton
-          className="min-w-[5rem]"
-          primaryText="Create"
+          primaryText="Create job"
           secondaryText="Creating..."
           isPending={isPending}
           disabled={!isDirty || !isValid || isPending}

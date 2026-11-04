@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
-import { Form, FormMessage, InputField, TextareaField } from "@avplatform/ui/form";
+import { Form, FormLabelExt, FormMessage, InputField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useState } from "react";
@@ -9,10 +9,10 @@ import { z } from "zod";
 import { roleOptimisticMutationFn } from "../../apis/roles-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  idProps,
   roleDescriptionProps,
   roleNameProps,
-} from "../../constants/role-form-field-props";
+  rolePermissionsProps,
+} from "../../constants/role-form-field-props.constant";
 import { RolePermission, addRoleFormZodSchema } from "../../constants/role-zod-schema";
 import { RoleTableDTO } from "../../dtos/roles-table-dto";
 import { useDefineRoleForm } from "../../hooks/useDefineRoleForm";
@@ -73,44 +73,38 @@ export const RoleCrudForm = ({ rowId, crudAction }: RoleCrudFormProps) => {
     onCloseConfirmed();
   };
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
-
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      disabled={isSubmitting || isReadMode}
-      className="px-2.5 pb-5"
+      disabled={isSubmitting}
+      recordName={form.watch("fullName") ?? ""}
     >
-      {isReadMode && <InputField {...idProps} />}
       <InputField
         {...roleNameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
-        disabled={isReadMode}
+        autoFocus
       />
       <TextareaField {...roleDescriptionProps} />
-
-      <PermissionsGrid
-        initialData={rolePermissions}
-        onPermissionsChange={handlePermissionsChange}
-      />
-      {errors.rolePermissions && (
-        <FormMessage customMessageType={"Red"} size={"base"}>
-          {errors.rolePermissions.message}
-        </FormMessage>
-      )}
-      <CrudDialogActions>
-        {!isReadMode && (
-          <Button
-            type="submit"
-            className="min-w-[8rem] text-base font-medium"
-            disabled={!isDirty || isSubmitting || !isAvailable || isCheckPending}
-          >
-            {crudAction === "create" ? "Submit" : "Save"}
-          </Button>
+      <div>
+        <FormLabelExt {...rolePermissionsProps} />
+        <div className="mt-1.5">
+          <PermissionsGrid
+            initialData={rolePermissions}
+            onPermissionsChange={handlePermissionsChange}
+          />
+        </div>
+        {errors.rolePermissions && (
+          <FormMessage customMessageType={"Red"} size={"base"}>
+            {errors.rolePermissions.message}
+          </FormMessage>
         )}
+      </div>
+      <CrudDialogActions>
+        <Button type="submit" disabled={!isDirty || isSubmitting || !isAvailable || isCheckPending}>
+          {crudAction === "create" ? "Create role" : "Save changes"}
+        </Button>
       </CrudDialogActions>
     </Form>
   );

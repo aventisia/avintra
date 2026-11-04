@@ -15,7 +15,7 @@ export * from "./constants/cloud-execution.constant";
 export * from "./constants/column-display-names";
 export * from "./constants/column-visibility-state";
 export * from "./constants/job-create-zod-schema";
-export * from "./constants/job-form-field-props";
+export * from "./constants/job-form-field-props.constant";
 export * from "./constants/job-update-zod-schema";
 export * from "./constants/variables";
 
