@@ -9,6 +9,7 @@ import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { testTool, testToolDirectly } from "../../apis/tools.apis";
 import { TestToolResponseDto } from "../../dtos/index";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
+import { formatOperationName } from "../../utils/operation-name-formatter.util";
 import {
   normalizeParsedSchemaOperations,
   setParsedSchemaOperationVerification,
@@ -208,7 +209,8 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
       : undefined;
   const lastTestedResponse = results[lastTestedId];
   const lastTestedLabel =
-    operations.find((operation) => operation.operationId === lastTestedId)?.summary || lastTestedId;
+    operations.find((operation) => operation.operationId === lastTestedId)?.summary ||
+    formatOperationName(lastTestedId);
 
   if (!draftTool) {
     return (
@@ -267,7 +269,7 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
             const result = results[operation.operationId];
             const verified = result ? isVerifiedResult(result) : operation.isVerified === true;
             const isSelected = selectedIds.includes(operation.operationId);
-            const label = operation.summary || operation.operationId;
+            const label = operation.summary || formatOperationName(operation.operationId);
             return (
               <label
                 key={operation.operationId}
@@ -311,7 +313,8 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
       {selectedSingle && (
         <div className="space-y-2 rounded border p-3">
           <p className="text-xs font-medium">
-            Parameters for {selectedSingle.summary || selectedSingle.operationId}
+            Parameters for{" "}
+            {selectedSingle.summary || formatOperationName(selectedSingle.operationId)}
           </p>
           <FieldLabel
             label="Parameters (JSON)"
