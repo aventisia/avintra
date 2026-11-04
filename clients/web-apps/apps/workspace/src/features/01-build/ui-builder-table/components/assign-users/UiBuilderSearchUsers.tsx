@@ -1,10 +1,9 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 
-import { MultiSelector } from "@/features/03-orchestrator/agents-table/components/assign-users/MultiSelector";
-
 import { useAssignUiBuilderUserMutation } from "../../hooks/useAssignUiBuilderUserMutation";
 import { useSearchUiBuilderUserMultiSelect } from "../../hooks/useSearchUiBuilderUserMultiSelect";
+import { MultiSelector } from "./MultiSelector";
 
 export const UiBuilderSearchUsers = ({
   uiBuilderProjectId,
@@ -18,7 +17,6 @@ export const UiBuilderSearchUsers = ({
   onUpdateSuccess: (newValue: boolean) => void;
 }) => {
   const {
-    searchTerm,
     setSearchTerm,
     selectedItems,
     handleItemSelect,
@@ -79,12 +77,10 @@ export const UiBuilderSearchUsers = ({
           onItemSelect={handleItemSelect}
           onItemRemove={handleItemRemove}
           onSearchChange={setSearchTerm}
-          searchQuery={searchTerm}
           isLoading={isLoading}
           disabled={isSelectorDisabled}
           isError={isError}
           placeholder={dynamicPlaceholder}
-          maxHeight="300px"
         />
       </div>
       <Button onClick={handleActionClick} disabled={isButtonDisabled} className="min-w-28">

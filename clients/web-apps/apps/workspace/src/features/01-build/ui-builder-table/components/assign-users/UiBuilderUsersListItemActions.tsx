@@ -1,9 +1,13 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { UserMinus2Icon } from "lucide-react";
-
-import { UsersActionsTrigger } from "@/features/03-orchestrator/agents-table/components/assign-users/assign-user-item-actions/UsersActionsTrigger";
 
 import { UiBuilderUserDto } from "../../dtos/ui-builder-users-dto";
 import { useRemoveUiBuilderUserMutation } from "../../hooks/useRemoveUiBuilderUserMutation";
@@ -21,7 +25,15 @@ export const UiBuilderUsersListItemActions = ({
 
   return (
     <DropdownMenu>
-      <UsersActionsTrigger />
+      <DropdownMenuTrigger
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon7" }),
+          "hover:bg-slate-200",
+          "data-[state=open]:bg-slate-200 data-[state=open]:opacity-100",
+        )}
+      >
+        <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[8rem] min-w-[8rem]">
         <DropdownMenuItem
           className={cn(

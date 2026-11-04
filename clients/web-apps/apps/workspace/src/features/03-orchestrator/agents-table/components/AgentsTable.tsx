@@ -24,7 +24,6 @@ import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
-import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import UiBuilderAssignUsersDialog from "./published-ui/UiBuilderAssignUsersDialog";
 import UiBuilderDisableDialog from "./published-ui/UiBuilderDisableDialog";
 import UiBuilderPreviewDialog from "./published-ui/UiBuilderPreviewDialog";

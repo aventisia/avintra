@@ -408,7 +408,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<UiBuilderVersion> UiBuilderVersions { get; set; }
     public DbSet<UiBuilderProjectUser> UiBuilderProjectUsers { get; set; }
     public DbSet<UiBuilderAsset> UiBuilderAssets { get; set; }
-    public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }
     public DbSet<Queue> Queues { get; set; }
