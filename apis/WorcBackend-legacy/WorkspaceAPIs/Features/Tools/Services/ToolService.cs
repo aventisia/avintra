@@ -10,6 +10,7 @@ public class ToolService : IToolService
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
+    private readonly IPlatformToolTenantService _platformToolTenantService;
     private readonly Guid _currentUserId;
 
     public ToolService(
@@ -19,7 +20,8 @@ public class ToolService : IToolService
         IResourceUserAccessService resourceUserAccessService,
         IResourceFlowAccessService resourceFlowAccessService,
         ICurrentTenantService currentTenantService,
-        IUserManagementGuardService userManagementGuardService)
+        IUserManagementGuardService userManagementGuardService,
+        IPlatformToolTenantService platformToolTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -27,6 +29,7 @@ public class ToolService : IToolService
         _resourceFlowAccessService = resourceFlowAccessService;
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
+        _platformToolTenantService = platformToolTenantService;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
@@ -158,7 +161,22 @@ public class ToolService : IToolService
 
             if (tool == null)
             {
-                return serviceResponse.Update("Tool not found.", 404);
+                var platformTool = await _unitOfWork.PlatformToolRepo
+                    .GetByConditionAsync(w => w.Id == toolId)
+                    .FirstOrDefaultAsync();
+
+                if (platformTool == null)
+                {
+                    return serviceResponse.Update("Tool not found.", 404);
+                }
+
+                await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+                return serviceResponse.Update(
+                    "Tool retrieved successfully.",
+                    200,
+                    PlatformToolDtoHelpers.ToToolDto(
+                        platformTool,
+                        await _platformToolTenantService.IsEnabledAsync(platformTool.Id)));
             }
 
             var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
@@ -179,10 +197,27 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have permission to view this tool.", 403);
             }
 
+            var toolDto = tool.Adapt<ToolDto>();
+
+            // IMPORTANT NOTE: the legacy platform catalog can hold a row whose id is also a library
+            // catalog id (ids preserved when the catalog was backfilled), so its tenant state has to
+            // be merged here; the library fallback above only runs when no legacy row exists.
+            if (tool.Type == ComponentTypeEnum.Platform)
+            {
+                var libraryTool = await FindLibraryToolAsync(toolId, tool.Name);
+                if (libraryTool is not null)
+                {
+                    await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+                    toolDto.Id = libraryTool.Id;
+                    toolDto.IsActive = await _platformToolTenantService.IsEnabledAsync(libraryTool.Id);
+                    toolDto.IsPopular = libraryTool.IsPopular;
+                }
+            }
+
             return serviceResponse.Update(
                 "Tool retrieved successfully.",
                 200,
-                tool.Adapt<ToolDto>());
+                toolDto);
         }
         catch (Exception ex)
         {
@@ -229,7 +264,22 @@ public class ToolService : IToolService
 
             if (tool == null)
             {
-                return serviceResponse.Update("Tool not found.", 404);
+                var platformTool = await _unitOfWork.PlatformToolRepo
+                    .GetByConditionAsync(w => EF.Functions.ILike(w.Name, namePattern))
+                    .FirstOrDefaultAsync();
+
+                if (platformTool == null)
+                {
+                    return serviceResponse.Update("Tool not found.", 404);
+                }
+
+                await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+                return serviceResponse.Update(
+                    "Tool retrieved successfully.",
+                    200,
+                    PlatformToolDtoHelpers.ToToolDto(
+                        platformTool,
+                        await _platformToolTenantService.IsEnabledAsync(platformTool.Id)));
             }
 
             var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
@@ -539,6 +589,23 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
+    private async Task<PlatformTool?> FindLibraryToolAsync(Guid toolId, string toolName)
+    {
+        var libraryTool = await _unitOfWork.PlatformToolRepo
+            .GetByConditionAsync(w => w.Id == toolId)
+            .FirstOrDefaultAsync();
+
+        if (libraryTool is not null || string.IsNullOrWhiteSpace(toolName))
+        {
+            return libraryTool;
+        }
+
+        var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(toolName.Trim().ToLowerInvariant());
+        return await _unitOfWork.PlatformToolRepo
+            .GetByConditionAsync(w => EF.Functions.ILike(w.Name, namePattern))
+            .FirstOrDefaultAsync();
+    }
+
     private static (string? Spec, JsonDocument? ParsedSchema, string? Error) SynthesizeManualSchema(
         List<ManualToolOperationDto> manualOperations,
         string toolName)
@@ -764,6 +831,70 @@ public class ToolService : IToolService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to set active state for tool {ToolId}.", toolId);
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<ToolDto>> SetToolEnabledStateAsync(Guid toolId, bool isEnabled)
+    {
+        var serviceResponse = ServiceResponse<ToolDto>.Create(
+            $"Failed to {(isEnabled ? "enable" : "disable")} library tool.",
+            500);
+
+        try
+        {
+            var platformTool = await _unitOfWork.PlatformToolRepo
+                .GetByConditionAsync(w => w.Id == toolId)
+                .FirstOrDefaultAsync();
+
+            var tenantId = _currentTenantService.CurrentTenantId;
+            if (platformTool == null || tenantId == Guid.Empty)
+            {
+                return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            var existingMapping = await _unitOfWork.TenantPlatformToolRepo
+                .GetByConditionAsync(w => w.TenantId == tenantId && w.PlatformToolId == toolId)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            if (isEnabled && existingMapping == null)
+            {
+                await _unitOfWork.TenantPlatformToolRepo.InsertAsync(new TenantPlatformTool
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = tenantId,
+                    PlatformToolId = toolId,
+                    CreatedByUserId = _currentUserId,
+                    CreatedOn = DateTimeOffset.UtcNow,
+                });
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to enable library tool {ToolId} for tenant {TenantId}.", toolId, tenantId);
+                    return serviceResponse;
+                }
+            }
+            else if (!isEnabled && existingMapping != null)
+            {
+                _unitOfWork.TenantPlatformToolRepo.Delete(existingMapping);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Failed to disable library tool {ToolId} for tenant {TenantId}.", toolId, tenantId);
+                    return serviceResponse;
+                }
+            }
+
+            return serviceResponse.Update(
+                $"Library tool {(isEnabled ? "enabled" : "disabled")} successfully.",
+                200,
+                PlatformToolDtoHelpers.ToToolDto(platformTool, isEnabled));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set enabled state for library tool {ToolId}.", toolId);
         }
 
         return serviceResponse;

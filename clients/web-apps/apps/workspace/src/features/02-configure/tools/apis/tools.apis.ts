@@ -146,6 +146,19 @@ export const setToolActiveState = (id: string, isActive: boolean) => {
 };
 
 /**
+ * Enables or disables a library tool for the current tenant.
+ */
+export const setToolEnabledState = (id: string, isEnabled: boolean) => {
+  return axiosInstance
+    .post<IHttpResponse<ToolDto>>(
+      `${baseAPIURL}/${id}/enabled-state`,
+      { isEnabled },
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves all platform's default tools.
  */
 export const getPlatformTools = () => {
