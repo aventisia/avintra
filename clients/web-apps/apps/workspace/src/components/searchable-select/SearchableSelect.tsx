@@ -25,6 +25,7 @@ interface SearchableSelectProps {
   disabled?: boolean;
   size?: FormFieldSizeType;
   className?: string;
+  triggerClassName?: string;
   isLoading?: boolean;
 }
 
@@ -44,6 +45,7 @@ export const SearchableSelect = ({
   disabled,
   size = "base",
   className,
+  triggerClassName,
   isLoading,
 }: SearchableSelectProps) => {
   const [open, setOpen] = React.useState(false);
@@ -75,7 +77,12 @@ export const SearchableSelect = ({
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
+          className={cn(
+            "w-full justify-between hover:bg-background",
+            sizeClasses[size],
+            className,
+            triggerClassName,
+          )}
         >
           <span className="line-clamp-1 text-foreground font-normal">
             {selectedOption?.label ? (

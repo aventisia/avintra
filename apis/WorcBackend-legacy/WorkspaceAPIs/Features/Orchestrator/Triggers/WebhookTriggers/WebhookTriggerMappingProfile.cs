@@ -53,23 +53,5 @@ public class WebhookTriggerMappingProfile : IRegister
             .Ignore(dest => dest.TenantId)
             .Ignore(dest => dest.Metadata)
             .IgnoreNullValues(true);
-
-        // Mapping to get agent list
-        config.NewConfig<TriggerFlowVersion, AssignAgentTriggerDto>()
-            .Map(dest => dest.Id, src => src.FlowVersion != null ? src.FlowVersion.Id : Guid.Empty)
-            .Map(dest => dest.Name, src => src.FlowVersion != null ? src.FlowVersion.Flow.Name : null)
-            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null)
-            .Map(dest => dest.CreatedByUserInitials,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName.First() + "" + src.CreatedByUser.LastName.First()
-                    : null);
     }
 }

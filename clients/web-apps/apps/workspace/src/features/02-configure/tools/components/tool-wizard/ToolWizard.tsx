@@ -236,7 +236,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
           ))}
         </div>
 
-        <div className="rounded-lg border p-4">{steps[currentIndex].component}</div>
+        {steps[currentIndex].component}
 
         <div className="flex justify-between">
           <Button

@@ -12,8 +12,9 @@ import { useShallow } from "zustand/react/shallow";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { isNameAvailable } from "../apis/triggers-table-apis";
-import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema";
+import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema.constant";
 import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
+import { formatPayloadSchema } from "../utils/format-payload-schema.util";
 import { useTableTab } from "./useTableTab";
 
 /**
@@ -84,7 +85,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
         `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-flow/webhook`,
 
       callbackUrl: triggerData?.callbackUrl ?? "",
-      expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
+      expectedPayloadSchema: formatPayloadSchema(triggerData?.expectedPayloadSchema ?? ""),
       isDisabled: triggerData?.isDisabled ?? false,
     });
   }, [rowId, form, queryClient, userSession]);

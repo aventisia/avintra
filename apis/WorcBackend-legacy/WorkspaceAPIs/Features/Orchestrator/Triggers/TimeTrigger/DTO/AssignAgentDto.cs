@@ -64,6 +64,11 @@ public class AssignAgentTriggerDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the flow the version belongs to.
+    /// </summary>
+    public Guid FlowId { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the flow version is assigned.
     /// </summary>
     public bool IsAssigned { get; set; }

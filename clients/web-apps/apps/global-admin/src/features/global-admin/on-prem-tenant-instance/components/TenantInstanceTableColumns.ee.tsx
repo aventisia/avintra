@@ -1,11 +1,11 @@
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
-import { getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util.ee";
 
 import { getColumnName } from "../constants/column-display-names.ee";
+import { INSTANCE_TYPE_LABELS } from "../constants/tenant-instance-field-props.constant.ee";
 import { OnPremInstanceDto } from "../dtos/tenant-instance-dto.ee";
 import { OnPremInstanceTypesEnum } from "../enums/tenant-instance-type-enum.ee";
 import { TenantInstanceLink } from "./TenantInstanceLink.ee";
@@ -40,7 +40,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
     header: renderHeader("type"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {getEnumValueByKey(OnPremInstanceTypesEnum, row.getValue("type")) ?? "--"}
+        {INSTANCE_TYPE_LABELS[row.getValue<OnPremInstanceTypesEnum>("type")] ?? "--"}
       </div>
     ),
   },
