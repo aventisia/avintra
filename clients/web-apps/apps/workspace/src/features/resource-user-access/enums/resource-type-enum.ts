@@ -9,4 +9,6 @@ export enum ResourceTypeEnum {
   Flow = "Flow",
   FlowVersion = "FlowVersion",
   Space = "Space",
+  UiBuilder = "UiBuilder",
+  UiBuilderPublished = "UiBuilderPublished",
 }

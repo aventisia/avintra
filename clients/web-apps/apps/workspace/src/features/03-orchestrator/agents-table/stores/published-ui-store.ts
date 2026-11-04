@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 type State = {
-  usersDialogOpen: boolean;
   viewDialogOpen: boolean;
   disableDialogOpen: boolean;
   uiBuilderProjectId: string;
@@ -10,8 +9,6 @@ type State = {
 };
 
 type Actions = {
-  openUsersDialog: (uiBuilderProjectId: string) => void;
-  closeUsersDialog: () => void;
   openViewDialog: (uiBuilderProjectId: string) => void;
   closeViewDialog: () => void;
   openDisableDialog: (uiBuilderProjectId: string, projectName: string, willEnable: boolean) => void;
@@ -22,15 +19,12 @@ type Actions = {
  * Manages the open state of the Published UI builder dialogs.
  */
 export const usePublishedUiStore = create<State & Actions>((set) => ({
-  usersDialogOpen: false,
   viewDialogOpen: false,
   disableDialogOpen: false,
   uiBuilderProjectId: "",
   projectName: "",
   willEnable: false,
 
-  openUsersDialog: (uiBuilderProjectId) => set({ uiBuilderProjectId, usersDialogOpen: true }),
-  closeUsersDialog: () => set({ usersDialogOpen: false }),
   openViewDialog: (uiBuilderProjectId) => set({ uiBuilderProjectId, viewDialogOpen: true }),
   closeViewDialog: () => set({ viewDialogOpen: false }),
   openDisableDialog: (uiBuilderProjectId, projectName, willEnable) =>

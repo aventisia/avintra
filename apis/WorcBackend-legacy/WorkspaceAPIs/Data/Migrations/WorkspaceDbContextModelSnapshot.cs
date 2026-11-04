@@ -2642,7 +2642,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("UiBuilderProjectId", "Name")
                         .IsUnique();
 
-                    b.ToTable("UiBuilderAssets");
+                    b.ToTable("uibuilder_Assets");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
@@ -2724,32 +2724,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
-                    b.ToTable("UiBuilderProjects");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProjectUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UiBuilderProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UiBuilderProjectId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("UiBuilderProjectUsers");
+                    b.ToTable("uibuilder_Projects");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderVersion", b =>
@@ -2829,7 +2804,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("UiBuilderProjectId");
 
-                    b.ToTable("UiBuilderVersions");
+                    b.ToTable("uibuilder_Versions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.VaultCredential", b =>
@@ -3857,25 +3832,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProjectUser", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.UiBuilderProject", "UiBuilderProject")
-                        .WithMany("UiBuilderProjectUsers")
-                        .HasForeignKey("UiBuilderProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("UiBuilderProject");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderVersion", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -4011,8 +3967,6 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.UiBuilderProject", b =>
                 {
                     b.Navigation("UiBuilderAssets");
-
-                    b.Navigation("UiBuilderProjectUsers");
 
                     b.Navigation("UiBuilderVersions");
                 });

@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an append-only generated version of a custom UI builder project.
 /// </summary>
+[Table("uibuilder_Versions")]
 public class UiBuilderVersion : BaseEntity, IMustHaveTenant
 {
     /// <summary>

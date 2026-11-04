@@ -40,14 +40,17 @@ Lets a user turn a plain-language prompt into a custom web page and keep every a
 - **Publishing pins the current version.** The owner can publish a project once it has at least
   one version; publishing again pins the newer version. **Disable** hides a published project
   instead of un-publishing it.
-- **Assigned users see the pinned version.** A published project is shared with individual users,
-  or with all tenant members, and those users see the pinned version read-only in Assist under
+- **Assigned users see the pinned version.** The published project's audience is stored as shared
+  `ResourceUserAccess` rows of type `UiBuilderPublished`, with tenant-wide access on
+  `IsPublishedTenantWide`; those users see the pinned version read-only in Assist under
   **User Interfaces**. Saving a new version changes nothing for them until the owner publishes
   again.
 - **Disable hides and blocks.** Disabling removes the project from Published and blocks assigned
-  access, while keeping the assignments; enabling restores both without re-assigning.
-- **Assigned-view access is separate from tenant-wide builder sharing**, and viewing a published
-  interface is free.
+  access, while keeping the access rows; enabling restores both without re-sharing.
+- **Builder access and published access are separate resource types.** Builder access uses
+  `ResourceUserAccess` rows of type `UiBuilder` plus `IsTenantWideAccess`; published-view access
+  uses `UiBuilderPublished` plus `IsPublishedTenantWide`. "Everyone" grants view only, so writing
+  to a project requires Owner or Edit access. Viewing a published interface is free.
 
 ## Models
 
@@ -110,7 +113,7 @@ properties used only for display (`title`, metric `label`, `derived`) are ignore
 
 ## Assets
 
-- Images uploaded to a project (`UiBuilderAssets` table, cascade delete with the project): PNG,
+- Images uploaded to a project (`uibuilder_Assets` table, cascade delete with the project): PNG,
   JPEG, WebP, GIF, or SVG, at most 512 KB each and 20 per project, with a name unique per project
   that generated code uses (`Avintra.asset("logo")`).
 - `GET {id}/assets` lists metadata for builders; `POST {id}/assets` uploads base64 content and

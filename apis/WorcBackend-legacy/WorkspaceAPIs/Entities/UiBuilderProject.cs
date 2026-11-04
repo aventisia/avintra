@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents a custom UI builder project.
 /// </summary>
+[Table("uibuilder_Projects")]
 public class UiBuilderProject : BaseEntity, IMustHaveTenant
 {
     /// <summary>
@@ -74,11 +75,6 @@ public class UiBuilderProject : BaseEntity, IMustHaveTenant
     /// Gets or sets the list of generated versions to manage the one-to-many relation.
     /// </summary>
     public virtual ICollection<UiBuilderVersion>? UiBuilderVersions { get; set; }
-
-    /// <summary>
-    /// Gets or sets the list of users assigned to the published project.
-    /// </summary>
-    public virtual ICollection<UiBuilderProjectUser>? UiBuilderProjectUsers { get; set; }
 
     /// <summary>
     /// Gets or sets the list of uploaded assets to manage the one-to-many relation.

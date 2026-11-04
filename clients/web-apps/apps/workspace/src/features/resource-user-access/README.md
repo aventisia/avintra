@@ -1,7 +1,8 @@
 # Resource user access
 
-People access for every access-controlled resource (queue, trigger, config store, vault credential, knowledge base, skill, tool, agent). The row action opens `ResourceUserAccessDialog`, the card dialog from this feature.
+People access for every access-controlled resource (queue, trigger, config store, vault credential, knowledge base, skill, tool, agent, UI builder). The row action opens `ResourceUserAccessDialog`, the card dialog from this feature.
 
+- A resource is identified by its id and type; `GET resource-user-access/{resourceId}/list?resourceType=...` returns only that type's rows. The UI builder uses `UiBuilder` for builder access and `UiBuilderPublished` for the published audience on the same project id.
 - Changes stay in a draft (`useResourceUserAccessDraft`) and are sent together on Save changes: the access mode (`PUT resource-user-access/tenant-access`), removals, role changes and additions (`POST resource-user-access/bulk`). A partial failure keeps the dialog open with only the changes the server did not accept.
 - Specific people is the per-user access list. Everyone is the resource's tenant-wide flag and grants view access only; it does not keep the people list.
 - Your own row is locked: you cannot remove yourself or change your own role.

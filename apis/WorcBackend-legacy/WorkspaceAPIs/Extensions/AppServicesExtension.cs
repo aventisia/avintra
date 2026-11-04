@@ -123,7 +123,6 @@ public static class AppServicesExtension
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFoldersTableService, FoldersTableService>();
         services.AddScoped<IUiBuilderService, UiBuilderService>();
-        services.AddScoped<IUiBuilderProjectUserService, UiBuilderProjectUserService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();

@@ -2,14 +2,18 @@ import { Separator } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { Ban, CheckCircle, Eye, UserIcon } from "lucide-react";
+import { Ban, CheckCircle, Eye } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
+import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { usePublishedUiStore } from "../../stores/published-ui-store";
 
 interface UiBuilderRowActionsProps {
   rowId: string;
   isDisabled: boolean;
+  isTenantWideAccess: boolean;
   projectName?: string | null;
 }
 
@@ -19,11 +23,11 @@ interface UiBuilderRowActionsProps {
 export const UiBuilderRowActions = ({
   rowId,
   isDisabled,
+  isTenantWideAccess,
   projectName,
 }: UiBuilderRowActionsProps) => {
-  const { openUsersDialog, openViewDialog, openDisableDialog } = usePublishedUiStore(
+  const { openViewDialog, openDisableDialog } = usePublishedUiStore(
     useShallow((state) => ({
-      openUsersDialog: state.openUsersDialog,
       openViewDialog: state.openViewDialog,
       openDisableDialog: state.openDisableDialog,
     })),
@@ -31,11 +35,12 @@ export const UiBuilderRowActions = ({
 
   return (
     <>
-      <SimpleDDMenuItem
-        content="Users"
-        Icon={UserIcon}
+      <ResourceUserAccessRowAction
+        rowId={rowId}
+        resourceName={projectName ?? ""}
+        isTenantWideAccess={isTenantWideAccess}
+        resourceType={ResourceTypeEnum.UiBuilderPublished}
         disabled={isDisabled}
-        onClick={() => openUsersDialog(rowId)}
       />
       <SimpleDDMenuItem content="View" Icon={Eye} onClick={() => openViewDialog(rowId)} />
       <Separator />

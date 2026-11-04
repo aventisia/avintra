@@ -26,7 +26,6 @@ import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
-import UiBuilderAssignUsersDialog from "./published-ui/UiBuilderAssignUsersDialog";
 import UiBuilderDisableDialog from "./published-ui/UiBuilderDisableDialog";
 import UiBuilderPreviewDialog from "./published-ui/UiBuilderPreviewDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
@@ -109,7 +108,6 @@ export const AgentsTable = () => {
       <ResourceUserAccessDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />
       <DisableAgentDialog />
       <AgentConfigDialog />
-      <UiBuilderAssignUsersDialog />
       <UiBuilderDisableDialog />
       <UiBuilderPreviewDialog />
     </>

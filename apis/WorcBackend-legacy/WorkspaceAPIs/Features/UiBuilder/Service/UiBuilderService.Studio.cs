@@ -104,7 +104,7 @@ public partial class UiBuilderService
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
-            if (source == null || source.IsDisabled || !(source.IsTemplate || HasReadAccess(source)))
+            if (source == null || source.IsDisabled || !(source.IsTemplate || await HasReadAccessAsync(source)))
             {
                 serviceResponse.Update("Template does not exist", 404);
                 return serviceResponse;
@@ -179,6 +179,12 @@ public partial class UiBuilderService
                 return serviceResponse;
             }
 
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newProject.Id, ResourceTypeEnum.UiBuilder))
+            {
+                serviceResponse.Update("Failed assigning ownership.", 400);
+                return serviceResponse;
+            }
+
             var projectDto = newProject.Adapt<UiBuilderProjectDto>();
             projectDto.AccessLevel = ResourceAccessTypeEnum.Owner;
             projectDto.VersionCount = 1;
@@ -202,7 +208,7 @@ public partial class UiBuilderService
         try
         {
             var project = await GetWritableProjectAsync(id);
-            if (project == null || !HasReadAccess(project))
+            if (project == null || !await HasReadAccessAsync(project))
             {
                 serviceResponse.Update("Project does not exist", 404);
                 return serviceResponse;
@@ -246,7 +252,7 @@ public partial class UiBuilderService
                 return serviceResponse;
             }
 
-            if (!HasWriteAccess(project))
+            if (!await HasWriteAccessAsync(project))
             {
                 _logger.LogWarning("Unauthorized asset upload. User {UserId}, Project {ProjectId}", _userId, project.Id);
                 serviceResponse.Update("You do not have access to update this project.", 403);
@@ -322,7 +328,7 @@ public partial class UiBuilderService
                 return serviceResponse;
             }
 
-            if (!HasWriteAccess(project))
+            if (!await HasWriteAccessAsync(project))
             {
                 _logger.LogWarning("Unauthorized asset delete. User {UserId}, Project {ProjectId}", _userId, project.Id);
                 serviceResponse.Update("You do not have access to update this project.", 403);
@@ -407,7 +413,7 @@ public partial class UiBuilderService
                 return serviceResponse;
             }
 
-            if (!HasWriteAccess(project))
+            if (!await HasWriteAccessAsync(project))
             {
                 _logger.LogWarning("Unauthorized version label update. User {UserId}, Project {ProjectId}", _userId, project.Id);
                 serviceResponse.Update("You do not have access to update this project.", 403);

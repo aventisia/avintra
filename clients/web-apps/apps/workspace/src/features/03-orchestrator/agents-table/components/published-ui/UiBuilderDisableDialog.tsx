@@ -39,8 +39,8 @@ const UiBuilderDisableDialog = () => {
           </h2>
           <p className="text-sm text-muted-foreground">
             {willEnable
-              ? "It will reappear in Published and assigned users will regain access."
-              : "It will be hidden from Published and assigned users will lose access. Assignments are kept and restored on Enable."}
+              ? "It will reappear in Published and shared users will regain access."
+              : "It will be hidden from Published and shared users will lose access. Sharing is kept and restored on Enable."}
           </p>
         </div>
 

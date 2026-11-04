@@ -71,7 +71,7 @@ public class ResourceUserAccessService : IResourceUserAccessService
     }
 
     // Retrieves all users who have been granted access to a specific resource.
-    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId)
+    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId, ResourceTypeEnum? requestedResourceType = null)
     {
         // Initialize response with default failure state.
         var serviceResponse = new ServiceResponse<IEnumerable<ResourceUserAccessDto>>
@@ -83,7 +83,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
         try
         {
             var tenantIds = ShareRowTenantIds();
-            var workspaceShareTarget = await FindWorkspaceShareTargetAsync(resourceId);
+            var workspaceShareTarget = await FindWorkspaceShareTargetAsync(resourceId, requestedResourceType);
+
+            if (requestedResourceType is { } requested && requested != ResourceTypeEnum.Space && workspaceShareTarget == null)
+            {
+                return serviceResponse.Update("Resource not found.", 404);
+            }
+
             var resourceType = workspaceShareTarget?.ResourceType ?? ResourceTypeEnum.Space;
 
             if (workspaceShareTarget is { } found &&
@@ -804,6 +810,10 @@ public class ResourceUserAccessService : IResourceUserAccessService
                             _unitOfWork.ToolRepo.Update(tool);
                         });
                 }
+            case ResourceTypeEnum.UiBuilder:
+                return await LoadShareTargetAsync(_unitOfWork.UiBuilderProjectRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.UiBuilderPublished:
+                return await LoadShareTargetAsync(_unitOfWork.UiBuilderProjectRepo, resourceId, w => w.IsPublishedTenantWide, (w, isOn) => w.IsPublishedTenantWide = isOn);
             default:
                 return null;
         }
@@ -832,9 +842,17 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
     // IMPORTANT NOTE: share rows carry a client-chosen ResourceType, so a Workspace resource's type is
     // resolved from its own table; only an id no Workspace table holds counts as a Space.
-    private async Task<(ResourceTypeEnum ResourceType, ShareTarget ShareTarget)?> FindWorkspaceShareTargetAsync(Guid resourceId)
+    // IMPORTANT NOTE: a UI Builder project and its published UI share one id, so callers that know which
+    // one they mean pass requestedResourceType instead of taking the first table that holds the id.
+    private async Task<(ResourceTypeEnum ResourceType, ShareTarget ShareTarget)?> FindWorkspaceShareTargetAsync(
+        Guid resourceId,
+        ResourceTypeEnum? requestedResourceType = null)
     {
-        foreach (var resourceType in Enum.GetValues<ResourceTypeEnum>().Where(w => w != ResourceTypeEnum.Space))
+        IEnumerable<ResourceTypeEnum> candidateTypes = requestedResourceType is { } requested && requested != ResourceTypeEnum.Space
+            ? [requested]
+            : Enum.GetValues<ResourceTypeEnum>().Where(w => w != ResourceTypeEnum.Space);
+
+        foreach (var resourceType in candidateTypes)
         {
             var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
 
