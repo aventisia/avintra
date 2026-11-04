@@ -95,6 +95,11 @@ public class ToolDto
     public bool? IsDisabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether this platform tool is one of the curated popular tools.
+    /// </summary>
+    public bool IsPopular { get; set; }
+
+    /// <summary>
     /// Gets or sets the creator identifier.
     /// </summary>
     public string? CreatedBy { get; set; }
