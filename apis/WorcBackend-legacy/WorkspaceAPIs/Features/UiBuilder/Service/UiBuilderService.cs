@@ -609,7 +609,6 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            var wasPublished = project.IsPublished;
             var isAlreadyPinned = false;
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
@@ -623,38 +622,36 @@ public partial class UiBuilderService : IUiBuilderService
                     .MaxAsync() ?? 0;
 
                 isAlreadyPinned = project.IsPublished && project.PublishedVersionNumber == headVersionNumber;
-                if (isAlreadyPinned)
+                if (!isAlreadyPinned)
                 {
-                    return;
+                    project.IsPublished = true;
+                    project.PublishedVersionNumber = headVersionNumber;
+                    project.LastModifiedByUserId = _userId;
+                    project.LastModifiedOn = DateTimeOffset.UtcNow;
+
+                    _unitOfWork.UiBuilderProjectRepo.Update(project);
+
+                    if (!await _unitOfWork.SaveAsync())
+                    {
+                        throw new InvalidOperationException("Failed to save project.");
+                    }
                 }
 
-                project.IsPublished = true;
-                project.PublishedVersionNumber = headVersionNumber;
-                project.LastModifiedByUserId = _userId;
-                project.LastModifiedOn = DateTimeOffset.UtcNow;
-
-                _unitOfWork.UiBuilderProjectRepo.Update(project);
-
-                if (!await _unitOfWork.SaveAsync())
+                if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, project.Id, ResourceTypeEnum.UiBuilderPublished))
                 {
-                    throw new InvalidOperationException("Failed to save project.");
+                    throw new InvalidOperationException("Failed assigning published access.");
                 }
             });
 
+            var projectDto = (await ToProjectDtosAsync([project])).Single();
+
             if (isAlreadyPinned)
             {
-                serviceResponse.Update("Project already published", 200, project.Adapt<UiBuilderProjectDto>());
+                serviceResponse.Update("Project already published", 200, projectDto);
                 return serviceResponse;
             }
 
-            if (!wasPublished &&
-                !await _resourceUserAccessService.AssignOwnerAsync(_userId, project.Id, ResourceTypeEnum.UiBuilderPublished))
-            {
-                serviceResponse.Update("Failed assigning published access.", 400);
-                return serviceResponse;
-            }
-
-            serviceResponse.Update("Project published successfully", 200, project.Adapt<UiBuilderProjectDto>());
+            serviceResponse.Update("Project published successfully", 200, projectDto);
         }
         catch (Exception ex)
         {
@@ -718,16 +715,22 @@ public partial class UiBuilderService : IUiBuilderService
                     w.IsPublished &&
                     !w.IsDisabled &&
                     w.PublishedVersionNumber != null &&
-                    (w.IsPublishedTenantWide || resourceAccess.Keys.Contains(w.Id)))
+                    (w.CreatedByUserId == _userId || w.IsPublishedTenantWide || resourceAccess.Keys.Contains(w.Id)))
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(w => w.CreatedOn)
                 .ToListAsync();
 
             var projectDtoList = await ToProjectDtosAsync(projects);
+            var ownedProjectIds = projects
+                .Where(project => project.CreatedByUserId == _userId)
+                .Select(project => project.Id)
+                .ToHashSet();
 
             projectDtoList.ForEach(projectDto =>
-                projectDto.AccessLevel = resourceAccess.GetValueOrDefault(projectDto.Id, ResourceAccessTypeEnum.View));
+                projectDto.AccessLevel = ownedProjectIds.Contains(projectDto.Id)
+                    ? ResourceAccessTypeEnum.Owner
+                    : resourceAccess.GetValueOrDefault(projectDto.Id, ResourceAccessTypeEnum.View));
 
             serviceResponse.Update("Assigned projects retrieved successfully", 200, projectDtoList);
         }

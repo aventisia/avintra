@@ -1809,7 +1809,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("ResourceId", "UserId")
+                    b.HasIndex("ResourceId", "ResourceType", "UserId")
                         .IsUnique();
 
                     b.ToTable("user_ResourceUserAccess");

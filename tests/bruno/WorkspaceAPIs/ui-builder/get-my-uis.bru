@@ -7,7 +7,11 @@ meta {
 get {
   url: {{WORKSPACE_API_BASE_URL}}/ui-builder/my
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }
 
 tests {
@@ -23,5 +27,10 @@ tests {
     res.body.data.forEach(function(row) {
       expect(row.publishedVersionNumber).to.be.a("number");
     });
+  });
+
+  test("published project is visible to its owner", function() {
+    var projectId = bru.getGlobalEnvVar("UIBUILDER_PROJECT_ID") || bru.getEnvVar("UIBUILDER_PROJECT_ID");
+    expect(res.body.data.map(function(row) { return row.id; })).to.include(projectId);
   });
 }
