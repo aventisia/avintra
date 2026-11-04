@@ -2,12 +2,12 @@
 name: implement-issue
 disable-model-invocation: true
 argument-hint: "Issue number or URL whose approved brief routes it Light"
-description: "Implement a Light-route Gitea issue in one session: plan from its approved brief, change, review, and hand over UI test steps."
+description: "Implement a Light-route Gitea issue in one session: plan from its approved brief, change, review, validate in the browser, and hand over UI test steps."
 ---
 
 # Implement a Light Issue
 
-Take an issue whose approved brief routes it **Light** to a reviewed, uncommitted change the user tests by hand, in one session. **Full loop** briefs go through the `orchestrator` agent instead.
+Take an issue whose approved brief routes it **Light** to a reviewed, browser-validated, uncommitted change the user tests by hand, in one session. **Full loop** briefs go through the `orchestrator` agent instead.
 
 Read [`../GITEA.md`](../GITEA.md) and [`../BRIEF.md`](../BRIEF.md) first. `GITEA.md` governs target resolution and request scoping; `BRIEF.md` defines the brief and when it is current.
 
@@ -38,8 +38,15 @@ Read [`../GITEA.md`](../GITEA.md) and [`../BRIEF.md`](../BRIEF.md) first. `GITEA
 
    After each pass, fix the findings whose fix stays inside the brief, and ask the user about a fix that goes beyond the brief or a judgement call, with your recommendation. Rerun the checks and that pass once more after fixing; findings left after the second run go into the hand-off. Done when both passes are clean or every remaining finding is listed.
 
-8. **Hand off**, leaving the change uncommitted:
+8. **Validate in the browser** every AC a person would otherwise check by hand, front end or back end, on the user's running `dekit` stack and logged-in Orca browser.
+   1. Ready the local stack as Implementation step 8 in `.claude/agents/coder.md` describes.
+   2. Load the `orca-cli` skill and walk each AC in a tab you open, as its user would, following Test surface and Rules of engagement in `.claude/agents/pilot.md`.
+   3. At each AC checkpoint, save a screenshot as `local-issues/<n>/ui-<AC>-<k>.png`, plus any console or network entry that proves what the screen cannot show.
+
+   Fix a failure that stays inside the brief, then rerun the step 6 checks and the failed walk; ask about anything beyond the brief as in step 7. Done when every such AC is `PASS` with its screenshot, or `FAIL` or `UNVERIFIED` with the reason.
+
+9. **Hand off**, leaving the change uncommitted:
    - Per AC, UI test steps in the product's vocabulary: where to start, what to do, what to expect. For an AC with no screen, how to observe it, such as a Bruno request in `tests/bruno/`.
-   - Checks run with their results, and anything unverified.
+   - Checks run with their results, each AC's browser result with its evidence paths, and anything unverified.
    - Review findings fixed, and any left open with why.
    - Next steps once the user's test passes: `/commit`, push, `/create-pr`.
