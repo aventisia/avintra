@@ -17,11 +17,14 @@ type ReactFlowObject = {
   nodes: unknown[];
   edges: unknown[];
   viewport: unknown;
+  flowVariablesObject?: unknown;
+  inputOutputObject?: unknown;
 };
 
 type ImportFileObject = {
   reactFlowObject: ReactFlowObject;
-  flowVariablesObject: unknown[];
+  // IMPORTANT NOTE: Files exported before #188 keep flow variables beside the canvas.
+  flowVariablesObject?: unknown;
 };
 
 /**
@@ -82,9 +85,23 @@ export const useFileUpload = () => {
           Object.prototype.hasOwnProperty.call(parsed.reactFlowObject, key),
         );
 
-        // Validate if flowVariablesObject exists and is an array
-        if (!Array.isArray(parsed.flowVariablesObject)) {
+        const reactFlowObject = parsed.reactFlowObject;
+        const flowVariablesObject = Object.prototype.hasOwnProperty.call(
+          reactFlowObject,
+          "flowVariablesObject",
+        )
+          ? reactFlowObject.flowVariablesObject
+          : parsed.flowVariablesObject;
+        const inputOutputObject = reactFlowObject?.inputOutputObject;
+
+        // Validate that any flow variables and input/output lists are arrays
+        if (flowVariablesObject !== undefined && !Array.isArray(flowVariablesObject)) {
           toast.error("Invalid flow variables object (must be an array)");
+          return;
+        }
+
+        if (inputOutputObject !== undefined && !Array.isArray(inputOutputObject)) {
+          toast.error("Invalid input/output object (must be an array)");
           return;
         }
 

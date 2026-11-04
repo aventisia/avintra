@@ -21,12 +21,13 @@ export const useExportFlow = () => {
   );
 
   // Get ReactFlowExt store state & actions
-  const { nodes, edges, viewport, flowVariablesObject } = useReactFlowExtStore(
+  const { nodes, edges, viewport, flowVariablesObject, inputOutputObject } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
       edges: state.edges,
       viewport: state.viewport,
       flowVariablesObject: state.flowVariablesObject,
+      inputOutputObject: state.inputOutputObject,
     })),
   );
 
@@ -36,9 +37,11 @@ export const useExportFlow = () => {
       nodes: nodes,
       edges: edges,
       viewport: viewport,
+      flowVariablesObject,
+      inputOutputObject,
     };
 
-    const data = { reactFlowObject, flowVariablesObject };
+    const data = { reactFlowObject };
 
     downloadJson(data, currentFlow?.name);
   };
