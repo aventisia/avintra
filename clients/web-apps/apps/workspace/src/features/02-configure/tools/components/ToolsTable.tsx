@@ -24,6 +24,7 @@ import {
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
+import { buildToolSections } from "../utils/tool-sections.util";
 import { ToolIcon } from "./ToolIcon";
 import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
@@ -47,6 +48,7 @@ export const ToolsTable = () => {
   const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
+  const pageRows = table.getRowModel().rows;
 
   return (
     <>
@@ -67,53 +69,61 @@ export const ToolsTable = () => {
             </div>
           </div>
 
-          {table.getRowModel().rows?.length > 0 ? (
-            <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
-              {table.getRowModel().rows.map((row) => (
-                <NavLink
-                  key={row.id}
-                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
-                    row.getValue("name"),
-                  )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
-                >
-                  <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
-                    {/* Left: Icon with centered content */}
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <ToolIcon
-                          name={row.getValue("name") as string}
-                          iconUrl={row.original.iconUrl}
-                          className="h-6 w-6 object-contain"
-                        />
-                      </div>
+          {pageRows.length > 0 ? (
+            <div className="space-y-4">
+              {buildToolSections(pageRows).map((section) => (
+                <section key={section.key} className="space-y-2">
+                  <h3 className="ml-1 text-sm font-semibold text-foreground">{section.title}</h3>
+                  <div className="grid grid-cols-3 gap-3 rounded-lg border bg-white px-2.5 py-3">
+                    {section.rows.map((row) => (
+                      <NavLink
+                        key={row.id}
+                        to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(
+                          row.getValue("name"),
+                        )}${isPlatformTab ? `&${TABLE_TAB_QUERY_PARAM}=library` : ""}`}
+                      >
+                        <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                          {/* Left: Icon with centered content */}
+                          <div className="flex items-center space-x-4">
+                            <div className="flex-shrink-0">
+                              <ToolIcon
+                                name={row.getValue("name") as string}
+                                iconUrl={row.original.iconUrl}
+                                className="h-6 w-6 object-contain"
+                              />
+                            </div>
 
-                      {/* Middle: Name and Description */}
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-3">
-                          <div className="text-sm font-medium">
-                            {getToolDisplayName(row.getValue("name") as string)}
+                            {/* Middle: Name and Description */}
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-3">
+                                <div className="text-sm font-medium">
+                                  {getToolDisplayName(row.getValue("name") as string)}
+                                </div>
+                                <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+                                  {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                                </span>
+                              </div>
+                              <span className="text-xs text-muted-foreground line-clamp-2">
+                                {row.getValue("description") as string}
+                              </span>
+                            </div>
                           </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground line-clamp-2">
-                          {row.getValue("description") as string}
-                        </span>
-                      </div>
-                    </div>
 
-                    {/* Right: Actions */}
-                    <ToolRowActions
-                      rowId={row.original.id ?? ""}
-                      name={row.original.name}
-                      accessLevel={row.original.accessLevel}
-                      isTenantWideAccess={row.original.isTenantWideAccess}
-                      isResourceAccessRestricted={row.original.isResourceAccessRestricted}
-                      isPlatformTool={isPlatformTab}
-                    />
+                          {/* Right: Actions */}
+                          <ToolRowActions
+                            rowId={row.original.id ?? ""}
+                            name={row.original.name}
+                            accessLevel={row.original.accessLevel}
+                            isTenantWideAccess={row.original.isTenantWideAccess}
+                            isResourceAccessRestricted={row.original.isResourceAccessRestricted}
+                            isPlatformTool={isPlatformTab}
+                            isEnabled={row.original.isActive}
+                          />
+                        </div>
+                      </NavLink>
+                    ))}
                   </div>
-                </NavLink>
+                </section>
               ))}
             </div>
           ) : (
