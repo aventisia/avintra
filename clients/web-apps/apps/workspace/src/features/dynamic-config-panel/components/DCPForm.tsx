@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { CrudDialogActions } from "@avplatform/ui/crud-dialog";
 import { Form } from "@avplatform/ui/form";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
@@ -51,11 +52,11 @@ export const DCPForm = () => {
   return (
     <>
       {isLoading ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex items-center justify-center gap-2 py-12 text-[13px] text-muted-foreground">
           <LoadingSpinner className="h-5 w-5 text-primary" />
         </div>
       ) : !isFormReady ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex items-center justify-center gap-2 py-12 text-[13px] text-muted-foreground">
           <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
@@ -66,7 +67,6 @@ export const DCPForm = () => {
             e.preventDefault();
             onSubmit(form.getValues());
           }}
-          className="px-2.5 pb-5"
           // disabled={isPublished}
         >
           {/* Input fields */}
@@ -117,12 +117,11 @@ export const DCPForm = () => {
             </>
           ) : null}
 
-          {/* Save button */}
-          <div className="!mt-5 flex w-full justify-end">
+          <CrudDialogActions>
             <Button type="submit" className="min-w-[5rem]">
               Save
             </Button>
-          </div>
+          </CrudDialogActions>
         </Form>
       )}
     </>

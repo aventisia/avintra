@@ -27,7 +27,7 @@ const ChoosePlanOptions = () => {
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   return (
-    <div className="space-y-5 px-8 py-10 pt-3">
+    <div className="space-y-5">
       <h2 className="text-heading">Our deployment options</h2>
 
       <div className="grid grid-cols-2 gap-4">

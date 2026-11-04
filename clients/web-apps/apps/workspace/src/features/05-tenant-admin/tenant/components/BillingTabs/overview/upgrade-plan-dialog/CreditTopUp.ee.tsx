@@ -58,7 +58,7 @@ const CreditTopUp = () => {
   };
 
   return (
-    <div className="space-y-4 p-4 pt-2">
+    <div className="space-y-4">
       <div className="grid grid-cols-7 gap-4">
         {/* Left Side */}
         <div className="col-span-4 space-y-4">
