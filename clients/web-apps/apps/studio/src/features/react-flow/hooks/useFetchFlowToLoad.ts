@@ -1,4 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { applyFlowInputsToVariables, deepParse } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect, useRef } from "react";
@@ -6,7 +7,6 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { applyFlowInputsToVariables } from "@/features/add-input-output/utils/sync-flow-inputs-to-variables.util";
 import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
@@ -16,7 +16,6 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 import { getFlowToLoad } from "../apis/react-flow-apis";
-import { deepParse } from "../utils/deepParse";
 import { getSavedViewport } from "../utils/viewport-persistence";
 
 export const useFetchFlowToLoad = () => {

@@ -1,28 +1,27 @@
-import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
-import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import type { FlowVariablesEntry } from "./flow-variables.type";
 
 /** Reserved node id for the flow-level input variables entry. */
 export const FLOW_INPUTS_NODE_ID = "__flow__";
 
-const parseInputOutputObject = (
-  inputOutputObject: DCPFieldSchemaType[] | string | unknown[],
-): DCPFieldSchemaType[] => {
+type InputOutputField = {
+  direction?: unknown;
+  name?: unknown;
+};
+
+const parseInputOutputObject = (inputOutputObject: unknown[] | string): InputOutputField[] => {
   if (typeof inputOutputObject === "string") {
     try {
       const parsed = JSON.parse(inputOutputObject);
-      return Array.isArray(parsed) ? (parsed as DCPFieldSchemaType[]) : [];
+      return Array.isArray(parsed) ? (parsed as InputOutputField[]) : [];
     } catch {
       return [];
     }
   }
 
-  return Array.isArray(inputOutputObject) ? (inputOutputObject as DCPFieldSchemaType[]) : [];
+  return Array.isArray(inputOutputObject) ? (inputOutputObject as InputOutputField[]) : [];
 };
 
-/** Returns the deduplicated names of the Input fields declared in an input/output definition. */
-export const getFlowInputNamesFromInputOutputObject = (
-  inputOutputObject: DCPFieldSchemaType[] | string | unknown[],
-): string[] =>
+const getFlowInputNames = (inputOutputObject: unknown[] | string): string[] =>
   Array.from(
     new Set(
       parseInputOutputObject(inputOutputObject)
@@ -32,8 +31,7 @@ export const getFlowInputNamesFromInputOutputObject = (
     ),
   );
 
-/** Builds the single flow-input variables entry, or null when there are no inputs. */
-export const buildFlowInputsVariableEntry = (names: string[]): FlowVariablesObjectType | null =>
+const buildFlowInputsVariableEntry = (names: string[]): FlowVariablesEntry | null =>
   names.length > 0 ? { nodeId: FLOW_INPUTS_NODE_ID, outputs: names } : null;
 
 /**
@@ -41,13 +39,11 @@ export const buildFlowInputsVariableEntry = (names: string[]): FlowVariablesObje
  * Returns the original array when the result is unchanged.
  */
 export const applyFlowInputsToVariables = (
-  variables: FlowVariablesObjectType[],
-  inputOutputObject: DCPFieldSchemaType[] | string | unknown[],
-): FlowVariablesObjectType[] => {
+  variables: FlowVariablesEntry[],
+  inputOutputObject: unknown[] | string,
+): FlowVariablesEntry[] => {
   const withoutFlowInputs = variables.filter((variable) => variable.nodeId !== FLOW_INPUTS_NODE_ID);
-  const flowInputsEntry = buildFlowInputsVariableEntry(
-    getFlowInputNamesFromInputOutputObject(inputOutputObject),
-  );
+  const flowInputsEntry = buildFlowInputsVariableEntry(getFlowInputNames(inputOutputObject));
   const nextVariables = flowInputsEntry
     ? [...withoutFlowInputs, flowInputsEntry]
     : withoutFlowInputs;

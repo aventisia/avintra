@@ -1,5 +1,6 @@
-import { deepParse } from "@/features/react-flow/utils/deepParse";
-import { useJsonDownload } from "@/hooks/useJSONDowndloader";
+import { buildFlowExportFileName, deepParse } from "@avplatform/ui/utils";
+
+import { useJsonDownload } from "@/hooks/useJsonDownload.hook";
 
 import { FlowVersionHistoryDetailDto } from "../dtos/agent-history-details-dto";
 
@@ -15,7 +16,7 @@ export const useExportVersionHistoryItem = () => {
 
     downloadJson(
       { reactFlowObject: { ...reactFlowObject, flowVariablesObject, inputOutputObject } },
-      detail.flowName ?? "",
+      buildFlowExportFileName(detail.flowName, detail.versionNumber),
     );
   };
 

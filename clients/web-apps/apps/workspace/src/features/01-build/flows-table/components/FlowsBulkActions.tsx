@@ -71,7 +71,7 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
         onMoved={() => table.resetRowSelection()}
       />
       <TableCNActionBarItem icon={Download} onClick={exportSelected}>
-        Export
+        Export CSV
       </TableCNActionBarItem>
       <TableCNActionBarSeparator />
       <LockedActionTooltip>

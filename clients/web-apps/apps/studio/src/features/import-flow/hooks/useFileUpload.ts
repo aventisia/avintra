@@ -1,10 +1,10 @@
 import { toast } from "@avplatform/ui/sonner";
+import { deepParse } from "@avplatform/ui/utils";
 import { Edge, Node } from "@xyflow/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { isChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { REQUIRED_JSON_KEYS } from "../constants";

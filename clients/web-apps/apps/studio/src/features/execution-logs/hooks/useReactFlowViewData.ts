@@ -1,3 +1,4 @@
+import { deepParse } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
@@ -6,7 +7,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { useBreadcrumbStore } from "@/stores/breadcrumb-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";

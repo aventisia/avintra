@@ -1,4 +1,4 @@
-// import { useViewport } from "@xyflow/react";
+import { buildFlowExportFileName } from "@avplatform/ui/utils";
 import { Edge, Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -7,20 +7,17 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { useJsonDownload } from "./useJSONDowndloader";
+import { useJsonDownload } from "./useJsonDownload.hook";
 
-// Hook for exporting flow data
 export const useExportFlow = () => {
   const { downloadJson } = useJsonDownload();
 
-  // Get global store state & actions
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       currentFlow: state.currentFlow,
     })),
   );
 
-  // Get ReactFlowExt store state & actions
   const { nodes, edges, viewport, flowVariablesObject, inputOutputObject } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -32,7 +29,6 @@ export const useExportFlow = () => {
   );
 
   const exportFlow = () => {
-    // Create react flow object
     const reactFlowObject = {
       nodes: nodes,
       edges: edges,
@@ -41,9 +37,10 @@ export const useExportFlow = () => {
       inputOutputObject,
     };
 
-    const data = { reactFlowObject };
-
-    downloadJson(data, currentFlow?.name);
+    downloadJson(
+      { reactFlowObject },
+      buildFlowExportFileName(currentFlow?.name, currentFlow?.versionNumber),
+    );
   };
 
   const exportFlowTrimmed = () => {
@@ -52,13 +49,15 @@ export const useExportFlow = () => {
       return { id: edge.id, source: edge.source, target: edge.target };
     });
 
-    // Create react flow object
     const reactFlowObject = {
       nodes: trimmedNodes,
       edges: trimmedEdges,
     };
 
-    downloadJson(reactFlowObject, currentFlow?.name);
+    downloadJson(
+      reactFlowObject,
+      buildFlowExportFileName(currentFlow?.name, currentFlow?.versionNumber),
+    );
   };
 
   return { exportFlow, exportFlowTrimmed };

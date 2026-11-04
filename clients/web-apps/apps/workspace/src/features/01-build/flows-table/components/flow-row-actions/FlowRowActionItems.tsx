@@ -9,6 +9,7 @@ import { getResourceAccessActions } from "@/features/resource-user-access/utils/
 
 import { FLOWS_QUERY_KEY } from "../../constants";
 import { FlowRowDeleteAction } from "./FlowRowDeleteAction";
+import { FlowRowExportAction } from "./FlowRowExportAction";
 import { FlowRowMoveToFolderAction } from "./FlowRowMoveToFolderAction";
 import { FlowRowOpenAction } from "./FlowRowOpenAction";
 import { FlowRowRemoveFromFolderAction } from "./FlowRowRemoveFromFolderAction";
@@ -36,6 +37,7 @@ export const FlowRowActionItems = ({
   return (
     <>
       <FlowRowOpenAction rowId={rowId} />
+      {actions?.read && <FlowRowExportAction rowId={rowId} />}
       {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="flow" />}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="flow" />}
       {actions?.update && (

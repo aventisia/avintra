@@ -3,6 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
+import { deepParse } from "@avplatform/ui/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edge, Node, Viewport } from "@xyflow/react";
 import { RocketIcon } from "lucide-react";
@@ -15,7 +16,6 @@ import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/u
 import { LoadFlowDto } from "../react-flow/dtos/load-flow-dto";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
 import { validateChatAgentGraph } from "../react-flow/utils/chat-agent-graph.util";
-import { deepParse } from "../react-flow/utils/deepParse";
 
 const PublishFlow = () => {
   const { search } = useLocation();
