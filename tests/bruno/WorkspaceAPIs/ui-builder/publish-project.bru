@@ -7,7 +7,11 @@ meta {
 post {
   url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/publish
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }
 
 script:post-response {

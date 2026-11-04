@@ -95,7 +95,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
-        modelBuilder.Entity<ResourceUserAccess>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
+        modelBuilder.Entity<ResourceUserAccess>().HasIndex(index => new { index.ResourceId, index.ResourceType, index.UserId }).IsUnique();
         modelBuilder.Entity<ApiKey>().HasIndex(index => index.KeyHash).IsUnique();
         modelBuilder.Entity<ApiKey>().OwnsOne(e => e.Permissions, permissions =>
         {

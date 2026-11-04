@@ -1,0 +1,34 @@
+meta {
+  name: List published shares returns only published access
+  type: http
+  seq: 24
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{UIBUILDER_PROJECT_ID}}/list?resourceType=UiBuilderPublished
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("rows are published access only", function() {
+    expect(res.body.data).to.be.an("array").that.is.not.empty;
+    res.body.data.forEach(function(row) {
+      expect(row.resourceType).to.equal("UiBuilderPublished");
+    });
+  });
+
+  test("owner access exists for the published interface", function() {
+    expect(res.body.data.some(function(row) {
+      return row.accessLevel === "Owner";
+    })).to.equal(true);
+  });
+}

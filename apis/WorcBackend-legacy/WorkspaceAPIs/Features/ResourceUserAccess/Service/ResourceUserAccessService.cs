@@ -1018,20 +1018,38 @@ public class ResourceUserAccessService : IResourceUserAccessService
     {
         try
         {
-            // Create ownership mapping
-            var resourceUserAccess = new ResourceUserAccess
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            // IMPORTANT NOTE: Owner rows created before tenant scoping was applied can have an empty tenant id, so ignore the filter to repair them instead of inserting a duplicate.
+            var existingAccess = await _unitOfWork.ResourceUserAccessRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            if (existingAccess == null)
             {
-                UserId = userId,
-                ResourceId = resourceId,
-                ResourceType = resourceType,
-                AccessLevel = ResourceAccessTypeEnum.Owner
-            };
+                await _unitOfWork.ResourceUserAccessRepo.InsertAsync(new ResourceUserAccess
+                {
+                    UserId = userId,
+                    ResourceId = resourceId,
+                    ResourceType = resourceType,
+                    AccessLevel = ResourceAccessTypeEnum.Owner,
+                    TenantId = tenantId
+                });
+            }
+            else if (existingAccess.TenantId != tenantId ||
+                     existingAccess.AccessLevel != ResourceAccessTypeEnum.Owner)
+            {
+                existingAccess.TenantId = tenantId;
+                existingAccess.AccessLevel = ResourceAccessTypeEnum.Owner;
+                _unitOfWork.ResourceUserAccessRepo.Update(existingAccess);
+            }
 
-            // Insert access mapping
-            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(resourceUserAccess);
-
-            // Persist owner assignment
-            if (!await _unitOfWork.SaveAsync())
+            // SaveAsync(true) treats an already-correct owner row as success.
+            if (!await _unitOfWork.SaveAsync(true))
             {
                 _logger.LogWarning(
                     "Failed assigning owner access. User {UserId}, Resource {ResourceId}",

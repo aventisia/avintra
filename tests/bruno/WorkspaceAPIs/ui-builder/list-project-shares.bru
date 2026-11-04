@@ -7,7 +7,11 @@ meta {
 get {
   url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{UIBUILDER_PROJECT_ID}}/list?resourceType=UiBuilder
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
 }
 
 tests {
