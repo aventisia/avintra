@@ -1,5 +1,6 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
+import { TimeTriggerView } from "./TimeTriggerView";
 import { TriggerCrudForm } from "./TriggerCrudForm";
 
 interface TimeTriggerCrudDialogContentProps {
@@ -11,5 +12,7 @@ export const TimeTriggerCrudDialogContent = ({
   crudAction,
   rowId,
 }: TimeTriggerCrudDialogContentProps) => {
-  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update" | "read"} />;
+  if (crudAction === "read") return <TimeTriggerView rowId={rowId} />;
+
+  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update"} />;
 };

@@ -24,22 +24,12 @@ const PermissionsGrid: React.FC<PermissionsGridProps> = ({
 
   return (
     <div className="mx-auto w-fit rounded-lg border bg-surface text-md">
-      {/* Header row */}
       <div className="grid grid-cols-7 rounded-t-lg border-b">
         <div className="col-span-2 ms-1 whitespace-nowrap border-r px-2 py-1 font-medium">
           Features
         </div>
-        {/* {ACCESSES.map((permission) => (
-          <div
-            key={permission + "1"}
-            className="flex justify-center whitespace-nowrap font-medium"
-          >
-            {permission?.replace(/([A-Z])/g, " $1")}
-          </div>
-        ))} */}
       </div>
 
-      {/* Role rows */}
       {roles.map((role) => (
         <div key={role.id} className="grid grid-cols-7">
           <div className="col-span-2 ms-1 flex items-center gap-2 whitespace-nowrap border-r px-2 py-1 font-medium">
@@ -55,13 +45,6 @@ const PermissionsGrid: React.FC<PermissionsGridProps> = ({
 
           {permissionTypes.map((permission) => (
             <div key={`${role.id}-${permission.id}`} className="flex items-center justify-center">
-              {/* <CheckboxField
-                name={`${role.id}-${permission.id}`}
-                label=""
-                checked={!!permissions[`${role.id}-${permission.id}`]}
-                onCheckedChange={() => togglePermission(role.id, permission.id)}
-                className="mx-auto"
-              /> */}
               <Toggle
                 pressed={!!permissions[`${role.id}-${permission.id}`]}
                 onPressedChange={() => togglePermission(role.id, permission.id)}

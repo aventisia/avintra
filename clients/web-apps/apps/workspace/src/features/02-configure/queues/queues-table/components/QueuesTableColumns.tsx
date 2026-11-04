@@ -7,19 +7,10 @@ import { NavLink } from "react-router-dom";
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { getColumnName } from "../constants/column-display-names";
+import { PROCESSING_MODE_LABELS } from "../constants/processing-mode-labels.constant";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
-
-/**
- * User-facing label for a queue's processing mode. The stored enum value for the
- * non-FIFO mode is "Manual", but it is branded as "Flexible" in the UI, so map it
- * to the display label instead of showing the raw stored value.
- */
-const processingModeLabel: Record<QueueProcessingModeEnum, string> = {
-  [QueueProcessingModeEnum.Fifo]: "Fifo",
-  [QueueProcessingModeEnum.Manual]: "Flexible",
-};
 
 const renderHeader =
   (columnKey: string) =>
@@ -76,7 +67,7 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
       const value = row.getValue<QueueProcessingModeEnum | null>("processingMode");
       return (
         <div className="w-auto truncate font-medium">
-          {value ? (processingModeLabel[value] ?? value) : "--"}
+          {value ? (PROCESSING_MODE_LABELS[value] ?? value) : "--"}
         </div>
       );
     },

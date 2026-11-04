@@ -3,43 +3,34 @@ import { Controller, useFormContext } from "react-hook-form";
 
 import { API_KEY_PERMISSION_ITEMS } from "../../constants/api-key-permissions.constant";
 
-interface FeatureAccessSectionProps {
-  disabled?: boolean;
-}
-
 /**
- * Renders the feature access toggles using the card-style layout from the design sample.
+ * Feature access toggles for an API key, one row per permission.
  */
-export const FeatureAccessSection = ({ disabled }: FeatureAccessSectionProps) => {
+export const FeatureAccessSection = () => {
   const { control } = useFormContext();
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-surface">
-      <div className="border-b border-line bg-sunken px-5 py-4">
-        <h3 className="text-heading text-ink">Feature access</h3>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Enable or disable specific features for this key.
-        </p>
+    <div className="space-y-1.5">
+      <div>
+        <p className="text-[12.5px] font-semibold text-ink-2">Feature access</p>
+        <p className="text-[12px] text-muted-foreground">Choose which features this key can use.</p>
       </div>
 
-      <ul className="divide-y divide-line">
+      <ul className="divide-y divide-line overflow-hidden rounded-md bg-sunken/80 ring-1 ring-line">
         {API_KEY_PERMISSION_ITEMS.map((item) => (
-          <li
-            key={item.id}
-            className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-hover"
-          >
-            <div className="flex flex-col gap-0.5 pr-4">
-              <span className="text-sm font-medium text-ink">{item.label}</span>
-              <span className="text-xs text-muted-foreground">{item.description}</span>
-            </div>
+          <li key={item.id} className="flex items-center justify-between gap-4 px-3.5 py-3">
+            <label htmlFor={`permission-${item.id}`} className="min-w-0">
+              <span className="block text-[13px] font-semibold text-ink">{item.label}</span>
+              <span className="block text-[12px] text-muted-foreground">{item.description}</span>
+            </label>
 
             <Controller
               name={`permissions.${item.id}`}
               control={control}
               render={({ field }) => (
                 <Switch
-                  size="base"
-                  disabled={disabled}
+                  id={`permission-${item.id}`}
+                  size="sm"
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />

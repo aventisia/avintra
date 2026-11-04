@@ -1,6 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
-import { AutherCard, Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
+import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
@@ -12,7 +12,6 @@ import {
   currencyProps,
   frequencyProps,
   historyRetentionDaysProps,
-  idProps,
   isDisabledProps,
   maxCreditsProps,
   maxPublishedItemsProps,
@@ -23,7 +22,7 @@ import {
   statusProps,
   storageLimitMBProps,
   typeProps,
-} from "../../constants/sub-plans-form-field-props.ee";
+} from "../../constants/sub-plans-form-field-props.constant.ee";
 import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema.ee";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto.ee";
 import { useDefineSubPlansForm } from "../../hooks/useDefineSubPlansForm.ee";
@@ -36,10 +35,8 @@ interface SubPlansCrudFormProps {
 export const SubPlansCrudForm = ({ rowId, crudAction }: SubPlansCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
 
-  // Define Subscription plan form
   const { form, isDirty, refineFormData } = useDefineSubPlansForm({ rowId, crudAction });
 
-  // Define optimistic mutation to crete or update the subscription plan
   const {
     mutate: mutateSubPlan,
     isPending,
@@ -50,95 +47,49 @@ export const SubPlansCrudForm = ({ rowId, crudAction }: SubPlansCrudFormProps) =
     PLANS_QUERY_KEY,
   );
 
-  // Define submit handler
   const onSubmit = (formData: z.infer<typeof subPlansZodSchema>) => {
-    // Create or update the subscription plan
     mutateSubPlan({
       payload: refineFormData(formData) as unknown as SubPlansTableDto,
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
     if (crudAction !== "create") onCloseConfirmed();
   };
 
-  // Close dialog and reset form when mutation is successful
   useEffect(() => {
     if (crudAction === "create" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
-
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* Plan Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      <SelectField {...currencyProps} />
-
-      <SelectField {...frequencyProps} />
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField {...nameProps} />
-
-      <SelectField {...typeProps} />
-
-      <SelectField {...statusProps} />
-
-      <InputField {...priceProps} />
-
-      {/* No of Credits */}
-      <InputField {...maxCreditsProps} />
-
-      {/* Published Agents and ML Models */}
-      <InputField {...maxPublishedItemsProps} />
-
-      {/* Insights and workflow history */}
-      <InputField {...historyRetentionDaysProps} />
-
-      {/* Spaces */}
-      <InputField {...maxSpacesProps} />
-
-      {/* Storage Limit */}
-      <InputField {...storageLimitMBProps} />
-
-      {/* Users */}
-      <InputField {...maxUsersProps} />
-
-      {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* AutherCard: TODO: Hiding till the time we don't have a good design for this */}
-      <div className="hidden">
-        {crudAction === "read" && (
-          <AutherCard
-            createdBy={form.getValues("createdBy")}
-            createdOn={form.getValues("createdOn")}
-            lastModifiedBy={form.getValues("lastModifiedBy")}
-            lastModifiedOn={form.getValues("lastModifiedOn")}
-          />
-        )}
+      <div className="grid grid-cols-2 gap-3">
+        <SelectField {...typeProps} />
+        <SelectField {...statusProps} />
       </div>
-
-      {/* Submit button */}
-      {!isReadMode && (
-        <CrudDialogActions>
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText="Creating..."
-            isPending={isPending}
-            disabled={!isDirty}
-          />
-        </CrudDialogActions>
-      )}
+      <div className="grid grid-cols-3 gap-3">
+        <InputField {...priceProps} />
+        <SelectField {...currencyProps} />
+        <SelectField {...frequencyProps} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <InputField {...maxCreditsProps} />
+        <InputField {...maxPublishedItemsProps} />
+        <InputField {...maxUsersProps} />
+        <InputField {...maxSpacesProps} />
+        <InputField {...storageLimitMBProps} />
+        <InputField {...historyRetentionDaysProps} />
+      </div>
+      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+      <CrudDialogActions>
+        <SubmitButton
+          className="min-w-[5rem]"
+          primaryText={crudAction === "create" ? "Create subscription plan" : "Save changes"}
+          secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

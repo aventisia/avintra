@@ -12,10 +12,9 @@ import {
   InputField,
   SelectField,
   SwitchField,
+  crudDialogFieldClasses,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { cn } from "@avplatform/ui/lib";
-import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -24,15 +23,18 @@ import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis";
 import { timezoneOptions } from "../../constants/form-utils";
 import {
+  LOCKED_EFFECTIVE_DATE_DESCRIPTION,
+  agentsLabelProps,
   effectiveDateProps,
   endDateProps,
+  exceptionDatesLabelProps,
   exceptionHoursProps,
   exceptionWeekdaysProps,
-  idProps,
   isDisabledProps,
   nameProps,
   selectFrequencyProps,
-} from "../../constants/trigger-form-field-props";
+  timezoneLabelProps,
+} from "../../constants/trigger-form-field-props.constant";
 import { triggerZodSchema } from "../../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../../dtos/time-trigger-dto";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm";
@@ -43,7 +45,7 @@ import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
 
 interface TriggerCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
@@ -97,116 +99,73 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     if (crudAction === "create" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
-  // Lock the effective date fields if we're purely reading OR if it's an update where the date already passed
-  const disableEffectiveInputs = isReadMode || (crudAction === "update" && isEffectivePassed);
+  const isUpdateMode = crudAction === "update";
 
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* trigger Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
-        disabled={crudAction !== "create"}
+        disabled={isUpdateMode}
       />
 
       <FormField
         name="timezone"
         control={form.control}
         render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt
-              size={"base"}
-              label="Timezone"
-              description="Select the timezone for the trigger."
-              isRequired
-            />
+          <FormItem className={crudDialogFieldClasses.item}>
+            <FormLabelExt {...timezoneLabelProps} />
             <FormControl>
               <TimezoneSelector
                 options={timezoneOptions}
                 selectedItem={timezoneOptions.find((val) => val.value == field.value) || null}
                 onItemSelect={(item) => field.onChange(item.value)}
                 onItemClear={() => field.onChange(null)}
-                placeholder="Search"
+                placeholder="Search timezones"
               />
             </FormControl>
-
-            <FormMessage size={"base"} />
+            <FormMessage />
           </FormItem>
         )}
       />
 
       <SelectField {...selectFrequencyProps} />
-      <div className={cn(frequency !== "OneTime" && "grid grid-cols-2 gap-2")}>
+      <div className="grid grid-cols-2 gap-3">
         <TriggerTimeScheduleInputs frequency={frequency} />
       </div>
 
-      {/* Agents Selector */}
-      <FormField
-        name="agents"
-        control={form.control}
-        render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt
-              size={"base"}
-              label="Select agent(s)"
-              description="Choose the agent(s) that should be triggered by this event."
-              isRequired
-            />
-
-            <FormControl>
-              <AgentsSelector
-                value={field.value ?? []}
-                onChange={field.onChange}
-                id={rowId}
-                crudAction={crudAction}
-              />
-            </FormControl>
-
-            <FormMessage size={"base"} />
-          </FormItem>
-        )}
-      />
-
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <DateTimePickerField
           {...effectiveDateProps}
+          description={
+            isUpdateMode && isEffectivePassed
+              ? LOCKED_EFFECTIVE_DATE_DESCRIPTION
+              : effectiveDateProps.description
+          }
           hourCycle={12}
-          granularity="minute"
-          disabled={disableEffectiveInputs}
+          disabled={isUpdateMode && isEffectivePassed}
         />
-        <DateTimePickerField {...endDateProps} hourCycle={12} granularity="minute" />
+        <DateTimePickerField {...endDateProps} hourCycle={12} />
       </div>
 
-      <MultiSelectField {...exceptionHoursProps} />
+      <div className="grid grid-cols-2 gap-3">
+        <MultiSelectField {...exceptionHoursProps} />
+        <MultiSelectField {...exceptionWeekdaysProps} />
+      </div>
 
-      <MultiSelectField {...exceptionWeekdaysProps} />
       <FormField
         name="exceptionDates"
         control={form.control}
         render={({ field }) => (
-          <FormItem>
-            <FormLabelExt
-              label="Exception dates"
-              description="Dates to exclude for triggers. Please enter date in format (YYYY-MM-DD)"
-            />
+          <FormItem className={crudDialogFieldClasses.item}>
+            <FormLabelExt {...exceptionDatesLabelProps} />
             <FormControl>
               <TagInput
                 {...field}
                 value={field.value?.map((v) => v.toString()) ?? []}
                 onChange={field.onChange}
-                placeholder=""
+                placeholder="e.g. 2026-12-25"
                 className="!shadow-none"
               />
             </FormControl>
@@ -215,21 +174,36 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         )}
       />
 
-      {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
+      <FormField
+        name="agents"
+        control={form.control}
+        render={({ field }) => (
+          <FormItem className={crudDialogFieldClasses.item}>
+            <FormLabelExt {...agentsLabelProps} />
+            <FormControl>
+              <AgentsSelector
+                value={field.value ?? []}
+                onChange={field.onChange}
+                id={rowId}
+                crudAction={crudAction}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-      {/* Submit button */}
-      {!isReadMode && (
-        <CrudDialogActions>
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
-            isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </CrudDialogActions>
-      )}
+      {isUpdateMode && <SwitchField size="sm" {...isDisabledProps} />}
+
+      <CrudDialogActions>
+        <SubmitButton
+          className="min-w-[5rem]"
+          primaryText={isUpdateMode ? "Save changes" : "Create trigger"}
+          secondaryText={isUpdateMode ? "Saving..." : "Creating..."}
+          isPending={isPending}
+          disabled={!isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

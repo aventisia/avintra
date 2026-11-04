@@ -2,18 +2,16 @@ import { SubmitButton } from "@avplatform/ui/buttons";
 import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
 import { knowledgeBaseOptimisticMutationFn } from "../../apis/knowledge-base-apis";
 import {
   descriptionProps,
-  idProps,
   isDisabledProps,
   nameProps,
   vectorStoreProps,
-} from "../../constants/knowledge-base-form-field-props";
+} from "../../constants/knowledge-base-form-field-props.constant";
 import { knowledgeBaseZodSchema } from "../../constants/knowledge-base-zod-schema";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKnowledgeBaseForm } from "../../hooks/useDefineKnowledgeBaseForm";
@@ -22,7 +20,7 @@ import { EmbeddingConfigField } from "./EmbeddingConfigField";
 
 interface KBCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const KBCrudForm = ({ rowId, crudAction }: KBCrudFormProps) => {
@@ -74,57 +72,28 @@ export const KBCrudForm = ({ rowId, crudAction }: KBCrudFormProps) => {
     if (crudAction === "create" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
-
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* Knowledge Base Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         disabled={crudAction !== "create"}
       />
-
-      {/* Description */}
       <TextareaField {...descriptionProps} />
-
-      {crudAction === "create" ? (
+      {(crudAction === "create" || form.getValues("vectorStore") !== "") && (
         <SelectField {...vectorStoreProps} />
-      ) : (
-        form.getValues("vectorStore") !== "" && (
-          <SelectField {...vectorStoreProps} disabled={isReadMode} />
-        )
       )}
-
-      {/* Embedding Config */}
       <EmbeddingConfigField name="embeddingConfig" />
-
-      {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* Submit button */}
-      {!isReadMode && (
-        <CrudDialogActions>
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText="Creating..."
-            isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </CrudDialogActions>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          primaryText={crudAction === "create" ? "Create knowledge base" : "Save changes"}
+          secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

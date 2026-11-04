@@ -1,5 +1,4 @@
-import { Button } from "@avplatform/ui/buttons";
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -9,8 +8,8 @@ import {
   TableCNToolbar,
   useTableCN,
 } from "@avplatform/ui/table-cn";
-import { EnvelopeIcon, PlusIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
+import { EnvelopeIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
+import { useMemo } from "react";
 
 import NotificationSettingsPanel from "@/features/05-tenant-admin/tenant/components/BillingTabs/notifications/NotificationSettingsPanel";
 
@@ -22,7 +21,6 @@ import {
   TABLE_KEY,
 } from "../constants/notifications-table.constant";
 import { useFetchNotifications } from "../hooks/useFetchNotifications.hook";
-import { NotificationComposeForm } from "./NotificationComposeForm";
 import type { NotificationsMode } from "./NotificationsManagement";
 import { getNotificationsTableColumns } from "./NotificationsTableColumns";
 import { NotificationBulkActions } from "./notification-row-actions/NotificationBulkActions";
@@ -49,8 +47,6 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
   useDocumentTitle(TABLE_HEADING);
 
   const { data, isLoading } = useFetchNotifications();
-
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const notifications = useMemo(() => data?.data ?? [], [data]);
 
@@ -103,14 +99,7 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Button
-            size="xs"
-            className="gap-2 text-sm tracking-wide"
-            onClick={() => setIsCreateOpen(true)}
-          >
-            <PlusIcon className="h-4 w-4" />
-            Create
-          </Button>
+          <CrudCreateButton entity="notification" />
         </div>
       </div>
 
@@ -129,14 +118,6 @@ export const NotificationsTable = ({ mode, onModeChange }: NotificationsTablePro
           <TableCNToolbar table={table} searchPlaceholder="Search notifications..." />
         </TableCN>
       )}
-
-      {/* Create notification dialog (right side) */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent side={"right"} className="!max-w-[36rem]">
-          <DialogDefaultHeader className="px-3.5 py-4 text-heading" heading="Create notification" />
-          <NotificationComposeForm onSuccess={() => setIsCreateOpen(false)} />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

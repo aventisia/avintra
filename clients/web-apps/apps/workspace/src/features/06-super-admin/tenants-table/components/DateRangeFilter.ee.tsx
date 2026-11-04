@@ -104,7 +104,8 @@ export const DateRangeFilter = () => {
       <PopoverTrigger>
         <Button size="xs" variant="outline">
           <CalendarDotsIcon className="mr-2 h-3.5 w-3.5" />
-          {format(selectedRange.from!, "MMM d, yyyy")} - {format(selectedRange.to!, "MMM d, yyyy")}
+          {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
+          {format(selectedRange.to ?? selectedRange.from!, "MMM d, yyyy")}
         </Button>
       </PopoverTrigger>
 

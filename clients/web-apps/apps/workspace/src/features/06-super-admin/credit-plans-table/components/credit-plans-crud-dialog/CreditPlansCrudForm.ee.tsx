@@ -4,19 +4,21 @@ import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form"
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { creditOptimisticMutationFn } from "../../apis/credit-plans-table-apis.ee";
 import { CREDIT_PLANS_QUERY_KEY } from "../../constants";
 import {
-  idProps,
+  creditsProps,
   isDisabledProps,
+  oneUnitProps,
   serviceTypeProps,
   unitTypeProps,
-} from "../../constants/credit-plans-form-field-props.ee";
+} from "../../constants/credit-plans-form-field-props.constant.ee";
 import { creditPlansZodSchema } from "../../constants/credit-plans-zod-schema.ee";
 import { CreditPlansTableDto } from "../../dtos/credit-plans-table-dto.ee";
+import { ServiceTypeEnum } from "../../enums/service-type-enum.ee";
 import { useDefineCreditPlansForm } from "../../hooks/useDefineCreditPlansForm.ee";
 
 interface CreditPlansCrudFormProps {
@@ -24,13 +26,47 @@ interface CreditPlansCrudFormProps {
   crudAction: CrudActionType;
 }
 
+const DecimalField = ({
+  name,
+  label,
+  description,
+}: {
+  name: "oneUnit" | "credits";
+  label: string;
+  description: string;
+}) => {
+  const { control } = useFormContext<z.infer<typeof creditPlansZodSchema>>();
+
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <InputField
+          value={field.value ?? ""}
+          label={label}
+          description={description}
+          type="number"
+          step="any"
+          onChange={(e) => {
+            const value = parseFloat(e.target.value);
+            field.onChange(isNaN(value) ? 0 : value);
+          }}
+          onBlur={field.onBlur}
+          name={field.name}
+          isRequired
+          min={0}
+        />
+      )}
+    />
+  );
+};
+
 export const CreditPlansCrudForm = ({ rowId, crudAction }: CreditPlansCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
 
-  // Define model form
   const { form, isDirty, refineFormData } = useDefineCreditPlansForm({ rowId, crudAction });
 
-  // Define optimistic mutation to crete or update the model
   const {
     mutate: mutateModel,
     isPending,
@@ -41,104 +77,43 @@ export const CreditPlansCrudForm = ({ rowId, crudAction }: CreditPlansCrudFormPr
     CreditPlansTableDto
   >([rowId], creditOptimisticMutationFn, CREDIT_PLANS_QUERY_KEY);
 
-  // Define submit handler
   const onSubmit = (formData: z.infer<typeof creditPlansZodSchema>) => {
-    // Create or update the model
     mutateModel({
       payload: refineFormData(formData) as unknown as CreditPlansTableDto,
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
     if (crudAction !== "create") onCloseConfirmed();
   };
 
-  // Close dialog and reset form when mutation is successful
   useEffect(() => {
     if (crudAction === "create" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
+  const serviceType = form.watch("serviceType");
 
-  // Return the form
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
+      recordName={ServiceTypeEnum[serviceType as keyof typeof ServiceTypeEnum] ?? serviceType ?? ""}
     >
-      {/* Model Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Service Type */}
       <SelectField {...serviceTypeProps} />
-
-      {/* Unit Type */}
       <SelectField {...unitTypeProps} />
-
-      {/* One Unit */}
-      <Controller
-        control={form.control}
-        name={`oneUnit`}
-        render={({ field }) => (
-          <InputField
-            value={field.value ?? ""}
-            label="One unit"
-            type="number"
-            step="any"
-            onChange={(e) => {
-              // Handle both integer and float values
-              const value = parseFloat(e.target.value);
-              field.onChange(isNaN(value) ? 0 : value); // Default to 0 if NaN
-            }}
-            onBlur={field.onBlur}
-            name={field.name}
-            isRequired={true}
-            min={0}
-          />
-        )}
-      />
-
-      {/* Credits */}
-      <Controller
-        control={form.control}
-        name={`credits`}
-        render={({ field }) => (
-          <InputField
-            value={field.value ?? ""}
-            label="Credits"
-            type="number"
-            step="any"
-            onChange={(e) => {
-              // Handle both integer and float values
-              const value = parseFloat(e.target.value);
-              field.onChange(isNaN(value) ? 0 : value); // Default to 0 if NaN
-            }}
-            onBlur={field.onBlur}
-            name={field.name}
-            isRequired={true}
-            min={0}
-          />
-        )}
-      />
-
-      {/* Is Disabled */}
+      <div className="grid grid-cols-2 gap-3">
+        <DecimalField {...oneUnitProps} />
+        <DecimalField {...creditsProps} />
+      </div>
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* Submit button */}
-      {!isReadMode && (
-        <CrudDialogActions>
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText="Creating..."
-            isPending={isPending}
-            disabled={!isDirty}
-          />
-        </CrudDialogActions>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          className="min-w-[5rem]"
+          primaryText={crudAction === "create" ? "Create credit plan" : "Save changes"}
+          secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };
