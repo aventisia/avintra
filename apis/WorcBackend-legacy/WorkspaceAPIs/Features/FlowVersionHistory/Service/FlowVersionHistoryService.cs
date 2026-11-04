@@ -337,7 +337,7 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
                 // IMPORTANT NOTE: serialize concurrent saves for the same flow version so both reuse
                 // the same unreferenced row instead of inserting duplicates, and the [Timestamp]
                 // concurrency token never turns last-write-wins into a conflict.
-                await _unitOfWork.AcquireAdvisoryLockAsync($"flow-version-history:{flowVersion.Id:N}");
+                await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersion.Id));
 
                 var latestHistory = await _unitOfWork.FlowVersionHistoryRepo
                     .GetByConditionAsync(x => x.FlowVersionId == flowVersion.Id)
@@ -345,8 +345,9 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
                     .ThenByDescending(x => x.Id)
                     .FirstOrDefaultAsync();
 
-                // IMPORTANT NOTE: Job has no tenant query filter by design, so the executed check
-                // must carry the explicit tenant predicate.
+                // IMPORTANT NOTE: Job also carries a tenant and space query filter, but background
+                // callers run without an ambient tenant, so the executed check keeps the explicit
+                // tenant predicate as defense in depth.
                 var latestHistoryIsExecuted = latestHistory != null && await _unitOfWork.JobRepo
                     .GetByConditionAsync(j => j.FlowVersionHistoryId == latestHistory.Id && j.TenantId == flowVersion.TenantId)
                     .AnyAsync();

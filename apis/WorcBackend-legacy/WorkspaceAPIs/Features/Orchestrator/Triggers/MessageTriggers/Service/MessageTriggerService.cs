@@ -995,22 +995,27 @@ public class MessageTriggerService : IMessageTriggerService
                     MachineId = null,
                     Priority = JobPriorityEnum.Normal,
                     Status = JobStatusEnum.Created,
-                    CreatedOn = DateTimeOffset.UtcNow,
                     IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
-                    FlowVersionHistoryId = triggerFlowVersion.FlowVersion.FlowVersionHistories
-                        .OrderByDescending(o => o.CreatedOn)
-                        .Select(s => (Guid?)s.Id)
-                        .FirstOrDefault()
                 };
 
-                // Insert the new job into the repository
-                await _unitOfWork.JobRepo.InsertAsync(newJob);
-
-                // Check if changes were successfully saved
-                if (!await _unitOfWork.SaveAsync())
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
                 {
-                    return serviceResponse;
-                }
+                    await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(triggerFlowVersion.FlowVersionId));
+
+                    newJob.CreatedOn = DateTimeOffset.UtcNow;
+
+                    newJob.FlowVersionHistoryId = await _workspaceInternalDbContext.FlowVersionHistories
+                        .Where(h => h.FlowVersionId == triggerFlowVersion.FlowVersionId && h.TenantId == triggerFlowVersion.TenantId)
+                        .OrderByDescending(h => h.CreatedOn)
+                        .ThenByDescending(h => h.Id)
+                        .Select(h => (Guid?)h.Id)
+                        .FirstOrDefaultAsync();
+
+                    await _unitOfWork.JobRepo.InsertAsync(newJob);
+
+                    if (!await _unitOfWork.SaveAsync())
+                        throw new InvalidOperationException("SaveChanges failed while inserting the trigger job.");
+                });
 
                 // If the flow version is published, trigger the job execution.
                 if (newJob.IsPublished)

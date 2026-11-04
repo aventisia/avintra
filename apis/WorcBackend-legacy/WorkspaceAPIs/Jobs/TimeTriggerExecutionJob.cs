@@ -72,6 +72,16 @@ public class TimeTriggerExecutionJob : IJob
         if (dueTriggers.Count == 0)
             return [];
 
+        var dueFlowVersionIds = dueTriggers
+            .SelectMany(t => t.TriggerFlowVersions)
+            .Select(f => f.FlowVersionId)
+            .Distinct()
+            .OrderBy(id => id)
+            .ToList();
+
+        foreach (var flowVersionId in dueFlowVersionIds)
+            await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersionId));
+
         var latestFlowVersionHistoryIds = await GetLatestFlowVersionHistoryIdsAsync(dueTriggers);
 
         var createdJobs = new List<Job>();
@@ -100,7 +110,6 @@ public class TimeTriggerExecutionJob : IJob
                     RefId = triggerFlowVersion.TriggerId,
                     Priority = JobPriorityEnum.Normal,
                     Status = JobStatusEnum.Created,
-                    CreatedOn = currentUtcTime,
                 });
             }
 
@@ -149,6 +158,7 @@ public class TimeTriggerExecutionJob : IJob
                 FlowVersionId = s.Key,
                 FlowVersionHistoryId = s
                     .OrderByDescending(o => o.CreatedOn)
+                    .ThenByDescending(o => o.Id)
                     .Select(s1 => (Guid?)s1.Id)
                     .FirstOrDefault()
             })

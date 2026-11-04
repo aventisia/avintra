@@ -225,18 +225,13 @@ public class JobsTableService : IJobsTableService
             // Retrieve the FlowVersion record
             var flowVersion = await _unitOfWork.FlowVersionRepo
                                 .GetByConditionAsync(w => w.Id == jobInsertDto.FlowVersionId)
-                                .Include(i => i.FlowVersionHistories)
                                 .Select(s => new
                                 {
                                     FlowName = s.Flow != null ? s.Flow.Name : "FLOW_NAME_NOT_FOUND",
                                     FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.Agent,
                                     FlowVersionNumber = s.VersionNumber,
                                     IsFlowVersionPublished = s.IsPublished,
-                                    SupportedPlatform = s.SupportedPlatform,
-                                    FlowVersionHistoryId = s.FlowVersionHistories
-                                                                .OrderByDescending(o => o.CreatedOn)
-                                                                .Select(s2 => s2.Id)
-                                                                .FirstOrDefault()
+                                    SupportedPlatform = s.SupportedPlatform
                                 })
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync();
@@ -290,7 +285,6 @@ public class JobsTableService : IJobsTableService
             // Default mapping
             var newJob = jobInsertDto.Adapt<Job>();
             newJob.TenantId = tenantId; // Set the TenantId to the current or providedTenantId
-            newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
             newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
 
             if (resolvedMachineId.HasValue)
@@ -344,10 +338,28 @@ public class JobsTableService : IJobsTableService
             newJob.InputArgumentsJson = jobInsertDto.JobInputData != null ? jobInsertDto.JobInputData.RootElement.GetRawText() : null;
 
             // Insert job
-            await _unitOfWork.JobRepo.InsertAsync(newJob);
+            var jobSaved = true;
+
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(jobInsertDto.FlowVersionId));
+
+                newJob.CreatedOn = DateTimeOffset.UtcNow;
+
+                newJob.FlowVersionHistoryId = await _unitOfWork.FlowVersionHistoryRepo
+                    .GetByConditionAsync(h => h.FlowVersionId == jobInsertDto.FlowVersionId && h.TenantId == tenantId)
+                    .OrderByDescending(h => h.CreatedOn)
+                    .ThenByDescending(h => h.Id)
+                    .Select(h => (Guid?)h.Id)
+                    .FirstOrDefaultAsync();
+
+                await _unitOfWork.JobRepo.InsertAsync(newJob);
+
+                jobSaved = await _unitOfWork.SaveAsync();
+            });
 
             // Insert-Job failed, log and return
-            if (!await _unitOfWork.SaveAsync())
+            if (!jobSaved)
                 return serviceResponse.Update("Failed to save changes.", 500);
 
             // Map newJob to JobRecordDto for the response

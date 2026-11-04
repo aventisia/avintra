@@ -449,14 +449,24 @@ public class OrchestratorHub : Hub
                 TenantId = tenantId,
                 SpaceId = agent.SpaceId ?? agent.Flow?.SpaceId,
                 TriggerType = TriggerTypesEnum.Manual,
-                FlowVersionHistoryId = agent.FlowVersionHistories
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Select(s => (Guid?)s.Id)
-                    .FirstOrDefault()
             };
 
-            _workspaceInternalDbContext.Jobs.Add(job);
-            await _workspaceInternalDbContext.SaveChangesAsync();
+            await _workspaceInternalDbContext.Database.ExecuteInTransactionAsync(async () =>
+            {
+                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(agent.Id));
+
+                job.CreatedOn = DateTimeOffset.UtcNow;
+
+                job.FlowVersionHistoryId = await _workspaceInternalDbContext.FlowVersionHistories
+                    .Where(h => h.FlowVersionId == agent.Id && h.TenantId == agent.TenantId)
+                    .OrderByDescending(h => h.CreatedOn)
+                    .ThenByDescending(h => h.Id)
+                    .Select(h => (Guid?)h.Id)
+                    .FirstOrDefaultAsync();
+
+                _workspaceInternalDbContext.Jobs.Add(job);
+                await _workspaceInternalDbContext.SaveChangesAsync();
+            });
 
             MachineReservationHelpers.Reserve(clientDataStore, job.Id, agentId);
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
