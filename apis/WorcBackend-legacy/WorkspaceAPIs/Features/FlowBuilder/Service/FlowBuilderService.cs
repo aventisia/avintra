@@ -16,6 +16,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IVaultCredentialService _vaultCredentialService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ITenantModelProviderService _tenantModelProviderService;
+    private readonly IPlatformToolTenantService _platformToolTenantService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -31,7 +32,8 @@ public class FlowBuilderService : IFlowBuilderService
         ICollaborationStore collaborationStore,
         IVaultCredentialService vaultCredentialService,
         IResourceFlowAccessService resourceFlowAccessService,
-        ITenantModelProviderService tenantModelProviderService)
+        ITenantModelProviderService tenantModelProviderService,
+        IPlatformToolTenantService platformToolTenantService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -52,6 +54,7 @@ public class FlowBuilderService : IFlowBuilderService
         _vaultCredentialService = vaultCredentialService;
         _resourceFlowAccessService = resourceFlowAccessService;
         _tenantModelProviderService = tenantModelProviderService;
+        _platformToolTenantService = platformToolTenantService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -1452,6 +1455,11 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var tenantId = _currentTenantService.CurrentTenantId;
+        if (names.Count > 0)
+        {
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+        }
+
         var devTools = await ResolveDevToolsAsync(names);
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
         var pendingUserAccesses = new List<ResourceUserAccess>();
@@ -1475,6 +1483,18 @@ public class FlowBuilderService : IFlowBuilderService
                     .IgnoreQueryFilters()
                     .AnyAsync();
                 if (platformToolExists)
+                    continue;
+
+                // Library tools live in the platform catalog and are enabled per tenant by a mapping row.
+                var libraryToolId = await _unitOfWork.PlatformToolRepo
+                    .GetByConditionAsync(w => w.Name == name && !w.IsDisabled)
+                    .Select(w => (Guid?)w.Id)
+                    .FirstOrDefaultAsync();
+                if (libraryToolId.HasValue &&
+                    await _unitOfWork.TenantPlatformToolRepo
+                        .GetByConditionAsync(w => w.TenantId == tenantId && w.PlatformToolId == libraryToolId.Value)
+                        .IgnoreQueryFilters()
+                        .AnyAsync())
                     continue;
 
                 missing.Add($"tool '{name}'");

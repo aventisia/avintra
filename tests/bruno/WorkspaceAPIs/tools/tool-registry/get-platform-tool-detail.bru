@@ -1,0 +1,51 @@
+meta {
+  name: Get platform tool detail matches platform list state
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tools/{{PLATFORM_TOOL_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:pre-request {
+  const listResponse = await bru.sendRequest({
+    url: `${bru.getEnvVar("WORKSPACE_API_BASE_URL")}/tools/platform`,
+    method: "GET",
+    headers: { Authorization: `Bearer ${bru.getEnvVar("ACCESS_TOKEN")}` },
+  });
+
+  const platformTools = listResponse?.data?.data ?? [];
+  const targetTool =
+    platformTools.find((tool) => tool.name === "Slack" && tool.isPopular) ??
+    platformTools.find((tool) => tool.isPopular);
+
+  if (!targetTool) {
+    throw new Error("No popular platform tool found in /tools/platform");
+  }
+
+  bru.setVar("PLATFORM_TOOL_ID", targetTool.id);
+  bru.setVar("PLATFORM_TOOL_LIST_STATE", String(targetTool.isActive));
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.isActive: isBoolean
+  res.body.data.isPopular: isBoolean
+}
+
+tests {
+  test("detail state matches the platform list state", function () {
+    expect(res.getBody().data.isActive).to.equal(bru.getVar("PLATFORM_TOOL_LIST_STATE") === "true");
+  });
+
+  test("detail keeps the popular flag", function () {
+    expect(res.getBody().data.isPopular).to.equal(true);
+  });
+}

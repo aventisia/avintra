@@ -1,12 +1,16 @@
 /**
  * Corsair tools seeding script — sidecar-owned artifact seeding.
  *
- * This script seeds Corsair-provided tools into the Workspace database (ai_Tools table)
- * as part of the Corsair deployment pipeline. It uses the shared generateToolMetadata()
- * function to build tool specs directly from the Corsair plugin registry (no file dependency).
+ * This script seeds Corsair-provided tools into the Workspace database
+ * (ai_PlatformTools table) as part of the Corsair deployment pipeline. It uses
+ * the shared generateToolMetadata() function to build tool specs directly from
+ * the Corsair plugin registry (no file dependency).
  *
- * Idempotent: safe to run repeatedly. Seeded tools are matched by deterministic ID and
- * updated on every run.
+ * Rows are identified by a deterministic id derived from the plugin id, so a
+ * re-run updates the existing row in place and keeps its id. The stored Name is
+ * the product display name; a separate popular-tools.json decides which names
+ * are marked IsPopular, with warning-only validation. IsDisabled is written only
+ * on insert, so an operator-disabled row stays disabled across re-runs.
  *
  * Typical usage:
  *   npm run seed:tools
@@ -14,14 +18,11 @@
  * Environment variables required:
  *   - WORKSPACE_POSTGRES_HOST, WORKSPACE_POSTGRES_PORT, WORKSPACE_POSTGRES_USERNAME,
  *     WORKSPACE_POSTGRES_PASSWORD (Workspace database connection)
- *
- * Platform (library) tools are seeded with empty (Guid.Empty) tenant and user
- * ids so they are free from both tenant and user constraints and available to
- * every tenant. Because ai_Tools has a foreign key on
- * CreatedByUserId/LastModifiedByUserId, a dedicated system WorkspaceUser with
- * Guid.Empty id is ensured to exist and referenced as the owner.
  */
 import dotenv from "dotenv";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import pg from "pg";
 import crypto from "node:crypto";
 import { createCorsair } from "corsair";
@@ -31,7 +32,7 @@ import { createCorsair } from "corsair";
 // on the server). The seed only needs the plugin list and builds its own
 // self-contained corsair instance below.
 import { plugins } from "./plugins.js";
-import { generateToolMetadata } from "./generate-tool-metadata.js";
+import { generateToolMetadata, type GeneratedToolMetadata } from "./generate-tool-metadata.js";
 
 // --- Variable selection precedence ---
 // Config is resolved in this order (highest wins):
@@ -49,12 +50,13 @@ const { Pool } = pg;
 
 const WORKSPACE_DATABASE = process.env.POSTGRESQL_WORKSPACE_DB_NAME || "WorkspaceDb";
 
-// Platform (library) tools are free from both tenant and user constraints.
-// They are seeded with empty (Guid.Empty) tenant and user ids so they are not
-// owned by any single tenant or user and appear in every tenant's library.
-const PLATFORM_TENANT_ID = "00000000-0000-0000-0000-000000000000";
-const PLATFORM_USER_ID = "00000000-0000-0000-0000-000000000000";
-const PLATFORM_USER_NAME = "system";
+// popular-tools.json lives at the package root, next to the catalogs the seeder
+// already reads. The cwd candidate covers `npm run seed:tools` from apis/corsair;
+// the module-relative candidate covers the compiled dist/ and src/ entry points.
+const POPULAR_TOOLS_PATH_CANDIDATES = [
+  path.resolve(process.cwd(), "popular-tools.json"),
+  fileURLToPath(new URL("../popular-tools.json", import.meta.url)),
+];
 
 const workspacePool = new Pool({
   host: process.env.POSTGRESQL_HOST,
@@ -70,11 +72,11 @@ function deterministicGuid(seed: string): string {
     .createHash("md5")
     .update(seed, "utf8")
     .digest();
-  
+
   // Set version to 4 (random) and variant bits per RFC 4122.
   hash[6] = (hash[6] & 0x0f) | 0x40;
   hash[8] = (hash[8] & 0x3f) | 0x80;
-  
+
   const hex = hash.toString("hex");
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
@@ -88,178 +90,175 @@ function toPascalCase(value: string): string {
     .join("");
 }
 
-/**
- * Ensure a dedicated system WorkspaceUser (Guid.Empty id/tenant) exists.
- * ai_Tools has a foreign key on CreatedByUserId/LastModifiedByUserId, so the
- * library tools must reference a real WorkspaceUser row. Idempotent.
- */
-async function ensureSystemUser(): Promise<void> {
-  const existing = await workspacePool.query(
-    `SELECT "Id" FROM "user_WorkspaceUsers" WHERE "Id" = $1`,
-    [PLATFORM_USER_ID]
-  );
-  if (existing.rows.length > 0) return;
-
-  await workspacePool.query(
-    `INSERT INTO "user_WorkspaceUsers" ("Id", "TenantId", "UserName", "FirstName", "LastName")
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT ("Id") DO NOTHING`,
-    [PLATFORM_USER_ID, PLATFORM_TENANT_ID, PLATFORM_USER_NAME, "System", "User"]
-  );
-  console.log("[corsair:seed] Ensured system WorkspaceUser for platform tools.");
+function warn(message: string): void {
+  console.warn(`[corsair:seed] ${message}`);
 }
 
-/** Seed Corsair tools generated from the plugin registry into ai_Tools. */
-async function seedCorsairTools(): Promise<void> {
-  try {
-    // Create a self-contained corsair instance for schema introspection.
-    const corsair = createCorsair({
-      multiTenancy: true,
-      plugins,
-      database: undefined,
-      kek: "0000000000000000000000000000000000000000000000000000000000000000",
-    });
-
-    console.log("[corsair:seed] Ensuring system WorkspaceUser...");
-    await ensureSystemUser();
-
-    console.log("[corsair:seed] Generating tool metadata from plugin registry...");
-    const generatedTools = await generateToolMetadata(plugins, corsair);
-
-    if (generatedTools.length === 0) {
-      console.warn("[corsair:seed] No Corsair tools generated.");
-      return;
-    }
-
-    const now = new Date().toISOString();
-    let seedCount = 0;
-
-    // These enums are persisted as strings via EF Core's EnumToStringConverter:
-    //   - ComponentTypeEnum: "Platform" | "Custom"
-    //   - ConfigureEnvironmentType: "Dev" | "Prod"
-    //   - ToolAuthenticationTypeEnum: "None" | "ApiKeyHeader" | ...
-    const TOOL_TYPE_PLATFORM = "Platform";
-    const envType = process.env.WORKSPACE_ENV_TYPE === "prod" ? "Prod" : "Dev";
-    const AUTH_TYPE_NONE = "None";
-
-    for (const tool of generatedTools) {
-      const toolName = `${toPascalCase(tool.id)}`;
-      const toolId = deterministicGuid(`corsair-tool-${toolName}`);
-
-      try {
-        // Parse the OpenAPI spec (already JSON string from generateToolMetadata).
-        const spec = JSON.parse(tool.openApiSpec);
-        // Store the full spec (which has a top-level "paths" key) as the parsed
-        // schema. The frontend's normalizeToolOperations reads schema.paths, and
-        // the .NET FlattenOpenApiSpec produces { info, servers, paths } — so the
-        // parsed schema must expose "paths" at the top level, not the bare paths
-        // object, otherwise the detail page shows no operations.
-        const parsedSchema = JSON.stringify(spec);
-
-        const toolRow = {
-          Id: toolId,
-          TenantId: PLATFORM_TENANT_ID,
-          SpaceId: null,
-          EnvType: envType,
-          Name: toolName,
-          Description: tool.description,
-          Type: TOOL_TYPE_PLATFORM,
-          // Corsair tools are platform tools executed via the sidecar, so they
-          // have no provider base URL. ai_Tools expects a non-null value, so
-          // seed an empty string rather than null.
-          BaseUrl: "",
-          OpenApiSpec: tool.openApiSpec,
-          ParsedSchema: parsedSchema,
-          AuthenticationType: AUTH_TYPE_NONE,
-          IsTenantWideAccess: true,
-          IsActive: true,
-          IsVerified: true,
-          IsDisabled: false,
-          CreatedByUserId: PLATFORM_USER_ID,
-          LastModifiedByUserId: PLATFORM_USER_ID,
-          CreatedOn: now,
-          LastModifiedOn: now,
-        };
-
-        // Check if tool already exists (by toolId).
-        const existingResult = await workspacePool.query(
-          `SELECT "Id" FROM "ai_Tools" WHERE "Id" = $1`,
-          [toolId]
-        );
-
-        if (existingResult.rows.length === 0) {
-          await workspacePool.query(
-            `INSERT INTO "ai_Tools" ("Id", "TenantId", "SpaceId", "EnvType", "Name", "Description", "Type", "BaseUrl", "OpenApiSpec", "ParsedSchema", "AuthenticationType", "IsTenantWideAccess", "IsActive", "IsVerified", "IsDisabled", "CreatedByUserId", "LastModifiedByUserId", "CreatedOn", "LastModifiedOn")
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`,
-            [
-              toolRow.Id,
-              toolRow.TenantId,
-              toolRow.SpaceId,
-              toolRow.EnvType,
-              toolRow.Name,
-              toolRow.Description,
-              toolRow.Type,
-              toolRow.BaseUrl,
-              toolRow.OpenApiSpec,
-              toolRow.ParsedSchema,
-              toolRow.AuthenticationType,
-              toolRow.IsTenantWideAccess,
-              toolRow.IsActive,
-              toolRow.IsVerified,
-              toolRow.IsDisabled,
-              toolRow.CreatedByUserId,
-              toolRow.LastModifiedByUserId,
-              toolRow.CreatedOn,
-              toolRow.LastModifiedOn,
-            ]
-          );
-          console.log(`[corsair:seed] Seeded new tool ${toolName} (${toolId}).`);
-        } else {
-          await workspacePool.query(
-            `UPDATE "ai_Tools" SET
-               "Name" = $1,
-               "Description" = $2,
-               "BaseUrl" = $3,
-               "OpenApiSpec" = $4,
-               "ParsedSchema" = $5,
-               "EnvType" = $6,
-               "Type" = $7,
-               "TenantId" = $8,
-               "IsTenantWideAccess" = true,
-               "IsActive" = true,
-               "IsVerified" = true,
-               "IsDisabled" = false,
-               "LastModifiedByUserId" = $9,
-               "LastModifiedOn" = $10
-             WHERE "Id" = $11`,
-            [
-              toolName,
-              tool.description,
-              "",
-              tool.openApiSpec,
-              parsedSchema,
-              envType,
-              TOOL_TYPE_PLATFORM,
-              PLATFORM_TENANT_ID,
-              PLATFORM_USER_ID,
-              now,
-              toolId,
-            ]
-          );
-          console.log(`[corsair:seed] Updated existing tool ${toolName} (${toolId}).`);
-        }
-
-        seedCount++;
-      } catch (err) {
-        console.error(`[corsair:seed] Failed to seed tool ${tool.pluginId}:`, err);
-      }
-    }
-
-    console.log(`[corsair:seed] Seeded ${seedCount} Corsair tool(s) into ai_Tools.`);
-  } catch (err) {
-    console.error("[corsair:seed] Error generating tool metadata:", err);
-    throw err;
+/** Read the configured popular names; a missing or malformed file warns and yields none. */
+function loadPopularToolNames(): string[] {
+  const popularFilePath = POPULAR_TOOLS_PATH_CANDIDATES.find((candidate) => fs.existsSync(candidate));
+  if (!popularFilePath) {
+    warn(`Popular tools file not found (${POPULAR_TOOLS_PATH_CANDIDATES.join(", ")}); continuing without popular marks.`);
+    return [];
   }
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(popularFilePath, "utf8")) as { popularTools?: unknown };
+    if (!Array.isArray(parsed.popularTools)) {
+      warn(`Popular tools file ${popularFilePath} has no popularTools list; continuing without popular marks.`);
+      return [];
+    }
+
+    return parsed.popularTools
+      .map((entry) => {
+        const name = (entry as { name?: unknown } | null | undefined)?.name;
+        return typeof name === "string" ? name.trim() : "";
+      })
+      .filter((name) => name.length > 0);
+  } catch (err) {
+    warn(`Popular tools file ${popularFilePath} could not be read or parsed (${(err as Error).message}); continuing without popular marks.`);
+    return [];
+  }
+}
+
+/**
+ * Resolve the popular subset with warning-only validation. A duplicated list
+ * entry, an unmatched name, an ambiguous name, or a display name shared by more
+ * than one catalog entry warns and continues; ambiguous names are not marked.
+ */
+function resolvePopularToolNames(
+  generatedTools: GeneratedToolMetadata[],
+  popularNames: string[],
+): Set<string> {
+  const catalogNames = new Map<string, string[]>();
+  for (const tool of generatedTools) {
+    const displayName = tool.name.trim();
+    const key = displayName.toLowerCase();
+    catalogNames.set(key, [...(catalogNames.get(key) ?? []), displayName]);
+  }
+
+  for (const names of catalogNames.values()) {
+    if (names.length > 1) {
+      warn(`Catalog display name '${names[0]}' is shared by ${names.length} entries (${names.join(", ")}); seeding them not popular.`);
+    }
+  }
+
+  const popularNameCounts = new Map<string, { displayName: string; count: number }>();
+  for (const popularName of popularNames) {
+    const key = popularName.toLowerCase();
+    const existing = popularNameCounts.get(key);
+    popularNameCounts.set(key, {
+      displayName: existing?.displayName ?? popularName,
+      count: (existing?.count ?? 0) + 1,
+    });
+  }
+
+  const popularKeys = new Set<string>();
+  for (const [key, { displayName, count }] of popularNameCounts) {
+    if (count > 1) {
+      warn(`Popular tool '${displayName}' is listed ${count} times; marking it once.`);
+    }
+
+    const matches = catalogNames.get(key) ?? [];
+    if (matches.length === 0) {
+      warn(`Popular tool '${displayName}' matches no catalog entry.`);
+      continue;
+    }
+    if (matches.length > 1) {
+      warn(`Popular tool '${displayName}' matches ${matches.length} catalog entries (${matches.join(", ")}); leaving it not popular.`);
+      continue;
+    }
+
+    popularKeys.add(key);
+  }
+
+  return popularKeys;
+}
+
+/** Seed Corsair tools generated from the plugin registry into ai_PlatformTools. */
+async function seedCorsairTools(): Promise<void> {
+  // A failing connection must fail the command, not be reported per tool.
+  await workspacePool.query("SELECT 1");
+
+  const corsair = createCorsair({
+    multiTenancy: true,
+    plugins,
+    database: undefined,
+    kek: "0000000000000000000000000000000000000000000000000000000000000000",
+  });
+
+  console.log("[corsair:seed] Generating tool metadata from plugin registry...");
+  const generatedTools = await generateToolMetadata(plugins, corsair);
+
+  if (generatedTools.length === 0) {
+    warn("No Corsair tools generated.");
+    return;
+  }
+
+  const popularToolNames = loadPopularToolNames();
+  const popularKeys = resolvePopularToolNames(generatedTools, popularToolNames);
+
+  let seedCount = 0;
+  let popularCount = 0;
+  const claimedNames = new Set<string>();
+
+  for (const tool of generatedTools) {
+    const toolName = tool.name.trim();
+    const toolId = deterministicGuid(`corsair-tool-${toPascalCase(tool.id)}`);
+
+    try {
+      if (!toolName) {
+        warn(`Skipping plugin '${tool.pluginId}': it has no display name.`);
+        continue;
+      }
+
+      // IMPORTANT NOTE: ai_PlatformTools has a unique index on Name; a catalog
+      // duplicate would abort the pass, so warn and skip the later row.
+      if (claimedNames.has(toolName)) {
+        warn(`Skipping plugin '${tool.pluginId}': display name '${toolName}' is already seeded by another entry.`);
+        continue;
+      }
+      claimedNames.add(toolName);
+
+      const isPopular = popularKeys.has(toolName.toLowerCase());
+      const parsedSchema = JSON.stringify(JSON.parse(tool.openApiSpec));
+
+      const existingResult = await workspacePool.query(
+        `SELECT "Id" FROM "ai_PlatformTools" WHERE "Id" = $1`,
+        [toolId]
+      );
+
+      if (existingResult.rows.length === 0) {
+        await workspacePool.query(
+          `INSERT INTO "ai_PlatformTools" ("Id", "Name", "Description", "OpenApiSpec", "ParsedSchema", "IsPopular", "IsDisabled")
+           VALUES ($1, $2, $3, $4, $5::jsonb, $6, false)`,
+          [toolId, toolName, tool.description, tool.openApiSpec, parsedSchema, isPopular]
+        );
+      } else {
+        await workspacePool.query(
+          `UPDATE "ai_PlatformTools" SET
+             "Name" = $1,
+             "Description" = $2,
+             "OpenApiSpec" = $3,
+             "ParsedSchema" = $4::jsonb,
+             "IsPopular" = $5
+           WHERE "Id" = $6`,
+          [toolName, tool.description, tool.openApiSpec, parsedSchema, isPopular, toolId]
+        );
+      }
+
+      seedCount++;
+      if (isPopular) popularCount++;
+    } catch (err) {
+      warn(`Failed to seed plugin '${tool.pluginId}': ${(err as Error).message}`);
+    }
+  }
+
+  if (seedCount === 0) {
+    throw new Error("No Corsair tools were seeded; check the Workspace database connection and columns.");
+  }
+
+  console.log(`[corsair:seed] Seeded ${seedCount} Corsair tools (${popularCount} popular) into ai_PlatformTools.`);
 }
 
 async function main() {

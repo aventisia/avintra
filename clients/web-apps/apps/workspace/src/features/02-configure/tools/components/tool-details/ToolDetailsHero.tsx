@@ -1,3 +1,4 @@
+import { Switch } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { MetaLine } from "@avplatform/ui/meta-line";
 import { formatDate, formatRelativeTime } from "@avplatform/ui/utils";
@@ -9,6 +10,7 @@ import { pluralize } from "@/utils/pluralize.util";
 import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "../../constants/tools-display-names.constant";
 import type { ToolDto } from "../../dtos/index";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
+import { useToggleLibraryTool } from "../../hooks/useToggleLibraryTool.hook";
 import { getToolDisplayName } from "../../utils/tool-name-formatter";
 import { ToolIcon } from "../ToolIcon";
 
@@ -60,7 +62,10 @@ type ToolDetailsHeroProps = {
 /**
  * Tool page banner: icon, kind, name, description, verification and state.
  */
-export const ToolDetailsHero = ({ tool, operationCount }: ToolDetailsHeroProps) => (
+export const ToolDetailsHero = ({ tool, operationCount }: ToolDetailsHeroProps) => {
+  const { canToggle, toggle } = useToggleLibraryTool();
+
+  return (
   <section className="relative isolate overflow-hidden rounded-lg bg-surface px-5 py-4 ring-1 ring-line">
     <ToolIcon
       name={tool.name}
@@ -95,7 +100,17 @@ export const ToolDetailsHero = ({ tool, operationCount }: ToolDetailsHeroProps) 
           ]}
         />
       </div>
-      <div className="shrink-0">{getStateBadge(tool)}</div>
+      <div className="flex shrink-0 items-center gap-3">
+        {canToggle && tool.type === ComponentTypeEnum.Platform && (
+          <Switch
+            checked={Boolean(tool.isActive)}
+            onCheckedChange={(checked) => toggle({ id: tool.id ?? "", isEnabled: checked })}
+            aria-label={tool.isActive ? "Disable tool" : "Enable tool"}
+          />
+        )}
+        {getStateBadge(tool)}
+      </div>
     </div>
   </section>
-);
+  );
+};

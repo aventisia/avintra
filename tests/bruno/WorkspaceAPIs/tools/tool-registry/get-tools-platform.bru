@@ -7,5 +7,30 @@ meta {
 get {
   url: {{WORKSPACE_API_BASE_URL}}/tools/platform
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  const tools = res.getBody()?.data ?? [];
+
+  test("returns the library catalog with per-tenant state", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(tools).to.be.an("array");
+    expect(tools.length).to.be.above(0);
+    tools.forEach((tool) => {
+      expect(tool).to.have.property("id");
+      expect(tool).to.have.property("name");
+      expect(tool.isActive).to.be.a("boolean");
+      expect(tool.isPopular).to.be.a("boolean");
+      expect(tool).to.not.have.property("isEnabled");
+    });
+  });
 }

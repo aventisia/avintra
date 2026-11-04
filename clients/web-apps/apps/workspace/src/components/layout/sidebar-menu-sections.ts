@@ -136,7 +136,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
-        permissions: ["OM", "TD"],
+        permissions: ["OM", "TD", "TA"],
         Icon: WrenchIcon,
         name: "Tools",
         route: "/configure/tools",
