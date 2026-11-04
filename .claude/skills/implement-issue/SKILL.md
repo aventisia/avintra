@@ -42,8 +42,9 @@ Read [`../GITEA.md`](../GITEA.md) and [`../BRIEF.md`](../BRIEF.md) first. `GITEA
    1. Ready the local stack as Implementation step 8 in `.claude/agents/coder.md` describes.
    2. Load the `orca-cli` skill and walk each AC in a tab you open, as its user would, following Test surface and Rules of engagement in `.claude/agents/pilot.md`.
    3. At each AC checkpoint, save a screenshot as `local-issues/<n>/ui-<AC>-<k>.png`, plus any console or network entry that proves what the screen cannot show.
+   4. Write `local-issues/<n>/evidence.md`: one section per walked AC headed by the AC's checklist sentence, stating what was walked, the result, and each screenshot embedded (`![](ui-<AC>-<k>.png)`) so it renders in a Markdown preview. ACs with no screenshot state why.
 
-   Fix a failure that stays inside the brief, then rerun the step 6 checks and the failed walk; ask about anything beyond the brief as in step 7. Done when every such AC is `PASS` with its screenshot, or `FAIL` or `UNVERIFIED` with the reason.
+   Fix a failure that stays inside the brief, then rerun the step 6 checks and the failed walk; ask about anything beyond the brief as in step 7. Done when every such AC is `PASS` with its screenshot embedded in `evidence.md`, or `FAIL` or `UNVERIFIED` with the reason recorded there.
 
 9. **Hand off**, leaving the change uncommitted:
    - Per AC, UI test steps in the product's vocabulary: where to start, what to do, what to expect. For an AC with no screen, how to observe it, such as a Bruno request in `tests/bruno/`.

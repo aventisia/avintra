@@ -26,7 +26,7 @@ Binds `orchestrator`, the only primary agent, and every subagent it launches.
 
 ## Execution conventions
 
-- Scout, analyst, architect, pentester, pilot, and QA keep source read-only and run inspection commands only, never write-capable shell options. They write only their approved reports, plus `poc-*` (pentester) and `ui-*` (pilot) artifacts in their round directory.
+- Scout, analyst, architect, pentester, pilot, and QA keep source read-only and run inspection commands only, never write-capable shell options. They write only their approved reports, plus `poc-*` (pentester) and `ui-*` plus `evidence.md` (pilot) artifacts in their round directory.
 - Run a test only after inspecting its script for side effects and generated outputs.
 - Keep commands and edits inside the active repository; permissions are not a filesystem sandbox.
 - Git and remote-state mutations need explicit authorization, with one standing exception: after scout's investigation and before the brief, the orchestrator has coder create the issue branch from `origin/main` and push it without asking. No other role creates or switches branches.
