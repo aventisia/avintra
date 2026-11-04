@@ -26,7 +26,7 @@ import {
   getCustomApiToolDefaultValues,
   getCustomApiToolVaultCredentialSchema,
   mapCustomApiToolDataToFormValues,
-} from "../constants/custom-api-tool-schema";
+} from "../constants/custom-api-tool-schema.constant";
 import { vaultCredentialAppsSelectOptions } from "../constants/vault-credential-app-select-options.constant";
 
 interface UseVaultCredentialDynamicFormOptions {

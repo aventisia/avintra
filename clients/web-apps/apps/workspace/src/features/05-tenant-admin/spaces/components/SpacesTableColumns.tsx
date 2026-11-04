@@ -2,31 +2,12 @@ import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
+import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { getColumnName } from "../constants/column-display-names";
 import { SpacesTableDto } from "../dtos/spaces-table-dto";
 import { SpaceRowActions } from "./space-row-actions/SpaceRowActions";
-
-/**
- * Formats a duration given in seconds into a human-readable "Xh Ym Zs" string.
- * Example: 159689.9 -> "44h 21m 29s"
- */
-const formatExecutionTime = (totalSeconds: unknown): string => {
-  const seconds = Number(totalSeconds);
-  if (!Number.isFinite(seconds) || seconds <= 0) return "0s";
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-
-  const parts: string[] = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (secs > 0 || parts.length === 0) parts.push(`${secs}s`);
-
-  return parts.join(" ");
-};
 
 const renderHeader =
   (columnKey: string) =>
@@ -76,7 +57,7 @@ export const getSpacesTableColumns = (showActions: boolean): ColumnDef<SpacesTab
       header: renderHeader("totalExecutionTime"),
       cell: ({ row }) => (
         <div className="font-mono tabular-nums w-auto truncate font-medium">
-          {formatExecutionTime(row.getValue("totalExecutionTime"))}
+          {formatSecondsToCompactDuration(row.getValue<number | undefined>("totalExecutionTime"))}
         </div>
       ),
     },

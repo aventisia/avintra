@@ -13,7 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { isTenantNameAvailable } from "../apis/tenants-table-apis.ee";
 import { DATA_QUERY_KEY } from "../constants";
-import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schema.ee";
+import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schema.constant.ee";
 import { TenantsTableDto } from "../dtos/tenants-table-dto.ee";
 import { useDateRangePickerStore } from "../stores/date-range-store.ee";
 
@@ -45,7 +45,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
   );
 
   const from = format(dateRange!.from!, "yyyy-MM-dd");
-  const to = format(dateRange!.to!, "yyyy-MM-dd");
+  const to = format(dateRange!.to ?? dateRange!.from!, "yyyy-MM-dd");
   // Get query client
   const queryClient = useQueryClient();
 
@@ -66,7 +66,6 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       isChangeRequestEnabled: false,
       isPwdEnabled: true,
       isSSOEnabled: false,
-      ssoConfigJson: undefined,
       isPwdNeverExpiresEnabled: true,
       daysBeforePwdExpires: "730",
       isIdleSessionTimeoutEnabled: true,
@@ -126,7 +125,6 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,
-      ssoConfigJson: undefined,
       // Group
       isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
       daysBeforePwdExpires: tenantData?.daysBeforePwdExpires?.toString() ?? "730",
@@ -172,11 +170,8 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
-    const refinedFormData = { ...formData };
-    delete refinedFormData.ssoConfigJson;
-
     return {
-      ...refinedFormData,
+      ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };
