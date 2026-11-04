@@ -1,4 +1,3 @@
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useEffect } from "react";
 
 import { deleteFile } from "@/components/file-uploader/apis/file-upload-apis";
@@ -7,12 +6,12 @@ import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.ty
 import { TicketAddAttachmentForm } from "./TicketAddAttachmentForm";
 import { useFileUploadQueue } from "./file-upload";
 
-interface TicketAttachmentUploadDialogProps {
+type TicketAttachmentUploadDialogProps = {
   ticketId: string;
   api: TicketDetailApiAdapter;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+};
 
 export const TicketAttachmentUploadDialog = ({
   ticketId,
@@ -40,21 +39,12 @@ export const TicketAttachmentUploadDialog = ({
   }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        side={"center"}
-        className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
-      >
-        <DialogDefaultHeader heading="Add attachment" className="p-3 px-4" />
-        <div className="flex-1 overflow-hidden">
-          <TicketAddAttachmentForm
-            ticketId={ticketId}
-            api={api}
-            queue={queue}
-            onCompleted={() => onOpenChange(false)}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
+    <TicketAddAttachmentForm
+      isOpen={open}
+      ticketId={ticketId}
+      api={api}
+      queue={queue}
+      onCompleted={() => onOpenChange(false)}
+    />
   );
 };

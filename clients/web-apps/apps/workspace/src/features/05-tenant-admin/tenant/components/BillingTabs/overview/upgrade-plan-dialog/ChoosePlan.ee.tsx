@@ -101,7 +101,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
   }
 
   return (
-    <div className="space-y-4 p-4 pt-2">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {isFrequencyChange ? (
@@ -165,7 +165,7 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
       <div className="grid grid-cols-7 gap-4">
         <div className="col-span-4 space-y-4">
           <div className="rounded-lg border">
-            <ScrollArea className="h-[calc(100vh-22rem)] p-3">
+            <ScrollArea className="h-[calc(100dvh-28rem)] min-h-64 p-3">
               <RadioGroup
                 value={selectedPlan}
                 onValueChange={(val) => {
