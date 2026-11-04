@@ -43,54 +43,54 @@
       "type": "select",
       "name": "StandardFormat",
       "label": "Standard Format",
-      "description": "The standard DateTime format to use.",
+      "description": "The standard DateTime format to use. Examples use US English; other regional settings may format differently.",
       "defaultValue": "ShortDate",
       "required": false,
       "selectOptions": [
         {
-          "label": "ShortDate",
+          "label": "Short date",
           "value": "ShortDate",
-          "description": ""
+          "description": "e.g. 11/3/2026 (US English)"
         },
         {
-          "label": "LongDate",
+          "label": "Long date",
           "value": "LongDate",
-          "description": ""
+          "description": "e.g. Tuesday, November 3, 2026 (US English)"
         },
         {
-          "label": "ShortTime",
+          "label": "Short time",
           "value": "ShortTime",
-          "description": ""
+          "description": "e.g. 3:45 PM (US English)"
         },
         {
-          "label": "LongTime",
+          "label": "Long time",
           "value": "LongTime",
-          "description": ""
+          "description": "e.g. 3:45:30 PM (US English)"
         },
         {
-          "label": "FullDatetimeLongTime",
+          "label": "Full date and time",
           "value": "FullDatetimeLongTime",
-          "description": ""
+          "description": "e.g. Tuesday, 03 November 2026 15:45:30 (fixed layout)"
         },
         {
-          "label": "FullDatetimeShortTime",
+          "label": "Short date and short time",
           "value": "FullDatetimeShortTime",
-          "description": ""
+          "description": "e.g. 11/3/2026 3:45 PM (US English)"
         },
         {
-          "label": "GeneralDatetimeShortTime",
+          "label": "General date, short time",
           "value": "GeneralDatetimeShortTime",
-          "description": ""
+          "description": "e.g. 11/3/2026 3:45 PM (US English)"
         },
         {
-          "label": "GeneralDatetimeLongTime",
+          "label": "General date, long time",
           "value": "GeneralDatetimeLongTime",
-          "description": ""
+          "description": "e.g. 11/3/2026 3:45:30 PM (US English)"
         },
         {
-          "label": "SortableDatetime",
+          "label": "Sortable (ISO 8601)",
           "value": "SortableDatetime",
-          "description": ""
+          "description": "e.g. 2026-11-03 15:45:30Z (fixed layout)"
         }
       ],
       "renderIf": {
@@ -107,7 +107,7 @@
       "type": "text",
       "name": "CustomFormat",
       "label": "Custom Format String",
-      "description": "A custom format string for the DateTime value (e.g., yyyyMMdd). For more info on custom format strings, see: https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1",
+      "description": "A custom format pattern. Examples using 3 November 2026, 3:45:30 PM:\n\n- \u0060yyyyMMdd\u0060 \u2192 20261103\n- \u0060yyyy-MM-dd\u0060 \u2192 2026-11-03\n- \u0060dd MMM yyyy\u0060 \u2192 03 Nov 2026\n- \u0060dddd, dd MMMM yyyy\u0060 \u2192 Tuesday, 03 November 2026\n- \u0060MM/dd/yyyy hh:mm tt\u0060 \u2192 11/03/2026 03:45 PM\n- \u0060HH:mm:ss\u0060 \u2192 15:45:30\n\nSpecifiers: \u0060yyyy\u0060 year, \u0060MM\u0060 month, \u0060MMM\u0060 short month, \u0060dd\u0060 day, \u0060ddd\u0060 short weekday, \u0060dddd\u0060 weekday, \u0060HH\u0060 24-hour, \u0060hh\u0060 12-hour, \u0060mm\u0060 minute, \u0060ss\u0060 second, \u0060tt\u0060 AM/PM.",
       "defaultValue": "",
       "required": false,
       "renderIf": {

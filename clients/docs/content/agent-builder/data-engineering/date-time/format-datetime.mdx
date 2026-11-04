@@ -7,17 +7,19 @@ The **Format DateTime** node is designed to transform DateTime values into a for
 For instance, you can:
 
 - Convert a DateTime object into a standard date string like "MM/DD/YYYY".
-- Create a custom format such as "YYYYMMDD" for sorting or comparisons.
+- Create a custom format such as "yyyyMMdd" for sorting or comparisons.
 - Display full date and time details with both short and long formats.
 
 ## Configuration Options
 
-| Field Name               | Description                                                                               | Input Type | Required? | Default Value |
-| ------------------------ | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **DateTime Value**       | The DateTime value you want to format.                                                    | Text       | No        | _(empty)_     |
-| **Format Option**        | Choose whether to apply a standard or custom format to the DateTime value.                | Select     | No        | Standard      |
-| **Standard Format**      | Select a predefined DateTime format. This field appears only when "Standard" is selected. | Select     | No        | ShortDate     |
-| **Custom Format String** | Enter a custom format pattern. This field appears only when "Custom" is selected.         | Text       | No        | _(empty)_     |
+| Field Name               | Description                                                                                        | Input Type | Required? | Default Value |
+| ------------------------ | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **DateTime Value**       | The DateTime value you want to format.                                                             | Text       | No        | _(empty)_     |
+| **Format Option**        | Choose whether to apply a standard or custom format to the DateTime value.                         | Select     | No        | Standard      |
+| **Standard Format**      | Select a predefined DateTime format. This field appears only when "Standard" is selected.          | Select     | No        | Short date    |
+| **Custom Format String** | Enter a custom format pattern, e.g. `yyyyMMdd`. This field appears only when "Custom" is selected. | Text       | No        | _(empty)_     |
+
+Standard format examples use US English. Results follow the regional settings of the machine running the Flow, except **Full date and time** and **Sortable (ISO 8601)**, which use a fixed layout.
 
 ## Expected Output Format
 
@@ -48,7 +50,7 @@ In the **Format Option** dropdown, select the formatting method:
 
 If you choose **Standard Format**, select from listed options in **Standard Format**:
 
-- Options include patterns like **Short Date**, **Long Time**, etc.
+- Options include patterns like **Short date**, **Long time**, etc.
 
 ### Step 5
 
@@ -69,9 +71,57 @@ Your formatted DateTime string will be produced as **Formatted DateTime String**
 
 | Format Option   | DateTime Value       | Standard Format | Custom Format String | Output Value               | Output Type       |
 | --------------- | -------------------- | --------------- | -------------------- | -------------------------- | ----------------- |
-| Standard Format | 01/01/2025 15:30     | Long Date       | _(n/a)_              | Wednesday, January 1, 2025 | String (DateTime) |
-| Standard Format | 01/01/2025 15:30     | Short Time      | _(n/a)_              | 15:30 PM                   | String (Time)     |
+| Standard Format | 01/01/2025 15:30     | Long date       | _(n/a)_              | Wednesday, January 1, 2025 | String (DateTime) |
+| Standard Format | 01/01/2025 15:30     | Short time      | _(n/a)_              | 3:30 PM                    | String (Time)     |
 | Custom Format   | 2025-01-01T15:30:00Z | _(n/a)_         | yyyyMMdd             | 20250101                   | String (Custom)   |
+
+### Custom Format Examples
+
+Using 3 November 2026, 3:45:30 PM as the reference date:
+
+| Custom Format String        | Output                      |
+| --------------------------- | --------------------------- |
+| `yyyyMMdd`                  | `20261103`                  |
+| `yyyy-MM-dd`                | `2026-11-03`                |
+| `dd MMM yyyy`               | `03 Nov 2026`               |
+| `dddd, dd MMMM yyyy`        | `Tuesday, 03 November 2026` |
+| `MM/dd/yyyy`                | `11/03/2026`                |
+| `MM/dd/yyyy hh:mm tt`       | `11/03/2026 03:45 PM`       |
+| `HH:mm`                     | `15:45`                     |
+| `HH:mm:ss`                  | `15:45:30`                  |
+| `h:mm tt`                   | `3:45 PM`                   |
+| `MMMM dd`                   | `November 03`               |
+| `yyyy MMMM`                 | `2026 November`             |
+| `ddd, dd MMM yyyy HH:mm:ss` | `Tue, 03 Nov 2026 15:45:30` |
+
+Custom format specifiers:
+
+| Specifier          | Meaning                                                   | Example                 |
+| ------------------ | --------------------------------------------------------- | ----------------------- |
+| `d`                | Day, no leading zero                                      | `3`                     |
+| `dd`               | Day, leading zero                                         | `03`                    |
+| `ddd`              | Abbreviated weekday                                       | `Tue`                   |
+| `dddd`             | Full weekday                                              | `Tuesday`               |
+| `h`                | 12-hour clock hour, no leading zero                       | `3`                     |
+| `hh`               | 12-hour clock hour, leading zero                          | `03`                    |
+| `H`                | 24-hour clock hour, no leading zero                       | `15`                    |
+| `HH`               | 24-hour clock hour, leading zero                          | `15`                    |
+| `m`                | Minute, no leading zero                                   | `45`                    |
+| `mm`               | Minute, leading zero                                      | `45`                    |
+| `M`                | Month number, no leading zero                             | `11`                    |
+| `MM`               | Month number, leading zero                                | `11`                    |
+| `MMM`              | Abbreviated month                                         | `Nov`                   |
+| `MMMM`             | Full month                                                | `November`              |
+| `s`                | Second, no leading zero                                   | `30`                    |
+| `ss`               | Second, leading zero                                      | `30`                    |
+| `t`                | First letter of AM/PM                                     | `P`                     |
+| `tt`               | AM/PM                                                     | `PM`                    |
+| `y`                | Year, no leading zero                                     | `26`                    |
+| `yy`               | Year, two digits                                          | `26`                    |
+| `yyyy`             | Year, four digits                                         | `2026`                  |
+| `K`                | Time zone offset                                          | `+00:00`                |
+| `z` / `zz` / `zzz` | UTC offset in hours / padded hours / hours and minutes    | `+0` / `+00` / `+00:00` |
+| `f` / `ff` / `fff` | Fraction of a second (tenths / hundredths / milliseconds) | `5` / `50` / `500`      |
 
 ## Common Mistakes & Troubleshooting
 
