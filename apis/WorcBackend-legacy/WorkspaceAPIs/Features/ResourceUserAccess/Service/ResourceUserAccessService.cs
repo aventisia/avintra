@@ -71,7 +71,7 @@ public class ResourceUserAccessService : IResourceUserAccessService
     }
 
     // Retrieves all users who have been granted access to a specific resource.
-    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId)
+    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId, ResourceTypeEnum? resourceType = null)
     {
         // Initialize response with default failure state.
         var serviceResponse = new ServiceResponse<IEnumerable<ResourceUserAccessDto>>
@@ -84,7 +84,9 @@ public class ResourceUserAccessService : IResourceUserAccessService
         {
             // Fetch all resource user access records for the given resource and include user details.
             var resourceUserAccesses = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.ResourceId == resourceId)
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceId &&
+                    (!resourceType.HasValue || w.ResourceType == resourceType.Value))
                 .Include(i => i.User)
                 .ProjectToType<ResourceUserAccessDto>()
                 .ToListAsync();
@@ -597,6 +599,36 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
                         tool.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
                         _unitOfWork.ToolRepo.Update(tool);
+                        break;
+                    }
+
+                case ResourceTypeEnum.UiBuilder:
+                    {
+                        // Retrieve the UiBuilderProject resource.
+                        var uiBuilderProject = await _unitOfWork.UiBuilderProjectRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (uiBuilderProject == null)
+                            return serviceResponse;
+
+                        uiBuilderProject.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.UiBuilderProjectRepo.Update(uiBuilderProject);
+                        break;
+                    }
+
+                case ResourceTypeEnum.UiBuilderPublished:
+                    {
+                        // Retrieve the UiBuilderProject resource.
+                        var uiBuilderProject = await _unitOfWork.UiBuilderProjectRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (uiBuilderProject == null)
+                            return serviceResponse;
+
+                        uiBuilderProject.IsPublishedTenantWide = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.UiBuilderProjectRepo.Update(uiBuilderProject);
                         break;
                     }
 

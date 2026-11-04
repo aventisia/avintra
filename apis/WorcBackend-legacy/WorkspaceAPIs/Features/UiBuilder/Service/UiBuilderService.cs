@@ -9,6 +9,7 @@ public partial class UiBuilderService : IUiBuilderService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IQueueWorkItemService _queueWorkItemService;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly Guid _userId;
     private readonly List<string> _userRoles;
 
@@ -18,7 +19,8 @@ public partial class UiBuilderService : IUiBuilderService
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
         IQueueWorkItemService queueWorkItemService,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        IResourceUserAccessService resourceUserAccessService)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _userRoles = httpContextAccessor.HttpContext?.User?.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList() ?? new List<string>();
@@ -28,6 +30,7 @@ public partial class UiBuilderService : IUiBuilderService
         _currentTenantService = currentTenantService;
         _queueWorkItemService = queueWorkItemService;
         _stringEncryptionService = stringEncryptionService;
+        _resourceUserAccessService = resourceUserAccessService;
     }
 
     public async Task<ServiceResponse<IEnumerable<UiBuilderProjectDto>>> GetUiBuilderProjectsAsync(bool isPersonal)
@@ -36,6 +39,15 @@ public partial class UiBuilderService : IUiBuilderService
 
         try
         {
+            var resourceAccess = isPersonal
+                ? new Dictionary<Guid, ResourceAccessTypeEnum>()
+                : await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
+                    _userId,
+                    ResourceTypeEnum.UiBuilder,
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit);
+
             var projects = isPersonal
                 ? await _unitOfWork.UiBuilderProjectRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
@@ -43,7 +55,9 @@ public partial class UiBuilderService : IUiBuilderService
                     .OrderByDescending(w => w.CreatedOn)
                     .ToListAsync()
                 : await _unitOfWork.UiBuilderProjectRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId != _userId && w.IsTenantWideAccess)
+                    .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _userId &&
+                        (w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)))
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(w => w.CreatedOn)
                     .ToListAsync();
@@ -53,7 +67,7 @@ public partial class UiBuilderService : IUiBuilderService
             projectDtoList.ForEach(projectDto =>
                 projectDto.AccessLevel = isPersonal
                     ? ResourceAccessTypeEnum.Owner
-                    : ResourceAccessTypeEnum.View);
+                    : resourceAccess.GetValueOrDefault(projectDto.Id, ResourceAccessTypeEnum.View));
 
             serviceResponse.Data = projectDtoList;
             serviceResponse.StatusCode = 200;
@@ -80,7 +94,7 @@ public partial class UiBuilderService : IUiBuilderService
                 .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
 
-            if (project == null || !HasReadAccess(project))
+            if (project == null || !await HasReadAccessAsync(project))
             {
                 serviceResponse.Update("Project does not exist", 404);
                 return serviceResponse;
@@ -114,7 +128,7 @@ public partial class UiBuilderService : IUiBuilderService
                 .GetByConditionAsync(w => w.Id == id)
                 .SingleOrDefaultAsync();
 
-            if (project == null || !HasReadAccess(project))
+            if (project == null || !await HasReadAccessAsync(project))
             {
                 serviceResponse.Update("Project does not exist", 404);
                 return serviceResponse;
@@ -168,6 +182,12 @@ public partial class UiBuilderService : IUiBuilderService
 
             if (!await _unitOfWork.SaveAsync())
             {
+                return serviceResponse;
+            }
+
+            if (!await _resourceUserAccessService.AssignOwnerAsync(_userId, newProject.Id, ResourceTypeEnum.UiBuilder))
+            {
+                serviceResponse.Update("Failed assigning ownership.", 400);
                 return serviceResponse;
             }
 
@@ -312,6 +332,9 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(project.Id, ResourceTypeEnum.UiBuilder);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(project.Id, ResourceTypeEnum.UiBuilderPublished);
+
             serviceResponse.Update("Project deleted successfully", 200, true);
         }
         catch (Exception ex)
@@ -353,6 +376,9 @@ public partial class UiBuilderService : IUiBuilderService
             {
                 return serviceResponse;
             }
+
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(ids, ResourceTypeEnum.UiBuilder);
+            await _resourceUserAccessService.DeleteResourceUserAccessesAsync(ids, ResourceTypeEnum.UiBuilderPublished);
 
             serviceResponse.Update($"{projects.Count} projects deleted successfully", 200, projects.Count);
         }
@@ -408,7 +434,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            if (!HasWriteAccess(project))
+            if (!await HasWriteAccessAsync(project))
             {
                 _logger.LogWarning("Unauthorized version insert. User {UserId}, Project {ProjectId}", _userId, project.Id);
                 serviceResponse.Update("You do not have access to update this project.", 403);
@@ -487,7 +513,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
-            if (!HasWriteAccess(project))
+            if (!await HasWriteAccessAsync(project))
             {
                 _logger.LogWarning("Unauthorized version restore. User {UserId}, Project {ProjectId}", _userId, project.Id);
                 serviceResponse.Update("You do not have access to update this project.", 403);
@@ -583,6 +609,7 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
+            var wasPublished = project.IsPublished;
             var isAlreadyPinned = false;
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
@@ -620,6 +647,13 @@ public partial class UiBuilderService : IUiBuilderService
                 return serviceResponse;
             }
 
+            if (!wasPublished &&
+                !await _resourceUserAccessService.AssignOwnerAsync(_userId, project.Id, ResourceTypeEnum.UiBuilderPublished))
+            {
+                serviceResponse.Update("Failed assigning published access.", 400);
+                return serviceResponse;
+            }
+
             serviceResponse.Update("Project published successfully", 200, project.Adapt<UiBuilderProjectDto>());
         }
         catch (Exception ex)
@@ -645,8 +679,15 @@ public partial class UiBuilderService : IUiBuilderService
                 .ToListAsync();
 
             var projectDtoList = await ToProjectDtosAsync(projects);
+            var ownedProjectIds = projects
+                .Where(project => project.CreatedByUserId == _userId)
+                .Select(project => project.Id)
+                .ToHashSet();
 
-            projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
+            projectDtoList.ForEach(projectDto =>
+                projectDto.AccessLevel = ownedProjectIds.Contains(projectDto.Id)
+                    ? ResourceAccessTypeEnum.Owner
+                    : ResourceAccessTypeEnum.View);
 
             serviceResponse.Update("Published projects retrieved successfully", 200, projectDtoList);
         }
@@ -665,13 +706,19 @@ public partial class UiBuilderService : IUiBuilderService
 
         try
         {
+            var resourceAccess = await _resourceUserAccessService.GetAccessibleResourcesWithAccessAsync(
+                _userId,
+                ResourceTypeEnum.UiBuilderPublished,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit);
+
             var projects = await _unitOfWork.UiBuilderProjectRepo
                 .GetByConditionAsync(w =>
                     w.IsPublished &&
                     !w.IsDisabled &&
                     w.PublishedVersionNumber != null &&
-                    (w.IsPublishedTenantWide ||
-                        (w.UiBuilderProjectUsers != null && w.UiBuilderProjectUsers.Any(user => user.UserId == _userId))))
+                    (w.IsPublishedTenantWide || resourceAccess.Keys.Contains(w.Id)))
                 .AsNoTracking()
                 .Include(i => i.CreatedByUser)
                 .OrderByDescending(w => w.CreatedOn)
@@ -679,7 +726,8 @@ public partial class UiBuilderService : IUiBuilderService
 
             var projectDtoList = await ToProjectDtosAsync(projects);
 
-            projectDtoList.ForEach(projectDto => projectDto.AccessLevel = ResourceAccessTypeEnum.View);
+            projectDtoList.ForEach(projectDto =>
+                projectDto.AccessLevel = resourceAccess.GetValueOrDefault(projectDto.Id, ResourceAccessTypeEnum.View));
 
             serviceResponse.Update("Assigned projects retrieved successfully", 200, projectDtoList);
         }
@@ -1084,11 +1132,17 @@ public partial class UiBuilderService : IUiBuilderService
 
         if (enforceAssignment && !project.IsPublishedTenantWide)
         {
-            var isAssigned = await _unitOfWork.UiBuilderProjectRepo
-                .GetByConditionAsync(w => w.Id == id && w.UiBuilderProjectUsers != null && w.UiBuilderProjectUsers.Any(user => user.UserId == _userId))
-                .AnyAsync();
+            var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+                _userId,
+                project.Id,
+                ResourceTypeEnum.UiBuilderPublished,
+                project.CreatedByUserId,
+                false,
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit);
 
-            if (!isAssigned)
+            if (!hasAccess)
             {
                 return null;
             }
@@ -1157,14 +1211,33 @@ public partial class UiBuilderService : IUiBuilderService
         return project;
     }
 
-    private bool HasReadAccess(UiBuilderProject project)
+    private async Task<bool> HasReadAccessAsync(UiBuilderProject project)
     {
-        return project.CreatedByUserId == _userId || project.IsTenantWideAccess;
+        var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+            _userId,
+            project.Id,
+            ResourceTypeEnum.UiBuilder,
+            project.CreatedByUserId,
+            project.IsTenantWideAccess,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.View,
+            ResourceAccessTypeEnum.Edit);
+
+        return hasAccess;
     }
 
-    private bool HasWriteAccess(UiBuilderProject project)
+    private async Task<bool> HasWriteAccessAsync(UiBuilderProject project)
     {
-        return project.CreatedByUserId == _userId || project.IsTenantWideAccess;
+        var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+            _userId,
+            project.Id,
+            ResourceTypeEnum.UiBuilder,
+            project.CreatedByUserId,
+            false,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.Edit);
+
+        return hasAccess;
     }
 
     private async Task<Dictionary<Guid, VaultCredential>> GetProviderCredentialsAsync(List<TenantModelProvider> providers)
@@ -1323,6 +1396,6 @@ public partial class UiBuilderService : IUiBuilderService
             return null;
         }
 
-        return HasReadAccess(project) ? project : await GetVisiblePublishedProjectAsync(id, true);
+        return await HasReadAccessAsync(project) ? project : await GetVisiblePublishedProjectAsync(id, true);
     }
 }

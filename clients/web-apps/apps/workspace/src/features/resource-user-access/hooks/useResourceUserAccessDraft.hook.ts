@@ -41,8 +41,8 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
   const myEmail = useUserSessionStore((state) => state.userSession?.email?.toLowerCase() ?? "");
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: [RESOURCE_USER_ACCESS_KEY, resourceId],
-    queryFn: () => getResourceUserAccessById(resourceId ?? ""),
+    queryKey: [RESOURCE_USER_ACCESS_KEY, resourceId, resourceType],
+    queryFn: () => getResourceUserAccessById(resourceId ?? "", resourceType ?? undefined),
     enabled: isOpen && Boolean(resourceId),
     staleTime: 0,
   });

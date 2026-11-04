@@ -1,18 +1,26 @@
 meta {
-  name: Assign user duplicate returns 409
+  name: Share published UI builder project with a user again returns 409
   type: http
   seq: 15
 }
 
 post {
-  url: {{WORKSPACE_API_BASE_URL}}/uibuilder-project-user
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
   body: json
   auth: none
 }
 
 body:json {
-  "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
-  "userId": "{{USER_ID}}"
+  {
+    "resourceType": "UiBuilderPublished",
+    "resourceId": "{{UIBUILDER_PROJECT_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{USER_ID}}"
+      }
+    ]
+  }
 }
 
 tests {

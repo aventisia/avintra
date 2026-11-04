@@ -7,6 +7,7 @@ import {
   ResourceUserAccessDto,
   UpdateTenantWideAccessDto,
 } from "../dtos/resource-user-access.dto";
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 
 const resourceUserAccessApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-user-access`;
 
@@ -22,9 +23,11 @@ const getAllResourceUserAccess = () => {
 /**
  * Retrieves ResourceUserAccess list by resource id.
  */
-const getResourceUserAccessById = (resourceId: string) => {
+const getResourceUserAccessById = (resourceId: string, resourceType?: ResourceTypeEnum) => {
   return axiosInstance
-    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`)
+    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`, {
+      params: { resourceType },
+    })
     .then((res) => res.data);
 };
 

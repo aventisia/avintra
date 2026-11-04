@@ -20,7 +20,6 @@ public class UnitOfWork : IUnitOfWork
     public IUiBuilderProjectRepo UiBuilderProjectRepo => new UiBuilderProjectRepo(_workspaceDbContext);
     public IUiBuilderVersionRepo UiBuilderVersionRepo => new UiBuilderVersionRepo(_workspaceDbContext);
     public IUiBuilderAssetRepo UiBuilderAssetRepo => new UiBuilderAssetRepo(_workspaceDbContext);
-    public IUiBuilderProjectUserRepo UiBuilderProjectUserRepo => new UiBuilderProjectUserRepo(_workspaceDbContext);
     public IFlowVersionHistoryRepo FlowVersionHistoryRepo => new FlowVersionHistoryRepo(_workspaceDbContext);
     public IAgentRiskRegistryRepo AgentRiskRegistryRepo => new AgentRiskRegistryRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);

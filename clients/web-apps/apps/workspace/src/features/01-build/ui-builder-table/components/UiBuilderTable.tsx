@@ -12,13 +12,14 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { LayoutTemplate } from "lucide-react";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
+import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
+
+import { TABLE_HEADING, TABLE_KEY, UI_BUILDER_QUERY_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUiBuilderProjects } from "../hooks/useFetchUiBuilderProjects";
 import { UiBuilderBulkActions } from "./UiBuilderBulkActions";
 import { uiBuilderTableColumns } from "./UiBuilderTableColumns";
-import UiBuilderAssignUsersDialog from "./assign-users/UiBuilderAssignUsersDialog";
 import UiBuilderDisableDialog from "./ui-builder-row-actions/UiBuilderDisableDialog";
 
 /**
@@ -81,7 +82,7 @@ export const UiBuilderTable = () => {
         <DataTableSkeleton />
       )}
       <UiBuilderDisableDialog />
-      <UiBuilderAssignUsersDialog />
+      <ResourceUserAccessDialog queryKey={UI_BUILDER_QUERY_KEY} allowInProd />
     </>
   );
 };

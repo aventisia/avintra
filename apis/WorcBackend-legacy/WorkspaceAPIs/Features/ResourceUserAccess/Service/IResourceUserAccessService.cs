@@ -16,8 +16,9 @@ public interface IResourceUserAccessService
     /// Gets all sharing records for a specific resource.
     /// </summary>
     /// <param name="resourceId"> The unique identifier of the resource. </param>
+    /// <param name="resourceType"> Optional resource type used to filter sharing records. </param>
     /// <returns> A collection of users and access levels assigned to the resource. </returns>
-    Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId);
+    Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId, ResourceTypeEnum? resourceType = null);
 
     /// <summary>
     /// Gets a resource user access by its unique identifier.

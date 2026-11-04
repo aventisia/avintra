@@ -55,8 +55,8 @@ const UiBuilderDisableDialog = () => {
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Disable {project?.name}?</h2>
           <p className="text-sm text-muted-foreground">
-            It will be hidden from Published and assigned users will lose access. Assignments are
-            kept and restored on Enable.
+            It will be hidden from Published and shared users will lose access. Sharing is kept and
+            restored on Enable.
           </p>
         </div>
 

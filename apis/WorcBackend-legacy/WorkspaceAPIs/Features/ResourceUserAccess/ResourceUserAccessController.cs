@@ -21,9 +21,9 @@ public class ResourceUserAccessController : BaseApiController
 
     // Gets all users who have access to a specific resource.
     [HttpGet("{resourceId}/list")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<ResourceUserAccessDto>>>> GetResourceUserAccessesAsync(Guid resourceId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ResourceUserAccessDto>>>> GetResourceUserAccessesAsync(Guid resourceId, [FromQuery] ResourceTypeEnum? resourceType)
     {
-        return ResultHelper(await _resourceUserAccessService.GetResourceUserAccessesAsync(resourceId));
+        return ResultHelper(await _resourceUserAccessService.GetResourceUserAccessesAsync(resourceId, resourceType));
     }
 
     // Gets a specific resource user access by ID.

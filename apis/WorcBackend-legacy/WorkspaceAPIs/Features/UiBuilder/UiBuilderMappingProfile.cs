@@ -49,30 +49,5 @@ public class UiBuilderMappingProfile : IRegister
 
         config.NewConfig<UiBuilderAsset, UiBuilderAssetDto>()
             .Ignore(nameof(UiBuilderAssetDto.DataBase64));
-
-        config.NewConfig<UiBuilderProjectUser, UiBuilderProjectUserDto>()
-            .Map(dest => dest.FirstName,
-                src => src.User != null ? src.User.FirstName : string.Empty)
-            .Map(dest => dest.LastName,
-                src => src.User != null ? src.User.LastName : string.Empty)
-            .Map(dest => dest.Username,
-                src => src.User != null ? src.User.UserName : string.Empty)
-            .Map(dest => dest.Initials,
-                src => src.User != null
-                    ? $"{src.User.FirstName.FirstOrDefault()}{src.User.LastName.FirstOrDefault()}"
-                    : null)
-            .Map(dest => dest.Name,
-                src => src.UiBuilderProject != null ? src.UiBuilderProject.Name : string.Empty)
-            .Map(dest => dest.HeadVersionNumber,
-                src => src.UiBuilderProject != null &&
-                    src.UiBuilderProject.UiBuilderVersions != null &&
-                    src.UiBuilderProject.UiBuilderVersions.Any()
-                    ? src.UiBuilderProject.UiBuilderVersions.Max(version => version.VersionNumber)
-                    : 0);
-
-        config.NewConfig<UiBuilderProjectUserDto, UiBuilderProjectUser>()
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.TenantId)
-            .IgnoreNullValues(true);
     }
 }

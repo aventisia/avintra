@@ -2,9 +2,11 @@ import { cn } from "@avplatform/ui/lib";
 import type { IconProps } from "@avplatform/ui/types";
 import { QueueListIcon } from "@heroicons/react/24/outline";
 import {
+  AppWindow,
   BookOpenCheckIcon,
   BoxesIcon,
   FolderCogIcon,
+  LayoutTemplate,
   PuzzleIcon,
   Shield,
   WrenchIcon,
@@ -26,6 +28,8 @@ const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> =
   [ResourceTypeEnum.Flow]: NewAgentIcon,
   [ResourceTypeEnum.FlowVersion]: NewAgentIcon,
   [ResourceTypeEnum.Space]: FolderCogIcon,
+  [ResourceTypeEnum.UiBuilder]: LayoutTemplate,
+  [ResourceTypeEnum.UiBuilderPublished]: AppWindow,
 };
 
 type ResourceMarkProps = {

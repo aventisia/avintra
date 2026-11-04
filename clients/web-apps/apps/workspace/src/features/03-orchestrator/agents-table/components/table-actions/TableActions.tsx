@@ -32,7 +32,12 @@ export const TableActions = ({
   if (type === "UI") {
     return (
       <DataTableRowActions>
-        <UiBuilderRowActions rowId={rowId} isDisabled={isDisabled} projectName={flowName} />
+        <UiBuilderRowActions
+          rowId={rowId}
+          isDisabled={isDisabled}
+          isTenantWideAccess={isTenantWideAccess}
+          projectName={flowName}
+        />
       </DataTableRowActions>
     );
   }

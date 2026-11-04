@@ -1,22 +1,26 @@
 meta {
-  name: Bulk assign users to UI builder project
+  name: Share UI builder project with a user
   type: http
   seq: 16
 }
 
 post {
-  url: {{WORKSPACE_API_BASE_URL}}/uibuilder-project-user/bulk
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
   body: json
   auth: none
 }
 
 body:json {
-  [
-    {
-      "uiBuilderProjectId": "{{UIBUILDER_PROJECT_ID}}",
-      "userId": "{{USER_ID}}"
-    }
-  ]
+  {
+    "resourceType": "UiBuilder",
+    "resourceId": "{{UIBUILDER_PROJECT_ID}}",
+    "users": [
+      {
+        "accessLevel": "Edit",
+        "userId": "{{USER_ID}}"
+      }
+    ]
+  }
 }
 
 tests {

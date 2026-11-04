@@ -3,6 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an image uploaded to a custom UI builder project, such as a logo, that generated interfaces can show.
 /// </summary>
+[Table("uibuilder_Assets")]
 public class UiBuilderAsset : BaseEntity, IMustHaveTenant
 {
     /// <summary>
