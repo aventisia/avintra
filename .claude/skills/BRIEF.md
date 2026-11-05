@@ -11,8 +11,8 @@ A brief covers one issue's problem, so the reviewer decides with full focus. Oth
 Search open and closed issues, one keyword search per distinct term for the problem (the entity, screen, symptom, and likely synonyms), and read the body of each plausible match:
 
 ```bash
-tea issues list --repo "$REPO" --state all --keyword "<term>" --fields index,state,title,labels,url --output simple
-tea api --repo "$REPO" "/repos/{owner}/{repo}/issues/<n>"
+gh issue list --repo "$REPO" --state all --search "<term>" --json number,state,title,labels,url
+gh api "repos/$REPO/issues/<n>"
 ```
 
 Issues the user names are matches too. Propose one handling for each open match that shares the problem:
@@ -25,7 +25,7 @@ A closed match is context: cite it where it explains current behavior, such as a
 
 ## Investigate
 
-Source, Git, and Gitea stay read-only; the draft file is your only write.
+Source, Git, and GitHub stay read-only; the draft file is your only write.
 
 1. Find related issues per Related issues, unless the skill has already searched.
 2. Read the area `AGENTS.md` and feature `README.md` files for the likely areas, and the `IMPORTANT NOTE:` comments in the code you trace.
@@ -115,19 +115,19 @@ Approving a revision authorizes posting exactly that file and closing the Combin
 
 After the skill writes the approved file into the issue description:
 
-1. **Record the approval** on the issue. The fingerprint comes from the description as Gitea stored it, so any later edit to the description breaks the match:
+1. **Record the approval** on the issue. The fingerprint comes from the description as GitHub stored it, so any later edit to the description breaks the match:
 
    ```bash
-   FINGERPRINT=$(tea api --repo "$REPO" "/repos/{owner}/{repo}/issues/$ID" | jq -r .body | git hash-object --stdin)
-   tea comments add --repo "$REPO" "$ID" "Brief approved (rev <N>). Fingerprint: $FINGERPRINT"
+   FINGERPRINT=$(gh api "repos/$REPO/issues/$ID" --jq .body | git hash-object --stdin)
+   gh issue comment --repo "$REPO" "$ID" --body "Brief approved (rev <N>). Fingerprint: $FINGERPRINT"
    ```
 
 2. **Close each Combine issue**:
 
    ```bash
-   tea comments add --repo "$REPO" "$OTHER" "Combined into #$ID; the approved brief there covers this report."
-   tea issues edit --repo "$REPO" "$OTHER" --add-labels "Reviewed/Duplicate"
-   tea issues close --repo "$REPO" "$OTHER"
+   gh issue comment --repo "$REPO" "$OTHER" --body "Combined into #$ID; the approved brief there covers this report."
+   gh issue edit --repo "$REPO" "$OTHER" --add-label "Reviewed/Duplicate"
+   gh issue close --repo "$REPO" "$OTHER"
    ```
 
 ## Reuse in the agent loop

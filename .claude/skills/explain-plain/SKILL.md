@@ -1,6 +1,6 @@
 ---
 name: explain-plain
-argument-hint: "Feature, flow, or Gitea issue to explain"
+argument-hint: "Feature, flow, or GitHub issue to explain"
 description: "Explain how an existing feature works in plain, non-technical language. Use when the user wants a non-technical or high-level explanation of existing logic."
 ---
 
@@ -10,7 +10,7 @@ Explain how an existing feature works so a non-technical reader can follow it. S
 
 ## Gather
 
-Read the source, and the issue itself for a Gitea issue (`tea issues --repo . <number>`; see [`../GITEA.md`](../GITEA.md) for URLs and other repositories). Read as much as it takes to stay factual. What you read stays out of the answer.
+Read the source, and the issue itself for a GitHub issue (`gh issue view <number> --comments`; see [`../GITHUB.md`](../GITHUB.md) for URLs and other repositories). Read as much as it takes to stay factual. What you read stays out of the answer.
 
 ## Answer
 

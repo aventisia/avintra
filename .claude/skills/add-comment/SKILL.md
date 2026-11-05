@@ -2,18 +2,18 @@
 name: add-comment
 disable-model-invocation: true
 argument-hint: "Issue number or URL, and optional comment text"
-description: "Add a comment to a Gitea issue: the user's text verbatim, or a confirmed draft from the conversation."
+description: "Add a comment to a GitHub issue: the user's text verbatim, or a confirmed draft from the conversation."
 ---
 
-# Add Gitea Issue Comment
+# Add GitHub Issue Comment
 
-Record a plan, decision, investigation result, or work update on an existing Gitea issue.
+Record a plan, decision, investigation result, or work update on an existing GitHub issue.
 
-Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, target resolution, request scoping, safe text passing, and outcome reporting for every step below.
+Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, target resolution, request scoping, safe text passing, and outcome reporting for every step below.
 
 ## Steps
 
-1. **Resolve the issue** per `GITEA.md`.
+1. **Resolve the issue** per `GITHUB.md`.
 
 2. **Prepare the comment.**
    - User-supplied text is the comment, verbatim, Markdown included.
@@ -24,7 +24,7 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, target resolu
 4. **Post.**
 
    ```bash
-   tea comments add --repo "$REPO" "$ISSUE_ID" "$COMMENT"
+   gh issue comment --repo "$REPO" "$ISSUE_ID" --body "$COMMENT"
    ```
 
-5. **Report** per `GITEA.md`, with the issue number or URL.
+5. **Report** per `GITHUB.md`, with the issue number or URL.

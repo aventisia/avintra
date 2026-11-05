@@ -21,7 +21,7 @@ permissions:
 ## Role
 - Use the change the way its users will and record what they would see.
 - A run where every UI AC passes is a valid result. Every step is evidence; never invent a failure to fill the report.
-- Source, tests, Git, and Gitea stay read-only. Your only writes are the assigned report, `ui-*` screenshots, and `evidence.md` in the round directory. Never fix code.
+- Source, tests, Git, and GitHub stay read-only. Your only writes are the assigned report, `ui-*` screenshots, and `evidence.md` in the round directory. Never fix code.
 
 ## Inputs
 - Read `AGENT-LOOP.md` first; its Shared handoff contract and Execution conventions bind this role.
@@ -64,6 +64,6 @@ Start from the ACs; do not tour the whole application.
 - You give no verdict; QA accepts or re-drives your results and owns the verdict.
 
 ## Boundaries
-- Do not edit source, tests, fixtures, configuration, or environment files; do not write Playwright specs, commit, push, comment, or mutate Gitea. A missing regression spec is a note for QA.
+- Do not edit source, tests, fixtures, configuration, or environment files; do not write Playwright specs, commit, push, comment, or mutate GitHub. A missing regression spec is a note for QA.
 - Evidence files stay in the assigned round directory; keep credentials, tokens, and cookies out of the report.
 - Return to the orchestrator instead of launching agents.

@@ -2,18 +2,18 @@
 name: create-issue
 disable-model-invocation: true
 argument-hint: "Problem or feedback to brief, or a body/file to file verbatim; optional title, labels, assignees, and repo"
-description: "File a Gitea issue as an approved brief, or with a body the user supplies verbatim."
+description: "File a GitHub issue as an approved brief, or with a body the user supplies verbatim."
 ---
 
-# Create Gitea Issue
+# Create GitHub Issue
 
 File new work as an approved brief, so the issue is ready for implementation the moment it exists.
 
-Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below. [`../BRIEF.md`](../BRIEF.md) governs related issues, the brief, and what follows posting.
+Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below. [`../BRIEF.md`](../BRIEF.md) governs related issues, the brief, and what follows posting.
 
 ## Steps
 
-1. **Resolve the repository** per `GITEA.md`: a named `owner/repo` or repository URL, else the current checkout once confirmed as intended; otherwise ask. Verify `tea` before composing anything.
+1. **Resolve the repository** per `GITHUB.md`: a named `owner/repo` or repository URL, else the current checkout once confirmed as intended; otherwise ask. Verify `gh` before composing anything.
 
 2. **Search for related issues** per `BRIEF.md` before any investigation or brief. Show the user every match with its state and one line on how it overlaps, and let them choose: file a new issue, or add the problem to an existing one. Only a choice to file continues; otherwise stop and suggest `/refine-issue <n>` to re-brief that issue or `/add-comment <n>` to note the problem on it. A brief carries the matches into its Related issues section. With no matches, say which terms you searched and continue.
 
@@ -26,7 +26,7 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository re
 
 5. **Select labels** from the catalog below, spelled exactly. At least one label is required.
    - User-supplied labels are used exactly as given. One missing from the catalog → ask the user to pick an approved label.
-   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. A brief always adds `Reviewed/Confirmed`. `Priority/*` stays off; the user sets priority later in the Gitea UI.
+   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. A brief always adds `Reviewed/Confirmed`. `Priority/*` stays off; the user sets priority later in the GitHub UI.
 
 6. **Collect assignees**: only usernames the user gave, as a comma-separated list. Milestones, priority, and other fields stay unset unless asked for.
 
@@ -35,17 +35,17 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository re
 8. **Create the issue.** For a brief, fill `BODY` from the approved file: `BODY=$(cat "local-issues/<key>/brief.md")`. Drop the `--assignees` line when there are none.
 
    ```bash
-   tea issues create \
+   gh issue create \
      --repo "$REPO" \
      --title "$TITLE" \
-     --description "$BODY" \
-     --labels "$LABELS" \
-     --assignees "$ASSIGNEES"
+     --body "$BODY" \
+     --label "$LABELS" \
+     --assignee "$ASSIGNEES"
    ```
 
    For a brief, then record the approval and close the Combine issues per Post in `BRIEF.md`.
 
-9. **Report** per `GITEA.md`, with the issue number and URL, and each Combine issue closed.
+9. **Report** per `GITHUB.md`, with the issue number and URL, and each Combine issue closed.
 
 ## Label Catalog
 
