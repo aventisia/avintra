@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.Features.Tools.Helpers;
 /// Maps a library catalog row to the unified tool shape. Platform tools carry no base URL,
 /// activation, verification, or access columns, so those are fixed here.
 /// </summary>
-public static class PlatformToolDtoHelpers
+public static class ToolsHelpers
 {
     /// <summary>
     /// Maps a platform tool to a <see cref="ToolDto"/> with the current tenant's active state.
@@ -22,7 +22,7 @@ public static class PlatformToolDtoHelpers
         IsResourceAccessRestricted = true,
         IsActive = isActive,
         IsVerified = true,
-        IsDisabled = false,
+        IsDisabled = tool.IsDisabled,
         IsPopular = tool.IsPopular,
         AccessLevel = ResourceAccessTypeEnum.View,
     };

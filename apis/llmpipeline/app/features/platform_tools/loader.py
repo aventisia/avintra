@@ -4,11 +4,9 @@ Only tools the calling tenant has switched on are loaded: a catalog row must be
 mapped in ``ai_TenantPlatformTools`` and not disabled. Names are matched
 trimmed and case-insensitively against the catalog display name, then against
 the derived Corsair plugin id. A tenant custom tool that owns the same name
-always wins, so an unmarked entry that the custom store loaded is left alone.
-An explicit platform entry that cannot be resolved is withheld; an unmarked
-entry is left for the custom store (fail closed, never guessed). A name that
-belongs to a catalog row the tenant cannot use is platform-reserved and is
-withheld too.
+always wins, so its entry is left untouched for the custom store. An explicit
+platform entry that cannot be resolved is withheld, and so is any other entry
+that would execute through Corsair (fail closed, never guessed).
 """
 
 import uuid
@@ -27,9 +25,7 @@ from app.features.platform_tools.models import PlatformTool, TenantPlatformTool
 
 
 def derive_plugin_id(parsed_schema: Any) -> str | None:
-    """Return the Corsair plugin id from a parsed OpenAPI schema, when present.
-
-    Mirrors ``ToolOperationHelpers.TryGetCorsairPluginId``: a ``/corsair/{plugin}/``
+    """Mirror ``ToolOperationHelpers.TryGetCorsairPluginId``: ``/corsair/{plugin}/``
     path segment wins, otherwise the first dotted ``operationId`` prefix.
     """
 
@@ -54,7 +50,7 @@ def derive_plugin_id(parsed_schema: Any) -> str | None:
                 if separator > 0:
                     plugin = operation_id[:separator].strip()
                     if plugin:
-                        return plugin
+                        return plugin.casefold()
 
     return None
 
@@ -67,7 +63,7 @@ def _parse_corsair_path(path: Any) -> str | None:
     remainder = path[len(prefix):]
     separator = remainder.find("/")
     plugin = remainder[:separator] if separator > 0 else remainder
-    return plugin.strip() or None
+    return plugin.strip().casefold() or None
 
 
 def catalog_statement(tenant_id: uuid.UUID):
@@ -93,8 +89,6 @@ def catalog_statement(tenant_id: uuid.UUID):
 
 
 def withhold_platform_entries(entries: list[Any]) -> None:
-    """Blank platform entries so they cannot bind anything."""
-
     for entry in entries:
         set_entry_tool(entry, "")
 
@@ -104,6 +98,29 @@ def set_entry_tool(entry: Any, tool: str) -> None:
         entry["tool"] = tool
     else:
         entry.tool = tool
+
+
+def _index_row(
+    index: dict[str, tuple[PlatformTool, bool]],
+    key: str,
+    row: PlatformTool,
+    enabled: bool,
+    kind: str,
+) -> None:
+    existing = index.get(key)
+    if existing is not None:
+        # IMPORTANT NOTE: display names are unique and each plugin maps to one row, so
+        # a duplicate means the catalog is inconsistent; the first row wins and the
+        # collision must be visible instead of silently shadowing a tenant's choice.
+        logger.warning(
+            "Catalog %s %r is shared by rows %s and %s; using the first.",
+            kind,
+            key,
+            existing[0].id,
+            row.id,
+        )
+        return
+    index[key] = (row, enabled)
 
 
 async def resolve_platform_tools(
@@ -118,8 +135,8 @@ async def resolve_platform_tools(
     that the custom store did not claim. Resolved entries have their ``tool``
     rewritten to the plugin root. An explicit platform entry that cannot be
     resolved is blanked, and so is any entry whose name belongs to a catalog
-    row this tenant cannot use; an unmarked entry with no catalog match is left
-    for the custom store.
+    row this tenant cannot use. An unmarked entry with no catalog match is left
+    for the custom store unless it would execute through Corsair.
     """
 
     claimed = {root.strip().casefold() for root in (custom_claimed_roots or set())}
@@ -130,10 +147,10 @@ async def resolve_platform_tools(
     plugin_index: dict[str, tuple[PlatformTool, bool]] = {}
     for row, mapping_id in result.all():
         enabled = mapping_id is not None and not row.is_disabled
+        _index_row(display_index, row.name.strip().casefold(), row, enabled, "display name")
         plugin = derive_plugin_id(row.parsed_schema)
         if plugin:
-            plugin_index.setdefault(plugin.casefold(), (row, enabled))
-        display_index.setdefault(row.name.strip().casefold(), (row, enabled))
+            _index_row(plugin_index, plugin, row, enabled, "plugin id")
 
     for entry in platform_entries:
         tool = (field(entry, "tool", "") or "").strip()
@@ -146,6 +163,7 @@ async def resolve_platform_tools(
                 entry,
                 tool,
                 explicit_platform,
+                key in claimed,
                 f"no catalog row for tenant {tenant_id}",
             )
             continue
@@ -154,19 +172,15 @@ async def resolve_platform_tools(
         plugin = derive_plugin_id(row.parsed_schema)
         claimed_names = {key, row.name.strip().casefold()}
         if plugin:
-            claimed_names.add(plugin.casefold())
+            claimed_names.add(plugin)
         if claimed_names & claimed:
-            if explicit_platform:
-                logger.info(
-                    "Platform tool entry %r resolves to the tenant custom tool (winner=custom)",
-                    tool,
-                )
-                set_entry_tool(entry, "")
-            else:
-                logger.debug(
-                    "Tool entry %r stays with the tenant custom tool (winner=custom)",
-                    tool,
-                )
+            # IMPORTANT NOTE: the custom tool is already registered for this turn, so the
+            # entry must stay as configured and expand to the custom store's name; blanking
+            # it would leave neither the custom tool nor a platform tool bound.
+            logger.debug(
+                "Tool entry %r stays with the tenant custom tool (winner=custom)",
+                tool,
+            )
             continue
 
         if not enabled or not plugin:
@@ -191,17 +205,21 @@ def _leave_unresolved(
     entry: Any,
     tool: str,
     explicit_platform: bool,
+    claimed_by_custom: bool,
     reason: str,
 ) -> None:
-    """Withhold an explicit platform entry; leave an unmarked one to custom.
+    if claimed_by_custom:
+        logger.debug(
+            "Leaving tool entry %r for the tenant custom tool: %s",
+            tool,
+            reason,
+        )
+        return
 
-    An unmarked entry predates the source marker, so the custom store was
-    already tried first. Leaving it unchanged reproduces the old behavior
-    instead of silently dropping a request whose name is simply unknown.
-    """
-
-    if explicit_platform:
-        logger.warning("Withholding platform tool entry %r: %s", tool, reason)
+    # IMPORTANT NOTE: an unmarked entry that expands to a dotted Corsair path would execute
+    # through the sidecar without a catalog row, so the tenant gate must withhold it too.
+    if explicit_platform or expands_to_corsair(entry):
+        logger.warning("Withholding tool entry %r: %s", tool, reason)
         set_entry_tool(entry, "")
     else:
         logger.debug(
@@ -209,3 +227,13 @@ def _leave_unresolved(
             tool,
             reason,
         )
+
+
+def expands_to_corsair(entry: Any) -> bool:
+    if "." in (field(entry, "tool", "") or ""):
+        return True
+
+    return any(
+        "." in (field(action, "action", "") or "")
+        for action in (field(entry, "actions", []) or [])
+    )

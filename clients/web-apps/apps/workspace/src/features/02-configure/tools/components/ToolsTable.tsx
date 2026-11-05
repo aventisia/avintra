@@ -20,6 +20,7 @@ import {
   TABLE_VIEW_TABS,
   TOOLS_INITIAL_STATE,
   TOOLS_PAGE_SIZE_OPTIONS,
+  mapAccessLevelLabel,
 } from "../constants/tools-table.constants";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
@@ -27,6 +28,7 @@ import { getToolDetailsPath } from "../utils/tool-details-path.util";
 import { getToolDisplayName } from "../utils/tool-name-formatter";
 import { buildToolSections } from "../utils/tool-sections.util";
 import { ToolIcon } from "./ToolIcon";
+import { ToolPill } from "./ToolPill";
 import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
@@ -55,7 +57,6 @@ export const ToolsTable = () => {
     searchColumns: ["name"],
   });
 
-  const isReadOnlyTab = isReadOnly;
   const pageRows = table.getRowModel().rows;
 
   return (
@@ -107,22 +108,14 @@ export const ToolsTable = () => {
                               />
                             </div>
 
-                            {/* Middle: Name and Description */}
                             <div className="flex flex-col">
                               <div className="flex items-center gap-3">
                                 <div className="text-sm font-medium">
                                   {getToolDisplayName(row.getValue("name") as string)}
                                 </div>
-                                <span className="bg-sunken border border-line px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
-                                  {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                                </span>
-                                {row.original.isActive ? (
-                                  <span
-                                    aria-label="Active"
-                                    className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full"
-                                  >
-                                    Active
-                                  </span>
+                                <ToolPill>{mapAccessLevelLabel(row.original.accessLevel)}</ToolPill>
+                                {isPlatformTab && row.original.isActive ? (
+                                  <ToolPill aria-label="Enabled">Enabled</ToolPill>
                                 ) : null}
                               </div>
                               <span className="text-xs text-muted-foreground line-clamp-2">
@@ -131,7 +124,6 @@ export const ToolsTable = () => {
                             </div>
                           </div>
 
-                          {/* Right: Actions */}
                           <ToolRowActions
                             rowId={row.original.id ?? ""}
                             name={row.original.name}
@@ -152,7 +144,7 @@ export const ToolsTable = () => {
             <EmptyState
               className="rounded-lg border bg-surface py-8"
               primaryMessage="No tools found"
-              secondaryMessage={isReadOnlyTab ? undefined : "Please add a new tool."}
+              secondaryMessage={isReadOnly ? undefined : "Please add a new tool."}
             />
           )}
 

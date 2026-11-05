@@ -11,15 +11,18 @@ export const ToolRowToggleEnabledAction = ({
   toolId,
   isEnabled = false,
 }: ToolRowToggleEnabledActionProps) => {
-  const { canToggle, toggle } = useToggleLibraryTool();
+  const { canToggle, isPending, toggle } = useToggleLibraryTool();
 
   if (!canToggle) {
     return null;
   }
 
   return (
-    <SimpleDDMenuItem onClick={() => toggle({ id: toolId, isEnabled: !isEnabled })}>
-      {isEnabled ? "Deactivate" : "Activate"}
+    <SimpleDDMenuItem
+      disabled={isPending}
+      onClick={() => toggle({ id: toolId, isEnabled: !isEnabled })}
+    >
+      {isEnabled ? "Disable" : "Enable"}
     </SimpleDDMenuItem>
   );
 };

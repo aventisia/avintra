@@ -16,9 +16,9 @@ from types import SimpleNamespace
 import pytest
 from pydantic import ValidationError
 
-from app.features.langgraph.graphs.graph_factory import (
+from app.features.langgraph.tools.tool_resolver import (
     _build_corsair_tools_for_names,
-    _resolve_tools,
+    resolve_tools,
 )
 from app.features.langgraph.services.chat_service import ChatService
 from app.features.langgraph.services.tool_skill_selector import (
@@ -29,7 +29,6 @@ from app.features.langgraph.tools.tool_config_utils import (
     configured_tool_roots,
     expand_tool_config,
     platform_candidate_entries,
-    split_tool_config_by_source,
     tool_source,
 )
 from app.features.langgraph.tools.tool_registry import ToolRegistry
@@ -86,19 +85,6 @@ def test_both_sources_are_accepted():
     custom = ToolConfig(tool="outlook", source="custom", actions=[])
 
     assert (tool_source(platform), tool_source(custom)) == ("platform", "custom")
-
-
-def test_split_keeps_entry_order_and_handles_dicts_and_models():
-    custom = _config("outlook")
-    platform = ToolConfig(tool="slack", source="platform", actions=[])
-    another_custom = ToolConfig(tool="gmail", actions=[])
-
-    custom_entries, platform_entries = split_tool_config_by_source(
-        [custom, platform, another_custom]
-    )
-
-    assert custom_entries == [custom, another_custom]
-    assert platform_entries == [platform]
 
 
 def test_platform_candidates_include_unmarked_and_platform_entries():
@@ -198,7 +184,7 @@ def test_custom_and_platform_tools_bind_together(monkeypatch):
     assert names == ["outlook_send_email", "slack.api.chat.postMessage"]
 
     tools = asyncio.run(
-        _resolve_tools(
+        resolve_tools(
             tool_registry,
             names,
             request,
@@ -207,6 +193,30 @@ def test_custom_and_platform_tools_bind_together(monkeypatch):
 
     assert tools[0] is custom_tool
     assert tools[1]["name"] == "slack.api.chat.postMessage"
+
+
+def test_registered_custom_tool_wins_a_dotted_name(monkeypatch):
+    calls = _patch_sidecar(monkeypatch)
+    request = _request([_config("Slack", "chat.postMessage")])
+
+    custom_tool = SimpleNamespace(name="Slack_chat.postMessage")
+    tool_registry = ToolRegistry()
+    tool_registry.register(custom_tool)
+
+    tools = asyncio.run(
+        resolve_tools(tool_registry, ["slack_chat.postMessage"], request)
+    )
+
+    assert tools == [custom_tool]
+    assert not calls
+
+
+def test_registered_custom_tool_matches_case_insensitively():
+    custom_tool = SimpleNamespace(name="outlook_send_email")
+    tool_registry = ToolRegistry()
+    tool_registry.register(custom_tool)
+
+    assert tool_registry.get("Outlook_Send_Email") is custom_tool
 
 
 def test_catalog_entries_include_configured_plugin(monkeypatch):
@@ -235,7 +245,7 @@ def test_platform_resolution_failure_withholds_entries(monkeypatch):
         raise RuntimeError("db down")
 
     monkeypatch.setattr(
-        "app.features.langgraph.services.chat_service.resolve_platform_tools",
+        "app.features.langgraph.tools.tool_resolver.resolve_platform_tools",
         failing_resolver,
     )
 
@@ -255,7 +265,7 @@ def test_unmarked_entry_is_resolved_as_a_platform_candidate(monkeypatch):
         entry.tool = "slack"
 
     monkeypatch.setattr(
-        "app.features.langgraph.services.chat_service.resolve_platform_tools",
+        "app.features.langgraph.tools.tool_resolver.resolve_platform_tools",
         resolving,
     )
 
@@ -274,7 +284,7 @@ def test_resolution_failure_leaves_unmarked_entry_for_the_custom_store(monkeypat
         raise RuntimeError("db down")
 
     monkeypatch.setattr(
-        "app.features.langgraph.services.chat_service.resolve_platform_tools",
+        "app.features.langgraph.tools.tool_resolver.resolve_platform_tools",
         failing_resolver,
     )
 
@@ -284,11 +294,13 @@ def test_resolution_failure_leaves_unmarked_entry_for_the_custom_store(monkeypat
 
 
 def _user():
+    from uuid import UUID
+
     from app.features.auth.authenticated_user import User
 
     return User(
         user_id="69de1a13-3779-4933-a46f-01c813502f86",
         username="admin@aventisia.com",
-        tenant_id="b2aaa86e-a637-4b28-9128-367cab0669cc",
+        tenant_id=UUID("b2aaa86e-a637-4b28-9128-367cab0669cc"),
         roles=[],
     )
