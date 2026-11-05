@@ -106,7 +106,7 @@ public class MyAccountService : IMyAccountService
                 TenantName = user.Tenant.Name,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName, user.Email),
                 AccessToken = accessToken,
                 RefreshToken = session.RefreshToken,
                 RTExpiresOn = session.SessionExpiresOn,
@@ -392,41 +392,33 @@ public class MyAccountService : IMyAccountService
                 TenantName = user.Tenant.Name,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName, user.Email),
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = tenant != null ? tenant.Country.ToString() : "NA",
-                PlatformVersion = _appDefaultConfig.PlatformVersion
+                PlatformVersion = _appDefaultConfig.PlatformVersion,
+                HasPaidPlan = tenantSubscription?.Plan is { IsDefault: false }
             };
 
+            // IMPORTANT NOTE: A verified free account keeps its tenant Unspecified and relies on the Active
+            // Default subscription created at signup, so the organization-setup gate must not fire while that
+            // subscription is usable. Genuinely incomplete tenants (no usable subscription) still require setup.
+            var hasUsableActiveSubscription = tenantSubscription != null && tenantSubscription.Status != SubscriptionStatusTypesEnum.Initiated;
+
             // Check if user is associated with an organization (tenant)
-            if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
+            if ((user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified) && !hasUsableActiveSubscription)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
+            else if (!hasUsableActiveSubscription)
+            {
+                _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
+                serviceResponse.Message = "Tenant has no active subscription.";
+            }
             else
             {
-                // Query current tenant's subscription
-                var subscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w =>
-                        w.TenantId == user.TenantId && w.IsActive
-                    )
-                    .SingleOrDefaultAsync();
-
-                // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
-
-
-                // Check if a valid subscription was found
-                if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
-                {
-                    _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
-                    serviceResponse.Message = "Tenant has no active subscription.";
-                }
-                else
-                {
-                    serviceResponse.Message = "Session has been refreshed successfully.";
-                }
+                serviceResponse.Message = "Session has been refreshed successfully.";
             }
 
             // UserSessionDto is ready
@@ -557,7 +549,7 @@ public class MyAccountService : IMyAccountService
             }
 
             // Create placeholder values for email template
-            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", user.FirstName } };
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(user.FirstName, user.Email) } };
 
             // Failed to send PwdReset email
             if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.PwdUpdated, user.Email, placeholderValues))

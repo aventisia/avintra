@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { getPostLoginDestination } from "@/constants/post-login-destination";
+import { resolvePostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 
@@ -51,14 +51,14 @@ export const useValidateUserSession = () => {
       } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         setOnBoardingStep("choose-plan");
       } else {
-        //User already onboarded. Redirect url in redirect query or default to Atlas/Workspace
-        const params = new URLSearchParams(window.location.search);
-        const redirect = params.get("redirect");
-        const destination = redirect
-          ? decodeURIComponent(redirect)
-          : getPostLoginDestination(userSession.email);
+        if (!userSession.hasPaidPlan && new URLSearchParams(window.location.search).has("plan")) {
+          setOnBoardingStep("choose-plan");
+          return;
+        }
 
-        navigate("/redirect?msg=Logging In...&url=" + destination);
+        navigate(
+          "/redirect?msg=Logging In...&url=" + resolvePostLoginDestination(userSession.email),
+        );
       }
     },
     onError: () => {

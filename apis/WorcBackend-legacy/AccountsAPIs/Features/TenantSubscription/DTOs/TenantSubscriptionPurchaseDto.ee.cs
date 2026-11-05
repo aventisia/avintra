@@ -22,6 +22,18 @@ public class TenantSubscriptionPurchaseDto
     public SubscriptionFrequenciesEnum Frequency { get; set; }
 
     /// <summary>
+    /// Gets or sets the first name of the billing contact. Maximum length is 50 characters.
+    /// </summary>
+    [StringLength(50)]
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the last name of the billing contact. Maximum length is 50 characters.
+    /// </summary>
+    [StringLength(50)]
+    public string? LastName { get; set; }
+
+    /// <summary>
     /// Gets or sets the first address line.
     /// </summary>
     public required string AddressLine1 { get; set; }

@@ -28,6 +28,7 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
     expiresOn: new Date(decodedJwt.exp * 1000),
     platformVersion: userSession.platformVersion,
     planType: decodedJwt?.plan,
+    hasPaidPlan: userSession.hasPaidPlan,
     deploymentType: decodedJwt.type,
 
     // Access mode used for Super Admin tenant viewing ("read_only" / "read_write").
