@@ -6,14 +6,14 @@ import { useShallow } from "zustand/react/shallow";
 
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
-import { getParsedBillingFromStorage } from "../utils";
+import { getParsedBillingFromStorage, isIndividualTenant } from "../utils";
 
 export const useDefineBillingInfoForm = () => {
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({ userSession: state.userSession })),
   );
 
-  const isIndividualUser = userSession?.tenantName == userSession?.email;
+  const isIndividualUser = isIndividualTenant(userSession);
 
   const { billingData } = useChoosePlanStore(
     useShallow((state) => ({
@@ -42,11 +42,17 @@ export const useDefineBillingInfoForm = () => {
   const form = useForm<z.infer<typeof billingInfoSchema>>({
     resolver: zodResolver(billingInfoSchema),
     defaultValues: {
+      organizationType:
+        billingData?.organizationType ??
+        parsedStoredData.organizationType ??
+        (isIndividualUser ? "Individual" : "Organization"),
       organizationName:
         billingData?.organizationName ??
         parsedStoredData.organizationName ??
-        userSession?.tenantName ??
-        "",
+        (isIndividualUser ? "" : (userSession?.tenantName ?? "")),
+      firstName:
+        billingData?.firstName ?? parsedStoredData.firstName ?? userSession?.firstName ?? "",
+      lastName: billingData?.lastName ?? parsedStoredData.lastName ?? userSession?.lastName ?? "",
       addressLine1: billingData?.addressLine1 ?? parsedStoredData.addressLine1 ?? "",
       addressLine2: billingData?.addressLine2 ?? parsedStoredData.addressLine2 ?? "",
       city: billingData?.city ?? parsedStoredData.city ?? "",

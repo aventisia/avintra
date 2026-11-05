@@ -46,4 +46,9 @@ public class UserSessionDto
     public required string Country { get; set; }
 
     public required string PlatformVersion { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the tenant's active subscription is a paid (non-default) plan.
+    /// </summary>
+    public bool HasPaidPlan { get; set; }
 }

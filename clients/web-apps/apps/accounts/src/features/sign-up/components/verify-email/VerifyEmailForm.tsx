@@ -28,8 +28,6 @@ export const VerifyEmailForm = () => {
     // Create account
     createAccountMutation({
       email: createAccountData.email,
-      firstName: createAccountData.firstName,
-      lastName: createAccountData.lastName,
       pwd: createAccountData.pwd,
       verificationCodeId: verifyEmailData.codeId,
       secretCode: formData.verificationCode,

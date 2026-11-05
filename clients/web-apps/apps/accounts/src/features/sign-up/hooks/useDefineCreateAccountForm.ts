@@ -21,8 +21,6 @@ export const useDefineCreateAccountForm = () => {
   const form = useForm<z.infer<typeof createAccountZodSchema>>({
     resolver: zodResolver(createAccountZodSchema),
     defaultValues: {
-      firstName: createAccountData?.firstName ?? "",
-      lastName: createAccountData?.lastName ?? "",
       email: createAccountData?.email ?? "",
       pwd: "",
       termsAgreement: false,

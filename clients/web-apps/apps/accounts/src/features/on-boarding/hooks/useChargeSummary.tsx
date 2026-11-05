@@ -6,6 +6,10 @@ import { useChoosePlanStore } from "../stores/choose-plan-store";
 import { getParsedBillingFromStorage } from "../utils";
 
 const DEFAULT_BILLING = {
+  organizationName: "",
+  organizationType: "Individual",
+  firstName: "",
+  lastName: "",
   country: "",
   addressLine1: "",
   city: "",

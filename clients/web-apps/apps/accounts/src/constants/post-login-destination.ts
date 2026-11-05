@@ -35,4 +35,13 @@ const getPostLoginDestination = (email: string): string => {
     : import.meta.env.VITE_WORKSPACE_PATH;
 };
 
-export { AVENTISIA_EMAIL_DOMAIN, getPostLoginDestination };
+/**
+ * Resolves where to send a signed-in user: the `redirect` query param when present, otherwise
+ * the default app for their email.
+ */
+const resolvePostLoginDestination = (email: string): string => {
+  const redirect = new URLSearchParams(window.location.search).get("redirect");
+  return redirect ? decodeURIComponent(redirect) : getPostLoginDestination(email);
+};
+
+export { AVENTISIA_EMAIL_DOMAIN, getPostLoginDestination, resolvePostLoginDestination };

@@ -27,6 +27,9 @@ interface UserSessionDto {
   country: string;
 
   platformVersion: string;
+
+  /** Whether the tenant's active subscription is a paid (non-default) plan */
+  hasPaidPlan?: boolean;
 }
 
 export { type UserSessionDto };

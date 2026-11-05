@@ -844,7 +844,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                 // Prepare placeholder values for account creation email
                 var placeholderValues = new Dictionary<string, string>
                 {
-                    { "{{userFirstName}}", newUser.FirstName }
+                    { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(newUser.FirstName, newUser.Email) }
                 };
 
                 // Attempt to send account creation email (non-blocking)
