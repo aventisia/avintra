@@ -102,6 +102,14 @@ export const ToolsTable = () => {
                                 <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
                                   {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                                 </span>
+                                {row.original.isActive ? (
+                                  <span
+                                    aria-label="Active"
+                                    className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full"
+                                  >
+                                    Active
+                                  </span>
+                                ) : null}
                               </div>
                               <span className="text-xs text-muted-foreground line-clamp-2">
                                 {row.getValue("description") as string}
