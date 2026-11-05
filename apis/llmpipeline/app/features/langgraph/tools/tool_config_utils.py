@@ -17,6 +17,10 @@ from app.features.llm_providers.services.corsair_sidecar_service import (
 APPROVAL_AUTO = "auto"
 APPROVAL_HUMAN = "human"
 
+# Tool-config source values; an absent marker keeps the custom store default.
+TOOL_SOURCE_CUSTOM = "custom"
+TOOL_SOURCE_PLATFORM = "platform"
+
 
 def field(obj: Any, name: str, default: Any = None) -> Any:
     """Read ``name`` from a pydantic-style object or a plain dict.
@@ -30,6 +34,57 @@ def field(obj: Any, name: str, default: Any = None) -> Any:
     else:
         value = getattr(obj, name, None)
     return default if value is None else value
+
+
+def explicit_tool_source(config: Any) -> str | None:
+    """Return an entry's explicit source marker, or ``None`` when it has none.
+
+    ``tool_config`` is validated as ``ToolConfig`` on ingress, so only the two
+    known values reach here. Anything else is treated as unsourced rather than
+    as a platform reference.
+    """
+
+    source = str(field(config, "source", "") or "").strip().lower()
+    return source if source in (TOOL_SOURCE_CUSTOM, TOOL_SOURCE_PLATFORM) else None
+
+
+def tool_source(config: Any) -> str:
+    """Return an entry's source marker; absent or unknown means the custom store."""
+
+    return explicit_tool_source(config) or TOOL_SOURCE_CUSTOM
+
+
+def platform_candidate_entries(tool_config: list[Any] | None) -> list[Any]:
+    """Return entries that may resolve from the platform catalog.
+
+    An explicit ``custom`` entry never becomes a platform tool. An entry with
+    no marker is a candidate because requests written before the stores split
+    carry no source; the custom store is tried first, so a tenant custom tool
+    with the same name always wins.
+    """
+
+    return [
+        config
+        for config in tool_config or []
+        if explicit_tool_source(config) in (None, TOOL_SOURCE_PLATFORM)
+    ]
+
+
+def split_tool_config_by_source(
+    tool_config: list[Any] | None,
+) -> tuple[list[Any], list[Any]]:
+    """Split entries into ``(custom_entries, platform_entries)`` by marker."""
+
+    custom_entries: list[Any] = []
+    platform_entries: list[Any] = []
+    for config in tool_config or []:
+        target = (
+            platform_entries
+            if tool_source(config) == TOOL_SOURCE_PLATFORM
+            else custom_entries
+        )
+        target.append(config)
+    return custom_entries, platform_entries
 
 
 def iter_tool_config_entries(tool_config: list[Any]):
@@ -67,17 +122,24 @@ def iter_tool_config_entries(tool_config: list[Any]):
                 yield f"{tool}_{action_name}", approval
 
 
-def configured_tool_roots(tool_config: list[Any]) -> list[str]:
+def configured_tool_roots(
+    tool_config: list[Any],
+    exclude_source: str | None = None,
+) -> list[str]:
     """Return the distinct root tool names from Studio ``tool_config`` entries.
 
     The root is the Studio ``tool`` field (e.g. ``outlook`` for the action
     ``outlook_send_email``), which matches ``ai_Tools.Name``. Custom OpenAPI
     tools are stored per root, so this is what ``load_custom_tools`` filters
-    on. Order is preserved and duplicates are dropped.
+    on. Entries whose source marker equals ``exclude_source`` are skipped so a
+    platform reference is never looked up in the custom store. Order is
+    preserved and duplicates are dropped.
     """
 
     roots: list[str] = []
     for config in tool_config or []:
+        if exclude_source and tool_source(config) == exclude_source:
+            continue
         tool = (field(config, "tool", "") or "").strip()
         if tool and tool not in roots:
             roots.append(tool)

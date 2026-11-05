@@ -22,6 +22,7 @@ class ToolConfig(BaseModel):
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')    # Credential reference (unique name) used to access the tool
     credential_id: Optional[str] = Field(default=None, validation_alias='credential_id', serialization_alias='credential_id')    # Credential reference (unique id) used to access the tool
     actions: List[ToolAction]    # List of permitted actions for this tool
+    source: Optional[Literal["custom", "platform"]] = None    # Entity the tool is resolved from; absent tries the custom store first, then enabled platform tools
 
 
 # Request schema to generate LLM response

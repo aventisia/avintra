@@ -41,3 +41,19 @@ as a row per tenant and tool.
 
 Deleting a tenant through the workspace tenant-deletion path removes that tenant's mapping
 rows. The catalog rows in `ai_PlatformTools` are shared and are never deleted with a tenant.
+
+## Custom-tool names
+
+A custom tool may not take a name that another tool already uses. The check is a
+trimmed, case-insensitive exact match against the calling tenant's custom tools and
+against every library catalog display name, and it runs when a tool is created and
+when it is renamed. A colliding library name is reported as "already exists as a
+library tool"; a colliding custom name keeps the existing message. Rejected requests
+create or change nothing, and tools created before this rule keep their names.
+
+## Usable catalog
+
+The usable catalog lists the tenant's own custom tools plus the library tools that
+tenant has switched on and that are not disabled in the catalog. Neither a
+switched-off nor another tenant's library tool appears, and the response shape is
+unchanged, so the flow builder and picker keep working as they do today.

@@ -133,6 +133,18 @@ public class ToolService : IToolService
                     new TrueFalseResultDto { Result = false });
             }
 
+            var libraryNameExists = await _unitOfWork.PlatformToolRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(w.Name, namePattern))
+                .AnyAsync();
+
+            if (libraryNameExists)
+            {
+                return serviceResponse.Update(
+                    $"Tool '{normalizedName}' already exists as a library tool.",
+                    200,
+                    new TrueFalseResultDto { Result = false });
+            }
+
             return serviceResponse.Update(
                 $"Tool name '{normalizedName}' is available.",
                 200,
@@ -359,6 +371,15 @@ public class ToolService : IToolService
                 return serviceResponse.Update($"Tool '{toolDto.Name}' already exists.", 409);
             }
 
+            var libraryToolWithSameName = await _unitOfWork.PlatformToolRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(w.Name, namePattern))
+                .AnyAsync();
+
+            if (libraryToolWithSameName)
+            {
+                return serviceResponse.Update($"Tool '{toolDto.Name}' already exists as a library tool.", 409);
+            }
+
             var toolToCreate = toolDto.Adapt<Tool>();
             toolToCreate.IsActive = true;
             toolToCreate.Type = ComponentTypeEnum.Custom;
@@ -506,6 +527,15 @@ public class ToolService : IToolService
             if (otherToolWithSameName != null)
             {
                 return serviceResponse.Update($"Tool '{toolDto.Name}' already exists.", 409);
+            }
+
+            var libraryToolWithSameName = await _unitOfWork.PlatformToolRepo
+                .GetByConditionAsync(w => EF.Functions.ILike(w.Name, namePattern))
+                .AnyAsync();
+
+            if (libraryToolWithSameName)
+            {
+                return serviceResponse.Update($"Tool '{toolDto.Name}' already exists as a library tool.", 409);
             }
 
             toolToUpdate.Description = toolDto.Description;

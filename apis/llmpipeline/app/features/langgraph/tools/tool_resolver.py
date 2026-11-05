@@ -11,6 +11,7 @@ from app.features.langgraph.tools.tool_config_utils import (
     configured_tool_roots,
     expand_tool_config,
     field,
+    split_tool_config_by_source,
 )
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
@@ -76,18 +77,25 @@ async def register_configured_custom_tools(
     user: User,
     db_session: AsyncSession,
     registry: ToolRegistry,
-) -> None:
+) -> set[str]:
     """Load the request's configured custom tools and register them.
 
-    Only tools explicitly configured on the agent are loaded, scoped to the
-    active environment. The previous ``FlowVersionId`` join could never match
+    Only entries without a platform marker are resolved here, scoped to the
+    active environment, so a platform reference never falls back into the
+    custom store. The previous ``FlowVersionId`` join could never match
     (the link table is dormant), so tools are resolved by their root name
     (``ai_Tools.Name``) instead.
+
+    Returns the casefolded names of the custom store rows that were selected;
+    platform resolution lets those win a shared name.
     """
 
-    tool_names = configured_tool_roots(request.tool_config or [])
+    custom_entries, _ = split_tool_config_by_source(request.tool_config or [])
+    tool_names = configured_tool_roots(custom_entries)
     if not tool_names:
-        return
+        return set()
+
+    claimed_roots: set[str] = set()
 
     try:
         custom_tools = await load_custom_tools(
@@ -98,6 +106,7 @@ async def register_configured_custom_tools(
             access_token=user.access_token,
             env_type=user.env_type,
             space_id=user.space_id,
+            claimed_roots=claimed_roots,
         )
         registry.register_many(custom_tools)
         if custom_tools:
@@ -112,6 +121,8 @@ async def register_configured_custom_tools(
             user.tenant_id,
             exc,
         )
+
+    return claimed_roots
 
 
 async def resolve_configured_tools(
