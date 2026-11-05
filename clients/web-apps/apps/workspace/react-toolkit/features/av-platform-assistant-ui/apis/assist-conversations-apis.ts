@@ -9,9 +9,9 @@ import { ConversationSummaryDto } from "../dtos/conversation-summary-dto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 
 /**
- * Inserts a new conversation.
+ * Inserts a new conversation; omit the flow version for an agent-less landing conversation.
  */
-export const insertConversation = (flowVersionId: string) => {
+export const insertConversation = (flowVersionId?: string) => {
   return axiosInstance
     .post<IHttpResponse<ConversationSummaryDto>>(
       `${baseAPIURL}`,

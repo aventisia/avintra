@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { CheckCircle } from "lucide-react";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 
 import { UiBuilderTableDto } from "../../dtos/ui-builder-table-dto";
 import { useUpdateUiBuilderMutation } from "../../hooks/useUpdateUiBuilderMutation";
@@ -19,7 +19,7 @@ export const UiBuilderRowEnableAction = ({
     <SimpleDDMenuItem
       size={size}
       content="Enable"
-      Icon={CheckCircle}
+      Icon={CheckCircleIcon}
       onClick={() => mutate({ ...project, isDisabled: false })}
     />
   );

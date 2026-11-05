@@ -8,8 +8,8 @@ import {
   fetchUiBuilderAssetMap,
   useUiBuilderCalculations,
 } from "@avplatform/ui/ui-builder-host";
+import { ArrowLeftIcon, BrowserIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, LayoutTemplate } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -88,12 +88,12 @@ export const InterfaceDetailPane = () => {
             className="mr-1"
             onClick={() => navigate("/assist/user-interfaces")}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeftIcon className="h-4 w-4" />
           </Button>
         )}
 
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary-50 to-accent text-primary ring-1 ring-primary-100">
-          <LayoutTemplate className="h-4 w-4" />
+          <BrowserIcon className="h-4 w-4" />
         </div>
 
         <h1 className="truncate text-sm font-semibold capitalize">

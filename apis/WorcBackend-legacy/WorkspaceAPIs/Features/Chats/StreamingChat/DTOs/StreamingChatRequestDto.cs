@@ -3,16 +3,15 @@ using System.Text.Json.Serialization;
 namespace WorkspaceAPIs.Features.Chats.StreamingChat.DTOs;
 
 /// <summary>
-/// Incoming request for a streaming chat completion against a Chat Agent flow.
-/// The Chat AI node configuration (model/prompt/tools/skills) is resolved
-/// server-side from the flow version's ReactFlow object, so the client only
-/// needs to send the conversation context.
+/// Incoming request for a streaming chat completion against a Chat Agent flow or
+/// the agent-less workspace landing chat. The Chat AI node configuration
+/// (model/prompt/tools/skills) is resolved server-side from the flow version's
+/// ReactFlow object, so the client only needs to send the conversation context.
 /// </summary>
 public class StreamingChatRequestDto
 {
-    /// <summary>Flow version that owns the Chat AI node configuration.</summary>
-    [RequiredGuid]
-    public Guid FlowVersionId { get; set; }
+    /// <summary>Flow version that owns the Chat AI node configuration; null for the agent-less landing chat.</summary>
+    public Guid? FlowVersionId { get; set; }
 
     /// <summary>
     /// Existing conversation id, or null to allocate a new one.
@@ -39,6 +38,24 @@ public class StreamingChatRequestDto
     /// </summary>
     [JsonPropertyName("isTempChat")]
     public bool IsTempChat { get; set; }
+
+    /// <summary>LiteLLM provider selected for this turn; overrides the node configuration when the model is also set.</summary>
+    public string? ModelProvider { get; set; }
+
+    /// <summary>Model id selected for this turn; overrides the node configuration when the provider is also set.</summary>
+    public string? ModelId { get; set; }
+
+    /// <summary>
+    /// Credential name the picker showed for the selected model. Advisory only:
+    /// the credential is resolved server-side from the tenant vault.
+    /// </summary>
+    public string? CredentialName { get; set; }
+
+    /// <summary>
+    /// Whether the selected model uses a tenant BYOK credential. Advisory only:
+    /// the credential is resolved server-side from the tenant vault.
+    /// </summary>
+    public bool? IsByokEnabled { get; set; }
 }
 
 /// <summary>A single role/content message in a conversation thread.</summary>

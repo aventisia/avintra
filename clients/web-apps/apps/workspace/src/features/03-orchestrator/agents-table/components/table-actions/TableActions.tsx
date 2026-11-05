@@ -31,14 +31,14 @@ export const TableActions = ({
 }: TableActionsProps) => {
   if (type === "UI") {
     return (
-      <DataTableRowActions>
+      <TableCNRowActionsMenu ariaLabel="Open published UI actions">
         <UiBuilderRowActions
           rowId={rowId}
           isDisabled={isDisabled}
           isTenantWideAccess={isTenantWideAccess}
           projectName={flowName}
         />
-      </DataTableRowActions>
+      </TableCNRowActionsMenu>
     );
   }
 

@@ -2,7 +2,7 @@ import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent } from "@avplatform/ui/dialog";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { RocketIcon } from "lucide-react";
+import { RocketLaunchIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { usePublishUiBuilder } from "../hooks/usePublishUiBuilder.hook";
@@ -61,7 +61,7 @@ export const UiBuilderPublishButton = () => {
           className="items-center justify-start gap-2"
           onClick={() => setIsDialogOpen(true)}
         >
-          <RocketIcon className="h-4 w-4 shrink-0" />
+          <RocketLaunchIcon className="h-4 w-4 shrink-0" />
           <span className="text-sm font-bold">{isUpToDate ? "Published" : "Publish"}</span>
         </Button>
       </Tooltip>

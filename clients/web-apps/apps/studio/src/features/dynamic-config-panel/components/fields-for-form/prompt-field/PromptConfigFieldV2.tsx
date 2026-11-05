@@ -53,6 +53,24 @@ const PromptConfigFieldV2 = ({
   const variables = useMemo(() => extractVariables(value), [value]);
   const tokenCount = useMemo(() => Math.round(value.length / CHARS_PER_TOKEN), [value]);
   const showFooter = showTokenCount || variables.length > 0;
+  const showVariables = variables.length > 0;
+
+  // Insert an empty {{ }} placeholder at the caret so users discover variable syntax.
+  const insertVariable = useCallback(() => {
+    const snippet = "{{ }}";
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      field.onChange(`${value}${snippet}`);
+      return;
+    }
+    const start = textarea.selectionStart ?? value.length;
+    const end = textarea.selectionEnd ?? value.length;
+    field.onChange(`${value.slice(0, start)}${snippet}${value.slice(end)}`);
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + 3, start + 3);
+    });
+  }, [field, value]);
 
   // Keep the line-number gutter scrolled in step with the textarea.
   const syncScroll = useCallback(() => {

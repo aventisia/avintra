@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 const UiBuilderTable = lazy(() =>
@@ -13,7 +13,7 @@ const UiBuilderTable = lazy(() =>
  */
 export const UiBuilderPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton columnCount={7} />}>
       <UiBuilderTable />
     </Suspense>
   );

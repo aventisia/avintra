@@ -24,6 +24,22 @@ public interface IConversationService
     Task<ServiceResponse<IEnumerable<ConversationDto>>> GetArchivedConversationsAsync(Guid flowVersionId);
 
     /// <summary>
+    /// Retrieves all active agent-less landing conversations for the current user.
+    /// </summary>
+    /// <returns>
+    /// A service response containing a collection of active landing conversations.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingActiveConversationsAsync();
+
+    /// <summary>
+    /// Retrieves all archived agent-less landing conversations for the current user.
+    /// </summary>
+    /// <returns>
+    /// A service response containing a collection of archived landing conversations.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync();
+
+    /// <summary>
     /// Retrieves a specific conversation by its unique identifier.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>

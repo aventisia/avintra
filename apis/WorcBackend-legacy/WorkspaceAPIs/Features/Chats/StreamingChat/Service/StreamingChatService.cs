@@ -37,21 +37,42 @@ public class StreamingChatService : IStreamingChatService
     private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
     private readonly string _accessToken;
+
+    // Landing turns run without a Chat Agent flow: a fixed prompt plus the UI
+    // skills the custom-UI generation path relies on.
+    private const string LandingSystemPrompt =
+        "You are the Workspace assistant. Answer questions and help the user build custom interfaces from natural language. " +
+        "When the user asks for an interface, produce a complete self-contained HTML artifact using the available ui-* skills.";
+
+    private static readonly List<string> LandingSkillNames = new()
+    {
+        "ui-design-system",
+        "ui-page-archetypes",
+        "ui-data-viz",
+        "ui-visual-review",
+        "ui-a11y-review",
+    };
+
+    /// <summary>A resolved model for one turn, with the tenant credential it uses.</summary>
+    private sealed record LlmModelSelection(string Provider, string Model, string? CredentialName, bool IsByokEnabled);
 
     public StreamingChatService(
         ILogger<StreamingChatService> logger,
         IUnitOfWork unitOfWork,
         IResourceUserAccessService resourceUserAccessService,
         EnvironmentConfig environmentConfig,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceUserAccessService = resourceUserAccessService;
         _environmentConfig = environmentConfig;
         _httpContextAccessor = httpContextAccessor;
+        _currentTenantService = currentTenantService;
 
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId)
             ? userId
@@ -64,6 +85,17 @@ public class StreamingChatService : IStreamingChatService
         StreamingChatRequestDto request,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        // The landing chat has no Chat Agent flow: it runs on the selected model
+        // with the default prompt and UI skills.
+        if (!request.FlowVersionId.HasValue)
+        {
+            await foreach (var landingChunk in StreamLandingFromPipelineAsync(request, cancellationToken))
+            {
+                yield return landingChunk;
+            }
+            yield break;
+        }
+
         // 1. Validate + resolve the Chat AI node config from the flow version.
         var (flowVersion, nodeConfig) = await ResolveChatAgentConfigAsync(request, cancellationToken);
         if (flowVersion is null || nodeConfig is null)
@@ -118,11 +150,40 @@ public class StreamingChatService : IStreamingChatService
         JsonNode nodeConfig,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var llmPayload = BuildLlmPayload(request, flowVersion, nodeConfig);
+        var llmPayload = await BuildLlmPayloadAsync(request, flowVersion, nodeConfig);
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
             llmPayload,
-            flowVersion,
+            flowVersion.Flow?.SpaceId,
+            flowVersion.IsPublished ? "prod" : "dev",
+            cancellationToken))
+        {
+            yield return chunk;
+        }
+    }
+
+    /// <summary>
+    /// Streams an agent-less landing turn: the selected model answers with the
+    /// default landing prompt and the UI skills, attributed to the "LandingChat"
+    /// reference so it is never billed or scoped as an agent run.
+    /// </summary>
+    private async IAsyncEnumerable<string> StreamLandingFromPipelineAsync(
+        StreamingChatRequestDto request,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var modelSelection = await ResolveModelSelectionAsync(request) ?? await ResolveDefaultModelSelectionAsync();
+        if (modelSelection is null)
+        {
+            yield return SerializeError("Select a model to start the chat.");
+            yield break;
+        }
+
+        var currentSpaceId = _currentTenantService.CurrentSpaceId;
+        await foreach (var chunk in RelayPipelineStreamAsync(
+            "/api/chat/completions/normalized",
+            BuildLandingLlmPayload(request, modelSelection),
+            currentSpaceId == Guid.Empty ? null : currentSpaceId,
+            _currentTenantService.CurrentEnvType == ConfigureEnvironmentType.Prod ? "prod" : "dev",
             cancellationToken))
         {
             yield return chunk;
@@ -159,7 +220,8 @@ public class StreamingChatService : IStreamingChatService
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/approvals",
             llmPayload,
-            flowVersion,
+            flowVersion.Flow?.SpaceId,
+            flowVersion.IsPublished ? "prod" : "dev",
             cancellationToken))
         {
             yield return chunk;
@@ -173,7 +235,8 @@ public class StreamingChatService : IStreamingChatService
     private async IAsyncEnumerable<string> RelayPipelineStreamAsync(
         string endpointPath,
         object payload,
-        WorkspaceAPIs.Entities.FlowVersion flowVersion,
+        Guid? spaceId,
+        string envType,
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}{endpointPath}";
@@ -194,16 +257,15 @@ public class StreamingChatService : IStreamingChatService
 
         // Forward the flow's space to llmpipeline so Chat Agent LLM credit usage
         // is attributed to the correct space (rather than defaulting to Central).
-        var flowSpaceId = flowVersion.Flow?.SpaceId;
-        if (flowSpaceId.HasValue && flowSpaceId.Value != Guid.Empty)
+        if (spaceId.HasValue && spaceId.Value != Guid.Empty)
         {
-            httpClient.DefaultRequestHeaders.Add("X-Space-Id", flowSpaceId.Value.ToString());
+            httpClient.DefaultRequestHeaders.Add("X-Space-Id", spaceId.Value.ToString());
         }
 
         // Forward the flow's environment to llmpipeline so Chat Agent resource
         // resolution (credentials, vaults, etc.) matches the flow's publication
         // status: published → "prod", otherwise "dev". Mirrors the executor path.
-        httpClient.DefaultRequestHeaders.Add("X-Env-Type", flowVersion.IsPublished ? "prod" : "dev");
+        httpClient.DefaultRequestHeaders.Add("X-Env-Type", envType);
 
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
@@ -264,6 +326,13 @@ public class StreamingChatService : IStreamingChatService
         StreamingChatRequestDto request,
         CancellationToken cancellationToken)
     {
+        if (!request.FlowVersionId.HasValue)
+        {
+            return (null, null);
+        }
+
+        var flowVersionId = request.FlowVersionId.Value;
+
         // Load the flow version by ID and type. The published/archived gate is
         // applied after the DB query so it can vary between temporary (Studio
         // test panel, draft allowed) and persisted (Assist, published required)
@@ -274,7 +343,7 @@ public class StreamingChatService : IStreamingChatService
         // access is enforced separately via GetResourceAccessAsync below.
         var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
-                w.Id == request.FlowVersionId &&
+                w.Id == flowVersionId &&
                 w.Flow.Type == FlowTypesEnum.ChatAgent)
             .Include(w => w.Flow)
                 .ThenInclude(f => f!.FlowUsers)
@@ -286,7 +355,7 @@ public class StreamingChatService : IStreamingChatService
         {
             _logger.LogWarning(
                 "[StreamingChat] Persisted chat requires a published, non-archived version. FlowVersionId={Id}, IsPublished={IsPublished}, IsArchived={IsArchived}",
-                request.FlowVersionId,
+                flowVersionId,
                 flowVersion.IsPublished,
                 flowVersion.IsArchived);
             return (null, null);
@@ -296,7 +365,7 @@ public class StreamingChatService : IStreamingChatService
         {
             _logger.LogWarning(
                 "[StreamingChat] Flow version not found or wrong type/archived. FlowVersionId={Id}, IsTempChat={IsTempChat}",
-                request.FlowVersionId,
+                flowVersionId,
                 request.IsTempChat);
             return (null, null);
         }
@@ -317,7 +386,7 @@ public class StreamingChatService : IStreamingChatService
         {
             _logger.LogWarning(
                 "[StreamingChat] User denied access to flow. FlowVersionId={Id}, FlowId={FlowId}, UserId={UserId}",
-                request.FlowVersionId,
+                flowVersionId,
                 flowVersion.FlowId,
                 _userId);
             return (null, null);
@@ -333,7 +402,7 @@ public class StreamingChatService : IStreamingChatService
         {
             _logger.LogWarning(
                 "[StreamingChat] No aiNode named CreateConversationAIAgent found. FlowVersionId={Id}, NodeCount={NodeCount}",
-                request.FlowVersionId,
+                flowVersionId,
                 flow?.Nodes?.Count ?? 0);
             return (flowVersion, null);
         }
@@ -342,7 +411,7 @@ public class StreamingChatService : IStreamingChatService
         {
             _logger.LogWarning(
                 "[StreamingChat] Chat AI node has no inputs. FlowVersionId={Id}",
-                request.FlowVersionId);
+                flowVersionId);
             return (flowVersion, null);
         }
 
@@ -364,8 +433,9 @@ public class StreamingChatService : IStreamingChatService
 
     /// <summary>
     /// Builds the llmpipeline LLMRequest payload from the resolved Chat AI node config.
+    /// A model picked for this turn overrides the node configuration.
     /// </summary>
-    private object BuildLlmPayload(
+    private async Task<object> BuildLlmPayloadAsync(
         StreamingChatRequestDto request,
         WorkspaceAPIs.Entities.FlowVersion flowVersion,
         JsonNode nodeConfig)
@@ -446,10 +516,15 @@ public class StreamingChatService : IStreamingChatService
         var maxOutputTokens = GetIntProperty(modelConfig, "max_output_tokens");
         var maxShortTermTurns = GetIntProperty(memoryConfig, "maxDataStored");
 
+        var modelSelection = await ResolveModelSelectionAsync(request);
+        var nodeProvider = modelConfig?.TryGetPropertyValue("provider", out var provider) == true ? provider?.ToString() : null;
+        var nodeModel = modelConfig?.TryGetPropertyValue("model", out var model) == true ? model?.ToString() : null;
+        var nodeByok = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true;
+
         return new
         {
-            provider = modelConfig?.TryGetPropertyValue("provider", out var provider) == true ? provider?.ToString() : null,
-            model = modelConfig?.TryGetPropertyValue("model", out var model) == true ? model?.ToString() : null,
+            provider = modelSelection?.Provider ?? nodeProvider,
+            model = modelSelection?.Model ?? nodeModel,
             input = messages,
             files = request.Files,
             tool_config = toolConfig.Count > 0 ? toolConfig : null,
@@ -461,8 +536,8 @@ public class StreamingChatService : IStreamingChatService
             temperature = modelConfig?.TryGetPropertyValue("temperature", out var temp) == true ? temp?.GetValue<double>() : 1.0,
             top_p = modelConfig?.TryGetPropertyValue("top_p", out var topP) == true ? topP?.GetValue<double>() : 1.0,
             reasoning_effort = modelConfig?.TryGetPropertyValue("reasoning_effort", out var reEffort) == true && reEffort?.GetValueKind() == System.Text.Json.JsonValueKind.String ? reEffort?.GetValue<string>() : null,
-            is_byok_enabled = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true,
-            credential_name = ReadCredentialProperty(modelConfig),
+            is_byok_enabled = modelSelection?.IsByokEnabled ?? nodeByok,
+            credential_name = modelSelection?.CredentialName ?? ReadCredentialProperty(modelConfig),
             max_output_tokens = maxOutputTokens,
             kb_names = kbNames,
             top_k = topK,
@@ -475,6 +550,183 @@ public class StreamingChatService : IStreamingChatService
             action = "AgentExecution",
             agent_name = flowVersion.Flow?.Name,
         };
+    }
+
+    /// <summary>
+    /// Builds the agent-less landing LLMRequest: default prompt plus the UI skills
+    /// on the selected model, attributed to the "LandingChat" reference.
+    /// </summary>
+    private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection)
+    {
+        var messages = new List<object> { new { role = "system", content = LandingSystemPrompt } };
+
+        if (request.ThreadMessages is { Count: > 0 })
+        {
+            foreach (var m in request.ThreadMessages)
+            {
+                if (string.IsNullOrWhiteSpace(m.Role) || string.IsNullOrWhiteSpace(m.Content))
+                    continue;
+                messages.Add(new { role = m.Role, content = m.Content });
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.UserInput))
+            messages.Add(new { role = "user", content = request.UserInput });
+
+        return new
+        {
+            provider = selection.Provider,
+            model = selection.Model,
+            input = messages,
+            files = request.Files,
+            is_chat_agent = false,
+            stream = true,
+            is_temp_chat = false,
+            conversation_id = request.ConversationId?.ToString(),
+            temperature = 1.0,
+            top_p = 1.0,
+            is_byok_enabled = selection.IsByokEnabled,
+            credential_name = selection.CredentialName,
+            skill_names = LandingSkillNames,
+            ref_type = "LandingChat",
+            ref_id = request.ConversationId?.ToString() ?? "",
+            ref_name = "Landing Chat",
+            action = "LandingChat",
+        };
+    }
+
+    /// <summary>
+    /// Resolves the model picked for this turn from the tenant's providers and
+    /// vault. Only a model enabled for a pipeline-supported provider is accepted;
+    /// the credential name comes from the tenant's configuration when the tenant
+    /// enables that model, otherwise the model runs on platform credits.
+    /// </summary>
+    private async Task<LlmModelSelection?> ResolveModelSelectionAsync(StreamingChatRequestDto request)
+    {
+        if (string.IsNullOrWhiteSpace(request.ModelProvider) || string.IsNullOrWhiteSpace(request.ModelId))
+            return null;
+
+        var provider = NormalizePipelineProvider(request.ModelProvider);
+        if (provider is null)
+            return null;
+
+        var modelId = ToModelId(provider, request.ModelId);
+        return await ResolveTenantModelSelectionAsync(provider, modelId)
+            ?? new LlmModelSelection(provider, modelId, null, false);
+    }
+
+    /// <summary>
+    /// Picks the tenant's first enabled text model on a pipeline-supported
+    /// provider when the landing chat has no explicit selection.
+    /// </summary>
+    private async Task<LlmModelSelection?> ResolveDefaultModelSelectionAsync()
+    {
+        var providers = await _unitOfWork.TenantModelProviderRepo
+            .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId && !w.IsDisabled)
+            .AsNoTracking()
+            .OrderBy(o => o.ProviderType)
+            .ToListAsync();
+
+        foreach (var provider in providers)
+        {
+            var pipelineProvider = ToPipelineProvider(provider.ProviderType);
+            if (pipelineProvider is null)
+                continue;
+
+            var modelId = ReadEnabledTextModelIds(provider)
+                .OrderBy(m => m, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(modelId))
+                continue;
+
+            var credentialName = await ResolveCredentialNameAsync(provider.CredentialId);
+            return new LlmModelSelection(pipelineProvider, ToModelId(pipelineProvider, modelId), credentialName, !string.IsNullOrEmpty(credentialName));
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Returns the tenant's selection for an enabled text model, or null when
+    /// the model is not enabled for the tenant.
+    /// </summary>
+    private async Task<LlmModelSelection?> ResolveTenantModelSelectionAsync(string provider, string modelId)
+    {
+        var providers = await _unitOfWork.TenantModelProviderRepo
+            .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId && !w.IsDisabled)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var match = providers.FirstOrDefault(p =>
+            string.Equals(ToPipelineProvider(p.ProviderType), provider, StringComparison.Ordinal) &&
+            ReadEnabledTextModelIds(p).Any(m => string.Equals(ToModelId(provider, m), modelId, StringComparison.OrdinalIgnoreCase)));
+
+        if (match is null)
+            return null;
+
+        var credentialName = await ResolveCredentialNameAsync(match.CredentialId);
+        return new LlmModelSelection(provider, modelId, credentialName, !string.IsNullOrEmpty(credentialName));
+    }
+
+    private async Task<string?> ResolveCredentialNameAsync(Guid? credentialId)
+    {
+        if (!credentialId.HasValue)
+            return null;
+
+        var credential = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w => w.Id == credentialId.Value && w.EnvType == _currentTenantService.CurrentEnvType)
+            .AsNoTracking()
+            .Select(w => new { w.Name })
+            .FirstOrDefaultAsync();
+
+        return credential?.Name;
+    }
+
+    private static IEnumerable<string> ReadEnabledTextModelIds(WorkspaceAPIs.Entities.TenantModelProvider provider)
+    {
+        if (provider.EnabledModels is { Count: > 0 })
+        {
+            // IMPORTANT NOTE: legacy enabled models have no capability and default to Text.
+            return provider.EnabledModels
+                .Where(m => !string.IsNullOrWhiteSpace(m.ModelId))
+                .Where(m => string.IsNullOrWhiteSpace(m.Capability) || string.Equals(m.Capability, "Text", StringComparison.OrdinalIgnoreCase))
+                .Select(m => m.ModelId);
+        }
+
+        return provider.EnabledModelIds.Where(m => !string.IsNullOrWhiteSpace(m));
+    }
+
+    private static string? ToPipelineProvider(LLMProviderTypesEnum providerType) => providerType switch
+    {
+        LLMProviderTypesEnum.OpenAI => "openai",
+        LLMProviderTypesEnum.Ollama => "ollama",
+        LLMProviderTypesEnum.Deepinfra => "deepinfra",
+        LLMProviderTypesEnum.Gemini => "googlegemini",
+        LLMProviderTypesEnum.OpenRouter => "openrouter",
+        LLMProviderTypesEnum.Anthropic => "anthropic",
+        _ => null,
+    };
+
+    private static string? NormalizePipelineProvider(string provider) => provider.Trim().ToLowerInvariant() switch
+    {
+        "openai" => "openai",
+        "ollama" => "ollama",
+        "deepinfra" => "deepinfra",
+        "googlegemini" or "gemini" => "googlegemini",
+        "openrouter" => "openrouter",
+        "anthropic" => "anthropic",
+        _ => null,
+    };
+
+    // The picker shows catalog ids ("openai/gpt-4o"); the pipeline wants the
+    // bare model id and its own provider prefix.
+    private static string ToModelId(string provider, string modelId)
+    {
+        var trimmed = modelId.Trim();
+        var unprefixed = trimmed.StartsWith($"{provider}/", StringComparison.OrdinalIgnoreCase)
+            ? trimmed[(provider.Length + 1)..]
+            : trimmed;
+        return unprefixed;
     }
 
     // --- JsonNode helpers ---

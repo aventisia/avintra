@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
@@ -22,15 +23,15 @@ export const UiBuilderRowActions = ({ project }: UiBuilderRowActionsProps) => {
   const rowId = project.id || "";
 
   return (
-    <DataTableRowActions className="w-36 min-w-36">
+    <TableCNRowActionsMenu ariaLabel="Open UI builder project actions">
       {/* To open the project in the UI builder */}
       <UiBuilderRowOpenAction rowId={rowId} />
 
       {/* View the project details */}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="uiBuilder" />}
+      {actions?.read && <CrudRowAction rowId={rowId} crudAction="read" entity="uiBuilder" />}
 
       {/* Edit project details */}
-      {isOwner && <DTRowAction rowId={rowId} crudAction="update" entity="uiBuilder" />}
+      {isOwner && <CrudRowAction rowId={rowId} crudAction="update" entity="uiBuilder" />}
 
       {/* Share the project with specific people or everyone */}
       <ResourceUserAccessRowAction
@@ -54,6 +55,6 @@ export const UiBuilderRowActions = ({ project }: UiBuilderRowActionsProps) => {
 
       {/* Triggers project delete alert dialog */}
       {actions?.delete && <UiBuilderRowDeleteAction rowId={rowId} />}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

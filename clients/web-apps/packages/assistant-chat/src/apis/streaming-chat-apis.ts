@@ -13,12 +13,16 @@
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chats/stream`;
 
 export interface StreamingChatRequestDto {
-  flowVersionId: string;
+  flowVersionId?: string;
   conversationId?: string | null;
   threadMessages?: { role: string; content: string }[];
   userInput?: string;
   files?: string[];
   isTempChat?: boolean;
+  modelProvider?: string;
+  modelId?: string;
+  credentialName?: string;
+  isByokEnabled?: boolean;
 }
 
 /** A single approve/deny decision for a pending tool call. */

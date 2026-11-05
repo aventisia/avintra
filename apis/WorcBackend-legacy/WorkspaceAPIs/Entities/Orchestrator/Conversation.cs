@@ -30,8 +30,9 @@ public class Conversation : BaseEntity, IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the ID of the Flow Version.
+    /// Null for agent-less landing conversations.
     /// </summary>
-    public required Guid FlowVersionId { get; set; }
+    public Guid? FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the workspace user associated with this conversation.

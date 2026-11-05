@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { ImageIcon, TrashIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -302,7 +302,7 @@ export const UiBuilderSettingsDialog = ({
               onClick={() => assetInputRef.current?.click()}
               disabled={assets.uploadMutation.isPending}
             >
-              <ImagePlus className="mr-1 h-3 w-3" />
+              <ImageIcon className="mr-1 h-3 w-3" />
               Upload
             </Button>
           </div>
@@ -335,7 +335,7 @@ export const UiBuilderSettingsDialog = ({
                     onClick={() => asset.id && assets.deleteMutation.mutate(asset.id)}
                     className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <TrashIcon className="h-3 w-3" />
                   </button>
                 </li>
               ))}

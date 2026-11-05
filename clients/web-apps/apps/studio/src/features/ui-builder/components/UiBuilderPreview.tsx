@@ -6,7 +6,7 @@ import {
   type UiBuilderQueryResultEvent,
   type UiBuilderRuntimeError,
 } from "@avplatform/ui/ui-builder-host";
-import { Sparkles } from "lucide-react";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { useCallback } from "react";
 
 import {
@@ -62,7 +62,7 @@ const isUiBuilderSelectionMessage = (
 const GeneratingOverlay = () => (
   <div className="pointer-events-none absolute inset-0 z-10 flex items-start justify-center bg-white/40 pt-6 backdrop-blur-[1px]">
     <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/90 px-3 py-1.5 text-2xs font-medium text-indigo-700 shadow-lg shadow-indigo-500/10">
-      <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+      <SparkleIcon className="h-3.5 w-3.5 animate-pulse" />
       The agent is building the next version…
     </div>
   </div>
@@ -87,7 +87,7 @@ const EmptyCanvas = ({ isGenerating }: { isGenerating: boolean }) => (
       ) : (
         <div className="space-y-2 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white text-slate-400">
-            <Sparkles className="h-5 w-5" />
+            <SparkleIcon className="h-5 w-5" />
           </div>
           <p className="text-sm font-medium text-slate-700">Your interface will appear here</p>
           <p className="text-2xs text-slate-500">

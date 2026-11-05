@@ -1,4 +1,4 @@
-import { Calculator, Database, Sigma } from "lucide-react";
+import { CalculatorIcon, DatabaseIcon, SigmaIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/ui/components/popover";
@@ -36,7 +36,7 @@ export const UiBuilderCalculationsButton = ({
           className,
         )}
       >
-        <Calculator className="h-3.5 w-3.5" />
+        <CalculatorIcon className="h-3.5 w-3.5" />
         How numbers are calculated
         {figureCount > 0 && (
           <span className="rounded-full bg-indigo-50 px-1.5 text-[10px] font-semibold text-indigo-700">
@@ -57,11 +57,11 @@ export const UiBuilderCalculationsButton = ({
             <section key={section.id} className="space-y-2">
               <div>
                 <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
-                  <Sigma className="h-3.5 w-3.5 text-indigo-500" />
+                  <SigmaIcon className="h-3.5 w-3.5 text-indigo-500" />
                   {section.title}
                 </p>
                 <p className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-400">
-                  <Database className="h-3 w-3" />
+                  <DatabaseIcon className="h-3 w-3" />
                   Queue · {section.queueName}
                 </p>
                 {section.description && (

@@ -6,21 +6,21 @@ import {
   type UiBuilderDataFetchMode,
   type UiBuilderDataOperation,
 } from "@avplatform/ui/ui-builder-host";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  AlertTriangle,
-  ArrowLeft,
-  Database,
-  FlaskConical,
-  Layers,
-  Loader2,
-  Plus,
-  Sparkles,
-  Trash2,
-  Wand2,
-  X,
-  Zap,
-} from "lucide-react";
+  ArrowLeftIcon,
+  CircleNotchIcon,
+  DatabaseIcon,
+  FlaskIcon,
+  LightningIcon,
+  MagicWandIcon,
+  PlusIcon,
+  SparkleIcon,
+  StackIcon,
+  TrashIcon,
+  WarningIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
 
 import {
@@ -281,7 +281,7 @@ const SampleDataOption = ({
       />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
-          <FlaskConical className="h-3.5 w-3.5 text-violet-600" />
+          <FlaskIcon className="h-3.5 w-3.5 text-violet-600" />
           Generate sample data
         </span>
         <span className="mt-0.5 block text-2xs leading-relaxed text-slate-500">
@@ -312,7 +312,7 @@ const SampleDataOption = ({
           envType === "prod" ? "bg-amber-100 text-amber-800" : "bg-white/70 text-slate-500",
         )}
       >
-        <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+        <WarningIcon className="mt-0.5 h-3 w-3 shrink-0" />
         {envType === "prod"
           ? "This is a Production queue. Sample items are real work items, and agents or people assigned to the queue may process them."
           : processedBy === "User"
@@ -604,11 +604,11 @@ export const UiBuilderDataPanel = ({
                 onClick={() => setView("list")}
                 className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeftIcon className="h-4 w-4" />
               </button>
             ) : (
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-sm">
-                <Database className="h-4 w-4" />
+                <DatabaseIcon className="h-4 w-4" />
               </div>
             )}
             <div>
@@ -635,7 +635,7 @@ export const UiBuilderDataPanel = ({
             onClick={() => onOpenChange(false)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           >
-            <X className="h-4 w-4" />
+            <XIcon className="h-4 w-4" />
           </button>
         </div>
 
@@ -658,7 +658,7 @@ export const UiBuilderDataPanel = ({
                     }}
                     className="mt-2.5 inline-flex h-7 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-2xs font-semibold text-white shadow-sm hover:bg-indigo-700"
                   >
-                    <Wand2 className="h-3.5 w-3.5" />
+                    <MagicWandIcon className="h-3.5 w-3.5" />
                     Wire it up
                   </button>
                 </div>
@@ -666,7 +666,7 @@ export const UiBuilderDataPanel = ({
 
               {contexts.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/50 px-6 py-8 text-center">
-                  <Layers className="mx-auto h-8 w-8 text-slate-300" />
+                  <StackIcon className="mx-auto h-8 w-8 text-slate-300" />
                   <p className="mt-2 text-xs font-semibold text-slate-700">No data connected yet</p>
                   <p className="mx-auto mt-1 max-w-xs text-2xs leading-relaxed text-slate-500">
                     Connect a queue so agents and people share the same work items: agents process
@@ -708,7 +708,7 @@ export const UiBuilderDataPanel = ({
                               onClick={() => void handleRemove(connection.key)}
                               className="flex h-6 w-6 items-center justify-center rounded-md text-slate-300 hover:bg-rose-50 hover:text-rose-500"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <TrashIcon className="h-3.5 w-3.5" />
                             </button>
                           )}
                         </div>
@@ -723,7 +723,7 @@ export const UiBuilderDataPanel = ({
                           </span>
                         ))}
                         <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
-                          <Zap className="h-2.5 w-2.5" />
+                          <LightningIcon className="h-2.5 w-2.5" />
                           {connection.fetchMode === "auto" ? "auto-load" : "on request"}
                         </span>
                         {connectionFields.length > 0 && (
@@ -748,7 +748,7 @@ export const UiBuilderDataPanel = ({
                       }}
                       className="group rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <Sparkles className="h-4 w-4 text-indigo-600" />
+                      <SparkleIcon className="h-4 w-4 text-indigo-600" />
                       <p className="mt-1.5 text-xs font-semibold text-slate-900">
                         Design a new queue
                       </p>
@@ -762,7 +762,7 @@ export const UiBuilderDataPanel = ({
                       }}
                       className="rounded-xl border border-slate-200 bg-white p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <Plus className="h-4 w-4 text-slate-600" />
+                      <PlusIcon className="h-4 w-4 text-slate-600" />
                       <p className="mt-1.5 text-xs font-semibold text-slate-900">
                         Use an existing queue
                       </p>
@@ -867,9 +867,9 @@ export const UiBuilderDataPanel = ({
                   className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 text-2xs font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {proposeMutation.isPending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <Sparkles className="h-3.5 w-3.5" />
+                    <SparkleIcon className="h-3.5 w-3.5" />
                   )}
                   {fields.length > 0 ? "Propose again" : "Propose schema from the interface"}
                 </button>
@@ -935,7 +935,7 @@ export const UiBuilderDataPanel = ({
                                 setStatuses(statuses.filter((value) => value !== status))
                               }
                             >
-                              <X className="h-2.5 w-2.5" />
+                              <XIcon className="h-2.5 w-2.5" />
                             </button>
                           </span>
                         ))}
@@ -976,7 +976,9 @@ export const UiBuilderDataPanel = ({
                 onClick={() => void handleBindExisting()}
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-slate-900 px-4 text-2xs font-semibold text-white shadow-sm hover:bg-slate-800 disabled:opacity-40"
               >
-                {(isSaving || isSeeding) && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                {(isSaving || isSeeding) && (
+                  <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />
+                )}
                 {isSeeding ? "Generating sample data…" : "Connect queue"}
               </button>
             ) : (
@@ -986,7 +988,9 @@ export const UiBuilderDataPanel = ({
                 onClick={() => createMutation.mutate()}
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-slate-900 px-4 text-2xs font-semibold text-white shadow-sm hover:bg-slate-800 disabled:opacity-40"
               >
-                {createMutation.isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                {createMutation.isPending && (
+                  <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />
+                )}
                 {isSeeding ? "Generating sample data…" : "Create queue & connect"}
               </button>
             )}

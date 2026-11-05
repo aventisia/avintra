@@ -1,5 +1,5 @@
 import { Button, CopyButton } from "@avplatform/ui/buttons";
-import { Download } from "lucide-react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 import { CodeEditor } from "@/components/code-editor/CodeEditor";
@@ -129,7 +129,7 @@ export const UiBuilderCodeView = ({
               onClick={onDownloadSource}
               className="h-6 gap-1 px-2 text-2xs"
             >
-              <Download className="h-3 w-3" />
+              <DownloadSimpleIcon className="h-3 w-3" />
               .jsx
             </Button>
           )}
@@ -140,7 +140,7 @@ export const UiBuilderCodeView = ({
               onClick={onDownloadHtml}
               className="h-6 gap-1 px-2 text-2xs"
             >
-              <Download className="h-3 w-3" />
+              <DownloadSimpleIcon className="h-3 w-3" />
               .html
             </Button>
           )}

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { Fingerprint, Plus, Trash2 } from "lucide-react";
+import { FingerprintIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { type UiBuilderQueueSchemaField } from "../dtos/ui-builder-dto";
 
@@ -99,7 +99,7 @@ export const UiBuilderQueueSchemaEditor = ({
                   : "text-slate-300 hover:bg-slate-100 hover:text-slate-500",
               )}
             >
-              <Fingerprint className="h-3.5 w-3.5" />
+              <FingerprintIcon className="h-3.5 w-3.5" />
             </button>
             {readOnly ? (
               <span className="w-6" />
@@ -110,7 +110,7 @@ export const UiBuilderQueueSchemaEditor = ({
                 onClick={() => onChange(fields.filter((_, cursor) => cursor !== index))}
                 className="flex h-6 w-6 items-center justify-center rounded-md text-slate-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <TrashIcon className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -134,7 +134,7 @@ export const UiBuilderQueueSchemaEditor = ({
           }
           className="flex w-full items-center justify-center gap-1 border-t border-slate-100 py-2 text-2xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50/50"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <PlusIcon className="h-3.5 w-3.5" />
           Add field
         </button>
       )}

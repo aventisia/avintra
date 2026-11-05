@@ -2,28 +2,28 @@ import { Alert } from "@avplatform/ui/alert";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import {
-  ArrowUp,
-  Bot,
-  Check,
-  Circle,
-  Database,
-  Eye,
-  EyeOff,
-  Hammer,
-  ImagePlus,
-  Inbox,
-  LayoutDashboard,
-  ListChecks,
-  Loader2,
-  MessagesSquare,
-  MousePointer2,
-  RotateCcw,
-  Sparkles,
-  Square,
-  Trash2,
-  X,
-  XCircle,
-} from "lucide-react";
+  ArrowCounterClockwiseIcon,
+  ArrowUpIcon,
+  ChatsIcon,
+  CheckIcon,
+  CircleIcon,
+  CircleNotchIcon,
+  CursorClickIcon,
+  DatabaseIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  HammerIcon,
+  ImageIcon,
+  ListChecksIcon,
+  RobotIcon,
+  SparkleIcon,
+  SquareIcon,
+  SquaresFourIcon,
+  TrashIcon,
+  TrayIcon,
+  XCircleIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import {
@@ -46,19 +46,19 @@ type UiBuilderStarter = { icon: ReactNode; title: string; prompt: string };
 
 const STARTERS: UiBuilderStarter[] = [
   {
-    icon: <Inbox className="h-4 w-4" />,
+    icon: <TrayIcon className="h-4 w-4" />,
     title: "Agent review inbox",
     prompt:
       "A review inbox for work items an AI agent has processed: a filterable list with status chips, a detail panel showing the extracted fields, and Approve / Reject actions with a comment box.",
   },
   {
-    icon: <ListChecks className="h-4 w-4" />,
+    icon: <ListChecksIcon className="h-4 w-4" />,
     title: "Intake form",
     prompt:
       "A multi-step intake form that captures a customer request (contact details, request type, description, priority, due date), validates every step, and shows a confirmation summary.",
   },
   {
-    icon: <LayoutDashboard className="h-4 w-4" />,
+    icon: <SquaresFourIcon className="h-4 w-4" />,
     title: "Operations dashboard",
     prompt:
       "An operations dashboard with KPI cards (pending, in progress, completed, failed), a throughput trend, and a table of the latest work items with search and status filters.",
@@ -97,10 +97,11 @@ type UiBuilderChatPanelProps = {
 };
 
 const StepIcon = ({ status }: { status: UiBuilderChatStep["status"] }) => {
-  if (status === "running") return <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-500" />;
-  if (status === "done") return <Check className="h-3.5 w-3.5 text-emerald-500" />;
-  if (status === "error") return <XCircle className="h-3.5 w-3.5 text-rose-500" />;
-  return <Circle className="h-3 w-3 text-slate-300" />;
+  if (status === "running")
+    return <CircleNotchIcon className="h-3.5 w-3.5 animate-spin text-indigo-500" />;
+  if (status === "done") return <CheckIcon className="h-3.5 w-3.5 text-emerald-500" />;
+  if (status === "error") return <XCircleIcon className="h-3.5 w-3.5 text-rose-500" />;
+  return <CircleIcon className="h-3 w-3 text-slate-300" />;
 };
 
 const StepTimeline = ({ steps }: { steps: UiBuilderChatStep[] }) => (
@@ -141,7 +142,7 @@ const SuggestionChips = ({
         onClick={() => onPick(suggestion)}
         className="inline-flex max-w-full items-center gap-1 rounded-full border border-indigo-100 bg-indigo-50/60 px-2.5 py-1 text-left text-[10px] font-medium text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100"
       >
-        <Sparkles className="h-2.5 w-2.5 shrink-0" />
+        <SparkleIcon className="h-2.5 w-2.5 shrink-0" />
         <span className="truncate">{suggestion}</span>
       </button>
     ))}
@@ -163,7 +164,7 @@ const AssistantMessage = ({
 }) => (
   <div className="flex gap-2.5">
     <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-sm">
-      <Bot className="h-3.5 w-3.5" />
+      <RobotIcon className="h-3.5 w-3.5" />
     </div>
     <div className="min-w-0 flex-1">
       <div
@@ -185,7 +186,7 @@ const AssistantMessage = ({
             onClick={() => onBuildPlan(message.text)}
             className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:underline"
           >
-            <Hammer className="h-2.5 w-2.5" />
+            <HammerIcon className="h-2.5 w-2.5" />
             Build this
           </button>
         )}
@@ -195,7 +196,7 @@ const AssistantMessage = ({
             onClick={() => onRetry(retryPrompt)}
             className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:underline"
           >
-            <RotateCcw className="h-2.5 w-2.5" />
+            <ArrowCounterClockwiseIcon className="h-2.5 w-2.5" />
             Retry
           </button>
         )}
@@ -224,7 +225,7 @@ const UserMessage = ({ message }: { message: UiBuilderChatMessage }) => (
       )}
       {message.selector && (
         <span className="mb-1 inline-flex max-w-full items-center gap-1 rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] text-slate-200">
-          <MousePointer2 className="h-2.5 w-2.5 shrink-0" />
+          <CursorClickIcon className="h-2.5 w-2.5 shrink-0" />
           <span className="truncate">{message.selector}</span>
         </span>
       )}
@@ -237,7 +238,7 @@ const EmptyState = ({ onPick }: { onPick: (prompt: string) => void }) => (
   <div className="flex flex-1 flex-col justify-center gap-5 py-6">
     <div className="space-y-2 text-center">
       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 text-white shadow-lg shadow-indigo-500/20">
-        <Bot className="h-5 w-5" />
+        <RobotIcon className="h-5 w-5" />
       </div>
       <h2 className="text-sm font-semibold text-slate-900">What should we build?</h2>
       <p className="mx-auto max-w-[260px] text-2xs leading-relaxed text-slate-500">
@@ -382,7 +383,7 @@ export const UiBuilderChatPanel = ({
                   : "text-slate-400 hover:bg-slate-100 hover:text-slate-700",
               )}
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <TrashIcon className="h-3.5 w-3.5" />
               {isConfirmingClear && "Confirm"}
             </button>
           </Tooltip>
@@ -465,7 +466,7 @@ export const UiBuilderChatPanel = ({
                     disabled={isGenerating}
                     className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-white shadow"
                   >
-                    <X className="h-2.5 w-2.5" />
+                    <XIcon className="h-2.5 w-2.5" />
                   </button>
                 </span>
               ))}
@@ -474,7 +475,7 @@ export const UiBuilderChatPanel = ({
           {selection && (
             <div className="flex items-center gap-1 px-3 pt-2.5">
               <span className="inline-flex min-w-0 items-center gap-1 rounded-md bg-indigo-50 px-2 py-1 text-[10px] font-medium text-indigo-700 ring-1 ring-indigo-200">
-                <MousePointer2 className="h-3 w-3 shrink-0" />
+                <CursorClickIcon className="h-3 w-3 shrink-0" />
                 <span className="min-w-0 truncate">Editing {selection.selector}</span>
                 <button
                   type="button"
@@ -482,7 +483,7 @@ export const UiBuilderChatPanel = ({
                   onClick={onClearSelection}
                   className="ml-0.5 shrink-0 rounded p-0.5 hover:bg-indigo-100"
                 >
-                  <X className="h-3 w-3" />
+                  <XIcon className="h-3 w-3" />
                 </button>
               </span>
             </div>
@@ -538,7 +539,7 @@ export const UiBuilderChatPanel = ({
                   onClick={() => fileInputRef.current?.click()}
                   className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:border-indigo-300 hover:text-indigo-700 disabled:opacity-50"
                 >
-                  <ImagePlus className="h-3.5 w-3.5" />
+                  <ImageIcon className="h-3.5 w-3.5" />
                 </button>
               </Tooltip>
               <UiBuilderModelPicker
@@ -559,7 +560,7 @@ export const UiBuilderChatPanel = ({
                       : "border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:text-indigo-700",
                   )}
                 >
-                  <Database className="h-3 w-3" />
+                  <DatabaseIcon className="h-3 w-3" />
                   {connectionCount > 0 ? connectionCount : "Data"}
                 </button>
               </Tooltip>
@@ -583,7 +584,7 @@ export const UiBuilderChatPanel = ({
                       : "border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700",
                   )}
                 >
-                  <MessagesSquare className="h-3 w-3" />
+                  <ChatsIcon className="h-3 w-3" />
                   Plan
                 </button>
               </Tooltip>
@@ -608,7 +609,11 @@ export const UiBuilderChatPanel = ({
                         : "border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700",
                     )}
                   >
-                    {visualReview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                    {visualReview ? (
+                      <EyeIcon className="h-3 w-3" />
+                    ) : (
+                      <EyeSlashIcon className="h-3 w-3" />
+                    )}
                     Visual
                   </button>
                 </Tooltip>
@@ -621,7 +626,7 @@ export const UiBuilderChatPanel = ({
                 aria-label="Stop generating"
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition-transform hover:scale-105"
               >
-                <Square className="h-3 w-3 fill-current" />
+                <SquareIcon className="h-3 w-3 fill-current" />
               </button>
             ) : (
               <button
@@ -631,7 +636,7 @@ export const UiBuilderChatPanel = ({
                 aria-label="Send prompt"
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md shadow-indigo-500/25 transition-all hover:scale-105 disabled:scale-100 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 disabled:shadow-none"
               >
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUpIcon className="h-4 w-4" />
               </button>
             )}
           </div>

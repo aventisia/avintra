@@ -7,8 +7,8 @@ import {
   PopoverWrapper,
 } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { BookmarkIcon, CaretDownIcon, CircleNotchIcon, PencilIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, ChevronDownIcon, Loader2, Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -72,9 +72,9 @@ export const UiBuilderVersions = () => {
             {headVersion ? `v${headVersion.versionNumber}` : "v—"}
           </span>
           {versionsQuery.isLoading || restoreMutation.isPending ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <CircleNotchIcon className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <ChevronDownIcon className="h-3 w-3 shrink-0 transition-all group-hover:mt-0.5" />
+            <CaretDownIcon className="h-3 w-3 shrink-0 transition-all group-hover:mt-0.5" />
           )}
         </PopoverTrigger>
       </Tooltip>
@@ -113,7 +113,7 @@ export const UiBuilderVersions = () => {
                         }
                         className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
                       >
-                        <Pencil className="h-3 w-3" />
+                        <PencilIcon className="h-3 w-3" />
                       </button>
                       <Button
                         size="xs"
@@ -150,7 +150,7 @@ export const UiBuilderVersions = () => {
                   ) : (
                     version.label && (
                       <p className="mt-1 inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-2xs font-medium text-amber-800">
-                        <Bookmark className="h-2.5 w-2.5" />
+                        <BookmarkIcon className="h-2.5 w-2.5" />
                         {version.label}
                       </p>
                     )

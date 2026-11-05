@@ -1,45 +1,34 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { UiBuilderTableDto } from "../dtos/ui-builder-table-dto";
 import { UiBuilderRowActions } from "./ui-builder-row-actions/UiBuilderRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<UiBuilderTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
+const getLabelMeta = (columnKey: string) => ({ label: getColumnName(columnKey) });
 
 /**
  * Array of table columns for the UI builder projects table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const uiBuilderTableColumns = (): ColumnDef<UiBuilderTableDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<UiBuilderTableDto>({
+    enableHiding: true,
+    meta: getLabelMeta("id"),
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: getLabelMeta("name"),
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex items-center gap-3 ">
         <a
@@ -57,9 +46,8 @@ export const uiBuilderTableColumns = (): ColumnDef<UiBuilderTableDto>[] => [
   },
   {
     accessorKey: "description",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("description")} />
-    ),
+    meta: getLabelMeta("description"),
+    header: renderHeader("description"),
     cell: ({ row }) => (
       <div className="w-auto max-w-[24rem] truncate font-medium">
         {row.original.description || "-"}
@@ -68,30 +56,28 @@ export const uiBuilderTableColumns = (): ColumnDef<UiBuilderTableDto>[] => [
   },
   {
     accessorKey: "versionCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("versionCount")} />
-    ),
+    meta: getLabelMeta("versionCount"),
+    header: renderHeader("versionCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.original.versionCount ?? 0}</div>
     ),
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: getLabelMeta("createdBy"),
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "lastModifiedOn",
+    meta: getLabelMeta("lastModifiedOn"),
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        label={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
@@ -100,7 +86,7 @@ export const uiBuilderTableColumns = (): ColumnDef<UiBuilderTableDto>[] => [
       </div>
     ),
   },
-  createDTActionsColumn<UiBuilderTableDto>({
-    renderCell: (row) => <UiBuilderRowActions project={row} />,
+  getRowActionsColumn<UiBuilderTableDto>({
+    actions: ({ row }) => <UiBuilderRowActions project={row.original} />,
   }),
 ];

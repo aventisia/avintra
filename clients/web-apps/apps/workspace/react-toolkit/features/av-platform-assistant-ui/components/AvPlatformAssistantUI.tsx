@@ -8,7 +8,7 @@ import {
   useAui,
   useLocalRuntime,
 } from "@assistant-ui/react";
-import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
+import { type ChatModelSelection, createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -27,10 +27,16 @@ export interface AvPlatformAssistantUIProps {
    * 'temporary': Ephemeral dev/test mode. Bypasses history storage entirely.
    */
   mode?: "production" | "temporary";
-  /** Explicit flow version ID (Required). */
-  flowVersionId: string;
+  /** Explicit flow version ID; omitted for the agent-less landing chat. */
+  flowVersionId?: string;
   /** Explicit conversation ID. If omitted in 'production', a new one is requested lazily. */
   conversationId?: string;
+  /** Lazily allocates a conversation when none exists; defaults to inserting one for the flow version. */
+  allocateConversation?: () => Promise<string | undefined>;
+  /** The model picked for this turn; absent falls back to the flow version's node config. */
+  getModelSelection?: () => ChatModelSelection | null;
+  /** Rendered next to the composer's attachment button. */
+  composerAccessory?: React.ReactNode;
   /** If true, blocks new message creation and only loads historical logs. */
   readOnly?: boolean;
   /** Archival visual state flag. */
@@ -59,6 +65,9 @@ export const AvPlatformAssistantUI = ({
   mode = "production",
   flowVersionId,
   conversationId,
+  allocateConversation,
+  getModelSelection,
+  composerAccessory,
   readOnly = false,
   archived = false,
   defaultActions = [],
@@ -103,6 +112,9 @@ export const AvPlatformAssistantUI = ({
         mode={mode}
         conversationId={activeConversationId}
         flowVersionId={flowVersionId}
+        allocateConversation={allocateConversation}
+        getModelSelection={getModelSelection}
+        composerAccessory={composerAccessory}
         readOnly={readOnly}
         archived={archived}
         defaultActions={defaultActions}
@@ -135,6 +147,9 @@ const RuntimeWrapper = ({
   mode,
   conversationId,
   flowVersionId,
+  allocateConversation,
+  getModelSelection,
+  composerAccessory,
   title,
   description,
   readOnly,
@@ -175,8 +190,11 @@ const RuntimeWrapper = ({
       // 4. Initiate database creation
       allocatingPromiseRef.current = (async () => {
         try {
-          const res = await insertConversation(flowVersionId);
-          const newId = res.data?.id;
+          const newId = allocateConversation
+            ? await allocateConversation()
+            : flowVersionId
+              ? (await insertConversation(flowVersionId)).data?.id
+              : undefined;
           if (newId) {
             conversationIdRef.current = newId;
             onConversationAllocated?.(newId);
@@ -196,7 +214,7 @@ const RuntimeWrapper = ({
 
       return allocatingPromiseRef.current;
     },
-    [mode, readOnly, flowVersionId, onConversationAllocated, queryClient],
+    [mode, readOnly, flowVersionId, allocateConversation, onConversationAllocated, queryClient],
   );
 
   /**
@@ -238,10 +256,18 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
           isTempChat: mode === "temporary",
+          getModelSelection,
           // Chat streams are scoped to the current space.
           getExtraHeaders: getSpaceHeaders,
         }),
-      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
+      [
+        flowVersionId,
+        getConversationId,
+        getModelSelection,
+        onRequestComplete,
+        handleSuggestionsUpdate,
+        mode,
+      ],
     ),
     {
       initialMessages,
@@ -255,7 +281,7 @@ const RuntimeWrapper = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SuggestionsProvider defaultActions={defaultActions}>
-        <Thread title={title} description={description} />
+        <Thread title={title} description={description} composerAccessory={composerAccessory} />
       </SuggestionsProvider>
     </AssistantRuntimeProvider>
   );

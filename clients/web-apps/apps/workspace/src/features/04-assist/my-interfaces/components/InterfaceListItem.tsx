@@ -1,6 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
-import { LayoutTemplate, Tag } from "lucide-react";
+import { BrowserIcon, TagIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { UI_TYPE_LABEL } from "../constants";
@@ -44,7 +44,7 @@ export const InterfaceListItem = ({
       )}
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary-50 to-accent text-primary ring-1 ring-primary-100">
-        <LayoutTemplate className="h-4 w-4" />
+        <BrowserIcon className="h-4 w-4" />
       </div>
 
       <div className="min-w-0 flex-1">
@@ -78,7 +78,7 @@ export const InterfaceListItem = ({
         variant="outline"
         className="shrink-0 gap-1 rounded-full border-primary-100 bg-primary-50 py-0.5 text-primary"
       >
-        <Tag className="h-3 w-3" />
+        <TagIcon className="h-3 w-3" />
         <span className="leading-3">{uiInterface.type ?? UI_TYPE_LABEL}</span>
       </Badge>
     </div>

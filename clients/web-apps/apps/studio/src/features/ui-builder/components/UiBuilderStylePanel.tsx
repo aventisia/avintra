@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Paintbrush, X } from "lucide-react";
+import { PaintBrushIcon, XIcon } from "@phosphor-icons/react";
 
 import {
   UI_BUILDER_STYLE_GROUPS,
@@ -36,7 +36,7 @@ export const UiBuilderStylePanel = ({
   >
     <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-3 py-2">
       <span className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-slate-800">
-        <Paintbrush className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
+        <PaintBrushIcon className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
         {tagName ? (
           <span className="truncate font-mono text-[11px]">&lt;{tagName}&gt;</span>
         ) : (
@@ -49,7 +49,7 @@ export const UiBuilderStylePanel = ({
         onClick={onClose}
         className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
       >
-        <X className="h-3.5 w-3.5" />
+        <XIcon className="h-3.5 w-3.5" />
       </button>
     </div>
     {!tagName ? (

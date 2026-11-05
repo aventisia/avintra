@@ -1,17 +1,17 @@
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import {
-  Code2,
-  Database,
-  Eye,
-  Monitor,
-  MousePointer2,
-  Paintbrush,
-  PencilLine,
-  RotateCw,
-  Smartphone,
-  Tablet,
-} from "lucide-react";
+  ArrowClockwiseIcon,
+  CodeIcon,
+  CursorClickIcon,
+  DatabaseIcon,
+  DeviceMobileIcon,
+  DeviceTabletIcon,
+  EyeIcon,
+  MonitorIcon,
+  PaintBrushIcon,
+  PencilLineIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode } from "react";
 
 import { type UiBuilderContentFormat } from "../constants/ui-builder-framework.constant";
@@ -140,7 +140,7 @@ export const UiBuilderPreviewToolbar = ({
         disabled={disabled || viewMode === "code"}
         onClick={() => onSelectModeChange(!selectMode)}
       >
-        <MousePointer2 className="h-3.5 w-3.5" />
+        <CursorClickIcon className="h-3.5 w-3.5" />
         Select
       </ToolButton>
       <ToolButton
@@ -148,7 +148,7 @@ export const UiBuilderPreviewToolbar = ({
         disabled={disabled || !hasSelection || Boolean(editTextDisabledReason)}
         onClick={onEditText}
       >
-        <PencilLine className="h-3.5 w-3.5" />
+        <PencilLineIcon className="h-3.5 w-3.5" />
         Edit text
       </ToolButton>
       <ToolButton
@@ -157,12 +157,12 @@ export const UiBuilderPreviewToolbar = ({
         active={isStyleOpen}
         onClick={onStyle}
       >
-        <Paintbrush className="h-3.5 w-3.5" />
+        <PaintBrushIcon className="h-3.5 w-3.5" />
         Style
       </ToolButton>
       <span className="mx-1 h-4 w-px bg-slate-200" />
       <ToolButton label="Data connections" onClick={onOpenData}>
-        <Database className="h-3.5 w-3.5" />
+        <DatabaseIcon className="h-3.5 w-3.5" />
         Data
         {connectionCount > 0 && (
           <span className="rounded-full bg-emerald-100 px-1.5 text-[10px] font-semibold text-emerald-700">
@@ -180,7 +180,7 @@ export const UiBuilderPreviewToolbar = ({
           disabled={viewMode === "code"}
           onClick={() => onDeviceChange("desktop")}
         >
-          <Monitor className="h-3.5 w-3.5" />
+          <MonitorIcon className="h-3.5 w-3.5" />
         </SegmentButton>
         <SegmentButton
           active={device === "tablet"}
@@ -188,7 +188,7 @@ export const UiBuilderPreviewToolbar = ({
           disabled={viewMode === "code"}
           onClick={() => onDeviceChange("tablet")}
         >
-          <Tablet className="h-3.5 w-3.5" />
+          <DeviceTabletIcon className="h-3.5 w-3.5" />
         </SegmentButton>
         <SegmentButton
           active={device === "mobile"}
@@ -196,7 +196,7 @@ export const UiBuilderPreviewToolbar = ({
           disabled={viewMode === "code"}
           onClick={() => onDeviceChange("mobile")}
         >
-          <Smartphone className="h-3.5 w-3.5" />
+          <DeviceMobileIcon className="h-3.5 w-3.5" />
         </SegmentButton>
       </Segment>
       <Tooltip content="Reload preview">
@@ -207,7 +207,7 @@ export const UiBuilderPreviewToolbar = ({
           onClick={onReload}
           className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40"
         >
-          <RotateCw className="h-3.5 w-3.5" />
+          <ArrowClockwiseIcon className="h-3.5 w-3.5" />
         </button>
       </Tooltip>
       <span className="mx-0.5 h-4 w-px bg-slate-200" />
@@ -242,7 +242,7 @@ export const UiBuilderPreviewToolbar = ({
           disabled={disabled}
           onClick={() => onViewModeChange("preview")}
         >
-          <Eye className="h-3.5 w-3.5" />
+          <EyeIcon className="h-3.5 w-3.5" />
         </SegmentButton>
         <SegmentButton
           active={viewMode === "code"}
@@ -250,7 +250,7 @@ export const UiBuilderPreviewToolbar = ({
           disabled={disabled}
           onClick={() => onViewModeChange("code")}
         >
-          <Code2 className="h-3.5 w-3.5" />
+          <CodeIcon className="h-3.5 w-3.5" />
         </SegmentButton>
       </Segment>
     </div>

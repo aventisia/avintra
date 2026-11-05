@@ -1,5 +1,8 @@
 export { createAssistantUIModelAdapter } from "./adapters/create-assistant-ui-model-adapter";
-export type { CreateAssistantUIModelAdapterParams } from "./adapters/create-assistant-ui-model-adapter";
+export type {
+  ChatModelSelection,
+  CreateAssistantUIModelAdapterParams,
+} from "./adapters/create-assistant-ui-model-adapter";
 
 export { streamApprovalDecisions, streamChatCompletion } from "./apis/streaming-chat-apis";
 export type {

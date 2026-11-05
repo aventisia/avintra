@@ -7,7 +7,7 @@ import { createContentPartsBuilder } from "../lib/content-parts";
 import { LLMMessageType } from "../types/llm-message.type";
 
 export type CreateAssistantUIModelAdapterParams = {
-  flowVersionId: string;
+  flowVersionId?: string;
   // Accepts the lazy getter instead of a static string
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
@@ -23,6 +23,16 @@ export type CreateAssistantUIModelAdapterParams = {
    * headers). Workspace omits this; Studio passes its space-header getter.
    */
   getExtraHeaders?: () => Record<string, string>;
+  /** The model picked for this turn; absent falls back to the flow's node config. */
+  getModelSelection?: () => ChatModelSelection | null;
+};
+
+/** The model picked for a turn. Credentials are resolved server-side. */
+export type ChatModelSelection = {
+  provider: string;
+  model: string;
+  credentialName?: string;
+  isByokEnabled?: boolean;
 };
 
 /**
@@ -136,6 +146,7 @@ export const createAssistantUIModelAdapter = ({
   onRunFinished,
   isTempChat = false,
   getExtraHeaders,
+  getModelSelection,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   // Last conversation id observed in a frame. Temporary chats never allocate
   // one client-side, so this is the only handle that can resume their approvals.
@@ -271,7 +282,7 @@ export const createAssistantUIModelAdapter = ({
           yield* processFrames(
             streamApprovalDecisions(
               {
-                flowVersionId,
+                flowVersionId: flowVersionId ?? "",
                 conversationId: conversationId ?? "",
                 isTempChat,
                 decisions: approvalDecisions,
@@ -281,6 +292,7 @@ export const createAssistantUIModelAdapter = ({
             ),
           );
         } else {
+          const modelSelection = getModelSelection?.();
           yield* processFrames(
             streamChatCompletion(
               {
@@ -290,6 +302,10 @@ export const createAssistantUIModelAdapter = ({
                 userInput: userInputText,
                 files: files.length > 0 ? files : undefined,
                 isTempChat,
+                modelProvider: modelSelection?.provider,
+                modelId: modelSelection?.model,
+                credentialName: modelSelection?.credentialName,
+                isByokEnabled: modelSelection?.isByokEnabled,
               },
               options.abortSignal,
               getExtraHeaders?.(),
