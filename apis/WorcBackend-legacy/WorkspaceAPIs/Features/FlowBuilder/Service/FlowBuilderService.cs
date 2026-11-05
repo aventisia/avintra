@@ -1,5 +1,6 @@
 using ExecutorLibrary.Models;
 using ExecutorLibrary.Helpers;
+using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
 
@@ -15,6 +16,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly ICollaborationStore _collaborationStore;
     private readonly IVaultCredentialService _vaultCredentialService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
+    private readonly IPlatformToolTenantService _platformToolTenantService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -29,7 +31,8 @@ public class FlowBuilderService : IFlowBuilderService
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
         IVaultCredentialService vaultCredentialService,
-        IResourceFlowAccessService resourceFlowAccessService)
+        IResourceFlowAccessService resourceFlowAccessService,
+        IPlatformToolTenantService platformToolTenantService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -49,6 +52,7 @@ public class FlowBuilderService : IFlowBuilderService
         _collaborationStore = collaborationStore;
         _vaultCredentialService = vaultCredentialService;
         _resourceFlowAccessService = resourceFlowAccessService;
+        _platformToolTenantService = platformToolTenantService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -1463,7 +1467,15 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var tenantId = _currentTenantService.CurrentTenantId;
+        if (names.Count > 0)
+        {
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+        }
+
         var devTools = await ResolveDevToolsAsync(names);
+        var enabledLibraryToolIds = names.Count > 0
+            ? await _platformToolTenantService.GetEnabledToolIdsAsync()
+            : new HashSet<Guid>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
         var hasProdToolChanges = false;
 
@@ -1473,8 +1485,8 @@ public class FlowBuilderService : IFlowBuilderService
 
             if (devTool == null)
             {
-                // Platform's default tools are tenant-agnostic (TenantId = Guid.Empty, SpaceId = null)
-                // and available in every environment, so they never need a Production clone.
+                // IMPORTANT NOTE: platform's default tools are tenant-agnostic (TenantId = Guid.Empty,
+                // SpaceId = null) and available in every environment, so they never need a Production clone.
                 var platformToolExists = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
                         w.Name == name &&
@@ -1484,6 +1496,17 @@ public class FlowBuilderService : IFlowBuilderService
                     .IgnoreQueryFilters()
                     .AnyAsync();
                 if (platformToolExists)
+                    continue;
+
+                var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(name.Trim());
+                var libraryToolId = await _unitOfWork.PlatformToolRepo
+                    .GetByConditionAsync(w =>
+                        EF.Functions.ILike(w.Name, namePattern) &&
+                        !w.IsDisabled &&
+                        enabledLibraryToolIds.Contains(w.Id))
+                    .Select(w => (Guid?)w.Id)
+                    .FirstOrDefaultAsync();
+                if (libraryToolId.HasValue)
                     continue;
 
                 missing.Add($"tool '{name}'");

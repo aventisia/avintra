@@ -47,7 +47,7 @@ This sidecar follows this sequence:
 
 1. **generate:configs** — introspect plugins and generate static metadata artifacts
 2. **migrate** — create Corsair database schema (CorsairDb)
-3. **seed:tools** — seed generated Corsair tools into the Workspace database (ai_Tools table)
+3. **seed:tools** — seed generated Corsair tools into the Workspace database (ai_PlatformTools table; marks the popular names in popular-tools.json)
 4. **start** — run the sidecar runtime for OAuth and invocation
 
 This preserves a clean split:
@@ -162,8 +162,8 @@ npm test
 When deploying the Corsair sidecar, follow this order:
 
 1. Ensure environment variables are set:
-   - Corsair database: `POSTGRESQL_HOST`, `POSTGRESQL_PORT`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
-   - Workspace database: `WORKSPACE_POSTGRES_HOST`, `WORKSPACE_POSTGRES_PORT`, `WORKSPACE_POSTGRES_USERNAME`, `WORKSPACE_POSTGRES_PASSWORD`
+   - Both databases share `POSTGRESQL_HOST`, `POSTGRESQL_PORT`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`
+   - Workspace database name: `POSTGRESQL_WORKSPACE_DB_NAME`
    - Admin user: `ON_PREM_ADMIN_EMAIL`
    - Sidecar config: `PORT`, `APP_BASE_URL`, `CORSAIR_KEK`
 
@@ -190,7 +190,7 @@ When deploying the Corsair sidecar, follow this order:
 `prestart`.** Config generation is an explicit CI/CD step (Jenkins `Generate -
 Corsair Configs` stage) because the per-plugin configs are deployed to the shared
 server files path, not generated at runtime. `seed:tools` is also explicit
-because it writes into the **Workspace database** (`ai_Tools`), which is owned by
+because it writes into the **Workspace database** (`ai_PlatformTools`), which is owned by
 the Workspace API — not the sidecar. The sidecar's runtime (OAuth,
 `/api/corsair/invoke`) does not depend on either, so coupling them to startup
 would block the sidecar if the Workspace DB is temporarily unavailable.
@@ -203,6 +203,13 @@ touches the Workspace DB and does not regenerate configs.
 the Workspace database is up and migrated.
 
 All seeding steps are idempotent and safe to run repeatedly.
+
+`src/data/popular-tools.json` lists the display names marked popular. The
+seeder matches those names case-insensitively against the generated catalog and
+warns about duplicated, unmatched, or ambiguous entries without stopping the
+pass. A missing or malformed file aborts seeding rather than clearing existing
+marks. Re-running never overwrites `IsDisabled`, so a tool an operator disabled
+stays disabled.
 
 ## Adding a new plugin
 
@@ -249,14 +256,14 @@ separate scripts you run explicitly afterwards:
 
 ```sh
 npm run generate:configs   # regenerate action configs, mapping, action map, catalog, OpenAPI
-npm run seed:tools         # seed the tools into the Workspace ai_Tools database
+npm run seed:tools         # seed the tools into the Workspace ai_PlatformTools database
 ```
 
 ### After onboarding
 
 1. **Run `npm install`** (with `--legacy-peer-deps`) if new deps were added.
 2. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
-3. **Run `npm run seed:tools`** to seed the tools into `ai_Tools`.
+3. **Run `npm run seed:tools`** to seed the tools into `ai_PlatformTools`.
 4. **Commit** the generated artifacts + the new plugin registration.
 
 ## Verification

@@ -47,7 +47,13 @@ public class ToolVerificationService : IToolVerificationService
 
             if (tool == null)
             {
-                return serviceResponse.Update("Tool not found.", 404);
+                var isLibraryTool = await _unitOfWork.PlatformToolRepo
+                    .GetByConditionAsync(w => w.Id == toolId)
+                    .AnyAsync();
+
+                return isLibraryTool
+                    ? serviceResponse.Update("Library tools cannot be tested.", 400)
+                    : serviceResponse.Update("Tool not found.", 404);
             }
 
             var prodUpdateBlock = ProdResourceUpdateGuard.Validate<TestToolResponseDto>(

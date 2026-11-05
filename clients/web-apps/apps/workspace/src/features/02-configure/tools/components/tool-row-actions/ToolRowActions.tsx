@@ -10,15 +10,17 @@ import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource
 
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { ToolRowDeleteAction } from "./ToolRowDeleteAction";
+import { ToolRowToggleEnabledAction } from "./ToolRowToggleEnabledAction";
 
-interface ToolRowActionsProps {
+type ToolRowActionsProps = {
   rowId: string;
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
   isResourceAccessRestricted: boolean;
   isPlatformTool?: boolean;
-}
+  isEnabled?: boolean;
+};
 
 export const ToolRowActions = ({
   rowId,
@@ -27,14 +29,16 @@ export const ToolRowActions = ({
   isTenantWideAccess,
   isResourceAccessRestricted,
   isPlatformTool = false,
+  isEnabled = false,
 }: ToolRowActionsProps) => {
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
-  // Get the query key used to invalidate the merged tools list after a mutation
   const { queryKey } = useTableTab();
 
   return (
     <DataTableRowActions className="w-36 min-w-36">
       <DTRowAction rowId={rowId} crudAction="read" entity="tool" />
+
+      {isPlatformTool && <ToolRowToggleEnabledAction toolId={rowId} isEnabled={isEnabled} />}
 
       {!isPlatformTool && actions?.update && (
         <DTRowAction rowId={rowId} crudAction="update" entity="tool" />
@@ -60,12 +64,16 @@ export const ToolRowActions = ({
         />
       )}
 
-      <DropdownMenuSeparator />
+      {!isPlatformTool && (
+        <>
+          <DropdownMenuSeparator />
 
-      {!isPlatformTool && resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
+          {resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
 
-      {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+          {accessLevel !== ResourceAccessTypeEnum.Owner && (
+            <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+          )}
+        </>
       )}
     </DataTableRowActions>
   );

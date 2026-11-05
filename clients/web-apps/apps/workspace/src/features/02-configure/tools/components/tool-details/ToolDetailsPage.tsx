@@ -1,3 +1,5 @@
+import { Switch } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,12 +13,14 @@ import { useQuery } from "@tanstack/react-query";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
 import { getToolById } from "../../apis/tools.apis";
+import { DETAIL_DATA_QUERY_KEY } from "../../constants/tools-table.constants";
+import { ComponentTypeEnum } from "../../enums/component-type-enum";
+import { useToggleLibraryTool } from "../../hooks/useToggleLibraryTool.hook";
 import { getToolDisplayName } from "../../utils/tool-name-formatter";
 import { ToolIcon } from "../ToolIcon";
 import { OperationList } from "./OperationList";
 
 const TABLE_HEADING = "Tools";
-const DETAIL_QUERY_KEY = "tool";
 
 export const ToolDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,13 +29,17 @@ export const ToolDetailsPage = () => {
 
   useDocumentTitle(`${toolName} - ${TABLE_HEADING}`);
 
+  const { canToggle, isPending, toggle } = useToggleLibraryTool();
+
   const { data, isLoading } = useQuery({
-    queryKey: [DETAIL_QUERY_KEY, id],
+    queryKey: [...DETAIL_DATA_QUERY_KEY, id],
     queryFn: () => getToolById(id ?? ""),
     enabled: !!id,
   });
 
   const tool = data?.data;
+  const isLibraryTool = tool?.type === ComponentTypeEnum.Platform;
+  const toolId = tool?.id;
 
   if (isLoading) {
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
@@ -76,7 +84,24 @@ export const ToolDetailsPage = () => {
                 className="h-12 w-12 flex-shrink-0 object-contain"
               />
               <div className="flex flex-col gap-2">
-                <h1 className="text-xl font-semibold">{getToolDisplayName(tool.name)}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-xl font-semibold">{getToolDisplayName(tool.name)}</h1>
+                  {isLibraryTool && (
+                    <>
+                      <Badge variant={tool.isActive ? "default" : "secondary"}>
+                        {tool.isActive ? "Enabled" : "Disabled"}
+                      </Badge>
+                      {canToggle && toolId && (
+                        <Switch
+                          aria-label="Enable library tool"
+                          checked={Boolean(tool.isActive)}
+                          disabled={isPending}
+                          onCheckedChange={(checked) => toggle({ id: toolId, isEnabled: checked })}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
                 {tool.description && (
                   <p className="text-sm text-muted-foreground">{tool.description}</p>
                 )}

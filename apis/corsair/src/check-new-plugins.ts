@@ -220,7 +220,7 @@ async function onboard(ids: string[]): Promise<void> {
   console.log("Next steps:");
   console.log("  1. Run `npm install` (with --legacy-peer-deps) if new deps were added");
   console.log("  2. Run `npm run generate:configs` to refresh configs/mapping/catalog/OpenAPI");
-  console.log("  3. Run `npm run seed:tools` to seed tools into ai_Tools");
+  console.log("  3. Run `npm run seed:tools` to seed tools into ai_PlatformTools");
   console.log("  4. Commit the generated artifacts + new plugin registration.");
 }
 

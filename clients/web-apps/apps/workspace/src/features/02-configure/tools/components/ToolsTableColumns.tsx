@@ -4,9 +4,11 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { type ColumnDef } from "@tanstack/react-table";
 
+import { ToolPill } from "@/features/02-configure/tools/components/ToolPill";
 import { ToolRowActions } from "@/features/02-configure/tools/components/tool-row-actions/ToolRowActions";
 import { getColumnName } from "@/features/02-configure/tools/constants/tools-column-display-names";
 import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "@/features/02-configure/tools/constants/tools-display-names.constant";
+import { mapAccessLevelLabel } from "@/features/02-configure/tools/constants/tools-table.constants";
 import { ToolDto } from "@/features/02-configure/tools/dtos/index";
 import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
@@ -36,9 +38,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
-          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-        </span>
+        <ToolPill>{mapAccessLevelLabel(row.original.accessLevel)}</ToolPill>
       </div>
     ),
   },
@@ -139,6 +139,7 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
         isTenantWideAccess={row.isTenantWideAccess}
         isResourceAccessRestricted={row.isResourceAccessRestricted}
         isPlatformTool={isPlatformTab}
+        isEnabled={row.isActive}
       />
     ),
   }),

@@ -90,6 +90,11 @@ public class ToolDto
     public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets whether this platform tool is one of the curated popular tools.
+    /// </summary>
+    public bool IsPopular { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the tool is disabled.
     /// </summary>
     public bool? IsDisabled { get; set; }

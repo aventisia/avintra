@@ -49,6 +49,7 @@ export const ToolCrudForm = ({
       ...formData,
       id: formData.id || crypto.randomUUID(),
       accessLevel: formData.accessLevel ?? ResourceAccessTypeEnum.Owner,
+      isPopular: false,
     };
     mutateTool({ payload, crudAction });
     setAvailabilityMessage(null);

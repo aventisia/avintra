@@ -58,6 +58,11 @@ export interface ToolDto {
 
   accessLevel: ResourceAccessTypeEnum;
 
+  /**
+   * Whether this library tool is one of the curated popular tools.
+   */
+  isPopular: boolean;
+
   isDisabled?: boolean;
 
   createdBy?: string;
