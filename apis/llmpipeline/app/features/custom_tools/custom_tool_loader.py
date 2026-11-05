@@ -52,7 +52,7 @@ async def load_custom_tools(
         select(Tool)
         .where(Tool.tenant_id == tenant_id)
         .where(func.lower(Tool.env_type) == normalized_env)
-        .where(Tool.name.in_(normalized_tool_names))
+        .where(func.lower(Tool.name).in_([name.lower() for name in normalized_tool_names]))
         .where(Tool.type == "Custom")
         .where(Tool.is_active == True)
         .where(Tool.is_disabled == False)

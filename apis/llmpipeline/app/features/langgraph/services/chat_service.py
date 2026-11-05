@@ -40,17 +40,10 @@ from app.features.langgraph.skills.skill_loader import (
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_platform_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.langgraph.tools.tool_config_utils import (
-    expand_tool_config,
-    platform_candidate_entries,
-    split_tool_config_by_source,
-)
+from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_resolver import (
     register_configured_custom_tools,
-)
-from app.features.platform_tools.loader import (
-    resolve_platform_tools,
-    withhold_platform_entries,
+    resolve_configured_platform_tools,
 )
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
@@ -104,10 +97,8 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph,
-        # then resolve the platform-marked entries against the tenant's library
-        # mapping so the tenant gate and the custom-name precedence apply to
-        # this turn.
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
             claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
@@ -150,10 +141,7 @@ class ChatService:
                 # The compiled graph is cached per conversation, so the request
                 # captured at build time goes stale. Seed each invocation with
                 # the current request/user for per-message planner gating.
-                "metadata": {
-                    "request": request,
-                    "user": user,
-                },
+                "metadata": {"request": request, "user": user},
             },
             config,
         )
@@ -192,10 +180,8 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph,
-        # then resolve the platform-marked entries against the tenant's library
-        # mapping so the tenant gate and the custom-name precedence apply to
-        # this turn.
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
             claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
@@ -239,10 +225,7 @@ class ChatService:
                 "messages": messages,
                 # Seed the current request so per-message planner gating sees
                 # this turn's input rather than the graph-build-time request.
-                "metadata": {
-                    "request": request,
-                    "user": user,
-                },
+                "metadata": {"request": request, "user": user},
             },
             config=config,
             stream_mode="messages",
@@ -1020,32 +1003,16 @@ class ChatService:
     ) -> None:
         """Resolve platform candidates against the tenant's library catalog.
 
-        Candidates are the entries explicitly marked platform plus unmarked
-        entries, because requests written before the stores split carry no
-        source and their library tools moved out of ``ai_tools``. Explicit
-        custom entries are never candidates, and a custom tool that claimed the
-        name always wins. An explicit platform entry that cannot be resolved is
-        withheld; an unmarked one is left to the custom store only when no
-        catalog row owns its name.
+        IMPORTANT NOTE: resolution rewrites request.tool_config in place, so it must
+        run before the graph is built for this turn.
         """
 
-        _, platform_entries = split_tool_config_by_source(request.tool_config or [])
-        candidates = platform_candidate_entries(request.tool_config or [])
-
-        try:
-            await resolve_platform_tools(
-                platform_entries=candidates,
-                tenant_id=user.tenant_id,
-                db_session=db_session,
-                custom_claimed_roots=custom_claimed_roots,
-            )
-        except Exception as exc:
-            logger.warning(
-                "Failed to resolve platform tools for tenant %s: %s",
-                user.tenant_id,
-                exc,
-            )
-            withhold_platform_entries(platform_entries)
+        await resolve_configured_platform_tools(
+            request,
+            user,
+            db_session,
+            custom_claimed_roots,
+        )
 
     async def _load_custom_skills(
         self,
@@ -1389,7 +1356,7 @@ class ChatService:
         A client that lost the approval widget must not dead-end the thread:
         pending calls are denied (never executed) and the new message proceeds.
         Returns the frames to emit and whether the pause was cleared. When it
-        was not cleared the caller MUST abort the new turn — invoking a graph
+        was not cleared the caller MUST abort the new turn â€” invoking a graph
         with a pending interrupt re-enters the pause.
 
         IMPORTANT NOTE: the auto-deny continuation is persisted silently (it

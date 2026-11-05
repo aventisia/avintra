@@ -4,6 +4,7 @@ type ToolRow = {
   };
 };
 
+/** A titled group of tool rows for the table's sectioned view. */
 export type ToolSection<TRow extends ToolRow> = {
   key: "popular" | "other";
   title: string;

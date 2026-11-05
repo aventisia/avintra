@@ -248,7 +248,7 @@ public class ToolCatalogService : IToolCatalogService
                 .ToListAsync();
 
             var mappedTools = platformTools
-                .Select(tool => PlatformToolDtoHelpers.ToToolDto(
+                .Select(tool => ToolsHelpers.ToToolDto(
                     tool,
                     enabledToolIds.Contains(tool.Id),
                     includeSchema: false)

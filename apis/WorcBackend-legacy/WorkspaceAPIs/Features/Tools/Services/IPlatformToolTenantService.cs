@@ -16,7 +16,7 @@ public interface IPlatformToolTenantService
     Task<bool> IsEnabledAsync(Guid platformToolId);
 
     /// <summary>
-    /// Enables the popular library tools for the current tenant once, on first access.
+    /// Maps the popular library tools to the current tenant when it has no mapping rows yet.
     /// </summary>
     Task EnsureCurrentTenantMaterializedAsync();
 }

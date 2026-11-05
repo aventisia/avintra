@@ -78,6 +78,7 @@ const createEmptyDraft = (): ToolDto => ({
   isActive: false,
   isVerified: false,
   accessLevel: ResourceAccessTypeEnum.Owner,
+  isPopular: false,
 });
 
 type WizardStepperProps = {

@@ -37,20 +37,11 @@ def field(obj: Any, name: str, default: Any = None) -> Any:
 
 
 def explicit_tool_source(config: Any) -> str | None:
-    """Return an entry's explicit source marker, or ``None`` when it has none.
-
-    ``tool_config`` is validated as ``ToolConfig`` on ingress, so only the two
-    known values reach here. Anything else is treated as unsourced rather than
-    as a platform reference.
-    """
-
     source = str(field(config, "source", "") or "").strip().lower()
     return source if source in (TOOL_SOURCE_CUSTOM, TOOL_SOURCE_PLATFORM) else None
 
 
 def tool_source(config: Any) -> str:
-    """Return an entry's source marker; absent or unknown means the custom store."""
-
     return explicit_tool_source(config) or TOOL_SOURCE_CUSTOM
 
 
@@ -68,23 +59,6 @@ def platform_candidate_entries(tool_config: list[Any] | None) -> list[Any]:
         for config in tool_config or []
         if explicit_tool_source(config) in (None, TOOL_SOURCE_PLATFORM)
     ]
-
-
-def split_tool_config_by_source(
-    tool_config: list[Any] | None,
-) -> tuple[list[Any], list[Any]]:
-    """Split entries into ``(custom_entries, platform_entries)`` by marker."""
-
-    custom_entries: list[Any] = []
-    platform_entries: list[Any] = []
-    for config in tool_config or []:
-        target = (
-            platform_entries
-            if tool_source(config) == TOOL_SOURCE_PLATFORM
-            else custom_entries
-        )
-        target.append(config)
-    return custom_entries, platform_entries
 
 
 def iter_tool_config_entries(tool_config: list[Any]):

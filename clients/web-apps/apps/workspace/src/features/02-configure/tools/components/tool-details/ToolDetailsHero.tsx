@@ -63,54 +63,58 @@ type ToolDetailsHeroProps = {
  * Tool page banner: icon, kind, name, description, verification and state.
  */
 export const ToolDetailsHero = ({ tool, operationCount }: ToolDetailsHeroProps) => {
-  const { canToggle, toggle } = useToggleLibraryTool();
+  const { canToggle, isPending, toggle } = useToggleLibraryTool();
+  const toolId = tool.id;
 
   return (
-  <section className="relative isolate overflow-hidden rounded-lg bg-surface px-5 py-4 ring-1 ring-line">
-    <ToolIcon
-      name={tool.name}
-      iconUrl={tool.iconUrl}
-      className="pointer-events-none absolute -bottom-10 right-28 -z-10 size-40 rotate-[-12deg] object-contain opacity-[0.06] grayscale"
-    />
-    <div className="flex items-start gap-4">
-      <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-popover shadow-sm ring-1 ring-line">
-        <ToolIcon
-          name={tool.name}
-          iconUrl={tool.iconUrl}
-          className={tool.isDisabled ? "size-8 object-contain opacity-50" : "size-8 object-contain"}
-        />
-      </span>
-      <div className="min-w-0 flex-1 pt-0.5">
-        <p className="font-mono text-label uppercase text-muted-foreground">
-          {tool.type === ComponentTypeEnum.Platform ? "Platform tool" : "Custom tool"}
-        </p>
-        <h2 className="truncate text-title text-ink">{getToolDisplayName(tool.name)}</h2>
-        {tool.description && (
-          <p className="mt-0.5 line-clamp-2 max-w-3xl text-[13px] leading-5 text-ink-2">
-            {tool.description}
-          </p>
-        )}
-        <MetaLine
-          className="mt-2 text-[12px] text-muted-foreground"
-          items={[
-            <VerificationStatus key="verification" isVerified={tool.isVerified} />,
-            `${operationCount} ${pluralize(operationCount, "operation")}`,
-            tool.authenticationType && AUTHENTICATION_TYPE_DISPLAY_NAMES[tool.authenticationType],
-            <LastChange key="change" tool={tool} />,
-          ]}
-        />
-      </div>
-      <div className="flex shrink-0 items-center gap-3">
-        {canToggle && tool.type === ComponentTypeEnum.Platform && (
-          <Switch
-            checked={Boolean(tool.isActive)}
-            onCheckedChange={(checked) => toggle({ id: tool.id ?? "", isEnabled: checked })}
-            aria-label={tool.isActive ? "Disable tool" : "Enable tool"}
+    <section className="relative isolate overflow-hidden rounded-lg bg-surface px-5 py-4 ring-1 ring-line">
+      <ToolIcon
+        name={tool.name}
+        iconUrl={tool.iconUrl}
+        className="pointer-events-none absolute -bottom-10 right-28 -z-10 size-40 rotate-[-12deg] object-contain opacity-[0.06] grayscale"
+      />
+      <div className="flex items-start gap-4">
+        <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-popover shadow-sm ring-1 ring-line">
+          <ToolIcon
+            name={tool.name}
+            iconUrl={tool.iconUrl}
+            className={
+              tool.isDisabled ? "size-8 object-contain opacity-50" : "size-8 object-contain"
+            }
           />
-        )}
-        {getStateBadge(tool)}
+        </span>
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="font-mono text-label uppercase text-muted-foreground">
+            {tool.type === ComponentTypeEnum.Platform ? "Platform tool" : "Custom tool"}
+          </p>
+          <h2 className="truncate text-title text-ink">{getToolDisplayName(tool.name)}</h2>
+          {tool.description && (
+            <p className="mt-0.5 line-clamp-2 max-w-3xl text-[13px] leading-5 text-ink-2">
+              {tool.description}
+            </p>
+          )}
+          <MetaLine
+            className="mt-2 text-[12px] text-muted-foreground"
+            items={[
+              <VerificationStatus key="verification" isVerified={tool.isVerified} />,
+              `${operationCount} ${pluralize(operationCount, "operation")}`,
+              tool.authenticationType && AUTHENTICATION_TYPE_DISPLAY_NAMES[tool.authenticationType],
+              <LastChange key="change" tool={tool} />,
+            ]}
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          {canToggle && tool.type === ComponentTypeEnum.Platform && toolId && (
+            <Switch
+              aria-label="Enable library tool"
+              checked={Boolean(tool.isActive)}
+              disabled={isPending}
+              onCheckedChange={(checked) => toggle({ id: toolId, isEnabled: checked })}
+            />
+          )}
+          {getStateBadge(tool)}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };

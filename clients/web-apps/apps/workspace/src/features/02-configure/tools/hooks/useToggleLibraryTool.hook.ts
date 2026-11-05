@@ -31,7 +31,7 @@ export const useToggleLibraryTool = () => {
   const roles = userSession?.userRoles ?? [];
   const canToggle = roles.includes(ROLE_TA) || roles.includes(ROLE_OM);
 
-  const { mutate: toggle } = useMutation({
+  const { mutate: toggle, isPending } = useMutation({
     mutationFn: ({ id, isEnabled }: ToggleLibraryToolPayload) => setToolEnabledState(id, isEnabled),
     onMutate: async ({ id, isEnabled }) => {
       await queryClient.cancelQueries({ queryKey: DATA_QUERY_KEY });
@@ -39,6 +39,8 @@ export const useToggleLibraryTool = () => {
       const previousLists = queryClient.getQueriesData<IHttpResponse<ToolDto[]>>({
         queryKey: DATA_QUERY_KEY,
       });
+      const detailQueryKey = [...DETAIL_DATA_QUERY_KEY, id];
+      const previousDetail = queryClient.getQueryData<IHttpResponse<ToolDto>>(detailQueryKey);
 
       queryClient.setQueriesData<IHttpResponse<ToolDto[]>>({ queryKey: DATA_QUERY_KEY }, (old) =>
         old
@@ -50,13 +52,19 @@ export const useToggleLibraryTool = () => {
             }
           : old,
       );
+      queryClient.setQueryData<IHttpResponse<ToolDto>>(detailQueryKey, (old) =>
+        old?.data ? { ...old, data: { ...old.data, isActive: isEnabled } } : old,
+      );
 
-      return { previousLists };
+      return { previousLists, previousDetail, detailQueryKey };
     },
     onError: (error, _payload, context) => {
       context?.previousLists.forEach(([queryKey, data]) =>
         queryClient.setQueryData(queryKey, data),
       );
+      if (context) {
+        queryClient.setQueryData(context.detailQueryKey, context.previousDetail);
+      }
       toast.error(getMutationErrorMessage(error));
     },
     onSettled: () => {
@@ -65,5 +73,5 @@ export const useToggleLibraryTool = () => {
     },
   });
 
-  return { canToggle, toggle };
+  return { canToggle, isPending, toggle };
 };

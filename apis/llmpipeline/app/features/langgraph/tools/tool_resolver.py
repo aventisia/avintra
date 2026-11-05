@@ -8,14 +8,21 @@ from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.custom_tools.custom_tool_loader import load_custom_tools
 from app.features.langgraph.tools.tool_config_utils import (
+    TOOL_SOURCE_PLATFORM,
     configured_tool_roots,
     expand_tool_config,
+    explicit_tool_source,
     field,
-    split_tool_config_by_source,
+    platform_candidate_entries,
 )
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.llm_providers.services.corsair_sidecar_service import is_corsair_tool
+from app.features.platform_tools.loader import (
+    expands_to_corsair,
+    resolve_platform_tools,
+    withhold_platform_entries,
+)
 
 
 class ToolResolver:
@@ -90,8 +97,10 @@ async def register_configured_custom_tools(
     platform resolution lets those win a shared name.
     """
 
-    custom_entries, _ = split_tool_config_by_source(request.tool_config or [])
-    tool_names = configured_tool_roots(custom_entries)
+    tool_names = configured_tool_roots(
+        request.tool_config,
+        exclude_source=TOOL_SOURCE_PLATFORM,
+    )
     if not tool_names:
         return set()
 
@@ -125,6 +134,53 @@ async def register_configured_custom_tools(
     return claimed_roots
 
 
+async def resolve_configured_platform_tools(
+    request: LLMRequest,
+    user: User,
+    db_session: AsyncSession,
+    custom_claimed_roots: set[str] | None = None,
+) -> None:
+    """Resolve platform candidates against the tenant's library catalog.
+
+    Candidates are the entries explicitly marked platform plus unmarked
+    entries, because requests written before the stores split carry no source
+    and their library tools moved out of ``ai_tools``. Explicit custom entries
+    are never candidates, and a custom tool that claimed the name always wins.
+    An explicit platform entry that cannot be resolved is withheld, and so is an
+    unmarked entry that would execute through Corsair; every other unmarked
+    entry is left to the custom store.
+    """
+
+    candidates = platform_candidate_entries(request.tool_config or [])
+
+    try:
+        await resolve_platform_tools(
+            platform_entries=candidates,
+            tenant_id=user.tenant_id,
+            db_session=db_session,
+            custom_claimed_roots=custom_claimed_roots,
+        )
+    except Exception as exc:
+        logger.warning(
+            "Failed to resolve %d platform tool entries for tenant %s: %s",
+            len(candidates),
+            user.tenant_id,
+            exc,
+        )
+        claimed = {root.strip().casefold() for root in (custom_claimed_roots or set())}
+        withhold_platform_entries(
+            [
+                entry
+                for entry in candidates
+                if (field(entry, "tool", "") or "").strip().casefold() not in claimed
+                and (
+                    explicit_tool_source(entry) == TOOL_SOURCE_PLATFORM
+                    or expands_to_corsair(entry)
+                )
+            ]
+        )
+
+
 async def resolve_configured_tools(
     request: LLMRequest,
     user: User,
@@ -138,7 +194,18 @@ async def resolve_configured_tools(
     """
 
     if db_session is not None:
-        await register_configured_custom_tools(request, user, db_session, registry)
+        claimed_roots = await register_configured_custom_tools(
+            request,
+            user,
+            db_session,
+            registry,
+        )
+        await resolve_configured_platform_tools(
+            request,
+            user,
+            db_session,
+            claimed_roots,
+        )
 
     return await resolve_tools(
         registry,
@@ -157,14 +224,15 @@ async def resolve_tools(
     if not selected_tool_names:
         return []
 
-    legacy_names = [name for name in selected_tool_names if not is_corsair_tool(name)]
-    corsair_names = [name for name in selected_tool_names if is_corsair_tool(name)]
-
-    tools = []
-    if legacy_names:
-        resolved_legacy = tool_registry.get_by_names(legacy_names)
-        if resolved_legacy:
-            tools.extend(resolved_legacy)
+    # Custom tools registered for this turn win over a same-named Corsair path.
+    tools: list[BaseTool] = []
+    corsair_names: list[str] = []
+    for name in selected_tool_names:
+        registered = tool_registry.get(name)
+        if registered is not None:
+            tools.append(registered)
+        elif is_corsair_tool(name):
+            corsair_names.append(name)
 
     if corsair_names and llm_request is not None:
         corsair_tools = await _build_corsair_tools_for_names(corsair_names, llm_request)

@@ -6,18 +6,10 @@ namespace WorkspaceAPIs.Services;
 /// </summary>
 public class PlatformToolTenantService : IPlatformToolTenantService
 {
-    /// <summary>
-    /// Reserved config-store name whose presence marks a tenant as already materialized.
-    /// </summary>
-    public const string MarkerName = "__platform_tools_seeded";
-
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly ILogger<PlatformToolTenantService> _logger;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PlatformToolTenantService"/> class.
-    /// </summary>
     public PlatformToolTenantService(
         IUnitOfWork unitOfWork,
         ICurrentTenantService currentTenantService,
@@ -28,7 +20,6 @@ public class PlatformToolTenantService : IPlatformToolTenantService
         _logger = logger;
     }
 
-    /// <inheritdoc />
     public async Task<IReadOnlySet<Guid>> GetEnabledToolIdsAsync()
     {
         var tenantId = _currentTenantService.CurrentTenantId;
@@ -46,11 +37,20 @@ public class PlatformToolTenantService : IPlatformToolTenantService
         return enabledIds.ToHashSet();
     }
 
-    /// <inheritdoc />
-    public async Task<bool> IsEnabledAsync(Guid platformToolId) =>
-        (await GetEnabledToolIdsAsync()).Contains(platformToolId);
+    public async Task<bool> IsEnabledAsync(Guid platformToolId)
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        if (tenantId == Guid.Empty)
+        {
+            return false;
+        }
 
-    /// <inheritdoc />
+        return await _unitOfWork.TenantPlatformToolRepo
+            .GetByConditionAsync(w => w.TenantId == tenantId && w.PlatformToolId == platformToolId)
+            .IgnoreQueryFilters()
+            .AnyAsync();
+    }
+
     public async Task EnsureCurrentTenantMaterializedAsync()
     {
         var tenantId = _currentTenantService.CurrentTenantId;
@@ -61,7 +61,14 @@ public class PlatformToolTenantService : IPlatformToolTenantService
 
         try
         {
-            if (await HasMarkerAsync(tenantId))
+            // IMPORTANT NOTE: the tenant's mapping table is the only source of truth. Any row
+            // means the tenant has already chosen, so later catalog additions are never forced
+            // on it; an empty table maps the popular tools once.
+            var hasMappings = await _unitOfWork.TenantPlatformToolRepo
+                .GetByConditionAsync(w => w.TenantId == tenantId)
+                .IgnoreQueryFilters()
+                .AnyAsync();
+            if (hasMappings)
             {
                 return;
             }
@@ -72,23 +79,16 @@ public class PlatformToolTenantService : IPlatformToolTenantService
                 return;
             }
 
-            await InsertMappingsIfMissingAsync(tenantId, actorUserId.Value, await GetPopularEnabledToolIdsAsync());
-            await InsertMarkerAsync(tenantId, actorUserId.Value);
+            await InsertMappingsAsync(tenantId, actorUserId.Value, await GetPopularEnabledToolIdsAsync());
             await _unitOfWork.SaveAsync();
         }
-        catch (Exception ex)
+        catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: Npgsql.PostgresErrorCodes.UniqueViolation })
         {
-            // IMPORTANT NOTE: concurrent first requests can race on the unique mapping/marker
-            // indexes; the winner materialized the tenant, so the loser only logs and continues.
-            _logger.LogWarning(ex, "Failed to materialize library tools for tenant {TenantId}.", tenantId);
+            // IMPORTANT NOTE: concurrent first requests can race on the unique mapping index;
+            // the winner materialized the tenant, so the loser only logs and continues.
+            _logger.LogWarning(ex, "Concurrent materialization for tenant {TenantId} lost the race.", tenantId);
         }
     }
-
-    private async Task<bool> HasMarkerAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
-        await _unitOfWork.ConfigStoreRepo
-            .GetByConditionAsync(w => w.TenantId == tenantId && w.Name == MarkerName)
-            .IgnoreQueryFilters()
-            .AnyAsync(cancellationToken);
 
     private async Task<List<Guid>> GetPopularEnabledToolIdsAsync(CancellationToken cancellationToken = default) =>
         await _unitOfWork.PlatformToolRepo
@@ -112,34 +112,25 @@ public class PlatformToolTenantService : IPlatformToolTenantService
 
         if (tenantUserIds.Count > 0)
         {
-            return tenantUserIds[0];
+            return tenantUserIds.Min();
         }
 
         _logger.LogWarning("No workspace user found for tenant {TenantId}; library tools cannot be materialized.", tenantId);
         return null;
     }
 
-    private async Task InsertMappingsIfMissingAsync(
+    private async Task InsertMappingsAsync(
         Guid tenantId,
         Guid actorUserId,
-        IReadOnlyCollection<Guid> platformToolIds,
-        CancellationToken cancellationToken = default)
+        IReadOnlyCollection<Guid> platformToolIds)
     {
         if (platformToolIds.Count == 0)
         {
             return;
         }
 
-        var toolIds = platformToolIds.ToList();
-        var existingToolIds = await _unitOfWork.TenantPlatformToolRepo
-            .GetByConditionAsync(w => w.TenantId == tenantId && toolIds.Contains(w.PlatformToolId))
-            .IgnoreQueryFilters()
-            .Select(w => w.PlatformToolId)
-            .ToListAsync(cancellationToken);
-
         var now = DateTimeOffset.UtcNow;
-        var mappings = toolIds
-            .Except(existingToolIds)
+        var mappings = platformToolIds
             .Select(platformToolId => new TenantPlatformTool
             {
                 Id = Guid.NewGuid(),
@@ -150,29 +141,6 @@ public class PlatformToolTenantService : IPlatformToolTenantService
             })
             .ToList();
 
-        if (mappings.Count > 0)
-        {
-            await _unitOfWork.TenantPlatformToolRepo.InsertAsync(mappings);
-        }
+        await _unitOfWork.TenantPlatformToolRepo.InsertAsync(mappings);
     }
-
-    private Task InsertMarkerAsync(Guid tenantId, Guid actorUserId) =>
-        _unitOfWork.ConfigStoreRepo.InsertAsync(new ConfigStore
-        {
-            Id = Guid.NewGuid(),
-            TenantId = tenantId,
-            SpaceId = null,
-            EnvType = ConfigureEnvironmentType.Dev,
-            Name = MarkerName,
-            Type = ConfigStoreTypesEnum.TEXT,
-            Value = "true",
-            AccessLevel = AccessLevelTypesEnum.PRIVATE,
-            IsTenantWideAccess = false,
-            IsResourceAccessRestricted = true,
-            IsDisabled = true,
-            CreatedByUserId = actorUserId,
-            LastModifiedByUserId = actorUserId,
-            CreatedOn = DateTimeOffset.UtcNow,
-            LastModifiedOn = DateTimeOffset.UtcNow,
-        });
 }
