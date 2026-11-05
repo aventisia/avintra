@@ -78,14 +78,14 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Dialog>
       <DialogTrigger
-        className="aui-attachment-preview-trigger cursor-pointer transition-colors hover:bg-accent/50"
+        className="aui-attachment-preview-trigger cursor-pointer transition-colors hover:bg-hover/50"
         asChild
       >
         {children}
       </DialogTrigger>
-      <DialogContent className="aui-attachment-preview-dialog-content p-2 sm:max-w-3xl [&>button]:rounded-full [&>button]:bg-foreground/60 [&>button]:p-1 [&>button]:opacity-100 [&>button]:!ring-0 [&_svg]:text-background [&>button]:hover:[&_svg]:text-destructive">
+      <DialogContent className="aui-attachment-preview-dialog-content p-2 sm:max-w-3xl [&>button]:rounded-full [&>button]:bg-ink/60 [&>button]:p-1 [&>button]:opacity-100 [&>button]:!ring-0 [&_svg]:text-bg [&>button]:hover:[&_svg]:text-destructive">
         <DialogTitle className="aui-sr-only sr-only">Image attachment preview</DialogTitle>
-        <div className="aui-attachment-preview relative mx-auto flex max-h-[80dvh] w-full items-center justify-center overflow-hidden bg-background">
+        <div className="aui-attachment-preview relative mx-auto flex max-h-[80dvh] w-full items-center justify-center overflow-hidden bg-surface">
           <AttachmentPreview src={src} />
         </div>
       </DialogContent>
@@ -140,7 +140,7 @@ const AttachmentUI: FC = () => {
       <AttachmentPreviewDialog>
         <Tooltip content={<AttachmentPrimitive.Name />} side="top">
           <div
-            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border bg-muted transition-opacity hover:opacity-75"
+            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border border-line bg-sunken transition-opacity hover:opacity-75"
             role="button"
             aria-label={`${typeLabel} attachment`}
           >
@@ -191,7 +191,7 @@ export const ComposerAddAttachment: FC = () => {
         side="bottom"
         variant="ghost"
         size="icon6"
-        className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
+        className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-hover dark:border-line dark:hover:bg-hover"
         aria-label="Add attachment"
       >
         <PlusIcon className="aui-attachment-add-icon size-5" />

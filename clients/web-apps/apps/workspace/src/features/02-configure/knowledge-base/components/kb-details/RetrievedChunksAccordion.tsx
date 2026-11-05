@@ -34,7 +34,7 @@ export function RetrievedChunksAccordion({
         {chunks.map((item, index) => (
           <AccordionItem key={`${item.similarity_score}-${index}`} value={`${index}`}>
             <AccordionTrigger className="group  flex w-full items-center justify-start gap-2 hover:!no-underline [&>svg]:hidden">
-              <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-muted">
+              <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-sunken">
                 <CaretRightIcon className="h-3.5 w-3.5 text-primary transition-transform duration-200  group-data-[state=open]:rotate-90" />
               </div>
               <p className="text-sm font-medium flex-1 text-left hover:underline hover:underline-offset-4">
@@ -42,7 +42,7 @@ export function RetrievedChunksAccordion({
               </p>
               <Badge
                 variant={"outline"}
-                className=" text-xs text-primary bg-muted  border-muted font-medium "
+                className=" text-xs text-primary-text bg-sunken  border-line font-medium "
               >
                 {`${(item.similarity_score * 100).toFixed(2)}%`}
               </Badge>

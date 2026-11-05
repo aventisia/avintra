@@ -83,7 +83,7 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex cursor-pointer flex-col gap-4 rounded-lg border border-line bg-card p-5 text-left transition-colors duration-200 hover:border-line-strong"
+      className="group flex cursor-pointer flex-col gap-4 rounded-lg border border-line bg-surface p-5 text-left transition-colors duration-200 hover:border-line-strong"
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
