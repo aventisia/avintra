@@ -53,13 +53,13 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
               template?.icons
                 ?.filter((icon) => icon !== "/function.png")
                 .map((icon, idx) => (
-                  <div key={icon || idx} className="rounded-lg bg-accent p-2">
+                  <div key={icon || idx} className="rounded-lg bg-sunken p-2">
                     <img src={basePath + icon} alt="icon" className="h-6 w-6" />
                   </div>
                 ))
             ) : (
               // Fallback icon
-              <div className="rounded-lg bg-accent p-2">
+              <div className="rounded-lg bg-sunken p-2">
                 <NewAgentIcon className="h-6 w-6" />
               </div>
             )}

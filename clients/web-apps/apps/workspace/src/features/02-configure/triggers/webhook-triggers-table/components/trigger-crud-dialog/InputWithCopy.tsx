@@ -38,7 +38,7 @@ export default function InputWithCopy({
     <div>
       <FormLabelExt label={label} description={description} />
       <InputGroup
-        className={cn("mt-1", readOnly && "focus-within:border-input focus-within:ring-0")}
+        className={cn("mt-1", readOnly && "focus-within:border-line focus-within:ring-0")}
       >
         <InputGroupInput
           value={value}

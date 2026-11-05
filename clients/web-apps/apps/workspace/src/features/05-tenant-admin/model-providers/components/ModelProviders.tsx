@@ -109,7 +109,7 @@ export const ModelProviders = () => {
                       {enabledModelIds.slice(0, 3).map((modelId) => (
                         <span
                           key={modelId}
-                          className="max-w-[8rem] truncate rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary"
+                          className="max-w-[8rem] truncate rounded-md bg-primary/15 px-2 py-0.5 text-xs text-primary-text"
                         >
                           {modelId}
                         </span>
@@ -120,7 +120,7 @@ export const ModelProviders = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-6 shrink-0 rounded-md bg-accent px-2 py-0 text-xs font-medium text-primary"
+                              className="h-6 shrink-0 rounded-md bg-hover px-2 py-0 text-xs font-medium text-primary-text"
                             >
                               +{enabledCount - 3} models
                             </Button>
@@ -130,7 +130,7 @@ export const ModelProviders = () => {
                               {enabledModelIds.map((modelId) => (
                                 <div
                                   key={modelId}
-                                  className="truncate rounded-md bg-primary/10 px-2 py-1 text-xs text-primary"
+                                  className="truncate rounded-md bg-primary/15 px-2 py-1 text-xs text-primary-text"
                                 >
                                   {modelId}
                                 </div>

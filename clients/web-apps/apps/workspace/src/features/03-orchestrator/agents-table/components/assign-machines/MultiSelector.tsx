@@ -171,7 +171,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   <div
                     key={result.id}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}

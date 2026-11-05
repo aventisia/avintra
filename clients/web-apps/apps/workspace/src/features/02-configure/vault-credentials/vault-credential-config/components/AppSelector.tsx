@@ -120,7 +120,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
     <div
       key={option.value}
       className={cn(
-        "flex cursor-pointer items-center gap-3 rounded-lg py-2 pl-6 pr-2 transition-colors hover:bg-accent",
+        "flex cursor-pointer items-center gap-3 rounded-lg py-2 pl-6 pr-2 transition-colors hover:bg-hover",
         isItemSelected(option.value) && "cursor-not-allowed opacity-50",
       )}
       onClick={() => !isItemSelected(option.value) && handleItemSelect(option)}

@@ -123,7 +123,7 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
         <>
           <div
             className={cn(
-              "w-full border flex bg-background rounded-lg  overflow-hidden",
+              "w-full border border-line flex bg-surface rounded-lg  overflow-hidden",
               containerHeight,
             )}
           >

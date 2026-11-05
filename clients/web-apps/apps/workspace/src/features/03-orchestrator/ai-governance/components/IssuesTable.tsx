@@ -44,7 +44,7 @@ const severityBadgeClass: Record<string, string> = {
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -117,7 +117,7 @@ export const IssuesTable = () => {
         const index = row.index;
         return (
           <input
-            className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+            className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
             placeholder="Issue title"
             value={String(getValue() ?? "")}
             onChange={(e) => updateIssue(index, { title: e.target.value })}
@@ -165,7 +165,7 @@ export const IssuesTable = () => {
       header: "Description",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-border bg-background p-2 text-sm"
+          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
           placeholder="Describe the issue"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { description: e.target.value })}
@@ -177,7 +177,7 @@ export const IssuesTable = () => {
       header: "Resolution notes",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-border bg-background p-2 text-sm"
+          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
           placeholder="Resolution notes"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { resolutionNotes: e.target.value })}

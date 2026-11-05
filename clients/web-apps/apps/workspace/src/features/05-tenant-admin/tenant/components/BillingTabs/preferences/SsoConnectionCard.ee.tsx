@@ -118,7 +118,7 @@ const SsoConnectionCard = () => {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-end gap-y-2 border-t bg-muted/40 px-5 py-3">
+      <div className="flex flex-wrap items-center justify-end gap-y-2 border-t border-line bg-sunken px-5 py-3">
         <div className="mr-auto flex items-center gap-2.5">
           <Tooltip content={ssoToggleTooltip}>
             <button
@@ -152,7 +152,7 @@ const SsoConnectionCard = () => {
               className={cn(
                 "text-sm leading-none",
                 isSSOEnabled && !isConnectBlocked
-                  ? "font-medium text-foreground"
+                  ? "font-medium text-ink"
                   : "text-muted-foreground",
               )}
             >

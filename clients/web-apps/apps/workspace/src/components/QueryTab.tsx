@@ -70,7 +70,9 @@ export const QueryTabs = ({
 
   return (
     <Tabs value={tabValue} onValueChange={handleTabSelect} className={className}>
-      <TabsList className={cn("h-fit w-full gap-1 rounded-lg px-1.5 py-1.5", listClassName)}>
+      <TabsList
+        className={cn("h-fit w-full gap-1 rounded-lg bg-sunken px-1.5 py-1.5", listClassName)}
+      >
         {tabs.map((tab) => {
           const TabIcon = tab.icon;
           return (
@@ -78,7 +80,7 @@ export const QueryTabs = ({
               key={tab.value}
               value={tab.value}
               className={cn(
-                "inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-background data-[state=active]:text-foreground",
+                "inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-hover data-[state=inactive]:hover:text-ink data-[state=active]:bg-surface data-[state=active]:text-ink",
                 triggerClassName,
               )}
             >

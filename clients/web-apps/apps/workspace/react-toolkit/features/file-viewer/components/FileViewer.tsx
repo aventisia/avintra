@@ -195,7 +195,7 @@ export default function FileViewer({
             allowDelete={allowDelete}
           />
 
-          <div className="relative flex-1 overflow-hidden bg-background">
+          <div className="relative flex-1 overflow-hidden bg-surface">
             {viewerReady && (
               <>
                 {fileType === FILE_TYPE.UNSUPPORTED ? (
@@ -207,10 +207,10 @@ export default function FileViewer({
             )}
 
             {isLoadingFile && activeFile && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80 px-4">
-                <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-background/90 px-4 py-5 text-center shadow-pop">
+              <div className="absolute inset-0 flex items-center justify-center bg-surface/80 px-4">
+                <div className="flex flex-col items-center gap-2 rounded-lg border border-line bg-surface/90 px-4 py-5 text-center shadow-pop">
                   <LoadingSpinner className="h-6 w-6 text-primary" />
-                  <p className="text-sm font-semibold text-foreground">Fetching file…</p>
+                  <p className="text-sm font-semibold text-ink">Fetching file…</p>
                   <p className="text-xs text-muted-foreground">
                     Please wait while the file is retrieved.
                   </p>
@@ -220,13 +220,13 @@ export default function FileViewer({
 
             {hasError && activeFile && (
               <div
-                className="absolute inset-0 flex items-center justify-center bg-background/80 px-4"
+                className="absolute inset-0 flex items-center justify-center bg-surface/80 px-4"
                 role="alert"
                 aria-live="assertive"
               >
-                <div className="flex flex-col items-center gap-2 rounded-lg border border-warn/30 bg-background/90 px-5 py-6 text-center shadow-pop">
+                <div className="flex flex-col items-center gap-2 rounded-lg border border-warn/30 bg-surface/90 px-5 py-6 text-center shadow-pop">
                   <WarningIcon className="size-6 text-warn" />
-                  <p className="text-sm font-semibold text-foreground">Unable to load file</p>
+                  <p className="text-sm font-semibold text-ink">Unable to load file</p>
                   <p className="text-xs text-muted-foreground">
                     {activeFile.error ?? "Try again to download the file."}
                   </p>

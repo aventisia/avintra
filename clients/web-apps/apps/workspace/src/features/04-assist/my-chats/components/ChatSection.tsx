@@ -105,7 +105,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   return (
     <div className="flex flex-col h-full w-full">
       {/* HEADER */}
-      <div className="px-3 h-16 min-h-16 max-h-16 border-b flex items-center justify-between">
+      <div className="px-3 h-16 min-h-16 max-h-16 border-b border-line flex items-center justify-between">
         <div className="flex items-center gap-3 justify-center">
           {/* MOBILE BACK BUTTON */}
           {layoutMode === "stacked" && (
@@ -124,7 +124,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold">{agentMeta.name}</span>
+              <span className="text-sm font-semibold text-ink">{agentMeta.name}</span>
 
               <Badge variant="outline" className="tabular-nums">
                 v{agentMeta.version}

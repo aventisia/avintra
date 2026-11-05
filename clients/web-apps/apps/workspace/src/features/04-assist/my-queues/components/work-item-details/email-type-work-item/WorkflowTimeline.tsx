@@ -46,7 +46,7 @@ const formatTimelineDate = (dateString: Date | string) => {
 
 const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
   const baseStyles =
-    "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-background ring-4 ring-background";
+    "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface ring-4 ring-surface";
 
   switch (type) {
     case QueueTransactionEventEnum.StatusChange:
@@ -268,7 +268,7 @@ export default function WorkflowTimeline({
               <TimelineIcon type={QueueTransactionEventEnum.CommentAdded} />
             </div>
 
-            <div className="min-w-0 flex-1 rounded-lg border p-2">
+            <div className="min-w-0 flex-1 rounded-lg border border-line bg-surface p-2">
               <MarkdownContainer
                 setTextValue={setCommentText}
                 textValue={commentText}

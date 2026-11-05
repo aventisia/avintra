@@ -191,7 +191,7 @@ export const AiGovernanceWizard = () => {
 
         {renderSection(activeSection)}
 
-        <div className="mt-9 flex items-center justify-between border-t border-border pt-5">
+        <div className="mt-9 flex items-center justify-between border-t border-line pt-5">
           <Button variant="outline" onClick={handleBack} disabled={currentIndex <= 0}>
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
             Back

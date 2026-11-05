@@ -114,7 +114,7 @@ const ByokModelCharts = () => {
       {currentModels.length > 0 && (
         <div className="mt-5 flex items-center justify-end space-x-6 px-6 lg:space-x-8">
           <div className="hidden items-center space-x-2 xs:flex">
-            <p className="text-sm font-medium">Charts per page</p>
+            <p className="whitespace-nowrap text-hint text-muted-foreground">Charts per page</p>
             <Select
               value={`${itemsPerPage}`}
               onValueChange={(value) => {
@@ -135,7 +135,7 @@ const ByokModelCharts = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          <div className="flex w-[100px] items-center justify-center whitespace-nowrap text-hint text-muted-foreground">
             Page {currentPage} of {totalPages}
           </div>
           <div className="flex items-center space-x-2">

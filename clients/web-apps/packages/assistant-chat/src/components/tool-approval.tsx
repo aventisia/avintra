@@ -122,7 +122,7 @@ export const ToolApprovalRequest = ({
     <div
       className={cn(
         "aui-tool-approval-root w-full rounded-lg border shadow-sm",
-        state === "pending" ? "border-warn/40 bg-warn/5" : "border-border/60 bg-muted/20",
+        state === "pending" ? "border-warn/40 bg-warn/5" : "border-line/60 bg-sunken/20",
       )}
     >
       <div className="flex items-start gap-2 px-4 py-3">
@@ -134,7 +134,7 @@ export const ToolApprovalRequest = ({
           <XCircleIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">{STATE_LABELS[state]}</p>
+          <p className="text-sm font-medium text-ink">{STATE_LABELS[state]}</p>
           <p className="text-xs text-muted-foreground">
             {state === "pending" && (
               <>
@@ -163,11 +163,11 @@ export const ToolApprovalRequest = ({
       </div>
 
       {argsText && argsText !== "{}" && (
-        <div className="border-t border-border/60">
+        <div className="border-t border-line/60">
           <button
             type="button"
             onClick={() => setShowArgs((value) => !value)}
-            className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/40"
+            className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-hover/40"
             aria-expanded={showArgs}
           >
             <CaretDownIcon
@@ -176,7 +176,7 @@ export const ToolApprovalRequest = ({
             {showArgs ? "Hide arguments" : "View arguments"}
           </button>
           {showArgs && (
-            <pre className="max-h-48 overflow-auto border-t border-border/60 bg-muted/30 px-4 py-2 text-xs whitespace-pre-wrap">
+            <pre className="max-h-48 overflow-auto border-t border-line/60 bg-sunken/30 px-4 py-2 text-xs whitespace-pre-wrap">
               {argsText}
             </pre>
           )}

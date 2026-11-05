@@ -43,7 +43,7 @@ export const AgentCard = ({ agent }: AgentCardProps) => {
     `/assist/queues?qid=${queueId}&qn=${encodeURIComponent(queueName)}&qt=${queueType ?? "User"}`;
 
   return (
-    <Card className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-line bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong">
+    <Card className="group relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-line bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong">
       <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
         {/* Agent icon tile */}
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sunken text-ink-2 ring-1 ring-line transition-transform duration-200 group-hover:scale-105">

@@ -84,7 +84,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
@@ -152,7 +152,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-surface shadow-pop">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border border-line bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -179,7 +179,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
                   <div
                     key={result.id}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}

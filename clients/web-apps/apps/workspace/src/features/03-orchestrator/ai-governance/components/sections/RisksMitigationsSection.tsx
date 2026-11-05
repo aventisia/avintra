@@ -39,7 +39,7 @@ const severityBadgeClass: Record<RiskSeverity, string> = {
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -103,16 +103,16 @@ export const RisksMitigationsSection = () => {
     >
       <div className="space-y-3">
         {risks.length === 0 && (
-          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted-foreground">
             No risks recorded yet. Add a risk to begin building the register.
           </div>
         )}
 
         {risks.map((row, index) => (
-          <div key={index} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+          <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <input
-                className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                 placeholder="Risk name"
                 value={row.name}
                 onChange={(e) => updateRow(index, { name: e.target.value })}
@@ -173,7 +173,7 @@ export const RisksMitigationsSection = () => {
                   Owner
                 </InfoLabel>
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   placeholder="Owner"
                   value={row.owner}
                   onChange={(e) => updateRow(index, { owner: e.target.value })}
@@ -195,7 +195,7 @@ export const RisksMitigationsSection = () => {
               info="Describe the concrete actions taken or planned to reduce the likelihood and/or impact of this risk."
             >
               <textarea
-                className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                 placeholder="Describe the mitigation plan for this risk."
                 value={row.mitigationPlan}
                 onChange={(e) => updateRow(index, { mitigationPlan: e.target.value })}

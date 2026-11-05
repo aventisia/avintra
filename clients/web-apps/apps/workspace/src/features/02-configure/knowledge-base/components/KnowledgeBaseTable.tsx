@@ -81,7 +81,7 @@ export const KnowledgeBaseTable = () => {
                           <div className="w-auto truncate text-sm font-medium">
                             {row.getValue("name")}
                           </div>
-                          <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2    rounded-sm">
+                          <span className="bg-sunken border border-line px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2    rounded-sm">
                             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                           </span>
                           {row.original.isResourceAccessRestricted && (

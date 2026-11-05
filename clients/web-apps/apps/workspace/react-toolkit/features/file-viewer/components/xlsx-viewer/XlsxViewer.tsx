@@ -66,7 +66,7 @@ const XlsxViewer = ({ fileUrl }: XlsxViewerProps) => {
     <div className="flex h-full flex-col">
       {/* Sheet tabs */}
       {sheets.length > 1 && (
-        <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b px-2 py-1">
+        <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-line px-2 py-1">
           {sheets.map((s, i) => (
             <button
               key={s.name}
@@ -75,7 +75,7 @@ const XlsxViewer = ({ fileUrl }: XlsxViewerProps) => {
               className={`rounded px-2 py-1 text-xs font-medium ${
                 i === activeSheet
                   ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent"
+                  : "text-muted-foreground hover:bg-hover hover:text-ink"
               }`}
             >
               {s.name}
@@ -93,8 +93,8 @@ const XlsxViewer = ({ fileUrl }: XlsxViewerProps) => {
                   {row.map((cell, c) => (
                     <td
                       key={c}
-                      className={`border border-border px-2 py-1 ${
-                        r === 0 ? "bg-accent font-semibold" : ""
+                      className={`border border-line px-2 py-1 text-ink ${
+                        r === 0 ? "bg-sunken font-semibold" : ""
                       }`}
                     >
                       {cell}

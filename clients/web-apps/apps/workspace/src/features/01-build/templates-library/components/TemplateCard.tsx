@@ -37,26 +37,26 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {templateIcons?.length ? (
             <>
               {templateIcons.slice(0, 4).map((icon, idx) => (
-                <div key={icon || idx} className="rounded-lg bg-accent p-1.5 md:p-2">
+                <div key={icon || idx} className="rounded-lg bg-sunken p-1.5 md:p-2">
                   <img src={basePath + icon} alt="icon" className="h-6 w-6" />
                 </div>
               ))}
 
               {templateIcons.length > 5 && (
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent p-1.5 md:p-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sunken p-1.5 md:p-2">
                   <span className="text-sm font-medium">+{templateIcons.length - 4}</span>
                 </div>
               )}
 
               {templateIcons.length === 5 && (
-                <div className="rounded-lg bg-accent p-1.5 md:p-2">
+                <div className="rounded-lg bg-sunken p-1.5 md:p-2">
                   <img src={basePath + templateIcons[4]} alt="icon" className="h-6 w-6" />
                 </div>
               )}
             </>
           ) : (
             // Fallback icon
-            <div className="rounded-lg bg-accent p-1.5 md:p-2">
+            <div className="rounded-lg bg-sunken p-1.5 md:p-2">
               <NewAgentIcon className="h-6 w-6" />
             </div>
           )}
@@ -83,7 +83,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {/* Creator badge and name */}
           <div className="flex items-center gap-2">
             <Avatar className="flex h-7 w-7 items-center justify-center">
-              <AvatarFallback className="flex items-center justify-center border border-line bg-accent text-2xs font-medium">
+              <AvatarFallback className="flex items-center justify-center border border-line bg-sunken text-2xs font-medium">
                 {template?.createdBy
                   ? template?.createdBy
                       ?.split(" ")
@@ -92,7 +92,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
                   : "--"}
               </AvatarFallback>
             </Avatar>
-            <p className="text-xs leading-7 text-accent-foreground">{template.createdBy}</p>
+            <p className="text-xs leading-7 text-ink-2">{template.createdBy}</p>
           </div>
 
           {/* Usage count with clipboard copy button */}

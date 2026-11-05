@@ -83,7 +83,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
@@ -176,7 +176,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
                   <div
                     key={result.id}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
