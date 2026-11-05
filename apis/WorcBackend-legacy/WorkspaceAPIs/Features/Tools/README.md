@@ -12,26 +12,27 @@ as a row per tenant and tool.
   name. The application never seeds the catalog at startup.
 - The display name is the identity. Running the seeder again updates the row in place,
   keeps its id, and never overwrites an operator-set disabled flag.
-- `apis/corsair/popular-tools.json` lists the curated popular names. A row is popular only
+- `apis/corsair/src/data/popular-tools.json` lists the curated popular names. A row is popular only
   when its display name matches one of those names ignoring case; a duplicated, unmatched,
   or ambiguous name is logged as a warning and the seeding continues.
 
 ## Tenant enablement
 
 - A row in `ai_TenantPlatformTools` means the tenant has the tool switched on. There is no
-  off flag: switching off deletes the row and records nothing else.
-- Popular tools are switched on for every tenant lazily, the first time anyone in that
-  tenant opens Tools. There is no seed-time backfill and tenant creation is untouched. A
-  `run_ConfigStore` row named `__platform_tools_seeded` records that a tenant has been
-  handled, so switching a popular tool off is not undone later. That row is internal: the
-  ConfigStore read endpoints return it as not found, and the update and delete endpoints
-  reject it, so tenant choices cannot be undone by removing it.
+  off flag: switching off deletes the row and records nothing else. Both catalog and mapping
+  rows are tenant-specific; no environment or space column exists, and none is filtered on.
+- Popular tools are mapped for a tenant lazily, the first time anyone in that tenant opens
+  Tools, and only when that tenant has no mapping rows at all. Any existing row means the
+  tenant has already chosen, so a newly popular tool is never forced on it. Tenant creation
+  is untouched. A tenant that switches every tool off has no rows left, so the popular set
+  is mapped again on its next visit.
 - The library list is the existing `GET tools/platform` list. Each row carries the calling
   tenant's on/off state in the existing `IsActive` field and the curated mark in `IsPopular`;
   custom tools keep their stored `IsActive` meaning.
 - Switching a tool on or off is per tenant and applies across its spaces and environments.
   It is gated to tenant-admins and orchestrator-managers, and the request must state
-  `isEnabled` explicitly; a body without it is rejected.
+  `isEnabled` explicitly; a body without it is rejected. A catalog-disabled tool cannot
+  be switched on and answers `400`.
 - Switching on records who did it and when. The usable-tools lists and the flow builder show
   the tenant's custom tools plus the library tools it has switched on. A switched-off tool
   only disappears from those lists; flows already using it keep running, and publishing a

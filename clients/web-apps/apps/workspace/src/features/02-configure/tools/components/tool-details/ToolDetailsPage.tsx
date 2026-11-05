@@ -29,7 +29,7 @@ export const ToolDetailsPage = () => {
 
   useDocumentTitle(`${toolName} - ${TABLE_HEADING}`);
 
-  const { canToggle, toggle } = useToggleLibraryTool();
+  const { canToggle, isPending, toggle } = useToggleLibraryTool();
 
   const { data, isLoading } = useQuery({
     queryKey: [...DETAIL_DATA_QUERY_KEY, id],
@@ -39,6 +39,7 @@ export const ToolDetailsPage = () => {
 
   const tool = data?.data;
   const isLibraryTool = tool?.type === ComponentTypeEnum.Platform;
+  const toolId = tool?.id;
 
   if (isLoading) {
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
@@ -90,12 +91,12 @@ export const ToolDetailsPage = () => {
                       <Badge variant={tool.isActive ? "default" : "secondary"}>
                         {tool.isActive ? "Enabled" : "Disabled"}
                       </Badge>
-                      {canToggle && (
+                      {canToggle && toolId && (
                         <Switch
+                          aria-label="Enable library tool"
                           checked={Boolean(tool.isActive)}
-                          onCheckedChange={(checked) =>
-                            toggle({ id: tool.id ?? "", isEnabled: checked })
-                          }
+                          disabled={isPending}
+                          onCheckedChange={(checked) => toggle({ id: toolId, isEnabled: checked })}
                         />
                       )}
                     </>

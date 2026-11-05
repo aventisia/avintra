@@ -103,7 +103,7 @@ public class ConfigStoreService : IConfigStoreService
             {
                 // Retrieve only owned config stores
                 configStores = await _unitOfWork.ConfigStoreRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType && w.Name != PlatformToolTenantService.MarkerName)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -128,7 +128,6 @@ public class ConfigStoreService : IConfigStoreService
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
                         w.EnvType == _currentTenantService.CurrentEnvType &&
-                        w.Name != PlatformToolTenantService.MarkerName &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -191,11 +190,6 @@ public class ConfigStoreService : IConfigStoreService
                 return serviceResponse;
             }
 
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("Config store not found.", 404);
-            }
-
             // Validate view access
             var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
                     _userId,
@@ -253,11 +247,6 @@ public class ConfigStoreService : IConfigStoreService
             {
                 serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
-            }
-
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("Key store not found.", 404);
             }
 
             // Validate whether the current user has permission to view the config store
@@ -325,7 +314,6 @@ public class ConfigStoreService : IConfigStoreService
             var keyValuePairs = await _unitOfWork.ConfigStoreRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.Name != PlatformToolTenantService.MarkerName &&
                     w.EnvType == _currentTenantService.CurrentEnvType &&
                     (w.SpaceId == null || w.SpaceId == currentSpaceId) &&
                     (fetchAllAccessibleKeys || normalizedKeys.Contains(w.Name))
@@ -496,11 +484,6 @@ public class ConfigStoreService : IConfigStoreService
                 return serviceResponse;
             }
 
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("The library seeding marker is reserved and cannot be updated.", 400);
-            }
-
             // Check if another config store with the same name exists within the current environment
             var existingConfigStore = await _unitOfWork.ConfigStoreRepo
                 .GetByConditionAsync(w =>
@@ -635,11 +618,6 @@ public class ConfigStoreService : IConfigStoreService
                 return serviceResponse;
             }
 
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("The library seeding marker is reserved and cannot be deleted.", 400);
-            }
-
             // Remove resource shares
             await _resourceUserAccessService.DeleteResourceUserAccessesAsync(configStoreId, ResourceTypeEnum.ConfigStore);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStoreId);
@@ -735,11 +713,6 @@ public class ConfigStoreService : IConfigStoreService
                 return serviceResponse;
             }
 
-            if (configStores.Any(w => w.Name == PlatformToolTenantService.MarkerName))
-            {
-                return serviceResponse.Update("The library seeding marker is reserved and cannot be deleted.", 400);
-            }
-
             // Remove resource shares
             await _resourceUserAccessService.DeleteResourceUserAccessesAsync(configStoreIds, ResourceTypeEnum.ConfigStore);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.ConfigStore, configStoreIds);
@@ -788,11 +761,6 @@ public class ConfigStoreService : IConfigStoreService
             {
                 serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
-            }
-
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("Key store not found.", 404);
             }
 
             // Validate decrypt/view access
@@ -873,11 +841,6 @@ public class ConfigStoreService : IConfigStoreService
             {
                 serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
-            }
-
-            if (configStore.Name == PlatformToolTenantService.MarkerName)
-            {
-                return serviceResponse.Update("Key store not found.", 404);
             }
 
             // Validate decrypt/view access

@@ -4,8 +4,8 @@ Covers the read-only table mappings, the plugin-id derivation ported from the
 Workspace ``ToolOperationHelpers``, and the tenant gate in the loader: only
 mapped, non-disabled catalog rows resolve, a tenant custom tool wins a shared
 name, an unmarked entry falls back to the catalog without overriding custom,
-and an entry whose name belongs to a catalog row the tenant cannot use is
-withheld.
+an entry whose name belongs to a catalog row the tenant cannot use is
+withheld, and so is an unresolved entry that would execute through Corsair.
 
 Run from ``apis/llmpipeline``:
 
@@ -123,6 +123,12 @@ def test_derive_plugin_id_from_corsair_path():
     assert derive_plugin_id(schema) == "slack"
 
 
+def test_derive_plugin_id_lowercases_mixed_case_paths():
+    schema = {"paths": {"/Corsair/Slack/Messages": {}}}
+
+    assert derive_plugin_id(schema) == "slack"
+
+
 def test_derive_plugin_id_from_operation_id_prefix():
     schema = {"operations": [{"operationId": "github.issues.list"}]}
 
@@ -175,21 +181,29 @@ def test_unmapped_entry_is_withheld():
     assert entry["tool"] == ""
 
 
-def test_unmarked_unknown_entry_is_left_for_the_custom_store():
+def test_unmarked_unknown_entry_that_expands_to_corsair_is_withheld():
     entry = _entry("Slack")
+
+    _resolve([], [entry])
+
+    assert entry["tool"] == ""
+
+
+def test_unmarked_unknown_entry_with_legacy_actions_is_left_for_the_custom_store():
+    entry = {"tool": "Slack", "actions": [{"action": "send_message"}]}
 
     _resolve([], [entry])
 
     assert entry["tool"] == "Slack"
 
 
-def test_custom_claimed_name_wins():
+def test_custom_claimed_name_keeps_platform_entry_for_the_custom_store():
     row = _row("Slack", {"paths": {"/corsair/slack/messages": {}}})
     entry = _entry("slack", source="platform")
 
     _resolve([_mapped(row)], [entry], claimed={"slack"})
 
-    assert entry["tool"] == ""
+    assert entry["tool"] == "slack"
 
 
 def test_unmarked_custom_claimed_name_stays_with_custom():
@@ -197,6 +211,33 @@ def test_unmarked_custom_claimed_name_stays_with_custom():
     entry = _entry("slack")
 
     _resolve([_mapped(row)], [entry], claimed={"slack"})
+
+    assert entry["tool"] == "slack"
+
+
+def test_unmarked_claimed_unknown_entry_is_left_for_the_custom_store():
+    entry = _entry("slack")
+
+    _resolve([], [entry], claimed={"slack"})
+
+    assert entry["tool"] == "slack"
+
+
+def test_claimed_plugin_alias_stays_with_custom():
+    row = _row("Jira", {"paths": {"/corsair/jira-cloud/rest": {}}})
+    entry = _entry("Jira", source="platform")
+
+    _resolve([_mapped(row)], [entry], claimed={"jira-cloud"})
+
+    assert entry["tool"] == "Jira"
+
+
+def test_duplicate_display_name_keeps_the_first_catalog_row():
+    first = _row("Slack", {"paths": {"/corsair/slack/messages": {}}})
+    second = _row("Slack", {"paths": {"/corsair/slack-alt/messages": {}}})
+    entry = _entry("Slack")
+
+    _resolve([_mapped(first), _mapped(second)], [entry])
 
     assert entry["tool"] == "slack"
 

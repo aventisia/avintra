@@ -98,6 +98,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
         isActive: false,
         isVerified: false,
         accessLevel: ResourceAccessTypeEnum.Owner,
+        isPopular: false,
       });
       return;
     }
