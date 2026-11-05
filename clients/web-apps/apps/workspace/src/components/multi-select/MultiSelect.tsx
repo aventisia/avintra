@@ -87,7 +87,7 @@ export const MultiSelect = ({
           aria-multiselectable
           disabled={disabled}
           className={cn(
-            "relative h-auto w-full py-2 hover:bg-background",
+            "relative h-auto w-full py-2 hover:bg-hover",
             sizeClasses[size],
             className,
             "pr-5",
@@ -106,7 +106,7 @@ export const MultiSelect = ({
                     key={o.value}
                     variant="outline"
                     className={cn(
-                      "flex items-center gap-1 bg-accent font-normal",
+                      "flex items-center gap-1 bg-sunken font-normal",
                       badgeSizeClasses[size], // <-- dynamic sizing
                     )}
                   >

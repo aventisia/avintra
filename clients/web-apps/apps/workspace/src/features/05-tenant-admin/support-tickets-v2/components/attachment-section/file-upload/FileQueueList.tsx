@@ -65,7 +65,7 @@ const FileQueueRow = ({
   return (
     <div
       className={`flex items-center justify-between rounded-lg p-2 px-2.5 ${
-        isActive ? "bg-selected border border-primary/35" : "bg-muted"
+        isActive ? "bg-selected border border-primary/35" : "bg-sunken"
       }`}
     >
       <div className="flex items-center gap-3 flex-1">

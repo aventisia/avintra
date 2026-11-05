@@ -6,6 +6,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
+import { RecordSheetUnavailable } from "@avplatform/ui/record-sheet";
+import { ChatCircleDotsIcon } from "@phosphor-icons/react";
 import { NavLink, useParams } from "react-router-dom";
 
 import { useCarryParams } from "@/hooks/useForwardQueryParams";
@@ -26,7 +28,7 @@ export default function ConversationDetail() {
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
-      <h2 className="ml-1 flex w-full items-center truncate text-heading text-foreground">
+      <h2 className="ml-1 flex w-full items-center truncate text-heading text-ink">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -44,6 +46,9 @@ export default function ConversationDetail() {
         </Breadcrumb>
       </h2>
       <div className="h-[calc(100vh-4.5rem-var(--header-height)-var(--header-padding))] rounded-lg">
+        {!isLoading && !data?.data && (
+          <RecordSheetUnavailable Icon={ChatCircleDotsIcon} recordLabel="Conversation" />
+        )}
         {!isLoading && data?.data && (
           <div
             className={

@@ -67,7 +67,7 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
       title: "Your API key",
       description: "Copy it now. For security reasons, this key will not be shown again.",
       content: (
-        <div className="min-w-0 rounded w-full border bg-muted pl-4 py-2 pr-1">
+        <div className="min-w-0 rounded w-full border border-line bg-sunken pl-4 py-2 pr-1">
           <CopyableText
             value={plainApiKey}
             copyValue={plainApiKey}

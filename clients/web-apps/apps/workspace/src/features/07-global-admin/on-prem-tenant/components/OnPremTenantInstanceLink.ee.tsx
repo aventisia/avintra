@@ -20,7 +20,7 @@ export const OnPremTenantInstanceLink = ({ rowId, cellValue }: OnPremTenantInsta
       }}
       className={cn(
         buttonVariants({ variant: "link" }),
-        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
+        "!h-8 w-auto cursor-pointer truncate font-medium text-ink hover:text-primary-text",
       )}
     >
       {cellValue}

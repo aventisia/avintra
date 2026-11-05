@@ -77,7 +77,7 @@ function FollowUps() {
           >
             <Button
               variant="outline"
-              className=" h-auto  text-wrap items-start justify-start gap-1 rounded-full italic border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted "
+              className=" h-auto  text-wrap items-start justify-start gap-1 rounded-full italic border bg-surface px-3.5 py-2 text-left text-sm transition-colors hover:bg-hover "
             >
               {s.prompt}
             </Button>
@@ -94,7 +94,7 @@ export const Thread = ({ title, description }: { title?: string; description?: s
 
   return (
     <ThreadPrimitive.Root
-      className="aui-root aui-thread-root flex h-full flex-col bg-background"
+      className="aui-root aui-thread-root flex h-full flex-col bg-surface"
       style={{
         ["--thread-max-width" as string]: "60rem",
         ["--composer-radius" as string]: "0.5rem",
@@ -118,7 +118,7 @@ export const Thread = ({ title, description }: { title?: string; description?: s
 
         <FollowUps />
 
-        <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-background pb-4 md:pb-6">
+        <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-surface pb-4 md:pb-6">
           <ThreadScrollToBottom />
           {isDisabled ? readOnly ? <ReadOnlyBanner /> : <Archived /> : <Composer />}
         </ThreadPrimitive.ViewportFooter>
@@ -128,7 +128,7 @@ export const Thread = ({ title, description }: { title?: string; description?: s
 };
 
 const ReadOnlyBanner: FC = () => (
-  <div className="flex w-full items-center justify-center rounded-lg border  bg-muted px-4 py-3 text-muted-foreground text-sm">
+  <div className="flex w-full items-center justify-center rounded-lg border  bg-sunken px-4 py-3 text-muted-foreground text-sm">
     This conversation is in read-only mode.
   </div>
 );
@@ -190,7 +190,7 @@ const ThreadSuggestionItem: FC = () => {
       <SuggestionPrimitive.Trigger send asChild>
         <Button
           variant="outline"
-          className="aui-thread-welcome-suggestion h-auto  flex-wrap items-start justify-start gap-1 rounded-full border bg-background px-3.5 py-2 text-left text-sm transition-colors hover:bg-muted md:flex-col"
+          className="aui-thread-welcome-suggestion h-auto  flex-wrap items-start justify-start gap-1 rounded-full border bg-surface px-3.5 py-2 text-left text-sm transition-colors hover:bg-hover md:flex-col"
         >
           <SuggestionPrimitive.Title className="aui-thread-welcome-suggestion-text-1 italic leading-tight  text-wrap font-medium" />
           <SuggestionPrimitive.Description className="aui-thread-welcome-suggestion-text-2 text-muted-foreground empty:hidden" />
@@ -208,7 +208,7 @@ const Composer: FC = () => {
       <ComposerPrimitive.AttachmentDropzone asChild>
         <div
           data-slot="composer-shell"
-          className="flex w-full flex-col gap-2 rounded-[var(--composer-radius)] border bg-background p-[var(--composer-padding)] transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:border-dashed data-[dragging=true]:bg-accent/50"
+          className="flex w-full flex-col gap-2 rounded-[var(--composer-radius)] border bg-surface p-[var(--composer-padding)] transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20 data-[dragging=true]:border-ring data-[dragging=true]:border-dashed data-[dragging=true]:bg-hover/50"
         >
           <ComposerAttachments />
           <ComposerPrimitive.Input
@@ -276,7 +276,7 @@ const ComposerAction: FC = () => {
 const MessageError: FC = () => {
   return (
     <MessagePrimitive.Error>
-      <ErrorPrimitive.Root className="aui-message-error-root mt-2 rounded-md border border-destructive bg-destructive/10 p-3 text-destructive text-sm">
+      <ErrorPrimitive.Root className="aui-message-error-root mt-2 rounded-md border border-bad bg-bad/10 p-3 text-bad text-sm">
         <ErrorPrimitive.Message className="aui-message-error-message line-clamp-2" />
       </ErrorPrimitive.Root>
     </MessagePrimitive.Error>
@@ -345,11 +345,11 @@ const ChainOfThought: FC<{
         : "Details";
 
   return (
-    <div className="aui-assistant-chain-of-thought my-2 w-full overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+    <div className="aui-assistant-chain-of-thought my-2 w-full overflow-hidden rounded-lg border border-line/60 bg-sunken/30">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/50"
+        className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-hover/50"
         aria-expanded={isOpen}
       >
         {isOpen ? (
@@ -363,7 +363,7 @@ const ChainOfThought: FC<{
           <CheckIcon
             className={cn(
               "size-3.5 shrink-0",
-              hasIncomplete ? "text-destructive" : "text-muted-foreground/70",
+              hasIncomplete ? "text-bad" : "text-muted-foreground/70",
             )}
           />
         )}
@@ -372,7 +372,7 @@ const ChainOfThought: FC<{
         </span>
       </button>
       {isOpen && (
-        <div className="aui-assistant-chain-of-thought-content space-y-1 border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+        <div className="aui-assistant-chain-of-thought-content space-y-1 border-t border-line/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
           {children}
         </div>
       )}
@@ -394,7 +394,7 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
 const SkillChip: FC<{ name?: string }> = ({ name }) => {
   if (!name) return null;
   return (
-    <div className="aui-assistant-skill-chip my-1 inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-muted-foreground text-xs">
+    <div className="aui-assistant-skill-chip my-1 inline-flex items-center gap-1.5 rounded-full border border-line/60 bg-surface/60 px-2.5 py-1 text-muted-foreground text-xs">
       <SparkleIcon className="size-3" />
       <span>Using skill: {name}</span>
     </div>
@@ -416,7 +416,7 @@ const AssistantMessage: FC = () => {
       className="aui-assistant-message-root text-sm fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-[var(--thread-max-width)] animate-in py-3 duration-150 !min-h-fit !h-fit"
       data-role="assistant"
     >
-      <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
+      <div className="aui-assistant-message-content wrap-break-word px-2 text-ink leading-relaxed">
         <MessagePrimitive.GroupedParts groupBy={groupMessageParts} indicator="no-text">
           {({ part, children }) => {
             switch (part.type) {
@@ -507,17 +507,17 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
 
       <ActionBarMorePrimitive.Root>
         <ActionBarMorePrimitive.Trigger asChild>
-          <TooltipIconButton tooltip="More" className="data-[state=open]:bg-accent">
+          <TooltipIconButton tooltip="More" className="data-[state=open]:bg-hover">
             <DotsThreeIcon />
           </TooltipIconButton>
         </ActionBarMorePrimitive.Trigger>
         <ActionBarMorePrimitive.Content
           side="bottom"
           align="start"
-          className="aui-action-bar-more-content z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-pop"
+          className="aui-action-bar-more-content z-50 min-w-32 overflow-hidden rounded-md border bg-surface p-1 text-ink shadow-pop"
         >
           <ActionBarPrimitive.ExportMarkdown asChild>
-            <ActionBarMorePrimitive.Item className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+            <ActionBarMorePrimitive.Item className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-hover hover:text-ink focus:bg-hover focus:text-ink">
               <DownloadSimpleIcon className="size-4" />
               Export as Markdown
             </ActionBarMorePrimitive.Item>
@@ -539,7 +539,7 @@ const UserMessage: FC = () => {
       <UserMessageAttachments />
 
       <div className="aui-user-message-content-wrapper relative col-start-2 min-w-0">
-        <div className="aui-user-message-content wrap-break-word peer rounded-2xl bg-muted px-4 py-2.5 text-foreground empty:hidden">
+        <div className="aui-user-message-content wrap-break-word peer rounded-2xl bg-sunken px-4 py-2.5 text-ink empty:hidden">
           <MessagePrimitive.Parts />
         </div>
         {/* Edit button hidden in read-only */}
@@ -574,9 +574,9 @@ const UserActionBar: FC = () => {
 const EditComposer: FC = () => {
   return (
     <MessagePrimitive.Root className="aui-edit-composer-wrapper mx-auto flex w-full max-w-[var(--thread-max-width)] flex-col px-2 py-3">
-      <ComposerPrimitive.Root className="aui-edit-composer-root ml-auto flex w-full max-w-[85%] flex-col rounded-2xl bg-muted">
+      <ComposerPrimitive.Root className="aui-edit-composer-root ml-auto flex w-full max-w-[85%] flex-col rounded-2xl bg-sunken">
         <ComposerPrimitive.Input
-          className="aui-edit-composer-input min-h-14 w-full resize-none bg-transparent p-4 text-foreground text-sm outline-none"
+          className="aui-edit-composer-input min-h-14 w-full resize-none bg-transparent p-4 text-ink text-sm outline-none"
           autoFocus
         />
         <div className="aui-edit-composer-footer mx-3 mb-3 flex items-center gap-2 self-end">

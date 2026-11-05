@@ -109,7 +109,7 @@ export const TicketDetailPage = ({
   return (
     <div className="space-y-4 h-full pb-4 pt-[17px]">
       <div className="flex items-center justify-between">
-        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -151,7 +151,7 @@ export const TicketDetailPage = ({
         )}
       </div>
 
-      <div className="rounded-lg border bg-background px-5 py-3.5">
+      <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
         <div className="mb-3">
           <h1 className="text-title text-ink">{ticket.title}</h1>
         </div>
@@ -170,13 +170,13 @@ export const TicketDetailPage = ({
         </div>
       </div>
 
-      <div className="rounded-lg border bg-background px-5 py-3.5">
+      <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
         <h3 className="text-sm font-semibold mb-3">Description</h3>
         <p className="text-sm whitespace-pre-wrap">{ticket.description}</p>
       </div>
 
       {isCR && crRows.length > 0 && (
-        <div className="rounded-lg border bg-background px-5 py-3.5">
+        <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
           <h3 className="text-sm font-semibold mb-3">Change request details</h3>
           <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
             {crRows.map((row) => (
@@ -192,12 +192,12 @@ export const TicketDetailPage = ({
       )}
 
       {showTriage && isCR && (
-        <div className="rounded-lg border bg-background px-5 py-3.5">
+        <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
           <TriagePanel ticket={ticket} api={api} />
         </div>
       )}
 
-      <div className="rounded-lg border bg-background px-5 py-3.5">
+      <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
         <AttachmentSection
           ticketId={ticket.id || ""}
           attachments={ticket.attachments || []}
@@ -206,7 +206,7 @@ export const TicketDetailPage = ({
         />
       </div>
 
-      <div className="rounded-lg border bg-background px-5 py-3.5">
+      <div className="rounded-lg border border-line bg-surface px-5 py-3.5">
         <CommentThread
           ticketId={ticket.id || ""}
           comments={ticket.comments || []}
