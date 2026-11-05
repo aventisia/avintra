@@ -1,5 +1,8 @@
 export interface IBillingData {
-  organizationName: string;
+  organizationName?: string;
+  organizationType?: "Organization" | "Individual";
+  firstName: string;
+  lastName: string;
   addressLine1: string;
   addressLine2?: string;
   gstNumber?: string;

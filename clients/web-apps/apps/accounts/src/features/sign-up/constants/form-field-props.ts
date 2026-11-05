@@ -3,25 +3,9 @@ import type { FloatingLabelInputFieldProps, InputOtpFieldProps } from "@avplatfo
 const className = "h-11 text-md";
 const labelClassName = "text-md";
 
-// First Name
-const firstNameProps: FloatingLabelInputFieldProps = {
-  autoFocus: true,
-  label: "First name",
-  name: "firstName",
-  className: className,
-  labelClassName: labelClassName,
-};
-
-// Last Name
-const lastNameProps: FloatingLabelInputFieldProps = {
-  label: "Last name",
-  name: "lastName",
-  className: className,
-  labelClassName: labelClassName,
-};
-
 // Email
 const emailProps: FloatingLabelInputFieldProps = {
+  autoFocus: true,
   label: "Email",
   name: "email",
   type: "email",
@@ -46,4 +30,4 @@ const verificationCodeProps: InputOtpFieldProps = {
   children: "", // Add an empty children property
 };
 
-export { emailProps, firstNameProps, lastNameProps, pwdProps, verificationCodeProps };
+export { emailProps, pwdProps, verificationCodeProps };

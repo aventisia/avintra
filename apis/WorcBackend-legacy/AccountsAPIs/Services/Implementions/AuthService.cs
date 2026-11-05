@@ -422,33 +422,34 @@ public class AuthService : IAuthService
                 TenantName = user.Tenant != null ? user.Tenant.Name : "NA",
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName),
+                UserInitials = GetUserInitialsUtil.GetUserInitials(user.FirstName, user.LastName, user.Email),
                 AccessToken = jwt,
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA",
-                PlatformVersion = _appDefaultConfig.PlatformVersion
+                PlatformVersion = _appDefaultConfig.PlatformVersion,
+                HasPaidPlan = tenantSubscription?.Plan is { IsDefault: false }
             };
 
+            // IMPORTANT NOTE: A verified free account keeps its tenant Unspecified and relies on the Active
+            // Default subscription created at signup, so the organization-setup gate must not fire while that
+            // subscription is usable. Genuinely incomplete tenants (no usable subscription) still require setup.
+            var hasUsableActiveSubscription = tenantSubscription != null && tenantSubscription.Status != SubscriptionStatusTypesEnum.Initiated;
+
             // Check if the user is associated with an organization (tenant)
-            if (user.Tenant?.Type == TenantTypesEnum.Unspecified || user.Tenant == null)
+            if ((user.Tenant?.Type == TenantTypesEnum.Unspecified || user.Tenant == null) && !hasUsableActiveSubscription)
             {
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
             else if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
             {
-                // Query the current tenant's subscription, including related plan and creator details
-                var subscription = await _unitOfWork.TenantSubscriptionRepo
-                    .GetByConditionAsync(w => w.TenantId == user.TenantId && w.IsActive)
-                    .SingleOrDefaultAsync();
-
                 // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
                 // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
                 // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
                 // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
                 // Subscription validation logic
-                if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
+                if (!hasUsableActiveSubscription)
                 {
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     serviceResponse.Message = "Tenant has no active subscription.";
@@ -703,7 +704,7 @@ public class AuthService : IAuthService
                 createVerificationCodeDto.Email,
                 new Dictionary<string, string>()
                 {
-                    {"{{userFirstName}}", user?.FirstName ?? "" },
+                    {"{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(user?.FirstName, createVerificationCodeDto.Email) },
                     {"{{VerificationCode}}", verificationCode.SecretCode},
                     {"{{VerificationCodeValidityInMinutes}}", _environmentConfig.OtpValidityInMinutes.ToString() }
                 }))

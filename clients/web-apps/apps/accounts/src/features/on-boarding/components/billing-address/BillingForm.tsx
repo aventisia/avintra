@@ -14,12 +14,16 @@ import {
   addressLine2Props,
   cityProps,
   countryProps,
+  firstNameProps,
   gstNumberProps,
   gstRegistrationProps,
+  lastNameProps,
+  organizationTypeProps,
   pinCodeProps,
   stateProps,
 } from "../../constants/form-field-props";
 import { useDefineBillingInfoForm } from "../../hooks/useDefineBillingInfoForm";
+import { useSaveDeferredTenantProfile } from "../../hooks/useSaveDeferredTenantProfile";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
 import { getParsedBillingFromStorage, setBillingDataInStorage } from "../../utils";
 
@@ -42,7 +46,11 @@ export const BillingForm = () => {
     useShallow((state) => ({ userSession: state.userSession })),
   );
 
-  const onSubmit = (formData: z.infer<typeof billingInfoSchema>) => {
+  const { saveDeferredTenantProfile } = useSaveDeferredTenantProfile();
+
+  const onSubmit = async (formData: z.infer<typeof billingInfoSchema>) => {
+    if (isIndividualUser && !(await saveDeferredTenantProfile(formData))) return;
+
     const existingData = getParsedBillingFromStorage(userSession?.tenantId);
 
     // Merge old data ( country) with new
@@ -61,6 +69,7 @@ export const BillingForm = () => {
   };
   const isGSTRegistered = form.watch("isWillingToFileGst");
   const applyGST = form.watch("country") == "India";
+  const isOrganization = form.watch("organizationType") === "Organization";
 
   return (
     <Form
@@ -71,11 +80,17 @@ export const BillingForm = () => {
     >
       <ScrollArea className="h-[60vh] border rounded-lg  p-4">
         <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
+            <InputField {...firstNameProps} />
+            <InputField {...lastNameProps} />
+          </div>
+          {isIndividualUser && <SelectField {...organizationTypeProps} />}
+          {isIndividualUser && isOrganization && <InputField {...organizationNameProps} />}
           {/* GST Filing Consent */}
           {applyGST && <SwitchField {...gstRegistrationProps} />}
           {/* Additional validation field */}
           {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
-          {/* Address Line 1 */}
+          {/* Existing organization name */}
           {!isIndividualUser && <InputField disabled {...organizationNameProps} />}{" "}
           {/* Address Line 1 */}
           <InputField {...addressLine1Props} />

@@ -3,6 +3,12 @@ interface PurchasePlanDto {
   /** Frequency of plan - e.g., Monthly, Yearly */
   frequency: string;
 
+  /** First name of the billing contact. Max-50 */
+  firstName?: string;
+
+  /** Last name of the billing contact. Max-50 */
+  lastName?: string;
+
   /** Address Line 1 */
   addressLine1: string;
 

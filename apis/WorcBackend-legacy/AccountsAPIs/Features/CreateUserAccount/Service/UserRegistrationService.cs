@@ -128,8 +128,8 @@ public class UserRegistrationService : IUserRegistrationService
                 UserName = createAccountDto.Email.ToLower(),
                 EmailConfirmed = true,
                 Email = createAccountDto.Email.ToLower(),
-                FirstName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.FirstName),
-                LastName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.LastName),
+                FirstName = string.Empty,
+                LastName = string.Empty,
                 CreatedByUserId = newUserId,
                 LastModifiedByUserId = newUserId,
                 PwdSetOn = newPwdSetOn,
@@ -232,7 +232,7 @@ public class UserRegistrationService : IUserRegistrationService
             }
 
             // Create placeholder values for email template
-            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(newUser.FirstName, newUser.Email) } };
 
             // Failed to send AccountCreated email
             if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
@@ -323,6 +323,12 @@ public class UserRegistrationService : IUserRegistrationService
 
             // Clean domain by removing 'www.' prefix if present
             var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
+
+            if (tenantOrganizationDto.Type == TenantTypesEnum.Organization && SsoConfigHelpers.IsConsumerEmailDomain(cleanDomain))
+            {
+                serviceResponse.Message = "Public email domains cannot be used for an organization. Choose Individual or use your organization email address.";
+                return serviceResponse;
+            }
 
             // Retrieve the tenant for this user (assuming tenantId is already associated with the user)
             var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
