@@ -92,7 +92,7 @@ export const SkillTable = () => {
                             {row.getValue("name")}
                           </div>
                           {row.original.accessLevel !== ResourceAccessTypeEnum.Personal && (
-                            <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
+                            <span className="bg-sunken border border-line px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
                               {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
                             </span>
                           )}

@@ -34,10 +34,10 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
             <NavLink
               to={`/sa/support/tickets/${row.original.id}`}
               onClick={(e) => e.stopPropagation()}
-              className="group inline-flex h-5 w-auto cursor-pointer truncate text-sm font-normal text-foreground hover:text-primary"
+              className="group inline-flex h-5 w-auto cursor-pointer truncate text-sm font-normal text-ink hover:text-primary-text"
               title={`Open ${row.original.title}`}
             >
-              <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
+              <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary-text">
                 <span className="truncate max-w-72">{row.original.title}</span>
               </span>
             </NavLink>

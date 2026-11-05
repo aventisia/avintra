@@ -78,13 +78,13 @@ export const SearchableSelect = ({
           disabled={disabled}
           aria-expanded={open}
           className={cn(
-            "w-full justify-between hover:bg-background",
+            "w-full justify-between hover:bg-hover",
             sizeClasses[size],
             className,
             triggerClassName,
           )}
         >
-          <span className="line-clamp-1 text-foreground font-normal">
+          <span className="line-clamp-1 text-ink font-normal">
             {selectedOption?.label ? (
               <>{selectedOption?.label}</>
             ) : (
@@ -124,7 +124,7 @@ export const SearchableSelect = ({
                       onValueChange(option.value);
                       setOpen(false);
                     }}
-                    className={cn(value === option.value && "bg-accent")}
+                    className={cn(value === option.value && "bg-selected")}
                   >
                     <div className="flex w-full items-center justify-between">
                       {option.label}

@@ -22,7 +22,7 @@ export const FlowRowRemoveAction = ({ rowId }: FlowRowRemoveActionProps) => {
       <SimpleDDMenuItem
         children={
           <>
-            <TrashIcon className={cn("", "h-4 w-4")} /> <>Remove</>
+            <TrashIcon className="h-4 w-4 text-bad" /> <>Remove</>
           </>
         }
         className={cn(
@@ -30,7 +30,7 @@ export const FlowRowRemoveAction = ({ rowId }: FlowRowRemoveActionProps) => {
             variant: "dropdownCautionItem",
             size: "sm",
           }),
-          "h-8",
+          "group h-8",
         )}
         // Icon={Trash2Icon}
         onClick={() => {

@@ -48,7 +48,7 @@ export const ToolApprovalBulkBar = ({ disabled = false }: ToolApprovalBulkBarPro
   if (disabled || pendingApprovalCount <= 1) return null;
 
   return (
-    <div className="aui-tool-approval-bulk mt-2 flex items-center justify-end gap-2 rounded-md border border-dashed border-border/70 px-3 py-2">
+    <div className="aui-tool-approval-bulk mt-2 flex items-center justify-end gap-2 rounded-md border border-dashed border-line/70 px-3 py-2">
       <span className="mr-auto text-xs text-muted-foreground">
         {pendingApprovalCount} actions are waiting for your approval.
       </span>

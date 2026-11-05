@@ -40,7 +40,7 @@ export const ToolDetailsPage = () => {
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
-      <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+      <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>

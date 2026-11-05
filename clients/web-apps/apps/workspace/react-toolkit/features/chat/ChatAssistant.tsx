@@ -18,7 +18,10 @@ const ChatAssistant = ({ className }: ChatAssistantProps) => {
       >
         <NewChatIcon className="h-6 w-6" />
       </PopoverTrigger>
-      <PopoverContent align="end" className="border rounded-lg h-[35rem] overflow-hidden w-[25rem]">
+      <PopoverContent
+        align="end"
+        className="h-[35rem] w-[25rem] overflow-hidden rounded-lg border border-line bg-surface p-0"
+      >
         <iframe
           className="h-[35rem]  w-[25rem]"
           src={`${window.location.origin}/workspace/external/chats`}

@@ -20,9 +20,11 @@ export function PromptTemplateContent({ template }: { template: UseTemplateDTO }
 
   return (
     <div>
-      {description && <p className="text-md border-b pb-3 mb-3.5">{description}</p>}
+      {description && (
+        <p className="text-md border-b border-line pb-3 mb-3.5 text-ink-2">{description}</p>
+      )}
 
-      <div className=" overflow-auto  text-md font-medium leading-5 whitespace-pre-wrap">
+      <div className=" overflow-auto text-md font-medium leading-5 whitespace-pre-wrap text-ink">
         <p className="font-semibold pb-3">Prompt: </p>
         <p>{prompt}</p>
       </div>

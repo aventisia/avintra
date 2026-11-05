@@ -131,7 +131,7 @@ export const RiskTieringSection = () => {
           info="Optionally explain how the sub-scores were assigned, especially if the computed tier is adjusted or is being questioned."
         >
           <textarea
-            className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+            className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
             placeholder="Explain the assigned sub-scores or any adjustment rationale."
             value={assessment.tierJustification}
             onChange={(e) => update({ tierJustification: e.target.value })}
