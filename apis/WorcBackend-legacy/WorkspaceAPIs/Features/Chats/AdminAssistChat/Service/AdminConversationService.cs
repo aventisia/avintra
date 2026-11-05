@@ -46,7 +46,7 @@ public class AdminConversationService : IAdminConversationService
 
                     // User and FlowVersion filter (optional)
                     (conversationFilterDto.UserIds == null || !conversationFilterDto.UserIds.Any() || conversationFilterDto.UserIds.Contains(w.UserId)) &&
-                    (conversationFilterDto.FlowVersionIds == null || !conversationFilterDto.FlowVersionIds.Any() || conversationFilterDto.FlowVersionIds.Contains(w.FlowVersionId))
+                    (conversationFilterDto.FlowVersionIds == null || !conversationFilterDto.FlowVersionIds.Any() || (w.FlowVersionId != null && conversationFilterDto.FlowVersionIds.Contains(w.FlowVersionId.Value)))
                 )
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.Messages)

@@ -8,8 +8,15 @@ import {
   stripUiBuilderRuntime,
   useUiBuilderCalculations,
 } from "@avplatform/ui/ui-builder-host";
+import {
+  ArrowLeftIcon,
+  DatabaseIcon,
+  MagicWandIcon,
+  SlidersHorizontalIcon,
+  WarningIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, Database, Settings2, Wand2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
@@ -898,7 +905,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
             aria-label="Back to UI Builder projects"
             className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeftIcon className="h-4 w-4" />
           </a>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-slate-900">{project.name}</p>
@@ -922,7 +929,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
                   : "border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700",
               )}
             >
-              <Settings2 className="h-3.5 w-3.5" />
+              <SlidersHorizontalIcon className="h-3.5 w-3.5" />
               Settings
             </button>
           )}
@@ -936,7 +943,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
                 : "border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700",
             )}
           >
-            <Database className="h-3.5 w-3.5" />
+            <DatabaseIcon className="h-3.5 w-3.5" />
             {data.connections.length > 0
               ? `${data.connections.length} live connection${data.connections.length === 1 ? "" : "s"}`
               : "Connect data"}
@@ -1050,7 +1057,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
             {runtimeError && viewMode === "preview" && !isGenerating && (
               <div className="flex items-start justify-between gap-3 border-b border-rose-200 bg-rose-50 px-3 py-2">
                 <div className="flex min-w-0 items-start gap-2 text-2xs text-rose-700">
-                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <WarningIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span className="min-w-0">
                     <span className="font-semibold">The interface hit a runtime error: </span>
                     <span className="break-words">{runtimeError.message}</span>
@@ -1067,7 +1074,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
                     }
                     className="inline-flex h-6 items-center gap-1 rounded-md bg-rose-600 px-2 text-2xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
                   >
-                    <Wand2 className="h-3 w-3" />
+                    <MagicWandIcon className="h-3 w-3" />
                     Fix with AI
                   </button>
                   <button
@@ -1076,7 +1083,7 @@ export const UiBuilderWorkspace = ({ projectId }: UiBuilderWorkspaceProps) => {
                     onClick={() => setRuntimeError(null)}
                     className="flex h-6 w-6 items-center justify-center rounded-md text-rose-400 hover:bg-rose-100"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <XIcon className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>

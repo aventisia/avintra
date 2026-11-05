@@ -40,6 +40,7 @@ import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { UserInterfacesPage } from "./pages/04-assist/UserInterfacesPage";
+import { WorkspaceChatPage } from "./pages/04-assist/WorkspaceChatPage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
@@ -257,6 +258,14 @@ const routerConfig: RouteObject[] = [
                 element: <Chat />,
               },
             ],
+          },
+          {
+            path: "chat",
+            element: <WorkspaceChatPage />,
+          },
+          {
+            path: "chat/:conversationId",
+            element: <WorkspaceChatPage />,
           },
           {
             path: "user-interfaces",

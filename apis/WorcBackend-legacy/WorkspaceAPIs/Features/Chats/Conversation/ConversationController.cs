@@ -26,6 +26,24 @@ public class ConversationController : BaseApiController
         return ResultHelper(await _conversationService.GetArchivedConversationsAsync(flowVersionId));
     }
 
+    /// <summary>
+    /// Retrieves active agent-less landing conversations for the current user.
+    /// </summary>
+    [HttpGet("landing/active")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationDto>>>> GetLandingActiveConversations()
+    {
+        return ResultHelper(await _conversationService.GetLandingActiveConversationsAsync());
+    }
+
+    /// <summary>
+    /// Retrieves archived agent-less landing conversations for the current user.
+    /// </summary>
+    [HttpGet("landing/archived")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationDto>>>> GetLandingArchivedConversations()
+    {
+        return ResultHelper(await _conversationService.GetLandingArchivedConversationsAsync());
+    }
+
     // Gets a conversation by its ID.
     [HttpGet("{conversationId}")]
     public async Task<ActionResult<ServiceResponse<ConversationDto>>> GetById(Guid conversationId)

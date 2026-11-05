@@ -2,7 +2,7 @@ import { Separator } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuItem, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
-import { Ban, CheckCircle, Eye } from "lucide-react";
+import { CheckCircleIcon, EyeIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
@@ -42,12 +42,12 @@ export const UiBuilderRowActions = ({
         resourceType={ResourceTypeEnum.UiBuilderPublished}
         disabled={isDisabled}
       />
-      <SimpleDDMenuItem content="View" Icon={Eye} onClick={() => openViewDialog(rowId)} />
+      <SimpleDDMenuItem content="View" Icon={EyeIcon} onClick={() => openViewDialog(rowId)} />
       <Separator />
       {isDisabled ? (
         <SimpleDDMenuItem
           content="Enable"
-          Icon={CheckCircle}
+          Icon={CheckCircleIcon}
           onClick={() => openDisableDialog(rowId, projectName ?? "", true)}
         />
       ) : (
@@ -55,7 +55,7 @@ export const UiBuilderRowActions = ({
           className={cn(buttonVariants({ variant: "dropdownCautionItem" }), "h-8")}
           onClick={() => openDisableDialog(rowId, projectName ?? "", false)}
         >
-          <Ban className={cn("", "h-4 w-4")} />
+          <ProhibitIcon className={cn("", "h-4 w-4")} />
           Disable
         </DropdownMenuItem>
       )}

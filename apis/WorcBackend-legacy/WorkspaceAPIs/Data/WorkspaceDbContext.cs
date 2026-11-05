@@ -70,6 +70,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<ChatArtifact>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         // API keys are tenant-global credentials (not scoped by space): authorization is
         // permission-based, and key-authenticated callers (RunnerApp, webhooks) send no space context.
         modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -239,6 +240,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderAssets).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ChatArtifact>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ChatArtifact>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -284,7 +287,7 @@ public class WorkspaceDbContext : DbContext
 
         modelBuilder.Entity<FlowVersionHistory>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionHistories).HasForeignKey(fKey => fKey.FlowVersionId).OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-Many relationship between Job and JobNodeExecutionLog

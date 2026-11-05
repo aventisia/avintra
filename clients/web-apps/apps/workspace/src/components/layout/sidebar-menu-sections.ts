@@ -4,6 +4,7 @@ import {
   BellIcon,
   BookOpenTextIcon,
   BooksIcon,
+  BrowserIcon,
   ChecksIcon,
   CpuIcon,
   CurrencyCircleDollarIcon,
@@ -162,6 +163,14 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         name: "Queues",
         route: "/assist/queues",
         hub: "assist",
+        type: ["Commercial", "Enterprise", "Community"],
+      },
+      {
+        permissions: ["TU"],
+        Icon: NewChatIcon,
+        name: "Chat",
+        route: "/assist/chat",
+        hub: "activity",
         type: ["Commercial", "Enterprise", "Community"],
       },
       {

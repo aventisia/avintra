@@ -88,7 +88,15 @@ function FollowUps() {
   );
 }
 
-export const Thread = ({ title, description }: { title?: string; description?: string }) => {
+export const Thread = ({
+  title,
+  description,
+  composerAccessory,
+}: {
+  title?: string;
+  description?: string;
+  composerAccessory?: React.ReactNode;
+}) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
 
@@ -120,7 +128,15 @@ export const Thread = ({ title, description }: { title?: string; description?: s
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-surface pb-4 md:pb-6">
           <ThreadScrollToBottom />
-          {isDisabled ? readOnly ? <ReadOnlyBanner /> : <Archived /> : <Composer />}
+          {isDisabled ? (
+            readOnly ? (
+              <ReadOnlyBanner />
+            ) : (
+              <Archived />
+            )
+          ) : (
+            <Composer composerAccessory={composerAccessory} />
+          )}
         </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
@@ -200,7 +216,7 @@ const ThreadSuggestionItem: FC = () => {
   );
 };
 
-const Composer: FC = () => {
+const Composer: FC<{ composerAccessory?: React.ReactNode }> = ({ composerAccessory }) => {
   const hasPending = useHasPendingToolCalls();
 
   return (
@@ -219,21 +235,24 @@ const Composer: FC = () => {
             autoFocus={!hasPending}
             aria-label="Message input"
           />
-          <ComposerAction />
+          <ComposerAction composerAccessory={composerAccessory} />
         </div>
       </ComposerPrimitive.AttachmentDropzone>
     </ComposerPrimitive.Root>
   );
 };
 
-const ComposerAction: FC = () => {
+const ComposerAction: FC<{ composerAccessory?: React.ReactNode }> = ({ composerAccessory }) => {
   const hasPending = useHasPendingToolCalls();
 
   const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
 
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
-      <ComposerAddAttachment />
+      <div className="flex min-w-0 items-center gap-1.5">
+        <ComposerAddAttachment />
+        {composerAccessory}
+      </div>
 
       <AuiIf condition={(s) => !s.thread.isRunning && !hasPending}>
         <ComposerPrimitive.Send asChild>

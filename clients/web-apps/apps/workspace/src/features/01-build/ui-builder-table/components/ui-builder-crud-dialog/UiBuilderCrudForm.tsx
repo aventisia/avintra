@@ -1,5 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import {

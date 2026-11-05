@@ -1,6 +1,12 @@
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { Check, ChevronsUpDown, KeyRound, Loader2, Search } from "lucide-react";
+import {
+  CaretUpDownIcon,
+  CheckIcon,
+  CircleNotchIcon,
+  KeyIcon,
+  MagnifyingGlassIcon,
+} from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import {
@@ -21,7 +27,7 @@ const CredentialBadge = ({ model }: { model: UiBuilderModelState }) => (
     className="inline-flex max-w-[7rem] items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-emerald-200"
     title={`Uses the tenant credential "${model.credentialName}"`}
   >
-    <KeyRound className="h-2.5 w-2.5 shrink-0" />
+    <KeyIcon className="h-2.5 w-2.5 shrink-0" />
     <span className="truncate">{model.credentialName}</span>
   </span>
 );
@@ -60,7 +66,7 @@ export const UiBuilderModelPicker = ({
         className="group inline-flex h-7 max-w-full min-w-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white pl-2 pr-1.5 text-2xs font-medium text-slate-700 shadow-sm transition-colors hover:border-indigo-300 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
+          <CircleNotchIcon className="h-3 w-3 animate-spin" />
         ) : (
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500" />
         )}
@@ -71,11 +77,11 @@ export const UiBuilderModelPicker = ({
               ? "Loading models…"
               : "No model"}
         </span>
-        <ChevronsUpDown className="h-3 w-3 shrink-0 text-slate-400" />
+        <CaretUpDownIcon className="h-3 w-3 shrink-0 text-slate-400" />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 overflow-hidden p-0">
         <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2">
-          <Search className="h-3.5 w-3.5 text-slate-400" />
+          <MagnifyingGlassIcon className="h-3.5 w-3.5 text-slate-400" />
           <input
             autoFocus
             value={query}
@@ -111,7 +117,7 @@ export const UiBuilderModelPicker = ({
                       isSelected && "bg-indigo-50/60",
                     )}
                   >
-                    <Check
+                    <CheckIcon
                       className={cn(
                         "h-3.5 w-3.5 shrink-0 text-indigo-600",
                         !isSelected && "invisible",

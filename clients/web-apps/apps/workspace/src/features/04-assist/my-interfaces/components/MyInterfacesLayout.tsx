@@ -2,7 +2,7 @@ import { Input } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { Search } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
@@ -70,7 +70,7 @@ export const MyInterfacesLayout = () => {
         <div className="flex w-full items-center justify-between">
           <p className="text-lg font-medium">{TABLE_HEADING}</p>
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}

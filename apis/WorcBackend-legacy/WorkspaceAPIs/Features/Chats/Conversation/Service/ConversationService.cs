@@ -97,6 +97,74 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
+    // Retrieves active agent-less landing conversations for the current user.
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingActiveConversationsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve active conversations. Please try again."
+        };
+
+        try
+        {
+            var conversations = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == null &&
+                    w.UserId == _userId &&
+                    w.Status != ConversationStatusEnum.Archived
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.Messages)
+                .ProjectToType<ConversationDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = conversations;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Active conversations retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetLandingActiveConversations] Failed for UserId {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves archived agent-less landing conversations for the current user.
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve archived conversations. Please try again."
+        };
+
+        try
+        {
+            var conversations = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == null &&
+                    w.UserId == _userId &&
+                    w.Status == ConversationStatusEnum.Archived
+                )
+                .OrderByDescending(o => o.LastModifiedOn)
+                .Include(i => i.Messages)
+                .ProjectToType<ConversationDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = conversations;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Archived conversations retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetLandingArchivedConversations] Failed for UserId {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves a specific conversation by its unique identifier.
     public async Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId)
     {
@@ -155,13 +223,42 @@ public class ConversationService : IConversationService
 
         try
         {
+            if (conversationDto.FlowVersionId is null)
+            {
+                var landingConversation = new Conversation
+                {
+                    UserId = _userId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                    Status = ConversationStatusEnum.Active,
+                };
+
+                await _unitOfWork.ConversationRepo.InsertAsync(landingConversation);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError(
+                        "[CreateConversation] Failed to persist landing conversation. UserId: {UserId}",
+                        _userId);
+
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = landingConversation.Adapt<ConversationDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Conversation created successfully.";
+                return serviceResponse;
+            }
+
+            var flowVersionId = conversationDto.FlowVersionId.Value;
+
             // Validate FlowVersion exists and is accessible.
             // A flow version ID is globally unique within a tenant, so the lookup
             // is intentionally NOT scoped to the current space query filter. Access
             // is enforced separately below via IsPublished + ResourceUserAccess.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Id == conversationDto.FlowVersionId &&
+                    w.Id == flowVersionId &&
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished)
                 .IgnoreQueryFilters()

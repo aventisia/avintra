@@ -101,7 +101,7 @@ namespace WorkspaceAPIs.MappingProfiles
                             Metadata = m.Metadata,
                             CreatedOn = m.CreatedOn,
                             ConversationId = src.Id,
-                            FlowVersionId = src.FlowVersionId,
+                            FlowVersionId = src.FlowVersionId ?? Guid.Empty,
                         })
                         .OrderBy(m => m.CreatedOn)
                 );
