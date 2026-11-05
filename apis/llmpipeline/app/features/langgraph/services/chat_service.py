@@ -40,9 +40,17 @@ from app.features.langgraph.skills.skill_loader import (
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_platform_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.langgraph.tools.tool_config_utils import expand_tool_config
+from app.features.langgraph.tools.tool_config_utils import (
+    expand_tool_config,
+    platform_candidate_entries,
+    split_tool_config_by_source,
+)
 from app.features.langgraph.tools.tool_resolver import (
     register_configured_custom_tools,
+)
+from app.features.platform_tools.loader import (
+    resolve_platform_tools,
+    withhold_platform_entries,
 )
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
@@ -96,10 +104,19 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph
+        # Load custom tools and custom skills from DB before building the graph,
+        # then resolve the platform-marked entries against the tenant's library
+        # mapping so the tenant gate and the custom-name precedence apply to
+        # this turn.
         if db_session is not None:
-            await self._load_custom_tools(request, user, db_session)
+            claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
+            await self._load_platform_tools(
+                request,
+                user,
+                db_session,
+                claimed_roots,
+            )
 
         graph = self._graph(
             request=request,
@@ -133,7 +150,10 @@ class ChatService:
                 # The compiled graph is cached per conversation, so the request
                 # captured at build time goes stale. Seed each invocation with
                 # the current request/user for per-message planner gating.
-                "metadata": {"request": request, "user": user},
+                "metadata": {
+                    "request": request,
+                    "user": user,
+                },
             },
             config,
         )
@@ -172,10 +192,19 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph
+        # Load custom tools and custom skills from DB before building the graph,
+        # then resolve the platform-marked entries against the tenant's library
+        # mapping so the tenant gate and the custom-name precedence apply to
+        # this turn.
         if db_session is not None:
-            await self._load_custom_tools(request, user, db_session)
+            claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
+            await self._load_platform_tools(
+                request,
+                user,
+                db_session,
+                claimed_roots,
+            )
 
         graph = self._graph(
             request=request,
@@ -210,7 +239,10 @@ class ChatService:
                 "messages": messages,
                 # Seed the current request so per-message planner gating sees
                 # this turn's input rather than the graph-build-time request.
-                "metadata": {"request": request, "user": user},
+                "metadata": {
+                    "request": request,
+                    "user": user,
+                },
             },
             config=config,
             stream_mode="messages",
@@ -437,8 +469,14 @@ class ChatService:
             )
         else:
             if db_session is not None:
-                await self._load_custom_tools(request, user, db_session)
+                claimed_roots = await self._load_custom_tools(request, user, db_session)
                 await self._load_custom_skills(user, db_session)
+                await self._load_platform_tools(
+                    request,
+                    user,
+                    db_session,
+                    claimed_roots,
+                )
 
             graph = self._graph(
                 request=request,
@@ -956,19 +994,58 @@ class ChatService:
         request: LLMRequest,
         user: User,
         db_session: AsyncSession,
-    ) -> None:
+    ) -> set[str]:
         """Load the request's configured custom tools and register them.
 
         Delegates to the shared resolver so the realtime voice bridge loads the
         same tools with the same environment and space scoping.
+
+        Returns the casefolded names of the custom store rows that were
+        selected; platform resolution lets those win a shared name.
         """
 
-        await register_configured_custom_tools(
+        return await register_configured_custom_tools(
             request,
             user,
             db_session,
             self.tool_registry,
         )
+
+    async def _load_platform_tools(
+        self,
+        request: LLMRequest,
+        user: User,
+        db_session: AsyncSession,
+        custom_claimed_roots: set[str],
+    ) -> None:
+        """Resolve platform candidates against the tenant's library catalog.
+
+        Candidates are the entries explicitly marked platform plus unmarked
+        entries, because requests written before the stores split carry no
+        source and their library tools moved out of ``ai_tools``. Explicit
+        custom entries are never candidates, and a custom tool that claimed the
+        name always wins. An explicit platform entry that cannot be resolved is
+        withheld; an unmarked one is left to the custom store only when no
+        catalog row owns its name.
+        """
+
+        _, platform_entries = split_tool_config_by_source(request.tool_config or [])
+        candidates = platform_candidate_entries(request.tool_config or [])
+
+        try:
+            await resolve_platform_tools(
+                platform_entries=candidates,
+                tenant_id=user.tenant_id,
+                db_session=db_session,
+                custom_claimed_roots=custom_claimed_roots,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Failed to resolve platform tools for tenant %s: %s",
+                user.tenant_id,
+                exc,
+            )
+            withhold_platform_entries(platform_entries)
 
     async def _load_custom_skills(
         self,
