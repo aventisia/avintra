@@ -20,6 +20,7 @@ async def load_custom_tools(
     access_token: str | None = None,
     env_type: str = "dev",
     space_id: str | UUID | None = None,
+    claimed_roots: set[str] | None = None,
 ) -> list[dict]:
     """
     Load the tenant's active custom tools for an environment.
@@ -28,6 +29,10 @@ async def load_custom_tools(
     explicitly configured on the agent are loaded. An empty/omitted
     ``tool_names`` loads nothing: custom tools are never bound unless the agent
     configures them.
+
+    When ``claimed_roots`` is passed, the casefolded names of the store rows
+    that were selected are added to it, so platform resolution can let a
+    tenant custom tool win a shared name.
     """
 
     normalized_tool_names = [
@@ -65,6 +70,8 @@ async def load_custom_tools(
         if normalized_name in selected_tool_names:
             continue
         selected_tool_names.add(normalized_name)
+        if claimed_roots is not None:
+            claimed_roots.add(normalized_name)
         if not tool.parsed_schema:
             continue
 
