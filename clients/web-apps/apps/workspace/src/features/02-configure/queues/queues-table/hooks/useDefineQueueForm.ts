@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { getVaultCredentialIconSrc } from "@/features/02-configure/vault-credentials/vault-credential-config/utils/vault-credential-icon.util";
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
@@ -159,7 +160,12 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
     getVaultCredentialSelectOptions("M365")
       .then((data) => {
-        setSelectOptions(data?.data as ISelectOption[]);
+        setSelectOptions(
+          (data?.data ?? []).map((option) => ({
+            ...option,
+            icon: getVaultCredentialIconSrc("M365"),
+          })),
+        );
         setIsOptionsLoading(false);
       })
       .catch((err) => {

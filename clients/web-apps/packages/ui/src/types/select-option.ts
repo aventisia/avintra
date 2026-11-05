@@ -9,6 +9,9 @@ type ISelectOption = {
   /** Description for the label if user needs more informmation to select */
   description?: string;
 
+  /** Optional icon URL rendered before the label */
+  icon?: string;
+
   /** Whether this option is the system default (e.g. the "Central" space) */
   isDefault?: boolean;
 };

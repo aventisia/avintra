@@ -17,6 +17,8 @@ import {
 import { useEffect, useState } from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
+import { getVaultCredentialIconSrc } from "@/utils/vault-credential-icon.util";
+
 import { getVaultCredentialSelectOptions } from "../../apis/vault-credential-select.apis.ts";
 import { VaultCredentialSelectDto } from "../../dtos/vault-credential-select.dto";
 
@@ -29,6 +31,9 @@ interface VaultCredentialSelectFieldProps
   placeholder?: string;
 
   modelProvider?: string;
+
+  /** Explicit icon asset, e.g. the selected tool's brand icon. */
+  iconSrc?: string;
 }
 
 /**
@@ -43,14 +48,21 @@ const VaultCredentialSelectField = ({
   disabled,
   placeholder,
   modelProvider,
+  iconSrc,
   ...props
 }: VaultCredentialSelectFieldProps) => {
   // Get the form context
   const { control } = useFormContext<FieldValues>();
 
-  const [selectOptions, setSelectOptions] = useState<VaultCredentialSelectDto[]>([]);
+  const [selectOptions, setSelectOptions] = useState<
+    (VaultCredentialSelectDto & { icon: string })[]
+  >([]);
 
   const [isLoading, setLoading] = useState<boolean>(true);
+
+  const credentialType = name.includes("credential_name")
+    ? modelProvider
+    : name.replace("__CredentialName__", "");
 
   useEffect(() => {
     // Skip fetching until the field is enabled (a tool is selected) so credentials
@@ -65,11 +77,14 @@ const VaultCredentialSelectField = ({
     setLoading(true);
 
     // Fetch credential list. Note: Every credential-field should have name ending with 'Credential'
-    getVaultCredentialSelectOptions(
-      name.includes("credential_name") ? modelProvider : name.replace("__CredentialName__", ""),
-    )
+    getVaultCredentialSelectOptions(credentialType)
       .then((data) => {
-        setSelectOptions(data?.data ?? []);
+        setSelectOptions(
+          (data?.data ?? []).map((option) => ({
+            ...option,
+            icon: getVaultCredentialIconSrc(credentialType, iconSrc),
+          })),
+        );
         setLoading(false);
       })
       .catch((err) => {
@@ -77,7 +92,7 @@ const VaultCredentialSelectField = ({
         setSelectOptions([]);
         setLoading(false);
       });
-  }, [modelProvider, name, disabled]);
+  }, [credentialType, iconSrc, disabled]);
 
   return (
     <>
@@ -118,7 +133,10 @@ const VaultCredentialSelectField = ({
                     ) : (
                       selectOptions.map((item) => (
                         <SelectItem size={size} key={item.value} value={item.value}>
-                          {item.label}
+                          <span className="flex items-center gap-2">
+                            <img src={item.icon} alt="" className="size-4 shrink-0" />
+                            {item.label}
+                          </span>
                         </SelectItem>
                       ))
                     )}

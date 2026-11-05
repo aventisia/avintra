@@ -1,7 +1,7 @@
 import { ModelProviderEnum } from "@avplatform/ui/enums";
 
 import { VaultCredentialAppsEnum } from "@/features/02-configure/vault-credentials/enums/vault-credential-apps.enum";
-import { vaultCredentialAppIconMapper } from "@/features/02-configure/vault-credentials/vault-credential-config/constants/vault-credential-app-icon-mapper.constant";
+import { getVaultCredentialIconSrc } from "@/features/02-configure/vault-credentials/vault-credential-config/utils/vault-credential-icon.util";
 
 export interface ModelProviderDefinition {
   value: ModelProviderEnum;
@@ -10,10 +10,8 @@ export interface ModelProviderDefinition {
   description: string;
 }
 
-const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
-
 export const getProviderIcon = (provider: ModelProviderDefinition): string => {
-  return `${basePath}${vaultCredentialAppIconMapper[provider.vaultCredentialType]}`;
+  return getVaultCredentialIconSrc(VaultCredentialAppsEnum[provider.vaultCredentialType]);
 };
 
 export const modelProviderDefinitions: ModelProviderDefinition[] = [

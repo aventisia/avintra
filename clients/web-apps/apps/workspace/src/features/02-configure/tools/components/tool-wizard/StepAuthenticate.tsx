@@ -1,3 +1,11 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@avplatform/ui/select";
+
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 import { useFetchCustomApiCredentials } from "../../hooks/useFetchCustomApiCredentials.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
@@ -10,6 +18,8 @@ const authOptions = [
   { label: "Bearer Token", value: ToolAuthenticationTypeEnum.Bearer },
   { label: "Basic Authentication", value: ToolAuthenticationTypeEnum.Basic },
 ];
+
+const NO_CREDENTIAL_VALUE = "__none__";
 
 export const StepAuthenticate = () => {
   const { draftTool, setDraftTool } = useToolWizardStore();
@@ -61,19 +71,28 @@ export const StepAuthenticate = () => {
           label="Credential"
           description="Select a Custom API Tool credential to use for authentication, if required."
         />
-        <select
-          value={draftTool.credentialName ?? ""}
-          onChange={(e) => handleCredentialChange(e.target.value)}
+        <Select
+          value={draftTool.credentialName || NO_CREDENTIAL_VALUE}
+          onValueChange={(value) =>
+            handleCredentialChange(value === NO_CREDENTIAL_VALUE ? "" : value)
+          }
           disabled={isCredentialsLoading}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">Select a Custom API Tool credential...</option>
-          {(customApiCredentials ?? []).map((cred) => (
-            <option key={cred.value} value={cred.value}>
-              {cred.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="h-9 w-full">
+            <SelectValue placeholder="Select a Custom API Tool credential..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NO_CREDENTIAL_VALUE}>No credential</SelectItem>
+            {(customApiCredentials ?? []).map((cred) => (
+              <SelectItem key={cred.value} value={cred.value}>
+                <span className="flex items-center gap-2">
+                  <img src={cred.icon} alt="" className="size-4 shrink-0" />
+                  {cred.label}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <p className="text-xs text-muted-foreground">
           To add a credential, go to <strong>Configure → Vaults</strong>.
         </p>

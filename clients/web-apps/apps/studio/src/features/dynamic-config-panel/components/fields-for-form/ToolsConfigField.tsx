@@ -252,6 +252,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           label="Select Credential"
           size="sm"
           modelProvider={credentialType}
+          iconSrc={selectedUsableTool?.icon}
           disabled={!currentTool || isToolOperationsLoading}
           placeholder="Select Credential"
         />

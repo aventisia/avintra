@@ -25,6 +25,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
+import { getVaultCredentialIconSrc } from "@/features/02-configure/vault-credentials/vault-credential-config/utils/vault-credential-icon.util";
 
 import { getLlmModelsV2, upsertModelProvider } from "../apis/model-provider-apis";
 import {
@@ -49,9 +50,9 @@ export const ModelProviderSetupDialog = () => {
   const queryClient = useQueryClient();
 
   const [step, setStep] = useState<Step>("credential");
-  const [credentialOptions, setCredentialOptions] = useState<{ value: string; label: string }[]>(
-    [],
-  );
+  const [credentialOptions, setCredentialOptions] = useState<
+    { value: string; label: string; icon: string }[]
+  >([]);
   const [isCredentialLoading, setIsCredentialLoading] = useState(false);
   const [selectedCredentialName, setSelectedCredentialName] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
@@ -79,9 +80,13 @@ export const ModelProviderSetupDialog = () => {
     resetState();
 
     setIsCredentialLoading(true);
-    getVaultCredentialSelectOptions(getVaultCredentialTypeForProvider(provider.value))
+    const credentialType = getVaultCredentialTypeForProvider(provider.value);
+    getVaultCredentialSelectOptions(credentialType)
       .then((res) => {
-        const options = res?.data ?? [];
+        const options = (res?.data ?? []).map((option) => ({
+          ...option,
+          icon: getVaultCredentialIconSrc(credentialType),
+        }));
         setCredentialOptions(options);
 
         if (config) {
@@ -243,7 +248,10 @@ export const ModelProviderSetupDialog = () => {
                   <SelectContent>
                     {credentialOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        <span className="flex items-center gap-2">
+                          <img src={option.icon} alt="" className="size-4 shrink-0" />
+                          {option.label}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -274,7 +282,10 @@ export const ModelProviderSetupDialog = () => {
                   <SelectContent>
                     {credentialOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        <span className="flex items-center gap-2">
+                          <img src={option.icon} alt="" className="size-4 shrink-0" />
+                          {option.label}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>

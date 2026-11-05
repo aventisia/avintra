@@ -71,7 +71,14 @@ const SelectField = ({
                     value={item.value}
                     description={item.description}
                   >
-                    {item.label}
+                    {item.icon ? (
+                      <span className="flex items-center gap-2">
+                        <img src={item.icon} alt="" className="size-4 shrink-0" />
+                        {item.label}
+                      </span>
+                    ) : (
+                      item.label
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>

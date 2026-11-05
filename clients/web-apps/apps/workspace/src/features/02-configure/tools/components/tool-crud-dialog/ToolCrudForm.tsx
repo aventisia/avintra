@@ -131,10 +131,7 @@ export const ToolCrudForm = ({
         label="Credential"
         placeholder="Select a Custom API Tool credential"
         description="Select a Custom API Tool credential to use for authentication, if required."
-        selectOptions={(customApiCredentials ?? []).map((cred) => ({
-          label: cred.label,
-          value: cred.value,
-        }))}
+        selectOptions={customApiCredentials ?? []}
         disabled={isReadMode || isCredentialsLoading}
       />
 

@@ -23,6 +23,8 @@ import {
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
+import { getVaultCredentialIconSrc } from "@/features/02-configure/vault-credentials/vault-credential-config/utils/vault-credential-icon.util";
+
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import { getVaultCredentialSelectOptions } from "../../apis/vault-credential-select.apis.ts";
 import { resourceRequiresReference } from "../../constants/form-utils.ts";
@@ -92,7 +94,12 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     // Fetch credentials list. Note: Every credential-field should have name ending with 'Credential'
     getVaultCredentialSelectOptions(provider)
       .then((data) => {
-        setSelectOptions(data?.data as ISelectOption[]);
+        setSelectOptions(
+          (data?.data ?? []).map((option) => ({
+            ...option,
+            icon: getVaultCredentialIconSrc(provider),
+          })),
+        );
         setLoading(false);
       })
       .catch((err) => {

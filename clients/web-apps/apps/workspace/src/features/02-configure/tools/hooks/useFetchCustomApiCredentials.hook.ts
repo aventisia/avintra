@@ -4,6 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
 import { VaultCredentialSelectDto } from "@/features/02-configure/queues/queues-table/dtos/vault-credential-select.dto";
+import { getVaultCredentialIconSrc } from "@/features/02-configure/vault-credentials/vault-credential-config/utils/vault-credential-icon.util";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
@@ -31,7 +32,14 @@ export const useFetchCustomApiCredentials = () => {
     staleTime: 60 * 1000,
   });
 
-  const credentials = useMemo(() => (data?.data ?? []) as VaultCredentialSelectDto[], [data]);
+  const credentials = useMemo(
+    () =>
+      ((data?.data ?? []) as VaultCredentialSelectDto[]).map((credential) => ({
+        ...credential,
+        icon: getVaultCredentialIconSrc("CustomApiTool"),
+      })),
+    [data],
+  );
 
   return { data: credentials, isFetching, isLoading, isError };
 };
