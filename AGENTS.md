@@ -78,7 +78,7 @@ Commercial-only source files are marked `.ee`; shared and Community-visible file
 - Agent contracts override legacy skill paths, branch mutations, and human-started stage transitions.
 
 ## Artifact conventions
-- Use the Gitea issue number, or one stable kebab-case slug for an idea/problem.
+- Use the GitHub issue number, or one stable kebab-case slug for an idea/problem.
 - Name the report `<agent>-report-r<N>.md` inside `round-NN/`; `N` is the design round and `NN` its zero-padded form. Each agent keeps exactly one report file per round; update it in place rather than creating additional same-round files.
 - Reference legacy reports from other locations only when supplied; leave them unchanged.
 - Record identity, revision/base, approval state, scope, findings, evidence, and limitations.
@@ -114,5 +114,5 @@ Commercial-only source files are marked `.ee`; shared and Community-visible file
 ## Standalone lifecycle operations
 
 - `commit`, `create-issue`, `add-comment`, `create-pr`, `merge-pr`, and `close-issue` are user-invoked operations outside the coding loop. QA success does not authorize them.
-- Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/tea commands.
+- Invoke them in a primary session with suitable permissions and explicit authorization for the exact mutation; preserve existing confirmations and repository/login identity. Coder does not load them or run their formatting/gh commands.
 - Supporting skills: architect → conditional `grilling`; QA → `code-review`; scout, analyst, coder, debugger, and pentester have no mandatory supporting skill.

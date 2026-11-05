@@ -2,18 +2,18 @@
 name: create-pr
 disable-model-invocation: true
 argument-hint: "Optional title, description, head branch, base branch, or repository URL"
-description: "Open a Gitea pull request from a committed, pushed branch, confirming any drafted title or description."
+description: "Open a GitHub pull request from a committed, pushed branch, confirming any drafted title or description."
 ---
 
-# Create Gitea Pull Request
+# Create GitHub Pull Request
 
-Open a pull request on Gitea once implementation is committed and the branch is ready for review.
+Open a pull request on GitHub once implementation is committed and the branch is ready for review.
 
-Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below.
+Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below.
 
 ## Steps
 
-1. **Resolve the repository** per `GITEA.md`: the user-supplied repository or URL, else the current checkout's Gitea remote. Same branch names in another repository make it a different target.
+1. **Resolve the repository** per `GITHUB.md`: the user-supplied repository or URL, else the current checkout's `origin`. Same branch names in another repository make it a different target.
 
 2. **Pick the branches.**
    - **Head**: the user's branch, else `git branch --show-current`.
@@ -31,14 +31,14 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository re
 5. **Create the PR.**
 
    ```bash
-   tea pulls create \
+   gh pr create \
      --repo "$REPO" \
      --head "$HEAD_BRANCH" \
      --base "$BASE_BRANCH" \
      --title "$TITLE" \
-     --description "$DESCRIPTION"
+     --body "$DESCRIPTION"
    ```
 
    Reviewers, labels, milestones, and assignees are added only when the user asks.
 
-6. **Report** per `GITEA.md`, with the PR number and URL.
+6. **Report** per `GITHUB.md`, with the PR number and URL.

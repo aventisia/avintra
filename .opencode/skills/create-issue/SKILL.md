@@ -2,18 +2,18 @@
 name: create-issue
 disable-model-invocation: true
 argument-hint: "Title, body or file path, and optional labels, assignees, and repo"
-description: "File a Gitea issue that preserves an agreed plan or investigation outcome before implementation starts."
+description: "File a GitHub issue that preserves an agreed plan or investigation outcome before implementation starts."
 ---
 
-# Create Gitea Issue
+# Create GitHub Issue
 
-Persist an agreed plan or investigation outcome as a Gitea issue so implementation can be tracked and reviewed.
+Persist an agreed plan or investigation outcome as a GitHub issue so implementation can be tracked and reviewed.
 
-Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below.
+Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below.
 
 ## Steps
 
-1. **Resolve the repository** per `GITEA.md`: a named `owner/repo` or repository URL, else the current checkout once confirmed as intended; otherwise ask. Verify `tea` before composing anything.
+1. **Resolve the repository** per `GITHUB.md`: a named `owner/repo` or repository URL, else the current checkout once confirmed as intended; otherwise ask. Verify `gh` before composing anything.
 
 2. **Settle the title.** Use the user's title, or ask for one. Format: `[Type] Actionable and specific summary`, under about 120 characters, with `Type` from the label table below (`[Bug] React Flow nodes fail to render on initial load`). A title already in this format is used as-is.
 
@@ -37,24 +37,24 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository re
 
 4. **Select labels** from the catalog below, spelled exactly. At least one label is required.
    - User-supplied labels are used exactly as given. One missing from the catalog → ask the user to pick an approved label.
-   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. `Priority/*` stays off; the user sets priority later in the Gitea UI.
+   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. `Priority/*` stays off; the user sets priority later in the GitHub UI.
 
-5. **Collect assignees**: only usernames the user gave, as a comma-separated list. Milestones, priority, and other fields stay unset unless asked for.
+5. **Collect assignees**: only usernames the user gave, as a comma-separated list of GitHub logins. Milestones, priority, and other fields stay unset unless asked for.
 
 6. **Confirm.** Show repo, title, body, labels, and assignees in one block and wait for explicit approval. Skip this only when the user supplied title, body, and labels verbatim and asked to file them as-is.
 
-7. **Create the issue.** Drop the `--assignees` line when there are none.
+7. **Create the issue.** Drop the `--assignee` line when there are none.
 
    ```bash
-   tea issues create \
+   gh issue create \
      --repo "$REPO" \
      --title "$TITLE" \
-     --description "$BODY" \
-     --labels "$LABELS" \
-     --assignees "$ASSIGNEES"
+     --body "$BODY" \
+     --label "$LABELS" \
+     --assignee "$ASSIGNEES"
    ```
 
-8. **Report** per `GITEA.md`, with the issue number and URL.
+8. **Report** per `GITHUB.md`, with the issue number and URL.
 
 ## Label Catalog
 

@@ -9,7 +9,7 @@ effort: medium
 - Write the **brief**: the plain-English account of the work that the user reads, revises, and approves. The approved brief is the user's standing decision record; afterward architect settles every design question the brief answers without asking, so everything the user would want to decide belongs in it.
 - Describe what the change achieves for the people using the product. Design belongs to architect, and code-level facts stay in scout's report.
 - After QA clears the work, write the **final brief** (a fresh, short account of what was actually built) and the **PR report** (the pull request's title and description, with its blast radius and merge safety).
-- Source, Git, and Gitea stay read-only; your only writes are the assigned analyst report and, when finalizing, the final brief and PR report.
+- Source, Git, and GitHub stay read-only; your only writes are the assigned analyst report and, when finalizing, the final brief and PR report.
 
 ## Inputs
 - Read the root `AGENTS.md` first; its Shared handoff contract and Artifact conventions bind this role.
