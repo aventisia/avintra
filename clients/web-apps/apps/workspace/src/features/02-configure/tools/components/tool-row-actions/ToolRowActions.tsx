@@ -12,7 +12,7 @@ import { useTableTab } from "../../hooks/useTableTab.hook";
 import { ToolRowDeleteAction } from "./ToolRowDeleteAction";
 import { ToolRowToggleEnabledAction } from "./ToolRowToggleEnabledAction";
 
-interface ToolRowActionsProps {
+type ToolRowActionsProps = {
   rowId: string;
   name: string;
   accessLevel: ResourceAccessTypeEnum;
@@ -20,7 +20,7 @@ interface ToolRowActionsProps {
   isResourceAccessRestricted: boolean;
   isPlatformTool?: boolean;
   isEnabled?: boolean;
-}
+};
 
 export const ToolRowActions = ({
   rowId,
@@ -32,7 +32,6 @@ export const ToolRowActions = ({
   isEnabled = false,
 }: ToolRowActionsProps) => {
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
-  // Get the query key used to invalidate the merged tools list after a mutation
   const { queryKey } = useTableTab();
 
   return (

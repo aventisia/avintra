@@ -26,6 +26,9 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /build/dist ./dist
 
+# Read by dist/seed-corsair-tools.js when seeding runs inside this image.
+COPY src/data/popular-tools.json ./dist/data/popular-tools.json
+
 # migration.sql is read at runtime by dist/migrate.js (resolved relative to the
 # compiled file, which sits at /app/dist/migrate.js -> /app/migration.sql).
 COPY migration.sql ./

@@ -40,13 +40,16 @@ from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_platform_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.langgraph.tools.tool_config_utils import (
+    TOOL_SOURCE_PLATFORM,
     configured_tool_roots,
+    explicit_tool_source,
     expand_tool_config,
+    field,
     platform_candidate_entries,
-    split_tool_config_by_source,
 )
 from app.features.custom_tools.custom_tool_loader import load_custom_tools
 from app.features.platform_tools.loader import (
+    expands_to_corsair,
     resolve_platform_tools,
     withhold_platform_entries,
 )
@@ -103,10 +106,8 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph,
-        # then resolve the platform-marked entries against the tenant's library
-        # mapping so the tenant gate and the custom-name precedence apply to
-        # this turn.
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
             claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
@@ -149,10 +150,7 @@ class ChatService:
                 # The compiled graph is cached per conversation, so the request
                 # captured at build time goes stale. Seed each invocation with
                 # the current request/user for per-message planner gating.
-                "metadata": {
-                    "request": request,
-                    "user": user,
-                },
+                "metadata": {"request": request, "user": user},
             },
             config,
         )
@@ -191,10 +189,8 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph,
-        # then resolve the platform-marked entries against the tenant's library
-        # mapping so the tenant gate and the custom-name precedence apply to
-        # this turn.
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
             claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
@@ -238,10 +234,7 @@ class ChatService:
                 "messages": messages,
                 # Seed the current request so per-message planner gating sees
                 # this turn's input rather than the graph-build-time request.
-                "metadata": {
-                    "request": request,
-                    "user": user,
-                },
+                "metadata": {"request": request, "user": user},
             },
             config=config,
             stream_mode="messages",
@@ -966,8 +959,10 @@ class ChatService:
         selected; platform resolution lets those win a shared name.
         """
 
-        custom_entries, _ = split_tool_config_by_source(request.tool_config or [])
-        tool_names = configured_tool_roots(custom_entries)
+        tool_names = configured_tool_roots(
+            request.tool_config,
+            exclude_source=TOOL_SOURCE_PLATFORM,
+        )
         if not tool_names:
             return set()
 
@@ -1015,11 +1010,10 @@ class ChatService:
         source and their library tools moved out of ``ai_tools``. Explicit
         custom entries are never candidates, and a custom tool that claimed the
         name always wins. An explicit platform entry that cannot be resolved is
-        withheld; an unmarked one is left to the custom store only when no
-        catalog row owns its name.
+        withheld, and so is an unmarked entry that would execute through
+        Corsair; every other unmarked entry is left to the custom store.
         """
 
-        _, platform_entries = split_tool_config_by_source(request.tool_config or [])
         candidates = platform_candidate_entries(request.tool_config or [])
 
         try:
@@ -1031,11 +1025,27 @@ class ChatService:
             )
         except Exception as exc:
             logger.warning(
-                "Failed to resolve platform tools for tenant %s: %s",
+                "Failed to resolve %d platform tool entries for tenant %s: %s",
+                len(candidates),
                 user.tenant_id,
                 exc,
             )
-            withhold_platform_entries(platform_entries)
+            claimed = {
+                root.strip().casefold()
+                for root in (custom_claimed_roots or set())
+            }
+            withhold_platform_entries(
+                [
+                    entry
+                    for entry in candidates
+                    if (field(entry, "tool", "") or "").strip().casefold()
+                    not in claimed
+                    and (
+                        explicit_tool_source(entry) == TOOL_SOURCE_PLATFORM
+                        or expands_to_corsair(entry)
+                    )
+                ]
+            )
 
     async def _load_custom_skills(
         self,
