@@ -9,15 +9,16 @@
  * Rows are identified by a deterministic id derived from the plugin id, so a
  * re-run updates the existing row in place and keeps its id. The stored Name is
  * the product display name; a separate popular-tools.json decides which names
- * are marked IsPopular, with warning-only validation. IsDisabled is written only
- * on insert, so an operator-disabled row stays disabled across re-runs.
+ * are marked IsPopular (a missing or malformed file aborts the pass). IsDisabled
+ * is written only on insert, so an operator-disabled row stays disabled across
+ * re-runs.
  *
  * Typical usage:
  *   npm run seed:tools
  *
  * Environment variables required:
- *   - WORKSPACE_POSTGRES_HOST, WORKSPACE_POSTGRES_PORT, WORKSPACE_POSTGRES_USERNAME,
- *     WORKSPACE_POSTGRES_PASSWORD (Workspace database connection)
+ *   - POSTGRESQL_HOST, POSTGRESQL_PORT, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD,
+ *     POSTGRESQL_WORKSPACE_DB_NAME (Workspace database connection)
  */
 import dotenv from "dotenv";
 import fs from "node:fs";
@@ -50,12 +51,12 @@ const { Pool } = pg;
 
 const WORKSPACE_DATABASE = process.env.POSTGRESQL_WORKSPACE_DB_NAME || "WorkspaceDb";
 
-// popular-tools.json lives at the package root, next to the catalogs the seeder
-// already reads. The cwd candidate covers `npm run seed:tools` from apis/corsair;
-// the module-relative candidate covers the compiled dist/ and src/ entry points.
+// popular-tools.json lives in src/data. The cwd candidate covers
+// `npm run seed:tools` from apis/corsair; the module-relative candidate covers
+// the compiled dist/ entry point, where the Dockerfile places the same file.
 const POPULAR_TOOLS_PATH_CANDIDATES = [
-  path.resolve(process.cwd(), "popular-tools.json"),
-  fileURLToPath(new URL("../popular-tools.json", import.meta.url)),
+  path.resolve(process.cwd(), "src/data/popular-tools.json"),
+  fileURLToPath(new URL("./data/popular-tools.json", import.meta.url)),
 ];
 
 const workspacePool = new Pool({
@@ -94,31 +95,37 @@ function warn(message: string): void {
   console.warn(`[corsair:seed] ${message}`);
 }
 
-/** Read the configured popular names; a missing or malformed file warns and yields none. */
+/**
+ * Read the configured popular names. A missing or malformed file aborts the pass:
+ * continuing would silently clear every existing popular mark on the next update.
+ */
 function loadPopularToolNames(): string[] {
   const popularFilePath = POPULAR_TOOLS_PATH_CANDIDATES.find((candidate) => fs.existsSync(candidate));
   if (!popularFilePath) {
-    warn(`Popular tools file not found (${POPULAR_TOOLS_PATH_CANDIDATES.join(", ")}); continuing without popular marks.`);
-    return [];
+    throw new Error(`Popular tools file not found (${POPULAR_TOOLS_PATH_CANDIDATES.join(", ")}).`);
   }
 
+  let parsed: { popularTools?: unknown };
   try {
-    const parsed = JSON.parse(fs.readFileSync(popularFilePath, "utf8")) as { popularTools?: unknown };
-    if (!Array.isArray(parsed.popularTools)) {
-      warn(`Popular tools file ${popularFilePath} has no popularTools list; continuing without popular marks.`);
-      return [];
-    }
-
-    return parsed.popularTools
-      .map((entry) => {
-        const name = (entry as { name?: unknown } | null | undefined)?.name;
-        return typeof name === "string" ? name.trim() : "";
-      })
-      .filter((name) => name.length > 0);
+    parsed = JSON.parse(fs.readFileSync(popularFilePath, "utf8")) as { popularTools?: unknown };
   } catch (err) {
-    warn(`Popular tools file ${popularFilePath} could not be read or parsed (${(err as Error).message}); continuing without popular marks.`);
-    return [];
+    throw new Error(`Popular tools file ${popularFilePath} could not be read or parsed (${(err as Error).message}).`);
   }
+
+  if (!Array.isArray(parsed.popularTools)) {
+    throw new Error(`Popular tools file ${popularFilePath} has no popularTools list.`);
+  }
+
+  return parsed.popularTools
+    .map((entry) => {
+      const name = (entry as { name?: unknown } | null | undefined)?.name;
+      if (typeof name !== "string" || name.trim().length === 0) {
+        warn(`Ignoring popular-tools entry without a non-empty name: ${JSON.stringify(entry)}.`);
+        return "";
+      }
+      return name.trim();
+    })
+    .filter((name) => name.length > 0);
 }
 
 /**
@@ -191,8 +198,7 @@ async function seedCorsairTools(): Promise<void> {
   const generatedTools = await generateToolMetadata(plugins, corsair);
 
   if (generatedTools.length === 0) {
-    warn("No Corsair tools generated.");
-    return;
+    throw new Error("No Corsair tools were generated from the plugin registry.");
   }
 
   const popularToolNames = loadPopularToolNames();
@@ -201,6 +207,7 @@ async function seedCorsairTools(): Promise<void> {
   let seedCount = 0;
   let popularCount = 0;
   const claimedNames = new Set<string>();
+  const failedPlugins: string[] = [];
 
   for (const tool of generatedTools) {
     const toolName = tool.name.trim();
@@ -214,13 +221,14 @@ async function seedCorsairTools(): Promise<void> {
 
       // IMPORTANT NOTE: ai_PlatformTools has a unique index on Name; a catalog
       // duplicate would abort the pass, so warn and skip the later row.
-      if (claimedNames.has(toolName)) {
+      const claimedNameKey = toolName.toLowerCase();
+      if (claimedNames.has(claimedNameKey)) {
         warn(`Skipping plugin '${tool.pluginId}': display name '${toolName}' is already seeded by another entry.`);
         continue;
       }
-      claimedNames.add(toolName);
+      claimedNames.add(claimedNameKey);
 
-      const isPopular = popularKeys.has(toolName.toLowerCase());
+      const isPopular = popularKeys.has(claimedNameKey);
       const parsedSchema = JSON.stringify(JSON.parse(tool.openApiSpec));
 
       const existingResult = await workspacePool.query(
@@ -235,6 +243,18 @@ async function seedCorsairTools(): Promise<void> {
           [toolId, toolName, tool.description, tool.openApiSpec, parsedSchema, isPopular]
         );
       } else {
+        // IMPORTANT NOTE: a stale row already holding this name under a different id must be
+        // reconciled by an operator; letting the update run would violate the unique Name index.
+        const conflictingRow = await workspacePool.query(
+          `SELECT "Id" FROM "ai_PlatformTools" WHERE "Name" = $1 AND "Id" <> $2`,
+          [toolName, toolId]
+        );
+        if (conflictingRow.rows.length > 0) {
+          throw new Error(
+            `display name '${toolName}' is already held by row ${conflictingRow.rows[0].Id}.`
+          );
+        }
+
         await workspacePool.query(
           `UPDATE "ai_PlatformTools" SET
              "Name" = $1,
@@ -250,12 +270,19 @@ async function seedCorsairTools(): Promise<void> {
       seedCount++;
       if (isPopular) popularCount++;
     } catch (err) {
+      failedPlugins.push(tool.pluginId);
       warn(`Failed to seed plugin '${tool.pluginId}': ${(err as Error).message}`);
     }
   }
 
   if (seedCount === 0) {
     throw new Error("No Corsair tools were seeded; check the Workspace database connection and columns.");
+  }
+
+  if (failedPlugins.length > 0) {
+    throw new Error(
+      `Failed to seed ${failedPlugins.length} plugin(s): ${failedPlugins.join(", ")}.`
+    );
   }
 
   console.log(`[corsair:seed] Seeded ${seedCount} Corsair tools (${popularCount} popular) into ai_PlatformTools.`);
