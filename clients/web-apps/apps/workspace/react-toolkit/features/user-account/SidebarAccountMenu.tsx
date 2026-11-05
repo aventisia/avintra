@@ -106,7 +106,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
         <span className="relative shrink-0">
           <PersonAvatar name={fullName} className="size-7 text-[11px]" />
           {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-destructive ring-2 ring-bg" />
+            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-bad ring-2 ring-bg" />
           )}
         </span>
         {sidebarExpand && (
@@ -153,7 +153,7 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
           <BellIcon />
           Notifications
           {unreadCount > 0 && (
-            <span className="ml-auto rounded-full bg-destructive px-1.5 font-mono text-2xs leading-4 text-destructive-foreground">
+            <span className="ml-auto rounded-full bg-bad px-1.5 font-mono text-2xs leading-4 text-bad-foreground">
               {unreadCount}
             </span>
           )}

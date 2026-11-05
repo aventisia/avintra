@@ -38,7 +38,7 @@ export const TemplatePagination = ({
     <div className="mt-5 flex items-center justify-end space-x-6 lg:space-x-8">
       {/* Dropdown to select number of templates per page */}
       <div className="hidden items-center space-x-2 xs:flex">
-        <p className="text-sm font-medium">Templates per page</p>
+        <p className="whitespace-nowrap text-hint text-muted-foreground">Templates per page</p>
         <Select
           value={`${itemsPerPage}`}
           onValueChange={(value) => {
@@ -59,7 +59,7 @@ export const TemplatePagination = ({
       </div>
 
       {/* Display current page and total pages */}
-      <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+      <div className="flex w-[100px] items-center justify-center whitespace-nowrap text-hint text-muted-foreground">
         Page {currentPage} of {totalPages}
       </div>
 

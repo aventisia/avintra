@@ -94,9 +94,9 @@ export const SaTicketsTable = () => {
             <TableCNHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+                <TabsList className="h-fit w-full">
                   {tabs.map((tab) => (
-                    <TabsTrigger value={tab} key={tab} className="w-full rounded-lg py-0.5">
+                    <TabsTrigger value={tab} key={tab} className="w-full">
                       {tab}
                     </TabsTrigger>
                   ))}

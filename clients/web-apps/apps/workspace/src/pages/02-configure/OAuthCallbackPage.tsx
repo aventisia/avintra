@@ -48,7 +48,7 @@ export const OAuthCallbackPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border bg-card p-8">
+      <div className="w-full max-w-md rounded-xl border border-line bg-surface p-8">
         <div className="flex flex-col items-center gap-4 text-center">
           {success ? (
             <CheckCircleIcon className="h-12 w-12 text-ok" />

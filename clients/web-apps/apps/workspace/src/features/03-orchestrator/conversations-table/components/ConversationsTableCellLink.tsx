@@ -25,7 +25,7 @@ export const ConversationsTableCellLink = ({
       to={withQueryParams(rowId)}
       className={cn(
         buttonVariants({ variant: "link" }),
-        "h-auto max-w-80 cursor-pointer  truncate  inline-block  font-medium text-foreground hover:text-primary",
+        "h-auto max-w-80 cursor-pointer  truncate  inline-block  font-medium text-ink hover:text-primary-text",
       )}
     >
       {cellValue}

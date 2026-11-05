@@ -103,7 +103,7 @@ export const KBFilesTable = () => {
                 />
               </TableCN>
             </div>
-            <div className="col-span-3 border bg-background rounded-lg">
+            <div className="col-span-3 border border-line bg-surface rounded-lg">
               <KBRetrievalSection
                 knowledgeBaseId={knowledgeBaseId}
                 knowledgeBaseName={kbName}

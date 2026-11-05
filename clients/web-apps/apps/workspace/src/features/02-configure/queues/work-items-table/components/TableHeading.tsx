@@ -16,7 +16,7 @@ interface PayloadTableHeadingProps {
 export const PayloadTableHeading = ({ queueName }: PayloadTableHeadingProps) => {
   useDocumentTitle(`${queueName} - Queues`);
   return (
-    <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+    <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

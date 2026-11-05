@@ -18,7 +18,7 @@ import { SectionLayout } from "./SectionLayout";
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -40,7 +40,7 @@ const renderLinkedChips = (items: string[] | undefined) =>
   ) : (
     <div className="flex flex-wrap gap-1.5">
       {items.map((item) => (
-        <Badge key={item} variant="outline" className="bg-muted/40">
+        <Badge key={item} variant="outline" className="bg-sunken/40">
           {item}
         </Badge>
       ))}
@@ -79,7 +79,7 @@ export const AiModelsUsedSection = () => {
         title="AI models used"
         description="Models used by the agent, resolved automatically from the agent definition."
       >
-        <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted-foreground">
           No AI models detected for this agent.
         </div>
       </SectionLayout>
@@ -94,7 +94,7 @@ export const AiModelsUsedSection = () => {
     >
       <div className="space-y-4">
         {aiModels.map((model, index) => (
-          <div key={index} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+          <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{model.provider}</Badge>
               <span className="text-sm font-semibold">{model.model}</span>
@@ -109,7 +109,7 @@ export const AiModelsUsedSection = () => {
             <div className="grid grid-cols-2 gap-3">
               <Field label="Node name" info="The flow node that uses this model.">
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   value={model.nodeName}
                   readOnly
                 />
@@ -119,7 +119,7 @@ export const AiModelsUsedSection = () => {
                 info="The type of the model, resolved from the agent definition: Conversation, Inferencing, or Generative."
               >
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   value={modelTypeLabel(model.modelType)}
                   readOnly
                 />
@@ -169,7 +169,7 @@ export const AiModelsUsedSection = () => {
                 info="Describe ongoing monitoring for this model, e.g. drift/quality checks and frequency."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Monitoring plan (e.g. drift checks, frequency)"
                   value={model.monitoringPlan}
                   onChange={(e) => updateRow(index, { monitoringPlan: e.target.value })}
@@ -180,7 +180,7 @@ export const AiModelsUsedSection = () => {
                 info="Allowed use cases or guardrails for this model."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Usage restrictions / guardrails"
                   value={model.usageRestrictions}
                   onChange={(e) => updateRow(index, { usageRestrictions: e.target.value })}
@@ -194,7 +194,7 @@ export const AiModelsUsedSection = () => {
                 info="List the specific risks posed by this model, such as output variability, bias, hallucination risk, or data-privacy concerns."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Risks specific to this model"
                   value={model.risks}
                   onChange={(e) => updateRow(index, { risks: e.target.value })}
@@ -205,7 +205,7 @@ export const AiModelsUsedSection = () => {
                 info="Describe the controls in place to address the risks above, e.g. output verification, confidence thresholds, or periodic re-validation."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Mitigations for the above"
                   value={model.mitigations}
                   onChange={(e) => updateRow(index, { mitigations: e.target.value })}

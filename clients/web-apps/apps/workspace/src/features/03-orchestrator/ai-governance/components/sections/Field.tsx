@@ -22,7 +22,7 @@ export const Field = ({ label, clause, hint, info, required, children, className
     <div className={className}>
       <label className="mb-1.5 flex items-center gap-1 text-[12.5px] font-semibold">
         {label}
-        {required && <span className="text-destructive">*</span>}
+        {required && <span className="text-bad">*</span>}
         {info && <FieldHelpPopover content={info} />}
         {clause && (
           <span className="ml-1 text-[10px] font-normal text-muted-foreground">{clause}</span>

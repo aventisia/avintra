@@ -72,7 +72,7 @@ export const AttachmentSection = ({
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="flex items-center justify-between rounded-lg border p-3"
+              className="flex items-center justify-between rounded-lg border border-line bg-surface p-3"
             >
               <div className="flex items-center gap-3">
                 <PaperclipIcon className="h-4 w-4 text-muted-foreground" />

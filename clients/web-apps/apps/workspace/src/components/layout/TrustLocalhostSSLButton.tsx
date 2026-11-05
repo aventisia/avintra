@@ -5,7 +5,7 @@ import React from "react";
 const TrustLocalhostSSLButton: React.FC = () => {
   return (
     <a
-      className="flex h-7 w-full items-center justify-center gap-1 rounded-lg bg-destructive px-1 text-xs text-destructive-foreground"
+      className="flex h-7 w-full items-center justify-center gap-1 rounded-lg bg-bad px-1 text-xs text-bad-foreground"
       href={import.meta.env.VITE_WORKSPACE_API_PATH?.replace("/api", "/swagger")}
     >
       <ShieldWarningIcon className="size-4" />
