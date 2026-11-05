@@ -2,22 +2,22 @@
 name: implement-issue
 disable-model-invocation: true
 argument-hint: "Issue number or URL whose approved brief routes it Light"
-description: "Implement a Light-route Gitea issue in one session: plan from its approved brief, change, review, validate in the browser, and hand over UI test steps."
+description: "Implement a Light-route GitHub issue in one session: plan from its approved brief, change, review, validate in the browser, and hand over UI test steps."
 ---
 
 # Implement a Light Issue
 
 Take an issue whose approved brief routes it **Light** to a reviewed, browser-validated, uncommitted change the user tests by hand, in one session. **Full loop** briefs go through the `orchestrator` agent instead.
 
-Read [`../GITEA.md`](../GITEA.md) and [`../BRIEF.md`](../BRIEF.md) first. `GITEA.md` governs target resolution and request scoping; `BRIEF.md` defines the brief and when it is current.
+Read [`../GITHUB.md`](../GITHUB.md) and [`../BRIEF.md`](../BRIEF.md) first. `GITHUB.md` governs target resolution and request scoping; `BRIEF.md` defines the brief and when it is current.
 
 ## Steps
 
-1. **Fetch** the issue resolved per `GITEA.md` and its comments, and save the description to `local-issues/<n>/brief.md`:
+1. **Fetch** the issue resolved per `GITHUB.md` and its comments, and save the description to `local-issues/<n>/brief.md`:
 
    ```bash
-   tea api --repo "$REPO" "/repos/{owner}/{repo}/issues/$ID"
-   tea api --repo "$REPO" "/repos/{owner}/{repo}/issues/$ID/comments"
+   gh api "repos/$REPO/issues/$ID"
+   gh api "repos/$REPO/issues/$ID/comments" --paginate
    ```
 
    On a tool error, report it and stop rather than reconstructing issue contents.

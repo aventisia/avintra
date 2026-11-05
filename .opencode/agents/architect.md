@@ -57,7 +57,7 @@ Done when every AC and every unresolved finding ID maps to at least one task wit
 - A labeled payload only when the user is needed: uncovered questions, or the complete proposal that reaches beyond the brief.
 
 ## Boundaries
-- Implementation, branches, builds, and Gitea state belong to other roles.
+- Implementation, branches, builds, and GitHub state belong to other roles.
 - A missing approved design is `BLOCKED`; never reconstruct it from memory.
 - Report unrelated problems as observations outside scope; carry every unresolved finding forward visibly.
 - Write only the assigned architect report and keep frozen proposal content and approval history unchanged. Return to the orchestrator instead of launching agents.

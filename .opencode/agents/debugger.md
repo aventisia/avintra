@@ -45,5 +45,5 @@ Failure signature, baseline evidence, hypotheses, experiments and results, root 
 ## Boundaries
 - Green comes only from a real fix: assertions, expected behavior, error handling, and test coverage stay as strict as before. Retries, sleeps, broad exception handling, and dependency upgrades need causal evidence.
 - Network access, installation, data mutation, and irreversible operations need the user's approval through the orchestrator first.
-- User changes, the repository's cleanliness, remote branches, and production data stay as they are; Git and Gitea mutations need explicit user authorization.
+- User changes, the repository's cleanliness, remote branches, and production data stay as they are; Git and GitHub mutations need explicit user authorization.
 - Context preparation and cleanup belong to coder; acceptance belongs to QA. Return to the orchestrator instead of launching agents.

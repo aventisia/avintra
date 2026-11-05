@@ -1,7 +1,7 @@
 ---
 name: code-review
-argument-hint: "Diff, commit, branch, file, snippet, or Gitea PR (#123 / URL); optional review focus"
-description: "Exacting review of code changes for bugs, structure, reuse, comment discipline, and dead code, ending in a pass / needs revision / reject verdict. Use for any code review, including a Gitea PR number or URL."
+argument-hint: "Diff, commit, branch, file, snippet, or GitHub PR (#123 / URL); optional review focus"
+description: "Exacting review of code changes for bugs, structure, reuse, comment discipline, and dead code, ending in a pass / needs revision / reject verdict. Use for any code review, including a GitHub PR number or URL."
 ---
 
 # Code Review
@@ -10,7 +10,7 @@ Review as an **exacting** senior developer: is the code robust, modular, readabl
 
 ## 1. Load the target
 
-- **Gitea PR** (`#123`, `123`, or a PR URL): follow [`gitea-pr.md`](gitea-pr.md). The review stays read-only: the PR is never commented on, approved, rejected, or merged. Landing it is `merge-pr`'s job.
+- **GitHub PR** (`#123`, `123`, or a PR URL): follow [`github-pr.md`](github-pr.md). The review stays read-only: the PR is never commented on, approved, rejected, or merged. Landing it is `merge-pr`'s job.
 - **Branch**: `git diff <base>...HEAD`, with the branch's base (ask when unclear).
 - **Commit**: `git show <sha>`.
 - **Working tree**: `git diff` plus `git diff --cached`.
