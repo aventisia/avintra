@@ -11,6 +11,7 @@ import { type CrudEntityKey } from "@avplatform/ui/types";
 import {
   BellIcon,
   BookOpenTextIcon,
+  BrowserIcon,
   BuildingsIcon,
   ChatIcon,
   ClockIcon,
@@ -37,6 +38,7 @@ import { toast } from "sonner";
 
 import { CrudCardDialog, type CrudCardDialogConfig } from "@/components/card-dialog/CrudCardDialog";
 import { ROLE_OM } from "@/constants/roles";
+import { getDialogHeadingDescription as getUiBuilderDialogHeadingDescription } from "@/features/01-build/ui-builder-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
@@ -82,6 +84,11 @@ const FlowFormDialog = lazy(() =>
 const FolderCrudDialog = lazy(() =>
   import("@/features/01-build/flows-table/components/folder-dialogs/FolderCrudDialog").then(
     (m) => ({ default: m.FolderCrudDialog }),
+  ),
+);
+const UiBuilderCrudDialogContent = lazy(() =>
+  import("@/features/01-build/ui-builder-table/components/ui-builder-crud-dialog/UiBuilderCrudDialogContent").then(
+    (m) => ({ default: m.UiBuilderCrudDialogContent }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -222,6 +229,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
   folder: {
     Dialog: FolderCrudDialog,
   },
+  uiBuilder: cardDialog({
+    Icon: BrowserIcon,
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
+  }),
   queue: cardDialog({
     Icon: ListIcon,
     getHeader: getQueueDialogHeadingDescription,
@@ -389,40 +401,56 @@ export function WorkspaceCrudDialogProvider() {
 
   const isBlockedCreate = env === "prod" && crudAction === "create" && isConfigureEntity;
 
+  const isStarterInviteCreate =
+    entity === "user" &&
+    crudAction === "create" &&
+    userSession?.planType === "Starter" &&
+    userSession?.deploymentType !== "Community";
+
   // Hold a Prod update dialog until the session (and therefore the user's role) is
   // known. Deciding while the session is null would briefly render the edit form
   // for every user and then close it.
   const isPendingProdEditAuth = isProdUpdate && !userSession;
+  const isPendingInviteAuth = entity === "user" && crudAction === "create" && !userSession;
   const isBlockedProdEdit =
     isProdUpdate && !!userSession && !userSession.userRoles.includes(ROLE_OM);
-  const isBlockedAction = isBlockedCreate || isBlockedProdEdit;
+  const isBlockedAction = isBlockedCreate || isBlockedProdEdit || isStarterInviteCreate;
 
   // The Configure dialog warning is only needed in Prod mode.
   const showEnvBanner = env === "prod" && isConfigureEntity;
 
-  // Warn once per blocked attempt, then strip the dialog params from the URL.
-  const notifiedRef = useRef(false);
+  const notifiedRef = useRef<string | null>(null);
   useEffect(() => {
     if (!isBlockedAction) {
-      notifiedRef.current = false;
+      notifiedRef.current = null;
       return;
     }
 
-    if (!notifiedRef.current) {
-      notifiedRef.current = true;
+    const blockKey = `${entity}:${crudAction}:${isBlockedCreate}:${isStarterInviteCreate}`;
+    if (notifiedRef.current !== blockKey) {
+      notifiedRef.current = blockKey;
       toast.warning(
-        isBlockedCreate
-          ? "Creating resources is not available in PROD mode"
-          : "Your role does not allow editing resources in PROD mode",
+        isStarterInviteCreate
+          ? "Inviting users is not available on the Starter plan"
+          : isBlockedCreate
+            ? "Creating resources is not available in PROD mode"
+            : "Your role does not allow editing resources in PROD mode",
       );
     }
 
     closeCrudDialog();
-  }, [isBlockedAction, isBlockedCreate, closeCrudDialog]);
+  }, [
+    isBlockedAction,
+    isBlockedCreate,
+    isStarterInviteCreate,
+    closeCrudDialog,
+    entity,
+    crudAction,
+  ]);
 
   return (
     <Suspense fallback={<TableCNSkeleton />}>
-      {isBlockedAction || isPendingProdEditAuth ? null : (
+      {isBlockedAction || isPendingProdEditAuth || isPendingInviteAuth ? null : (
         <CrudDialogProvider
           registry={crudDialogRegistry}
           contentBanner={showEnvBanner ? <ConfigureProdEnvBanner /> : undefined}

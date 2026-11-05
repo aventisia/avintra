@@ -351,6 +351,7 @@ public class OrchestratorHub : Hub
             // Retrieve agent details from the database and ensure it is published
             var agent = await _workspaceInternalDbContext.FlowVersions
                 .Where(w => w.Id == agentId && w.IsPublished)
+                .Include(i => i.Flow)
                 .Include(i => i.FlowVersionMachines)
                 .Include(i => i.FlowVersionHistories)
                 .SingleOrDefaultAsync();
@@ -446,6 +447,7 @@ public class OrchestratorHub : Hub
                 Status = JobStatusEnum.Created,
                 Priority = JobPriorityEnum.Normal,
                 TenantId = tenantId,
+                SpaceId = agent.SpaceId ?? agent.Flow?.SpaceId,
                 TriggerType = TriggerTypesEnum.Manual,
                 FlowVersionHistoryId = agent.FlowVersionHistories
                     .OrderByDescending(o => o.CreatedOn)

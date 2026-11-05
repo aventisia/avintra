@@ -71,7 +71,7 @@ public class ResourceUserAccessService : IResourceUserAccessService
     }
 
     // Retrieves all users who have been granted access to a specific resource.
-    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId)
+    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId, ResourceTypeEnum? resourceType = null)
     {
         // Initialize response with default failure state.
         var serviceResponse = new ServiceResponse<IEnumerable<ResourceUserAccessDto>>
@@ -84,7 +84,9 @@ public class ResourceUserAccessService : IResourceUserAccessService
         {
             // Fetch all resource user access records for the given resource and include user details.
             var resourceUserAccesses = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.ResourceId == resourceId)
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceId &&
+                    (!resourceType.HasValue || w.ResourceType == resourceType.Value))
                 .Include(i => i.User)
                 .ProjectToType<ResourceUserAccessDto>()
                 .ToListAsync();
@@ -600,6 +602,36 @@ public class ResourceUserAccessService : IResourceUserAccessService
                         break;
                     }
 
+                case ResourceTypeEnum.UiBuilder:
+                    {
+                        // Retrieve the UiBuilderProject resource.
+                        var uiBuilderProject = await _unitOfWork.UiBuilderProjectRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (uiBuilderProject == null)
+                            return serviceResponse;
+
+                        uiBuilderProject.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.UiBuilderProjectRepo.Update(uiBuilderProject);
+                        break;
+                    }
+
+                case ResourceTypeEnum.UiBuilderPublished:
+                    {
+                        // Retrieve the UiBuilderProject resource.
+                        var uiBuilderProject = await _unitOfWork.UiBuilderProjectRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (uiBuilderProject == null)
+                            return serviceResponse;
+
+                        uiBuilderProject.IsPublishedTenantWide = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.UiBuilderProjectRepo.Update(uiBuilderProject);
+                        break;
+                    }
+
                 default:
                     return serviceResponse;
             }
@@ -986,20 +1018,38 @@ public class ResourceUserAccessService : IResourceUserAccessService
     {
         try
         {
-            // Create ownership mapping
-            var resourceUserAccess = new ResourceUserAccess
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            // IMPORTANT NOTE: Owner rows created before tenant scoping was applied can have an empty tenant id, so ignore the filter to repair them instead of inserting a duplicate.
+            var existingAccess = await _unitOfWork.ResourceUserAccessRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            if (existingAccess == null)
             {
-                UserId = userId,
-                ResourceId = resourceId,
-                ResourceType = resourceType,
-                AccessLevel = ResourceAccessTypeEnum.Owner
-            };
+                await _unitOfWork.ResourceUserAccessRepo.InsertAsync(new ResourceUserAccess
+                {
+                    UserId = userId,
+                    ResourceId = resourceId,
+                    ResourceType = resourceType,
+                    AccessLevel = ResourceAccessTypeEnum.Owner,
+                    TenantId = tenantId
+                });
+            }
+            else if (existingAccess.TenantId != tenantId ||
+                     existingAccess.AccessLevel != ResourceAccessTypeEnum.Owner)
+            {
+                existingAccess.TenantId = tenantId;
+                existingAccess.AccessLevel = ResourceAccessTypeEnum.Owner;
+                _unitOfWork.ResourceUserAccessRepo.Update(existingAccess);
+            }
 
-            // Insert access mapping
-            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(resourceUserAccess);
-
-            // Persist owner assignment
-            if (!await _unitOfWork.SaveAsync())
+            // SaveAsync(true) treats an already-correct owner row as success.
+            if (!await _unitOfWork.SaveAsync(true))
             {
                 _logger.LogWarning(
                     "Failed assigning owner access. User {UserId}, Resource {ResourceId}",

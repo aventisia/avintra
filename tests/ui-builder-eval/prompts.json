@@ -1,0 +1,22 @@
+[
+  { "id": "ops-dashboard", "archetype": "dashboard", "prompt": "An operations dashboard for a claims team: KPI cards for open, approved, average handling time, and SLA breaches; a daily approved vs rejected chart; claims by status; and a table of the latest claims with search." },
+  { "id": "support-overview", "archetype": "dashboard", "prompt": "A support overview with tickets received, resolution rate, first response time, a 30-day trend, tickets by channel, and a top-agents leaderboard." },
+  { "id": "sales-pipeline-metrics", "archetype": "dashboard", "prompt": "A sales pipeline dashboard showing pipeline value by stage, win rate, average deal size, deals closing this month, and a table of stalled deals." },
+  { "id": "finance-close", "archetype": "dashboard", "prompt": "A month-end close tracker for finance: progress per task category, overdue tasks, owners, and a checklist table with status updates." },
+  { "id": "invoice-review", "archetype": "work-list", "prompt": "An invoice review queue: searchable table of supplier invoices with vendor, amount, due date, owner, and status; clicking a row opens details with approve and return actions." },
+  { "id": "kyc-queue", "archetype": "work-list", "prompt": "A KYC verification work list for compliance analysts with risk level badges, filters by risk and status, bulk assign, and a detail panel showing documents and checks." },
+  { "id": "it-tickets", "archetype": "work-list", "prompt": "An IT helpdesk ticket list with priority, category, requester, SLA countdown, quick filters, and a side panel to reply and change status." },
+  { "id": "approvals-inbox", "archetype": "inbox", "prompt": "An approvals inbox for managers: list of pending expense, leave, and purchase requests on the left; the selected request with history and approve/reject with comment on the right." },
+  { "id": "email-triage", "archetype": "inbox", "prompt": "An email triage view for a shared mailbox where an AI agent proposed a category and draft reply; reviewers accept, edit, or reassign each email." },
+  { "id": "access-request", "archetype": "wizard", "prompt": "A three-step system access request form: requester details, system and justification, review and submit, with validation and a confirmation." },
+  { "id": "vendor-onboarding", "archetype": "wizard", "prompt": "A vendor onboarding wizard collecting company details, bank details, tax documents checklist, and contacts, with progress and save-as-draft." },
+  { "id": "incident-report", "archetype": "form", "prompt": "A workplace incident report form with date and time, location, severity, people involved, description, and immediate actions taken." },
+  { "id": "merchant-board", "archetype": "kanban", "prompt": "A kanban board for merchant onboarding with columns New, Documents, Review, Approved, Rejected; cards show company, owner, and value; cards can be moved between columns." },
+  { "id": "recruiting-board", "archetype": "kanban", "prompt": "A recruiting pipeline board with candidate cards (name, role, rating, days in stage) across Applied, Screen, Interview, Offer, Hired." },
+  { "id": "customer-detail", "archetype": "detail", "prompt": "A customer record page with header, status, key facts, tabs for overview, orders, and activity timeline, and actions to email or escalate." },
+  { "id": "order-detail", "archetype": "detail", "prompt": "An order detail page showing line items with totals, shipping progress steps, payment status, and an activity log." },
+  { "id": "notification-settings", "archetype": "settings", "prompt": "A notification settings page with toggles per channel and event type, quiet hours, and a save bar that appears when something changes." },
+  { "id": "multi-view-ops", "archetype": "multi-view", "prompt": "A small operations app with a sidebar: Overview (KPIs and a trend), Queue (work items table with filters), and Reports (charts by team and month)." },
+  { "id": "agent-monitor", "archetype": "dashboard", "prompt": "A monitor for AI agents processing a document queue: items per hour, success rate, failures by reason, a live list of recent failures with retry, and agent status cards." },
+  { "id": "field-inspection", "archetype": "form", "prompt": "A mobile-friendly field inspection checklist with pass/fail per item, notes, overall result, and a summary before submission." }
+]

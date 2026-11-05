@@ -53,6 +53,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Folder>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderProject>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UiBuilderAsset>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<ConfigStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -61,6 +64,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<TenantPlatformTool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         // Machines are a tenant-global pool (not scoped by space) — any machine in the tenant
         // can execute jobs/flow versions from any space.
         modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -85,11 +89,13 @@ public class WorkspaceDbContext : DbContext
         // Unique property
         modelBuilder.Entity<WorkspaceUser>().HasIndex(index => index.UserName).IsUnique();
         modelBuilder.Entity<Flow>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<UiBuilderProject>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<UiBuilderAsset>().HasIndex(index => new { index.UiBuilderProjectId, index.Name }).IsUnique();
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
-        modelBuilder.Entity<ResourceUserAccess>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
+        modelBuilder.Entity<ResourceUserAccess>().HasIndex(index => new { index.ResourceId, index.ResourceType, index.UserId }).IsUnique();
         modelBuilder.Entity<ApiKey>().HasIndex(index => index.KeyHash).IsUnique();
         modelBuilder.Entity<ApiKey>().OwnsOne(e => e.Permissions, permissions =>
         {
@@ -100,6 +106,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
         modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<PlatformTool>().HasIndex(index => index.Name).IsUnique();
+        modelBuilder.Entity<TenantPlatformTool>().HasIndex(index => new { index.TenantId, index.PlatformToolId }).IsUnique();
         modelBuilder.Entity<Queue>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<ConfigStore>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<VaultCredential>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
@@ -159,6 +167,27 @@ public class WorkspaceDbContext : DbContext
                     (a, b) => (a ?? Enumerable.Empty<EnabledModel>()).Select(m => new { m.ModelId, m.Capability }).SequenceEqual((b ?? Enumerable.Empty<EnabledModel>()).Select(m => new { m.ModelId, m.Capability })),
                     c => (c ?? Enumerable.Empty<EnabledModel>()).Aggregate(0, (acc, m) => HashCode.Combine(acc, m.ModelId, m.Capability)),
                     c => (c ?? new List<EnabledModel>()).Select(m => new EnabledModel { ModelId = m.ModelId, Capability = m.Capability }).ToList()));
+        modelBuilder.Entity<UiBuilderProject>().Property(e => e.DataConnections)
+            .HasColumnType("jsonb")
+            .HasDefaultValueSql("'[]'::jsonb")
+            .HasConversion(
+                v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => System.Text.Json.JsonSerializer.Deserialize<List<UiBuilderDataConnection>>(v, (JsonSerializerOptions?)null) ?? new List<UiBuilderDataConnection>())
+            .Metadata.SetValueComparer(
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<UiBuilderDataConnection>>(
+                    (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
+                    c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
+                    c => System.Text.Json.JsonSerializer.Deserialize<List<UiBuilderDataConnection>>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null) ?? new List<UiBuilderDataConnection>()));
+        modelBuilder.Entity<UiBuilderProject>().Property(e => e.Theme)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => v == null ? null : System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => string.IsNullOrEmpty(v) ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(v, (JsonSerializerOptions?)null))
+            .Metadata.SetValueComparer(
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<UiBuilderTheme?>(
+                    (a, b) => System.Text.Json.JsonSerializer.Serialize(a, (JsonSerializerOptions?)null) == System.Text.Json.JsonSerializer.Serialize(b, (JsonSerializerOptions?)null),
+                    c => System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null).GetHashCode(),
+                    c => c == null ? null : System.Text.Json.JsonSerializer.Deserialize<UiBuilderTheme>(System.Text.Json.JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
@@ -205,6 +234,15 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<QueueUser>().HasOne(one => one.Queue).WithMany(many => many.QueueUsers).HasForeignKey(fKey => fKey.QueueId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasOne(one => one.Flow).WithMany(many => many.FlowVersions).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowUser>().HasOne(one => one.Flow).WithMany(many => many.FlowUsers).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderVersions).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderProject>().HasMany(many => many.UiBuilderAssets).WithOne(one => one.UiBuilderProject).HasForeignKey(fKey => fKey.UiBuilderProjectId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderAsset>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderProject>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<UiBuilderVersion>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TemplateResource>().HasOne(one => one.ProjectTemplate).WithMany(many => many.TemplateResources).HasForeignKey(fKey => fKey.ProjectTemplateId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.Ticket).WithMany(many => many.Comments).HasForeignKey(fKey => fKey.TicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TicketComment>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -224,6 +262,8 @@ public class WorkspaceDbContext : DbContext
         // Configure One-to-One relationship between Tool and WorkspaceUser
         modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TenantPlatformTool>().HasOne(one => one.PlatformTool).WithMany().HasForeignKey(f => f.PlatformToolId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ResourceFlowAccess>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
 
@@ -360,6 +400,9 @@ public class WorkspaceDbContext : DbContext
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }
     public DbSet<FlowVersion> FlowVersions { get; set; }
+    public DbSet<UiBuilderProject> UiBuilderProjects { get; set; }
+    public DbSet<UiBuilderVersion> UiBuilderVersions { get; set; }
+    public DbSet<UiBuilderAsset> UiBuilderAssets { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
     public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }
     public DbSet<Queue> Queues { get; set; }
@@ -385,6 +428,8 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
     public DbSet<Tool> Tools { get; set; }
+    public DbSet<PlatformTool> PlatformTools { get; set; }
+    public DbSet<TenantPlatformTool> TenantPlatformTools { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketComment> TicketComments { get; set; }
     public DbSet<TicketAttachment> TicketAttachments { get; set; }

@@ -1,0 +1,31 @@
+meta {
+  name: Insert project for studio settings tests
+  type: http
+  seq: 27
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder
+  body: json
+  auth: none
+}
+
+body:json {
+  "name": "Bruno studio settings {{$timestamp}}",
+  "description": "Project for the settings, templates, assets, and label tests"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_STUDIO_PROJECT_ID",
+          res.getBody().data.id
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

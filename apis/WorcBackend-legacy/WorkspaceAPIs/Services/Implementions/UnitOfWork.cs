@@ -17,6 +17,9 @@ public class UnitOfWork : IUnitOfWork
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
+    public IUiBuilderProjectRepo UiBuilderProjectRepo => new UiBuilderProjectRepo(_workspaceDbContext);
+    public IUiBuilderVersionRepo UiBuilderVersionRepo => new UiBuilderVersionRepo(_workspaceDbContext);
+    public IUiBuilderAssetRepo UiBuilderAssetRepo => new UiBuilderAssetRepo(_workspaceDbContext);
     public IFlowVersionHistoryRepo FlowVersionHistoryRepo => new FlowVersionHistoryRepo(_workspaceDbContext);
     public IAgentRiskRegistryRepo AgentRiskRegistryRepo => new AgentRiskRegistryRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
@@ -46,6 +49,8 @@ public class UnitOfWork : IUnitOfWork
     public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
     public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);
     public IToolRepo ToolRepo => new ToolRepo(_workspaceDbContext);
+    public IPlatformToolRepo PlatformToolRepo => new PlatformToolRepo(_workspaceDbContext);
+    public ITenantPlatformToolRepo TenantPlatformToolRepo => new TenantPlatformToolRepo(_workspaceDbContext);
     public ITicketRepo TicketRepo => new TicketRepo(_workspaceDbContext);
     public ITicketCommentRepo TicketCommentRepo => new TicketCommentRepo(_workspaceDbContext);
     public ITicketAttachmentRepo TicketAttachmentRepo => new TicketAttachmentRepo(_workspaceDbContext);

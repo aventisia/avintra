@@ -9,6 +9,7 @@ import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
 import { TABLE_KEY, WORK_ITEMS_INITIAL_STATE, WORK_ITEMS_PAGE_SIZE_OPTIONS } from "../constants";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 import { PayloadTableHeading } from "./TableHeading";
+import { WorkItemBulkActions } from "./WorkItemBulkActions";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
 
 const PAGINATION_PROPS = { pageSizeOptions: WORK_ITEMS_PAGE_SIZE_OPTIONS };
@@ -77,8 +78,13 @@ export const WorkItemsTable = () => {
           <div className="flex items-center justify-between">
             <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
           </div>
-          {/* Table with its toolbar and pagination footer */}
-          <TableCN table={table} label={name} paginationProps={PAGINATION_PROPS}>
+          {/* Table with its toolbar, pagination footer, and bulk actions */}
+          <TableCN
+            table={table}
+            label={name}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={hasOnlyReadAccess ? undefined : <WorkItemBulkActions table={table} />}
+          >
             <TableCNToolbar table={table} searchPlaceholder="Search..." />
           </TableCN>
         </div>

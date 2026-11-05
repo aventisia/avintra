@@ -18,6 +18,11 @@ import { FlowVersions } from "@/features/flow-versions/components";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
+import {
+  UiBuilderPublishButton,
+  UiBuilderVersions,
+  useIsUiBuilderRoute,
+} from "@/features/ui-builder";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -46,6 +51,7 @@ const AppHeader: React.FC = () => {
     (serverBranding && Object.values(serverBranding).some((value) => !!value)
       ? "Agent Builder"
       : undefined);
+  const isUiBuilder = useIsUiBuilderRoute();
 
   // ChatAgent flows hide search, flow settings, and studio preferences.
   const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
@@ -90,10 +96,16 @@ const AppHeader: React.FC = () => {
           <span className="rotate-12 text-line-strong">/</span>
 
           {/* Agent name */}
-          <AgentName className={isViewTenant ? "max-w-56" : ""} />
+          {!isUiBuilder && <AgentName className={isViewTenant ? "max-w-56" : ""} />}
 
           {/* Version selector */}
-          {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
+          {isUiBuilder ? (
+            <UiBuilderVersions />
+          ) : !isAgentHistory && !isExecutionLog ? (
+            <FlowVersions />
+          ) : (
+            <ViewOnlyVersionSelector />
+          )}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex min-w-0 shrink-0 items-center justify-center gap-2">
@@ -113,9 +125,15 @@ const AppHeader: React.FC = () => {
               <Chat className="mt-0 mlg:mt-4" />
             </div>
             <div className="flex items-center gap-2">
-              <SaveFlow />
-              <ExecuteFlow />
-              <PublishFlow />
+              {isUiBuilder ? (
+                <UiBuilderPublishButton />
+              ) : (
+                <>
+                  <SaveFlow />
+                  <ExecuteFlow />
+                  <PublishFlow />
+                </>
+              )}
               <HeaderActionMenu />
             </div>
           </div>

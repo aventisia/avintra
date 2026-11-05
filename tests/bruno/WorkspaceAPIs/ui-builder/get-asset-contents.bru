@@ -1,0 +1,23 @@
+meta {
+  name: Get UI builder asset contents
+  type: http
+  seq: 34
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/assets/content
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("the uploaded image is returned with content", function() {
+    const asset = res.getBody().data.find((entry) => entry.name === "companyLogo");
+    expect(asset.contentType).to.equal("image/png");
+    expect(asset.dataBase64.length).to.be.above(0);
+  });
+}

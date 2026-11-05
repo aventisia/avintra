@@ -61,6 +61,8 @@ public class TimeTriggerExecutionJob : IJob
         var activeTriggers = await _workspaceInternalDbContext.Triggers
             .Where(w => w.TriggerType == TriggerTypesEnum.Time && !w.IsDisabled)
             .Include(t => t.TriggerFlowVersions)
+                .ThenInclude(tfv => tfv.FlowVersion)
+                    .ThenInclude(fv => fv.Flow)
             .ToListAsync();
 
         var dueTriggers = activeTriggers
@@ -78,12 +80,20 @@ public class TimeTriggerExecutionJob : IJob
         {
             foreach (var triggerFlowVersion in trigger.TriggerFlowVersions)
             {
+                // Skip invalid entries
+                if (triggerFlowVersion.FlowVersion == null)
+                {
+                    _logger.LogWarning("Skipping invalid FlowVersionId for trigger {TriggerId}.", trigger.Id);
+                    continue;
+                }
+
                 latestFlowVersionHistoryIds.TryGetValue(triggerFlowVersion.FlowVersionId, out Guid? latestFlowVersionHistoryId);
 
                 createdJobs.Add(new Job()
                 {
                     Id = Guid.NewGuid(),
                     TenantId = triggerFlowVersion.TenantId,
+                    SpaceId = triggerFlowVersion.FlowVersion?.SpaceId ?? triggerFlowVersion.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
                     FlowVersionHistoryId = latestFlowVersionHistoryId,
                     TriggerType = TriggerTypesEnum.Time,

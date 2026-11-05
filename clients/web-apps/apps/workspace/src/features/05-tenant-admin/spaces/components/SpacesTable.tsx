@@ -1,3 +1,4 @@
+import { UpgradeCreateButton } from "@avplatform/ui";
 import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
@@ -22,7 +23,9 @@ import {
 } from "../constants";
 import { useFetchSpaces } from "../hooks/useFetchSpaces";
 import { getSpacesTableColumns } from "./SpacesTableColumns";
-import { UpgradeSpaceButton } from "./upgrade-space-dialog/UpgradeSpaceButton";
+
+const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
+const UPGRADE_PRICING_URL = `${MARKETING_URL ?? "https://aventisia.com"}/pricing`;
 
 const PAGINATION_PROPS = { pageSizeOptions: SPACES_PAGE_SIZE_OPTIONS };
 
@@ -35,15 +38,18 @@ export const SpacesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get the deployment type to gate space creation for community editions
-  const { deploymentType } = useUserSessionStore(
+  // Get the deployment type and plan type to gate space creation
+  const { deploymentType, planType } = useUserSessionStore(
     useShallow((state) => ({
       deploymentType: state.userSession?.deploymentType,
+      planType: state.userSession?.planType,
     })),
   );
 
-  // Community deployments are limited to the single seeded Central space
+  // Community deployments and Starter plans are limited to the single Central space
   const isCommunityDeployment = deploymentType === "Community";
+  const isLimitedPlan = isCommunityDeployment || planType === "Starter";
+  const useTenantOverview = planType === "Starter" && !isCommunityDeployment;
 
   // Fetch spaces data
   const { data } = useFetchSpaces();
@@ -80,8 +86,12 @@ export const SpacesTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              {isCommunityDeployment ? (
-                <UpgradeSpaceButton />
+              {isLimitedPlan ? (
+                useTenantOverview ? (
+                  <UpgradeCreateButton label="Create Space" upgradePath="/tenant/overview" />
+                ) : (
+                  <UpgradeCreateButton label="Create Space" pricingUrl={UPGRADE_PRICING_URL} />
+                )
               ) : (
                 <CrudCreateButton buttonText="Create space" entity="space" />
               )}

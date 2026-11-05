@@ -1,49 +1,38 @@
 ---
 name: create-issue
 disable-model-invocation: true
-argument-hint: "Title, body or file path, and optional labels, assignees, and repo"
-description: "File a Gitea issue that preserves an agreed plan or investigation outcome before implementation starts."
+argument-hint: "Problem or feedback to brief, or a body/file to file verbatim; optional title, labels, assignees, and repo"
+description: "File a Gitea issue as an approved brief, or with a body the user supplies verbatim."
 ---
 
 # Create Gitea Issue
 
-Persist an agreed plan or investigation outcome as a Gitea issue so implementation can be tracked and reviewed.
+File new work as an approved brief, so the issue is ready for implementation the moment it exists.
 
-Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below.
+Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository resolution, request scoping, safe text passing, and outcome reporting for every step below. [`../BRIEF.md`](../BRIEF.md) governs related issues, the brief, and what follows posting.
 
 ## Steps
 
 1. **Resolve the repository** per `GITEA.md`: a named `owner/repo` or repository URL, else the current checkout once confirmed as intended; otherwise ask. Verify `tea` before composing anything.
 
-2. **Settle the title.** Use the user's title, or ask for one. Format: `[Type] Actionable and specific summary`, under about 120 characters, with `Type` from the label table below (`[Bug] React Flow nodes fail to render on initial load`). A title already in this format is used as-is.
+2. **Search for related issues** per `BRIEF.md` before any investigation or brief. Show the user every match with its state and one line on how it overlaps, and let them choose: file a new issue, or add the problem to an existing one. Only a choice to file continues; otherwise stop and suggest `/refine-issue <n>` to re-brief that issue or `/add-comment <n>` to note the problem on it. A brief carries the matches into its Related issues section. With no matches, say which terms you searched and continue.
 
 3. **Settle the body**, first match wins:
-   - A file path → the file's contents, verbatim.
-   - Inline text → that text, verbatim.
-   - An agreed plan or investigation in the conversation → a body composed from it, preserving its Markdown.
-   - A clear need with no detailed plan yet → this template, filled in:
-
-     ```md
-     ### Context
-
-     <!-- Why this issue exists: the current broken behavior (bugs) or the underlying need (features/enhancements). -->
-
-     ### Expected Behavior / Solution
-
-     <!-- The agreed fix or implementation. What does the final state look like? -->
-     ```
-
+   - A file path, or text the user asks to file as the body as-is → that content, verbatim.
+   - Feedback, a problem statement, or an agreed plan or investigation in the conversation → a brief: investigate and draft per `BRIEF.md`. Feedback someone else wrote goes verbatim into Original report; drop that section when the brief comes from the conversation alone.
    - Nothing clear enough to file → ask the user what the issue should capture.
 
-4. **Select labels** from the catalog below, spelled exactly. At least one label is required.
+4. **Settle the title.** Use the user's title; otherwise propose one from the brief, or ask for one for a verbatim body. Format: `[Type] Actionable and specific summary`, under about 120 characters, with `Type` from the label table below (`[Bug] React Flow nodes fail to render on initial load`). A title already in this format is used as-is.
+
+5. **Select labels** from the catalog below, spelled exactly. At least one label is required.
    - User-supplied labels are used exactly as given. One missing from the catalog → ask the user to pick an approved label.
-   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. `Priority/*` stays off; the user sets priority later in the Gitea UI.
+   - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. A brief always adds `Reviewed/Confirmed`. `Priority/*` stays off; the user sets priority later in the Gitea UI.
 
-5. **Collect assignees**: only usernames the user gave, as a comma-separated list. Milestones, priority, and other fields stay unset unless asked for.
+6. **Collect assignees**: only usernames the user gave, as a comma-separated list. Milestones, priority, and other fields stay unset unless asked for.
 
-6. **Confirm.** Show repo, title, body, labels, and assignees in one block and wait for explicit approval. Skip this only when the user supplied title, body, and labels verbatim and asked to file them as-is.
+7. **Confirm.** For a brief, run the review in `BRIEF.md` with repo, title, labels, and assignees shown beside every revision; its approval covers them all. Otherwise show repo, title, body, labels, and assignees in one block and wait for explicit approval. Skip this only when the user supplied title, body, and labels verbatim and asked to file them as-is.
 
-7. **Create the issue.** Drop the `--assignees` line when there are none.
+8. **Create the issue.** For a brief, fill `BODY` from the approved file: `BODY=$(cat "local-issues/<key>/brief.md")`. Drop the `--assignees` line when there are none.
 
    ```bash
    tea issues create \
@@ -54,7 +43,9 @@ Read [`../GITEA.md`](../GITEA.md) first. It governs authorization, repository re
      --assignees "$ASSIGNEES"
    ```
 
-8. **Report** per `GITEA.md`, with the issue number and URL.
+   For a brief, then record the approval and close the Combine issues per Post in `BRIEF.md`.
+
+9. **Report** per `GITEA.md`, with the issue number and URL, and each Combine issue closed.
 
 ## Label Catalog
 

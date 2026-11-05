@@ -97,6 +97,7 @@ export const ResourceFlowAccessContent = ({ isOpen, draft }: ResourceFlowAccessC
                 title="Selected agents"
                 description="Limited to the agents you pick."
                 onSelect={chooseMode}
+                autoFocusTarget={mode === "restricted"}
               />
             </div>
 

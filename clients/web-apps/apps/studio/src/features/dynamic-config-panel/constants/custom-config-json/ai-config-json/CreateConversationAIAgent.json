@@ -16,7 +16,6 @@
       "min": 16,
       "defaultValue": "",
       "showTokenCount": false,
-      "showVariables": false,
       "category": "System Prompt"
     },
     {

@@ -1,0 +1,46 @@
+meta {
+  name: Publish UI builder project
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/publish
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_PROJECT_PUBLISHED",
+          "true"
+      );
+      bru.setGlobalEnvVar(
+          "UIBUILDER_PUBLISHED_VERSION_NUMBER",
+          res.getBody().data.publishedVersionNumber
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("project is published", function() {
+    expect(res.body.data.isPublished).to.equal(true);
+  });
+
+  test("published version number is captured", function() {
+    expect(res.body.data.publishedVersionNumber).to.be.a("number");
+  });
+
+  test("published version matches the head at publish", function() {
+    expect(res.body.data.publishedVersionNumber).to.equal(res.body.data.headVersionNumber);
+  });
+}

@@ -19,7 +19,6 @@ interface PromptConfigFieldV2Props {
   name: string;
   disabled?: boolean;
   showTokenCount?: boolean;
-  showVariables?: boolean;
 }
 
 // Extract the unique variable names referenced as {{name}} in the prompt.
@@ -35,7 +34,6 @@ const PromptConfigFieldV2 = ({
   name,
   disabled,
   showTokenCount = false,
-  showVariables = false,
 }: PromptConfigFieldV2Props) => {
   const { control } = useFormContext();
   const { field } = useController({ name, control });
@@ -52,12 +50,9 @@ const PromptConfigFieldV2 = ({
   const value = typeof field.value === "string" ? field.value : "";
 
   const lineCount = useMemo(() => Math.max(value.split("\n").length, 1), [value]);
-  const variables = useMemo(
-    () => (showVariables ? extractVariables(value) : []),
-    [value, showVariables],
-  );
+  const variables = useMemo(() => extractVariables(value), [value]);
   const tokenCount = useMemo(() => Math.round(value.length / CHARS_PER_TOKEN), [value]);
-  const showFooter = showTokenCount || showVariables;
+  const showFooter = showTokenCount || variables.length > 0;
 
   // Keep the line-number gutter scrolled in step with the textarea.
   const syncScroll = useCallback(() => {
@@ -70,21 +65,6 @@ const PromptConfigFieldV2 = ({
   useEffect(() => {
     syncScroll();
   }, [value, syncScroll]);
-
-  const insertVariable = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const next = value.slice(0, start) + "{{}}" + value.slice(textarea.selectionEnd);
-
-    field.onChange(next);
-
-    requestAnimationFrame(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + 2, start + 2);
-    });
-  };
 
   return (
     <div className="flex min-h-[15rem] w-full flex-col" style={{ height: FILL_HEIGHT }}>

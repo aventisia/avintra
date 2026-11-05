@@ -950,6 +950,9 @@ public class MessageTriggerService : IMessageTriggerService
                 .Include(i => i.TriggerFlowVersions)
                     .ThenInclude(i2 => i2.FlowVersion)
                         .ThenInclude(i3 => i3.FlowVersionHistories)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -985,6 +988,7 @@ public class MessageTriggerService : IMessageTriggerService
                 var newJob = new Job()
                 {
                     TenantId = triggerFlowVersion.TenantId,
+                    SpaceId = triggerFlowVersion.FlowVersion.SpaceId ?? triggerFlowVersion.FlowVersion.Flow?.SpaceId ?? trigger.SpaceId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
                     TriggerType = trigger.TriggerType,
                     InputArgumentsJson = ExtractAndBuildInputJson(payload),

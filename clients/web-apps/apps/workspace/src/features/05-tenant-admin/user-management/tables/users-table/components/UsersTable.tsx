@@ -1,5 +1,7 @@
+import { UpgradeCreateButton } from "@avplatform/ui";
 import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import {
   TableCN,
   TableCNHeading,
@@ -8,6 +10,7 @@ import {
   useTableCN,
 } from "@avplatform/ui/table-cn";
 import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   TABLE_HEADING,
@@ -55,6 +58,14 @@ export const UsersTable = () => {
     searchColumns: ["firstName"],
   });
 
+  const { deploymentType, planType } = useUserSessionStore(
+    useShallow((state) => ({
+      deploymentType: state.userSession?.deploymentType,
+      planType: state.userSession?.planType,
+    })),
+  );
+  const isStarterPlan = planType === "Starter" && deploymentType !== "Community";
+
   return (
     <>
       {data ? (
@@ -66,7 +77,11 @@ export const UsersTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <CrudCreateButton buttonText="Invite" entity="user" />
+              {isStarterPlan ? (
+                <UpgradeCreateButton label="Invite" upgradePath="/tenant/overview" />
+              ) : (
+                <CrudCreateButton buttonText="Invite" entity="user" />
+              )}
             </div>
           </div>
 

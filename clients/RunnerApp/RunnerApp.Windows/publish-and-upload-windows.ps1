@@ -234,9 +234,7 @@ try {
 
             Move-Item -Path $publishedExe -Destination $renamedExe -Force
 
-            $resolvedOutputDir = Resolve-Path $OutputDir
-            $archiveItems = Get-ChildItem -Path $PublishDir -Force
-            Compress-Archive -Path $archiveItems -DestinationPath $zipPath -Force
+            Compress-Archive -Path (Join-Path $PublishDir '*') -DestinationPath $zipPath -Force
         }
     }
 

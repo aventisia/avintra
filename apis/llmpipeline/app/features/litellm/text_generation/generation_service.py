@@ -16,6 +16,7 @@ from app.utils.file_converter_utils import (
 )
 
 from .kb_integration import augment_with_kb_context
+from .skill_integration import augment_with_skill_context
 from ..core.credit_utils import (
     agent_has_fixed_credits,
     build_byok_entry,
@@ -261,6 +262,7 @@ class GenerationService:
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
         check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
+        await augment_with_skill_context(req, user)
 
         messages = _messages_from_request(req)
         response_format = _build_response_format(req)
@@ -313,7 +315,7 @@ class GenerationService:
     async def start_streaming(self, req: LLMGenerationRequest, user: User):
         """Register a streaming job and return (job_id, async_stream_generator).
 
-        The stream generator yields `LLMGenerationChunk` model_dump_json strings,
+        The stream generator yields newline-delimited `LLMGenerationChunk` JSON frames,
         one per non-empty content delta, stopping early if the job is cancelled.
         When the stream finishes, a final `LLMGenerationResponse` is emitted and
         credit usage is posted (only for platform, non-BYOK requests).
@@ -325,6 +327,7 @@ class GenerationService:
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
         check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
+        await augment_with_skill_context(req, user)
 
         messages = _messages_from_request(req)
         response_format = _build_response_format(req)
@@ -334,6 +337,7 @@ class GenerationService:
             # and billed once the provider finishes streaming.
             streamed_text: list[str] = []
             finish_reason: str | None = None
+            cancelled = False
             # Token usage is only present on the final stream chunk; capture it
             # so the response carries accurate input/output token counts.
             input_tokens = 0
@@ -349,6 +353,9 @@ class GenerationService:
                     user=user,
                 )
                 async for chunk in stream:
+                    if not v2_job_manager.is_active(job_id):
+                        cancelled = True
+                        break
                     delta = getattr(chunk, "choices", None)
                     text = ""
                     if delta and delta[0].delta:
@@ -368,16 +375,16 @@ class GenerationService:
                             output=text,
                             conversation_id=req.conversation_id,
                         )
-                        yield chunk_dto.model_dump_json()
+                        yield chunk_dto.model_dump_json() + "\n"
             except HTTPException as exc:
                 # Emit a clear, final error frame so the client is not silently
                 # truncated mid-stream.
                 log_exception(logger, exc, "[LLM-V2] stream error: ")
-                yield self._error_chunk(req, str(exc.detail)).model_dump_json()
+                yield self._error_chunk(req, str(exc.detail)).model_dump_json() + "\n"
                 return
             except Exception as e:
                 log_exception(logger, e, "[LLM-V2] stream error: ")
-                yield self._error_chunk(req, friendly_error(e)).model_dump_json()
+                yield self._error_chunk(req, friendly_error(e)).model_dump_json() + "\n"
                 return
             finally:
                 v2_job_manager.cleanup(job_id)
@@ -388,7 +395,7 @@ class GenerationService:
                 provider=req.provider,
                 model=req.model,
                 output="".join(streamed_text),
-                status=_map_finish_reason_to_status(finish_reason),
+                status="cancelled" if cancelled else _map_finish_reason_to_status(finish_reason),
                 finish_reason=finish_reason,
                 stream=True,
                 time_taken=round(time.perf_counter() - start, 2),
@@ -400,7 +407,7 @@ class GenerationService:
                 conversation_id=req.conversation_id,
                 is_temp_chat=req.is_temp_chat,
             )
-            yield response.model_dump_json()
+            yield response.model_dump_json() + "\n"
 
             # Post credit usage only for platform (non-BYOK) requests.
             if should_post_usage(req.is_byok_enabled, req.credential_name):

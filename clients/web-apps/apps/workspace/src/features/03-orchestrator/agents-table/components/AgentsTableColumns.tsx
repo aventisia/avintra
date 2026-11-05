@@ -59,6 +59,17 @@ export const agentsTableColumns = ({
     header: renderHeader("name"),
     cell: ({ row }) => {
       const agent = row.original;
+      if (agent.type === "UI") {
+        return (
+          <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
+            <AgentTypeAvatar type={agent.type} isMuted={agent.isDisabled} />
+            <span className="truncate">
+              <HighlightedText text={agent.name ?? "NAME_NOT_FOUND"} query={searchText} />
+            </span>
+            <AgentVersion versionNumber={agent.versionNumber} lastModifiedOn={agent.lastModifiedOn} />
+          </div>
+        );
+      }
       return (
         <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
           <AgentTypeAvatar type={agent.type} isMuted={agent.isDisabled} />

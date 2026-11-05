@@ -1,3 +1,4 @@
+import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
@@ -25,6 +26,29 @@ const renderHeader =
  */
 export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
   {
+    accessorKey: "selectRow",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    id: "workItemId",
     accessorKey: "id",
     meta: { label: getColumnName("id") },
     header: renderHeader("id"),

@@ -1,0 +1,47 @@
+meta {
+  name: Create UI builder project from template
+  type: http
+  seq: 36
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/clone
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  bru.setVar("CLONE_NAME", "Bruno template clone " + Date.now());
+}
+
+body:json {
+  "name": "{{CLONE_NAME}}",
+  "description": "Created from a template by Bruno",
+  "isTenantWideAccess": false,
+  "isPublished": false,
+  "isPublishedTenantWide": false,
+  "accessLevel": "Owner"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_CLONE_ID",
+          res.getBody().data.id
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("the clone starts at v1 with the template settings and no data connections", function() {
+    const data = res.getBody().data;
+    expect(data.headVersionNumber).to.equal(1);
+    expect(data.theme.primaryColor).to.equal("#0d9488");
+    expect(data.isTemplate).to.equal(false);
+    expect(data.dataConnections.length).to.equal(0);
+  });
+}
