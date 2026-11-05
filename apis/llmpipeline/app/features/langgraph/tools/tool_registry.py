@@ -63,7 +63,18 @@ class ToolRegistry:
         """
 
         # Return tool if available, otherwise None.
-        return self._tools.get(name)
+        tool = self._tools.get(name)
+        if tool is not None:
+            return tool
+
+        # Custom tool names keep their stored casing, so a configured name may
+        # differ only by case.
+        folded = name.casefold()
+        for registered_name, registered in self._tools.items():
+            if registered_name.casefold() == folded:
+                return registered
+
+        return None
 
 
 

@@ -343,14 +343,15 @@ async def _resolve_tools(
     if not selected_tool_names:
         return []
 
-    legacy_names = [name for name in selected_tool_names if not is_corsair_tool(name)]
-    corsair_names = [name for name in selected_tool_names if is_corsair_tool(name)]
-
-    tools = []
-    if legacy_names:
-        resolved_legacy = tool_registry.get_by_names(legacy_names)
-        if resolved_legacy:
-            tools.extend(resolved_legacy)
+    # Custom tools registered for this turn win over a same-named Corsair path.
+    tools: list[BaseTool] = []
+    corsair_names: list[str] = []
+    for name in selected_tool_names:
+        registered = tool_registry.get(name)
+        if registered is not None:
+            tools.append(registered)
+        elif is_corsair_tool(name):
+            corsair_names.append(name)
 
     if corsair_names and llm_request is not None:
         corsair_tools = await _build_corsair_tools_for_names(corsair_names, llm_request)
@@ -371,6 +372,7 @@ async def _build_corsair_tools_for_names(
     from app.features.langgraph.tools.corsair.corsair_tool_factory import (
         build_corsair_tools_from_schemas,
     )
+    from app.features.langgraph.tools.tool_config_utils import field
     from app.features.llm_providers.services.corsair_sidecar_service import (
         fetch_corsair_schemas,
         parse_corsair_tool_name,
@@ -380,16 +382,13 @@ async def _build_corsair_tools_for_names(
     configs = llm_request.tool_config or []
     allowed: dict[str, set[str]] = {}
     for config in configs:
-        if isinstance(config, dict):
-            tool = config.get("tool", "")
-            actions = {a.get("action", "") for a in config.get("actions", [])}
-        else:
-            tool = config.tool
-            actions = {a.action for a in config.actions}
+        tool = field(config, "tool", "")
         plugin = (tool or "").strip().lower()
-        allowed.setdefault(plugin, set()).update(
-            to_corsair_action(plugin, action) for action in actions if action
-        )
+        allowed_actions = allowed.setdefault(plugin, set())
+        for action in field(config, "actions", []) or []:
+            action_name = field(action, "action", "")
+            if action_name:
+                allowed_actions.add(to_corsair_action(plugin, action_name))
 
     fetch_configs = []
     wanted: set[str] = set()

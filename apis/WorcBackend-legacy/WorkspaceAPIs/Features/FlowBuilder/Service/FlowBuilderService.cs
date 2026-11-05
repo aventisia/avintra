@@ -1,5 +1,6 @@
 using ExecutorLibrary.Models;
 using ExecutorLibrary.Helpers;
+using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
 
@@ -1472,6 +1473,9 @@ public class FlowBuilderService : IFlowBuilderService
         }
 
         var devTools = await ResolveDevToolsAsync(names);
+        var enabledLibraryToolIds = names.Count > 0
+            ? await _platformToolTenantService.GetEnabledToolIdsAsync()
+            : new HashSet<Guid>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
         var hasProdToolChanges = false;
 
@@ -1481,8 +1485,8 @@ public class FlowBuilderService : IFlowBuilderService
 
             if (devTool == null)
             {
-                // Platform's default tools are tenant-agnostic (TenantId = Guid.Empty, SpaceId = null)
-                // and available in every environment, so they never need a Production clone.
+                // IMPORTANT NOTE: platform's default tools are tenant-agnostic (TenantId = Guid.Empty,
+                // SpaceId = null) and available in every environment, so they never need a Production clone.
                 var platformToolExists = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
                         w.Name == name &&
@@ -1494,16 +1498,15 @@ public class FlowBuilderService : IFlowBuilderService
                 if (platformToolExists)
                     continue;
 
-                // Library tools live in the platform catalog and are enabled per tenant by a mapping row.
+                var namePattern = ToolNameMatchHelpers.ToExactMatchPattern(name.Trim());
                 var libraryToolId = await _unitOfWork.PlatformToolRepo
-                    .GetByConditionAsync(w => w.Name == name && !w.IsDisabled)
+                    .GetByConditionAsync(w =>
+                        EF.Functions.ILike(w.Name, namePattern) &&
+                        !w.IsDisabled &&
+                        enabledLibraryToolIds.Contains(w.Id))
                     .Select(w => (Guid?)w.Id)
                     .FirstOrDefaultAsync();
-                if (libraryToolId.HasValue &&
-                    await _unitOfWork.TenantPlatformToolRepo
-                        .GetByConditionAsync(w => w.TenantId == tenantId && w.PlatformToolId == libraryToolId.Value)
-                        .IgnoreQueryFilters()
-                        .AnyAsync())
+                if (libraryToolId.HasValue)
                     continue;
 
                 missing.Add($"tool '{name}'");

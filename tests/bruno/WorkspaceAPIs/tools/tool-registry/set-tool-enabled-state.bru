@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{WORKSPACE_API_BASE_URL}}/tools/{{TOOL_ID}}/enabled-state
+  url: {{WORKSPACE_API_BASE_URL}}/tools/{{PLATFORM_TOOL_ID}}/enabled-state
   body: json
   auth: bearer
 }
@@ -14,8 +14,33 @@ auth:bearer {
   token: {{ACCESS_TOKEN}}
 }
 
+script:pre-request {
+  const listResponse = await bru.sendRequest({
+    url: `${bru.getEnvVar("WORKSPACE_API_BASE_URL")}/tools/platform`,
+    method: "GET",
+    headers: { Authorization: `Bearer ${bru.getEnvVar("ACCESS_TOKEN")}` },
+  });
+
+  const platformTools = listResponse?.data?.data ?? [];
+  const targetTool =
+    platformTools.find((tool) => tool.name === "Slack") ?? platformTools[0];
+
+  if (!targetTool) {
+    throw new Error("No platform tool found in /tools/platform");
+  }
+
+  bru.setVar("PLATFORM_TOOL_ID", targetTool.id);
+}
+
 assert {
   res.status: eq 200
+  res.body.data.isActive: eq true
+}
+
+tests {
+  test("enabled state is persisted on the returned tool", function () {
+    expect(res.getBody().data.isActive).to.equal(true);
+  });
 }
 
 body:json {
