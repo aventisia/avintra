@@ -43,6 +43,12 @@ pipeline {
         string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,globaladmin_api,llmpipeline_api,apachecamel_api,corsair_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, global-admin, and studio apps (desktop-app excluded).')
     }
     stages {
+        stage('Secret Scan') {
+            steps {
+                sh 'bash scripts/install-gitleaks.sh && bash scripts/secret-scan.sh'
+            }
+        }
+
         stage('Detect Changes') {
             steps {
                 script {

@@ -89,7 +89,7 @@ Pipeline, nginx, Apache Camel, and the web apps.
 The whole local stack runs with [dekit](https://dekit.run) from `dekit.yaml`; its header lists the everyday commands.
 
 ```sh
-./scripts/initial-setup.sh   # once (initial-setup.ps1 on Windows): env files, dependencies, and dekit
+./scripts/initial-setup.sh   # once (initial-setup.ps1 on Windows): env files, dependencies, dekit, gitleaks hook
 dekit up             # start every service
 dekit attach         # watch them; select a service and press r to restart it
 ```
@@ -118,6 +118,17 @@ ENV=local python dev.py
 ```
 
 > See the individual `README.md` files inside each top-level directory for detailed setup, build, and run instructions.
+
+## Secret Scanning
+
+[gitleaks](https://github.com/gitleaks/gitleaks) blocks commits and CI builds that contain credentials. `scripts/initial-setup.sh` installs the pinned binary and enables the pre-commit hook (`core.hooksPath=scripts/hooks`), which scans staged changes; Jenkins installs the same pinned binary, scans the full history in its first stage, and stops the build on a finding.
+
+```sh
+./scripts/secret-scan.sh            # full history (what CI runs)
+./scripts/secret-scan.sh --staged   # staged changes (what the hook runs)
+```
+
+- False positive: end the flagged line with a `gitleaks:allow` comment. Never use it, `--no-verify`, or `.gitleaksignore` to get a real secret past the scan; remove the secret and rotate it.
 
 ## Docker Build & Push
 
