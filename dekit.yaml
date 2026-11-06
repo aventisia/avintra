@@ -2,7 +2,7 @@
 #
 # Prerequisites:
 #   - Node.js 22+ with npm (`node --run` needs 22+), .NET 8 SDK, Python 3.12
-#   - Env files and dependencies from scripts/setup.sh (or setup.ps1), which also installs dekit
+#   - Env files and dependencies from scripts/initial-setup.sh (or initial-setup.ps1), which also installs dekit
 #   - dekit itself, if setup ran before it was added: npm install -g @dekit/cli
 #
 # Ports come from each service's local env files, so a worktree made by create-worktree runs on its own ports.
