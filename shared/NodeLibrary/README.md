@@ -1,6 +1,6 @@
 # NodeLibrary
 
-Cross-platform .NET 8 library containing automation node definitions for the Aventisia WORC Platform.
+Cross-platform .NET 8 library containing automation node definitions for the Aventisia Avintra.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Bruno API Tests
 
-Bruno test collections for the Aventisia WORC Platform APIs.
+Bruno test collections for the Aventisia Avintra APIs.
 
 ## Overview
 

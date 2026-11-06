@@ -4,7 +4,7 @@ Binds `orchestrator`, the only primary agent, and every subagent it launches.
 
 ## Shared handoff contract
 
-- Reports live at `local-issues/<key>/round-NN/<agent>-report-r<N>.md`: `<key>` is the Gitea issue number or one stable kebab-case slug, `N` the design round, `NN` its zero-padded form. Each agent keeps one report per round, updated in place. Never overwrite another round's completed report; resume only an explicitly incomplete matching one.
+- Reports live at `local-issues/<key>/round-NN/<agent>-report-r<N>.md`: `<key>` is the GitHub issue number or one stable kebab-case slug, `N` the design round, `NN` its zero-padded form. Each agent keeps one report per round, updated in place. Never overwrite another round's completed report; resume only an explicitly incomplete matching one.
 - Each delegation is a fresh session: context travels only through the task message and the reports it lists. Read every listed report from disk before inspecting source or acting.
 - Read the source before proposing or changing a path, API, or symbol.
 - Preserve unrelated work; report a scope change instead of making it.
@@ -40,4 +40,4 @@ Binds `orchestrator`, the only primary agent, and every subagent it launches.
 - Architect picks the planning mode from the scout manifest and complexity and settles what the approved brief covers on its own recommendation; the orchestrator relays only uncovered questions and the user's answers until the frontier is empty, before any plan is written.
 - Only the orchestrator routes agents, tracks the loop budget, and declares completion.
 - Supporting skills: architect → `grilling` in Grilling mode; QA → `code-review`, plus `orca-cli` to repeat a pilot failure; pilot → `orca-cli`; the other roles need none.
-- The lifecycle operations in root `AGENTS.md` stay outside the loop: QA success never authorizes them, and coder never loads them or runs their formatting or `tea` commands.
+- The lifecycle operations in root `AGENTS.md` stay outside the loop: QA success never authorizes them, and coder never loads them or runs their formatting or `gh` commands.

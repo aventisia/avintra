@@ -1,6 +1,6 @@
 # ExecutorLibrary
 
-Cross-platform .NET 8 flow execution engine for the Aventisia WORC Platform.
+Cross-platform .NET 8 flow execution engine for the Aventisia Avintra.
 
 ## Overview
 
