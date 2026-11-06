@@ -17,7 +17,7 @@ Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository 
 
 2. **Pick the branches.**
    - **Head**: the user's branch, else `git branch --show-current`.
-   - **Base**: the user's branch, else `uat`. Use `main` only on explicit request (for example, a production hotfix). Confirm with the user when the target is ambiguous.
+   - **Base**: the user's branch, else `uat`. A work branch goes to `uat` first, then the same branch to `main` once UAT passes (see the branch flow in `AGENTS.md`); target `main` when the user says the branch passed UAT or asks for it. A head ending in `-uat` never targets `main`; stop and say so. Confirm with the user when the target is ambiguous.
 
 3. **Check readiness.** Run `git fetch origin`, then confirm all of:
    - The working tree is clean. With uncommitted changes, stop and ask the user to commit or explicitly exclude them; leave the changes where they are.
