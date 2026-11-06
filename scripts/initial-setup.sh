@@ -7,7 +7,9 @@
 # committed `.env.example` template to the local env file its service expects
 # and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
 # the local stack from dekit.yaml), so the checkout can be built and run without
-# doing it by hand.
+# doing it by hand. It also installs the pinned gitleaks binary and enables the
+# committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
+# changes for secrets.
 #
 # System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
@@ -19,12 +21,13 @@
 #   ./scripts/initial-setup.sh --help
 #
 # Existing env files are never overwritten unless --force is given, so the script
-# is safe to re-run. It only writes the env files in ENV_FILES and installs
-# dependencies; it never commits, pushes, or deletes anything.
+# is safe to re-run. It only writes the env files in ENV_FILES, installs
+# dependencies, and sets core.hooksPath; it never commits, pushes, or deletes
+# anything.
 
 set -euo pipefail
 
-TOTAL_STEPS=3
+TOTAL_STEPS=4
 STEP=0
 FORCE=0
 SKIP_INSTALL=0
@@ -35,7 +38,8 @@ initial-setup.sh — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
-(npm install -g @dekit/cli). System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
+(npm install -g @dekit/cli), installs gitleaks, and enables the secret-scanning
+pre-commit hook. System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
 Python 3.12) must be installed separately first.
 
 Usage:
@@ -45,8 +49,8 @@ Usage:
   ./scripts/initial-setup.sh --help           show this help
 
 Existing env files are never overwritten unless --force is given, so the script
-is safe to re-run. It only writes env files and installs dependencies; it never
-commits, pushes, or deletes anything.
+is safe to re-run. It only writes env files, installs dependencies, and sets
+core.hooksPath; it never commits, pushes, or deletes anything.
 USAGE
 }
 
@@ -233,6 +237,25 @@ else
     fi
   else
     omitmark "llmpipeline (venv + pip)" "Python 3.12 not found"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Step 4 — secret scanning: gitleaks binary + pre-commit hook
+# ---------------------------------------------------------------------------
+step "Setting up secret scanning (gitleaks)"
+if [ "$SKIP_INSTALL" -eq 1 ]; then
+  detail "skipped (--skip-install)"
+else
+  run_install "gitleaks (scripts/install-gitleaks.sh)" "$ROOT" bash "$ROOT/scripts/install-gitleaks.sh"
+  HOOKS_PATH="$(git -C "$ROOT" config --get core.hooksPath || true)"
+  if [ "$RUN_OK" -eq 0 ]; then
+    omitmark "pre-commit hook" "gitleaks install failed; the hook would block every commit"
+  elif [ -n "$HOOKS_PATH" ] && [ "$HOOKS_PATH" != "scripts/hooks" ]; then
+    omitmark "pre-commit hook" "core.hooksPath is already '$HOOKS_PATH'; set it to scripts/hooks yourself"
+  else
+    git -C "$ROOT" config core.hooksPath scripts/hooks
+    okmark "pre-commit hook (core.hooksPath=scripts/hooks)"
   fi
 fi
 
