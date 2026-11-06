@@ -3,10 +3,10 @@
 # create-worktree.sh — Create an isolated git worktree for this repository.
 #
 # The worktree is placed next to the main checkout, inside a shared
-# "<repo-parent>/avplatform-wt/" folder. Every local, gitignored `.env` and
-# `.env.local` file is copied into the new worktree and its service ports are
-# re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes. API env files also get WT<N>_-prefixed database names
+# "<repo-parent>/<repo-folder>-wt/" folder (e.g. "avintra-wt/"). Every local,
+# gitignored `.env` and `.env.local` file is copied into the new worktree and
+# its service ports are re-prefixed with the worktree number so multiple
+# checkouts can run at once without port clashes. API env files also get WT<N>_-prefixed database names
 # (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
 # and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
 # APIs accept requests for the worktree host.
@@ -46,7 +46,6 @@
 
 set -euo pipefail
 
-WT_BASE_NAME="avplatform-wt"
 MAX_WORKTREES=50
 TOTAL_STEPS=7
 
@@ -110,7 +109,7 @@ N="${N%"${N##*[![:space:]]}"}"
 WT_NAME="wt-$N"
 
 PARENT="$(dirname "$MAIN")"
-WT_BASE="$PARENT/$WT_BASE_NAME"
+WT_BASE="$PARENT/$(basename "$MAIN")-wt"
 WT_PATH="$WT_BASE/$WT_NAME"
 
 if [ "$CREATE_BRANCH" -eq 1 ]; then

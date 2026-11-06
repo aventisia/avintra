@@ -1,6 +1,6 @@
-# Aventisia WORC Platform Monorepo
+# Aventisia Avintra Monorepo
 
-This repository contains the source code, shared libraries, clients, and deployment configuration for the **Aventisia WORC Platform** — an automation, AI, and workflow orchestration platform.
+This repository contains the source code, shared libraries, clients, and deployment configuration for **Aventisia Avintra**, an automation, AI, and workflow orchestration platform.
 
 ## Repository Structure
 

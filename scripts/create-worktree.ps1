@@ -1,10 +1,10 @@
 # create-worktree.ps1 — Create an isolated git worktree for this repository.
 #
 # The worktree is placed next to the main checkout, inside a shared
-# "<repo-parent>\avplatform-wt\" folder. Every local, gitignored `.env` and
-# `.env.local` file is copied into the new worktree and its service ports are
-# re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes. API env files also get WT<N>_-prefixed database names
+# "<repo-parent>\<repo-folder>-wt\" folder (e.g. "avintra-wt\"). Every local,
+# gitignored `.env` and `.env.local` file is copied into the new worktree and
+# its service ports are re-prefixed with the worktree number so multiple
+# checkouts can run at once without port clashes. API env files also get WT<N>_-prefixed database names
 # (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
 # and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
 # APIs accept requests for the worktree host.
@@ -51,7 +51,6 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$WtBaseName = 'avplatform-wt'
 $MaxWorktrees = 50
 $TotalSteps = 7
 $Step = 0
@@ -138,7 +137,7 @@ $PortPrefix = [int]$Number
 $Name = "wt-$PortPrefix"
 
 $Parent = Split-Path -Parent $Main
-$WtBase = Join-Path $Parent $WtBaseName
+$WtBase = Join-Path $Parent "$(Split-Path -Leaf $Main)-wt"
 $WtPath = Join-Path $WtBase $Name
 
 if ($Branch.IsPresent) {

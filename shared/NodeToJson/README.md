@@ -1,6 +1,6 @@
 # NodeToJson
 
-Utility to convert automation node definitions to JSON for the Aventisia WORC Platform.
+Utility to convert automation node definitions to JSON for the Aventisia Avintra.
 
 ## Overview
 
