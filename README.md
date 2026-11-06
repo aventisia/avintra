@@ -89,7 +89,7 @@ Pipeline, nginx, Apache Camel, and the web apps.
 The whole local stack runs with [dekit](https://dekit.run) from `dekit.yaml`; its header lists the everyday commands.
 
 ```sh
-./scripts/setup.sh   # once (setup.ps1 on Windows): env files, dependencies, and dekit
+./scripts/initial-setup.sh   # once (initial-setup.ps1 on Windows): env files, dependencies, and dekit
 dekit up             # start every service
 dekit attach         # watch them; select a service and press r to restart it
 ```

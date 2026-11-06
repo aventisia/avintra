@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# setup.sh — Bootstrap this repository on a fresh clone.
+# initial-setup.sh — Bootstrap this repository on a fresh clone.
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
@@ -13,10 +13,10 @@
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
-#   ./scripts/setup.sh                  # create env files + install dependencies
-#   ./scripts/setup.sh --skip-install   # create env files only
-#   ./scripts/setup.sh --force          # overwrite existing env files
-#   ./scripts/setup.sh --help
+#   ./scripts/initial-setup.sh                  # create env files + install dependencies
+#   ./scripts/initial-setup.sh --skip-install   # create env files only
+#   ./scripts/initial-setup.sh --force          # overwrite existing env files
+#   ./scripts/initial-setup.sh --help
 #
 # Existing env files are never overwritten unless --force is given, so the script
 # is safe to re-run. It only writes the env files in ENV_FILES and installs
@@ -31,7 +31,7 @@ SKIP_INSTALL=0
 
 usage() {
   cat <<'USAGE'
-setup.sh — Bootstrap this repository on a fresh clone.
+initial-setup.sh — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
@@ -39,10 +39,10 @@ its service expects and installs the project dependencies plus dekit
 Python 3.12) must be installed separately first.
 
 Usage:
-  ./scripts/setup.sh                  create env files and install dependencies
-  ./scripts/setup.sh --skip-install   create env files only
-  ./scripts/setup.sh --force          overwrite existing env files
-  ./scripts/setup.sh --help           show this help
+  ./scripts/initial-setup.sh                  create env files and install dependencies
+  ./scripts/initial-setup.sh --skip-install   create env files only
+  ./scripts/initial-setup.sh --force          overwrite existing env files
+  ./scripts/initial-setup.sh --help           show this help
 
 Existing env files are never overwritten unless --force is given, so the script
 is safe to re-run. It only writes env files and installs dependencies; it never
@@ -87,7 +87,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 [ -f "$ROOT/Avplatform.sln" ] \
   || die "Avplatform.sln not found in $ROOT (run this script from the repository)"
 
-printf 'setup — bootstrapping the repository at:\n'
+printf 'initial-setup — bootstrapping the repository at:\n'
 printf '  %s\n' "$ROOT"
 
 # ---------------------------------------------------------------------------
