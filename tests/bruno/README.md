@@ -129,7 +129,7 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 - `collection.bru` — Root collection metadata
 - `bruno.json` — Bruno configuration
 - `environments/` — Environment-specific variables (base URLs, login credential and localhost port mapping)
-- `.env.example` — Template for the gitignored `.env` (secrets; `scripts/setup.sh` copies it, then fill in)
+- `.env.example` — Template for the gitignored `.env` (secrets; `scripts/initial-setup.sh` copies it, then fill in)
 
 ## Notes
 

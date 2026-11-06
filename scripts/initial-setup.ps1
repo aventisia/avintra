@@ -1,24 +1,27 @@
-# setup.ps1 — Bootstrap this repository on a fresh clone.
+# initial-setup.ps1 — Bootstrap this repository on a fresh clone.
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
 # committed `.env.example` template to the local env file its service expects
 # and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
 # the local stack from dekit.yaml), so the checkout can be built and run without
-# doing it by hand.
+# doing it by hand. It also installs the pinned gitleaks binary and enables the
+# committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
+# changes for secrets.
 #
 # System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
-#   .\scripts\setup.ps1                  # create env files + install dependencies
-#   .\scripts\setup.ps1 -SkipInstall     # create env files only
-#   .\scripts\setup.ps1 -Force           # overwrite existing env files
-#   .\scripts\setup.ps1 -Help
+#   .\scripts\initial-setup.ps1                  # create env files + install dependencies
+#   .\scripts\initial-setup.ps1 -SkipInstall     # create env files only
+#   .\scripts\initial-setup.ps1 -Force           # overwrite existing env files
+#   .\scripts\initial-setup.ps1 -Help
 #
 # Existing env files are never overwritten unless -Force is given, so the script
-# is safe to re-run. It only writes the env files in $EnvFiles and installs
-# dependencies; it never commits, pushes, or deletes anything.
+# is safe to re-run. It only writes the env files in $EnvFiles, installs
+# dependencies, and sets core.hooksPath; it never commits, pushes, or deletes
+# anything.
 
 param(
     [switch]$SkipInstall,
@@ -28,7 +31,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$TotalSteps = 3
+$TotalSteps = 4
 $Step = 0
 
 $UseColor = -not [Console]::IsOutputRedirected -and [bool]$Host.UI.SupportsVirtualTerminal -and -not $env:NO_COLOR
@@ -43,22 +46,23 @@ if ($UseColor) {
 
 function Show-Usage {
     Write-Output @'
-setup.ps1 — Bootstrap this repository on a fresh clone.
+initial-setup.ps1 — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
-(npm install -g @dekit/cli). System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
+(npm install -g @dekit/cli), installs gitleaks, and enables the secret-scanning
+pre-commit hook. System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
 Python 3.12) must be installed separately first.
 
 Usage:
-  .\scripts\setup.ps1                  create env files and install dependencies
-  .\scripts\setup.ps1 -SkipInstall     create env files only
-  .\scripts\setup.ps1 -Force           overwrite existing env files
-  .\scripts\setup.ps1 -Help            show this help
+  .\scripts\initial-setup.ps1                  create env files and install dependencies
+  .\scripts\initial-setup.ps1 -SkipInstall     create env files only
+  .\scripts\initial-setup.ps1 -Force           overwrite existing env files
+  .\scripts\initial-setup.ps1 -Help            show this help
 
 Existing env files are never overwritten unless -Force is given, so the script
-is safe to re-run. It only writes env files and installs dependencies; it never
-commits, pushes, or deletes anything.
+is safe to re-run. It only writes env files, installs dependencies, and sets
+core.hooksPath; it never commits, pushes, or deletes anything.
 '@
 }
 
@@ -106,7 +110,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $Root 'Avplatform.sln'))) {
     Die "Avplatform.sln not found in $Root (run this script from the repository)"
 }
 
-Write-Output 'setup — bootstrapping the repository at:'
+Write-Output 'initial-setup — bootstrapping the repository at:'
 Write-Output "  $Root"
 
 # ---------------------------------------------------------------------------
@@ -291,6 +295,29 @@ if ($SkipInstall.IsPresent) {
                 Invoke-Install 'llmpipeline pip install' $llmDir $venvPip @('-r', 'requirements.txt', '-r', 'requirements-dev.txt')
             }
         }
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Step 4 — secret scanning: gitleaks binary + pre-commit hook
+# ---------------------------------------------------------------------------
+Step 'Setting up secret scanning (gitleaks)'
+if ($SkipInstall.IsPresent) {
+    Detail 'skipped (-SkipInstall)'
+} else {
+    $psExe = (Get-Process -Id $PID).Path
+    Invoke-Install 'gitleaks (scripts/install-gitleaks.ps1)' $Root $psExe @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'install-gitleaks.ps1'))
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $hooksPath = & git -C $Root config --get core.hooksPath 2>$null
+    $ErrorActionPreference = $prev
+    if (-not $script:LastInstallOk) {
+        OmitMark 'pre-commit hook' 'gitleaks install failed; the hook would block every commit'
+    } elseif ($hooksPath -and $hooksPath -ne 'scripts/hooks') {
+        OmitMark 'pre-commit hook' "core.hooksPath is already '$hooksPath'; set it to scripts/hooks yourself"
+    } else {
+        & git -C $Root config core.hooksPath scripts/hooks
+        OkMark 'pre-commit hook (core.hooksPath=scripts/hooks)'
     }
 }
 
