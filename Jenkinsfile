@@ -22,17 +22,19 @@ def getBuildMode(branchName) {
     }
 }
 
-// Function to check if a directory has changes
-def hasChangesInPath(path) {
-    if (env.CHANGE_ID) {
-        // For pull requests
-        def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...HEAD | grep '^${path}/' || true", returnStdout: true).trim()
-        return changes != ''
-    } else {
-        // For regular commits - compare with previous commit
-        def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep '^${path}/' || true", returnStdout: true).trim()
-        return changes != ''
+// IMPORTANT NOTE: GitHub rebase merges and multi-commit pushes land several commits at once,
+// so diff against the last successful build; HEAD~1 only covers the first build or a rewritten history.
+def changedFiles() {
+    def base = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+    if (!base || sh(script: "git cat-file -e ${base}^{commit}", returnStatus: true) != 0) {
+        base = 'HEAD~1'
     }
+    echo "Detecting changes since ${base}"
+    return sh(script: "git diff --name-only ${base} HEAD", returnStdout: true)
+}
+
+def hasChangesInPath(changes, path) {
+    return ("\n" + changes).contains("\n${path}/")
 }
 
 pipeline {
@@ -44,8 +46,15 @@ pipeline {
         stage('Detect Changes') {
             steps {
                 script {
+                    // IMPORTANT NOTE: the repo is public on GitHub, so PR and feature-branch builds may carry
+                    // untrusted code; only uat and main ever build or deploy. Unset BUILD_* flags skip every stage.
+                    if (!(env.BRANCH_NAME in ['uat', 'main'])) {
+                        echo "Skipping build: ${env.BRANCH_NAME} is not a deploy branch (uat, main)"
+                        return
+                    }
+
                     echo 'Detecting changes in monorepo...'
-                    
+
                     // Check if this is a manual/retry build
                     def isManualBuild = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0
                     
@@ -64,19 +73,21 @@ pipeline {
                     } else {
                         echo 'Automatic build - detecting changes...'
                         
+                        def changes = changedFiles()
+
                         // Detect changes in each component
-                        def aspnetToolkitChanged = hasChangesInPath('apis/WorcBackend-legacy/AspNetToolkit')
+                        def aspnetToolkitChanged = hasChangesInPath(changes, 'apis/WorcBackend-legacy/AspNetToolkit')
                         
                         // If AspNetToolkit changed, all .NET APIs need to be rebuilt
-                        env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_GLOBALADMIN_API = hasChangesInPath('apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
-                        env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
-                        env.BUILD_APACHECAMEL_API = hasChangesInPath('apis/apache-camel') ? 'true' : 'false'
-                        env.BUILD_CORSAIR_API = hasChangesInPath('apis/corsair') ? 'true' : 'false'
-                        env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
-                        env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
-                        env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
+                        env.BUILD_ACCOUNTS_API = (hasChangesInPath(changes, 'apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_API = (hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_GLOBALADMIN_API = hasChangesInPath(changes, 'apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
+                        env.BUILD_LLMPIPELINE_API = hasChangesInPath(changes, 'apis/llmpipeline') ? 'true' : 'false'
+                        env.BUILD_APACHECAMEL_API = hasChangesInPath(changes, 'apis/apache-camel') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = hasChangesInPath(changes, 'apis/corsair') ? 'true' : 'false'
+                        env.BUILD_DOCS_CLIENT = hasChangesInPath(changes, 'clients/docs') ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = hasChangesInPath(changes, 'clients/web-apps') ? 'true' : 'false'
+                        env.BUILD_RUNNER_APP = hasChangesInPath(changes, 'clients/RunnerApp') ? 'true' : 'false'
                     }
                     
                     echo """
