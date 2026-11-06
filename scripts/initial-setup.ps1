@@ -1,4 +1,4 @@
-# setup.ps1 — Bootstrap this repository on a fresh clone.
+# initial-setup.ps1 — Bootstrap this repository on a fresh clone.
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
@@ -11,10 +11,10 @@
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
-#   .\scripts\setup.ps1                  # create env files + install dependencies
-#   .\scripts\setup.ps1 -SkipInstall     # create env files only
-#   .\scripts\setup.ps1 -Force           # overwrite existing env files
-#   .\scripts\setup.ps1 -Help
+#   .\scripts\initial-setup.ps1                  # create env files + install dependencies
+#   .\scripts\initial-setup.ps1 -SkipInstall     # create env files only
+#   .\scripts\initial-setup.ps1 -Force           # overwrite existing env files
+#   .\scripts\initial-setup.ps1 -Help
 #
 # Existing env files are never overwritten unless -Force is given, so the script
 # is safe to re-run. It only writes the env files in $EnvFiles and installs
@@ -43,7 +43,7 @@ if ($UseColor) {
 
 function Show-Usage {
     Write-Output @'
-setup.ps1 — Bootstrap this repository on a fresh clone.
+initial-setup.ps1 — Bootstrap this repository on a fresh clone.
 
 Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
@@ -51,10 +51,10 @@ its service expects and installs the project dependencies plus dekit
 Python 3.12) must be installed separately first.
 
 Usage:
-  .\scripts\setup.ps1                  create env files and install dependencies
-  .\scripts\setup.ps1 -SkipInstall     create env files only
-  .\scripts\setup.ps1 -Force           overwrite existing env files
-  .\scripts\setup.ps1 -Help            show this help
+  .\scripts\initial-setup.ps1                  create env files and install dependencies
+  .\scripts\initial-setup.ps1 -SkipInstall     create env files only
+  .\scripts\initial-setup.ps1 -Force           overwrite existing env files
+  .\scripts\initial-setup.ps1 -Help            show this help
 
 Existing env files are never overwritten unless -Force is given, so the script
 is safe to re-run. It only writes env files and installs dependencies; it never
@@ -106,7 +106,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $Root 'Avplatform.sln'))) {
     Die "Avplatform.sln not found in $Root (run this script from the repository)"
 }
 
-Write-Output 'setup — bootstrapping the repository at:'
+Write-Output 'initial-setup — bootstrapping the repository at:'
 Write-Output "  $Root"
 
 # ---------------------------------------------------------------------------
