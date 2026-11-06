@@ -4,7 +4,7 @@ React + Vite application for Aventisia identity and account flows.
 
 ## Overview
 
-This app is part of the `clients/web-apps` Turborepo monorepo. It handles login, registration, tenant management, subscriptions, and other account-level features for the Aventisia WORC Platform.
+This app is part of the `clients/web-apps` Turborepo monorepo. It handles login, registration, tenant management, subscriptions, and other account-level features for the Aventisia Avintra.
 
 ## Getting Started
 

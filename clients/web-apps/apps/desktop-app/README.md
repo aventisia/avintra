@@ -1,6 +1,6 @@
 # Desktop App
 
-Tauri-based cross-platform desktop application for the Aventisia WORC Platform.
+Tauri-based cross-platform desktop application for the Aventisia Avintra.
 
 ## Overview
 

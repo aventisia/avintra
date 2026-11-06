@@ -1,6 +1,6 @@
 # Aventisia Documentation Site
 
-Nextra-based documentation site for the Aventisia WORC Platform.
+Nextra-based documentation site for the Aventisia Avintra.
 
 ## Overview
 

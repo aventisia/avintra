@@ -1,9 +1,9 @@
-# Aventisia WORC Platform — Agent Guide
+# Aventisia Avintra — Agent Guide
 
 ## Repo facts
 
 - The active .NET backend is `apis/WorcBackend-legacy/`, not the `apis/WorcBackend/` that `README.md` describes.
-- Feature PRs target `uat` (deploys to `avuat.aventisia.com`); `main` is production (`avweb1.aventisia.com`). The tracker is Gitea, not GitHub. Jenkins (root `Jenkinsfile`) is the only CI, and there are no pre-commit hooks.
+- Feature PRs target `uat` (deploys to `avuat.aventisia.com`); `main` is production (`avweb1.aventisia.com`). The repo and tracker are GitHub (`aventisia/avintra`, driven by `gh`; see `.claude/skills/GITHUB.md`). Jenkins (root `Jenkinsfile`) is the only CI, and there are no pre-commit hooks.
 - Local stack: from the checkout or worktree root, `dekit up`, then `dekit restart <service>` after a change, `dekit screen <service>` for output, `dekit down` to stop; `dekit.yaml` lists the services. Ports come from each service's env files, so a worktree made by `scripts/create-worktree.sh` runs on its own.
 - Env files: `scripts/setup.sh` (or `.ps1`) copies each committed `.env.example` to the gitignored `.env.local` (`.env` for the web apps and `tests/bruno`). For the .NET APIs and llmpipeline (under `ENV=local`), `.env.local` overrides the OS environment, so templates keep secrets commented out.
 - Builds: `dotnet build Avplatform.sln` covers the legacy APIs, shared libs, and RunnerApp (alone: `clients/RunnerApp/RunnerApp.slnx`). Web apps (`clients/web-apps`, npm workspaces + Turborepo) check with `npx turbo run typecheck --filter=<package>` and `npx eslint <changed files>` from the package, formatting only changed files with prettier; `npm run pregit` fails (no root ESLint config) after its prettier pass reformats unrelated files. Corsair (`apis/corsair`) installs with `npm ci --force`; read its `README.md` before changing the Workspace↔Corsair boundary.

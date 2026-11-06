@@ -1,6 +1,6 @@
 # Global Admin App
 
-React + Vite application for the Aventisia WORC Platform Global Admin area.
+React + Vite application for the Aventisia Avintra Global Admin area.
 
 ## Overview
 

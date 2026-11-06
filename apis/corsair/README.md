@@ -1,6 +1,6 @@
 # Corsair Sidecar
 
-Internal-only sidecar for the WORC Platform. It hosts plugin-backed tool execution and OAuth credential handling for optional external providers, while keeping the main Workspace API deployment independent from provider-specific lifecycle concerns.
+Internal-only sidecar for Avintra. It hosts plugin-backed tool execution and OAuth credential handling for optional external providers, while keeping the main Workspace API deployment independent from provider-specific lifecycle concerns.
 
 ## Security and ownership boundary
 
