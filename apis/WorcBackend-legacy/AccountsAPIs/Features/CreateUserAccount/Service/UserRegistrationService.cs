@@ -384,25 +384,31 @@ public class UserRegistrationService : IUserRegistrationService
 
     private async Task CreateDefaultTenantSubscriptionAsync(Guid tenantId, Guid userId)
     {
+        var signupPlanUniqueName = EditionSubscriptionPlanHelpers.GetSignupPlan(_environmentConfig, userId).UniqueName;
+
         var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
-            .GetByConditionAsync(w => w.Name == "Default" && w.IsDefault)
+            .GetByConditionAsync(w => w.UniqueName == signupPlanUniqueName && w.IsDefault)
             .SingleOrDefaultAsync();
 
         if (subscriptionPlan == null)
         {
-            _logger.LogError("Default subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
+            _logger.LogError("Signup subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
             return;
         }
+
+        var isStarterPlan = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter;
 
         var tenantSubscription = new TenantSubscription
         {
             TenantId = tenantId,
             PlanId = subscriptionPlan.Id,
-            Frequency = SubscriptionFrequenciesEnum.Yearly,
+            Frequency = subscriptionPlan.Frequency,
             IsActive = true,
             Status = SubscriptionStatusTypesEnum.Active,
-            NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
-            MaxCredits = ulong.MaxValue,
+            NextBillingDate = isStarterPlan
+                ? DateTimeOffset.UtcNow.Date.AddMonths(1)
+                : new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
+            MaxCredits = subscriptionPlan.MaxCredits,
             MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
             MaxSpaces = subscriptionPlan.MaxSpaces,
             MaxUsers = subscriptionPlan.MaxUsers,
@@ -413,6 +419,22 @@ public class UserRegistrationService : IUserRegistrationService
         };
 
         await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+        // IMPORTANT NOTE: TenantCreditAllocationJob only refills Starter credits once NextBillingDate is due, so the first month is granted here.
+        if (isStarterPlan)
+        {
+            await _unitOfWork.TenantCreditRepo.InsertAsync(new TenantCredit
+            {
+                TenantId = tenantId,
+                TenantSubscription = tenantSubscription,
+                AvailableCredits = tenantSubscription.MaxCredits,
+                CreditedOn = DateTimeOffset.UtcNow,
+                ExpiredOn = tenantSubscription.NextBillingDate,
+                Type = CreditTypesEnum.Subscription,
+                CreatedByUserId = userId,
+                LastModifiedByUserId = userId
+            });
+        }
 
         if (!await _unitOfWork.SaveAsync())
         {
