@@ -3,6 +3,7 @@ import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum"
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -78,9 +79,9 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       dbHost: undefined,
       dbPort: undefined,
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -145,10 +146,9 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Single field
       isDisabled: tenantData?.isDisabled ?? false,
       // Group (read-only)
-      createdBy: tenantData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: tenantData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: tenantData?.createdOn ? new Date(tenantData?.createdOn) : new Date(),
-      lastModifiedBy:
-        tenantData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: tenantData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: tenantData?.lastModifiedOn
         ? new Date(tenantData?.lastModifiedOn)
         : new Date(),

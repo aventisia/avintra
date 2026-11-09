@@ -1,6 +1,7 @@
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -115,10 +116,9 @@ export const useDefineAgentForm = ({ rowId, crudAction }: UseDefineAgentFormOpti
       // isPublished: agentData?.isPublished,
       // isArchived: agentData?.isArchived,
 
-      createdBy: agentData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: agentData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: agentData?.createdOn ? new Date(agentData?.createdOn) : new Date(),
-      lastModifiedBy:
-        agentData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: agentData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: agentData?.lastModifiedOn ? new Date(agentData?.lastModifiedOn) : new Date(),
     });
     setIsFetching(isFetching);

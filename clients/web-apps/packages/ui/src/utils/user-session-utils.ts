@@ -29,6 +29,7 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
     platformVersion: userSession.platformVersion,
     planType: decodedJwt?.plan,
     hasPaidPlan: userSession.hasPaidPlan,
+    tenantType: userSession.tenantType,
     deploymentType: decodedJwt.type,
 
     // Access mode used for Super Admin tenant viewing ("read_only" / "read_write").
@@ -36,4 +37,19 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
   };
 };
 
-export { setUserSessionLocally };
+/** True while a free sign-up has not chosen its account type yet (organization setup is deferred to checkout). */
+const isTenantSetupPending = (userSession: IUserSessionStore | null | undefined) =>
+  userSession?.tenantType === "Unspecified";
+
+/** True when checkout must still collect the name or account type that free sign-up skipped. */
+const needsDeferredProfile = (userSession: IUserSessionStore | null | undefined) =>
+  isTenantSetupPending(userSession) ||
+  !userSession?.firstName?.trim() ||
+  !userSession?.lastName?.trim();
+
+/** The user's full name, or their email when free sign-up skipped the name. */
+const getUserDisplayName = (userSession: IUserSessionStore | null | undefined) =>
+  `${userSession?.firstName ?? ""} ${userSession?.lastName ?? ""}`.trim() ||
+  (userSession?.email ?? "");
+
+export { getUserDisplayName, isTenantSetupPending, needsDeferredProfile, setUserSessionLocally };

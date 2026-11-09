@@ -1,0 +1,39 @@
+meta {
+  name: Purchase requires deferred profile
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/tenant-subscriptions/purchase-plan
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "planId": "{{SUBSCRIPTION_PLAN_ID}}",
+    "frequency": "Monthly",
+    "addressLine1": "123 Main Street",
+    "city": "Noida",
+    "postalCode": "123456",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "isWillingToFileGst": false,
+    "amount": 24,
+    "taxRate": 18
+  }
+}
+
+tests {
+  test("rejects a paid plan before the name is collected", function() {
+    expect(res.getStatus()).to.not.equal(200);
+    expect(res.getBody().message).to.contain("First name and last name are required");
+  });
+}
+
+docs {
+  > Run right after Create user account, as that fresh free sign-up, with SUBSCRIPTION_PLAN_ID set to a paid plan.
+  > Sign-up collects no name, so a paid purchase without firstName/lastName must be refused.
+  > The name check runs before the organization-setup and INR checks, so the body's country and plan currency do not matter.
+}

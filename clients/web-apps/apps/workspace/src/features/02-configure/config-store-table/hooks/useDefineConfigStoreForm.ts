@@ -2,6 +2,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -56,9 +57,9 @@ export const useDefineConfigStoreForm = ({
       tags: "",
       isEncrypted: false,
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -91,10 +92,9 @@ export const useDefineConfigStoreForm = ({
       description: configStoreData?.description ?? "",
       isDisabled: configStoreData?.isDisabled,
       // Read (view) only fields
-      createdBy: configStoreData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: configStoreData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: configStoreData?.createdOn ? new Date(configStoreData?.createdOn) : new Date(),
-      lastModifiedBy:
-        configStoreData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: configStoreData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: configStoreData?.lastModifiedOn
         ? new Date(configStoreData?.lastModifiedOn)
         : new Date(),

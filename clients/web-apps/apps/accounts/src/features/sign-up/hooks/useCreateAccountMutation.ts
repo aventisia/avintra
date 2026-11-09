@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { resolvePostLoginDestination } from "@/constants/post-login-destination";
+import { hasPlanIntent, resolvePostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT } from "@/constants/variables";
 
 import { createAccount } from "../apis/create-account-apis";
@@ -42,9 +42,7 @@ export const useCreateAccountMutation = () => {
       // Set authenticated user locally
       const userSession = setUserSessionLocally(httpResponse.data);
 
-      const hasPlanIntent = new URLSearchParams(window.location.search).has("plan");
-
-      if (httpResponse.message.includes(ADD_TENANT) || hasPlanIntent) {
+      if (httpResponse.message.includes(ADD_TENANT) || hasPlanIntent()) {
         navigate(withQueryParams("/onboarding"));
       } else if (userSession.deploymentType == "Enterprise") {
         // Redirect to workspace app

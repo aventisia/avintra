@@ -5,6 +5,7 @@ import { SelectField } from "@avplatform/ui/form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { COUNTRY_LS_KEY, INDIVIDUAL_ORGANIZATION_NAME } from "@/constants/variables";
 import { countryProps } from "@/features/on-boarding/constants/company-form-field-props";
 import { userInfoSchema } from "@/features/on-boarding/constants/user-info-zod-schema";
 import { useDefineUserInfoForm } from "@/features/on-boarding/hooks/useDefineUserInfoForm";
@@ -38,11 +39,11 @@ export const UserInfoForm = () => {
     try {
       await updateTenantInfoMutation({
         domain: localStorage.getItem(USER_NAME_LS_KEY)?.split("@")[1] ?? "",
-        organizationName: "Individual Users",
+        organizationName: INDIVIDUAL_ORGANIZATION_NAME,
         type: "Individual",
         ...formData,
       });
-      localStorage.setItem("country", formData.country);
+      localStorage.setItem(COUNTRY_LS_KEY, formData.country);
 
       // Reset the form to clear dirty state and suppress discard dialog
       form.reset(form.getValues());

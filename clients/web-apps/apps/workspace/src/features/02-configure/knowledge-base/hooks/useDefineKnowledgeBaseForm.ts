@@ -2,6 +2,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -63,9 +64,9 @@ export const useDefineKnowledgeBaseForm = ({
         model: "",
       },
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -105,11 +106,9 @@ export const useDefineKnowledgeBaseForm = ({
         model: knowledgeBaseData?.embeddingModel ?? "",
       },
       isDisabled: knowledgeBaseData?.isDisabled ?? false,
-      createdBy:
-        knowledgeBaseData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: knowledgeBaseData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: knowledgeBaseData?.createdOn ? new Date(knowledgeBaseData?.createdOn) : new Date(),
-      lastModifiedBy:
-        knowledgeBaseData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: knowledgeBaseData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: knowledgeBaseData?.lastModifiedOn
         ? new Date(knowledgeBaseData?.lastModifiedOn)
         : new Date(),

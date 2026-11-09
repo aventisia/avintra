@@ -2,6 +2,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -56,9 +57,9 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
       description: "",
       thumbnail: "",
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -90,10 +91,9 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
       thumbnail: flowData?.thumbnail ?? "",
       isDisabled: flowData?.isDisabled ?? false,
       // Read (view) only fields
-      createdBy: flowData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: flowData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: flowData?.createdOn ? new Date(flowData?.createdOn) : new Date(),
-      lastModifiedBy:
-        flowData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: flowData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: flowData?.lastModifiedOn ? new Date(flowData?.lastModifiedOn) : new Date(),
     });
 

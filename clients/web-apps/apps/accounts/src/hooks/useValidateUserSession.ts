@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { resolvePostLoginDestination } from "@/constants/post-login-destination";
+import { hasPlanIntent, resolvePostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 
@@ -51,7 +51,7 @@ export const useValidateUserSession = () => {
       } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         setOnBoardingStep("choose-plan");
       } else {
-        if (!userSession.hasPaidPlan && new URLSearchParams(window.location.search).has("plan")) {
+        if (!userSession.hasPaidPlan && hasPlanIntent()) {
           setOnBoardingStep("choose-plan");
           return;
         }
