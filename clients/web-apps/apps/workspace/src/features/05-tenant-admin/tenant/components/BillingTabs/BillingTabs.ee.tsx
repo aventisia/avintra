@@ -1,54 +1,52 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
+
 import { BillingHistoryTable } from "./billing-history/components/BillingHistoryTable.ee";
 import CompanyDetails from "./comapny-details/CompanyDetails";
 import Overview from "./overview/Overview.ee";
 import PaymentMethods from "./payment-methods/PaymentMethods.ee";
 import Preferences from "./preferences/Preferences";
 
-const BillingTabs = () => {
-  return (
-    <div className="py-2">
-      <Tabs defaultValue="overview">
-        <TabsList className="w-full justify-start rounded-none border-b bg-transparent text-muted-foreground">
-          <TabsTrigger value="overview" className="rounded-none">
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="paymentMethods" className="rounded-none">
-            Payment methods
-          </TabsTrigger>
-          <TabsTrigger value="billingHistory" className="rounded-none">
-            Billing history
-          </TabsTrigger>
-          <TabsTrigger value="companyDetails" className="rounded-none">
-            Billing details
-          </TabsTrigger>
-          <TabsTrigger value="preferences" className="rounded-none">
-            Preferences
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="p-6">
-          <Overview />
-        </TabsContent>
+const TABS = [
+  { value: "overview", label: "Overview" },
+  { value: "paymentMethods", label: "Payment methods" },
+  { value: "billingHistory", label: "Billing history" },
+  { value: "companyDetails", label: "Billing details" },
+  { value: "preferences", label: "Preferences" },
+];
 
-        <TabsContent value="paymentMethods" className="p-6">
-          <PaymentMethods />
-        </TabsContent>
+const PANEL_CLASS = "rounded-lg bg-surface p-6 ring-1 ring-line";
 
-        <TabsContent value="billingHistory" className="p-6">
-          <BillingHistoryTable />
-        </TabsContent>
+const BillingTabs = () => (
+  <Tabs defaultValue="overview" className="space-y-5">
+    <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
+      {TABS.map((tab) => (
+        <TabsTrigger key={tab.value} value={tab.value} className={SEGMENTED_TABS_TRIGGER_CLASS}>
+          {tab.label}
+        </TabsTrigger>
+      ))}
+    </TabsList>
 
-        <TabsContent value="preferences" className="p-6">
-          <Preferences />
-        </TabsContent>
-
-        <TabsContent value="companyDetails" className="p-6">
-          <CompanyDetails />
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
+    <TabsContent value="overview">
+      <Overview />
+    </TabsContent>
+    <TabsContent value="paymentMethods">
+      <PaymentMethods />
+    </TabsContent>
+    <TabsContent value="billingHistory" className={PANEL_CLASS}>
+      <BillingHistoryTable />
+    </TabsContent>
+    <TabsContent value="preferences">
+      <Preferences />
+    </TabsContent>
+    <TabsContent value="companyDetails">
+      <CompanyDetails />
+    </TabsContent>
+  </Tabs>
+);
 
 export default BillingTabs;
