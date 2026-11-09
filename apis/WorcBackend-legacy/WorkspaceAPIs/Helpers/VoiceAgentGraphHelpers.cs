@@ -72,6 +72,31 @@ public static class VoiceAgentGraphHelpers
     public const string PipelineTextToSpeechKey = "__ModelConfig__TextToSpeech";
 
     /// <summary>
+    /// Input key holding the pipeline text-to-speech voice settings.
+    /// </summary>
+    public const string PipelineVoiceKey = "__VoiceConfig__TextToSpeech";
+
+    /// <summary>
+    /// Input key holding the tool configuration list.
+    /// </summary>
+    public const string ToolsConfigKey = "__ToolsConfig__Voice";
+
+    /// <summary>
+    /// Input key holding the knowledge-base configuration.
+    /// </summary>
+    public const string KnowledgeBaseConfigKey = "__KbConfig__Voice";
+
+    /// <summary>
+    /// Input key holding the skill configuration.
+    /// </summary>
+    public const string SkillsConfigKey = "__SkillsConfig__Voice";
+
+    /// <summary>
+    /// Input key holding the memory configuration.
+    /// </summary>
+    public const string MemoryConfigKey = "__MemoryConfig__Voice";
+
+    /// <summary>
     /// Input key holding the dynamic variable defaults.
     /// </summary>
     public const string VariablesKey = "__Variables__Voice";
@@ -556,6 +581,45 @@ public static class VoiceAgentGraphHelpers
             return ReactFlowHelper.Parse(reactFlowObject);
         }
         catch (InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Converts the Voice AI node inputs into the keyed configuration object used
+    /// by the voice settings factory.
+    /// </summary>
+    /// <param name="parsedFlow">The parsed ReactFlow object.</param>
+    /// <returns>The node configuration, or null when the Voice AI node is absent.</returns>
+    public static JsonObject? GetVoiceAgentNodeConfig(ReactFlowDataModel? parsedFlow)
+    {
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+        if (voiceNode?.Data?.Inputs is not { Count: > 0 })
+            return null;
+
+        var config = new JsonObject();
+        foreach (var input in voiceNode.Data.Inputs)
+        {
+            if (string.IsNullOrWhiteSpace(input.Key) || input.Value is null)
+                continue;
+
+            if (ToConfigNode(input.Value) is JsonNode node)
+                config[input.Key] = node;
+        }
+
+        return config;
+    }
+
+    private static JsonNode? ToConfigNode(object value)
+    {
+        try
+        {
+            return value is JsonElement element
+                ? JsonNode.Parse(element.GetRawText())
+                : JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(value));
+        }
+        catch (System.Text.Json.JsonException)
         {
             return null;
         }

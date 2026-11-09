@@ -119,6 +119,32 @@ ENV=local python dev.py
 
 > See the individual `README.md` files inside each top-level directory for detailed setup, build, and run instructions.
 
+#### Voice agent (LiveKit)
+
+Voice sessions use [LiveKit](https://livekit.io) for WebRTC. On the backend, only `llmpipeline`
+talks to LiveKit (tokens, rooms, and the agent worker) through the official `livekit-api` SDK;
+WorkspaceAPIs reaches it through the existing `LLMPIPELINE_API_BASE_URL`. Start the optional local
+server separately; it is not part of `dekit up`:
+
+```sh
+dekit start livekit         # LiveKit dev server (autostart is off in dekit.yaml)
+dekit start voice_agent     # llmpipeline worker (autostart is off; joins only dispatched rooms)
+curl http://localhost:7880  # health check: OK
+```
+
+The dev server uses LiveKit's documented `devkey` / `secret` pair. Set the matching `LIVEKIT_*`
+values in `apis/llmpipeline/.env.local` (see `.env.example`); no other service needs them. Local
+ports are 7880/tcp (HTTP and WebSocket signaling), 7881/tcp and 7882/udp (WebRTC media).
+When the APIs are reached directly rather than through nginx, set
+`WORKSPACE_API_URL=https://localhost:4001/api` in the same file so the worker can fetch the
+resolved agent settings. The full session contract, event/error codes, cleanup rules, and
+latency/test commands are in `apis/llmpipeline/app/features/voice_sessions/README.md`.
+
+Production points `LIVEKIT_WS_URL` at `wss://livekit.<domain>` and `LIVEKIT_HTTP_URL` at
+`https://livekit.<domain>`, terminates TLS at the reverse proxy, and replaces the dev key pair.
+Keep 7881/tcp and 7882/udp reachable from clients, or run LiveKit TURN on 443 for restrictive
+networks.
+
 ## Docker Build & Push
 
 Login to the private registry if needed:

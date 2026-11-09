@@ -59,6 +59,8 @@ class LLMRequest(BaseModel):
     source_threshold: Optional[float] = Field(default=None, ge=0.0, le=1.0)  # Minimum similarity score for KB chunks; None uses the default (0.1)
     skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
     conversation_id: Optional[str] = None   # Unique identifier for the conversation thread used to preserve context across requests.
+    flow_version_id: Optional[str] = None   # Workspace flow version identity for persisted conversations.
+    channel: Literal['chat', 'voice'] = 'chat'  # Conversation channel for persisted rows.
     is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
     max_short_term_turns: Optional[int] = Field(default=None, ge=0)  # Number of most recent conversation turns sent to the model; None or 0 means no limit
 

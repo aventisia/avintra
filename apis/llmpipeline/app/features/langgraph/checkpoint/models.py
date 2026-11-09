@@ -78,6 +78,12 @@ class Conversation(WorkspaceBase, _BaseEntityMixin):
         nullable=False,
         default="active",
     )
+    channel: Mapped[str] = mapped_column(
+        "Channel",
+        String(50),
+        nullable=False,
+        default="chat",
+    )
     flow_version_id: Mapped[uuid.UUID] = mapped_column(
         "FlowVersionId",
         UUID(as_uuid=True),

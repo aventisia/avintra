@@ -26,6 +26,8 @@ from app.features.langgraph.checkpoint.models import (
     ConversationMessage,
 )
 
+TERMINAL_CONVERSATION_STATUSES = {"Completed", "Failed", "AccessRevoked", "Archived"}
+
 
 def _message_role(message: BaseMessage) -> str:
     """Map a LangChain message to a conversation role string."""
@@ -94,6 +96,7 @@ async def ensure_conversation(
     user_id: uuid.UUID,
     conversation_id: str,
     flow_version_id: str,
+    channel: str,
     audit_user_id: uuid.UUID,
 ) -> Conversation:
     """Fetch an existing conversation or create it if it does not exist."""
@@ -134,6 +137,7 @@ async def ensure_conversation(
         tenant_id=tenant_id,
         user_id=user_id,
         flow_version_id=flow_version_uuid,
+        channel=channel,
         status="active",
         created_by_user_id=audit_user_id,
         last_modified_by_user_id=audit_user_id,
@@ -237,6 +241,93 @@ async def save_transcript(
         "Persisted UI transcript for conversation %s.",
         conversation_id,
     )
+
+
+async def attach_voice_turn_timing(
+    session: AsyncSession,
+    conversation_id: str,
+    timing: dict[str, Any],
+) -> bool:
+    """Merge voice timing into the latest assistant UI transcript row.
+
+    The row already carries the normalized frames and decisions, so timing is
+    added as a metadata key instead of replacing the row or its metadata.
+    """
+
+    try:
+        conversation_uuid = uuid.UUID(conversation_id)
+    except ValueError:
+        logger.error(
+            "Cannot attach voice timing; invalid conversation_id UUID: %s",
+            conversation_id,
+        )
+        return False
+
+    # IMPORTANT NOTE: voice turns are sequential, so the newest assistant
+    # transcript row is the turn that just finished.
+    result = await session.execute(
+        select(ConversationMessage)
+        .where(
+            ConversationMessage.conversation_id == conversation_uuid,
+            ConversationMessage.role == "assistant",
+            ConversationMessage.message_metadata["ui_transcript"].as_boolean().is_(True),
+        )
+        .order_by(ConversationMessage.created_on.desc())
+        .limit(1)
+    )
+    record = result.scalar_one_or_none()
+    if record is None:
+        logger.warning(
+            "No assistant voice transcript to attach timing. conversation_id=%s",
+            conversation_id,
+        )
+        return False
+
+    metadata = dict(record.message_metadata or {})
+    if "voice_turn_timing" in metadata:
+        logger.warning(
+            "Voice timing already attached; keeping the first turn. conversation_id=%s",
+            conversation_id,
+        )
+        return False
+    metadata["voice_turn_timing"] = timing
+    record.message_metadata = metadata
+    return True
+
+
+async def update_conversation_status(
+    session: AsyncSession,
+    conversation_id: str,
+    status: str,
+    *,
+    audit_user_id: uuid.UUID | None = None,
+) -> bool:
+    """Set a conversation's status unless it already reached a terminal one."""
+
+    try:
+        conversation_uuid = uuid.UUID(conversation_id)
+    except ValueError:
+        logger.error(
+            "Cannot update conversation status; invalid conversation_id UUID: %s",
+            conversation_id,
+        )
+        return False
+
+    conversation = await session.get(Conversation, conversation_uuid)
+    if conversation is None:
+        logger.warning(
+            "Cannot update missing conversation. conversation_id=%s",
+            conversation_id,
+        )
+        return False
+    if conversation.status in TERMINAL_CONVERSATION_STATUSES:
+        return False
+
+    conversation.status = status
+    conversation.last_modified_on = datetime.now(timezone.utc)
+    if audit_user_id is not None:
+        conversation.last_modified_by_user_id = audit_user_id
+    return True
 
 
 async def load_messages(

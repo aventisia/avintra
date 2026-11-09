@@ -1,0 +1,23 @@
+meta {
+  name: Voice sessions
+  seq: 10
+}
+
+docs {
+  # Voice sessions
+
+  Run the requests in order. `00-login` stores `ACCESS_TOKEN`; the settings
+  request reads a VoiceAgent flow version; the session request creates the
+  conversation and LiveKit room and stores the join details as collection
+  variables.
+
+  Set these collection or environment variables before running:
+
+  - `VOICE_FLOW_VERSION_ID`: a VoiceAgent flow version UUID.
+  - `VOICE_MODE`: `test` for the draft or `live` for a published version
+    (default `test` in the request).
+
+  Join the returned room with the LiveKit console or CLI using
+  `VOICE_SERVER_URL`, `VOICE_CLIENT_TOKEN`, and `VOICE_ROOM_NAME`. The token is
+  a short-lived credential; do not commit it or copy it into shared notes.
+}
