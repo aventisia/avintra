@@ -169,7 +169,7 @@ const ConversationDetail = ({
   );
 };
 
-/** Voice agent sessions with duration, outcome, and transcript. Uses sample data until Phase 2. */
+/** Voice agent sessions with duration, outcome, and transcript. Uses sample data until the conversations tab is wired to server data. */
 export const VoiceConversations = () => {
   useFetchFlowToLoad();
   const agentName = useCurrentFlowStore((state) => state.currentFlow.name) || "Agent";

@@ -6,6 +6,7 @@ import {
   TableCNToolbar,
   useTableCN,
 } from "@avplatform/ui/table-cn";
+import { useState } from "react";
 
 import {
   CONVERSATIONS_INITIAL_STATE,
@@ -14,6 +15,7 @@ import {
   TABLE_KEY,
 } from "../constants";
 import { useFetchConversationsList } from "../hooks/useFetchConversationsList";
+import { ChannelFilter, ChannelFilterValue } from "./ChannelFilter";
 import { ConversationsStats } from "./ConversationsStats";
 import { conversationsTableColumns } from "./ConversationsTableColumns";
 import { DateRangeFilter } from "./DateRangeFilter";
@@ -29,8 +31,10 @@ export const ConversationsTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
+  const [channel, setChannel] = useState<ChannelFilterValue>("all");
+
   // Fetch conversations data
-  const { data } = useFetchConversationsList();
+  const { data } = useFetchConversationsList(channel === "all" ? undefined : channel);
 
   // Create a TableCN table; page, size, and sorting live in the URL
   const { table } = useTableCN({
@@ -54,8 +58,9 @@ export const ConversationsTable = () => {
 
           {/* Table with its toolbar, statistics strip and pagination footer */}
           <TableCN table={table} label={TABLE_HEADING} paginationProps={PAGINATION_PROPS}>
-            {/* Search beside the page-level date-range filter */}
+            {/* Channel and date-range filters beside the search */}
             <TableCNToolbar table={table} searchPlaceholder="Search...">
+              <ChannelFilter value={channel} onChange={setChannel} />
               <DateRangeFilter />
             </TableCNToolbar>
 
@@ -65,7 +70,7 @@ export const ConversationsTable = () => {
         </div>
       ) : (
         // Show a table-shaped placeholder while fetching the conversations data
-        <TableCNSkeleton columnCount={6} withSearch />
+        <TableCNSkeleton columnCount={7} withSearch />
       )}
     </>
   );

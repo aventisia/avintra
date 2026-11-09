@@ -20,6 +20,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@avplatform/voice-client": "*",
     "@codemirror/lang-json": "^6.0.2",
     "@hookform/resolvers": "^3.9.0",
     "@microsoft/signalr": "^10.0.0",

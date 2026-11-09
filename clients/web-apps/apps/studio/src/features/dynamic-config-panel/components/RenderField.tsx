@@ -109,7 +109,14 @@ export const RenderField = ({ force, ...field }: DCPFieldSchemaType & { force?: 
         />
       );
     case "tools-config-select":
-      return <ToolsConfigField name={field.name} />;
+      return (
+        <ToolsConfigField
+          name={field.name}
+          lockApprovalToAuto={
+            useDynamicConfigPanelStore.getState().nodeData?.name === VOICE_AGENT_NODE_NAME
+          }
+        />
+      );
     case "voice-config-select":
       // IMPORTANT NOTE: this schema entry stays load-bearing for form defaults and Zod
       // generation; its UI renders inline inside ModelConfigField for TTS-capable nodes.

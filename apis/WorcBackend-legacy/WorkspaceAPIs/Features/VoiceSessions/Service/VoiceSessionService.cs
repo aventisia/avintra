@@ -135,7 +135,7 @@ public sealed class VoiceSessionService : IVoiceSessionService
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
         httpClient.DefaultRequestHeaders.Add(
             "X-Env-Type",
-            _currentTenantService.CurrentEnvType == ConfigureEnvironmentType.Prod ? "prod" : "dev");
+            mode == VoiceAgentSettingsMode.Live ? "prod" : "dev");
         if (_currentTenantService.CurrentSpaceId != Guid.Empty)
             httpClient.DefaultRequestHeaders.Add("X-Space-Id", _currentTenantService.CurrentSpaceId.ToString());
 
