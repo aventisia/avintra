@@ -6,7 +6,7 @@ const VARIANTS = {
   primary:
     "bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary-hover focus-visible:ring-offset-2 disabled:bg-border disabled:text-muted-foreground disabled:shadow-none",
   danger:
-    "bg-bad px-4 font-semibold text-on-bad hover:bg-bad/90 focus-visible:ring-offset-2 disabled:bg-border disabled:text-muted-foreground disabled:shadow-none",
+    "bg-bad px-4 font-semibold text-bad-foreground hover:bg-bad-hover focus-visible:ring-offset-2 disabled:bg-border disabled:text-muted-foreground disabled:shadow-none",
   secondary: "px-3.5 font-medium text-ink-2 hover:bg-muted hover:text-ink",
 } as const;
 
