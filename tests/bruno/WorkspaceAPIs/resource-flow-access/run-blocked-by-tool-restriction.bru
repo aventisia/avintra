@@ -1,0 +1,44 @@
+meta {
+  name: Run blocked by restricted tool
+  type: http
+  seq: 25
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/execute-flow/execute
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{RESTRICTED_FLOW_VERSION_ID}}"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const toolName = bru.getGlobalEnvVar("RESTRICTED_TOOL_NAME") || bru.getEnvVar("RESTRICTED_TOOL_NAME");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("run is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("run block message names the restricted tool", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+    expect(text).to.contain("tool '" + toolName + "'");
+  });
+}
+
+docs {
+  > Requires RESTRICTED_FLOW_VERSION_ID to be an unpublished version of RESTRICTED_FLOW_ID
+  > whose saved reactFlowObject references a custom tool by name, and RESTRICTED_TOOL_NAME
+  > to name a Dev custom tool whose flow assignment is non-empty and does NOT include
+  > that flow. The manual run returns HTTP 403 naming the tool and creates no job.
+  > Same fixture flow as the queue case, so use a flow that references both.
+}

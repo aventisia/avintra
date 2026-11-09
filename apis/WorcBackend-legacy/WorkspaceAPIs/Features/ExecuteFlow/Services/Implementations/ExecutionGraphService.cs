@@ -1,5 +1,4 @@
 using ExecutorLibrary.Helpers;
-using System.Text.Json;
 
 namespace WorkspaceAPIs.Services;
 
@@ -11,17 +10,20 @@ public class ExecutionGraphService : IExecutionGraphService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IFlowBuilderService _flowBuilderService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
 
     public ExecutionGraphService(
         ILogger<ExecutionGraphService> logger,
         IUnitOfWork unitOfWork,
         IFlowBuilderService flowBuilderService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _flowBuilderService = flowBuilderService;
         _currentTenantService = currentTenantService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     public async Task<ServiceResponse<ExecutionGraphDto>> GetExecutionGraphAsync(Guid jobId)
@@ -59,6 +61,24 @@ public class ExecutionGraphService : IExecutionGraphService
                 return serviceResponse;
             }
 
+            var resourceAccess = await _resourceFlowAccessService.ValidateRunResourceAccessAsync(
+                job.TenantId,
+                flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+                flowVersion.Flow?.SpaceId,
+                flowVersion.FlowId,
+                flowVersion.ReactFlowObject);
+            if (resourceAccess.Data != true)
+            {
+                var denialMessage = resourceAccess.Message ?? "This flow is not assigned to a restricted resource.";
+                if (resourceAccess.StatusCode == 403)
+                {
+                    await RecordRunDenialAsync(job, denialMessage);
+                }
+                serviceResponse.Message = denialMessage;
+                serviceResponse.StatusCode = resourceAccess.StatusCode;
+                return serviceResponse;
+            }
+
             var reactFlowObject = flowVersion.ReactFlowObject ?? "{}";
 
             var subFlows = await CollectSubFlowGraphsAsync(reactFlowObject);
@@ -92,6 +112,23 @@ public class ExecutionGraphService : IExecutionGraphService
         return serviceResponse;
     }
 
+    private async Task RecordRunDenialAsync(Job job, string message)
+    {
+        try
+        {
+            // IMPORTANT NOTE: the desktop runner surfaces a rejected graph fetch as a generic
+            // HTTP failure, so the denial is recorded here to keep the Failed job's message.
+            job.Status = JobStatusEnum.Failed;
+            job.EndTime = DateTimeOffset.UtcNow;
+            job.Remark = message;
+            await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to record the resource access denial for job {JobId}.", job.Id);
+        }
+    }
+
     private async Task<List<SubFlowGraphDto>> CollectSubFlowGraphsAsync(string reactFlowObject)
     {
         var subFlowIds = new HashSet<Guid>();
@@ -102,13 +139,15 @@ public class ExecutionGraphService : IExecutionGraphService
 
         foreach (var node in flow.Nodes)
         {
-            if (string.Equals(node.Type, "callAgentNode", StringComparison.OrdinalIgnoreCase))
+            var reference = string.Equals(node.Type, "callAgentNode", StringComparison.OrdinalIgnoreCase)
+                ? node.Data?.SelectedAgent
+                : string.Equals(node.Type, "blockNode", StringComparison.OrdinalIgnoreCase)
+                    ? node.Data?.SelectedBlock
+                    : null;
+
+            if (ResourceFlowAccessHelpers.TryExtractFlowVersionId(reference, out var flowVersionId))
             {
-                TryExtractFlowVersionId(node.Data?.SelectedAgent, subFlowIds);
-            }
-            else if (string.Equals(node.Type, "blockNode", StringComparison.OrdinalIgnoreCase))
-            {
-                TryExtractFlowVersionId(node.Data?.SelectedBlock, subFlowIds);
+                subFlowIds.Add(flowVersionId);
             }
         }
 
@@ -136,29 +175,5 @@ public class ExecutionGraphService : IExecutionGraphService
         }
 
         return result;
-    }
-
-    private static void TryExtractFlowVersionId(JsonElement? reference, HashSet<Guid> ids)
-    {
-        if (reference is null)
-            return;
-
-        string? flowVersionIdStr = null;
-
-        if (reference.Value.ValueKind == JsonValueKind.Object &&
-            reference.Value.TryGetProperty("id", out var idProperty))
-        {
-            flowVersionIdStr = idProperty.GetString();
-        }
-        else if (reference.Value.ValueKind == JsonValueKind.String)
-        {
-            flowVersionIdStr = reference.Value.GetString();
-        }
-
-        if (!string.IsNullOrWhiteSpace(flowVersionIdStr) &&
-            Guid.TryParse(flowVersionIdStr.Trim(), out var flowVersionId))
-        {
-            ids.Add(flowVersionId);
-        }
     }
 }
