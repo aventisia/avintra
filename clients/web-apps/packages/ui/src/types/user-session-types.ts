@@ -10,6 +10,7 @@ interface IUserSessionStore {
   platformVersion: string;
   planType?: string;
   hasPaidPlan?: boolean;
+  tenantType?: string;
   deploymentType: DeploymentType;
 
   /** IsAventisiaEmployee */

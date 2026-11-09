@@ -4,6 +4,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { needsDeferredProfile } from "@avplatform/ui/utils";
 import { InfoIcon, PlusIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -19,6 +20,8 @@ import NextPaymentDetails from "./NextPaymentDetails.ee";
 import { PlanFeatures } from "./PlanFeatures.ee";
 import { UsageDetails } from "./UsageDetails.ee";
 import UpgradePlanDialog from "./upgrade-plan-dialog/UpgradePlanDialog.ee";
+
+const ACCOUNTS_CHECKOUT_PATH = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding?plan=";
 
 const Overview = () => {
   const { setOpen } = useCancelPlanDialogStore();
@@ -36,6 +39,14 @@ const Overview = () => {
     setChosenPlan,
     paymentId,
   } = useUpgradePlanDialogStore();
+
+  const openUpgrade = () => {
+    if (isStarterPlan && needsDeferredProfile(userSession)) {
+      window.location.href = ACCOUNTS_CHECKOUT_PATH;
+      return;
+    }
+    setUpgradePlanDialogOpen(true);
+  };
 
   const isPaymentProcessing = paymentId !== "";
 
@@ -137,7 +148,7 @@ const Overview = () => {
             <Button variant={"outline"} onClick={() => setOpen(true)}>
               Cancel Plan
             </Button>
-            <Button disabled={isPaymentProcessing} onClick={() => setUpgradePlanDialogOpen(true)}>
+            <Button disabled={isPaymentProcessing} onClick={openUpgrade}>
               Upgrade
             </Button>
           </div>

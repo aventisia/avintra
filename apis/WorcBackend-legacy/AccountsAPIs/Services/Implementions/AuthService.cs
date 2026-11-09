@@ -427,12 +427,13 @@ public class AuthService : IAuthService
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = user.Tenant != null ? user.Tenant.Country.ToString() : "NA",
+                TenantType = user.Tenant != null ? user.Tenant.Type.ToString() : "NA",
                 PlatformVersion = _appDefaultConfig.PlatformVersion,
-                HasPaidPlan = tenantSubscription?.Plan is { IsDefault: false }
+                HasPaidPlan = tenantSubscription?.Plan is { Price: > 0 }
             };
 
-            // IMPORTANT NOTE: A verified free account keeps its tenant Unspecified and relies on the Active
-            // Default subscription created at signup, so the organization-setup gate must not fire while that
+            // IMPORTANT NOTE: A verified free account keeps its tenant Unspecified and relies on the active
+            // signup-plan subscription (Starter on Commercial), so the organization-setup gate must not fire while that
             // subscription is usable. Genuinely incomplete tenants (no usable subscription) still require setup.
             var hasUsableActiveSubscription = tenantSubscription != null && tenantSubscription.Status != SubscriptionStatusTypesEnum.Initiated;
 

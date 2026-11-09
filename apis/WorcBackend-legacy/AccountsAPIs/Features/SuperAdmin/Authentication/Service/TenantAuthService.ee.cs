@@ -162,6 +162,7 @@ public class TenantAuthService : ITenantAuthService
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = user.Tenant?.Country.ToString() ?? "NA",
+                TenantType = user.Tenant?.Type.ToString() ?? "NA",
                 PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
@@ -391,6 +392,7 @@ public class TenantAuthService : ITenantAuthService
                 RefreshToken = refreshToken,
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = tenant != null ? tenant.Country.ToString() : "NA",
+                TenantType = tenant != null ? tenant.Type.ToString() : "NA",
                 PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 

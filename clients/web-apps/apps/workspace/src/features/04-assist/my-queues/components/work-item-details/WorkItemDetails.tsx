@@ -8,6 +8,7 @@ import {
 } from "@avplatform/ui/breadcrumb";
 import { Button, CopyButton } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -92,7 +93,7 @@ export const WorkItemDetails = () => {
   // In FIFO mode, a user may only close the item they actually claimed via the
   // "Get Next Item" button (which sets the assignee to the current user). This
   // prevents a user from closing an arbitrary item in the list regardless of age.
-  const currentUserDisplayName = userSession?.firstName + " " + userSession?.lastName;
+  const currentUserDisplayName = getUserDisplayName(userSession);
   const canClose = !isFifo || workItemData?.data.assignee === currentUserDisplayName;
 
   const handleClose = () => {
@@ -161,7 +162,7 @@ export const WorkItemDetails = () => {
         eventType: QueueTransactionEventEnum.StatusChange,
         data: "In Progress",
         createdOn: new Date().toISOString(),
-        createdBy: userSession?.firstName + " " + userSession?.lastName,
+        createdBy: currentUserDisplayName,
       });
     }
 
@@ -172,8 +173,7 @@ export const WorkItemDetails = () => {
     isViewOnly,
     myCurrentQueue,
     workItemData?.data.status,
-    userSession?.firstName,
-    userSession?.lastName,
+    currentUserDisplayName,
     workItemId,
   ]);
 

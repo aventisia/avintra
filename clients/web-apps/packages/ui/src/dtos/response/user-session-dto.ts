@@ -26,9 +26,12 @@ interface UserSessionDto {
 
   country: string;
 
+  /** Tenant type: "Unspecified" until organization setup, or "NA" without a tenant */
+  tenantType: string;
+
   platformVersion: string;
 
-  /** Whether the tenant's active subscription is a paid (non-default) plan */
+  /** Whether the tenant's active subscription is a paid (priced) plan */
   hasPaidPlan?: boolean;
 }
 

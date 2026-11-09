@@ -7,6 +7,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -75,7 +76,7 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
         {/* Header */}
         <div className={cn("flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5")}>
           <span className="truncate whitespace-nowrap text-base font-medium uppercase leading-4">
-            {userSession ? userSession?.firstName + " " + userSession?.lastName : "User Name"}
+            {userSession ? getUserDisplayName(userSession) : "User Name"}
           </span>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}

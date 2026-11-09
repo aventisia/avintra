@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { COUNTRY_LS_KEY } from "@/constants/variables";
+
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
 import { getParsedBillingFromStorage, isIndividualTenant } from "../utils";
@@ -24,7 +26,8 @@ export const useDefineBillingInfoForm = () => {
   // Try loading from localStorage
   const storedBillingData = getParsedBillingFromStorage(userSession?.tenantId);
 
-  const storedCountryData = typeof window !== "undefined" ? localStorage.getItem("country") : null;
+  const storedCountryData =
+    typeof window !== "undefined" ? localStorage.getItem(COUNTRY_LS_KEY) : null;
 
   let parsedStoredData: Partial<z.infer<typeof billingInfoSchema>> = {};
 

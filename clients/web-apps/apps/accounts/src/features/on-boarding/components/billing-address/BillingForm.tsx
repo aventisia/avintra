@@ -2,7 +2,9 @@ import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { isTenantSetupPending } from "@avplatform/ui/utils";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -33,12 +35,13 @@ import { getParsedBillingFromStorage, setBillingDataInStorage } from "../../util
 export const BillingForm = () => {
   const { form, isSubmitting, isIndividualUser, disableCountryDD } = useDefineBillingInfoForm();
 
-  const { setStepNo, setBillingData } = useChoosePlanStore(
+  const { setStepNo, setBillingData, currency, setCurrency, setPlanId } = useChoosePlanStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
-      planId: state.planId,
-      planFrequency: state.planFrequency,
       setBillingData: state.setBillingData,
+      currency: state.currency,
+      setCurrency: state.setCurrency,
+      setPlanId: state.setPlanId,
     })),
   );
 
@@ -48,8 +51,10 @@ export const BillingForm = () => {
 
   const { saveDeferredTenantProfile } = useSaveDeferredTenantProfile();
 
+  const isSetupPending = isTenantSetupPending(userSession);
+
   const onSubmit = async (formData: z.infer<typeof billingInfoSchema>) => {
-    if (isIndividualUser && !(await saveDeferredTenantProfile(formData))) return;
+    if (isSetupPending && !(await saveDeferredTenantProfile(formData))) return;
 
     const existingData = getParsedBillingFromStorage(userSession?.tenantId);
 
@@ -65,6 +70,15 @@ export const BillingForm = () => {
     setBillingData({
       ...formData,
     });
+
+    if (formData.country === "India" && currency !== "INR") {
+      setCurrency("INR");
+      setPlanId("");
+      toast.info("Billing in India uses INR pricing. Choose your plan again in INR.");
+      setStepNo(1);
+      return;
+    }
+
     setStepNo(3);
   };
   const isGSTRegistered = form.watch("isWillingToFileGst");
@@ -84,8 +98,8 @@ export const BillingForm = () => {
             <InputField {...firstNameProps} />
             <InputField {...lastNameProps} />
           </div>
-          {isIndividualUser && <SelectField {...organizationTypeProps} />}
-          {isIndividualUser && isOrganization && <InputField {...organizationNameProps} />}
+          {isSetupPending && <SelectField {...organizationTypeProps} />}
+          {isSetupPending && isOrganization && <InputField {...organizationNameProps} />}
           {/* GST Filing Consent */}
           {applyGST && <SwitchField {...gstRegistrationProps} />}
           {/* Additional validation field */}

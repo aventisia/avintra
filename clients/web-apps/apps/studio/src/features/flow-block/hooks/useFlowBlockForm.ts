@@ -1,5 +1,6 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -68,9 +69,9 @@ export const useFlowBlockForm = () => {
       type: "",
       inputs: [],
       outputs: [],
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -103,11 +104,9 @@ export const useFlowBlockForm = () => {
         description: flowData?.data?.description ?? "",
         ...IOObj,
 
-        createdBy:
-          flowData?.data?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+        createdBy: flowData?.data?.createdBy ?? getUserDisplayName(userSession),
         createdOn: flowData?.data?.createdOn ? new Date(flowData?.data?.createdOn) : new Date(),
-        lastModifiedBy:
-          flowData?.data?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+        lastModifiedBy: flowData?.data?.lastModifiedBy ?? getUserDisplayName(userSession),
         lastModifiedOn: flowData?.data?.lastModifiedOn
           ? new Date(flowData?.data?.lastModifiedOn)
           : new Date(),

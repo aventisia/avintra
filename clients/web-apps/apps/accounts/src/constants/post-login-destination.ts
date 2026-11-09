@@ -35,13 +35,31 @@ const getPostLoginDestination = (email: string): string => {
     : import.meta.env.VITE_WORKSPACE_PATH;
 };
 
-/**
- * Resolves where to send a signed-in user: the `redirect` query param when present, otherwise
- * the default app for their email.
- */
-const resolvePostLoginDestination = (email: string): string => {
-  const redirect = new URLSearchParams(window.location.search).get("redirect");
-  return redirect ? decodeURIComponent(redirect) : getPostLoginDestination(email);
+const getSameOriginRedirect = (): string | null => {
+  try {
+    const redirect = new URLSearchParams(window.location.search).get("redirect");
+    if (!redirect) return null;
+
+    const url = new URL(decodeURIComponent(redirect), window.location.origin);
+    return url.origin === window.location.origin ? url.href : null;
+  } catch {
+    return null;
+  }
 };
 
-export { AVENTISIA_EMAIL_DOMAIN, getPostLoginDestination, resolvePostLoginDestination };
+/**
+ * Resolves where to send a signed-in user: the same-origin `redirect` query param when present,
+ * otherwise the default app for their email.
+ */
+const resolvePostLoginDestination = (email: string): string =>
+  getSameOriginRedirect() ?? getPostLoginDestination(email);
+
+/** True when the user arrived intending to buy a plan (a `plan` query param is present). */
+const hasPlanIntent = (): boolean => new URLSearchParams(window.location.search).has("plan");
+
+export {
+  AVENTISIA_EMAIL_DOMAIN,
+  getPostLoginDestination,
+  hasPlanIntent,
+  resolvePostLoginDestination,
+};

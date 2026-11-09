@@ -1,4 +1,5 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -298,9 +299,7 @@ export const useCollaboration = () => {
     connection.invoke("JoinFlow", flowVersionId).catch(() => undefined);
   }, [flowVersionId]);
 
-  const displayName = userSession
-    ? `${userSession.firstName} ${userSession.lastName}`.trim() || userSession.email
-    : undefined;
+  const displayName = userSession ? getUserDisplayName(userSession) : undefined;
 
   const acquireLock = useCallback(
     async (targetType: LockTargetType, targetId: string) => {

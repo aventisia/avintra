@@ -82,7 +82,7 @@ const setBillingDataInStorage = (tenantId?: string, formData?: any) => {
   }
 };
 
-/** True while the tenant is still the personal one created at sign-up (its name is the user's email). */
+/** True for Individual tenants and tenants still pending setup, both named after the user's email. */
 const isIndividualTenant = (
   userSession: { tenantName?: string; email?: string } | null | undefined,
 ) => userSession?.tenantName == userSession?.email;
