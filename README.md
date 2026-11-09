@@ -61,14 +61,6 @@ The Desktop App and Runner run on Windows 10 and 11, macOS and Linux (x64). Desk
 
 [Talk to us about Enterprise](https://aventisia.com/contact/)
 
-## How Avintra compares
-
-| | Avintra | Dify | n8n |
-| --- | --- | --- | --- |
-| Primary focus | Enterprise process automation with agents | LLM app development | General workflow automation |
-| Human approvals built in | Approve or deny an agent's tool calls in chat; approval workflow in the agent risk registry | Human Input node pauses a workflow until a reviewer responds by web form or email | Human review step on AI agent tool calls; Send and Wait for Response on messaging nodes |
-| Governance and audit | Audit log, agent risk registry, run history and credential vault; full audit logs on Enterprise | SSO, RBAC, SCIM and audit logs on Enterprise | Log streaming of workflow, node and audit events on Enterprise |
-
 ## License
 
 Avintra is licensed under the [Avintra Community License](LICENSE): Apache 2.0 with additional conditions.
