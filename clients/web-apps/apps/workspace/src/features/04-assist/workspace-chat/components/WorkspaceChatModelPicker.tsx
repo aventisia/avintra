@@ -4,10 +4,12 @@ import {
   CaretUpDownIcon,
   CheckIcon,
   CircleNotchIcon,
+  GearIcon,
   KeyIcon,
   MagnifyingGlassIcon,
 } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   type WorkspaceChatModelState,
@@ -45,6 +47,8 @@ export const WorkspaceChatModelPicker = ({
 }: WorkspaceChatModelPickerProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const isEmpty = groups.length === 0 && !isLoading;
 
   const filteredGroups = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -78,12 +82,15 @@ export const WorkspaceChatModelPicker = ({
             ? `${selectedModel.providerLabel} · ${selectedModel.modelId}`
             : isLoading
               ? "Loading models…"
-              : "Default model"}
+              : "Select model"}
         </span>
         <CaretUpDownIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 overflow-hidden p-0">
-        <div className="flex items-center gap-2 border-b px-3 py-2">
+      <PopoverContent
+        align="start"
+        className="flex max-h-[var(--radix-popover-content-available-height,100dvh)] w-80 flex-col overflow-hidden p-0"
+      >
+        <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2">
           <MagnifyingGlassIcon className="h-3.5 w-3.5 text-muted-foreground" />
           <input
             autoFocus
@@ -91,31 +98,32 @@ export const WorkspaceChatModelPicker = ({
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search models"
             aria-label="Search models"
-            className="h-6 w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+            className="h-6 w-full min-w-0 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
           />
         </div>
-        <div className="max-h-80 overflow-y-auto py-1">
-          <button
-            type="button"
-            onClick={() => {
-              onSelect(null);
-              setOpen(false);
-            }}
-            className={cn(
-              "flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs transition-colors hover:bg-muted",
-              !selectedModel && "bg-muted/60",
-            )}
-          >
-            <CheckIcon
-              className={cn("h-3.5 w-3.5 shrink-0 text-primary", selectedModel && "invisible")}
-            />
-            <span className="min-w-0 flex-1 truncate font-medium">Default model</span>
-          </button>
-          {filteredGroups.length === 0 && (
-            <p className="px-3 py-6 text-center text-2xs text-muted-foreground">
-              No model matches.
-            </p>
-          )}
+        <div className="max-h-80 min-h-0 overflow-y-auto py-1">
+          {isEmpty ? (
+            <div className="flex flex-col items-center gap-2 px-3 py-6 text-center">
+              <p className="text-2xs text-muted-foreground">No models configured.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/tenant/model-providers");
+                }}
+                className="inline-flex h-7 items-center gap-1.5 rounded-full border bg-background px-3 text-2xs font-medium shadow-sm transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                <GearIcon className="h-3 w-3" />
+                Configure models
+              </button>
+            </div>
+          ) : (
+            <>
+              {filteredGroups.length === 0 && (
+                <p className="px-3 py-6 text-center text-2xs text-muted-foreground">
+                  No model matches.
+                </p>
+              )}
           {filteredGroups.map((group) => (
             <div key={group.provider} className="py-1">
               <p className="px-3 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -149,10 +157,11 @@ export const WorkspaceChatModelPicker = ({
               })}
             </div>
           ))}
+            </>
+          )}
         </div>
-        <p className="border-t bg-muted/40 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground">
-          Models with a provider key show that tenant credential. Other models run on platform
-          credits.
+        <p className="shrink-0 border-t bg-muted/40 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground">
+          Key badge marks models using a tenant vault credential.
         </p>
       </PopoverContent>
     </Popover>

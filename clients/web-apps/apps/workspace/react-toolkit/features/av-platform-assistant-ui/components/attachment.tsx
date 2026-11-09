@@ -10,10 +10,128 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@avplatform/u
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { FileTextIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
-import { type FC, PropsWithChildren, useEffect, useState } from "react";
+import { type FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { TooltipIconButton } from "./tooltip-icon-button";
+
+const WORKSPACE_CHAT_MAX_ATTACHMENT_COUNT = 3;
+
+const WORKSPACE_CHAT_MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+
+const WORKSPACE_CHAT_ALLOWED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "text/plain",
+  "text/markdown",
+  "text/csv",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
+
+const WORKSPACE_CHAT_ALLOWED_EXTENSIONS = [
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
+  "gif",
+  "pdf",
+  "txt",
+  "md",
+  "csv",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
+];
+
+const WORKSPACE_CHAT_UPLOAD_ACCEPT = [
+  ...WORKSPACE_CHAT_ALLOWED_MIME_TYPES,
+  ...WORKSPACE_CHAT_ALLOWED_EXTENSIONS.map((extension) => `.${extension}`),
+].join(",");
+
+const WORKSPACE_CHAT_UPLOAD_HINT =
+  "documents, images, text, spreadsheets and presentations; up to 3 files of 10 MB each";
+
+type WorkspaceChatAttachmentRejection = { fileName: string; reason: string };
+
+const getWorkspaceChatFileExtension = (fileName: string) => {
+  const dot = fileName.lastIndexOf(".");
+  return dot < 0 ? "" : fileName.slice(dot + 1).toLowerCase();
+};
+
+const isWorkspaceChatSupportedFile = (file: File) =>
+  WORKSPACE_CHAT_ALLOWED_MIME_TYPES.includes(file.type.toLowerCase()) ||
+  WORKSPACE_CHAT_ALLOWED_EXTENSIONS.includes(getWorkspaceChatFileExtension(file.name));
+
+const validateWorkspaceChatAttachments = (
+  existingCount: number,
+  files: readonly File[],
+): { valid: File[]; rejected: WorkspaceChatAttachmentRejection[] } => {
+  const valid: File[] = [];
+  const rejected: WorkspaceChatAttachmentRejection[] = [];
+
+  for (const file of files) {
+    if (existingCount + valid.length >= WORKSPACE_CHAT_MAX_ATTACHMENT_COUNT) {
+      rejected.push({
+        fileName: file.name,
+        reason: `Only ${WORKSPACE_CHAT_MAX_ATTACHMENT_COUNT} files per message.`,
+      });
+    } else if (file.size > WORKSPACE_CHAT_MAX_ATTACHMENT_BYTES) {
+      rejected.push({ fileName: file.name, reason: `"${file.name}" is larger than 10 MB.` });
+    } else if (!isWorkspaceChatSupportedFile(file)) {
+      rejected.push({ fileName: file.name, reason: `"${file.name}" isn't a supported file type.` });
+    } else {
+      valid.push(file);
+    }
+  }
+
+  return { valid, rejected };
+};
+
+const useComposerAttachmentNotice = () => {
+  const attachments = useAuiState((s) => s.composer.attachments);
+
+  return useMemo(() => {
+    if (attachments.length === 0) return null;
+
+    const parts: string[] = [];
+    const overflow = attachments.length - WORKSPACE_CHAT_MAX_ATTACHMENT_COUNT;
+    if (overflow > 0) {
+      parts.push(
+        `Only ${WORKSPACE_CHAT_MAX_ATTACHMENT_COUNT} files per message — remove ${overflow}.`,
+      );
+    }
+
+    const invalid = attachments.filter(
+      (attachment) =>
+        attachment.file &&
+        (attachment.file.size > WORKSPACE_CHAT_MAX_ATTACHMENT_BYTES ||
+          !isWorkspaceChatSupportedFile(attachment.file)),
+    );
+    for (const attachment of invalid.slice(0, 2)) {
+      const file = attachment.file;
+      if (!file) continue;
+      parts.push(
+        file.size > WORKSPACE_CHAT_MAX_ATTACHMENT_BYTES
+          ? `"${attachment.name}" is larger than 10 MB — remove it.`
+          : `"${attachment.name}" isn't a supported file type — remove it.`,
+      );
+    }
+    if (invalid.length > 2) parts.push(`(+${invalid.length - 2} more)`);
+
+    return parts.length > 0 ? parts.join(" ") : null;
+  }, [attachments]);
+};
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -176,26 +294,75 @@ export const UserMessageAttachments: FC = () => {
 };
 
 export const ComposerAttachments: FC = () => {
+  const notice = useComposerAttachmentNotice();
+
   return (
-    <div className="aui-composer-attachments flex w-full flex-row items-center gap-2 overflow-x-auto empty:hidden">
-      <ComposerPrimitive.Attachments>{() => <AttachmentUI />}</ComposerPrimitive.Attachments>
-    </div>
+    <>
+      <div className="aui-composer-attachments flex w-full flex-row items-center gap-2 overflow-x-auto empty:hidden">
+        <ComposerPrimitive.Attachments>{() => <AttachmentUI />}</ComposerPrimitive.Attachments>
+      </div>
+      {notice && (
+        <p role="alert" className="aui-composer-attachments-notice text-xs text-bad">
+          {notice}
+        </p>
+      )}
+    </>
   );
 };
 
 export const ComposerAddAttachment: FC = () => {
+  const aui = useAui();
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   return (
-    <ComposerPrimitive.AddAttachment asChild>
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        accept={WORKSPACE_CHAT_UPLOAD_ACCEPT}
+        className="hidden"
+        aria-hidden
+        tabIndex={-1}
+        onChange={(event) => {
+          const picked = Array.from(event.target.files ?? []);
+          event.target.value = "";
+          if (picked.length === 0) return;
+
+          const existingCount = aui.composer.getState().attachments.length;
+          const { valid, rejected } = validateWorkspaceChatAttachments(existingCount, picked);
+          setError(
+            rejected.length === 0
+              ? null
+              : rejected.length === 1
+                ? rejected[0].reason
+                : `${rejected[0].reason} (+${rejected.length - 1} more)`,
+          );
+          void Promise.all(valid.map((file) => aui.composer.addAttachment(file))).catch(() => {
+            setError("Could not attach the file — try again.");
+          });
+        }}
+      />
       <TooltipIconButton
-        tooltip="Add attachment"
+        tooltip={`Add attachment (${WORKSPACE_CHAT_UPLOAD_HINT})`}
         side="bottom"
         variant="ghost"
         size="icon6"
         className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-hover dark:border-line dark:hover:bg-hover"
         aria-label="Add attachment"
+        onClick={() => {
+          setError(null);
+          inputRef.current?.click();
+        }}
       >
         <PlusIcon className="aui-attachment-add-icon size-5" />
       </TooltipIconButton>
-    </ComposerPrimitive.AddAttachment>
+      {error && (
+        <span role="alert" className="min-w-0 truncate text-[11px] text-bad">
+          {error}
+        </span>
+      )}
+    </>
   );
 };

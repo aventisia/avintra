@@ -79,6 +79,7 @@ public static class AppServicesExtension
         config.Apply(new AssistChatMappingProfile());
         config.Apply(new ConversationMappingProfile());
         config.Apply(new ConversationMessageMappingProfile());
+        config.Apply(new ChatArtifactsMappingProfile());
         config.Apply(new AdminConversationMappingProfile());
         config.Apply(new SearchByQueryMappingProfile());
         config.Apply(new KnowledgeBaseMappingProfile());
@@ -174,6 +175,7 @@ public static class AppServicesExtension
         services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IConversationMessageService, ConversationMessageService>();
+        services.AddScoped<IChatArtifactsService, ChatArtifactsService>();
         services.AddScoped<IStreamingChatService, StreamingChatService>();
         services.AddScoped<IAdminConversationService, AdminConversationService>();
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();

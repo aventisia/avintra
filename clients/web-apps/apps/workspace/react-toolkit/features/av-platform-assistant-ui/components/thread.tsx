@@ -92,13 +92,37 @@ export const Thread = ({
   title,
   description,
   composerAccessory,
+  centerComposerWhenEmpty = false,
+  assistantSuffix,
+  markdownPreprocess,
 }: {
   title?: string;
   description?: string;
   composerAccessory?: React.ReactNode;
+  /** Centers the welcome and composer while the thread is empty; the composer docks at the bottom afterwards. */
+  centerComposerWhenEmpty?: boolean;
+  /** Rendered inside each assistant message, after its content parts. */
+  assistantSuffix?: React.ReactNode;
+  /** Transforms assistant text before markdown rendering. */
+  markdownPreprocess?: (text: string) => string;
 }) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
+
+  const footer = (
+    <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-surface pb-4 md:pb-6">
+      <ThreadScrollToBottom />
+      {isDisabled ? (
+        readOnly ? (
+          <ReadOnlyBanner />
+        ) : (
+          <Archived />
+        )
+      ) : (
+        <Composer composerAccessory={composerAccessory} />
+      )}
+    </ThreadPrimitive.ViewportFooter>
+  );
 
   return (
     <ThreadPrimitive.Root
@@ -116,28 +140,50 @@ export const Thread = ({
         scrollToBottomOnInitialize
         className="aui-thread-viewport relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth px-4 pt-4"
       >
-        {!isDisabled && (
-          <AuiIf condition={(s) => s.thread.isEmpty}>
-            <ThreadWelcome title={title} description={description} />
-          </AuiIf>
+        {centerComposerWhenEmpty ? (
+          <>
+            <AuiIf condition={(s) => s.thread.isEmpty}>
+              <div className="aui-thread-empty-center m-auto flex w-full max-w-2xl -translate-y-10 flex-col gap-6 px-4">
+                {!isDisabled && <ThreadWelcome title={title} description={description} />}
+                {isDisabled ? (
+                  readOnly ? (
+                    <ReadOnlyBanner />
+                  ) : (
+                    <Archived />
+                  )
+                ) : (
+                  <Composer composerAccessory={composerAccessory} />
+                )}
+              </div>
+            </AuiIf>
+
+            <AuiIf condition={(s) => !s.thread.isEmpty}>
+              <ThreadPrimitive.Messages>
+                {() => <ThreadMessage assistantSuffix={assistantSuffix} markdownPreprocess={markdownPreprocess} />}
+              </ThreadPrimitive.Messages>
+
+              <FollowUps />
+
+              {footer}
+            </AuiIf>
+          </>
+        ) : (
+          <>
+            {!isDisabled && (
+              <AuiIf condition={(s) => s.thread.isEmpty}>
+                <ThreadWelcome title={title} description={description} />
+              </AuiIf>
+            )}
+
+            <ThreadPrimitive.Messages>
+              {() => <ThreadMessage assistantSuffix={assistantSuffix} markdownPreprocess={markdownPreprocess} />}
+            </ThreadPrimitive.Messages>
+
+            <FollowUps />
+
+            {footer}
+          </>
         )}
-
-        <ThreadPrimitive.Messages>{() => <ThreadMessage />}</ThreadPrimitive.Messages>
-
-        <FollowUps />
-
-        <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-surface pb-4 md:pb-6">
-          <ThreadScrollToBottom />
-          {isDisabled ? (
-            readOnly ? (
-              <ReadOnlyBanner />
-            ) : (
-              <Archived />
-            )
-          ) : (
-            <Composer composerAccessory={composerAccessory} />
-          )}
-        </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
   );
@@ -149,7 +195,7 @@ const ReadOnlyBanner: FC = () => (
   </div>
 );
 
-const ThreadMessage: FC = () => {
+const ThreadMessage: FC<{ assistantSuffix?: React.ReactNode; markdownPreprocess?: (text: string) => string }> = ({ assistantSuffix, markdownPreprocess }) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
   const role = useAuiState((s) => s.message.role);
@@ -157,7 +203,7 @@ const ThreadMessage: FC = () => {
 
   if (isEditing && !isDisabled) return <EditComposer />;
   if (role === "user") return <UserMessage />;
-  return <AssistantMessage />;
+  return <AssistantMessage assistantSuffix={assistantSuffix} markdownPreprocess={markdownPreprocess} />;
 };
 
 const ThreadScrollToBottom: FC = () => {
@@ -194,7 +240,7 @@ const ThreadWelcome = ({ title, description }: { title?: string; description?: s
 
 const ThreadSuggestions: FC = () => {
   return (
-    <div className="aui-thread-welcome-suggestions flex gap-2 pb-4 w-full flex-wrap">
+    <div className="aui-thread-welcome-suggestions flex w-full flex-wrap justify-center gap-2 pb-4">
       <ThreadPrimitive.Suggestions>{() => <ThreadSuggestionItem />}</ThreadPrimitive.Suggestions>
     </div>
   );
@@ -426,7 +472,7 @@ const MessageThinking: FC = () => {
   return <ThinkingIndicator startedAt={startedAt} className="mt-1 px-2" />;
 };
 
-const AssistantMessage: FC = () => {
+const AssistantMessage: FC<{ assistantSuffix?: React.ReactNode; markdownPreprocess?: (text: string) => string }> = ({ assistantSuffix, markdownPreprocess }) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
 
@@ -476,7 +522,7 @@ const AssistantMessage: FC = () => {
               case "text":
                 if (!part.text || part.text.trim() === "") return null;
                 // Render Markdown if there is text.
-                return <MarkdownText />;
+                return <MarkdownText preprocess={markdownPreprocess} />;
               case "indicator":
                 return <MessageThinking />;
               default:
@@ -487,6 +533,7 @@ const AssistantMessage: FC = () => {
 
         <ToolApprovalBulkBar disabled={isDisabled} />
         <MessageError />
+        {assistantSuffix}
       </div>
 
       <div className="aui-assistant-message-footer mt-1 ml-2 flex min-h-6 items-center">

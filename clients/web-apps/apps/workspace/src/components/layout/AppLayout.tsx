@@ -159,9 +159,9 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes([...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE, NOTIFICATIONS_ROUTE]);
+    setAllowedRoutes(["/", ...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE, NOTIFICATIONS_ROUTE]);
 
-    setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
+    setLandingUrl("/");
   }, [
     isPending,
     selectedRoles,
@@ -170,13 +170,6 @@ export const AppLayout = () => {
     setLandingUrl,
     userSession,
   ]);
-
-  useEffect(() => {
-    //Navigate user to first option of filteredSidebarMenu
-    if (location?.pathname == "/") {
-      navigate(landingUrl);
-    }
-  }, [landingUrl, location?.pathname, navigate]);
 
   // Routes protection by getting allowed routes form side bar menu section
   useEffect(() => {

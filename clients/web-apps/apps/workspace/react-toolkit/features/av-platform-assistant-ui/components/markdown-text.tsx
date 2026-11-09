@@ -13,12 +13,13 @@ import remarkGfm from "remark-gfm";
 import { DataViz } from "./data-viz";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
-const MarkdownTextImpl = () => {
+const MarkdownTextImpl = ({ preprocess }: { preprocess?: (text: string) => string }) => {
   return (
     <MarkdownTextPrimitive
       remarkPlugins={[remarkGfm]}
       className="aui-md"
       components={defaultComponents}
+      preprocess={preprocess}
     />
   );
 };
@@ -60,8 +61,8 @@ function extractJsonFromPre(children?: ReactNode): string | null {
       text += node;
     } else if (Array.isArray(node)) {
       node.forEach(walk);
-    } else if (node && typeof node === "object" && "props" in (node as any)) {
-      walk((node as any).props?.children);
+    } else if (node && typeof node === "object" && "props" in node) {
+      walk((node as { props?: { children?: ReactNode } }).props?.children);
     }
   };
   walk(children);

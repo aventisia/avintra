@@ -209,6 +209,13 @@ public class StreamingChatService : IStreamingChatService
             yield break;
         }
 
+        var filesError = ChatArtifactsHelpers.ValidateFiles(request.Files);
+        if (filesError is not null)
+        {
+            yield return SerializeError(filesError);
+            yield break;
+        }
+
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
@@ -648,7 +655,8 @@ public class StreamingChatService : IStreamingChatService
 
     /// <summary>
     /// Picks the tenant's first enabled text model on a pipeline-supported
-    /// provider when the landing chat has no explicit selection.
+    /// provider when the landing chat has no explicit selection, falling back
+    /// to the platform default model when the tenant enables none.
     /// </summary>
     private async Task<LlmModelSelection?> ResolveDefaultModelSelectionAsync()
     {
@@ -673,6 +681,17 @@ public class StreamingChatService : IStreamingChatService
             var credentialName = await ResolveCredentialNameAsync(provider.CredentialId);
             return new LlmModelSelection(pipelineProvider, ToModelId(pipelineProvider, modelId), credentialName, !string.IsNullOrEmpty(credentialName));
         }
+
+        return ResolvePlatformDefaultModelSelection();
+    }
+
+    private LlmModelSelection? ResolvePlatformDefaultModelSelection()
+    {
+        if (!string.IsNullOrWhiteSpace(_environmentConfig.OpenAiApiKey))
+            return new LlmModelSelection("openai", "gpt-4o-mini", null, false);
+
+        if (!string.IsNullOrWhiteSpace(_environmentConfig.GeminiApiKey))
+            return new LlmModelSelection("googlegemini", "gemini-2.5-flash-lite", null, false);
 
         return null;
     }

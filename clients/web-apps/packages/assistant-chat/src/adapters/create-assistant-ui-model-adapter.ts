@@ -14,6 +14,8 @@ export type CreateAssistantUIModelAdapterParams = {
   onSuggestionsUpdate?: (actions: string[]) => void;
   /** Called for every streamed text delta so observers can synthesize speech incrementally. */
   onTextDelta?: (delta: string) => void;
+  /** Called once with the turn's full assistant text when a fresh run finishes streaming. */
+  onTextComplete?: (text: string) => void;
   /** Called once per run when streaming settles (success, error, or abort). */
   onRunFinished?: () => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
@@ -76,18 +78,23 @@ function mapThreadToLLMMessages(messages: readonly ThreadMessage[]): LLMMessageT
 }
 
 /**
- * Extracts file references (data URLs / http(s) URLs) from a user message's
- * attachments so they can be forwarded to the LLM pipeline.
+ * Extracts file references (data URLs) from a user message's image/file parts
+ * so they can be forwarded to the LLM pipeline. Attachments travel on the
+ * message as content parts (and under `attachments` after send), not as URL
+ * fields, so both shapes are read.
  */
 function extractFilesFromMessage(message: ThreadMessage | undefined): string[] {
   if (!message) return [];
   const files: string[] = [];
-  const attachments = (message as any).attachments as any[] | undefined;
-  if (Array.isArray(attachments)) {
-    for (const att of attachments) {
-      const src = att?.src || att?.url || att?.file?.src;
-      if (typeof src === "string" && src) files.push(src);
-    }
+  const pushFilePart = (part: any) => {
+    if (part?.type === "image" && typeof part.image === "string" && part.image)
+      files.push(part.image);
+    else if (part?.type === "file" && typeof part.data === "string" && part.data)
+      files.push(part.data);
+  };
+  for (const part of (message as any).content ?? []) pushFilePart(part);
+  for (const attachment of (message as any).attachments ?? []) {
+    for (const part of attachment?.content ?? []) pushFilePart(part);
   }
   return files;
 }
@@ -143,6 +150,7 @@ export const createAssistantUIModelAdapter = ({
   onRequestComplete,
   onSuggestionsUpdate,
   onTextDelta,
+  onTextComplete,
   onRunFinished,
   isTempChat = false,
   getExtraHeaders,
@@ -311,6 +319,11 @@ export const createAssistantUIModelAdapter = ({
               getExtraHeaders?.(),
             ),
           );
+          const fullText = builder.parts
+            .filter((part) => (part as { type?: string }).type === "text")
+            .map((part) => (part as { text?: string }).text ?? "")
+            .join("");
+          onTextComplete?.(fullText);
         }
 
         // Ensure at least a placeholder is rendered.

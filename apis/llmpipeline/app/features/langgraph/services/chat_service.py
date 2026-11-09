@@ -512,6 +512,11 @@ class ChatService:
 
             # Token-level deltas from the chat model.
             if event_type == "on_chat_model_stream":
+                # The planner's token deltas are routing metadata
+                # ({"tool_names": [...], "skill_names": [...]}), never user
+                # text, so they stay out of the stream and the buffer.
+                if node_name == "agent_selector":
+                    continue
                 chunk = data.get("chunk")
                 if chunk is not None:
                     # Reasoning/thinking deltas (when the model emits them).

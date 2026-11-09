@@ -1,0 +1,14 @@
+meta {
+  name: Get chat artifacts by conversation
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-artifacts/list/{{CONVERSATION_ID}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}

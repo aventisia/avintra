@@ -3,14 +3,9 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import {
-  getLlmModelsV2,
-  getLlmProvidersV2,
-  getModelProviders,
-} from "@/features/05-tenant-admin/model-providers";
+import { getModelProviders } from "@/features/05-tenant-admin/model-providers";
 
 const WORKSPACE_CHAT_MODELS_QUERY_KEY = ["workspace-chat-models"] as const;
-const TEXT_CAPABILITY = "text";
 
 /** LiteLLM provider names accepted by the llmpipeline chat API, keyed by the names either side reports. */
 const PIPELINE_PROVIDERS: Record<string, string> = {
@@ -79,32 +74,9 @@ const createModel = (
   };
 };
 
-// The credential-less listing is the platform catalog: models the platform
-// pays for when no tenant credential is configured for them.
-const fetchPlatformModels = async (): Promise<WorkspaceChatModelState[]> => {
-  const response = await getLlmProvidersV2(TEXT_CAPABILITY);
-  const providers = [
-    ...new Set(
-      (response?.providers ?? [])
-        .map((provider) => toPipelineProvider(provider.name))
-        .filter((provider): provider is string => provider !== null),
-    ),
-  ];
-
-  const catalogs = await Promise.all(
-    providers.map((provider) => getLlmModelsV2(provider, TEXT_CAPABILITY)),
-  );
-
-  return providers.flatMap((provider, index) =>
-    (catalogs[index]?.models ?? [])
-      .map((model) => createModel(provider, model.id, null))
-      .filter((model): model is WorkspaceChatModelState => model !== null),
-  );
-};
-
 /**
- * Derives the landing chat's model options from the tenant's enabled models and
- * the platform catalog, keeping only providers the llmpipeline can route.
+ * Derives the landing chat's model options from the tenant's enabled models,
+ * keeping only providers the llmpipeline can route.
  */
 export const useWorkspaceChatModels = () => {
   const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
@@ -113,12 +85,6 @@ export const useWorkspaceChatModels = () => {
     queryFn: getModelProviders,
     enabled: Boolean(tenantId),
     staleTime: 60_000,
-  });
-  const platformQuery = useQuery({
-    queryKey: [...WORKSPACE_CHAT_MODELS_QUERY_KEY, "platform"],
-    queryFn: fetchPlatformModels,
-    enabled: Boolean(tenantId),
-    staleTime: 300_000,
   });
 
   const models = useMemo<WorkspaceChatModelState[]>(() => {
@@ -143,16 +109,14 @@ export const useWorkspaceChatModels = () => {
       }
     }
 
-    options.push(...(platformQuery.data ?? []));
-
-    // A tenant-enabled model wins over the same platform model: it carries the credential badge.
+    // A tenant-enabled model wins over a duplicate entry.
     const seen = new Set<string>();
     return options.filter((model) => {
       if (seen.has(model.key)) return false;
       seen.add(model.key);
       return true;
     });
-  }, [tenantQuery.data, platformQuery.data]);
+  }, [tenantQuery.data]);
 
   const groups = useMemo<WorkspaceChatProviderGroup[]>(() => {
     const byProvider = new Map<string, WorkspaceChatProviderGroup>();
@@ -173,8 +137,8 @@ export const useWorkspaceChatModels = () => {
     models,
     groups,
     hasUsableModel: models.length > 0,
-    isLoading: tenantQuery.isLoading || platformQuery.isLoading,
-    isError: tenantQuery.isError && platformQuery.isError,
-    isSuccess: tenantQuery.isSuccess || platformQuery.isSuccess,
+    isLoading: tenantQuery.isLoading,
+    isError: tenantQuery.isError,
+    isSuccess: tenantQuery.isSuccess,
   };
 };
