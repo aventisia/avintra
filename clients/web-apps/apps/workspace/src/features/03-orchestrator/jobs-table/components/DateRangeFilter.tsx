@@ -2,6 +2,7 @@ import { Calendar, UpgradeDialog } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME } from "@avplatform/ui/table-cn";
 import { CalendarDotsIcon } from "@phosphor-icons/react";
 import {
   differenceInCalendarDays,
@@ -140,8 +141,13 @@ export const DateRangeFilter = () => {
         }}
       >
         <PopoverTrigger asChild disabled={isCurrentTab}>
-          <Button disabled={isCurrentTab} variant="outline">
-            <CalendarDotsIcon className="mr-2 h-3.5 w-3.5" />
+          <Button
+            disabled={isCurrentTab}
+            variant="outline"
+            size="xs"
+            className={TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME}
+          >
+            <CalendarDotsIcon />
             {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
             {format(selectedRange.to!, "MMM d, yyyy")}
           </Button>

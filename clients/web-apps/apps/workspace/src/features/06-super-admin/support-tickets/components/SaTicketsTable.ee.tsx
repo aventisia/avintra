@@ -12,6 +12,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
+
+import {
   SA_TICKETS_INITIAL_STATE,
   SA_TICKETS_PAGE_SIZE_OPTIONS,
   TABLE_HEADING,
@@ -94,9 +99,9 @@ export const SaTicketsTable = () => {
             <TableCNHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                <TabsList className="h-fit w-full">
+                <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
                   {tabs.map((tab) => (
-                    <TabsTrigger value={tab} key={tab} className="w-full">
+                    <TabsTrigger value={tab} key={tab} className={SEGMENTED_TABS_TRIGGER_CLASS}>
                       {tab}
                     </TabsTrigger>
                   ))}
