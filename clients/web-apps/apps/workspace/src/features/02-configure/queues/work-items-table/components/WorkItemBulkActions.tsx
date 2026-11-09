@@ -1,6 +1,11 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 
@@ -35,29 +40,29 @@ export function WorkItemBulkActions({ table }: Readonly<WorkItemBulkActionsProps
   >(selectedRowIds, workItemsOptimisticMutationFn, queryKey);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  deleteWorkItems({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
-
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "work items" : "work item"}`,
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <TableCNActionBarItem
+        icon={TrashIcon}
+        tone="destructive"
+        onClick={() => {
+          showDefaultAlertDialog({
+            confirmActionFn: () => {
+              deleteWorkItems({
+                payload: selectedRowIds,
+                crudAction: "delete-multiple",
               });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+
+              table.toggleAllRowsSelected(false);
+            },
+            alertType: "delete-multiple",
+            additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "work items" : "work item"}`,
+          });
+        }}
+      >
+        Delete
+      </TableCNActionBarItem>
+    </TableCNActionBar>
   );
 }

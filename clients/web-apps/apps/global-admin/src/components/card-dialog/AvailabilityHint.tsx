@@ -1,6 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import { type CustomFormMessage } from "@avplatform/ui/types";
-import { CircleCheck, LoaderCircle } from "lucide-react";
+import { CheckCircleIcon, CircleNotchIcon } from "@phosphor-icons/react";
 
 /**
  * Field hint that shows a name or email availability check in progress, then its result.
@@ -18,9 +18,9 @@ export const AvailabilityHint = ({ message }: { message: CustomFormMessage | nul
       )}
     >
       {isChecking ? (
-        <LoaderCircle className="size-3.5 shrink-0 animate-spin" />
+        <CircleNotchIcon className="size-3.5 shrink-0 animate-spin" />
       ) : (
-        <CircleCheck className="size-3.5 shrink-0" />
+        <CheckCircleIcon className="size-3.5 shrink-0" />
       )}
       {message.message}
     </span>

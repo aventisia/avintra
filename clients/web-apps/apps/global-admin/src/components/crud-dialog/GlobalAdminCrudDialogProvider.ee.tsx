@@ -5,7 +5,7 @@ import {
   type CrudDialogRegistry,
 } from "@avplatform/ui/crud-dialog";
 import { TableCNSkeleton } from "@avplatform/ui/table-cn";
-import { Building2, Server } from "lucide-react";
+import { BuildingsIcon, HardDrivesIcon } from "@phosphor-icons/react";
 import { Suspense, lazy } from "react";
 
 import { CrudCardDialog, type CrudCardDialogConfig } from "@/components/card-dialog/CrudCardDialog";
@@ -30,13 +30,13 @@ const cardDialog = (config: CrudCardDialogConfig): CrudDialogEntityConfig => ({
 
 const crudDialogRegistry: CrudDialogRegistry = {
   onPremTenant: cardDialog({
-    Icon: Building2,
+    Icon: BuildingsIcon,
     widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getOnPremTenantDialogHeadingDescription,
     Content: OnPremTenantCrudDialogContent,
   }),
   tenantInstance: cardDialog({
-    Icon: Server,
+    Icon: HardDrivesIcon,
     widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getTenantInstanceDialogHeadingDescription,
     Content: TenantInstanceCrudDialogContent,

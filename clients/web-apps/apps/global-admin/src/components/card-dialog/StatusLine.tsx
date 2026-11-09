@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { TriangleAlert } from "lucide-react";
+import { WarningIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 
 const TONES = {
@@ -21,7 +21,7 @@ type StatusLineProps = {
 export const StatusLine = ({ tone, children }: StatusLineProps) => (
   <p className={cn("flex min-w-0 items-center gap-2 text-[12.5px]", TONES[tone].text)}>
     {tone === "warning" ? (
-      <TriangleAlert className="size-4 shrink-0" />
+      <WarningIcon className="size-4 shrink-0" />
     ) : (
       <span className={cn("size-2 shrink-0 rounded-full", TONES[tone].dot)} />
     )}

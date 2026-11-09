@@ -1,8 +1,10 @@
+import { CopyButton } from "@avplatform/ui/buttons";
 import {
   type CrudCustomDialogProps,
   useCrudDialogChrome,
   useCrudDialogIsDirty,
 } from "@avplatform/ui/crud-dialog";
+import { useCopyToClipboard } from "@avplatform/ui/hooks";
 import { IconTile, type IconTileProps } from "@avplatform/ui/icon-tile";
 import { cn } from "@avplatform/ui/lib";
 import { type DialogCrudAction } from "@avplatform/ui/types";
@@ -21,7 +23,8 @@ export type CrudCardDialogConfig = {
 
 /**
  * Card dialog around an entity's CRUD form: the form's `name` becomes the title, and actions
- * the form wraps in `CrudDialogActions` sit in the footer next to Cancel.
+ * the form wraps in `CrudDialogActions` sit in the footer next to Cancel. A read-only record
+ * view drops the status line and gets a copyable title.
  */
 export const CrudCardDialog = ({
   isOpen,
@@ -41,6 +44,8 @@ export const CrudCardDialog = ({
   const recordName = chrome?.recordName?.trim();
   const hasNameField = chrome?.recordName !== undefined;
   const isReadMode = crudAction === "read";
+  const isRecordView = Boolean(chrome?.isRecordView);
+  const { isCopied, copy } = useCopyToClipboard({ successDuration: 1000 });
 
   const status = isReadMode ? (
     <StatusLine tone="idle">View only</StatusLine>
@@ -60,17 +65,28 @@ export const CrudCardDialog = ({
       eyebrow={hasNameField ? heading : null}
       title={
         hasNameField ? (
-          <span className={cn(!recordName && "text-muted-foreground")}>
+          <span className={cn(!recordName && "text-muted-foreground")} title={recordName}>
             {recordName || "Untitled"}
           </span>
         ) : (
           heading
         )
       }
+      titleAccessory={
+        isRecordView &&
+        recordName && (
+          <CopyButton
+            isCopied={isCopied}
+            onClick={() => copy(recordName)}
+            aria-label="Copy name"
+            className="text-[17px]"
+          />
+        )
+      }
       footer={
         <>
-          {status}
-          <div className="flex shrink-0 items-center gap-2">
+          {!isRecordView && status}
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <CardDialogButton onClick={onGoBack ?? onClose}>
               {onGoBack ? "Back" : isReadMode ? "Close" : "Cancel"}
             </CardDialogButton>
