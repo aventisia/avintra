@@ -28,7 +28,6 @@ const SECTION_LABELS: Record<HelpSection, string> = {
   assist: "Assist",
   "tenant-admin": "Tenant admin",
   "super-admin": "Multi-tenant admin",
-  "global-admin": "Global admin",
 };
 
 const ICON_BUTTON_CLASS_NAME = cn(
