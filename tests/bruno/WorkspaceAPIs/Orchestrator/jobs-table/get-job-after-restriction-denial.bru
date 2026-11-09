@@ -1,0 +1,42 @@
+meta {
+  name: Get cloud job after restriction denial
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/job/{{RESTRICTED_CLOUD_JOB_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const jobId = bru.getGlobalEnvVar("RESTRICTED_CLOUD_JOB_ID") || bru.getEnvVar("RESTRICTED_CLOUD_JOB_ID");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("job fetch returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("job is recorded as Failed", function() {
+    expect(res.getBody().data.id).to.equal(jobId);
+    expect(res.getBody().data.status).to.equal("Failed");
+  });
+
+  test("job remark carries the restriction message", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+  });
+}
+
+docs {
+  > Regression for PT-486-02. Run after insert-job-blocked-by-restriction. The cloud
+  > dispatch marks the job Failed before claiming or executing any step, and the full
+  > restriction message is kept in the job remark. Before the fix the job stayed Created
+  > with an empty remark because the denial write hit the change tracker. ACCESS_TOKEN
+  > must belong to an OM user.
+}
