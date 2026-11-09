@@ -11,6 +11,7 @@ import { type CrudEntityKey } from "@avplatform/ui/types";
 import {
   BellIcon,
   BookOpenTextIcon,
+  BrowserIcon,
   ChatIcon,
   ClockIcon,
   CurrencyCircleDollarIcon,
@@ -214,6 +215,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
   folder: {
     Dialog: FolderCrudDialog,
   },
+  uiBuilder: cardDialog({
+    Icon: BrowserIcon,
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
+  }),
   queue: cardDialog({
     Icon: ListIcon,
     getHeader: getQueueDialogHeadingDescription,

@@ -19,7 +19,6 @@ import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import {
-  UiBuilderPublishButton,
   UiBuilderVersions,
   useIsUiBuilderRoute,
 } from "@/features/ui-builder";

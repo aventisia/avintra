@@ -9,6 +9,8 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { InterfaceDetailPane } from "./features/04-assist/my-interfaces/components/InterfaceDetailPane";
+import { InterfaceNoSelection } from "./features/04-assist/my-interfaces/components/InterfaceNoSelection";
 import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
@@ -95,6 +97,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
+      },
+      {
+        path: "/ui-builder",
+        element: <UiBuilderPage />,
       },
       // configure section
       {

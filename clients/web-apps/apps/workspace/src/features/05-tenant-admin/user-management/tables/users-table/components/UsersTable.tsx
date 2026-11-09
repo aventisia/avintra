@@ -48,14 +48,6 @@ export const UsersTable = () => {
 
   const columns = useMemo(() => usersTableColumns(spaceIdToName), [spaceIdToName]);
 
-  const { deploymentType, planType } = useUserSessionStore(
-    useShallow((state) => ({
-      deploymentType: state.userSession?.deploymentType,
-      planType: state.userSession?.planType,
-    })),
-  );
-  const isStarterPlan = planType === "Starter" && deploymentType !== "Community";
-
   // Create a TableCN table; page, size, and sorting live in the URL
   const { table } = useTableCN({
     data: data?.data ?? [],
@@ -65,6 +57,14 @@ export const UsersTable = () => {
     persistKey: TABLE_KEY,
     searchColumns: ["firstName"],
   });
+
+  const { deploymentType, planType } = useUserSessionStore(
+    useShallow((state) => ({
+      deploymentType: state.userSession?.deploymentType,
+      planType: state.userSession?.planType,
+    })),
+  );
+  const isStarterPlan = planType === "Starter" && deploymentType !== "Community";
 
   return (
     <>

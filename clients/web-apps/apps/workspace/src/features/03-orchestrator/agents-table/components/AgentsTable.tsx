@@ -62,7 +62,7 @@ export const AgentsTable = () => {
 
   // Create a TableCN table; page, size, and sorting live in the URL
   const { table } = useTableCN({
-    data: data?.data ?? [],
+    data: rows,
     columns,
     getRowId: (row) => row.id,
     initialState: AGENTS_INITIAL_STATE,
