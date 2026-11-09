@@ -1,11 +1,9 @@
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { TrashIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/react/shallow";
 
-import { TooltipIconButton } from "@/react-toolkit/features/av-platform-assistant-ui/components/tooltip-icon-button";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import { useWorkspaceChatArtifacts } from "../hooks/useWorkspaceChatArtifacts.hook";
@@ -90,24 +88,15 @@ export const WorkspaceChatArtifactsGallery = () => {
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {artifacts.map((artifact) => (
-                <div key={artifact.id} className="flex min-w-0 items-center gap-1">
-                  <div className="min-w-0 flex-1">
-                    <WorkspaceChatFileCard
-                      artifactId={artifact.id}
-                      name={artifact.name}
-                      contentType={artifact.contentType}
-                      sizeBytes={artifact.sizeBytes}
-                      onPreview={setPreviewArtifactId}
-                    />
-                  </div>
-                  <TooltipIconButton
-                    tooltip="Delete artifact"
-                    aria-label={`Delete ${artifact.name}`}
-                    onClick={() => confirmDeleteArtifact(artifact.id)}
-                  >
-                    <TrashIcon className="size-4" />
-                  </TooltipIconButton>
-                </div>
+                <WorkspaceChatFileCard
+                  key={artifact.id}
+                  artifactId={artifact.id}
+                  name={artifact.name}
+                  contentType={artifact.contentType}
+                  sizeBytes={artifact.sizeBytes}
+                  onPreview={setPreviewArtifactId}
+                  onDelete={confirmDeleteArtifact}
+                />
               ))}
             </div>
           )}
