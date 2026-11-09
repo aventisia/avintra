@@ -1,4 +1,5 @@
-from uuid import uuid4
+from typing import Any
+from uuid import UUID, uuid4
 
 from langchain_core.messages import BaseMessage
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,13 +7,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.checkpoint.persistence import (
+    attach_voice_turn_timing as _attach_voice_turn_timing,
     ensure_conversation,
     load_messages,
     save_message as _save_message,
     save_transcript as _save_transcript,
+    update_conversation_status as _update_conversation_status,
 )
 from app.features.langgraph.graphs.message_builder import build_messages
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
+
+
+def _flow_version_id(request: LLMRequest) -> str:
+    if request.flow_version_id:
+        return request.flow_version_id
+    # IMPORTANT NOTE: legacy chat requests send only the parent flow id, which voice
+    # turns must never record as a version.
+    return "" if request.is_voice_agent else (request.ref_id or "")
 
 
 class ConversationService:
@@ -69,7 +80,8 @@ class ConversationService:
                 tenant_id=user.tenant_id,
                 user_id=user.user_id,
                 conversation_id=conversation_id,
-                flow_version_id=request.ref_id,
+                flow_version_id=_flow_version_id(request),
+                channel=request.channel,
                 audit_user_id=user.user_id,
             )
 
@@ -116,7 +128,8 @@ class ConversationService:
                 tenant_id=user.tenant_id,
                 user_id=user.user_id,
                 conversation_id=conversation_id,
-                flow_version_id=request.ref_id,
+                flow_version_id=_flow_version_id(request),
+                channel=request.channel,
                 audit_user_id=user.user_id,
             )
 
@@ -133,6 +146,51 @@ class ConversationService:
         except Exception:
             logger.exception(
                 "Failed to persist chat transcript. conversation_id=%s",
+                conversation_id,
+            )
+
+    async def save_voice_turn_timing(
+        self,
+        db_session: AsyncSession,
+        conversation_id: str,
+        timing: dict[str, Any],
+    ) -> None:
+        """Merge the voice timing for the turn that just completed."""
+
+        try:
+            await _attach_voice_turn_timing(
+                session=db_session,
+                conversation_id=conversation_id,
+                timing=timing,
+            )
+            await db_session.flush()
+        except Exception:
+            logger.exception(
+                "Failed to persist voice turn timing. conversation_id=%s",
+                conversation_id,
+            )
+
+    async def finish_voice_conversation(
+        self,
+        db_session: AsyncSession,
+        conversation_id: str,
+        *,
+        failed: bool,
+        user_id: UUID | None = None,
+    ) -> None:
+        """Set the terminal status for a finished voice conversation."""
+
+        try:
+            await _update_conversation_status(
+                session=db_session,
+                conversation_id=conversation_id,
+                status="Failed" if failed else "Completed",
+                audit_user_id=user_id,
+            )
+            await db_session.flush()
+        except Exception:
+            logger.exception(
+                "Failed to finish voice conversation. conversation_id=%s",
                 conversation_id,
             )
 

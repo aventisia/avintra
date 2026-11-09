@@ -32,6 +32,7 @@ namespace WorkspaceAPIs.MappingProfiles
                    .Ignore(dest => dest.CreatedByUserId)
                    .Ignore(dest => dest.LastModifiedByUserId)
                    .Ignore(dest => dest.TenantId)
+                   .Ignore(dest => dest.Channel)
                    .IgnoreNullValues(true);
           }
      }

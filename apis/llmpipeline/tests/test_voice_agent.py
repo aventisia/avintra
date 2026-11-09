@@ -48,6 +48,8 @@ class TestVoiceContractShape:
         assert request.introduction_text is None
         assert request.voice_system_prompt is None
         assert request.manager_agent is None
+        assert request.flow_version_id is None
+        assert request.channel == "chat"
 
     def test_request_accepts_voice_fields(self):
         request = _voice_request(
@@ -55,6 +57,8 @@ class TestVoiceContractShape:
             introduction_text="Hello there.",
             voice_system_prompt="Goal:\nHelp the caller.",
             manager_agent={"target": "billing_agent", "context": {"conversation_id": "c1"}},
+            flow_version_id="22222222-2222-2222-2222-222222222222",
+            channel="voice",
         )
 
         assert request.is_voice_agent is True
@@ -62,6 +66,8 @@ class TestVoiceContractShape:
         assert request.introduction_text == "Hello there."
         assert request.voice_system_prompt == "Goal:\nHelp the caller."
         assert request.manager_agent["target"] == "billing_agent"
+        assert request.flow_version_id == "22222222-2222-2222-2222-222222222222"
+        assert request.channel == "voice"
 
 
 # ---------------------------------------------------------------------------

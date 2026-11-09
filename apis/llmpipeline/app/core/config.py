@@ -81,6 +81,13 @@ class Settings(BaseSettings):
     ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1"
     ELEVENLABS_API_KEY: str = ""
 
+    # LiveKit voice
+    LIVEKIT_WS_URL: str = ""
+    LIVEKIT_HTTP_URL: str = ""
+    LIVEKIT_API_KEY: str = ""
+    LIVEKIT_API_SECRET: str = ""
+    LIVEKIT_AGENT_NAME: str = "avintra-voice-agent"
+
     # Corsair sidecar configuration
     # URL of the Corsair sidecar (llmpipeline calls this directly for Corsair tools).
     # The sidecar is backend-only and private; no auth header is required.

@@ -30,4 +30,9 @@ public class ConversationDto
     /// Gets or sets the current status of the conversation lifecycle.
     /// </summary>
     public ConversationStatusEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the channel that created the conversation.
+    /// </summary>
+    public ConversationChannelEnum Channel { get; set; } = ConversationChannelEnum.Chat;
 }

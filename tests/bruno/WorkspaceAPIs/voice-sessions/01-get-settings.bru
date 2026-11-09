@@ -1,0 +1,29 @@
+meta {
+  name: Get resolved voice agent settings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/settings/{{VOICE_FLOW_VERSION_ID}}?mode={{VOICE_MODE}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+      const settings = res.getBody()?.data;
+      bru.setGlobalEnvVar("VOICE_ENGINE_MODE", settings?.engineMode);
+      bru.setGlobalEnvVar("VOICE_FIRST_SPEAKER", settings?.firstSpeaker);
+  }
+}
+
+docs {
+  > `VOICE_FLOW_VERSION_ID` must identify a VoiceAgent flow version the caller
+  > can access. `VOICE_MODE` is `test` for the draft or `live` for a published
+  > version. The response never contains provider secrets.
+}

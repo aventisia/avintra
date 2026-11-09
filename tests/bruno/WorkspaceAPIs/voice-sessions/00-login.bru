@@ -1,0 +1,29 @@
+meta {
+  name: Login and obtain access token
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "email": "{{MY_EMAIL}}",
+      "pwd": "{{MY_PWD}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200 && res.getBody()?.data?.accessToken) {
+      bru.setGlobalEnvVar("ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > Set `MY_EMAIL` and `MY_PWD` through the Bruno environment or a collection
+  > secret. Do not commit real credentials.
+}
