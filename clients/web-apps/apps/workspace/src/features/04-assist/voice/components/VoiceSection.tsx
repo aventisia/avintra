@@ -1,26 +1,66 @@
-import { VoiceCallView } from "@avplatform/assistant-chat";
+import { VoiceCallView, type VoiceCaptionTurn, useLiveVoiceCall } from "@avplatform/assistant-chat";
+import { EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { ArrowLeft, AudioLines, Bot, Languages, UserRound } from "lucide-react";
+import { Button } from "@avplatform/ui/buttons";
+import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { ArrowLeft, AudioLines, Bot, LoaderCircle, UserRound } from "lucide-react";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { SAMPLE_VOICE_AGENTS } from "../constants/voice-agent-samples.constant";
-import type { SampleVoiceAgent } from "../types/voice-agent-sample.type";
+import { useFetchChatAgents } from "@/features/04-assist/my-chats/hooks/useFetchChatAgents";
+
+import type { AssistChatDto } from "../../my-chats/dtos/assist-chat.dto";
+import { createVoiceSession } from "../apis/voice-session.apis";
 
 const VOICE_HOME = "/assist/voice";
+const INTRODUCTION_TURN_ID = "introduction";
 
-/** Voice route section: agent picker, or the call screen for the selected agent. Uses sample agents until Phase 1. */
+/** Voice route section: published VoiceAgent picker, or the call screen for the selected agent. */
 export const VoiceSection = () => {
   const { flowVersionId } = useParams<{ flowVersionId?: string }>();
+  const { active } = useFetchChatAgents();
 
-  if (!flowVersionId) return <VoiceAgentPicker />;
+  const agents = (active.data?.data ?? []).filter(
+    (agent) => agent.flowType === FlowTypesEnum.VoiceAgent,
+  );
+  const selectedAgent = flowVersionId
+    ? agents.find((agent) => agent.id === flowVersionId)
+    : undefined;
 
-  const agent = SAMPLE_VOICE_AGENTS.find((item) => item.id === flowVersionId);
-  if (!agent) return <UnknownVoiceAgent />;
+  if (selectedAgent) return <VoiceCallScreen key={selectedAgent.id} agent={selectedAgent} />;
+  if (active.isError) return <VoiceLoadError onRetry={() => void active.refetch()} />;
+  if (active.isLoading) return <VoiceLoading />;
+  if (flowVersionId) return <UnknownVoiceAgent />;
+
+  return <VoiceAgentPicker agents={agents} />;
+};
+
+const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
+  const introduction = agent.voiceIntroduction?.trim();
+
+  const initialTurns = useMemo<VoiceCaptionTurn[]>(
+    () =>
+      agent.firstSpeaker === "ai" && introduction
+        ? [{ id: INTRODUCTION_TURN_ID, speaker: "agent", text: introduction }]
+        : [],
+    [agent.firstSpeaker, introduction],
+  );
+
+  const call = useLiveVoiceCall({
+    flowVersionId: agent.id,
+    mode: "live",
+    initialTurns,
+    createSession: async (request) => {
+      const response = await createVoiceSession({ ...request, mode: "live" });
+      if (!response.data)
+        throw new Error(response.message || "Voice session could not be started.");
+      return response.data;
+    },
+  });
 
   return (
     <VoiceCallView
-      key={agent.id}
-      script={agent.script}
+      call={call}
       agentName={agent.name}
       variant="full"
       idleTitle={`Talk to ${agent.name}`}
@@ -41,12 +81,13 @@ export const VoiceSection = () => {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="truncate text-body font-semibold text-ink">{agent.name}</h1>
-              <Badge variant="secondary">v{agent.versionNumber}</Badge>
-              <Badge variant="draft">Sample</Badge>
+              <Badge variant="outline" className="tabular-nums">
+                v{agent.versionNumber}
+              </Badge>
             </div>
-            <p className="truncate text-hint text-muted-foreground">
-              {agent.language} · {agent.voice}
-            </p>
+            {agent.description && (
+              <p className="truncate text-hint text-muted-foreground">{agent.description}</p>
+            )}
           </div>
         </header>
       }
@@ -54,7 +95,7 @@ export const VoiceSection = () => {
   );
 };
 
-const VoiceAgentCard = ({ agent }: { agent: SampleVoiceAgent }) => {
+const VoiceAgentCard = ({ agent }: { agent: AssistChatDto }) => {
   const SpeakerIcon = agent.firstSpeaker === "ai" ? Bot : UserRound;
 
   return (
@@ -69,18 +110,14 @@ const VoiceAgentCard = ({ agent }: { agent: SampleVoiceAgent }) => {
         <span className="min-w-0 flex-1 truncate text-body font-semibold text-ink">
           {agent.name}
         </span>
-        <Badge variant="draft">Sample</Badge>
+        <Badge variant="outline" className="tabular-nums">
+          v{agent.versionNumber}
+        </Badge>
       </div>
-      <p className="line-clamp-2 text-body-sm text-ink-2">{agent.description}</p>
+      {agent.description && (
+        <p className="line-clamp-2 text-body-sm text-ink-2">{agent.description}</p>
+      )}
       <div className="flex flex-wrap gap-x-3 gap-y-1 text-hint text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Languages aria-hidden="true" className="size-3.5" />
-          {agent.language}
-        </span>
-        <span className="flex items-center gap-1">
-          <AudioLines aria-hidden="true" className="size-3.5" />
-          {agent.voice}
-        </span>
         <span className="flex items-center gap-1">
           <SpeakerIcon aria-hidden="true" className="size-3.5" />
           {agent.firstSpeaker === "ai" ? "Agent speaks first" : "You speak first"}
@@ -90,22 +127,48 @@ const VoiceAgentCard = ({ agent }: { agent: SampleVoiceAgent }) => {
   );
 };
 
-const VoiceAgentPicker = () => (
+const VoiceAgentPicker = ({ agents }: { agents: AssistChatDto[] }) => (
   <div className="flex h-full w-full flex-col bg-bg">
     <div className="border-b border-line bg-surface px-4 py-3">
       <h1 className="text-heading text-ink">Voice</h1>
       <p className="text-hint text-muted-foreground">
-        Choose an agent to start a hands-free call. These are sample agents until your published
-        voice agents are listed here.
+        Choose a published agent to start a hands-free call.
       </p>
     </div>
     <div className="flex-1 overflow-y-auto p-4">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {SAMPLE_VOICE_AGENTS.map((agent) => (
-          <VoiceAgentCard key={agent.id} agent={agent} />
-        ))}
-      </div>
+      {agents.length ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {agents.map((agent) => (
+            <VoiceAgentCard key={agent.id} agent={agent} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          Icon={AudioLines}
+          primaryMessage="No voice agents available"
+          secondaryMessage="Ask your admin to publish a voice agent and assign it to you."
+          className="h-full"
+        />
+      )}
     </div>
+  </div>
+);
+
+const VoiceLoading = () => (
+  <div className="flex h-full w-full items-center justify-center gap-2 text-body-sm text-muted-foreground">
+    <LoaderCircle aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" />
+    Loading voice agents…
+  </div>
+);
+
+const VoiceLoadError = ({ onRetry }: { onRetry: () => void }) => (
+  <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-center">
+    <p role="alert" className="text-body font-semibold text-ink">
+      Voice agents could not be loaded.
+    </p>
+    <Button variant="outline" onClick={onRetry}>
+      Try again
+    </Button>
   </div>
 );
 

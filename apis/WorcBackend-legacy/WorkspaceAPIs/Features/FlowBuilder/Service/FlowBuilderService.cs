@@ -15,6 +15,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly ICollaborationStore _collaborationStore;
     private readonly IVaultCredentialService _vaultCredentialService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
+    private readonly ITenantModelProviderService _tenantModelProviderService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -29,7 +30,8 @@ public class FlowBuilderService : IFlowBuilderService
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
         IVaultCredentialService vaultCredentialService,
-        IResourceFlowAccessService resourceFlowAccessService)
+        IResourceFlowAccessService resourceFlowAccessService,
+        ITenantModelProviderService tenantModelProviderService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -49,6 +51,7 @@ public class FlowBuilderService : IFlowBuilderService
         _collaborationStore = collaborationStore;
         _vaultCredentialService = vaultCredentialService;
         _resourceFlowAccessService = resourceFlowAccessService;
+        _tenantModelProviderService = tenantModelProviderService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -354,6 +357,19 @@ public class FlowBuilderService : IFlowBuilderService
 
                 if (VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(parsedVoiceFlow) is string voiceEngineError)
                     return serviceResponse.Update(voiceEngineError, 400);
+
+                var tenantEnabledModels = await _tenantModelProviderService.GetEnabledModelsAsync(null, null);
+                if (tenantEnabledModels.Data is null)
+                    return serviceResponse.Update(
+                        "Voice agent model configuration could not be verified. Please try again.", 500);
+
+                var enabledModelOptions = tenantEnabledModels.Data
+                    .Select(model => (
+                        Provider: model.ProviderType.ToString(),
+                        Model: model.ModelId,
+                        Capability: model.Capability?.ToString()));
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentModelsEnabled(parsedVoiceFlow, enabledModelOptions) is string voiceModelError)
+                    return serviceResponse.Update(voiceModelError, 400);
 
                 if (VoiceAgentGraphHelpers.ValidateVoiceAgentEscalation(parsedVoiceFlow) is string voiceEscalationError)
                     return serviceResponse.Update(voiceEscalationError, 400);

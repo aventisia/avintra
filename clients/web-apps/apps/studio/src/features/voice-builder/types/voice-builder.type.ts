@@ -1,5 +1,4 @@
-export type VoiceBuilderSectionId =
-  "persona" | "opening" | "voice" | "brain" | "knowledge" | "pronunciation" | "later";
+export type VoiceBuilderSectionId = "persona" | "opening" | "brain" | "knowledge" | "pronunciation";
 
 export type VoiceReadinessCheck = {
   section: VoiceBuilderSectionId;

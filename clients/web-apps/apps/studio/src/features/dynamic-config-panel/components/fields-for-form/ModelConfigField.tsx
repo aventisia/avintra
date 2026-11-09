@@ -33,6 +33,8 @@ interface ModelConfigFieldProps {
   hideByok?: boolean;
   /** Hides the voice, language, and speed pickers when the caller renders its own. */
   hideVoiceConfig?: boolean;
+  /** Renders the fields without the named group wrapper when the caller provides one. */
+  hideGroup?: boolean;
 }
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -58,6 +60,7 @@ const ModelConfigField = ({
   specialty,
   hideByok = false,
   hideVoiceConfig = false,
+  hideGroup = false,
 }: ModelConfigFieldProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -484,7 +487,7 @@ const ModelConfigField = ({
     </div>
   );
 
-  return groupName ? (
+  return groupName && !hideGroup ? (
     <GroupedFieldsWrapper groupName={groupName}>{content}</GroupedFieldsWrapper>
   ) : (
     content

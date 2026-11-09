@@ -1,8 +1,10 @@
-import type { VoiceCallScriptTurn, VoiceCaptionTurn } from "@avplatform/assistant-chat";
+import type { VoiceCaptionTurn } from "@avplatform/assistant-chat";
 
 import type { VoiceConversation } from "../types/voice-conversation.type";
 
-const toTurns = (script: VoiceCallScriptTurn[]): VoiceCaptionTurn[] =>
+type VoiceConversationSampleTurn = Omit<VoiceCaptionTurn, "id">;
+
+const toTurns = (script: VoiceConversationSampleTurn[]): VoiceCaptionTurn[] =>
   script.map((turn, index) => ({ ...turn, id: `turn-${index}` }));
 
 const latency = (speechToTextMs: number, firstTokenMs: number, firstAudioMs: number) => ({

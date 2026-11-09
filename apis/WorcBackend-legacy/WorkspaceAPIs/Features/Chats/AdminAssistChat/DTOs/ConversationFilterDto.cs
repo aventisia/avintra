@@ -30,4 +30,9 @@ public class ConversationFilterDto
     /// Gets or sets the collection of flow version IDs used to filter conversations.
     /// </summary>
     public IEnumerable<Guid>? FlowVersionIds { get; set; }
+
+    /// <summary>
+    /// Gets or sets the channel used to filter conversations. Null includes all channels.
+    /// </summary>
+    public ConversationChannelEnum? Channel { get; set; }
 }

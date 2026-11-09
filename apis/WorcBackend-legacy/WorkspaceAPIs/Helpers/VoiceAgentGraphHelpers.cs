@@ -309,6 +309,48 @@ public static class VoiceAgentGraphHelpers
     }
 
     /// <summary>
+    /// Validates that the VoiceAgent pipeline language, speech-to-text, and text-to-speech
+    /// models are enabled for the tenant.
+    /// </summary>
+    /// <param name="parsedFlow">The parsed ReactFlow object.</param>
+    /// <param name="enabledModels">The tenant-enabled models with provider, model, and capability.</param>
+    /// <returns>An error message when a model is not enabled; otherwise, null.</returns>
+    public static string? ValidateVoiceAgentModelsEnabled(
+        ReactFlowDataModel? parsedFlow,
+        IEnumerable<(string Provider, string Model, string? Capability)> enabledModels)
+    {
+        var voiceNode = FindVoiceAgentNode(parsedFlow);
+        if (voiceNode is null)
+            return null;
+
+        if (string.Equals(GetInputString(voiceNode, EngineModeKey)?.Trim(), "realtime", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        // shortcut: voice models are assumed to come from tenant providers (the voice builder hides
+        // BYOK), revisit when BYOK is exposed in the voice builder.
+        var enabled = enabledModels.ToList();
+        var components = new (string Key, string Label, string Capability)[]
+        {
+            (PipelineSpeechToTextKey, "speech-to-text", "Stt"),
+            (PipelineLlmKey, "language model", "Text"),
+            (PipelineTextToSpeechKey, "text-to-speech", "Tts")
+        };
+
+        foreach (var component in components)
+        {
+            var provider = GetInputObjectField(voiceNode, component.Key, "provider");
+            var model = GetInputObjectField(voiceNode, component.Key, "model");
+
+            if (IsModelEnabled(provider, model, component.Capability, enabled))
+                continue;
+
+            return $"Voice agent {component.Label} model '{model}' is not enabled for this tenant.";
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Validates the VoiceAgent escalation configuration: an empty destination
     /// disables escalation, and a configured destination must carry a supported fallback.
     /// </summary>
@@ -411,6 +453,41 @@ public static class VoiceAgentGraphHelpers
         }
 
         return null;
+    }
+
+    private static bool IsModelEnabled(
+        string? provider,
+        string? model,
+        string capability,
+        List<(string Provider, string Model, string? Capability)> enabledModels)
+    {
+        var normalizedProvider = NormalizeModelProvider(provider);
+        var normalizedModel = model?.Trim();
+
+        return enabledModels.Any(enabled =>
+            string.Equals(NormalizeModelProvider(enabled.Provider), normalizedProvider, StringComparison.Ordinal) &&
+            string.Equals(enabled.Model?.Trim(), normalizedModel, StringComparison.Ordinal) &&
+            IsCapabilityEnabled(enabled.Capability, capability));
+    }
+
+    private static bool IsCapabilityEnabled(string? capability, string requiredCapability)
+    {
+        var normalized = string.IsNullOrWhiteSpace(capability) ? "Text" : capability.Trim();
+
+        return string.Equals(normalized, requiredCapability, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeModelProvider(string? provider)
+    {
+        var normalized = new string((provider ?? string.Empty)
+            .Where(character => character != '_' && character != '-' && !char.IsWhiteSpace(character))
+            .ToArray()).ToLowerInvariant();
+
+        return normalized switch
+        {
+            "googlegemini" or "google" or "googleai" => "gemini",
+            _ => normalized,
+        };
     }
 
     private static bool IsUnsupportedProviderName(string? value) =>

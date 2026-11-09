@@ -17,7 +17,11 @@ const VoiceToolChip = ({ tool }: { tool: VoiceToolCall }) => (
     )}
     {tool.name}
     <span className="text-muted-foreground">
-      {tool.isRunning ? "running…" : `${tool.durationMs} ms`}
+      {tool.isRunning
+        ? "running…"
+        : tool.durationMs !== undefined
+          ? `${tool.durationMs} ms`
+          : "called"}
     </span>
   </span>
 );
@@ -62,8 +66,8 @@ export const VoiceCaptions = ({
 
           {turn.toolCalls?.length ? (
             <div className="flex flex-wrap gap-1.5">
-              {turn.toolCalls.map((tool) => (
-                <VoiceToolChip key={tool.name} tool={tool} />
+              {turn.toolCalls.map((tool, index) => (
+                <VoiceToolChip key={`${tool.name}-${index}`} tool={tool} />
               ))}
             </div>
           ) : null}

@@ -41,7 +41,6 @@ export const isPersonaEmpty = (values: FormValues) =>
     hasText(values[name]),
   );
 
-/** Client-side stand-in for the Phase 2 publish check. */
 export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => [
   {
     section: "persona",
@@ -57,19 +56,13 @@ export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => 
       values[VOICE_FIELDS.firstSpeaker] !== "ai" || hasText(values[VOICE_FIELDS.introduction]),
   },
   {
-    section: "voice",
-    label: "Voice",
-    hint: "Pick a text-to-speech model and a voice.",
-    isReady:
-      hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
-  },
-  {
     section: "brain",
     label: "Brain",
-    hint: "Pick a language model and a speech-to-text model.",
+    hint: "Pick a language model, speech-to-text and text-to-speech models, and a voice.",
     isReady:
       hasText(readKey(values[VOICE_FIELDS.languageModel], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.speechToText], "model")),
+      hasText(readKey(values[VOICE_FIELDS.speechToText], "model")) &&
+      hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
+      hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
   },
 ];

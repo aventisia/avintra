@@ -28,6 +28,11 @@ public class AssistChatDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the parent flow.
+    /// </summary>
+    public FlowTypesEnum FlowType { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of default actions available for the chat agent.
     /// </summary>
     public List<string> DefaultActions { get; set; } = [];

@@ -1,5 +1,3 @@
-import type { VoiceCallScriptTurn } from "@avplatform/assistant-chat";
-
 import type { VoiceAgentTemplate, VoiceBuilderSectionId } from "../types/voice-builder.type";
 
 export const VOICE_FIELDS = {
@@ -23,11 +21,9 @@ export const VOICE_FIELDS = {
 export const VOICE_BUILDER_SECTIONS: { id: VoiceBuilderSectionId; label: string }[] = [
   { id: "persona", label: "Persona" },
   { id: "opening", label: "Opening" },
-  { id: "voice", label: "Voice" },
   { id: "brain", label: "Brain" },
   { id: "knowledge", label: "Knowledge & tools" },
   { id: "pronunciation", label: "Pronunciation & variables" },
-  { id: "later", label: "Coming later" },
 ];
 
 export const VOICE_AGENT_TEMPLATES: VoiceAgentTemplate[] = [
@@ -61,42 +57,5 @@ export const VOICE_AGENT_TEMPLATES: VoiceAgentTemplate[] = [
     instructions:
       "Ask one question at a time. Search the knowledge base before answering product questions. If the caller reports an outage or a safety issue, tell them a person will call back within 15 minutes.",
     introduction: "You've reached {{business_name}} support. What can I help you with?",
-  },
-];
-
-/** Deferred settings, shown read-only so the team sees where they will land. */
-export const VOICE_COMING_LATER: { phase: string; items: string[] }[] = [
-  {
-    phase: "Phase 4",
-    items: ["Escalation to a person", "Transcript webhook", "Phone and widget channels"],
-  },
-  { phase: "Phase 5", items: ["Realtime engine", "Preemptive generation", "Noise cancellation"] },
-  {
-    phase: "Phase 6",
-    items: ["Manager agent", "Call recording", "Custom sounds", "Avatar", "Screen share", "Camera"],
-  },
-];
-
-/** Sample conversation the test console plays after the configured introduction. */
-export const VOICE_TEST_CALL_SCRIPT: VoiceCallScriptTurn[] = [
-  { speaker: "caller", text: "Hi, I'd like to move my appointment on Thursday to next week." },
-  {
-    speaker: "agent",
-    text: "Sure. I found your Thursday 10 AM booking. Next Tuesday at 10 or Wednesday at 2 are open. Which works?",
-    toolCalls: [{ name: "lookup_booking", durationMs: 700 }],
-    latency: { speechToTextMs: 210, firstTokenMs: 480, firstAudioMs: 1320 },
-  },
-  { speaker: "caller", text: "Tuesday at 10, please." },
-  {
-    speaker: "agent",
-    text: "Done. You're booked for Tuesday at 10 AM, and I've sent a confirmation text. Anything else?",
-    toolCalls: [{ name: "reschedule_booking", durationMs: 900 }],
-    latency: { speechToTextMs: 190, firstTokenMs: 430, firstAudioMs: 1180 },
-  },
-  { speaker: "caller", text: "No, that's all. Thanks!" },
-  {
-    speaker: "agent",
-    text: "You're welcome. Have a great day.",
-    latency: { speechToTextMs: 170, firstTokenMs: 390, firstAudioMs: 940 },
   },
 ];

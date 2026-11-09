@@ -23,6 +23,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@avplatform/voice-client": "*",
     "@babel/runtime": "^7.24.0",
     "@dagrejs/dagre": "^1.1.3",
     "@fontsource-variable/inter": "^5.3.0",
