@@ -2,7 +2,7 @@
 
 ## Repo facts
 
-- The active .NET backend is `apis/WorcBackend-legacy/`, not the `apis/WorcBackend/` that `README.md` describes.
+- The active .NET backend is `apis/WorcBackend-legacy/`, despite its name; there is no other.
 - Branch flow: a work branch starts from `main`, goes by PR to `uat` (Jenkins deploys it to `avuat.aventisia.com`), and after UAT passes the same branch goes by PR to `main` (production, `avweb1.aventisia.com`, deployed by a manual Jenkins build). Nothing merges from `uat` to `main`. When the branch conflicts with `uat`, resolve them on a temporary `<branch>-uat` copy and PR that copy to `uat` instead; a `-uat` branch never targets `main`. Both PRs need an approval: any `developers` team member for `uat`, the `owners` team (`.github/CODEOWNERS`) for `main`.
 - The repo and tracker are GitHub (`aventisia/avintra`, driven by `gh`; see `.claude/skills/GITHUB.md`). Jenkins (root `Jenkinsfile`) is the only CI; the only pre-commit hook is the gitleaks secret scan in `scripts/hooks`, which `scripts/initial-setup.sh` enables, and CI runs `scripts/secret-scan.sh` before building. Never bypass a finding with `--no-verify` or `.gitleaksignore`; a false positive takes a `gitleaks:allow` comment on its line.
 - Local stack: from the checkout or worktree root, `dekit up`, then `dekit restart <service>` after a change, `dekit screen <service>` for output, `dekit down` to stop; `dekit.yaml` lists the services. Ports come from each service's env files, so a worktree made by `scripts/create-worktree.sh` runs on its own.
@@ -18,7 +18,7 @@
 - Agent loop (orchestrator and its subagents): `AGENT-LOOP.md`
 - Backend, including build and EF migration gotchas: `apis/WorcBackend-legacy/AGENTS.md`
 - Frontend: `clients/web-apps/AGENTS.md`
-- Full setup, Docker commands, custom HTTP headers: `README.md`
+- Full setup, Docker commands, custom HTTP headers: `DEVELOPMENT.md`
 
 ## EE file marking
 
