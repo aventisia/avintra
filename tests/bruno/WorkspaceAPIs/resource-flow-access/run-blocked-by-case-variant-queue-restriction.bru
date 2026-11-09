@@ -1,0 +1,46 @@
+meta {
+  name: Run blocked by restricted queue referenced in a different case
+  type: http
+  seq: 36
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/execute-flow/execute
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{CASE_VARIANT_FLOW_VERSION_ID}}"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const queueName = bru.getGlobalEnvVar("CASE_VARIANT_QUEUE_NAME") || bru.getEnvVar("CASE_VARIANT_QUEUE_NAME");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("case-variant run is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("case-variant block message names the restricted queue", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+    expect(text).to.contain("queue '" + queueName + "'");
+  });
+}
+
+docs {
+  > Regression for PT-486-01. Requires CASE_VARIANT_FLOW_VERSION_ID to be an unpublished
+  > version whose saved reactFlowObject references a queue by name in a different letter
+  > case than the stored resource (for example PT486Q for pt486q), and
+  > CASE_VARIANT_QUEUE_NAME to name that Dev queue with its stored casing. The queue must
+  > have a non-empty flow assignment that does NOT include the flow. Run-time resolution is
+  > case-insensitive, so the run must return HTTP 403 naming the queue and create no job.
+  > Before the fix the same request returned 200 and executed the node.
+}

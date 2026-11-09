@@ -14,6 +14,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
     private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICreditGateService _creditGateService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -25,7 +26,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         IExecuteFlowStep2Service executeFlowStep2Service,
         IHttpContextAccessor httpContextAccessor,
         IResourceUserAccessService resourceUserAccessService,
-        ICreditGateService creditGateService)
+        ICreditGateService creditGateService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -38,6 +40,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
         _resourceUserAccessService = resourceUserAccessService;
         _creditGateService = creditGateService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType)
@@ -111,6 +114,17 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             {
                 _logger.LogWarning("Blocking flow execution for tenant {TenantId}: insufficient credits.", tenantId);
                 return serviceResponse.Update("Insufficient credits to execute this flow.", 402);
+            }
+
+            var resourceAccess = await _resourceFlowAccessService.ValidateRunResourceAccessAsync(
+                flowVersion.TenantId,
+                flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+                flowVersion.Flow?.SpaceId,
+                flowVersion.FlowId,
+                flowVersion.ReactFlowObject);
+            if (resourceAccess.Data != true)
+            {
+                return serviceResponse.Update(resourceAccess.Message, resourceAccess.StatusCode);
             }
 
             // Insert a new job for the flow execution.
