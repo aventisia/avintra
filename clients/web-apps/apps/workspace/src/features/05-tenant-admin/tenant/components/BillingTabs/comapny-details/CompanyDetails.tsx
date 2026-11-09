@@ -1,8 +1,22 @@
-import { Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import {
+  RecordEmpty,
+  RecordFact,
+  RecordFactGrid,
+  RecordPanel,
+  RecordSection,
+  RecordSummary,
+} from "@avplatform/ui/record-sheet";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { NotePencilIcon } from "@phosphor-icons/react";
-import { useShallow } from "zustand/react/shallow";
+import {
+  BuildingsIcon,
+  EnvelopeSimpleIcon,
+  GlobeHemisphereWestIcon,
+  MapPinIcon,
+  PencilSimpleIcon,
+  ReceiptIcon,
+  UserIcon,
+} from "@phosphor-icons/react";
 
 import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails.ee";
 import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/store/company-details/company-details-dialog-store.ee";
@@ -10,91 +24,99 @@ import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/
 import TabLoader from "../TabLoader.ee";
 import CompanyDetailsDialog from "./company-details-dialog/CompanyDetailsDialog";
 
+const formatCountry = (country?: string) => country?.replace(/([a-z])([A-Z])/g, "$1 $2");
+
 const CompanyDetails = () => {
   const { setOpen } = useCompanyDetailsDialogStore();
-
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({ userSession: state.userSession })),
+  const isIndividualUser = useUserSessionStore(
+    (state) => state.userSession?.tenantName == state.userSession?.email,
   );
-
-  const isIndividualUser = userSession?.tenantName == userSession?.email;
-
   const { data, isLoading } = useFetchCompanyDetails();
+  const details = data?.data;
 
   if (isLoading) return <TabLoader />;
 
+  const addressLines = [
+    details?.addressLine1,
+    details?.addressLine2,
+    [details?.city, [details?.state, details?.postalCode].filter(Boolean).join(" ")]
+      .filter(Boolean)
+      .join(", "),
+    formatCountry(details?.country),
+  ].filter(Boolean);
+
   return (
     <>
-      <div className="rounded-lg border">
-        <div className="flex items-center justify-between border-b p-4">
-          <p className="text-heading text-ink">Billing details</p>
-          <Button
-            className="flex items-center gap-1.5 bg-selected text-primary-text"
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => setOpen(true)}
+      <div className="grid items-start gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <RecordSection
+            title="Billing contact"
+            action={
+              <Button variant="ghost" size="xs" className="gap-1" onClick={() => setOpen(true)}>
+                <PencilSimpleIcon className="size-3.5" />
+                Edit
+              </Button>
+            }
           >
-            <NotePencilIcon className="h-4 w-4" /> Edit
-          </Button>
-        </div>
+            <RecordSummary>
+              <RecordFactGrid>
+                {!isIndividualUser && (
+                  <RecordFact
+                    Icon={BuildingsIcon}
+                    label="Company name"
+                    value={details?.organizationName}
+                  />
+                )}
+                <RecordFact
+                  Icon={EnvelopeSimpleIcon}
+                  label="Billing email"
+                  value={details?.billingEmail}
+                />
+                <RecordFact Icon={UserIcon} label="Contact" value={details?.contactPerson} />
+                <RecordFact
+                  Icon={GlobeHemisphereWestIcon}
+                  label="Country"
+                  value={formatCountry(details?.country)}
+                />
+              </RecordFactGrid>
+            </RecordSummary>
+          </RecordSection>
 
-        <div className="space-y-4 p-4">
-          <div className="space-y-2">
-            {/* <p className="text-base font-medium">Company details</p> */}
-            {isIndividualUser ? null : (
-              <div className="flex items-center gap-4 text-md">
-                <p className="basis-32 text-muted-foreground">Company name</p>
-                <p>{data?.data.organizationName ?? "--"}</p>
-              </div>
+          <RecordSection title="Billing address">
+            {addressLines.length > 0 ? (
+              <RecordPanel className="flex items-start gap-3 py-4">
+                <MapPinIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                <address className="text-[13px] not-italic leading-5 text-ink">
+                  {addressLines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </address>
+              </RecordPanel>
+            ) : (
+              <RecordEmpty mark={<MapPinIcon className="size-5 text-muted-foreground" />}>
+                No billing address yet.
+              </RecordEmpty>
             )}
-            <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Billing email</p>
-              <p>{data?.data.billingEmail ?? "--"} </p>
-            </div>
-            <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Contact</p>
-              <p>{data?.data.contactPerson ?? "--"} </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <p className="text-base font-medium">Billing address</p>
-            <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Primary address</p>
-              <p>
-                {[
-                  data?.data.addressLine1,
-                  data?.data.addressLine2,
-                  data?.data.city,
-                  data?.data.state,
-                  data?.data.country?.replace(/([a-z])([A-Z])/g, "$1 $2"),
-                ]
-                  .filter(Boolean)
-                  .join(", ") + (data?.data.postalCode ? ` - ${data?.data.postalCode}` : "")}
-              </p>
-            </div>
-            <div className="flex items-center gap-4 text-md">
-              <p className="basis-32 text-muted-foreground">Country</p>
-              <p>{data?.data.country}</p>
-            </div>
-          </div>
-
-          {data?.data.gstNumber && (
-            <>
-              <Separator />
-              <div className="space-y-2">
-                <p className="text-base font-medium">Tax details</p>
-
-                <div className="flex items-center gap-4 text-md">
-                  <p className="basis-32 text-muted-foreground">GST number</p>
-                  <p>{data?.data.gstNumber}</p>
-                </div>
-              </div>
-            </>
-          )}
+          </RecordSection>
         </div>
+
+        <RecordSection title="Tax details">
+          {details?.gstNumber ? (
+            <RecordSummary>
+              <RecordFact
+                Icon={ReceiptIcon}
+                label="GST number"
+                value={<span className="font-mono">{details.gstNumber}</span>}
+              />
+            </RecordSummary>
+          ) : (
+            <RecordEmpty mark={<ReceiptIcon className="size-5 text-muted-foreground" />}>
+              No tax number on file.
+            </RecordEmpty>
+          )}
+        </RecordSection>
       </div>
       <CompanyDetailsDialog />
     </>

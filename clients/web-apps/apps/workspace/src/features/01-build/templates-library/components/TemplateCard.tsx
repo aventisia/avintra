@@ -1,109 +1,69 @@
-import { Separator } from "@avplatform/ui";
-import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
-import { Badge } from "@avplatform/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@avplatform/ui/cards";
-import { CopyIcon, TagIcon } from "@phosphor-icons/react";
+import { HighlightedText } from "@avplatform/ui/highlighted-text";
+import { MetaLine } from "@avplatform/ui/meta-line";
+import { CopyIcon } from "@phosphor-icons/react";
+import { Link, type To } from "react-router-dom";
 
-import NewAgentIcon from "@/components/NewAgentIcon";
+import { PersonAvatar } from "@/components/PersonAvatar";
 
+import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
-import { useViewTemplate } from "../hooks/useViewTemplate";
-import { transformTemplateType } from "../utils/transform-template-type";
+import { getTemplateAccessLabel, getTemplateTypeLabel } from "../utils/template-attributes.util";
+import { TemplateIntegrations } from "./TemplateIntegrations";
+import { TemplateMark } from "./TemplateMark";
 
 type TemplateCardProps = {
   template: AvPlatformTemplatesDto;
+  to: To;
+  searchText: string;
 };
+
+const META_CLASS_NAME = "inline-flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground";
 
 /**
- * TemplateCard
- *
- * Reusable component to visually display a avplatform template.
- * Shows name, description, icons, usage count, and creator info.
+ * Library grid card, laid out like the Agents grid card: the type tile, name, type and access,
+ * description, and a footer with the integrations used, the author and the clone count.
  */
-export const TemplateCard = ({ template }: TemplateCardProps) => {
-  const handleViewTemplate = useViewTemplate();
-
-  const templateIcons = template?.icons?.filter((icon) => icon !== "/function.png");
-  const basePath = import.meta.env.VITE_WORKSPACE_PATH;
-
-  return (
-    <Card
-      key={template.id}
-      className="flex cursor-pointer flex-col justify-between rounded-lg border-line shadow-none transition-colors hover:border-line-strong hover:bg-hover"
-      onClick={() => handleViewTemplate(template.id)}
-    >
-      <CardHeader className="pb-4">
-        <div className="flex flex-wrap items-center gap-2 md:gap-4">
-          {templateIcons?.length ? (
-            <>
-              {templateIcons.slice(0, 4).map((icon, idx) => (
-                <div key={icon || idx} className="rounded-lg bg-sunken p-1.5 md:p-2">
-                  <img src={basePath + icon} alt="icon" className="h-6 w-6" />
-                </div>
-              ))}
-
-              {templateIcons.length > 5 && (
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sunken p-1.5 md:p-2">
-                  <span className="text-sm font-medium">+{templateIcons.length - 4}</span>
-                </div>
-              )}
-
-              {templateIcons.length === 5 && (
-                <div className="rounded-lg bg-sunken p-1.5 md:p-2">
-                  <img src={basePath + templateIcons[4]} alt="icon" className="h-6 w-6" />
-                </div>
-              )}
-            </>
-          ) : (
-            // Fallback icon
-            <div className="rounded-lg bg-sunken p-1.5 md:p-2">
-              <NewAgentIcon className="h-6 w-6" />
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <div>
-        <CardContent className="space-y-3 pb-1">
-          {/* Template title */}
-          <CardTitle
-            title={template.name}
-            className="truncate text-[0.9rem] font-semibold capitalize"
-          >
-            {template.name}
-          </CardTitle>
-          {/* Type badge */}
-          <Badge variant="outline" className="flex w-fit items-center gap-1 bg-sunken py-1">
-            <TagIcon className="h-3 w-3" />
-            <span className="leading-3">{transformTemplateType(template?.type)}</span>
-          </Badge>
-        </CardContent>
-        <Separator className="mx-4 mb-3 mt-2.5 h-[0.5px] w-auto" />
-
-        <CardFooter className="flex items-center justify-between !pb-4">
-          {/* Creator badge and name */}
-          <div className="flex items-center gap-2">
-            <Avatar className="flex h-7 w-7 items-center justify-center">
-              <AvatarFallback className="flex items-center justify-center border border-line bg-sunken text-2xs font-medium">
-                {template?.createdBy
-                  ? template?.createdBy
-                      ?.split(" ")
-                      .map((word) => word[0])
-                      .join("")
-                  : "--"}
-              </AvatarFallback>
-            </Avatar>
-            <p className="text-xs leading-7 text-ink-2">{template.createdBy}</p>
-          </div>
-
-          {/* Usage count with clipboard copy button */}
-          {template.type !== "Prompt" && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CopyIcon className="h-4 w-4" />
-              <p>{template.usagesCount}</p>
-            </div>
-          )}
-        </CardFooter>
+export const TemplateCard = ({ template, to, searchText }: TemplateCardProps) => (
+  <Link
+    to={to}
+    className="group flex flex-col rounded-md border border-line bg-surface outline-none transition-colors duration-150 hover:border-line-strong focus-visible:ring-2 focus-visible:ring-focus"
+  >
+    <div className="flex items-start gap-3 p-4 pb-0">
+      <TemplateMark type={template.type} size="lg" />
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span
+          title={template.name}
+          className="truncate text-body font-semibold text-ink transition-colors group-hover:text-primary-text"
+        >
+          <HighlightedText text={template.name} query={searchText} />
+        </span>
+        <MetaLine
+          className="text-xs text-muted-foreground"
+          items={[getTemplateTypeLabel(template.type), getTemplateAccessLabel(template.accessType)]}
+        />
       </div>
-    </Card>
-  );
-};
+    </div>
+
+    <p className="mx-4 mb-4 mt-3 line-clamp-2 min-h-10 text-body-sm text-ink-2">
+      {template.description || <span className="text-muted-foreground">No description</span>}
+    </p>
+
+    <div className="mt-auto flex h-10 items-center gap-3 overflow-hidden border-t border-line px-4">
+      <TemplateIntegrations icons={template.icons} limit={5} />
+      <span className="ml-auto flex min-w-0 items-center gap-3">
+        {template.createdBy && (
+          <span className={META_CLASS_NAME} title={`Created by ${template.createdBy}`}>
+            <PersonAvatar name={template.createdBy} size="sm" />
+            <span className="truncate">{template.createdBy}</span>
+          </span>
+        )}
+        {template.type !== ProjectTemplateTypesEnum.Prompt && (
+          <span className={META_CLASS_NAME} title="Times cloned">
+            <CopyIcon className="size-3.5 shrink-0" />
+            <span className="tabular-nums">{template.usagesCount}</span>
+          </span>
+        )}
+      </span>
+    </div>
+  </Link>
+);

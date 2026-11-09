@@ -1,66 +1,71 @@
-// import { Button } from "@avplatform/ui/buttons";
-// import { usePaymentMethodsDialogStore } from "@/features/05-tenant-admin/store/payment-methods/payment-methods-dialog-store";
-import { DotSeparator } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
+import { MetaLine } from "@avplatform/ui/meta-line";
+import { RecordEmpty, RecordSection } from "@avplatform/ui/record-sheet";
+import { CreditCardIcon } from "@phosphor-icons/react";
 
-import { PaymentMethodDTO } from "@/features/05-tenant-admin/tenant/dtos/payment-methods-dto.ee";
+import {
+  CardNetworkTypesEnum,
+  PaymentMethodDTO,
+  PaymentMethodTypesEnum,
+} from "@/features/05-tenant-admin/tenant/dtos/payment-methods-dto.ee";
 import { useFetchPaymentMethods } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentMethods.ee";
 
+import VisaLogo from "../../../assets/payment-methods/visa.svg";
+import TabLoader from "../TabLoader.ee";
 import PaymentMethodsDialog from "./PaymentMethodsDialog.ee";
 
+const CardMark = ({ network }: { network?: CardNetworkTypesEnum }) => (
+  <span className="grid h-9 w-14 shrink-0 place-items-center rounded-md bg-surface shadow-sm ring-1 ring-line">
+    {network === CardNetworkTypesEnum.Visa ? (
+      <img src={VisaLogo} alt="Visa" className="h-3.5" />
+    ) : (
+      <CreditCardIcon className="size-5 text-ink-2" />
+    )}
+  </span>
+);
+
+const SavedCard = ({ card }: { card: PaymentMethodDTO }) => (
+  <li className="flex items-center gap-3.5 rounded-lg bg-surface p-4 ring-1 ring-line">
+    <CardMark network={card.cardNetwork} />
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-[13px] font-medium text-ink">
+        {[card.cardNetwork, card.cardType?.toLowerCase(), "card"].filter(Boolean).join(" ")}
+      </p>
+      <MetaLine
+        className="text-[12px] text-muted-foreground"
+        items={[
+          card.cardLast4 && (
+            <span className="font-mono tabular-nums tracking-wider">•••• {card.cardLast4}</span>
+          ),
+          card.cardIssuer,
+        ]}
+      />
+    </div>
+    {card.cardInternational && <Badge variant="outline">International</Badge>}
+  </li>
+);
+
 const PaymentMethods = () => {
-  // const { setOpen } = usePaymentMethodsDialogStore();
-  const { data } = useFetchPaymentMethods();
+  const { data, isLoading } = useFetchPaymentMethods();
+  const cards = data?.data?.filter((method) => method.type === PaymentMethodTypesEnum.Card) ?? [];
+
+  if (isLoading) return <TabLoader />;
+
   return (
     <>
-      <div className="rounded-lg border">
-        <div className="flex items-center justify-between border-b p-4">
-          <p className="text-heading text-ink">Payment methods</p>
-          {/* <Button
-            className="flex items-center gap-1 bg-selected text-primary-text"
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => setOpen(true)}
-          >
-            <Plus className="h-4 w-4" /> Add Payment Method
-          </Button> */}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 p-4">
-          {data?.data && data?.data?.length > 0 ? (
-            data?.data
-              .filter((v) => v?.type == "Card")
-              .map((value: PaymentMethodDTO) => (
-                //TODO: Update Icon and name
-                <div className="col-span-1 flex items-center justify-between rounded-lg border px-4 py-4">
-                  <div className="flex items-center gap-4">
-                    {/* <img src={VisaIcon} alt="" /> */}
-                    <div>
-                      {/* Currently showing card name */}
-                      <p className="text-md font-medium">{value.cardType + " " + value.type}</p>
-                      <p className="flex items-center text-sm text-muted-foreground">
-                        Ending {value.cardLast4} <DotSeparator /> Expires 12/2026{" "}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* <div className="flex items-center gap-2">
-              <p className="mr-2 rounded-sm bg-black px-2.5 text-sm font-medium text-white">
-                Primary
-              </p>
-              <Button variant={"ghost"} size={"icon5"}>
-                <SquarePen className="h-4 w-4" />
-              </Button>
-              <Button variant={"ghost"} size={"icon5"}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div> */}
-                </div>
-              ))
-          ) : (
-            <div className="col-span-2 text-center text-sm">No results.</div>
-          )}
-        </div>
-      </div>
+      <RecordSection title="Saved cards" count={cards.length}>
+        {cards.length > 0 ? (
+          <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {cards.map((card) => (
+              <SavedCard key={card.id} card={card} />
+            ))}
+          </ul>
+        ) : (
+          <RecordEmpty mark={<CreditCardIcon className="size-5 text-muted-foreground" />}>
+            No saved cards yet.
+          </RecordEmpty>
+        )}
+      </RecordSection>
       <PaymentMethodsDialog />
     </>
   );
