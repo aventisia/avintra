@@ -55,6 +55,12 @@ export const conversationsTableColumns: ColumnDef<AdminConversationDto>[] = [
     ),
   },
   {
+    accessorKey: "channel",
+    meta: { label: getColumnName("channel") },
+    header: renderHeader("channel"),
+    cell: ({ row }) => <Badge variant="outline">{row.getValue("channel")}</Badge>,
+  },
+  {
     accessorKey: "timestamp",
     meta: { label: getColumnName("timestamp") },
     header: ({ column }) => (

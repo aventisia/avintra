@@ -62,6 +62,7 @@ public class AssistChatService : IAssistChatService
                     Name = s.Flow != null ? s.Flow.Name : string.Empty,
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
+                    FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.ChatAgent,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
                         s.FlowVersionHistories
@@ -91,7 +92,7 @@ public class AssistChatService : IAssistChatService
                     LastModifiedOn = s.LastModifiedOn,
 
                     Timestamp = s.Conversations.Any() ? s.Conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId && w1.Messages.Any())
                         .Select(s1 => s1.Messages
                             .OrderByDescending(o => o.CreatedOn)
                             .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
@@ -103,7 +104,7 @@ public class AssistChatService : IAssistChatService
                     // Project conversations with latest activity details
                     Conversations = s.Conversations
                         // Include only active (non-archived) conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId && w1.Messages.Any())
                         .Select(s1 => new ConversationSummaryDto
                         {
                             Id = s1.Id,
@@ -194,6 +195,7 @@ public class AssistChatService : IAssistChatService
                     Name = s.Flow != null ? s.Flow.Name : string.Empty,
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
+                    FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.ChatAgent,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
                         s.FlowVersionHistories

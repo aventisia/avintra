@@ -10,7 +10,7 @@ import { ChevronDown } from "lucide-react";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { AssistChatDto } from "../../dtos/assist-chat-dto";
+import { AssistChatDto } from "../../dtos/assist-chat.dto";
 import { AgentIcon } from "./AgentIcon";
 import { ConversationListItem } from "./ConversationListItem";
 

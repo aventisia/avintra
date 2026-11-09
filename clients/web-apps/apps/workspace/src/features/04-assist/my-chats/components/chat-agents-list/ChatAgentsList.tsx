@@ -9,7 +9,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import NewChatIcon from "@/components/NewChatIcon";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
-import { AssistChatDto } from "../../dtos/assist-chat-dto";
+import { AssistChatDto } from "../../dtos/assist-chat.dto";
 import { ChatAgentListItem } from "./ChatAgentListItem";
 
 interface ChatAgentsListProps {

@@ -23,10 +23,17 @@ import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
 type ToolsConfigFieldProps = {
   name: string;
+  /** Locks the approval picker to auto; voice calls cannot pause for approval. */
+  lockApprovalToAuto?: boolean;
 };
 
-export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
-  const { control, setValue } = useFormContext();
+export function ToolsConfigField({ name, lockApprovalToAuto = false }: ToolsConfigFieldProps) {
+  const { control, setValue, getValues } = useFormContext();
+
+  const defaultApproval = lockApprovalToAuto ? "auto" : "human";
+  const approvalOptions = lockApprovalToAuto
+    ? APPROVAL_OPTIONS.filter((option) => option.value === "auto")
+    : APPROVAL_OPTIONS;
 
   const { fields, append, update, remove } = useFieldArray({
     control,
@@ -57,7 +64,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     name: fieldNames.credential_name,
   });
   const currentActions = useWatch({ control, name: fieldNames.actions }) || [];
-  const currentApproval = useWatch({ control, name: fieldNames.approval }) || "human";
+  const currentApproval = useWatch({ control, name: fieldNames.approval }) || defaultApproval;
 
   const { data: usableToolsResponse, isLoading: isUsableToolsLoading } = useUsableTools();
   const usableTools = useMemo(() => usableToolsResponse?.data ?? [], [usableToolsResponse]);
@@ -118,6 +125,28 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     }
   }, [currentTool, editingIndex, initialEditTool, selectedUsableTool, setValue, fieldNames]);
 
+  // IMPORTANT NOTE: voice calls cannot pause for approval, so previously saved human
+  // approvals are migrated to auto without dirtying the form until the user saves.
+  useEffect(() => {
+    if (!lockApprovalToAuto) return;
+
+    const stored = getValues(name);
+    if (!Array.isArray(stored)) return;
+
+    let changed = false;
+    const migrated = stored.map((entry: any) => {
+      if (!entry || !Array.isArray(entry.actions)) return entry;
+      if (entry.actions.every((action: any) => action?.approval === "auto")) return entry;
+      changed = true;
+      return {
+        ...entry,
+        actions: entry.actions.map((action: any) => ({ ...action, approval: "auto" })),
+      };
+    });
+
+    if (changed) setValue(name, migrated, { shouldValidate: true, shouldDirty: false });
+  }, [lockApprovalToAuto, fields, name, getValues, setValue]);
+
   useEffect(() => {
     setDuplicateAttempted(false);
   }, [currentTool, currentApproval]);
@@ -130,10 +159,10 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     return fields.some((f: any, idx: number) => {
       if (idx === editingIndex) return false;
 
-      const fApproval = f.actions[0]?.approval || "human";
+      const fApproval = f.actions[0]?.approval || defaultApproval;
       return f.tool === currentTool && fApproval === currentApproval;
     });
-  }, [fields, currentTool, currentApproval, editingIndex]);
+  }, [fields, currentTool, currentApproval, editingIndex, defaultApproval]);
 
   const isAddDisabled =
     !currentTool || (requiresCredential && !currentCredential) || currentActions.length === 0;
@@ -149,7 +178,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     setValue(fieldNames.tool, "");
     setValue(fieldNames.credential_name, "");
     setValue(fieldNames.actions, []);
-    setValue(fieldNames.approval, "human");
+    setValue(fieldNames.approval, defaultApproval);
   };
 
   const handleSaveConfig = () => {
@@ -161,7 +190,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     }
 
     const mappedActions = currentActions.map((a: string) => ({
-      approval: currentApproval,
+      approval: lockApprovalToAuto ? "auto" : currentApproval,
       action: a,
     }));
 
@@ -191,7 +220,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     const item = fields[index] as any;
 
     const flatActions = item.actions.map((a: any) => a.action);
-    const approval = item.actions[0]?.approval || "human";
+    const approval = lockApprovalToAuto ? "auto" : item.actions[0]?.approval || defaultApproval;
 
     setValue(fieldNames.tool, item.tool);
     setValue(fieldNames.credential_name, item.credential_name);
@@ -265,7 +294,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           fieldSize="sm"
           disabled={!currentTool || isToolOperationsLoading || availableActionsForTool.length === 0}
           actionSelect={{
-            options: APPROVAL_OPTIONS,
+            options: approvalOptions,
             value: currentApproval,
             onChange: (val) => setValue(fieldNames.approval, val, { shouldValidate: true }),
           }}
@@ -321,7 +350,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           fields.map((field: any, index) => {
             const toolConfigInfo = toolByName.get(field.tool);
             const actionNames = field.actions.map((a: any) => a.action);
-            const approval = field.actions[0]?.approval || "human";
+            const approval = field.actions[0]?.approval || defaultApproval;
             const credentialName = field.credential_name || "";
 
             const displayActions = actionNames.slice(0, 3).join(", ");

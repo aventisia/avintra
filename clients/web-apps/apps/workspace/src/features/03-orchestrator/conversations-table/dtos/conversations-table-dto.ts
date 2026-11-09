@@ -1,3 +1,4 @@
+import { ConversationChannelEnum } from "../enums/conversation-channel.enum";
 import { ConversationStatusEnum } from "../enums/conversation-status-enum";
 import { ConversationMessageDto } from "./conversation-message-dto";
 
@@ -24,6 +25,11 @@ export interface AdminConversationDto {
    * Gets or sets the current status of the conversation.
    */
   status: ConversationStatusEnum;
+
+  /**
+   * Gets or sets the channel that created the conversation.
+   */
+  channel: ConversationChannelEnum;
 
   /**
    * Gets or sets the total number of exchange.
