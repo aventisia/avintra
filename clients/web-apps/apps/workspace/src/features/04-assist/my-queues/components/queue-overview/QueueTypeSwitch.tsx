@@ -1,5 +1,10 @@
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
+
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 
 interface QueueTypeSwitchProps {
@@ -22,9 +27,13 @@ const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
 export const QueueTypeSwitch: React.FC<QueueTypeSwitchProps> = ({ value, onChange }) => {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as QueueTypesEnum)}>
-      <TabsList>
+      <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
         {OPTIONS.map((option) => (
-          <TabsTrigger key={option.value} value={option.value}>
+          <TabsTrigger
+            key={option.value}
+            value={option.value}
+            className={SEGMENTED_TABS_TRIGGER_CLASS}
+          >
             {option.label}
           </TabsTrigger>
         ))}
