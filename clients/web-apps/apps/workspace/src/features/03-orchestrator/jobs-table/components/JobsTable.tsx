@@ -2,6 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
+  TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME,
   TableCN,
   TableCNHeading,
   TableCNSkeleton,
@@ -18,6 +19,11 @@ import {
 } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
 
 import {
   DateRangeFilter,
@@ -121,11 +127,15 @@ export const JobsTable = () => {
             <div className="flex items-center gap-2">
               <TableCNHeading heading={TABLE_HEADING} />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                <TabsList>
+                <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
                   {tabs.map((tab) => {
                     const TabIcon = tab.icon;
                     return (
-                      <TabsTrigger value={tab.value} key={tab.value}>
+                      <TabsTrigger
+                        value={tab.value}
+                        key={tab.value}
+                        className={SEGMENTED_TABS_TRIGGER_CLASS}
+                      >
                         {TabIcon && <TabIcon className="size-4 shrink-0" aria-hidden="true" />}
                         <span>{tab.label}</span>
                       </TabsTrigger>
@@ -153,10 +163,10 @@ export const JobsTable = () => {
                 <Button
                   variant="outline"
                   size="xs"
-                  className="gap-2 text-sm tracking-wide"
+                  className={TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME}
                   onClick={() => exportTableCNToCsv(table, { fileName: TABLE_KEY })}
                 >
-                  <DownloadSimpleIcon className="h-4 w-4" />
+                  <DownloadSimpleIcon />
                   Export
                 </Button>
               )}

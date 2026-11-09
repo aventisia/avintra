@@ -233,8 +233,8 @@ export const IssuesTable = () => {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <Button variant="outline" onClick={addIssue}>
-          <PlusIcon className="mr-2 h-4 w-4" />
+        <Button className="gap-2 text-sm tracking-wide" onClick={addIssue}>
+          <PlusIcon className="h-4 w-4" />
           Add issue
         </Button>
       </div>
