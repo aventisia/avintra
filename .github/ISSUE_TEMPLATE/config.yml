@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ideas and discussions
+    url: https://github.com/aventisia/avintra/discussions
+    about: Propose larger ideas or RFCs here.
+  - name: Product documentation
+    url: https://docs.aventisia.com
+    about: Guides for the Agent Builder, Workspace, Orchestrator and Desktop App.
+  - name: Enterprise and licensing
+    url: https://aventisia.com/contact/
+    about: Commercial licensing, Enterprise Edition and support.

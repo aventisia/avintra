@@ -1,0 +1,74 @@
+name: Bug report
+description: Something isn't working as expected
+labels: ["Kind/Bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! Please search existing issues first. For security issues, see SECURITY.md instead.
+  - type: input
+    id: version
+    attributes:
+      label: Avintra version
+      description: The release tag, or the commit if you run from source.
+      placeholder: e.g. v0.2.36
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment
+      options:
+        - Avintra cloud
+        - Self-hosted
+        - From source
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition
+      options:
+        - Community
+        - Enterprise
+        - Commercial
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it happen?
+      multiple: true
+      options:
+        - Agent Builder
+        - Orchestrator (machines, queues, triggers, executions, vault)
+        - Knowledge bases, skills, tools or models
+        - Accounts and sign-in
+        - Admin (tenant, users, billing)
+        - Studio
+        - Desktop App or Runner
+        - API
+        - Other
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: For Desktop App and Runner issues.
+      placeholder: e.g. Windows 11 x64
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and screenshots
+      render: shell
