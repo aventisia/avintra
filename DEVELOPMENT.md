@@ -132,10 +132,10 @@ ENV=local python dev.py
 
 ## Docker Build & Push
 
-Login to the private registry if needed:
+Log in to your container registry if you push images:
 
 ```sh
-sudo docker login acr.aventisia.com
+sudo docker login <registry>
 ```
 
 ### 1. Install and build legacy web clients
@@ -155,41 +155,23 @@ npx --prefix clients/web-apps turbo run build --filter=studio -- --mode=producti
 
 ```sh
 # Nginx frontend
-sudo docker build -f deploy/nginx/Dockerfile -t acr.aventisia.com/avplatform/frontend:0.4.0 .
+sudo docker build -f deploy/nginx/Dockerfile -t <registry>/avplatform/frontend:0.4.0 .
 
 # Legacy .NET APIs
-sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t acr.aventisia.com/avplatform/accounts-apis:0.1.0 .
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t acr.aventisia.com/avplatform/workspace-apis:0.1.0 .
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t <registry>/avplatform/accounts-apis:0.1.0 .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t <registry>/avplatform/workspace-apis:0.1.0 .
 
 # LLM Pipeline
-cd apis/llmpipeline && sudo docker build -t acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
+cd apis/llmpipeline && sudo docker build -t <registry>/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
 ```
 
 ### 3. Push images
 
 ```sh
-sudo docker push acr.aventisia.com/avplatform/frontend:0.4.0
-sudo docker push acr.aventisia.com/avplatform/accounts-apis:0.1.0
-sudo docker push acr.aventisia.com/avplatform/workspace-apis:0.1.0
-sudo docker push acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0
-```
-
-## Retag and Push to Azure Container Registry
-
-When images are stable in `acr.aventisia.com`, retag and push them to `aventisiaacr.azurecr.io` for on-premises / production deployments:
-
-```sh
-sudo docker tag acr.aventisia.com/avplatform/frontend:0.4.0 aventisiaacr.azurecr.io/avplatform/frontend:0.4.0
-sudo docker tag acr.aventisia.com/avplatform/accounts-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/accounts-apis:0.1.0
-sudo docker tag acr.aventisia.com/avplatform/workspace-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/workspace-apis:0.1.0
-sudo docker tag acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/llmpipeline-apis:0.1.0
-
-sudo docker login aventisiaacr.azurecr.io -u internal-pushpull-token -p <acr_token_password>
-
-sudo docker push aventisiaacr.azurecr.io/avplatform/frontend:0.4.0
-sudo docker push aventisiaacr.azurecr.io/avplatform/accounts-apis:0.1.0
-sudo docker push aventisiaacr.azurecr.io/avplatform/workspace-apis:0.1.0
-sudo docker push aventisiaacr.azurecr.io/avplatform/llmpipeline-apis:0.1.0
+sudo docker push <registry>/avplatform/frontend:0.4.0
+sudo docker push <registry>/avplatform/accounts-apis:0.1.0
+sudo docker push <registry>/avplatform/workspace-apis:0.1.0
+sudo docker push <registry>/avplatform/llmpipeline-apis:0.1.0
 ```
 
 ## Network Setup
