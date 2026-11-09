@@ -25,7 +25,14 @@ import { TableCNFilterTrigger, TableCNFilterValue } from "./TableCNFilterTrigger
 
 const MAX_LISTED_SELECTIONS = 2;
 
-const OptionMark = ({ isSelected, multiple }: { isSelected: boolean; multiple: boolean }) => (
+/** Check or radio mark of a filter option. */
+export const TableCNOptionMark = ({
+  isSelected,
+  multiple,
+}: {
+  isSelected: boolean;
+  multiple: boolean;
+}) => (
   <span
     aria-hidden="true"
     className={cn(
@@ -127,7 +134,7 @@ export const TableCNFacetedFilter = <TData, TValue>({
                     onSelect={() => onSelectOption(option.value)}
                     className={TABLE_CN_COMMAND_ITEM_CLASS_NAME}
                   >
-                    <OptionMark isSelected={isSelected} multiple={multiple} />
+                    <TableCNOptionMark isSelected={isSelected} multiple={multiple} />
                     {option.icon && (
                       <option.icon className="size-4 shrink-0 text-muted-foreground" />
                     )}

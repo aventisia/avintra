@@ -4,6 +4,8 @@ import { type Icon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { SEGMENTED_TABS_LIST_CLASS, SEGMENTED_TABS_TRIGGER_CLASS } from "./segmented-tabs.constant";
+
 export interface QueryTabItem {
   label: string;
   value: string;
@@ -70,19 +72,14 @@ export const QueryTabs = ({
 
   return (
     <Tabs value={tabValue} onValueChange={handleTabSelect} className={className}>
-      <TabsList
-        className={cn("h-fit w-full gap-1 rounded-lg bg-sunken px-1.5 py-1.5", listClassName)}
-      >
+      <TabsList className={cn(SEGMENTED_TABS_LIST_CLASS, listClassName)}>
         {tabs.map((tab) => {
           const TabIcon = tab.icon;
           return (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className={cn(
-                "inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-hover data-[state=inactive]:hover:text-ink data-[state=active]:bg-surface data-[state=active]:text-ink",
-                triggerClassName,
-              )}
+              className={cn(SEGMENTED_TABS_TRIGGER_CLASS, triggerClassName)}
             >
               {TabIcon && <TabIcon className="size-4 shrink-0" aria-hidden="true" />}
               <span>{tab.label}</span>

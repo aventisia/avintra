@@ -3,7 +3,7 @@ export const TABLE_CN_PANEL_CLASS_NAME = "rounded-lg border border-line bg-popov
 
 /** Outline button of the toolbar (sort, view); pair with `variant="outline" size="xs"`. */
 export const TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME =
-  "h-8 gap-1.5 px-2.5 text-body-sm font-semibold [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground data-[state=open]:bg-hover data-[state=open]:text-ink";
+  "h-8 gap-1.5 px-2.5 text-[12.5px] font-semibold [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground data-[state=open]:bg-hover data-[state=open]:text-ink";
 
 /** Row of a TableCN command list. */
 export const TABLE_CN_COMMAND_ITEM_CLASS_NAME =

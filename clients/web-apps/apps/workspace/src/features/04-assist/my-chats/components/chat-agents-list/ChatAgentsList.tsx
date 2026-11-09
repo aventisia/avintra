@@ -6,6 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 import NewChatIcon from "@/components/NewChatIcon";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { AssistChatDto } from "../../dtos/assist-chat-dto";
@@ -118,11 +122,11 @@ export default function ChatAgentsList({ data: agents, setTab, tab, mode }: Chat
 
       <div className="p-2 border-t">
         <Tabs value={tab} onValueChange={(v) => setTab(v as "active" | "archived")}>
-          <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
-            <TabsTrigger value="active" className="w-full rounded-lg py-0.5">
+          <TabsList className={`${SEGMENTED_TABS_LIST_CLASS} w-full`}>
+            <TabsTrigger value="active" className={`${SEGMENTED_TABS_TRIGGER_CLASS} w-full`}>
               Active
             </TabsTrigger>
-            <TabsTrigger value="archived" className="w-full rounded-lg py-0.5">
+            <TabsTrigger value="archived" className={`${SEGMENTED_TABS_TRIGGER_CLASS} w-full`}>
               Archived
             </TabsTrigger>
           </TabsList>

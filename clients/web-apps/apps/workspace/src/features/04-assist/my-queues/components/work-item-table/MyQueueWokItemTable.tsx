@@ -14,6 +14,10 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
 
 import {
   MY_QUEUES_INITIAL_STATE,
@@ -158,9 +162,9 @@ export const MyQueueWokItemTable = () => {
               updateParams({ t: v });
             }}
           >
-            <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+            <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
               {tabs.map((tab) => (
-                <TabsTrigger key={tab} value={tab} className="w-full rounded-lg py-0.5">
+                <TabsTrigger key={tab} value={tab} className={SEGMENTED_TABS_TRIGGER_CLASS}>
                   {tab}
                 </TabsTrigger>
               ))}
