@@ -39,7 +39,9 @@ only; it does not carry a space.
   `SpaceId`, so already-assigned cross-space flows keep working and stay re-saveable.
 - Publish checks only the restriction on the resource in the current environment. The Prod
   clone's flag and rows are copied add-only and are enforced at run time for published
-  agents.
+  agents. The Dev resource's people-sharing rows (`ResourceUserAccess`) are copied to the
+  Prod clone as well, so users shared in Dev keep access in Prod; the add-only rule keeps
+  any Prod rows set by an OM.
 - When a save restricts the resource, the response lists, in `unassignedPublishedFlows`, the
   published flows whose publish would resolve the resource's name to this resource but that
   are not on the list.
@@ -74,10 +76,10 @@ only; it does not carry a space.
 - PROD parity lives in `FlowBuilderService.EnsureProdToolsAsync`,
   `EnsureProdQueuesAsync`, `EnsureProdConfigStoresAsync`, and
   `EnsureProdVaultCredentialsAsync`, which copy a Dev resource's flow
-  set onto its Production clone. Vault credentials are matched by name and space.
-  The sync is add-only: it adds missing rows and sets the restricted flag when Dev has it,
-  but never removes rows or lifts a restriction set directly on Prod by an OM. PROD edits
-  stay blocked by the OM-only guard.
+  set and people-sharing rows onto its Production clone. Vault credentials are matched by
+  name and space. The sync is add-only: it adds missing rows and sets the restricted flag
+  when Dev has it, but never removes rows or lifts a restriction set directly on Prod by an
+  OM. PROD edits stay blocked by the OM-only guard.
 - Flow rows are removed when the resource is deleted (`ToolService`, `QueueTableService`,
   `ConfigStoreService`, `VaultCredentialService`), when archive deletes an orphaned Prod resource
   (`AgentTableService`), when archiving every non-archived version of a flow
