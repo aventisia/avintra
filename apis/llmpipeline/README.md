@@ -84,6 +84,33 @@ UVICORN_PORT=14003
 
 For other Uvicorn options, run `uvicorn app.main:app` directly and pass flags as needed.
 
+## Voice sessions
+
+`app/features/voice_sessions` creates LiveKit rooms and caller tokens for
+VoiceAgent sessions; the `voice_agent` worker runs the actual call. Both are
+optional and are not started by `dekit up`.
+
+```sh
+dekit start livekit      # LiveKit dev server, ports 7880/7881 and 7882/udp
+dekit start voice_agent  # LiveKit Agents worker; start it after LiveKit registers
+```
+
+Set `LIVEKIT_HTTP_URL`, `LIVEKIT_WS_URL`, `LIVEKIT_API_KEY`,
+`LIVEKIT_API_SECRET`, and `LIVEKIT_AGENT_NAME` in `.env.local` (see
+`.env.example`). For direct local APIs, set
+`WORKSPACE_API_URL=https://localhost:4001/api` so the worker can fetch settings
+without going through nginx. Only llmpipeline and the worker hold LiveKit
+credentials; WorkspaceAPIs calls llmpipeline through its existing base URL.
+
+Run the voice tests with:
+
+```sh
+./venv/Scripts/python.exe -m pytest tests -k voice -q
+```
+
+See `app/features/voice_sessions/README.md` for the architecture, job binding,
+event contract, cleanup, latency measurement, and v1 limits.
+
 ## API Usage
 
 - The main endpoint for text extraction is `/extract-file-text`.

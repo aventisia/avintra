@@ -62,3 +62,8 @@ langchain-openrouter>=0.2,<2.0
 
 # LiteLLM provider abstraction layer (LLM Providers v2 feature)
 litellm>=1.40.0,<2.0.0
+
+# LiveKit voice sessions: server SDK (rooms, dispatch, tokens) and the agent worker.
+livekit-api==1.2.2
+livekit-agents==1.8.11
+livekit-plugins-silero==1.8.11

@@ -21,6 +21,7 @@ from app.features.tts_providers.tts_providers_routes import router as tts_router
 from app.features.stt_providers.stt_providers_routes import router as stt_router
 from app.features.custom_tools.routes import router as custom_tools_router
 from app.features.realtime_voice.router import router as realtime_voice_router
+from app.features.voice_sessions.router import router as voice_sessions_router
 from app.core.logger import logger
 
 # The lifespan function is used to perform any necessary cleanup when the application shuts down.
@@ -63,6 +64,7 @@ app.include_router(tts_router, tags=["Text to Speech"])
 app.include_router(stt_router, tags=["Speech to Text"])
 app.include_router(custom_tools_router, tags=["Custom Tools"])
 app.include_router(realtime_voice_router, tags=["Realtime Voice"])
+app.include_router(voice_sessions_router, tags=["Voice Sessions"])
 
 app.add_middleware(
     CORSMiddleware,
