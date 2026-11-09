@@ -1,181 +1,150 @@
-import { DotSeparator, Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { Card, CardContent, CardHeader, CardTitle } from "@avplatform/ui/cards";
-import { FALLBACK_VALUE } from "@avplatform/ui/constants";
+import { MetaLine } from "@avplatform/ui/meta-line";
+import {
+  RecordFact,
+  RecordFactGrid,
+  RecordList,
+  RecordListItem,
+  RecordPanel,
+  RecordSection,
+  RecordSummary,
+} from "@avplatform/ui/record-sheet";
 import { formatDate } from "@avplatform/ui/utils";
-
-import NewAgentIcon from "@/components/NewAgentIcon";
+import {
+  CalendarBlankIcon,
+  ClockCounterClockwiseIcon,
+  DownloadSimpleIcon,
+  GitBranchIcon,
+  GlobeHemisphereWestIcon,
+  SealCheckIcon,
+  ShapesIcon,
+} from "@phosphor-icons/react";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
-import { PromptTemplateSchema } from "../../types/prompt-template-schema-type";
 import { formatFileSize } from "../../utils";
-import { transformTemplateType } from "../../utils/transform-template-type";
+import {
+  getTemplateAccessLabel,
+  getTemplateIconUrls,
+  getTemplateTypeLabel,
+  parseTemplateSchema,
+} from "../../utils/template-attributes.util";
+import { TemplateIntegrations } from "../TemplateIntegrations";
 import { FileTypeIcon } from "./FileTypeIcon";
 
+/**
+ * Side column of a template page: its details, integrations, prompt settings, tools and
+ * downloadable resources.
+ */
 export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
-  const { mutate: downloadFile } = useDownloadFile(template.accessType == "Public");
-  const parsedPromptSchema: PromptTemplateSchema | null = (() => {
-    try {
-      return template?.schema ? (JSON.parse(template.schema) as PromptTemplateSchema) : null;
-    } catch {
-      return null;
-    }
-  })();
-  const basePath = import.meta.env.VITE_WORKSPACE_PATH;
+  const { mutate: downloadFile } = useDownloadFile(template.accessType === "Public");
+  const schema = parseTemplateSchema(template.schema);
+  const modelConfig = schema?.modelConfig;
+  const tools = Array.isArray(schema?.toolsConfig) ? schema.toolsConfig : [];
+  const integrationCount = getTemplateIconUrls(template.icons).length;
+  const resources = template.resources ?? [];
 
   return (
-    <aside className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="grid grid-cols-3 gap-2">
-            <span className="text-muted-foreground">Type</span>
-            <span className="col-span-2">{transformTemplateType(template?.type)}</span>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <span className="text-muted-foreground">Version</span>
-            <span className="col-span-2">{template?.schemaVersion}</span>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <span className="text-muted-foreground">Created</span>
-            <span className="col-span-2">{formatDate(template?.createdOn)} </span>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <span className="text-muted-foreground">Updated</span>
-            <span className="col-span-2">{formatDate(template?.lastModifiedOn)} </span>
-          </div>
-          <Separator />
-          <div className="flex flex-wrap gap-2">
-            {template?.icons?.length ? (
-              template?.icons
-                ?.filter((icon) => icon !== "/function.png")
-                .map((icon, idx) => (
-                  <div key={icon || idx} className="rounded-lg bg-sunken p-2">
-                    <img src={basePath + icon} alt="icon" className="h-6 w-6" />
-                  </div>
-                ))
-            ) : (
-              // Fallback icon
-              <div className="rounded-lg bg-sunken p-2">
-                <NewAgentIcon className="h-6 w-6" />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      {parsedPromptSchema ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Prompt configuration</CardTitle>
-          </CardHeader>
+    <aside className="space-y-6">
+      <RecordSection title="Details">
+        <RecordSummary>
+          <RecordFactGrid>
+            <RecordFact
+              Icon={ShapesIcon}
+              label="Type"
+              value={getTemplateTypeLabel(template.type)}
+            />
+            <RecordFact
+              Icon={GlobeHemisphereWestIcon}
+              label="Access"
+              value={getTemplateAccessLabel(template.accessType)}
+            />
+            <RecordFact Icon={SealCheckIcon} label="Status" value={template.status} />
+            <RecordFact Icon={GitBranchIcon} label="Version" value={template.schemaVersion} />
+            <RecordFact
+              Icon={CalendarBlankIcon}
+              label="Created"
+              value={template.createdOn && formatDate(template.createdOn)}
+            />
+            <RecordFact
+              Icon={ClockCounterClockwiseIcon}
+              label="Updated"
+              value={template.lastModifiedOn && formatDate(template.lastModifiedOn)}
+            />
+          </RecordFactGrid>
+        </RecordSummary>
+      </RecordSection>
 
-          <CardContent className="space-y-3 text-sm">
-            {parsedPromptSchema.modelConfig ? (
-              <>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">Provider</span>
-                    <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.provider || FALLBACK_VALUE}
-                    </span>
-                  </div>
+      {integrationCount > 0 && (
+        <RecordSection title="Integrations" count={integrationCount}>
+          <RecordPanel>
+            <TemplateIntegrations icons={template.icons} size="md" />
+          </RecordPanel>
+        </RecordSection>
+      )}
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">Model</span>
-                    <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.model || FALLBACK_VALUE}
-                    </span>
-                  </div>
+      {modelConfig && (
+        <RecordSection title="Prompt configuration">
+          <RecordSummary>
+            <RecordFactGrid>
+              <RecordFact label="Provider" value={modelConfig.provider} />
+              <RecordFact label="Model" value={modelConfig.model} />
+              <RecordFact label="Temperature" value={modelConfig.temperature} />
+              <RecordFact label="Top P" value={modelConfig.top_p} />
+              <RecordFact
+                label="JSON output"
+                value={modelConfig.is_json_output ? "Enabled" : "Disabled"}
+              />
+            </RecordFactGrid>
+          </RecordSummary>
+        </RecordSection>
+      )}
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">Temperature</span>
-                    <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.temperature ?? FALLBACK_VALUE}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">Top P</span>
-                    <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.top_p ?? FALLBACK_VALUE}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <span className="text-muted-foreground">JSON output</span>
-                    <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.is_json_output ? "Enabled" : "Disabled"}
-                    </span>
-                  </div>
-                </div>
-              </>
-            ) : null}
-          </CardContent>
-        </Card>
-      ) : null}
-      {Array.isArray(parsedPromptSchema?.toolsConfig) &&
-      parsedPromptSchema.toolsConfig.length > 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Tools</CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-3 text-sm">
-            {parsedPromptSchema.toolsConfig.map((tool, idx) => (
-              <div key={`${tool.tool}-${idx}`}>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-muted-foreground capitalize">{tool.tool}</span>
-
-                  <span className="col-span-2 break-words">
-                    {tool.actions.length > 0
-                      ? tool.actions.map((action) => action.action).join(", ")
-                      : FALLBACK_VALUE}
-                  </span>
-                </div>
-              </div>
+      {tools.length > 0 && (
+        <RecordSection title="Tools" count={tools.length}>
+          <RecordList>
+            {tools.map(({ tool, actions }, index) => (
+              <RecordListItem key={`${tool}-${index}`} className="items-start">
+                <span className="w-24 shrink-0 truncate text-[13px] font-medium capitalize text-ink">
+                  {tool}
+                </span>
+                <span className="min-w-0 break-words text-[12.5px] text-ink-2">
+                  {actions.map(({ action }) => action).join(", ") || "No actions"}
+                </span>
+              </RecordListItem>
             ))}
-          </CardContent>
-        </Card>
-      ) : null}
+          </RecordList>
+        </RecordSection>
+      )}
 
-      {(template?.resources ?? []).length !== 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resources</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm">
-            <ul className="space-y-2">
-              {template.resources!.map((item) => (
-                <li key={item.path} className="flex items-center gap-1">
-                  <FileTypeIcon fileType={item.extension} />
-                  <div className="flex flex-col">
-                    <Button
-                      onClick={() => {
-                        downloadFile(item);
-                      }}
-                      variant={"link"}
-                      className="justify-start text-wrap text-start"
-                    >
-                      <span>{item.name}</span>
-                    </Button>
-
-                    {item.size ? (
-                      <div className="flex items-center text-2xs text-muted-foreground">
-                        <span>{formatFileSize(item.size)}</span>
-                        <DotSeparator className="mx-1" />
-                        <span>{item.extension}</span>
-                      </div>
-                    ) : null}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      ) : null}
+      {resources.length > 0 && (
+        <RecordSection title="Resources" count={resources.length}>
+          <RecordList>
+            {resources.map((file) => (
+              <RecordListItem key={file.path} className="p-0">
+                <button
+                  type="button"
+                  onClick={() => downloadFile(file)}
+                  className="group flex w-full min-w-0 items-center gap-3 p-3 text-left outline-none transition hover:bg-hover focus-visible:bg-hover"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-md bg-sunken ring-1 ring-inset ring-line">
+                    <FileTypeIcon fileType={file.extension} className="size-4 text-ink-2" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-medium text-ink group-hover:text-primary-text">
+                      {file.name}
+                    </span>
+                    <MetaLine
+                      className="text-[11.5px] text-muted-foreground"
+                      items={[file.size ? formatFileSize(file.size) : null, file.extension]}
+                    />
+                  </span>
+                  <DownloadSimpleIcon className="size-4 shrink-0 text-muted-foreground group-hover:text-ink" />
+                </button>
+              </RecordListItem>
+            ))}
+          </RecordList>
+        </RecordSection>
+      )}
     </aside>
   );
 }

@@ -1,4 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
+import { recordLabelClass } from "@avplatform/ui/record-sheet";
 import { CheckCircleIcon } from "@phosphor-icons/react";
 
 /**
@@ -99,11 +100,12 @@ export const PlanFeatures = ({
 
   return (
     <div className={cn(className)}>
-      <h3 className="font-medium">Plan includes:</h3>
-      <ul className="mt-2 space-y-2 text-sm">
-        {featuresList.map((feature, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <CheckCircleIcon className="mt-0.5 size-4 shrink-0 text-ok" /> {feature}
+      <h4 className={recordLabelClass}>Plan includes</h4>
+      <ul className="mt-2 grid gap-x-4 gap-y-1.5 text-[12.5px] text-ink-2 sm:grid-cols-2">
+        {featuresList.map((feature) => (
+          <li key={feature} className="flex items-start gap-2">
+            <CheckCircleIcon className="mt-0.5 size-4 shrink-0 text-ok" weight="fill" />
+            {feature}
           </li>
         ))}
       </ul>

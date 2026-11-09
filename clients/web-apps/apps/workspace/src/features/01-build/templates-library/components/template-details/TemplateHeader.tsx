@@ -1,129 +1,93 @@
-import { DotSeparator, LoadingSpinner, Separator } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
+import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { MetaLine } from "@avplatform/ui/meta-line";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { formatDate } from "@avplatform/ui/utils";
-import { ClockIcon, DownloadSimpleIcon, TagIcon, UserIcon } from "@phosphor-icons/react";
-import { useShallow } from "zustand/react/shallow";
+import { CopyIcon } from "@phosphor-icons/react";
 
+import { pluralize } from "@/utils/pluralize.util";
+
+import { ProjectTemplateTypesEnum } from "../../constants/template-types-enum";
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
-import { transformTemplateType } from "../../utils/transform-template-type";
+import { getTemplateTypeLabel } from "../../utils/template-attributes.util";
+import { TemplateMark } from "../TemplateMark";
 import { DeleteTemplateButton } from "./DeleteTemplateButton";
 
+/**
+ * Template page banner: the type tile, name, description, details, tags and the Clone and
+ * Delete actions.
+ */
 export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
   useDocumentTitle(`${template.name} - Library`);
 
-  const { mutateAsync: cloneTemplateMutation, isPending } = useCloneTemplateMutation();
-
-  // Access the current user session from the store
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({
-      userSession: state.userSession,
-    })),
-  );
-
-  const isSA = userSession?.userRoles.includes("SA");
-  const isTA = userSession?.userRoles.includes("TA");
+  const { mutate: cloneTemplate, isPending } = useCloneTemplateMutation();
+  const userRoles = useUserSessionStore((state) => state.userSession?.userRoles);
 
   const canDeleteTemplate =
-    (isSA && template?.accessType === "Public") || (isTA && template?.accessType === "TenantLevel");
-
-  // Handles the action to apply the selected template
-  const handleUseTemplate = async () => {
-    try {
-      await cloneTemplateMutation(template);
-    } catch (error) {
-      // Mutation error is already handled by hooks
-      console.log(error);
-    }
-  };
+    (userRoles?.includes("SA") && template.accessType === "Public") ||
+    (userRoles?.includes("TA") && template.accessType === "TenantLevel");
+  const canClone = template.type !== ProjectTemplateTypesEnum.Prompt;
+  const isApproved = template.status === "Approved";
+  const usageCount = template.usageCount ?? 0;
+  const tags = template.tags?.filter((tag) => tag.toLowerCase() !== template.type?.toLowerCase());
 
   return (
-    <>
-      <div>
-        <div className="flex flex-row items-center justify-between gap-6">
-          {/* Left side */}
-          <div className="flex flex-col gap-4">
-            {/* Template Name */}
-            <h1 className="text-title text-ink">{template.name}</h1>
-
-            {/* Metadata: uses, last updated, creator */}
-            <div className="flex flex-row items-center gap-1 text-sm text-muted-foreground">
-              {/* Usage count */}
-              <div className="flex items-center gap-1">
-                <DownloadSimpleIcon className="h-4 w-4" />
-                <span className="leading-4">
-                  {template?.usageCount?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}{" "}
-                  uses
-                </span>
-              </div>
-
-              <DotSeparator />
-
-              {/* Last updated */}
-              <div className="flex items-center gap-1">
-                <ClockIcon className="h-4 w-4" />
-                <span className="leading-4">Updated on {formatDate(template?.lastModifiedOn)}</span>
-              </div>
-
-              <DotSeparator />
-
-              {/* Created by */}
-              <div className="flex items-center gap-1">
-                <UserIcon className="h-4 w-4" />
-                <span className="leading-4">{template.createdBy || "Unknown"}</span>
-              </div>
-            </div>
-
-            {/* Type and Tags */}
-            <div className="flex flex-row flex-wrap items-center gap-2">
-              {/* Type Badge */}
-              <Badge className="flex items-center gap-1 capitalize">
-                {transformTemplateType(template?.type)}
-              </Badge>
-              <Badge variant="outline" className="flex items-center gap-1 bg-sunken">
-                <TagIcon className="h-3 w-3" />
-
-                {template?.accessType == "Public" ? "Public" : "Tenant"}
-              </Badge>
-
-              {/* Tags */}
-              {template?.tags
-                ?.filter((tag) => tag.toLowerCase() !== template?.type?.toLowerCase()) //Filter tags that are similar to project type
-                ?.map((tag) => (
-                  <Badge key={tag} variant="outline" className="flex items-center gap-1 bg-sunken">
-                    <TagIcon className="h-3 w-3" />
-                    {tag}
-                  </Badge>
-                ))}
-            </div>
-          </div>
-
-          {/* Right side: Button */}
-
-          <div className="flex items-center gap-3">
-            {template.type !== "Prompt" && (
-              <Button
-                id="get-started"
-                className="flex items-center gap-2"
-                disabled={template.status !== "Approved" || isPending}
-                onClick={handleUseTemplate}
-              >
-                {isPending && <LoadingSpinner className="h-4 w-4 animate-spin" />}
-                {isPending ? "Cloning..." : "Clone this template"}
-              </Button>
-            )}
-            {canDeleteTemplate && <DeleteTemplateButton id={template.id} />}
-          </div>
+    <section className="rounded-lg bg-surface px-5 py-4 ring-1 ring-line">
+      <div className="flex items-start gap-4">
+        <TemplateMark type={template.type} size="xl" />
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="font-mono text-label uppercase text-muted-foreground">
+            {getTemplateTypeLabel(template.type) || "Template"} template
+          </p>
+          <h2 className="truncate text-title text-ink">{template.name}</h2>
+          {template.description && (
+            <p className="mt-0.5 line-clamp-2 max-w-3xl text-[13px] leading-5 text-ink-2">
+              {template.description}
+            </p>
+          )}
+          <MetaLine
+            className="mt-2 text-[12px] text-muted-foreground"
+            items={[
+              canClone && `${usageCount.toLocaleString()} ${pluralize(usageCount, "clone")}`,
+              template.createdBy && `Created by ${template.createdBy}`,
+              template.lastModifiedOn && `Updated ${formatDate(template.lastModifiedOn)}`,
+            ]}
+          />
+          {!!tags?.length && (
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-sm bg-sunken px-1.5 py-0.5 text-[11.5px] text-ink-2 ring-1 ring-inset ring-line"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-
-        {/* Separator */}
-        <Separator className="mt-6" />
+        <div className="flex shrink-0 items-center gap-1.5">
+          {canClone && (
+            <Button
+              className="gap-1.5"
+              disabled={!isApproved || isPending}
+              aria-busy={isPending}
+              title={isApproved ? undefined : "Only approved templates can be cloned"}
+              onClick={() => cloneTemplate(template)}
+            >
+              {isPending ? (
+                <LoadingSpinner className="size-3.5" />
+              ) : (
+                <CopyIcon className="size-3.5" />
+              )}
+              {isPending ? "Cloning..." : "Clone template"}
+            </Button>
+          )}
+          {canDeleteTemplate && <DeleteTemplateButton template={template} />}
+        </div>
       </div>
-    </>
+    </section>
   );
 }

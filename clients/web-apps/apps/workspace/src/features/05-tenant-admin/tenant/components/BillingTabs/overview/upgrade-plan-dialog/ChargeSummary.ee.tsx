@@ -1,6 +1,8 @@
-import { LoadingSpinner, Separator } from "@avplatform/ui";
+import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { RecordSection } from "@avplatform/ui/record-sheet";
 import { toast } from "@avplatform/ui/sonner";
+import { LockSimpleIcon } from "@phosphor-icons/react";
 
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";
 import { CompanyDetailsDTO } from "@/features/05-tenant-admin/tenant/dtos/company-details-dto.ee";
@@ -55,7 +57,6 @@ const ChargeSummary = ({
 
   const handleCreditTopUp = () => {
     const credits = topUp.credits || 0;
-    console.log(credits);
     if (credits % 500 !== 0) {
       toast.error("Credits must be in multiples of 500");
       return;
@@ -74,99 +75,65 @@ const ChargeSummary = ({
     });
   };
 
+  const isBusy = isTopUpPending || isUpgradePending;
+  const payAction = isTopUp
+    ? { onClick: handleCreditTopUp, disabled: isTopUpPending || total == 0 }
+    : isFrequencyChange
+      ? { onClick: undefined, disabled: false }
+      : { onClick: handleSubscription, disabled: isUpgradePending || total == 0 };
+  const payLabel = isFrequencyChange && planFrequency == "monthly" ? "Continue" : "Make payment";
+
   return (
-    <div className="rounded-lg border">
-      <div className="border-b p-4 text-base font-medium">
-        {isFrequencyChange && planFrequency == "monthly" && "Next"} Charge Summary
-      </div>
-      <div className="space-y-3 p-4 text-sm">
-        {plan && basePrice >= 0 ? (
-          <SummaryRow label="Subscription fee" value={formatCurrency(basePrice, currency)} />
-        ) : null}
+    <RecordSection
+      title={isFrequencyChange && planFrequency == "monthly" ? "Next charge" : "Charge summary"}
+    >
+      <div className="rounded-lg bg-surface ring-1 ring-line">
+        <dl className="space-y-2 px-4 pt-4 text-[12.5px]">
+          {plan && basePrice >= 0 ? (
+            <SummaryRow label="Subscription fee" value={formatCurrency(basePrice, currency)} />
+          ) : null}
 
-        {/* Show top-up breakdown if any */}
-        {topUpBreakdown.map(
-          (item) =>
-            (item.quantity > 0 || (item.type == "Credits" && chosenPlan == "Credits")) && (
-              <SummaryRow
-                key={item.type}
-                label={`${item.type}`}
-                value={formatCurrency(item.total, currency)}
-              />
-            ),
-        )}
+          {topUpBreakdown.map(
+            (item) =>
+              (item.quantity > 0 || (item.type == "Credits" && chosenPlan == "Credits")) && (
+                <SummaryRow
+                  key={item.type}
+                  label={`${item.type}`}
+                  value={formatCurrency(item.total, currency)}
+                />
+              ),
+          )}
 
-        {isTaxApplicable && <SummaryRow label="Tax" value={formatCurrency(tax, currency)} />}
+          {isTaxApplicable && <SummaryRow label="Tax" value={formatCurrency(tax, currency)} />}
 
-        <Separator />
+          <div className="flex items-center justify-between border-t border-dashed border-line pt-2">
+            <dt className="font-semibold text-ink">Amount due</dt>
+            <dd className="font-mono text-[15px] font-semibold tabular-nums text-ink">
+              {formatCurrency(total, currency)}
+            </dd>
+          </div>
+        </dl>
 
-        <SummaryRow
-          label="Amount due"
-          value={formatCurrency(total, currency)}
-          className="font-medium"
-        />
-
-        {isTopUp ? (
+        <div className="p-4">
           <Button
-            disabled={isTopUpPending || total == 0}
-            onClick={handleCreditTopUp}
-            className="mt-5 w-full"
+            className="w-full gap-1.5"
+            disabled={payAction.disabled}
+            aria-busy={isBusy}
+            onClick={payAction.onClick}
           >
-            {isTopUpPending ? (
-              <>
-                <LoadingSpinner className="mr-2 h-4 w-4" />
-                Initiating Payment...
-              </>
-            ) : (
-              "Make Payment"
-            )}
+            {isBusy ? <LoadingSpinner className="size-4" /> : <LockSimpleIcon className="size-4" />}
+            {isBusy ? "Initiating payment..." : payLabel}
           </Button>
-        ) : isFrequencyChange ? (
-          <Button className="mt-5 w-full">
-            {isTopUpPending ? (
-              <>
-                <LoadingSpinner className="mr-2 h-4 w-4" />
-                Initiating Payment...
-              </>
-            ) : planFrequency == "monthly" ? (
-              "Continue"
-            ) : (
-              "Make Payment"
-            )}
-          </Button>
-        ) : (
-          <Button
-            disabled={isUpgradePending || total == 0}
-            onClick={handleSubscription}
-            className="mt-5 w-full"
-          >
-            {isUpgradePending ? (
-              <>
-                <LoadingSpinner className="mr-2 h-4 w-4" />
-                Initiating Payment...
-              </>
-            ) : (
-              "Make Payment"
-            )}
-          </Button>
-        )}
+        </div>
       </div>
-    </div>
+    </RecordSection>
   );
 };
 
-const SummaryRow = ({
-  label,
-  value,
-  className = "",
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) => (
-  <div className={`flex items-center justify-between ${className}`}>
-    <p className="text-muted-foreground">{label}</p>
-    <p>{value}</p>
+const SummaryRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-center justify-between">
+    <dt className="text-ink-2">{label}</dt>
+    <dd className="font-mono tabular-nums text-ink">{value}</dd>
   </div>
 );
 
