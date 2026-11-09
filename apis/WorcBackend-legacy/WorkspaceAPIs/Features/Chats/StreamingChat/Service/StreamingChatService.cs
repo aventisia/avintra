@@ -35,6 +35,7 @@ public class StreamingChatService : IStreamingChatService
     private readonly ILogger<StreamingChatService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceUserAccessService _resourceUserAccessService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Guid _userId;
@@ -44,12 +45,14 @@ public class StreamingChatService : IStreamingChatService
         ILogger<StreamingChatService> logger,
         IUnitOfWork unitOfWork,
         IResourceUserAccessService resourceUserAccessService,
+        IResourceFlowAccessService resourceFlowAccessService,
         EnvironmentConfig environmentConfig,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceUserAccessService = resourceUserAccessService;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _environmentConfig = environmentConfig;
         _httpContextAccessor = httpContextAccessor;
 
@@ -69,6 +72,13 @@ public class StreamingChatService : IStreamingChatService
         if (flowVersion is null || nodeConfig is null)
         {
             yield return SerializeError("Chat Agent flow configuration could not be resolved.");
+            yield break;
+        }
+
+        var accessError = await ValidateFlowAccessAsync(flowVersion);
+        if (accessError is not null)
+        {
+            yield return SerializeError(accessError);
             yield break;
         }
 
@@ -100,12 +110,33 @@ public class StreamingChatService : IStreamingChatService
             yield break;
         }
 
+        var accessError = await ValidateFlowAccessAsync(flowVersion);
+        if (accessError is not null)
+        {
+            yield return SerializeError(accessError);
+            yield break;
+        }
+
         // 2. Relay the resumed turn. The try/catch lives inside the inner
         // iterator method because C# forbids `yield` within a try/catch.
         await foreach (var chunk in StreamApprovalsFromPipelineAsync(request, flowVersion, cancellationToken))
         {
             yield return chunk;
         }
+    }
+
+    private async Task<string?> ValidateFlowAccessAsync(WorkspaceAPIs.Entities.FlowVersion flowVersion)
+    {
+        var resourceAccess = await _resourceFlowAccessService.ValidateRunResourceAccessAsync(
+            flowVersion.TenantId,
+            flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+            flowVersion.Flow?.SpaceId,
+            flowVersion.FlowId,
+            flowVersion.ReactFlowObject);
+
+        return resourceAccess.Data == true
+            ? null
+            : resourceAccess.Message ?? "Chat Agent is not assigned to a restricted resource.";
     }
 
     /// <summary>

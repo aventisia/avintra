@@ -1,0 +1,46 @@
+meta {
+  name: Run blocked by restricted queue
+  type: http
+  seq: 24
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/execute-flow/execute
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{RESTRICTED_FLOW_VERSION_ID}}"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const queueName = bru.getGlobalEnvVar("RESTRICTED_QUEUE_NAME") || bru.getEnvVar("RESTRICTED_QUEUE_NAME");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("run is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("run block message names the restricted queue", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+    expect(text).to.contain("queue '" + queueName + "'");
+  });
+}
+
+docs {
+  > Requires RESTRICTED_FLOW_VERSION_ID to be an unpublished version of RESTRICTED_FLOW_ID
+  > whose saved reactFlowObject references a queue by name, and RESTRICTED_QUEUE_NAME to
+  > name a Dev queue whose flow assignment is non-empty and does NOT include that flow.
+  > The manual run returns HTTP 403 with the message "Cannot run: this agent is not
+  > assigned to restricted resource(s): queue '<queue>'. ..." and no job is created.
+  > Run this before the allowed-after-assign request while the restriction is still
+  > present. Any-agent (unrestricted) queues never block.
+}
