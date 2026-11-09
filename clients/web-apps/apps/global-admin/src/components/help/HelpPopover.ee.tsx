@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverDefaultHeader } from "@avplatform/ui/popover";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 import MarkdownViewer from "@/components/markdown/MarkdownViewer.ee";
 import { getGuide } from "@/docs-content";
@@ -46,7 +46,7 @@ const HelpPopover = ({ guideId, open, onOpenChange, children }: HelpPopoverProps
               rel="noopener noreferrer"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <ExternalLinkIcon className="h-4 w-4" />
+              <ArrowSquareOutIcon className="h-4 w-4" />
               View full docs
             </a>
           </div>

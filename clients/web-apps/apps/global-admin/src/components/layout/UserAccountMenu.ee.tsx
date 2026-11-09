@@ -8,8 +8,8 @@ import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { getUserDisplayName } from "@avplatform/ui/utils";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 
 /** Header avatar menu with the signed-in identity and Logout. */
@@ -61,7 +61,7 @@ const UserAccountMenu = () => {
           onClick={() => mutate()}
         >
           {isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[--icon-color]" />
+            <CircleNotchIcon className="h-4 w-4 animate-spin text-[--icon-color]" />
           ) : (
             <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
           )}

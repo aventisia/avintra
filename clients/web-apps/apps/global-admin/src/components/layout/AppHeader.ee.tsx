@@ -8,7 +8,7 @@ const AppHeader = () => {
     <HeaderContainer>
       <Header>
         <div className="flex flex-grow items-center">
-          <SidebarOnDialog appLogo={<AppLogo lightLogo={false} />} className="flex md:hidden" />
+          <SidebarOnDialog appLogo={<AppLogo />} className="flex md:hidden" />
           <AppLogo />
         </div>
         <div className="ml-4 flex items-center gap-4">
