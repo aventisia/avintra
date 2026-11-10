@@ -25,7 +25,8 @@
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
-# Corsair, docs and Bruno collections; dotnet restore for the root solution; and
+# Corsair, docs and Bruno collections; cargo fetch for the desktop-app Tauri
+# Rust dependencies; dotnet restore for the root solution; and
 # a Python 3.12 virtualenv + pip install for the LLM pipeline. A failing install
 # is reported and the script exits non-zero, but the worktree is kept. Pass
 # -SkipInstall to skip this step.
@@ -426,6 +427,15 @@ if ($SkipInstall.IsPresent) {
         Invoke-Task 'web apps (npm install)' $webAppsDir 'npm' @('install', '--force')
     } else {
         OmitMark 'web apps (npm install)' 'clients/web-apps not found'
+    }
+
+    $tauriDir = Resolve-WorktreePath @('clients', 'web-apps', 'apps', 'desktop-app', 'src-tauri')
+    if (-not (Test-Path -LiteralPath (Join-Path $tauriDir 'Cargo.toml'))) {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'src-tauri/Cargo.toml not found'
+    } elseif (Get-Command cargo -ErrorAction SilentlyContinue) {
+        Invoke-Task 'desktop-app Rust deps (cargo fetch)' $tauriDir 'cargo' @('fetch', '--locked')
+    } else {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'cargo not found (install Rust via https://rustup.rs)'
     }
 
     $corsairDir = Resolve-WorktreePath @('apis', 'corsair')

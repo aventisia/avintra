@@ -11,7 +11,8 @@
 # committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
 # changes for secrets.
 #
-# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
+# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12, Rust stable
+# toolchain for the desktop-app Tauri shell) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
@@ -40,7 +41,7 @@ Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
 (npm install -g @dekit/cli), installs gitleaks, and enables the secret-scanning
 pre-commit hook. System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
-Python 3.12) must be installed separately first.
+Python 3.12, Rust stable toolchain) must be installed separately first.
 
 Usage:
   ./scripts/initial-setup.sh                  create env files and install dependencies
@@ -126,6 +127,15 @@ report_tool "git" git --version
 report_tool "node" node --version
 report_tool "npm" npm --version
 report_tool "dotnet" dotnet --version
+report_tool "rustc" rustc --version
+report_tool "cargo" cargo --version
+if [ "$(uname -s)" = "Linux" ]; then
+  if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists webkit2gtk-4.1; then
+    printf '      [ok] %-11s %s\n' "webkit2gtk" "$(pkg-config --modversion webkit2gtk-4.1)"
+  else
+    printf '      [--] %-11s webkit2gtk-4.1 dev package not found (Tauri: https://v2.tauri.app/start/prerequisites/)\n' "webkit2gtk"
+  fi
+fi
 if PY="$(resolve_python312)"; then
   report_tool "python" "$PY" --version
 else
@@ -207,6 +217,14 @@ else
   trap 'rm -rf "$LOGDIR"' EXIT
 
   install_npm "web apps (npm install)" "$ROOT/clients/web-apps"
+  TAURI_DIR="$ROOT/clients/web-apps/apps/desktop-app/src-tauri"
+  if [ ! -f "$TAURI_DIR/Cargo.toml" ]; then
+    omitmark "desktop-app Rust deps (cargo fetch)" "src-tauri/Cargo.toml not found"
+  elif command -v cargo >/dev/null 2>&1; then
+    run_install "desktop-app Rust deps (cargo fetch)" "$TAURI_DIR" cargo fetch --locked
+  else
+    omitmark "desktop-app Rust deps (cargo fetch)" "cargo not found (install Rust via https://rustup.rs)"
+  fi
   install_npm "corsair (npm install)" "$ROOT/apis/corsair"
   install_npm "docs (npm install)" "$ROOT/clients/docs"
   install_npm "bruno tests (npm install)" "$ROOT/tests/bruno"

@@ -86,6 +86,7 @@ Pipeline, nginx, Apache Camel, and the web apps.
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js 22+](https://nodejs.org/) with npm
 - [Python 3.12+](https://www.python.org/) (for `llmpipeline`)
+- [Rust stable](https://rustup.rs/) and the [Tauri system prerequisites](https://v2.tauri.app/start/prerequisites/) (for the `desktop-app` Tauri shell)
 - [Docker](https://www.docker.com/) (for containerized builds)
 
 ### Running Local Development
