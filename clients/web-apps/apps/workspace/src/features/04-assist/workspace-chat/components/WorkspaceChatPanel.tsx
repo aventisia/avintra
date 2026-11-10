@@ -10,29 +10,28 @@ import { insertConversation } from "@/react-toolkit/features/av-platform-assista
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
-import {
-  createChatArtifact,
-  getChatArtifacts,
-} from "../apis/workspace-chat.apis";
+import { createChatArtifact, getChatArtifacts } from "../apis/workspace-chat.apis";
+import { WORKSPACE_CHAT_STARTER_SUGGESTIONS } from "../constants/workspace-chat-suggestions.constant";
 import { type ChatArtifactDto } from "../dtos/chat-artifact.dto";
 import { type InsertChatArtifactDto } from "../dtos/insert-chat-artifact.dto";
-
 import {
   LANDING_CONVERSATIONS_KEY,
   useLandingConversations,
 } from "../hooks/useLandingConversations.hook";
 import { useWorkspaceChatModels } from "../hooks/useWorkspaceChatModels.hook";
-import { WORKSPACE_CHAT_STARTER_SUGGESTIONS } from "../constants/workspace-chat-suggestions.constant";
+import {
+  extractWorkspaceChatHtmlArtifact,
+  stripWorkspaceChatArtifactContent,
+} from "../utils/workspace-chat-html-artifact.util";
 import {
   WORKSPACE_CHAT_PREVIEW_PANEL_ID,
   WORKSPACE_CHAT_THREAD_PANEL_ID,
   getWorkspaceChatPreviewSplit,
   saveWorkspaceChatPreviewSplit,
 } from "../utils/workspace-chat-split-persistence.util";
-import { extractWorkspaceChatHtmlArtifact, stripWorkspaceChatArtifactContent } from "../utils/workspace-chat-html-artifact.util";
 import {
-  type WorkspaceChatAssistantArtifactMatch,
   WorkspaceChatAssistantArtifact,
+  type WorkspaceChatAssistantArtifactMatch,
 } from "./WorkspaceChatAssistantArtifact";
 import { WorkspaceChatModelPicker } from "./WorkspaceChatModelPicker";
 import { WorkspaceChatPreviewPanel } from "./WorkspaceChatPreviewPanel";
@@ -317,7 +316,7 @@ export const WorkspaceChatPanel = () => {
       >
         <AvPlatformAssistantUI
           title={`Hello${userSession?.firstName ? `, ${userSession.firstName}` : ""}`}
-          description="Ask anything, or describe the interface you want to build."
+          description="Ask anything, or describe the UI, document, spreadsheet, or file you want to create."
           conversationId={effectiveConversationId}
           archived={isArchived}
           allocateConversation={allocateConversation}

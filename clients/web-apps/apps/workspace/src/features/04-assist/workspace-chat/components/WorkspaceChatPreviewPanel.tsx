@@ -54,6 +54,8 @@ const canPreviewWorkspaceChatFileInline = (contentType: string) => {
   return (
     type.startsWith("image/") ||
     type === "application/pdf" ||
+    type === "application/json" ||
+    type === "application/xml" ||
     type === "text/html" ||
     type.startsWith("text/")
   );

@@ -82,7 +82,8 @@ export const WorkspaceChatArtifactsGallery = () => {
             <div className="flex flex-1 flex-col items-center justify-center gap-1 text-center">
               <p className="text-sm font-medium text-ink">No generated files yet</p>
               <p className="text-xs text-muted-foreground">
-                Describe a UI in the home chat and it will show up here.
+                Describe a UI, document, spreadsheet, or file in the home chat and it will show up
+                here.
               </p>
             </div>
           ) : (

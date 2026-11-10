@@ -29,9 +29,14 @@ public static class ChatArtifactsHelpers
 
     // Model-generated files are platform output, not user uploads, so code
     // documents are allowed for them while uploads stay on the strict list.
+    // Phase 2 extends this to the document/spreadsheet/presentation/PDF types
+    // the workspace chat promises, reusing the text preview + summary fallback.
     private static readonly HashSet<string> AllowedGeneratedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".html", ".css", ".js", ".jsx", ".ts", ".tsx", ".json", ".md", ".txt", ".svg",
+        ".csv", ".tsv", ".xml",
+        ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp",
     };
 
     /// <summary>
@@ -82,7 +87,13 @@ public static class ChatArtifactsHelpers
     {
         return mimeType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ||
             mimeType.Equals("application/json", StringComparison.OrdinalIgnoreCase) ||
-            mimeType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+            mimeType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Equals("application/xml", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Contains("officedocument", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Contains("msword", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Contains("ms-excel", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Contains("ms-powerpoint", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

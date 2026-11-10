@@ -30,9 +30,42 @@ const extensionForFenceLanguage = (language: string): string => {
     case "markdown":
     case "md":
       return "md";
-    case "svg":
+    case "csv":
+      return "csv";
+    case "tsv":
+      return "tsv";
     case "xml":
+      return "xml";
+    case "pdf":
+      return "pdf";
+    case "doc":
+      return "doc";
+    case "docx":
+      return "docx";
+    case "xls":
+      return "xls";
+    case "xlsx":
+      return "xlsx";
+    case "ppt":
+      return "ppt";
+    case "pptx":
+      return "pptx";
+    case "png":
+      return "png";
+    case "jpg":
+    case "jpeg":
+      return "jpg";
+    case "gif":
+      return "gif";
+    case "webp":
+      return "webp";
+    case "bmp":
+      return "bmp";
+    case "svg":
       return "svg";
+    case "txt":
+    case "text":
+      return "txt";
     default:
       return "txt";
   }
@@ -50,6 +83,36 @@ const contentTypeForExtension = (extension: string): string => {
       return "application/json";
     case "md":
       return "text/markdown";
+    case "csv":
+      return "text/csv";
+    case "tsv":
+      return "text/tab-separated-values";
+    case "xml":
+      return "application/xml";
+    case "pdf":
+      return "application/pdf";
+    case "doc":
+      return "application/msword";
+    case "docx":
+      return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    case "xls":
+      return "application/vnd.ms-excel";
+    case "xlsx":
+      return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    case "ppt":
+      return "application/vnd.ms-powerpoint";
+    case "pptx":
+      return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    case "png":
+      return "image/png";
+    case "jpg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    case "webp":
+      return "image/webp";
+    case "bmp":
+      return "image/bmp";
     case "svg":
       return "image/svg+xml";
     default:
@@ -107,10 +170,7 @@ export const stripWorkspaceChatArtifactContent = (text: string): string => {
   if (fence?.[2]?.trim()) return source.replace(fence[0], "");
 
   const opening = OPENING_FENCE_PATTERN.exec(source);
-  if (
-    opening &&
-    source.indexOf("```", opening.index + opening[0].length) === -1
-  ) {
+  if (opening && source.indexOf("```", opening.index + opening[0].length) === -1) {
     return source.slice(0, opening.index);
   }
   return source;
@@ -125,9 +185,7 @@ export type WorkspaceChatArtifactPeek = {
  * Names the artifact a text is producing, whether its fence already closed
  * or is still streaming. Null when there is no artifact fence at all.
  */
-export const peekWorkspaceChatArtifact = (
-  text: string,
-): WorkspaceChatArtifactPeek | null => {
+export const peekWorkspaceChatArtifact = (text: string): WorkspaceChatArtifactPeek | null => {
   const complete = extractWorkspaceChatHtmlArtifact(text ?? "");
   if (complete) return { name: complete.name, contentType: complete.contentType };
 
