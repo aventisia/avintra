@@ -1,4 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
+import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
@@ -6,25 +7,56 @@ import { NavLink } from "react-router-dom";
 
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
+import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
 import { getColumnName, getStatusBadgeVariant } from "../constants/column-display-names";
-import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import {
+  WorkItemsTableRow,
+  customColumnId,
+  customFieldLabel,
+} from "../utils/work-items-custom-columns.util";
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
 const renderHeader =
   (columnKey: string) =>
-  ({ column }: HeaderContext<QueueWorkItemDto, unknown>) => (
+  ({ column }: HeaderContext<WorkItemsTableRow, unknown>) => (
     <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
   );
 
+const formatCustomFieldValue = (value: unknown): string => {
+  if (value === null || value === undefined || value === "") return FALLBACK_VALUE;
+  return typeof value === "object" ? JSON.stringify(value) : String(value);
+};
+
+const customFieldColumns = (fields: InputSchemaField[]): ColumnDef<WorkItemsTableRow>[] =>
+  fields.map((field) => ({
+    id: customColumnId(field),
+    accessorFn: (row) => row.customData?.[field.name],
+    meta: { label: customFieldLabel(field) },
+    header: ({ column }) => (
+      <TableCNColumnHeader column={column} label={customFieldLabel(field)} className="max-w-40" />
+    ),
+    cell: ({ getValue }) => {
+      const value = formatCustomFieldValue(getValue());
+      return (
+        <div title={value} className="w-40 truncate font-medium">
+          {value}
+        </div>
+      );
+    },
+  }));
+
 /**
  * Array of table columns for the WorkItems table.
- * Each column object contains an accessorKey, header component, and cell component.
  *
  * @param queueName Name of the parent queue, used for the detail-view link and
  * back navigation.
+ * @param customFields The queue's non-array custom fields, rendered after Status.
  */
-export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
-  getTableCNSelectColumn<QueueWorkItemDto>({
+export const workItemsTableColumns = (
+  queueName = "WorkItem",
+  customFields: InputSchemaField[] = [],
+): ColumnDef<WorkItemsTableRow>[] => [
+  getTableCNSelectColumn<WorkItemsTableRow>({
     enableHiding: true,
     meta: { label: getColumnName("select") },
   }),
@@ -59,6 +91,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       </Badge>
     ),
   },
+  ...customFieldColumns(customFields),
   {
     accessorKey: "createdBy",
     meta: { label: getColumnName("createdBy") },
@@ -118,7 +151,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
       </div>
     ),
   },
-  getRowActionsColumn<QueueWorkItemDto>({
+  getRowActionsColumn<WorkItemsTableRow>({
     actions: ({ row }) => <WorkItemRowActions rowId={row.original.id ?? "rowId"} />,
   }),
 ];
