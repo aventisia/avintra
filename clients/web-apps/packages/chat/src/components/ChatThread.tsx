@@ -1,0 +1,70 @@
+import { AuiIf, ThreadPrimitive, useAuiState } from "@assistant-ui/react";
+import { ArrowDownIcon } from "@phosphor-icons/react";
+import { type CSSProperties, type ReactNode, useState } from "react";
+
+import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { ChatComposer } from "./ChatComposer";
+import { ChatMessage } from "./ChatMessage";
+
+export type ChatThreadProps = {
+  /** Shown in place of messages while the thread is empty. */
+  welcome?: ReactNode;
+  /** Composer placeholder. */
+  placeholder?: string;
+};
+
+const columnStyle = { "--chat-column": "46rem" } as CSSProperties;
+
+const ScrollToLatest = () => (
+  <ThreadPrimitive.ScrollToBottom
+    aria-label="Scroll to latest message"
+    className="absolute -top-12 left-1/2 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink-2 shadow-[0_4px_16px_-6px_rgb(0_0_0/0.2)] transition-opacity hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:pointer-events-none disabled:opacity-0 dark:bg-fill"
+  >
+    <ArrowDownIcon weight="bold" className="size-4" />
+  </ThreadPrimitive.ScrollToBottom>
+);
+
+const RunAnnouncer = () => {
+  const hasReply = useAuiState((s) => !s.thread.isRunning && !s.thread.isEmpty);
+  return (
+    <div aria-live="polite" className="sr-only">
+      {hasReply ? "Response ready" : ""}
+    </div>
+  );
+};
+
+/**
+ * Full-height chat thread for the runtime above it: a centred reading column,
+ * top-anchored turns, and a sticky composer. The host owns the runtime.
+ */
+export const ChatThread = ({ welcome, placeholder = "Message" }: ChatThreadProps) => {
+  const [mountedAt] = useState(Date.now);
+  return (
+    <ChatThreadMountedAtContext.Provider value={mountedAt}>
+      <ThreadPrimitive.Root
+        data-chat
+        style={columnStyle}
+        className="flex h-full min-h-0 flex-col bg-surface text-ink dark:bg-bg"
+      >
+        <ThreadPrimitive.Viewport
+          turnAnchor="top"
+          scrollToBottomOnInitialize
+          scrollToBottomOnThreadSwitch
+          className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-4 [scrollbar-gutter:stable] sm:px-6"
+        >
+          <AuiIf condition={(s) => s.thread.isEmpty}>
+            <div className="mx-auto flex w-full max-w-[var(--chat-column)] flex-1 flex-col justify-center py-10">
+              {welcome}
+            </div>
+          </AuiIf>
+          <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
+          <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-4 pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
+            <ScrollToLatest />
+            <ChatComposer placeholder={placeholder} />
+          </ThreadPrimitive.ViewportFooter>
+        </ThreadPrimitive.Viewport>
+        <RunAnnouncer />
+      </ThreadPrimitive.Root>
+    </ChatThreadMountedAtContext.Provider>
+  );
+};

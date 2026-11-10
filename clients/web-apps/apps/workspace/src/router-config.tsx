@@ -445,6 +445,14 @@ const routerConfig: RouteObject[] = [
       },
     ],
   },
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: "/dev/chat-lab",
+          lazy: async () => ({ Component: (await import("./pages/dev/ChatLabPage")).ChatLabPage }),
+        },
+      ]
+    : []),
 ];
 
 export const router = createBrowserRouter(routerConfig, {
