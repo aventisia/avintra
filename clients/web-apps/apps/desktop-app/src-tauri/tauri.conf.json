@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "mainBinaryName": "AvintraDesktopApp",
   "productName": "AvintraDesktopApp",
-  "version": "0.2.36",
+  "version": "0.2.37",
   "identifier": "com.aventisia.avintra",
   "build": {
     "frontendDist": "../dist",
@@ -22,7 +22,7 @@
         "center": true,
         "resizable": true,
         "fullscreen": false,
-        "userAgent": "AvintraDesktopApp/0.2.36"
+        "userAgent": "AvintraDesktopApp/0.2.37"
       }
     ],
     "security": {
