@@ -473,6 +473,8 @@ public class QueueTransactionService : IQueueTransactionService
 
                     // Map DTO to entity and populate fields
                     var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
+                    newTransaction.Id = Guid.NewGuid();
+                    newTransaction.SourceWorkItemId = newTransaction.Id;
                     newTransaction.PayloadData = serializedPayload;
                     newTransaction.Status = QueueTransactionStatusTypesEnum.Pending.ToString();
 

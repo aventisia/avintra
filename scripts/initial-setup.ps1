@@ -9,7 +9,8 @@
 # committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
 # changes for secrets.
 #
-# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12) are NOT installed
+# System prerequisites (.NET 8 SDK, Node.js 22+ and npm, Python 3.12, Rust stable
+# toolchain for the desktop-app Tauri shell) are NOT installed
 # by this script; install them separately first. The script reports what it finds.
 #
 # Usage:
@@ -52,7 +53,7 @@ Copies each committed .env.example template to the local, gitignored env file
 its service expects and installs the project dependencies plus dekit
 (npm install -g @dekit/cli), installs gitleaks, and enables the secret-scanning
 pre-commit hook. System prerequisites (.NET 8 SDK, Node.js 22+ and npm,
-Python 3.12) must be installed separately first.
+Python 3.12, Rust stable toolchain) must be installed separately first.
 
 Usage:
   .\scripts\initial-setup.ps1                  create env files and install dependencies
@@ -159,6 +160,19 @@ Report-Tool 'git' 'git' @('--version')
 Report-Tool 'node' 'node' @('--version')
 Report-Tool 'npm' 'npm' @('--version')
 Report-Tool 'dotnet' 'dotnet' @('--version')
+Report-Tool 'rustc' 'rustc' @('--version')
+Report-Tool 'cargo' 'cargo' @('--version')
+if ($env:OS -eq 'Windows_NT') {
+    $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+    $msvc = if (Test-Path -LiteralPath $vswhere) {
+        & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property displayName
+    }
+    if ($msvc) {
+        Write-Output ('      [ok] ' + 'msvc'.PadRight(11) + " $msvc")
+    } else {
+        Write-Output ('      [--] ' + 'msvc'.PadRight(11) + ' C++ build tools not found (Tauri: https://v2.tauri.app/start/prerequisites/)')
+    }
+}
 $py = Resolve-Python312
 if ($null -eq $py) {
     Write-Output ('      [--] ' + 'python'.PadRight(11) + ' Python 3.12 not found')
@@ -256,6 +270,14 @@ if ($SkipInstall.IsPresent) {
     Detail 'skipped (-SkipInstall)'
 } else {
     Install-Npm 'web apps (npm install)' (Join-Path $Root 'clients/web-apps') 'clients/web-apps not found'
+    $tauriDir = Join-Path $Root 'clients/web-apps/apps/desktop-app/src-tauri'
+    if (-not (Test-Path -LiteralPath (Join-Path $tauriDir 'Cargo.toml'))) {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'src-tauri/Cargo.toml not found'
+    } elseif (Get-Command cargo -ErrorAction SilentlyContinue) {
+        Invoke-Install 'desktop-app Rust deps (cargo fetch)' $tauriDir 'cargo' @('fetch', '--locked')
+    } else {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'cargo not found (install Rust via https://rustup.rs)'
+    }
     Install-Npm 'corsair (npm install)' (Join-Path $Root 'apis/corsair') 'apis/corsair not found'
     Install-Npm 'docs (npm install)' (Join-Path $Root 'clients/docs') 'clients/docs not found'
     Install-Npm 'bruno tests (npm install)' (Join-Path $Root 'tests/bruno') 'tests/bruno not found'

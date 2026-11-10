@@ -56,6 +56,10 @@ public class ByokUsageService : IByokUsageService
                 endDate = DateTime.UtcNow.Date;
             }
 
+            // IMPORTANT NOTE: Npgsql only writes UTC DateTimeOffset values; query dates bind with the server's local offset.
+            startDate = new DateTimeOffset(startDate.Value.Date, TimeSpan.Zero);
+            endDate = new DateTimeOffset(endDate.Value.Date, TimeSpan.Zero);
+
             var tenant = await _unitOfWork
                 .TenantRepo.GetByConditionAsync(w => w.Id == _tenantId)
                 .FirstOrDefaultAsync();
@@ -353,6 +357,9 @@ public class ByokUsageService : IByokUsageService
                 exportByokUsageRequestDto.EndDate = DateTime.UtcNow.Date;
                 exportByokUsageRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
             }
+
+            exportByokUsageRequestDto.StartDate = new DateTimeOffset(exportByokUsageRequestDto.StartDate.Value.Date, TimeSpan.Zero);
+            exportByokUsageRequestDto.EndDate = new DateTimeOffset(exportByokUsageRequestDto.EndDate.Value.Date, TimeSpan.Zero);
 
             // Fetch the tenant details from the repository based on the TenantId
             var tenant = await _unitOfWork

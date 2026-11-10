@@ -752,18 +752,6 @@ public partial class TenantAccountService : ITenantAccountService
         };
     }
 
-    /// <summary>
-    /// Validates Azure Entra (Azure AD) credentials by attempting to acquire an access token.
-    /// </summary>
-    /// <returns>True if credentials are valid; false otherwise.</returns>
-    public async Task<bool> ValidateAzureEntraCredentialsAsync()
-    {
-        return await ValidateEntraClientCredentialsAsync(
-            _environmentConfig.AzureTenantId,
-            _environmentConfig.AzureEntraIdClientId,
-            _environmentConfig.AzureEntraIdClientSecret);
-    }
-
     private void ApplyRedactedSsoConfig(TenantPreferenceDto dto, string? ssoConfigJson)
     {
         var ssoConfig = SsoConfigHelpers.Parse(ssoConfigJson);

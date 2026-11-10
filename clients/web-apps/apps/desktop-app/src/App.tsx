@@ -1,7 +1,10 @@
 import { ThemeSwitcher } from "@avplatform/layout/header";
+import { Button } from "@avplatform/ui/buttons";
 import { useThemeStore } from "@avplatform/ui/stores";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
-import { useEffect, useState } from "react";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { type ReactNode, useEffect, useState } from "react";
 
 import ServiceUrlPage from "./ServiceUrlPage";
 import { TauriAppFooter } from "./TauriAppFooter";
@@ -13,6 +16,7 @@ import {
   clearSetupState,
   getSavedServiceUrl,
   getSavedSetupStep,
+  isTauriEnv,
   setSavedServiceUrl,
   setSetupStep,
 } from "./lib/setupStore";
@@ -28,13 +32,16 @@ function App() {
   return <SetupFlow />;
 }
 
-function AppHeader() {
+function AppHeader({ children }: { children?: ReactNode }) {
   const isDark = useThemeStore((state) => state.isDark);
 
   return (
     <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
       <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
-      <ThemeSwitcher className="px-0" />
+      <div className="flex items-center gap-2">
+        {children}
+        <ThemeSwitcher className="px-0" />
+      </div>
     </header>
   );
 }
@@ -138,6 +145,14 @@ function SetupFlow() {
     await setSetupStep("runner");
   };
 
+  const handleOpenWebApp = async () => {
+    try {
+      await openUrl(`${appBaseUrl}/accounts/login`);
+    } catch (err) {
+      console.error("Open web app error:", err);
+    }
+  };
+
   if (isResuming) {
     return (
       <div className="relative flex min-h-screen flex-col bg-bg text-ink">
@@ -151,7 +166,16 @@ function SetupFlow() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-bg pb-8 text-ink">
-      <AppHeader />
+      <AppHeader>
+        {isTauriEnv() && step !== "service-url" && appBaseUrl !== "" && (
+          <Button type="button" variant="outline" size="sm" onClick={handleOpenWebApp}>
+            <span className="inline-flex items-center gap-1.5">
+              Open web app
+              <ArrowSquareOutIcon className="h-4 w-4" />
+            </span>
+          </Button>
+        )}
+      </AppHeader>
 
       {step === "service-url" ? (
         <ServiceUrlPage onContinue={handleServiceUrlContinue} />

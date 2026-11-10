@@ -99,7 +99,6 @@ public static partial class AppServicesExtension
         services.AddScoped<IEmailCampaignService, EmailCampaignService>();
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
-        services.AddScoped<ISingleSignOnService, SingleSignOnService>();
         services.AddScoped<IBrandingService, BrandingService>();
         services.AddScoped<IMyAccountService, MyAccountService>();
         services.AddScoped<ITenantAccountService, TenantAccountService>();
@@ -184,6 +183,17 @@ public static partial class AppServicesExtension
                 .StartNow()
                 .WithCronSchedule("1 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:01 AM UTC
                 .WithDescription("Trigger for Instance Usage Job - runs daily at 12:01 AM UTC"));
+
+            var pendingCheckoutCleanupJobKey = new JobKey("PendingCheckoutCleanupJob");
+
+            quartz.AddJob<PendingCheckoutCleanupJob>(opts => opts.WithIdentity(pendingCheckoutCleanupJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(pendingCheckoutCleanupJobKey)
+                .WithIdentity("PendingCheckoutCleanupJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 2 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithDescription("Trigger for Pending Checkout Cleanup Job - runs daily at 12:02 AM UTC"));
         });
 
         // Register Quartz hosted service to run jobs in the background and wait for job completion on shutdown
@@ -192,5 +202,6 @@ public static partial class AppServicesExtension
         // Register job classes with DI container so they can receive dependencies via constructor injection
         services.AddTransient<TenantCreditAllocationJob>();
         services.AddTransient<InstanceUsageJob>();
+        services.AddTransient<PendingCheckoutCleanupJob>();
     }
 }

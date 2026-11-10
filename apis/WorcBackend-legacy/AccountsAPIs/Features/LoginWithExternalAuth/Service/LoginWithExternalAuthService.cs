@@ -49,12 +49,6 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
         _accountsDbContext = accountsDbContext;
     }
 
-    // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
-    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
-    {
-        return GenerateLoginUrlAsync(type, null, Guid.Empty);
-    }
-
     // Generates an authentication URL carrying the email hint and the OAuth state binding for a specific tenant.
     public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type, string? email, Guid tenantId)
     {
@@ -538,16 +532,6 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
         return (true, 200, "Identity token verified.", (JwtSecurityToken)validatedToken);
     }
 
-    private Guid? ResolveJitTargetTenantId(ValidateTokenRequestDto validateTokenRequestDto)
-    {
-        if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-        {
-            return Guid.Parse(_environmentConfig.OnPremTenantId);
-        }
-
-        return validateTokenRequestDto.SsoTenantId;
-    }
-
     // Validates the external authentication token and creates or retrieves the user
     public async Task<ServiceResponse<AccountUser>> ValidateTokenAndCreateUserAsync(ValidateTokenRequestDto validateTokenRequestDto)
     {
@@ -643,24 +627,6 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                 return serviceResponse;
             }
 
-            // Validation: enterprise tenants require email domain match
-            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-            {
-                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
-                var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
-
-                if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    _logger.LogWarning(
-                        "Enterprise domain validation failed. EmailDomain={EmailDomain}, AppDomain={AppDomain}",
-                        emailDomain, appDomain);
-
-                    serviceResponse.StatusCode = 400;
-                    serviceResponse.Message = "Email domain does not match the platform's domain.";
-                    return serviceResponse;
-                }
-            }
-
             // Check database for an existing user with the same email
             var existingUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => w.Email.ToLower() == email.ToLower())
@@ -684,7 +650,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
             // Condition: create user only if not already present
             if (existingUser == null)
             {
-                var jitTargetTenantId = ResolveJitTargetTenantId(validateTokenRequestDto);
+                var jitTargetTenantId = validateTokenRequestDto.SsoTenantId;
                 if (jitTargetTenantId.HasValue)
                 {
                     var jitTargetTenant = await _unitOfWork.TenantRepo
@@ -751,15 +717,8 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                 Guid tenantId;
                 List<string> userRoles;
 
-                // Condition: enterprise tenant vs non-enterprise tenant
-                if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-                {
-                    // Assign enterprise tenant and default role
-                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
-                    tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
-                    _logger.LogInformation("Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
-                }
-                else if (validateTokenRequestDto.SsoTenantId.HasValue)
+                // Condition: the domain-matched single sign-on tenant, otherwise a new tenant
+                if (validateTokenRequestDto.SsoTenantId.HasValue)
                 {
                     // Join the domain-matched single sign-on tenant with the default member roles only
                     tenantId = validateTokenRequestDto.SsoTenantId.Value;
@@ -768,7 +727,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                 }
                 else
                 {
-                    // Create a new tenant for non-enterprise users
+                    // Create a new tenant when no single sign-on tenant matched
                     var userTenant = new Tenant
                     {
                         Id = Guid.NewGuid(),

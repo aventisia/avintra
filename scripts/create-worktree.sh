@@ -27,7 +27,8 @@
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
-# Corsair, docs and Bruno collections; dotnet restore for the root solution; and
+# Corsair, docs and Bruno collections; cargo fetch for the desktop-app Tauri
+# Rust dependencies; dotnet restore for the root solution; and
 # a Python 3.12 virtualenv + pip install for the LLM pipeline. A failing install
 # is reported and the script exits non-zero, but the worktree is kept. Pass
 # --skip-install to skip this step.
@@ -340,6 +341,15 @@ else
     run_task "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
   else
     omitmark "web apps (npm install)" "clients/web-apps not found"
+  fi
+
+  TAURI_DIR="$WT_PATH/clients/web-apps/apps/desktop-app/src-tauri"
+  if [ ! -f "$TAURI_DIR/Cargo.toml" ]; then
+    omitmark "desktop-app Rust deps (cargo fetch)" "src-tauri/Cargo.toml not found"
+  elif command -v cargo >/dev/null 2>&1; then
+    run_task "desktop-app Rust deps (cargo fetch)" "$TAURI_DIR" cargo fetch --locked
+  else
+    omitmark "desktop-app Rust deps (cargo fetch)" "cargo not found (install Rust via https://rustup.rs)"
   fi
 
   if [ -f "$WT_PATH/apis/corsair/package.json" ]; then
