@@ -9,5 +9,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ExecutorLibrary\ExecutorLibrary.csproj" />
+        <ProjectReference Include="..\..\apis\WorcBackend-legacy\WorkspaceAPIs\WorkspaceAPIs.csproj" />
     </ItemGroup>
 </Project>
