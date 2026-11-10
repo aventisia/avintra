@@ -8,7 +8,7 @@ import {
   useAui,
   useLocalRuntime,
 } from "@assistant-ui/react";
-import { type ChatModelSelection, createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
+import { createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -16,7 +16,6 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 // API imports are kept as they are internal domain logic for this specific feature
 import { createHistoryAdapter } from "../adapters/history-adaptor";
-import { workspaceChatAttachmentAdapter } from "../adapters/workspace-chat-attachment-adapter";
 import { insertConversation } from "../apis/assist-conversations-apis";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import { Thread } from "./thread";
@@ -28,22 +27,10 @@ export interface AvPlatformAssistantUIProps {
    * 'temporary': Ephemeral dev/test mode. Bypasses history storage entirely.
    */
   mode?: "production" | "temporary";
-  /** Explicit flow version ID; omitted for the agent-less landing chat. */
-  flowVersionId?: string;
+  /** Explicit flow version ID (Required). */
+  flowVersionId: string;
   /** Explicit conversation ID. If omitted in 'production', a new one is requested lazily. */
   conversationId?: string;
-  /** Lazily allocates a conversation when none exists; defaults to inserting one for the flow version. */
-  allocateConversation?: () => Promise<string | undefined>;
-  /** The model picked for this turn; absent falls back to the flow version's node config. */
-  getModelSelection?: () => ChatModelSelection | null;
-  /** Rendered next to the composer's attachment button. */
-  composerAccessory?: React.ReactNode;
-  /** Rendered inside each assistant message, after its content parts. */
-  assistantSuffix?: React.ReactNode;
-  /** Transforms assistant text before markdown rendering. */
-  markdownPreprocess?: (text: string) => string;
-  /** Centers the welcome and composer while the thread is empty; the composer docks at the bottom afterwards. */
-  centerComposerWhenEmpty?: boolean;
   /** If true, blocks new message creation and only loads historical logs. */
   readOnly?: boolean;
   /** Archival visual state flag. */
@@ -51,18 +38,13 @@ export interface AvPlatformAssistantUIProps {
   /** Visual thread title. */
   title?: string;
   /** Visual thread description. */
-  description?: string;  /** Optional fallback suggestions for empty threads. */
+  description?: string;
+  /** Optional fallback suggestions for empty threads. */
   defaultActions?: string[];
   /** Injected historical messages. */
   initialMessages?: readonly ThreadMessageLike[];
   /** Callback fired when a new chat session is allocated lazily. Parent should update the URL/state. */
   onConversationAllocated?: (newConversationId: string) => void;
-  /** Called once with the turn's full assistant text when a fresh run finishes streaming. */
-  onTextComplete?: (text: string) => void;
-  /** Called for every streamed text delta. */
-  onTextDelta?: (delta: string) => void;
-  /** Called once per run when streaming settles (success, error, or abort). */
-  onRunFinished?: () => void;
   /** Callback fired when a workflow execution completes. */
   onRequestComplete?: () => void;
   /** Styling wrapper classes. */
@@ -77,20 +59,11 @@ export const AvPlatformAssistantUI = ({
   mode = "production",
   flowVersionId,
   conversationId,
-  allocateConversation,
-  getModelSelection,
-  composerAccessory,
-  assistantSuffix,
-  markdownPreprocess,
-  centerComposerWhenEmpty = false,
   readOnly = false,
   archived = false,
   defaultActions = [],
   className = "flex h-full flex-col w-full bg-background",
   onConversationAllocated,
-  onTextComplete,
-  onTextDelta,
-  onRunFinished,
   onRequestComplete,
   ...props
 }: AvPlatformAssistantUIProps) => {
@@ -130,19 +103,10 @@ export const AvPlatformAssistantUI = ({
         mode={mode}
         conversationId={activeConversationId}
         flowVersionId={flowVersionId}
-        allocateConversation={allocateConversation}
-        getModelSelection={getModelSelection}
-        composerAccessory={composerAccessory}
-        centerComposerWhenEmpty={centerComposerWhenEmpty}
-        assistantSuffix={assistantSuffix}
-        markdownPreprocess={markdownPreprocess}
         readOnly={readOnly}
         archived={archived}
         defaultActions={defaultActions}
         onRequestComplete={onRequestComplete}
-        onTextComplete={onTextComplete}
-        onTextDelta={onTextDelta}
-        onRunFinished={onRunFinished}
         // Bubble the lazy allocation event up, and set it to internal state
         onConversationAllocated={(newId) => {
           setActiveConversationId(newId);
@@ -171,21 +135,12 @@ const RuntimeWrapper = ({
   mode,
   conversationId,
   flowVersionId,
-  allocateConversation,
-  getModelSelection,
-  composerAccessory,
-  assistantSuffix,
-  markdownPreprocess,
-  centerComposerWhenEmpty = false,
   title,
   description,
   readOnly,
   initialMessages = [],
   defaultActions = [],
   onRequestComplete,
-  onTextComplete,
-  onTextDelta,
-  onRunFinished,
   onConversationAllocated,
 }: RuntimeWrapperProps) => {
   const activeSuggestionsRef = useRef<string[]>([]);
@@ -220,11 +175,8 @@ const RuntimeWrapper = ({
       // 4. Initiate database creation
       allocatingPromiseRef.current = (async () => {
         try {
-          const newId = allocateConversation
-            ? await allocateConversation()
-            : flowVersionId
-              ? (await insertConversation(flowVersionId)).data?.id
-              : undefined;
+          const res = await insertConversation(flowVersionId);
+          const newId = res.data?.id;
           if (newId) {
             conversationIdRef.current = newId;
             onConversationAllocated?.(newId);
@@ -244,7 +196,7 @@ const RuntimeWrapper = ({
 
       return allocatingPromiseRef.current;
     },
-    [mode, readOnly, flowVersionId, allocateConversation, onConversationAllocated, queryClient],
+    [mode, readOnly, flowVersionId, onConversationAllocated, queryClient],
   );
 
   /**
@@ -286,30 +238,15 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
           isTempChat: mode === "temporary",
-          getModelSelection,
-          onTextComplete,
-          onTextDelta,
-          onRunFinished,
           // Chat streams are scoped to the current space.
           getExtraHeaders: getSpaceHeaders,
         }),
-      [
-        flowVersionId,
-        getConversationId,
-        getModelSelection,
-        onRequestComplete,
-        onTextComplete,
-        onTextDelta,
-        onRunFinished,
-        handleSuggestionsUpdate,
-        mode,
-      ],
+      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
     ),
     {
       initialMessages,
       adapters: {
         suggestion: suggestionAdapter,
-        attachments: workspaceChatAttachmentAdapter,
         ...(historyAdapter ? { history: historyAdapter } : {}),
       },
     },
@@ -318,14 +255,7 @@ const RuntimeWrapper = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <SuggestionsProvider defaultActions={defaultActions}>
-        <Thread
-          title={title}
-          description={description}
-          composerAccessory={composerAccessory}
-          centerComposerWhenEmpty={centerComposerWhenEmpty}
-          assistantSuffix={assistantSuffix}
-          markdownPreprocess={markdownPreprocess}
-        />
+        <Thread title={title} description={description} />
       </SuggestionsProvider>
     </AssistantRuntimeProvider>
   );

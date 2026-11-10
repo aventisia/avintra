@@ -23,6 +23,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
 import { ROLE_TA } from "@/constants/roles";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
+import { useIsHomeChatAvailable } from "@/features/home-chat";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
@@ -47,6 +48,7 @@ const AppHeader: React.FC = () => {
   const openGetStartedGuide = useOnboardingStore((state) => state.openGuide);
   const navigate = useNavigate();
   const location = useLocation();
+  const isHomeChatAvailable = useIsHomeChatAvailable();
 
   const handleNewAiChat = () => {
     if (location.pathname === "/") {
@@ -102,17 +104,19 @@ const AppHeader: React.FC = () => {
       <div className="flex flex-1 basis-0 items-center justify-end gap-2">
         {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
         <JobsPill to="/orchestrator/jobs" />
-        <Tooltip content="New AI chat">
-          <Button
-            variant="ghost"
-            size="icon8"
-            aria-label="New AI chat"
-            onClick={handleNewAiChat}
-            className="text-ink-2 hover:text-ink"
-          >
-            <SparkleIcon className="size-[18px]" />
-          </Button>
-        </Tooltip>
+        {isHomeChatAvailable && (
+          <Tooltip content="New AI chat">
+            <Button
+              variant="ghost"
+              size="icon8"
+              aria-label="New AI chat"
+              onClick={handleNewAiChat}
+              className="text-ink-2 hover:text-ink"
+            >
+              <SparkleIcon className="size-[18px]" />
+            </Button>
+          </Tooltip>
+        )}
         {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
           <TrustLocalhostSSLButton />
         )}

@@ -15,6 +15,7 @@
     "src",
     "react-toolkit",
     "../../packages/assistant-chat/src/**/*",
+    "../../packages/chat/src/**/*",
     "../../packages/ui/src/**/*",
     "../../packages/layout/src/**/*",
     "../../packages/tauri-utils/src/**/*"

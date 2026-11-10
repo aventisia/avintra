@@ -2,7 +2,7 @@
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useMatches, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
@@ -15,6 +15,7 @@ import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
+import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
 import { AccountDialog } from "@/features/my-account";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
@@ -45,6 +46,10 @@ export const AppLayout = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const isFullBleed = useMatches().some(
+    (match) => (match.handle as { fullBleed?: boolean } | undefined)?.fullBleed,
+  );
+  const isHomeChatAvailable = useIsHomeChatAvailable();
 
   // Get the state and actions from the base layout store
   const { setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
@@ -159,10 +164,16 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes(["/", ...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE, NOTIFICATIONS_ROUTE]);
+    setAllowedRoutes([
+      ...(isHomeChatAvailable ? [HOME_CHAT_CONVERSATION_ROUTE] : []),
+      ...allowedRoutes,
+      DESKTOP_DOWNLOAD_ROUTE,
+      NOTIFICATIONS_ROUTE,
+    ]);
 
-    setLandingUrl("/");
+    setLandingUrl(isHomeChatAvailable ? "/" : filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
+    isHomeChatAvailable,
     isPending,
     selectedRoles,
     setAllowedRoutes,
@@ -170,6 +181,13 @@ export const AppLayout = () => {
     setLandingUrl,
     userSession,
   ]);
+
+  useEffect(() => {
+    //Navigate user to first option of filteredSidebarMenu
+    if (location?.pathname == "/" && landingUrl != "/") {
+      navigate(landingUrl);
+    }
+  }, [landingUrl, location?.pathname, navigate]);
 
   // Routes protection by getting allowed routes form side bar menu section
   useEffect(() => {
@@ -212,11 +230,17 @@ export const AppLayout = () => {
             <AppHeader />
             <div className="flex min-h-0 flex-1">
               <HubNav />
-              <ScrollArea className="min-w-0 flex-1" viewportClassName="[&>div]:!block">
-                <main className="px-3 py-0 md:px-7">
+              {isFullBleed ? (
+                <main className="flex min-w-0 flex-1 flex-col">
                   <Outlet />
                 </main>
-              </ScrollArea>
+              ) : (
+                <ScrollArea className="min-w-0 flex-1" viewportClassName="[&>div]:!block">
+                  <main className="px-3 py-0 md:px-7">
+                    <Outlet />
+                  </main>
+                </ScrollArea>
+              )}
               <HelpPanel />
             </div>
           </div>
