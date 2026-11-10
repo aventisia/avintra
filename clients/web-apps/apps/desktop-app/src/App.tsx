@@ -1,7 +1,7 @@
 import { ThemeSwitcher } from "@avplatform/layout/header";
 import { Button } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
 import { useThemeStore } from "@avplatform/ui/stores";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { type ReactNode, useEffect, useState } from "react";
@@ -171,7 +171,7 @@ function SetupFlow() {
           <Button type="button" variant="outline" size="sm" onClick={handleOpenWebApp}>
             <span className="inline-flex items-center gap-1.5">
               Open web app
-              <Lucide icon="ExternalLink" className="h-4 w-4" />
+              <ArrowSquareOutIcon className="h-4 w-4" />
             </span>
           </Button>
         )}
