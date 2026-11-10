@@ -10,9 +10,10 @@ import { DATA_QUERY_KEY } from "../constants";
 
 /**
  * Custom hook to fetch projects using react query.
+ * @param enabled Whether the queue is known to be accessible to the current user.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchQueuesWorkItems = () => {
+export const useFetchQueuesWorkItems = (enabled = true) => {
   // Get projects using react query
 
   const { qid } = useParams();
@@ -20,6 +21,7 @@ export const useFetchQueuesWorkItems = () => {
   const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...DATA_QUERY_KEY, qid, env],
     queryFn: () => getQueuesWorkItemsList(qid ?? ""),
+    enabled,
   });
 
   // Show toast on fetch error

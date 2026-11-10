@@ -1,5 +1,6 @@
 import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
+import { useParams } from "react-router-dom";
 
 // Lazy load the WorkItemPayloadDataTable component.
 const TriggersTable = lazy(() =>
@@ -11,13 +12,15 @@ const TriggersTable = lazy(() =>
 );
 
 /**
- * Renders the AgentsPage component.
- * @returns JSX element representing the AgentsPage component.
+ * Renders the work-items page for a queue.
+ * @returns JSX element representing the QueuesWorkItemsPage component.
  */
 export const QueuesWorkItemsPage = () => {
+  const { qid } = useParams();
+
   return (
     <Suspense fallback={<TableCNSkeleton />}>
-      <TriggersTable />
+      <TriggersTable key={qid} />
     </Suspense>
   );
 };
