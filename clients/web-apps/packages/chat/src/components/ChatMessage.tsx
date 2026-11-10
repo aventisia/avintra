@@ -16,6 +16,7 @@ import { CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { useContext } from "react";
 
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { ChatAttachment } from "./ChatAttachment";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
 
@@ -28,6 +29,11 @@ const useMessageEntranceClass = () => {
 };
 
 const ungrouped = () => null;
+
+const useHasText = () =>
+  useAuiState((s) =>
+    s.message.content.some((part) => part.type === "text" && part.text.trim() !== ""),
+  );
 
 const MessageCopy = () => (
   <ActionBarPrimitive.Copy asChild>
@@ -59,28 +65,36 @@ const AssistantThinking = () => {
   return <ThinkingIndicator startedAt={startedAt} className="py-1" />;
 };
 
-const UserMessage = () => (
-  <MessagePrimitive.Root
-    data-role="user"
-    className={cn(
-      "group/message mx-auto flex w-full max-w-[var(--chat-column)] flex-col items-end gap-1 pb-2 pt-6",
-      useMessageEntranceClass(),
-    )}
-  >
-    <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
-      <MessagePrimitive.Parts />
-    </div>
-    <ActionBarPrimitive.Root className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
-      <MessageCopy />
-    </ActionBarPrimitive.Root>
-  </MessagePrimitive.Root>
-);
+const UserMessage = () => {
+  const hasText = useHasText();
+  return (
+    <MessagePrimitive.Root
+      data-role="user"
+      className={cn(
+        "group/message mx-auto flex w-full max-w-[var(--chat-column)] flex-col items-end gap-1 pb-2 pt-6",
+        useMessageEntranceClass(),
+      )}
+    >
+      <div className="flex max-w-[85%] flex-wrap justify-end gap-2 pb-1 empty:hidden">
+        <MessagePrimitive.Attachments>{() => <ChatAttachment />}</MessagePrimitive.Attachments>
+      </div>
+      {hasText && (
+        <>
+          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
+            <MessagePrimitive.Parts />
+          </div>
+          <ActionBarPrimitive.Root className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
+            <MessageCopy />
+          </ActionBarPrimitive.Root>
+        </>
+      )}
+    </MessagePrimitive.Root>
+  );
+};
 
 const AssistantMessage = () => {
   const isLast = useAuiState((s) => s.message.isLast);
-  const hasText = useAuiState((s) =>
-    s.message.content.some((part) => part.type === "text" && part.text.trim() !== ""),
-  );
+  const hasText = useHasText();
   return (
     <MessagePrimitive.Root
       data-role="assistant"

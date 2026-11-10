@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 import { getModelProviders } from "@/features/05-tenant-admin/model-providers";
 
-const WORKSPACE_CHAT_MODELS_QUERY_KEY = ["workspace-chat-models"] as const;
+const HOME_CHAT_MODELS_QUERY_KEY = ["home-chat-models"] as const;
 
 /** LiteLLM provider names accepted by the llmpipeline chat API, keyed by the names either side reports. */
 const PIPELINE_PROVIDERS: Record<string, string> = {
@@ -27,23 +27,24 @@ const PROVIDER_LABELS: Record<string, string> = {
   openrouter: "OpenRouter",
 };
 
-/** A model shown in the landing chat's model picker. */
-export type WorkspaceChatModelState = {
+/** A model shown in the Home composer's model picker. */
+export type HomeChatModel = {
   key: string;
   /** LiteLLM provider name sent to the pipeline. */
   provider: string;
   providerLabel: string;
   modelId: string;
+  label: string;
   /** Vault credential configured for the provider, or null when it runs on platform credits. */
   credentialName: string | null;
   isByokEnabled: boolean;
 };
 
-/** A provider group in the landing chat's model picker. */
-export type WorkspaceChatProviderGroup = {
+/** A provider group in the Home composer's model picker. */
+export type HomeChatModelGroup = {
   provider: string;
   label: string;
-  models: WorkspaceChatModelState[];
+  models: HomeChatModel[];
 };
 
 const toPipelineProvider = (providerName: string) =>
@@ -61,7 +62,7 @@ const createModel = (
   provider: string,
   rawModelId: string,
   credentialName: string | null,
-): WorkspaceChatModelState | null => {
+): HomeChatModel | null => {
   const modelId = toModelId(provider, rawModelId);
   if (!modelId) return null;
   return {
@@ -69,26 +70,27 @@ const createModel = (
     provider,
     providerLabel: PROVIDER_LABELS[provider],
     modelId,
+    label: modelId,
     credentialName,
     isByokEnabled: Boolean(credentialName),
   };
 };
 
 /**
- * Derives the landing chat's model options from the tenant's enabled models,
+ * Derives the Home composer's model options from the tenant's enabled models,
  * keeping only providers the llmpipeline can route.
  */
-export const useWorkspaceChatModels = () => {
+export const useHomeChatModels = () => {
   const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
   const tenantQuery = useQuery({
-    queryKey: [...WORKSPACE_CHAT_MODELS_QUERY_KEY, "tenant", tenantId],
+    queryKey: [...HOME_CHAT_MODELS_QUERY_KEY, "tenant", tenantId],
     queryFn: getModelProviders,
     enabled: Boolean(tenantId),
     staleTime: 60_000,
   });
 
-  const models = useMemo<WorkspaceChatModelState[]>(() => {
-    const options: WorkspaceChatModelState[] = [];
+  const models = useMemo<HomeChatModel[]>(() => {
+    const options: HomeChatModel[] = [];
 
     for (const provider of tenantQuery.data?.data ?? []) {
       if (provider.isDisabled) continue;
@@ -118,8 +120,8 @@ export const useWorkspaceChatModels = () => {
     });
   }, [tenantQuery.data]);
 
-  const groups = useMemo<WorkspaceChatProviderGroup[]>(() => {
-    const byProvider = new Map<string, WorkspaceChatProviderGroup>();
+  const groups = useMemo<HomeChatModelGroup[]>(() => {
+    const byProvider = new Map<string, HomeChatModelGroup>();
     for (const model of models) {
       const group = byProvider.get(model.provider) ?? {
         provider: model.provider,

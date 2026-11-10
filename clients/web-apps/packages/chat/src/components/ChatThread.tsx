@@ -1,14 +1,19 @@
-import { AuiIf, ThreadPrimitive, useAuiState } from "@assistant-ui/react";
+import { AuiIf, ThreadPrimitive, useAui, useAuiState } from "@assistant-ui/react";
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import { type CSSProperties, type ReactNode, useState } from "react";
+import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
 import { ChatComposer } from "./ChatComposer";
 import { ChatMessage } from "./ChatMessage";
+import { type ChatStarterGroup, ChatStarters } from "./ChatStarters";
 
 export type ChatThreadProps = {
-  /** Shown in place of messages while the thread is empty. */
+  /** Shown above the composer while the thread is empty. */
   welcome?: ReactNode;
+  /** Example prompts offered under the composer while the thread is empty. */
+  starters?: readonly ChatStarterGroup[];
+  /** Controls placed after the composer's attach button, such as a model picker. */
+  composerTools?: ReactNode;
   /** Composer placeholder. */
   placeholder?: string;
 };
@@ -35,10 +40,24 @@ const RunAnnouncer = () => {
 
 /**
  * Full-height chat thread for the runtime above it: a centred reading column,
- * top-anchored turns, and a sticky composer. The host owns the runtime.
+ * top-anchored turns, and a sticky composer that starts mid-screen while the
+ * thread is empty. The host owns the runtime.
  */
-export const ChatThread = ({ welcome, placeholder = "Message" }: ChatThreadProps) => {
+export const ChatThread = ({
+  welcome,
+  starters,
+  composerTools,
+  placeholder = "Message",
+}: ChatThreadProps) => {
   const [mountedAt] = useState(Date.now);
+  const aui = useAui();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const fillComposer = (prompt: string) => {
+    aui.composer.setText(prompt);
+    inputRef.current?.focus();
+  };
+
   return (
     <ChatThreadMountedAtContext.Provider value={mountedAt}>
       <ThreadPrimitive.Root
@@ -53,15 +72,20 @@ export const ChatThread = ({ welcome, placeholder = "Message" }: ChatThreadProps
           className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-4 [scrollbar-gutter:stable] sm:px-6"
         >
           <AuiIf condition={(s) => s.thread.isEmpty}>
-            <div className="mx-auto flex w-full max-w-[var(--chat-column)] flex-1 flex-col justify-center py-10">
+            <div className="mx-auto flex w-full max-w-[var(--chat-column)] flex-1 flex-col justify-end pb-10 pt-10">
               {welcome}
             </div>
           </AuiIf>
           <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
           <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-4 pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
             <ScrollToLatest />
-            <ChatComposer placeholder={placeholder} />
+            <ChatComposer placeholder={placeholder} inputRef={inputRef} tools={composerTools} />
           </ThreadPrimitive.ViewportFooter>
+          <AuiIf condition={(s) => s.thread.isEmpty}>
+            <div className="mx-auto w-full max-w-[var(--chat-column)] flex-1 pb-10">
+              {starters && <ChatStarters groups={starters} onPick={fillComposer} />}
+            </div>
+          </AuiIf>
         </ThreadPrimitive.Viewport>
         <RunAnnouncer />
       </ThreadPrimitive.Root>
