@@ -8,6 +8,7 @@ import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource
 import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 
 import { FLOWS_QUERY_KEY } from "../../constants";
+import { FlowRowArchiveAction } from "./FlowRowArchiveAction";
 import { FlowRowDeleteAction } from "./FlowRowDeleteAction";
 import { FlowRowExportAction } from "./FlowRowExportAction";
 import { FlowRowMoveToFolderAction } from "./FlowRowMoveToFolderAction";
@@ -20,6 +21,8 @@ export type FlowRowActionsProps = {
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
   folderId?: string | null;
+  isArchived?: boolean;
+  isPublished?: boolean;
 };
 
 /**
@@ -31,6 +34,8 @@ export const FlowRowActionItems = ({
   accessLevel,
   isTenantWideAccess,
   folderId,
+  isArchived = false,
+  isPublished = false,
 }: FlowRowActionsProps) => {
   const actions = getResourceAccessActions(accessLevel);
 
@@ -40,6 +45,14 @@ export const FlowRowActionItems = ({
       {actions?.read && <FlowRowExportAction rowId={rowId} />}
       {actions?.read && <CrudRowAction rowId={rowId} crudAction="read" entity="flow" />}
       {actions?.update && <CrudRowAction rowId={rowId} crudAction="update" entity="flow" />}
+      {actions?.update && (
+        <FlowRowArchiveAction
+          rowId={rowId}
+          name={name}
+          isArchived={isArchived}
+          isPublished={isPublished}
+        />
+      )}
       {actions?.update && (
         <FlowRowMoveToFolderAction rowId={rowId} name={name} folderId={folderId} />
       )}

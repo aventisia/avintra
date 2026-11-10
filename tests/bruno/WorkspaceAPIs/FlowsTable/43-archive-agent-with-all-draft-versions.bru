@@ -1,0 +1,27 @@
+meta {
+  name: Archive agent with all its draft versions
+  type: http
+  seq: 43
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/agent/{{UNARCHIVE_FLOW_ID}}/archive
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("archive returns the number of archived versions", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(3);
+  });
+}
+
+docs {
+  > AC1: one archive call covers every unarchived version: the one created with the flow
+  > plus the two inserted above.
+}

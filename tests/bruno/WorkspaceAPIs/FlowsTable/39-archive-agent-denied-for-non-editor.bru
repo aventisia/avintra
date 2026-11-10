@@ -1,0 +1,33 @@
+meta {
+  name: Archive agent denied for a user without edit access
+  type: http
+  seq: 39
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/agent/{{ARCHIVE_GUARD_FLOW_ID}}/archive
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TU_ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("archive is denied with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("denial names the missing access", function() {
+    expect(text).to.contain("do not have access");
+  });
+}
+
+docs {
+  > `TU_ACCESS_TOKEN` neither created the flow nor holds a share on it, so the server
+  > side access check refuses the archive. The client menu is only a convenience.
+}

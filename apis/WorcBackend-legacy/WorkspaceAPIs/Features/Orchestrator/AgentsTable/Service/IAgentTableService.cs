@@ -24,6 +24,20 @@ public interface IAgentTableService
     Task<ServiceResponse<AgentTableDto>> UpdateFlowVersionAsync(AgentTableDto agentTableDto);
 
     /// <summary>
+    /// Archives the latest version of a flow together with its other unarchived draft versions.
+    /// </summary>
+    /// <param name="flowId">The ID of the flow to archive.</param>
+    /// <returns>A service response containing the number of archived flow versions.</returns>
+    Task<ServiceResponse<int>> ArchiveFlowVersionsAsync(Guid flowId);
+
+    /// <summary>
+    /// Unarchives every archived version of a flow.
+    /// </summary>
+    /// <param name="flowId">The ID of the flow to unarchive.</param>
+    /// <returns>A service response containing the number of unarchived flow versions.</returns>
+    Task<ServiceResponse<int>> UnarchiveFlowVersionsAsync(Guid flowId);
+
+    /// <summary>
     /// Fetch the list of archived versions for a specific flow.
     /// </summary>
     /// <param name="flowId">Flow Id</param>

@@ -67,6 +67,28 @@ export const updateAgent = (updatedAgent: AgentsTableDto) => {
 };
 
 /**
+ * Archives a flow's latest version together with its other unarchived draft versions.
+ */
+export const archiveFlowVersions = (flowId: string) => {
+  return axiosInstance
+    .post<IHttpResponse<number>>(`${baseAPIURL}/${flowId}/archive`, undefined, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Unarchives every archived version of a flow.
+ */
+export const unarchiveFlowVersions = (flowId: string) => {
+  return axiosInstance
+    .post<IHttpResponse<number>>(`${baseAPIURL}/${flowId}/unarchive`, undefined, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
  * Deletes a Agent by its ID.
  */
 const deleteAgent = (id: string) => {

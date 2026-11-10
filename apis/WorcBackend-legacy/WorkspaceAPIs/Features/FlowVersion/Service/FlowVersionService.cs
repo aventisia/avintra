@@ -264,6 +264,20 @@ public class FlowVersionService : IFlowVersionService
                 return serviceResponse;
             }
 
+            // IMPORTANT NOTE: archive and unarchive act on the whole agent and detach or restore
+            // its relationships, so the per-version update never flips IsArchived; only the
+            // agent endpoints own those transitions.
+            if (existingFlowVersion.IsArchived != flowVersionDto.IsArchived)
+            {
+                _logger.LogWarning(
+                    "Flow version archive change denied. FlowVersionId: {FlowVersionId} must be archived or unarchived through the agent endpoints.",
+                    existingFlowVersion.Id
+                );
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Use the Archive or Unarchive action on the Agents list.";
+                return serviceResponse;
+            }
+
             // Get count of versions of a related flow
             var relatedFlowVersionCount = await _unitOfWork.FlowVersionRepo.GetFlowVersionCountAsync(existingFlowVersion.FlowId);
 
