@@ -56,6 +56,19 @@ public class StreamingChatRequestDto
     /// the credential is resolved server-side from the tenant vault.
     /// </summary>
     public bool? IsByokEnabled { get; set; }
+
+    /// <summary>
+    /// Workspace pages the user can open, offered to the landing chat's navigate tool.
+    /// Advisory only: the client re-checks every route before showing it.
+    /// </summary>
+    public List<ChatDestinationItem>? Destinations { get; set; }
+}
+
+/// <summary>A Workspace page the landing chat can send the user to.</summary>
+public class ChatDestinationItem
+{
+    public string Route { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
 }
 
 /// <summary>A single role/content message in a conversation thread.</summary>

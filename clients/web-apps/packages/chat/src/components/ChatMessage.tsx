@@ -12,9 +12,12 @@ import { CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { useContext } from "react";
 
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { NAVIGATE_TOOL_NAME } from "../utils/chat-intent.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
+import { ChatBlueprint } from "./ChatBlueprint";
+import { ChatDestination } from "./ChatDestination";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
 
@@ -31,7 +34,7 @@ const ACTIVITY = ["group-activity"] as const;
 const groupActivity = (part: PartState) =>
   part.type === "reasoning" ||
   (part.type === "data" && part.name === "skill") ||
-  (part.type === "tool-call" && !part.approval)
+  (part.type === "tool-call" && !part.approval && part.toolName !== NAVIGATE_TOOL_NAME)
     ? ACTIVITY
     : null;
 
@@ -121,8 +124,11 @@ const AssistantMessage = () => {
               case "reasoning":
                 return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
               case "data":
-                return part.name === "skill" ? <ChatSkillStep name={skillName(part.data)} /> : null;
+                if (part.name === "skill") return <ChatSkillStep name={skillName(part.data)} />;
+                return part.name === "blueprint" ? <ChatBlueprint data={part.data} /> : null;
               case "tool-call":
+                if (part.toolName === NAVIGATE_TOOL_NAME)
+                  return <ChatDestination args={part.args} />;
                 return part.approval ? <ChatApproval {...part} /> : <ChatToolStep {...part} />;
               case "indicator":
                 return <AssistantThinking />;

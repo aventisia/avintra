@@ -58,6 +58,12 @@ public class StreamingChatService : IStreamingChatService
         "ui-a11y-review",
     };
 
+    // workspace_navigate only acknowledges the call; the client renders the page button.
+    private static readonly object[] LandingNavigateToolConfig =
+    [
+        new { tool = "workspace", credential_name = (string?)null, actions = new[] { new { action = "navigate", approval = "auto" } } },
+    ];
+
     /// <summary>A resolved model for one turn, with the tenant credential it uses.</summary>
     private sealed record LlmModelSelection(string Provider, string Model, string? CredentialName, bool IsByokEnabled);
 
@@ -615,7 +621,9 @@ public class StreamingChatService : IStreamingChatService
     /// </summary>
     private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection)
     {
-        var messages = new List<object> { new { role = "system", content = LandingSystemPrompt } };
+        var destinationsPrompt = StreamingChatHelpers.BuildLandingDestinationsPrompt(request.Destinations);
+        var systemPrompt = destinationsPrompt is null ? LandingSystemPrompt : $"{LandingSystemPrompt}\n\n{destinationsPrompt}";
+        var messages = new List<object> { new { role = "system", content = systemPrompt } };
 
         if (request.ThreadMessages is { Count: > 0 })
         {
@@ -645,6 +653,7 @@ public class StreamingChatService : IStreamingChatService
             is_byok_enabled = selection.IsByokEnabled,
             credential_name = selection.CredentialName,
             skill_names = LandingSkillNames,
+            tool_config = destinationsPrompt is null ? null : LandingNavigateToolConfig,
             ref_type = "LandingChat",
             ref_id = request.ConversationId?.ToString() ?? "",
             ref_name = "Landing Chat",

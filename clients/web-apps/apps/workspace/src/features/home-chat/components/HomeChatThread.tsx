@@ -3,10 +3,12 @@ import { type ChatModelSelection } from "@avplatform/assistant-chat";
 import { ChatModelPicker, ChatThread } from "@avplatform/chat";
 import { useBranding } from "@avplatform/ui/hooks";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { HOME_CHAT_STARTERS } from "../constants/home-chat-starters.constant";
+import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
 import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
+import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
 import { HomeChatWelcome } from "./HomeChatWelcome";
 
 type HomeChatThreadProps = {
@@ -33,9 +35,20 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
       : null;
   };
 
+  const destinations = useHomeChatDestinations();
+  const destinationsRef = useRef(destinations);
+  destinationsRef.current = destinations;
+  const starters = useHomeChatStarters(destinations);
+  const navigate = useNavigate();
+
   const runtime = useHomeChatRuntime({
     ...props,
     getModelSelection: () => modelSelectionRef.current,
+    getDestinations: () =>
+      destinationsRef.current.map(({ route, label, section }) => ({
+        route,
+        label: `${section} › ${label}`,
+      })),
   });
   const { companyName } = useBranding();
 
@@ -44,7 +57,9 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
       <ChatThread
         placeholder={`Ask ${companyName ?? "anything"}…`}
         welcome={<HomeChatWelcome />}
-        starters={HOME_CHAT_STARTERS}
+        starters={starters}
+        destinations={destinations}
+        onNavigate={navigate}
         composerTools={
           groups.length > 0 && (
             <ChatModelPicker groups={groups} value={modelKey} onChange={selectModel} />

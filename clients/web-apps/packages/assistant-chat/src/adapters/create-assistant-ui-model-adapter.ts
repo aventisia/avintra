@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assistant-ui/react";
 
-import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
+import {
+  type ChatDestination,
+  streamApprovalDecisions,
+  streamChatCompletion,
+} from "../apis/streaming-chat-apis";
 import { isPendingApprovalPart } from "../lib/approval-parts";
 import { createContentPartsBuilder } from "../lib/content-parts";
 import { LLMMessageType } from "../types/llm-message.type";
@@ -27,6 +31,8 @@ export type CreateAssistantUIModelAdapterParams = {
   getExtraHeaders?: () => Record<string, string>;
   /** The model picked for this turn; absent falls back to the flow's node config. */
   getModelSelection?: () => ChatModelSelection | null;
+  /** Pages the landing chat may send the user to, read on every send. */
+  getDestinations?: () => readonly ChatDestination[];
 };
 
 /** The model picked for a turn. Credentials are resolved server-side. */
@@ -155,6 +161,7 @@ export const createAssistantUIModelAdapter = ({
   isTempChat = false,
   getExtraHeaders,
   getModelSelection,
+  getDestinations,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   // Last conversation id observed in a frame. Temporary chats never allocate
   // one client-side, so this is the only handle that can resume their approvals.
@@ -314,6 +321,7 @@ export const createAssistantUIModelAdapter = ({
                 modelId: modelSelection?.model,
                 credentialName: modelSelection?.credentialName,
                 isByokEnabled: modelSelection?.isByokEnabled,
+                destinations: getDestinations?.(),
               },
               options.abortSignal,
               getExtraHeaders?.(),

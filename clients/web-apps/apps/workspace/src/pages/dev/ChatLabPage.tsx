@@ -10,10 +10,13 @@ import {
 } from "@avplatform/chat";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { getSidebarMenuBasedOnPermissions } from "@/components/layout/sidebar-menu-sections";
 import { HomeChatFrame } from "@/features/home-chat/components/HomeChatFrame";
 import { HomeChatWelcome } from "@/features/home-chat/components/HomeChatWelcome";
-import { HOME_CHAT_STARTERS } from "@/features/home-chat/constants/home-chat-starters.constant";
+import { toHomeChatDestinations } from "@/features/home-chat/hooks/useHomeChatDestinations.hook";
+import { useHomeChatStarters } from "@/features/home-chat/hooks/useHomeChatStarters.hook";
 import { chatLabAdapter } from "@/features/home-chat/utils/chat-lab-adapter.util";
 
 const LAB_MODEL_GROUPS: readonly ChatModelGroup[] = [
@@ -46,6 +49,10 @@ const createLabHistory = (): ChatHistoryItem[] =>
     title,
     lastModifiedOn: new Date(Date.now() - daysAgo * 86_400_000 - index * 60_000).toISOString(),
   }));
+
+const LAB_DESTINATIONS = toHomeChatDestinations(
+  getSidebarMenuBasedOnPermissions(["TA", "OM", "TD", "TU"], "Enterprise"),
+);
 
 const labAdapter = withAttachmentText(chatLabAdapter);
 const labAttachments = createChatAttachmentAdapter();
@@ -117,12 +124,16 @@ export const ChatLabPage = () => {
 const LabThread = () => {
   const runtime = useLocalRuntime(labAdapter, { adapters: { attachments: labAttachments } });
   const [modelKey, setModelKey] = useState<string | null>(null);
+  const starters = useHomeChatStarters(LAB_DESTINATIONS);
+  const navigate = useNavigate();
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <ChatThread
-        placeholder="Try “markdown”, “code”, “agent”, “approve”, “long” or “error”…"
+        placeholder="Try “find”, “blueprint”, “code”, “agent”, “approve”, “long” or “error”…"
         welcome={<HomeChatWelcome />}
-        starters={HOME_CHAT_STARTERS}
+        starters={starters}
+        destinations={LAB_DESTINATIONS}
+        onNavigate={navigate}
         composerTools={
           <ChatModelPicker groups={LAB_MODEL_GROUPS} value={modelKey} onChange={setModelKey} />
         }

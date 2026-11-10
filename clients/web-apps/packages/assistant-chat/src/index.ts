@@ -7,6 +7,7 @@ export type {
 export { streamApprovalDecisions, streamChatCompletion } from "./apis/streaming-chat-apis";
 export type {
   ApprovalDecisionDto,
+  ChatDestination,
   StreamingChatApprovalRequestDto,
   StreamingChatRequestDto,
 } from "./apis/streaming-chat-apis";

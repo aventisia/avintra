@@ -1,5 +1,9 @@
 import { useLocalRuntime } from "@assistant-ui/react";
-import { type ChatModelSelection, createAssistantUIModelAdapter } from "@avplatform/assistant-chat";
+import {
+  type ChatDestination,
+  type ChatModelSelection,
+  createAssistantUIModelAdapter,
+} from "@avplatform/assistant-chat";
 import {
   createChatAttachmentAdapter,
   createConversationHistoryAdapter,
@@ -22,6 +26,8 @@ type HomeChatRuntimeInput = {
   onConversationMissing: () => void;
   /** Read on every send; null lets the server pick the tenant's default model. */
   getModelSelection: () => ChatModelSelection | null;
+  /** Pages the assistant may send the user to, read on every send. */
+  getDestinations: () => readonly ChatDestination[];
 };
 
 /**
@@ -34,6 +40,7 @@ export const useHomeChatRuntime = ({
   onConversationCreated,
   onConversationMissing,
   getModelSelection,
+  getDestinations,
 }: HomeChatRuntimeInput) => {
   const isMountedRef = useRef(false);
   useEffect(() => {
@@ -64,6 +71,7 @@ export const useHomeChatRuntime = ({
         }),
         getExtraHeaders: getSpaceHeaders,
         getModelSelection,
+        getDestinations,
         onTextDelta: () => refreshHistory(true),
         onRunFinished: () => refreshHistory(false),
       }),

@@ -23,6 +23,14 @@ export interface StreamingChatRequestDto {
   modelId?: string;
   credentialName?: string;
   isByokEnabled?: boolean;
+  /** Pages the landing chat may send the user to; ignored by agent chats. */
+  destinations?: readonly ChatDestination[];
+}
+
+/** A Workspace page the landing chat can send the user to. */
+export interface ChatDestination {
+  route: string;
+  label: string;
 }
 
 /** A single approve/deny decision for a pending tool call. */

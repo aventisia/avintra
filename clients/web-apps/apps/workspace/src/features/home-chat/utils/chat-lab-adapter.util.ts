@@ -8,6 +8,7 @@ import {
   createContentPartsBuilder,
   humanizeToolLabel,
 } from "@avplatform/assistant-chat";
+import { type ChatBlueprint, NAVIGATE_TOOL_NAME } from "@avplatform/chat";
 
 const MARKDOWN_REPLY = `Here's a quick plan for an **invoice-intake agent**:
 
@@ -125,6 +126,37 @@ const APPROVAL_FRAMES: NormalizedChatFrame[] = [
   },
 ];
 
+const NAVIGATE_FRAMES: NormalizedChatFrame[] = [
+  ...toDeltas("delta", "Webhook triggers live under Configure. "),
+  {
+    type: "tool_call",
+    output: {
+      tool_call_id: "lab-navigate",
+      name: NAVIGATE_TOOL_NAME,
+      args: { route: "/configure/triggers/webhook" },
+    },
+  },
+  {
+    type: "tool_call",
+    output: { tool_call_id: "lab-navigate", content: "Showed the user a button." },
+  },
+  ...toDeltas(
+    "delta",
+    "Create one there, copy its URL into the sending system, and pick the agent each call should start.",
+  ),
+];
+
+const BLUEPRINT: ChatBlueprint = {
+  title: "Invoice intake agent",
+  summary: "Reads vendor invoices from a shared mailbox and files them for approval.",
+  steps: [
+    { title: "Watch the invoices mailbox", detail: "Email trigger on ap@yourcompany.com" },
+    { title: "Extract vendor, amount and due date", detail: "Document extraction on each PDF" },
+    { title: "Check against open purchase orders" },
+    { title: "Queue for approval", detail: "Over $10,000 goes to the finance lead" },
+  ],
+};
+
 const pickReply = (prompt: string) => {
   if (/code|webhook/i.test(prompt)) return CODE_REPLY;
   if (/long|scroll/i.test(prompt)) return LONG_REPLY;
@@ -162,8 +194,9 @@ const summarizeDecisions = (content: ThreadMessage["content"]) => {
 };
 
 /**
- * Dev-only model adapter that streams canned replies. "agent" streams reasoning
- * and tool steps, "approve" pauses on two approvals, and "error" fails.
+ * Dev-only model adapter that streams canned replies. "find" offers a page,
+ * "blueprint" proposes a plan, "agent" streams reasoning and tool steps,
+ * "approve" pauses on two approvals, and "error" fails.
  */
 export const chatLabAdapter: ChatModelAdapter = {
   async *run({ messages, abortSignal, unstable_getMessage }) {
@@ -185,6 +218,24 @@ export const chatLabAdapter: ChatModelAdapter = {
     await wait(900, abortSignal);
     if (/error/i.test(prompt))
       throw new Error("The model provider timed out. Try again in a moment.");
+
+    if (/where|find|open|take me/i.test(prompt)) {
+      for await (const content of playFrames(NAVIGATE_FRAMES, abortSignal)) yield { content };
+      return;
+    }
+
+    if (/blueprint|build|automat/i.test(prompt)) {
+      const intro = "Here's what I'd build. Tell me what to change before I start.";
+      for await (const content of playFrames(toDeltas("delta", intro), abortSignal))
+        yield { content };
+      yield {
+        content: [
+          { type: "text", text: intro },
+          { type: "data", name: "blueprint", data: BLUEPRINT },
+        ],
+      };
+      return;
+    }
 
     if (/agent|tool|approv/i.test(prompt)) {
       const isApproval = /approv/i.test(prompt);
