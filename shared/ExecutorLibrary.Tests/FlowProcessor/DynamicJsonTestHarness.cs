@@ -20,6 +20,8 @@ public static class DynamicJsonTestHarness
 
         failures += CustomToolNodeRoutingTestHarness.Run();
 
+        failures += ExecutorLibrary.Tests.TimeTriggers.TimeTriggerScheduleCorrectionTestHarness.Run();
+
         failures += Run("DotNotationOnJsonObject", () =>
         {
             var ctx = new FlowExecutionContext();
