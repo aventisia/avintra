@@ -106,6 +106,7 @@ class LiteLLMSTT(stt.STT):
         conn_options: APIConnectOptions = DEFAULT_API_CONNECT_OPTIONS,
     ) -> stt.SpeechEvent:
         if isinstance(buffer, list) and not buffer:
+            self._report_empty_transcript()
             return stt.SpeechEvent(type=stt.SpeechEventType.FINAL_TRANSCRIPT)
 
         started_at = time.perf_counter()
@@ -121,10 +122,12 @@ class LiteLLMSTT(stt.STT):
             response = await self._transcribe(request, self._user)
         except Exception as error:
             logger.warning("[voice-agent] speech-to-text failed: %s", type(error).__name__)
+            self._report_empty_transcript()
             return stt.SpeechEvent(type=stt.SpeechEventType.FINAL_TRANSCRIPT)
 
         text = (response.output or "").strip()
         if not text:
+            self._report_empty_transcript()
             return stt.SpeechEvent(type=stt.SpeechEventType.FINAL_TRANSCRIPT)
 
         if self._session_events is not None:
@@ -134,3 +137,7 @@ class LiteLLMSTT(stt.STT):
             type=stt.SpeechEventType.FINAL_TRANSCRIPT,
             alternatives=[stt.SpeechData(language=request.language or "", text=text)],
         )
+
+    def _report_empty_transcript(self) -> None:
+        if self._session_events is not None:
+            self._session_events.empty_transcript()

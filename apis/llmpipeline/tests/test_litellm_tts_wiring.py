@@ -127,6 +127,66 @@ def test_synthesize_returns_base64_of_transport_bytes(monkeypatch):
     }
 
 
+def test_googlegemini_alias_is_normalized_for_gemini_tts(monkeypatch):
+    captured: dict = {}
+
+    async def _synthesize(provider, model, **kwargs):
+        captured.update({"provider": provider, "model": model})
+        return FIXED_AUDIO
+
+    monkeypatch.setattr(litellm_service, "synthesize", _synthesize)
+
+    request = _byok_request(
+        provider="googlegemini",
+        model="gemini/gemini-3.8-flash-tts",
+    )
+    response = asyncio.run(LiteLLMTTSProvider().synthesize(request, _user()))
+
+    assert response.provider == "gemini"
+    assert captured == {
+        "provider": "gemini",
+        "model": "gemini/gemini-3.8-flash-tts",
+    }
+
+
+def test_gemini_voice_name_is_capitalized(monkeypatch):
+    captured: dict = {}
+
+    async def _synthesize(provider, model, **kwargs):
+        captured.update(kwargs)
+        return FIXED_AUDIO
+
+    monkeypatch.setattr(litellm_service, "synthesize", _synthesize)
+
+    request = _byok_request(
+        provider="googlegemini",
+        model="gemini/gemini-3.8-flash-tts",
+        voice_id="journey",
+    )
+    asyncio.run(LiteLLMTTSProvider().synthesize(request, _user()))
+
+    assert captured["voice"] == "Journey"
+
+
+def test_gemini_voice_name_keeps_its_hyphenated_suffix(monkeypatch):
+    captured: dict = {}
+
+    async def _synthesize(provider, model, **kwargs):
+        captured.update(kwargs)
+        return FIXED_AUDIO
+
+    monkeypatch.setattr(litellm_service, "synthesize", _synthesize)
+
+    request = _byok_request(
+        provider="googlegemini",
+        model="gemini/gemini-3.8-flash-tts",
+        voice_id="en-us-journey-f",
+    )
+    asyncio.run(LiteLLMTTSProvider().synthesize(request, _user()))
+
+    assert captured["voice"] == "En-us-journey-f"
+
+
 def test_provider_http_exception_propagates(monkeypatch):
     async def _synthesize(*args, **kwargs):
         raise HTTPException(status_code=400, detail="Unsupported model for preview.")
