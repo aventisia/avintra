@@ -42,8 +42,11 @@ const ByokModelCharts = () => {
 
   const providers = useMemo(() => providersFromData(data ?? {}), [data]);
 
-  // Keep the selected provider in sync with the data (e.g. after a date change).
-  const activeProvider = providers.find((p) => p.provider === selectedProvider)?.provider ?? null;
+  // Fall back to the first provider when none is chosen or the choice left the data.
+  const activeProvider =
+    providers.find((p) => p.provider === selectedProvider)?.provider ??
+    providers[0]?.provider ??
+    null;
 
   const models = useMemo<IByokModelUsage[]>(() => {
     if (!activeProvider) return [];
@@ -61,7 +64,7 @@ const ByokModelCharts = () => {
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
       {/* Model Provider selector */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg bg-surface px-6 py-4">
+      <div className="mb-4 flex items-center gap-3">
         <p className="text-sm font-medium">Model provider</p>
         <Select
           value={activeProvider ?? ""}
@@ -85,7 +88,7 @@ const ByokModelCharts = () => {
 
       {/* Per-model charts for the selected provider */}
       {activeProvider && (
-        <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
+        <div className="grid grid-cols-2 gap-4">
           {currentModels.map((model) => (
             <ModelChart
               key={model.model}
@@ -112,7 +115,7 @@ const ByokModelCharts = () => {
 
       {/* Pagination */}
       {currentModels.length > 0 && (
-        <div className="mt-5 flex items-center justify-end space-x-6 px-6 lg:space-x-8">
+        <div className="mt-5 flex items-center justify-end space-x-6 lg:space-x-8">
           <div className="hidden items-center space-x-2 xs:flex">
             <p className="whitespace-nowrap text-hint text-muted-foreground">Charts per page</p>
             <Select

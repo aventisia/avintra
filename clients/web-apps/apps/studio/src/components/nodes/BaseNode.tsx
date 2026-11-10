@@ -14,6 +14,7 @@ import React from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
 import { NodeContainer } from "@/components/node-container";
+import { NodeShape } from "@/components/node-container/NodeCard";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 // import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -27,6 +28,7 @@ interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   nodeId: string;
   glyph?: React.ReactNode;
   kind?: React.ReactNode;
+  shape?: NodeShape;
 }
 
 const BaseNode: React.FC<BaseNodeProps> = ({
@@ -36,6 +38,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   nodeId,
   glyph: glyphOverride,
   kind,
+  shape = "square",
   ...props
 }) => {
   const { toggleGroupExpand } = useGroupToggle();
@@ -78,7 +81,8 @@ const BaseNode: React.FC<BaseNodeProps> = ({
             key={i}
             style={{ translate: `${(renderCount - i) * 4}px ${(renderCount - i) * 4}px` }}
             className={cn(
-              "absolute inset-0 -z-10 rounded-md border border-line-strong bg-surface",
+              "absolute inset-0 -z-10 border border-line-strong bg-surface",
+              shape === "circle" ? "rounded-full" : "rounded-lg",
               nodeData?.isDisabled && "opacity-50",
               nodeData?.isCut && "border-dashed border-bad opacity-60",
             )}
@@ -86,7 +90,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         ))}
 
       <NodeContainer
-        {...{ nodeId, nodeData, selected, glyph }}
+        {...{ nodeId, nodeData, selected, glyph, shape }}
         kind={isCollapsedGroup ? "Group" : kind}
         {...props}
       >

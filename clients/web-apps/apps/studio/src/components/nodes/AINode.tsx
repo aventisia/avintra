@@ -64,6 +64,7 @@ export const AINode = memo(
         selected={selected}
         nodeData={data}
         nodeId={id}
+        shape="wide"
         glyph={data.img ? <NodeImage src={data.img} /> : <BrainIcon />}
         kind={llm?.length ? `AI · ${llm.join(", ")}` : undefined}
       >
