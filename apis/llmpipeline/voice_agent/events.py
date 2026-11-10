@@ -147,15 +147,36 @@ class VoiceSessionEvents:
         self._turn_tasks: set[asyncio.Task[None]] = set()
 
     def state(self, state: str, previous: str | None = None) -> None:
-        stable = _AGENT_STATES.get(state, state)
+        self._set_state(
+            _AGENT_STATES.get(state, state),
+            _AGENT_STATES.get(previous or "", previous),
+        )
+
+    def user_state(self, state: str) -> None:
+        """Reflect microphone activity before LiveKit commits the caller's turn.
+
+        LiveKit reports ``thinking`` only once the final transcript arrives, which
+        can be many seconds after the caller stopped speaking.
+        """
+
+        if state == "speaking":
+            if self._state == "processing":
+                self._set_state("listening", "processing")
+            return
+        if state == "listening" and self._state in ("idle", "listening"):
+            self._set_state("processing", self._state)
+
+    def empty_transcript(self) -> None:
+        """Return to listening when the caller's utterance produced no transcript."""
+
+        if self._state == "processing":
+            self._set_state("listening", "processing")
+
+    def _set_state(self, stable: str, previous: str | None) -> None:
         if stable == self._state:
             return
         self._state = stable
-        self._emit(
-            "session.state",
-            state=stable,
-            previousState=_AGENT_STATES.get(previous or "", previous),
-        )
+        self._emit("session.state", state=stable, previousState=previous)
 
     def caller_transcript(self, text: str) -> None:
         text = text.strip()

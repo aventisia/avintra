@@ -26,9 +26,28 @@ from ..core.credit_utils import (
 )
 from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
-from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
+from ..core.provider_registry import (
+    get_credit_service_type,
+    normalize_provider,
+    should_post_usage,
+    validate_model,
+    validate_provider,
+)
 from ..core.schemas import PronunciationEntry, TTSRequest, TTSResponse
 from .tts_base import BaseTextToSpeechProvider
+
+
+def canonical_voice(provider: str, voice: str) -> str:
+    """Return the provider's canonical voice spelling.
+
+    Gemini matches voice names case-sensitively ("Journey"), while the Studio
+    sends them lowercase.
+    """
+
+    if provider == "gemini" and voice:
+        stripped = voice.strip()
+        return stripped[:1].upper() + stripped[1:]
+    return voice
 
 
 def apply_pronunciations(
@@ -79,6 +98,9 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         """
         start_time = time.perf_counter()
 
+        # IMPORTANT NOTE: Studio voice settings store the provider as
+        # "googlegemini"; LiteLLM only accepts "gemini".
+        tts_request.provider = normalize_provider(tts_request.provider)
         # Validate the provider/model with the request's credential mode.
         validate_provider(tts_request.provider, tts_request.is_byok_enabled, tts_request.credential_name)
         validate_model(tts_request.provider, tts_request.model, tts_request.is_byok_enabled, tts_request.credential_name)
@@ -99,7 +121,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                 tts_request.provider,
                 tts_request.model,
                 input=synthesis_input,
-                voice=tts_request.voice_id or "",
+                voice=canonical_voice(tts_request.provider, tts_request.voice_id or ""),
                 speed=tts_request.speed if tts_request.speed is not None else 1.0,
                 is_byok=tts_request.is_byok_enabled,
                 credential_name=tts_request.credential_name,
