@@ -1,0 +1,37 @@
+meta {
+  name: Get execution graph blocked by restricted resource
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/execution/graph/{{RESTRICTED_GRAPH_JOB_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("graph fetch is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("graph denial names the restricted resource", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+  });
+}
+
+docs {
+  > Requires RESTRICTED_GRAPH_JOB_ID to identify a job whose flow version references a
+  > restricted resource the flow is not assigned to. Create the job while the resource is
+  > still open (or the flow is assigned), then remove the assignment / restrict the
+  > resource. The desktop graph fetch returns HTTP 403 with the plain-text
+  > "Cannot run: this agent is not assigned to restricted resource(s): ..." message
+  > instead of a graph, so the runner never starts a step.
+}

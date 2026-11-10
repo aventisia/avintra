@@ -591,107 +591,11 @@ public class FlowBuilderService : IFlowBuilderService
     /// </summary>
     private async Task<string?> CollectResourceReferencesAsync(string? reactFlowObject, Guid publishingFlowId, string flowName)
     {
-        var references = new Dictionary<string, List<string>>
-        {
-            ["credentials"] = new(),
-            ["queues"] = new(),
-            ["knowledgeBases"] = new(),
-            ["tools"] = new(),
-            ["skills"] = new(),
-            ["configStores"] = new(),
-        };
+        Dictionary<string, List<string>> references;
 
         try
         {
-            var flow = ReactFlowHelper.Parse(reactFlowObject);
-            if (flow?.Nodes is null || flow.Nodes.Count == 0)
-                return System.Text.Json.JsonSerializer.Serialize(references);
-
-            foreach (var node in flow.Nodes)
-            {
-                if (node?.Data?.Inputs is null)
-                    continue;
-
-                // Build a key/value map from the node inputs.
-                var configObj = new JsonObject();
-                foreach (var input in node.Data.Inputs)
-                {
-                    if (string.IsNullOrWhiteSpace(input.Key) || input.Value is null)
-                        continue;
-                    configObj[input.Key] = input.Value is JsonElement je
-                        ? JsonNode.Parse(je.GetRawText())
-                        : JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input.Value));
-                }
-
-                // Config stores: {{__config__<name>}} placeholders anywhere in the node inputs, including nested objects
-                foreach (Match match in Regex.Matches(configObj.ToJsonString(), @"\{\{__config__([^}]+)\}\}", RegexOptions.IgnoreCase))
-                    AddIfNotPresent(references["configStores"], match.Groups[1].Value.Trim());
-
-                // Credentials: any key containing __CredentialName__ (value is the credential name)
-                foreach (var kvp in configObj)
-                {
-                    if (kvp.Key.Contains("__CredentialName__") && kvp.Value is not null)
-                        AddIfNotPresent(references["credentials"], kvp.Value.ToString());
-                }
-
-                // Credentials: __ModelConfig__* -> credential_id / credential_name
-                foreach (var kvp in configObj)
-                {
-                    if (!kvp.Key.Contains("__ModelConfig__") || kvp.Value is not JsonObject mc)
-                        continue;
-                    var credId = ReadCredentialReference(mc);
-                    if (credId is not null && !IsEmptyCredential(credId))
-                        AddIfNotPresent(references["credentials"], credId);
-                }
-
-                // Tools: __ToolsConfig__* -> array of { tool, credential_id / credential_name }
-                foreach (var kvp in configObj)
-                {
-                    if (!kvp.Key.Contains("__ToolsConfig__") || kvp.Value is not JsonArray toolsArr)
-                        continue;
-                    foreach (var item in toolsArr)
-                    {
-                        if (item is not JsonObject toolObj)
-                            continue;
-                        if (toolObj.TryGetPropertyValue("tool", out var toolNode) && toolNode is not null)
-                            AddIfNotPresent(references["tools"], toolNode.ToString());
-                        var toolCred = ReadCredentialReference(toolObj);
-                        if (toolCred is not null && !IsEmptyCredential(toolCred))
-                            AddIfNotPresent(references["credentials"], toolCred);
-                    }
-                }
-
-                // Knowledge bases: __KbConfig__* -> knowledgeBase[] names
-                foreach (var kvp in configObj)
-                {
-                    if (!kvp.Key.Contains("__KbConfig__") || kvp.Value is not JsonObject kb)
-                        continue;
-                    if (kb.TryGetPropertyValue("knowledgeBase", out var kbNode) && kbNode is JsonArray kbArr)
-                    {
-                        foreach (var name in kbArr.Where(x => x is not null))
-                            AddIfNotPresent(references["knowledgeBases"], name!.ToString());
-                    }
-                }
-
-                // Skills: __SkillsConfig__* -> skills[] names
-                foreach (var kvp in configObj)
-                {
-                    if (!kvp.Key.Contains("__SkillsConfig__") || kvp.Value is not JsonObject sc)
-                        continue;
-                    if (sc.TryGetPropertyValue("skills", out var skillsNode) && skillsNode is JsonArray skillsArr)
-                    {
-                        foreach (var name in skillsArr.Where(x => x is not null))
-                            AddIfNotPresent(references["skills"], name!.ToString());
-                    }
-                }
-
-                // Queues: QueueName / QueueId node fields (persisted value is the queue name)
-                foreach (var kvp in configObj)
-                {
-                    if (kvp.Key.Equals("QueueName", StringComparison.OrdinalIgnoreCase) && kvp.Value is not null)
-                        AddIfNotPresent(references["queues"], kvp.Value.ToString());
-                }
-            }
+            references = ResourceFlowAccessHelpers.CollectReferencedResourceNames(ReactFlowHelper.Parse(reactFlowObject));
 
             // Validate credential references: resolve any legacy GUID values to their actual
             // credential names and drop references that no longer resolve in the current env.
@@ -742,8 +646,9 @@ public class FlowBuilderService : IFlowBuilderService
 
             // IMPORTANT NOTE: a legacy value that parses as a GUID can also be a credential name;
             // the name wins so publish and the flow-access gate resolve the same credential.
+            var normalizedValue = value.ToLowerInvariant();
             var byName = await _unitOfWork.VaultCredentialRepo
-                .GetByConditionAsync(w => w.Name == value && w.TenantId == tenantId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Name.ToLower() == normalizedValue && w.TenantId == tenantId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
             if (byName != null)
@@ -810,9 +715,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.ToolRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.Type == ComponentTypeEnum.Custom &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
@@ -821,7 +727,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedTool(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedTool(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowToolAccessAsync(Guid publishingFlowId, List<string> toolNames, string flowName)
@@ -864,9 +770,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.QueueRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
             .IgnoreQueryFilters()
@@ -875,7 +782,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedQueue(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedQueue(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowQueueAccessAsync(Guid publishingFlowId, List<string> queueNames, string flowName)
@@ -914,9 +821,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.SkillRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.Type == ComponentTypeEnum.Custom &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
@@ -925,7 +833,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedSkill(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedSkill(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowSkillAccessAsync(Guid publishingFlowId, List<string> skillNames, string flowName)
@@ -964,9 +872,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.KnowledgeBaseRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
             .IgnoreQueryFilters()
@@ -975,7 +884,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedKnowledgeBase(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedKnowledgeBase(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowKnowledgeBaseAccessAsync(Guid publishingFlowId, List<string> knowledgeBaseNames, string flowName)
@@ -1018,9 +927,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
             .IgnoreQueryFilters()
@@ -1028,7 +938,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedCredential(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedCredential(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowVaultCredentialAccessAsync(Guid publishingFlowId, List<string> credentialNames, string flowName)
@@ -1067,9 +977,10 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
 
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
         var candidates = await _unitOfWork.ConfigStoreRepo
             .GetByConditionAsync(w =>
-                names.Contains(w.Name) &&
+                normalizedNames.Contains(w.Name.ToLower()) &&
                 w.TenantId == tenantId &&
                 w.EnvType == envType)
             .IgnoreQueryFilters()
@@ -1077,7 +988,7 @@ public class FlowBuilderService : IFlowBuilderService
 
         return candidates
             .GroupBy(w => w.Name)
-            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedConfigStore(g, targetSpaceId)!);
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedConfigStore(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
     private async Task ValidateFlowConfigStoreAccessAsync(Guid publishingFlowId, List<string> configStoreNames, string flowName)
@@ -1139,13 +1050,19 @@ public class FlowBuilderService : IFlowBuilderService
             await EnsureProdCredentialMirroredAsync(prodSecret);
 
             var pendingFlowAccesses = new List<ResourceFlowAccess>();
+            var pendingUserAccesses = new List<ResourceUserAccess>();
             var hasProdCredentialChanges = await StageProdCredentialAccessSyncAsync(sourceSecret, prodSecret, pendingFlowAccesses);
+            await StageProdResourceUserAccessSyncAsync(sourceSecret.Id, prodSecret.Id, ResourceTypeEnum.VaultCredential, pendingUserAccesses);
             if (pendingFlowAccesses.Count > 0)
             {
                 await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
             }
+            if (pendingUserAccesses.Count > 0)
+            {
+                await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+            }
 
-            if (pendingFlowAccesses.Count > 0 || hasProdCredentialChanges)
+            if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdCredentialChanges)
             {
                 await _unitOfWork.SaveAsync();
             }
@@ -1155,10 +1072,19 @@ public class FlowBuilderService : IFlowBuilderService
 
         var clone = await CloneVaultCredentialToProdAsync(sourceSecret);
         var clonePendingFlowAccesses = new List<ResourceFlowAccess>();
+        var clonePendingUserAccesses = new List<ResourceUserAccess>();
         await StageProdCredentialAccessSyncAsync(sourceSecret, clone, clonePendingFlowAccesses);
+        await StageProdResourceUserAccessSyncAsync(sourceSecret.Id, clone.Id, ResourceTypeEnum.VaultCredential, clonePendingUserAccesses);
         if (clonePendingFlowAccesses.Count > 0)
         {
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(clonePendingFlowAccesses);
+        }
+        if (clonePendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(clonePendingUserAccesses);
+        }
+        if (clonePendingFlowAccesses.Count > 0 || clonePendingUserAccesses.Count > 0)
+        {
             await _unitOfWork.SaveAsync();
         }
 
@@ -1214,6 +1140,7 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var hasProdCredentialChanges = false;
         var tenantId = _currentTenantService.CurrentTenantId;
         var devCredentials = await ResolveDevVaultCredentialsAsync(names);
@@ -1229,7 +1156,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodSecret = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devSecret.Name &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.SpaceId == devSecret.SpaceId)
@@ -1251,6 +1178,8 @@ public class FlowBuilderService : IFlowBuilderService
             {
                 hasProdCredentialChanges = true;
             }
+
+            await StageProdResourceUserAccessSyncAsync(devSecret.Id, prodSecret.Id, ResourceTypeEnum.VaultCredential, pendingUserAccesses);
         }
 
         if (pendingFlowAccesses.Count > 0)
@@ -1258,7 +1187,12 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
-        if (pendingFlowAccesses.Count > 0 || hasProdCredentialChanges)
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdCredentialChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -1326,6 +1260,7 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var pendingQueueUsers = new List<QueueUser>();
         var hasProdQueueChanges = false;
         var tenantId = _currentTenantService.CurrentTenantId;
@@ -1341,7 +1276,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodQueue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devQueue.Name &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.SpaceId == devQueue.SpaceId)
@@ -1379,6 +1314,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             await StageProdQueueUsersAsync(devQueue, prodQueue, pendingQueueUsers);
+            await StageProdResourceUserAccessSyncAsync(devQueue.Id, prodQueue.Id, ResourceTypeEnum.Queue, pendingUserAccesses);
 
             // IMPORTANT NOTE: Sync is add-only: a restriction is never lifted from Dev, and Prod rows set directly by an OM are kept.
             if (devQueue.IsResourceAccessRestricted && !prodQueue.IsResourceAccessRestricted)
@@ -1396,12 +1332,17 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
         if (pendingQueueUsers.Count > 0)
         {
             await _unitOfWork.QueueUserRepo.InsertAsync(pendingQueueUsers);
         }
 
-        if (pendingFlowAccesses.Count > 0 || pendingQueueUsers.Count > 0 || hasProdQueueChanges)
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || pendingQueueUsers.Count > 0 || hasProdQueueChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -1465,10 +1406,12 @@ public class FlowBuilderService : IFlowBuilderService
         var tenantId = _currentTenantService.CurrentTenantId;
         var devTools = await ResolveDevToolsAsync(names);
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var hasProdToolChanges = false;
 
         foreach (var name in names)
         {
+            var normalizedName = name.ToLowerInvariant();
             devTools.TryGetValue(name, out var devTool);
 
             if (devTool == null)
@@ -1477,7 +1420,7 @@ public class FlowBuilderService : IFlowBuilderService
                 // and available in every environment, so they never need a Production clone.
                 var platformToolExists = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
-                        w.Name == name &&
+                        w.Name.ToLower() == normalizedName &&
                         w.Type == ComponentTypeEnum.Platform &&
                         w.TenantId == Guid.Empty &&
                         w.SpaceId == null)
@@ -1494,7 +1437,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodTool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devTool.Name &&
                     w.Type == ComponentTypeEnum.Custom &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
@@ -1536,6 +1479,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             await EnsureProdToolFlowAccessAsync(devTool.Id, prodTool.Id, pendingFlowAccesses);
+            await StageProdResourceUserAccessSyncAsync(devTool.Id, prodTool.Id, ResourceTypeEnum.Tool, pendingUserAccesses);
         }
 
         if (pendingFlowAccesses.Count > 0)
@@ -1543,7 +1487,12 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
-        if (pendingFlowAccesses.Count > 0 || hasProdToolChanges)
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdToolChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -1581,6 +1530,7 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var hasProdKnowledgeBaseChanges = false;
         var tenantId = _currentTenantService.CurrentTenantId;
         var devKnowledgeBases = await ResolveDevKnowledgeBasesAsync(names);
@@ -1602,7 +1552,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodKb = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devKb.Name &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.SpaceId == devKb.SpaceId)
@@ -1644,6 +1594,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             await EnsureProdKnowledgeBaseFlowAccessAsync(devKb.Id, prodKb.Id, pendingFlowAccesses);
+            await StageProdResourceUserAccessSyncAsync(devKb.Id, prodKb.Id, ResourceTypeEnum.KnowledgeBase, pendingUserAccesses);
 
             // Mirror file metadata and vectors so the Production KB is usable (idempotent repair).
             await EnsureProdKnowledgeBaseFilesAsync(devKb, prodKb);
@@ -1655,7 +1606,12 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
-        if (pendingFlowAccesses.Count > 0 || hasProdKnowledgeBaseChanges)
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdKnowledgeBaseChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -1813,13 +1769,15 @@ public class FlowBuilderService : IFlowBuilderService
             ? (Guid?)null
             : _currentTenantService.CurrentSpaceId;
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var hasProdSkillChanges = false;
 
         foreach (var name in names)
         {
+            var normalizedName = name.ToLowerInvariant();
             var devSkillCandidates = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name.ToLower() == normalizedName &&
                     w.Type == ComponentTypeEnum.Custom &&
                     w.TenantId == tenantId &&
                     w.EnvType == envType)
@@ -1834,7 +1792,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (devSkill == null)
             {
                 var platformSkillExists = await _unitOfWork.SkillRepo
-                    .GetByConditionAsync(w => w.Name == name && w.Type == ComponentTypeEnum.Platform)
+                    .GetByConditionAsync(w => w.Name.ToLower() == normalizedName && w.Type == ComponentTypeEnum.Platform)
                     .IgnoreQueryFilters()
                     .AnyAsync();
                 if (platformSkillExists)
@@ -1851,7 +1809,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodSkill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devSkill.Name &&
                     w.Type == ComponentTypeEnum.Custom &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
@@ -1890,6 +1848,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             await EnsureProdSkillFlowAccessAsync(devSkill.Id, prodSkill.Id, pendingFlowAccesses);
+            await StageProdResourceUserAccessSyncAsync(devSkill.Id, prodSkill.Id, ResourceTypeEnum.Skill, pendingUserAccesses);
 
             await EnsureProdSkillFilesAsync(devSkill, prodSkill);
         }
@@ -1899,7 +1858,12 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
-        if (pendingFlowAccesses.Count > 0 || hasProdSkillChanges)
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdSkillChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -1974,6 +1938,7 @@ public class FlowBuilderService : IFlowBuilderService
     {
         var missing = new List<string>();
         var pendingFlowAccesses = new List<ResourceFlowAccess>();
+        var pendingUserAccesses = new List<ResourceUserAccess>();
         var hasProdConfigStoreChanges = false;
         var tenantId = _currentTenantService.CurrentTenantId;
         var devConfigStores = await ResolveDevConfigStoresAsync(names);
@@ -1988,7 +1953,7 @@ public class FlowBuilderService : IFlowBuilderService
 
             var prodConfigStore = await _unitOfWork.ConfigStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name == name &&
+                    w.Name == devConfigStore.Name &&
                     w.TenantId == tenantId &&
                     w.EnvType == ConfigureEnvironmentType.Prod &&
                     w.SpaceId == devConfigStore.SpaceId)
@@ -2026,6 +1991,7 @@ public class FlowBuilderService : IFlowBuilderService
             }
 
             await EnsureProdConfigStoreFlowAccessAsync(devConfigStore.Id, prodConfigStore.Id, pendingFlowAccesses);
+            await StageProdResourceUserAccessSyncAsync(devConfigStore.Id, prodConfigStore.Id, ResourceTypeEnum.ConfigStore, pendingUserAccesses);
         }
 
         if (pendingFlowAccesses.Count > 0)
@@ -2033,7 +1999,12 @@ public class FlowBuilderService : IFlowBuilderService
             await _unitOfWork.ResourceFlowAccessRepo.InsertAsync(pendingFlowAccesses);
         }
 
-        if (pendingFlowAccesses.Count > 0 || hasProdConfigStoreChanges)
+        if (pendingUserAccesses.Count > 0)
+        {
+            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(pendingUserAccesses);
+        }
+
+        if (pendingFlowAccesses.Count > 0 || pendingUserAccesses.Count > 0 || hasProdConfigStoreChanges)
         {
             await _unitOfWork.SaveAsync();
         }
@@ -2067,9 +2038,39 @@ public class FlowBuilderService : IFlowBuilderService
             }));
     }
 
-    private static bool IsEmptyCredential(string? value) =>
-        string.IsNullOrWhiteSpace(value) ||
-        value == "00000000-0000-0000-0000-000000000000";
+    // Copies the Dev resource's people-sharing rows onto its Prod clone. Add-only: existing
+    // Prod rows are kept, and Dev access levels are never used to change them.
+    private async Task StageProdResourceUserAccessSyncAsync(
+        Guid devResourceId,
+        Guid prodResourceId,
+        ResourceTypeEnum resourceType,
+        List<ResourceUserAccess> pendingUserAccesses)
+    {
+        var sourceAccesses = await _unitOfWork.ResourceUserAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == resourceType && w.ResourceId == devResourceId)
+            .ToListAsync();
+
+        if (sourceAccesses.Count == 0)
+            return;
+
+        var existingUserIds = await _unitOfWork.ResourceUserAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == resourceType && w.ResourceId == prodResourceId)
+            .IgnoreQueryFilters()
+            .Select(w => w.UserId)
+            .ToListAsync();
+
+        pendingUserAccesses.AddRange(sourceAccesses
+            .Where(w => !existingUserIds.Contains(w.UserId) &&
+                        !pendingUserAccesses.Any(p => p.ResourceType == resourceType && p.ResourceId == prodResourceId && p.UserId == w.UserId))
+            .Select(w => new ResourceUserAccess
+            {
+                TenantId = w.TenantId,
+                ResourceType = resourceType,
+                ResourceId = prodResourceId,
+                UserId = w.UserId,
+                AccessLevel = w.AccessLevel
+            }));
+    }
 
     /// <summary>
     /// Assigns ownership to a newly cloned resource and aborts publishing when the share cannot be
@@ -2091,23 +2092,5 @@ public class FlowBuilderService : IFlowBuilderService
             : _currentTenantService.CurrentSpaceId.ToString("N");
         var key = $"prod-clone:{_currentTenantService.CurrentTenantId:N}:{space}:{resourceType}:{name.Trim().ToUpperInvariant()}";
         return _unitOfWork.AcquireAdvisoryLockAsync(key);
-    }
-
-    // Reads a credential reference from a config object. Accepts both the canonical
-    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
-    private static string? ReadCredentialReference(JsonObject obj)
-    {
-        if (obj.TryGetPropertyValue("credential_name", out var nameNode) && nameNode is not null)
-            return nameNode.ToString();
-        if (obj.TryGetPropertyValue("credential_id", out var idNode) && idNode is not null)
-            return idNode.ToString();
-        return null;
-    }
-
-    private static void AddIfNotPresent(List<string> list, string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return;
-        if (!list.Contains(value, StringComparer.OrdinalIgnoreCase))
-            list.Add(value);
     }
 }

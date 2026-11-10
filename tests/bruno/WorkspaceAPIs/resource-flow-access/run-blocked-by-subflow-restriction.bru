@@ -1,0 +1,45 @@
+meta {
+  name: Run blocked by restricted queue in a called subflow
+  type: http
+  seq: 29
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/execute-flow/execute
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{SUBFLOW_PARENT_FLOW_VERSION_ID}}"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const queueName = bru.getGlobalEnvVar("SUBFLOW_RESTRICTED_QUEUE_NAME") || bru.getEnvVar("SUBFLOW_RESTRICTED_QUEUE_NAME");
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("parent run is blocked with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("run block message names the child's restricted queue", function() {
+    expect(text).to.contain("Cannot run: this agent is not assigned to restricted resource(s):");
+    expect(text).to.contain("queue '" + queueName + "'");
+  });
+}
+
+docs {
+  > Requires SUBFLOW_PARENT_FLOW_VERSION_ID to be an unpublished version of
+  > SUBFLOW_PARENT_FLOW_ID with a callAgentNode or blockNode that references a child
+  > version of SUBFLOW_CHILD_FLOW_ID. The child graph references a queue by name,
+  > SUBFLOW_RESTRICTED_QUEUE_NAME, which is a Dev queue assigned to the parent flow but
+  > NOT to the child flow. The parent run returns HTTP 403 naming the child's queue,
+  > because every called agent/block is checked against its own grants.
+}
