@@ -155,9 +155,13 @@ def test_speech_is_transcribed_as_one_final_event_with_one_wav_utterance():
 class _TimingEvents:
     def __init__(self) -> None:
         self.durations: list[int] = []
+        self.empty_transcripts = 0
 
     def stt_final(self, duration_ms: int) -> None:
         self.durations.append(duration_ms)
+
+    def empty_transcript(self) -> None:
+        self.empty_transcripts += 1
 
 
 def test_final_utterance_records_the_stt_duration_before_the_turn_starts():
@@ -175,14 +179,17 @@ def test_final_utterance_records_the_stt_duration_before_the_turn_starts():
     assert event.alternatives[0].text == "hello there"
     assert len(events.durations) == 1
     assert events.durations[0] >= 0
+    assert events.empty_transcripts == 0
 
 
 def test_empty_vad_buffer_does_not_call_the_provider_or_emit_a_transcript():
     calls, transcribe = _recording_provider()
+    events = _TimingEvents()
     adapter = LiteLLMSTT(
         request=build_stt_request(_claims(), AGENT_SETTINGS),
         user=build_user(_claims()),
         transcribe=transcribe,
+        events=events,
     )
 
     event = asyncio.run(adapter.recognize([]))
@@ -190,6 +197,7 @@ def test_empty_vad_buffer_does_not_call_the_provider_or_emit_a_transcript():
     assert event.type.value == "final_transcript"
     assert event.alternatives == []
     assert calls == []
+    assert events.empty_transcripts == 1
 
 
 def test_empty_provider_output_emits_no_transcript_or_timing():
@@ -207,6 +215,7 @@ def test_empty_provider_output_emits_no_transcript_or_timing():
     assert event.alternatives == []
     assert len(calls) == 1
     assert events.durations == []
+    assert events.empty_transcripts == 1
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +224,8 @@ def test_empty_provider_output_emits_no_transcript_or_timing():
 
 
 def test_provider_failure_keeps_the_session_alive_without_a_transcript():
+    events = _TimingEvents()
+
     async def failing(request, user):
         raise RuntimeError("provider is down")
 
@@ -222,12 +233,14 @@ def test_provider_failure_keeps_the_session_alive_without_a_transcript():
         request=build_stt_request(_claims(), AGENT_SETTINGS),
         user=build_user(_claims()),
         transcribe=failing,
+        events=events,
     )
 
     event = asyncio.run(adapter.recognize([_frame()]))
 
     assert event.type.value == "final_transcript"
     assert event.alternatives == []
+    assert events.empty_transcripts == 1
 
 
 def test_cancellation_propagates():

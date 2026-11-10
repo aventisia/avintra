@@ -61,7 +61,9 @@ langchain-openrouter>=0.2,<2.0
 # psycopg-binary>=3.0,<4.0
 
 # LiteLLM provider abstraction layer (LLM Providers v2 feature)
-litellm>=1.40.0,<2.0.0
+# 1.108.3 adds Gemini audio transcription, which the voice worker needs for
+# googlegemini STT models.
+litellm>=1.108.3,<2.0.0
 
 # LiveKit voice sessions: server SDK (rooms, dispatch, tokens) and the agent worker.
 livekit-api==1.2.2

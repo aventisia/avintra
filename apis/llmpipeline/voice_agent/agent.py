@@ -11,7 +11,10 @@ before any provider call.
 
 from __future__ import annotations
 
-from livekit.agents import JobContext, JobProcess, WorkerOptions, cli
+import logging
+
+from livekit.agents import JobContext, JobExecutorType, JobProcess, WorkerOptions, cli
+from livekit.agents.worker import ServerEnvOption
 from livekit.plugins import silero
 
 from app.core.config import settings
@@ -43,6 +46,10 @@ async def entrypoint(ctx: JobContext) -> None:
 def prewarm(proc: JobProcess) -> None:
     """Load the VAD model once per worker process instead of once per call."""
 
+    # IMPORTANT NOTE: LiveKit's dev CLI raises the root logger to DEBUG, so LiteLLM
+    # dumps each request body (whole audio files included) to stdout and the worker
+    # stalls on the pipe. Warnings and errors still come through.
+    logging.getLogger("LiteLLM").setLevel(logging.WARNING)
     proc.userdata["vad"] = silero.VAD.load()
 
 
@@ -61,6 +68,13 @@ def worker_options() -> WorkerOptions:
         ws_url=settings.LIVEKIT_WS_URL,
         api_key=settings.LIVEKIT_API_KEY,
         api_secret=settings.LIVEKIT_API_SECRET,
+        # IMPORTANT NOTE: Windows defaults to thread-isolated jobs, so a process-global
+        # engine or HTTP client survives into the next job's loop and fails. Process
+        # isolation matches the Linux default and keeps each job's state loop-local.
+        job_executor_type=JobExecutorType.PROCESS,
+        # Keep a prewarmed process ready so the first caller does not wait for imports
+        # and the VAD load; dev defaults to zero idle processes.
+        num_idle_processes=ServerEnvOption(dev_default=1, prod_default=4),
     )
 
 

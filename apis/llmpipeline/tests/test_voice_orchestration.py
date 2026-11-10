@@ -328,6 +328,75 @@ def test_session_events_cover_state_transcripts_tools_errors_and_timing():
     assert _of_type(published, "session.closed")[0]["code"] == WS_CLOSE_NORMAL
 
 
+def test_microphone_activity_shows_processing_before_livekit_commits_the_turn():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("listening", "idle")
+    events.user_state("speaking")
+    events.user_state("listening")
+    events.state("thinking", "listening")
+    events.state("speaking", "thinking")
+    events.state("listening", "speaking")
+
+    states = [
+        (event["state"], event["previousState"])
+        for event in _of_type(published, "session.state")
+    ]
+    assert states == [
+        ("listening", "idle"),
+        ("processing", "listening"),
+        ("speaking", "processing"),
+        ("listening", "speaking"),
+    ]
+
+
+def test_microphone_input_from_idle_reports_idle_as_the_previous_state():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("idle", "initializing")
+    events.user_state("listening")
+
+    state = _of_type(published, "session.state")[-1]
+    assert (state["state"], state["previousState"]) == ("processing", "idle")
+
+
+def test_speaking_again_during_processing_returns_to_listening():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("listening", "idle")
+    events.user_state("listening")
+    events.user_state("speaking")
+
+    states = [event["state"] for event in _of_type(published, "session.state")]
+    assert states == ["listening", "processing", "listening"]
+
+
+def test_user_stopping_while_the_agent_speaks_keeps_speaking():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("speaking", "processing")
+    events.user_state("listening")
+
+    [state] = _of_type(published, "session.state")
+    assert state["state"] == "speaking"
+
+
+def test_empty_transcript_returns_to_listening():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("listening", "idle")
+    events.user_state("listening")
+    events.empty_transcript()
+
+    states = [event["state"] for event in _of_type(published, "session.state")]
+    assert states == ["listening", "processing", "listening"]
+
+
 def test_finished_turn_persists_the_same_timing_object_as_its_event():
     published: list[dict] = []
     persisted: list[tuple[int, dict]] = []
@@ -668,6 +737,44 @@ def test_state_caller_transcript_and_provider_error_events_are_published(
     assert _of_type(events, "session.closed")[0]["code"] == WS_CLOSE_NORMAL
     assert voice_persistence.lifecycles[0].failed is True
     assert ctx.deleted_rooms == 1
+
+
+def test_user_state_events_publish_processing_before_the_reply(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+
+    def on_start(session) -> None:
+        session.handlers["agent_state_changed"](
+            SimpleNamespace(old_state="idle", new_state="listening")
+        )
+        session.handlers["user_state_changed"](
+            SimpleNamespace(old_state="listening", new_state="speaking")
+        )
+        session.handlers["user_state_changed"](
+            SimpleNamespace(old_state="speaking", new_state="listening")
+        )
+        session.handlers["agent_state_changed"](
+            SimpleNamespace(old_state="listening", new_state="thinking")
+        )
+        session.handlers["agent_state_changed"](
+            SimpleNamespace(old_state="thinking", new_state="speaking")
+        )
+        ctx.room.handlers["participant_disconnected"](ctx.caller)
+
+    _fake_agent_session(monkeypatch, on_start=on_start)
+
+    asyncio.run(run_session(ctx, _claims(), _settings()))
+
+    states = [
+        (event["state"], event["previousState"])
+        for event in _of_type(_payloads(ctx), "session.state")
+    ]
+    assert states == [
+        ("listening", "idle"),
+        ("processing", "listening"),
+        ("speaking", "processing"),
+    ]
 
 
 def test_join_failure_marks_the_conversation_failed_and_deletes_the_room(

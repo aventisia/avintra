@@ -187,6 +187,9 @@ async def run_session(
     def _on_agent_state_changed(event) -> None:
         events.state(event.new_state, event.old_state)
 
+    def _on_user_state_changed(event) -> None:
+        events.user_state(event.new_state)
+
     def _on_user_input_transcribed(event) -> None:
         if event.is_final:
             events.caller_transcript(event.transcript)
@@ -237,6 +240,7 @@ async def run_session(
     )
 
     session.on("agent_state_changed", _on_agent_state_changed)
+    session.on("user_state_changed", _on_user_state_changed)
     session.on("user_input_transcribed", _on_user_input_transcribed)
     session.on("error", _on_session_error)
     session.on("close", _on_session_close)
