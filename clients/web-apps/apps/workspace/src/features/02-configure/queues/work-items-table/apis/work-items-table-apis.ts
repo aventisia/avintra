@@ -18,14 +18,17 @@ export const getQueuesWorkItemPayload = (id: string) => {
     .then((res) => res.data);
 };
 
+// IMPORTANT NOTE: this list shortens strings over 50 characters and removes array
+// fields, so the table cannot render them; getQueuesWorkItemById carries the full payload.
 /**
  * Retrieves list of queues work items.
  */
 export const getQueuesWorkItemsList = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueWorkItemDto[]>>(`${baseAPIURL}/list/${id}`, {
-      headers: getSpaceHeaders(),
-    })
+    .get<IHttpResponse<QueueWorkItemDto[]>>(
+      `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue/workitem/${id}/list`,
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
