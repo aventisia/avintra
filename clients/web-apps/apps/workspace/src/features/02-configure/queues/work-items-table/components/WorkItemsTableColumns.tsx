@@ -47,7 +47,6 @@ const customFieldColumns = (fields: InputSchemaField[]): ColumnDef<WorkItemsTabl
 
 /**
  * Array of table columns for the WorkItems table.
- * Each column object contains an accessorKey, header component, and cell component.
  *
  * @param queueName Name of the parent queue, used for the detail-view link and
  * back navigation.

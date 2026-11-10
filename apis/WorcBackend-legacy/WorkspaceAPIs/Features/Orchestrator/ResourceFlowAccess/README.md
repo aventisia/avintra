@@ -38,16 +38,19 @@ only; it does not carry a space.
   but the grant itself carries no space: the resource and the flow already carry their own
   `SpaceId`, so already-assigned cross-space flows keep working and stay re-saveable.
 - Publish checks only the restriction on the resource in the current environment. The Prod
-  clone's flag and rows are copied add-only but are not enforced anywhere until runtime
-  enforcement lands.
+  clone's flag and rows are copied add-only and are enforced at run time for published
+  agents. The Dev resource's people-sharing rows (`ResourceUserAccess`) are copied to the
+  Prod clone as well, so users shared in Dev keep access in Prod; the add-only rule keeps
+  any Prod rows set by an OM.
 - When a save restricts the resource, the response lists, in `unassignedPublishedFlows`, the
   published flows whose publish would resolve the resource's name to this resource but that
   are not on the list.
 
 ## Where the pieces live
 
-- `ResourceFlowAccessService` provides the one reusable bulk assign/list flow and the
-  batch `GetAssignedFlowIdsAsync` read used for publish enforcement.
+- `ResourceFlowAccessService` provides the one reusable bulk assign/list flow, the
+  batch `GetAssignedFlowIdsAsync` read used for publish enforcement, and
+  `ValidateRunResourceAccessAsync` for run-time enforcement.
 - `ResourceFlowAccessController` exposes the bulk-only routes under `resource-flows`;
   there are no per-link create/update/delete routes. `POST resource-flows/assign` carries
   the resource type, resource id, and the complete flow set in its body;
@@ -65,17 +68,18 @@ only; it does not carry a space.
   with a 403 when the publishing flow is not listed on a restricted referenced tool, queue,
   config store, vault credential, or knowledge base. Config store references are collected
   from `{{__config__<name>}}` placeholders in string node input values. Definition
-  resolution is the enforcement point; execution-time pickup is not covered yet.
+  resolution is the enforcement point for publish; run time uses the separate validator
+  described below.
 - `GET queue/by-agent/{flowVersionId}` stays for the studio. It resolves the version to its
   flow space-free and answers from the queue rows, then lists queues in the current space,
   so it returns the same space-scoped queues the assignment list holds. An unknown version is a 404.
 - PROD parity lives in `FlowBuilderService.EnsureProdToolsAsync`,
   `EnsureProdQueuesAsync`, `EnsureProdConfigStoresAsync`, and
   `EnsureProdVaultCredentialsAsync`, which copy a Dev resource's flow
-  set onto its Production clone. Vault credentials are matched by name and space.
-  The sync is add-only: it adds missing rows and sets the restricted flag when Dev has it,
-  but never removes rows or lifts a restriction set directly on Prod by an OM. PROD edits
-  stay blocked by the OM-only guard.
+  set and people-sharing rows onto its Production clone. Vault credentials are matched by
+  name and space. The sync is add-only: it adds missing rows and sets the restricted flag
+  when Dev has it, but never removes rows or lifts a restriction set directly on Prod by an
+  OM. PROD edits stay blocked by the OM-only guard.
 - Flow rows are removed when the resource is deleted (`ToolService`, `QueueTableService`,
   `ConfigStoreService`, `VaultCredentialService`), when archive deletes an orphaned Prod resource
   (`AgentTableService`), when archiving every non-archived version of a flow
@@ -100,11 +104,24 @@ only; it does not carry a space.
 - The Tool, Queue, ConfigStore, VaultCredential, KnowledgeBase, and Skill resource types are wired.
   Other configure types keep their existing behavior and will adopt the same list later.
 
-## Known gaps
+## Run-time enforcement
 
-- Runtime resolution (`ToolService.GetToolByNameAsync`, queue work pickup, llmpipeline) does
-  not check flow access yet; enforcement happens only at publish time.
-- The restriction on a Prod clone is inert: nothing reads it, so it neither blocks nor allows
-  a flow until runtime enforcement lands.
-- Config store references held only inside subflows are not collected at publish time; the
-  collector scans the root graph only, like the tool and queue collectors.
+- Every agent run validates the saved configuration before any step executes. The check
+  resolves each referenced queue, tool, credential, config store, knowledge base, and skill
+  in the run's environment (Dev for draft versions, Prod for published ones), including
+  agents and blocks called by the flow, and refuses to start when the flow is not assigned
+  to a restricted resource. The denial message names every blocking resource.
+- Gates: the manual/API run (`ExecuteFlowStep1Service`) returns 403 and creates no job; a
+  triggered or cloud job (`CloudJobExecutionService`) is marked `Failed` with the message;
+  the desktop graph fetch (`ExecutionGraphService`) returns 403 and marks the job `Failed`;
+  the chat stream (`StreamingChatService`) yields one error chunk.
+- A validator failure (500) is never reported as a denial: the manual run and the graph
+  fetch return 500 without touching the job, a triggered or cloud job is marked `Failed`
+  with the validator message, and the chat stream yields that message.
+- Names are matched case-insensitively, the same way run-time resource resolution matches
+  them, so publish and run agree on which resource a reference means.
+- Any-agent resources never block, and the check is read-only: it changes no assignment.
+- Still not covered: publish-time collection scans only the root graph, so config store
+  references held only inside subflows are not checked at publish; names generated at run
+  time by node output (only saved references are scanned); and restrictions changed while a
+  run is already executing.
