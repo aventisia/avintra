@@ -2,6 +2,8 @@ using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ExecutorLibrary.FlowProcessor;
+using ExecutorLibrary.Tests.Helpers;
+using static ExecutorLibrary.Tests.TestHarness;
 
 namespace ExecutorLibrary.Tests.FlowProcessor;
 
@@ -22,7 +24,9 @@ public static class DynamicJsonTestHarness
 
         failures += ExecutorLibrary.Tests.TimeTriggers.TimeTriggerScheduleCorrectionTestHarness.Run();
 
-        failures += Run("DotNotationOnJsonObject", () =>
+        failures += NodeLogDataTableTestHarness.Run();
+
+        failures += RunCase("DotNotationOnJsonObject", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("data", JsonDocument.Parse("""{"name":"Aventisia"}""").RootElement);
@@ -30,7 +34,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("Aventisia", result);
         });
 
-        failures += Run("StringIndexerOnJsonObject", () =>
+        failures += RunCase("StringIndexerOnJsonObject", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("data", JsonDocument.Parse("""{"Loan Account Number or File Number":"12345"}""").RootElement);
@@ -38,7 +42,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("12345", result);
         });
 
-        failures += Run("NestedArrayDotAndStringIndexer", () =>
+        failures += RunCase("NestedArrayDotAndStringIndexer", () =>
         {
             var ctx = new FlowExecutionContext();
             var json = """
@@ -53,7 +57,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("third", result);
         });
 
-        failures += Run("NumericKeyAccessCoercesToString", () =>
+        failures += RunCase("NumericKeyAccessCoercesToString", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("data", JsonDocument.Parse("""{"0":"numeric-key-value"}""").RootElement);
@@ -61,7 +65,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("numeric-key-value", result);
         });
 
-        failures += Run("MissingStringIndexerLeavesPlaceholder", () =>
+        failures += RunCase("MissingStringIndexerLeavesPlaceholder", () =>
         {
             // A missing key must NOT fail the whole node: ResolvePlaceholdersToString
             // catches KeyNotFoundException and leaves the original placeholder in place
@@ -72,7 +76,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{{data["missing"]}}""", result);
         });
 
-        failures += Run("ExpandoObjectRoundTrip", () =>
+        failures += RunCase("ExpandoObjectRoundTrip", () =>
         {
             var ctx = new FlowExecutionContext();
             dynamic expando = new ExpandoObject();
@@ -86,7 +90,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("value", indexedResult);
         });
 
-        failures += Run("JsonNodeConversion", () =>
+        failures += RunCase("JsonNodeConversion", () =>
         {
             var ctx = new FlowExecutionContext();
             var node = JsonNode.Parse("""{"nested":{"key":"from node"}}""");
@@ -95,7 +99,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("from node", result);
         });
 
-        failures += Run("JsonSerializerRoundTrip", () =>
+        failures += RunCase("JsonSerializerRoundTrip", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("data", JsonDocument.Parse("""{"a":1,"b":[2,3]}""").RootElement);
@@ -107,7 +111,7 @@ public static class DynamicJsonTestHarness
             AssertEqual(1, doc.RootElement.GetProperty("a").GetInt32());
         });
 
-        failures += Run("DictionaryConversion", () =>
+        failures += RunCase("DictionaryConversion", () =>
         {
             var ctx = new FlowExecutionContext();
             var dict = new Dictionary<string, object?>
@@ -120,7 +124,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("Jane Doe", result);
         });
 
-        failures += Run("NodeArgumentHelperSerializesDynamicJson", () =>
+        failures += RunCase("NodeArgumentHelperSerializesDynamicJson", () =>
         {
             var dyn = new DynamicJson();
             dyn["x"] = 1;
@@ -129,21 +133,21 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"x":1,"y":"two"}""", result);
         });
 
-        failures += Run("NodeArgumentHelperSingleFilePathToList", () =>
+        failures += RunCase("NodeArgumentHelperSingleFilePathToList", () =>
         {
             var path = "C:\\Users\\Gaurav\\Gitea\\Aventisia\\assets\\demo-files\\sendgrid-invoice.pdf";
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(path, typeof(List<string>));
             AssertTrue(result is List<string> list && list.Count == 1 && list[0] == path);
         });
 
-        failures += Run("NodeArgumentHelperJsonArrayStringToList", () =>
+        failures += RunCase("NodeArgumentHelperJsonArrayStringToList", () =>
         {
             var json = """["C:\\a.pdf","C:\\b.pdf"]""";
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(json, typeof(List<string>));
             AssertTrue(result is List<string> list && list.Count == 2 && list[0] == "C:\\a.pdf" && list[1] == "C:\\b.pdf");
         });
 
-        failures += Run("NodeArgumentHelperCommaSeparatedStringToList", () =>
+        failures += RunCase("NodeArgumentHelperCommaSeparatedStringToList", () =>
         {
             var csv = "C:\\a.pdf,C:\\b.pdf";
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(csv, typeof(List<string>));
@@ -153,7 +157,7 @@ public static class DynamicJsonTestHarness
         // Regression: a List<DynamicJson> (e.g. {{DeserializedToken.line_items}}) must serialize
         // as JSON, not fall through to ToString() which yields the class name
         // "System.Collections.Generic.List`1[ExecutorLibrary.FlowProcessor.DynamicJson]".
-        failures += Run("ListOfDynamicJsonResolvesToJson", () =>
+        failures += RunCase("ListOfDynamicJsonResolvesToJson", () =>
         {
             var ctx = new FlowExecutionContext();
             var lineItems = new List<DynamicJson>
@@ -181,14 +185,14 @@ public static class DynamicJsonTestHarness
         // ------------------------------------------------------------------
 
         // --- 1. DynamicJson ---
-        failures += Run("DynamicJsonSimpleSerializesToJson", () =>
+        failures += RunCase("DynamicJsonSimpleSerializesToJson", () =>
         {
             var dyn = new DynamicJson { ["x"] = 1, ["y"] = "two" };
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(dyn, typeof(string));
             AssertEqual("""{"x":1,"y":"two"}""", result);
         });
 
-        failures += Run("DynamicJsonNestedWithArraySerializesToJson", () =>
+        failures += RunCase("DynamicJsonNestedWithArraySerializesToJson", () =>
         {
             var dyn = new DynamicJson
             {
@@ -200,14 +204,14 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"name":"Aventisia","tags":["rpa","automation"],"meta":{"active":true}}""", result);
         });
 
-        failures += Run("DynamicJsonEmptySerializesToEmptyObject", () =>
+        failures += RunCase("DynamicJsonEmptySerializesToEmptyObject", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new DynamicJson(), typeof(string));
             AssertEqual("{}", result);
         });
 
         // --- 2. ExpandoObject ---
-        failures += Run("ExpandoObjectSimpleSerializesToJson", () =>
+        failures += RunCase("ExpandoObjectSimpleSerializesToJson", () =>
         {
             dynamic expando = new ExpandoObject();
             expando.Key = "value";
@@ -216,7 +220,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"Key":"value","Count":3}""", result);
         });
 
-        failures += Run("ExpandoObjectNestedSerializesToJson", () =>
+        failures += RunCase("ExpandoObjectNestedSerializesToJson", () =>
         {
             dynamic outer = new ExpandoObject();
             outer.Name = "Aventisia";
@@ -228,14 +232,14 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"Name":"Aventisia","Details":{"Count":5,"Enabled":true}}""", result);
         });
 
-        failures += Run("ExpandoObjectEmptySerializesToEmptyObject", () =>
+        failures += RunCase("ExpandoObjectEmptySerializesToEmptyObject", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new ExpandoObject(), typeof(string));
             AssertEqual("{}", result);
         });
 
         // --- 3. IDictionary<string, object?> ---
-        failures += Run("DictionarySimpleSerializesToJson", () =>
+        failures += RunCase("DictionarySimpleSerializesToJson", () =>
         {
             var dict = new Dictionary<string, object?>
             {
@@ -246,7 +250,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"First Name":"Jane","Last Name":"Doe"}""", result);
         });
 
-        failures += Run("DictionaryNestedSerializesToJson", () =>
+        failures += RunCase("DictionaryNestedSerializesToJson", () =>
         {
             var dict = new Dictionary<string, object?>
             {
@@ -257,7 +261,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"user":{"id":42,"role":"admin"},"active":true}""", result);
         });
 
-        failures += Run("DictionaryMixedValuesSerializesToJson", () =>
+        failures += RunCase("DictionaryMixedValuesSerializesToJson", () =>
         {
             var dict = new Dictionary<string, object?>
             {
@@ -271,20 +275,20 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"int":7,"double":1.5,"bool":false,"null":null,"str":"text"}""", result);
         });
 
-        failures += Run("DictionaryEmptySerializesToEmptyObject", () =>
+        failures += RunCase("DictionaryEmptySerializesToEmptyObject", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new Dictionary<string, object?>(), typeof(string));
             AssertEqual("{}", result);
         });
 
         // --- 4. IEnumerable (excluding string) ---
-        failures += Run("ListOfStringsSerializesToJsonArray", () =>
+        failures += RunCase("ListOfStringsSerializesToJsonArray", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new List<string> { "a", "b", "c" }, typeof(string));
             AssertEqual("""["a","b","c"]""", result);
         });
 
-        failures += Run("ListOfDynamicJsonSerializesToJsonArray", () =>
+        failures += RunCase("ListOfDynamicJsonSerializesToJsonArray", () =>
         {
             var list = new List<DynamicJson>
             {
@@ -295,32 +299,32 @@ public static class DynamicJsonTestHarness
             AssertEqual("""[{"item":"A","qty":2},{"item":"B","qty":3}]""", result);
         });
 
-        failures += Run("IntArraySerializesToJsonArray", () =>
+        failures += RunCase("IntArraySerializesToJsonArray", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new[] { 1, 2, 3 }, typeof(string));
             AssertEqual("""[1,2,3]""", result);
         });
 
-        failures += Run("HashSetOfIntsSerializesToJsonArray", () =>
+        failures += RunCase("HashSetOfIntsSerializesToJsonArray", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new HashSet<int> { 1, 2, 3 }, typeof(string));
             AssertEqual("""[1,2,3]""", result);
         });
 
-        failures += Run("ListOfMixedObjectsSerializesToJsonArray", () =>
+        failures += RunCase("ListOfMixedObjectsSerializesToJsonArray", () =>
         {
             var list = new List<object?> { 1, "two", true, null };
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(list, typeof(string));
             AssertEqual("""[1,"two",true,null]""", result);
         });
 
-        failures += Run("EmptyListSerializesToEmptyArray", () =>
+        failures += RunCase("EmptyListSerializesToEmptyArray", () =>
         {
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(new List<object?>(), typeof(string));
             AssertEqual("[]", result);
         });
 
-        failures += Run("PlainStringIsNotTreatedAsEnumerable", () =>
+        failures += RunCase("PlainStringIsNotTreatedAsEnumerable", () =>
         {
             // A string is IEnumerable<char> but must NOT be serialized as a JSON array.
             var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType("hello", typeof(string));
@@ -328,7 +332,7 @@ public static class DynamicJsonTestHarness
         });
 
         // --- End-to-end: template resolution renders each type as JSON ---
-        failures += Run("TemplateResolvesDynamicJsonToJson", () =>
+        failures += RunCase("TemplateResolvesDynamicJsonToJson", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("data", new DynamicJson { ["name"] = "Aventisia", ["count"] = 2L });
@@ -336,7 +340,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"name":"Aventisia","count":2}""", result);
         });
 
-        failures += Run("TemplateResolvesExpandoObjectToJson", () =>
+        failures += RunCase("TemplateResolvesExpandoObjectToJson", () =>
         {
             var ctx = new FlowExecutionContext();
             dynamic expando = new ExpandoObject();
@@ -346,7 +350,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"Key":"value"}""", result);
         });
 
-        failures += Run("TemplateResolvesDictionaryToJson", () =>
+        failures += RunCase("TemplateResolvesDictionaryToJson", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("person", new Dictionary<string, object?> { ["First Name"] = "Jane", ["Last Name"] = "Doe" });
@@ -354,7 +358,7 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"First Name":"Jane","Last Name":"Doe"}""", result);
         });
 
-        failures += Run("TemplateResolvesListToJson", () =>
+        failures += RunCase("TemplateResolvesListToJson", () =>
         {
             var ctx = new FlowExecutionContext();
             ctx.Set("items", new List<string> { "a", "b" });
@@ -364,33 +368,5 @@ public static class DynamicJsonTestHarness
 
         Console.WriteLine($"\nResults: {(failures == 0 ? "ALL PASSED" : $"{failures} FAILED")}");
         return failures;
-    }
-
-    private static int Run(string name, Action test)
-    {
-        try
-        {
-            test();
-            Console.WriteLine($"  PASS: {name}");
-            return 0;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"  FAIL: {name}");
-            Console.WriteLine($"        {ex.Message}");
-            return 1;
-        }
-    }
-
-    private static void AssertEqual(object? expected, object? actual)
-    {
-        if (!Equals(expected, actual))
-            throw new InvalidOperationException($"Expected '{expected}', got '{actual}'.");
-    }
-
-    private static void AssertTrue(bool condition)
-    {
-        if (!condition)
-            throw new InvalidOperationException("Assertion failed.");
     }
 }
