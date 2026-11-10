@@ -22,6 +22,7 @@ pub fn run() {
     // Initialize the Tauri application
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_opener::init())
         // Register the PendingUpdate wrapper so commands can find it
         .manage(PendingUpdate::new())
         .plugin(tauri_plugin_store::Builder::new().build())

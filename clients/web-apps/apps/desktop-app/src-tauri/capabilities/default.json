@@ -9,6 +9,7 @@
     "store:default",
     "os:default",
     "os:allow-hostname",
+    "opener:allow-open-url",
     "fs:default",
     {
       "identifier": "fs:allow-app-read-recursive",
