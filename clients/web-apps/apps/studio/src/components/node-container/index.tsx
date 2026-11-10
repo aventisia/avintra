@@ -4,7 +4,7 @@ import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNod
 import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { NodeDataType } from "@/types/node-data-type";
 
-import { NodeCard, NodeCardContent, getNodeKind } from "./NodeCard";
+import { NodeCard, NodeCardContent, NodeShape, getNodeKind } from "./NodeCard";
 import { OpenNodeConfig } from "./node-header/OpenNodeConfig";
 import { NodeRunState, useNodeRunState } from "./useNodeRunState";
 
@@ -14,6 +14,7 @@ interface NodeContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   glyph: React.ReactNode;
   kind?: React.ReactNode;
+  shape?: NodeShape;
   /** Overrides the run state resolved from the execution stores. */
   runState?: NodeRunState;
 }
@@ -24,6 +25,7 @@ export const NodeContainer = ({
   selected = false,
   glyph,
   kind,
+  shape,
   runState,
   className,
   children,
@@ -39,6 +41,7 @@ export const NodeContainer = ({
     <NodeCard
       runState={state}
       selected={selected}
+      shape={shape}
       className={cn(
         !!nodeData?.groupId && "border-ink-2",
         className,
@@ -54,10 +57,11 @@ export const NodeContainer = ({
           kind={kind ?? getNodeKind(nodeData.type)}
           title={nodeData.label}
           runState={state}
+          shape={shape}
         />
         {children}
       </OpenNodeConfig>
-      {lockedByOther && <LockedNodeOverlay nodeId={nodeId} className="rounded-md" />}
+      {lockedByOther && <LockedNodeOverlay nodeId={nodeId} className="rounded-[inherit]" />}
     </NodeCard>
   );
 };

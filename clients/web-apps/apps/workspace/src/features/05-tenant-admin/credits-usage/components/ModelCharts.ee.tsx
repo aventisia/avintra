@@ -125,8 +125,18 @@ const ModelCharts = () => {
         }
       } else {
         // Non-token resource (embeddings, TTS/STT, etc): render as a single series.
-        const group = { name: label, totalCredits: item.totalCredits, series: [] };
-        groups.set(label, group);
+        groups.set(label, {
+          name: label,
+          totalCredits: item.totalCredits,
+          series: [
+            {
+              type: "input",
+              label: "Credits",
+              color: TOKEN_COLORS.input,
+              timeline: item.usageTimeline ?? [],
+            },
+          ],
+        });
       }
     }
 
@@ -143,7 +153,7 @@ const ModelCharts = () => {
 
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
-      <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
+      <div className="grid grid-cols-2 gap-4">
         {currentGroups.map((group) => {
           const merged = mergeTimelines(group.series);
           const chartData = Object.entries(merged)
@@ -171,7 +181,7 @@ const ModelCharts = () => {
 
       {/* Pagination */}
       {currentGroups.length > 0 && (
-        <div className="mt-5 flex items-center justify-end space-x-6 px-6 lg:space-x-8">
+        <div className="mt-5 flex items-center justify-end space-x-6 lg:space-x-8">
           <div className="hidden items-center space-x-2 xs:flex">
             <p className="whitespace-nowrap text-hint text-muted-foreground">Charts per page</p>
             <Select
