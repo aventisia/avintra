@@ -52,9 +52,8 @@ allows single sign-on, the tenant switch is on and the connection is bound, and 
   not used yet. No tenant supplies or
   stores client credentials, there is no secret field in the stored document, and no response returns
   credential material. Super Admin tenant reads return `SSOConfigJson` as `null`; raw SSO JSON is editable
-  nowhere in the UI. `AZURE_TENANT_ID`, `AZURE_ENTRA_ID_CLIENT_ID` and `AZURE_ENTRA_ID_CLIENT_SECRET` remain
-  loaded only for the legacy credential-validation path, and `AZURE_ENTRA_ID_ENABLED` is still loaded but no
-  longer gates anything; dropping them is future work.
+  nowhere in the UI. The old `tenant-sso` / `siw-*` sign-in stubs and the legacy Azure Entra settings are
+  gone, so this is the only single sign-on implementation.
 - **Disabling SSO only warns.** Turning SSO off never blocks, even when SSO availability is revoked for the
   deployment; only turning it on is gated. When users without a password are affected, the
   response carries a warning that names the affected admins and explains how they set a password, an

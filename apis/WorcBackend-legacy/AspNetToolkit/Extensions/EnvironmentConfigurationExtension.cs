@@ -78,18 +78,7 @@ public static class EnvironmentConfigurationExtension
         var AES_ENCRYPTION_KEY = GetRequiredEnvVar("AES_ENCRYPTION_KEY");
         var AES_INITIALIZATION_VECTOR = GetRequiredEnvVar("AES_INITIALIZATION_VECTOR");
 
-        // Azure Entra ID environment variables
-        var AZURE_ENTRA_ID_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_ENABLED") ?? config["EnvironmentConfig:AzureEntraIdEnabled"] ?? "false");
-        string AZURE_TENANT_ID = string.Empty;
-        string AZURE_ENTRA_ID_CLIENT_ID = string.Empty;
-        string AZURE_ENTRA_ID_CLIENT_SECRET = string.Empty;
-        if (AZURE_ENTRA_ID_ENABLED)
-        {
-            AZURE_TENANT_ID = GetRequiredEnvVar("AZURE_TENANT_ID");
-            AZURE_ENTRA_ID_CLIENT_ID = GetRequiredEnvVar("AZURE_ENTRA_ID_CLIENT_ID");
-            AZURE_ENTRA_ID_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_CLIENT_SECRET") ?? string.Empty;
-        }
-
+        // Single sign-on environment variables
         var MICROSOFT_SSO_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("MICROSOFT_SSO_ENABLED") ?? config["EnvironmentConfig:MicrosoftSsoEnabled"] ?? "false");
         var MICROSOFT_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_ID") ?? string.Empty;
         var MICROSOFT_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_SECRET") ?? string.Empty;
@@ -328,10 +317,6 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:PostgresqlWorkspaceDbName", POSTGRESQL_WORKSPACE_DB_NAME },
                     { "EnvironmentConfig:AzureBlobStorageConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING },
 
-                    { "EnvironmentConfig:AzureEntraIdEnabled", AZURE_ENTRA_ID_ENABLED.ToString() },
-                    { "EnvironmentConfig:AzureTenantId", AZURE_TENANT_ID },
-                    { "EnvironmentConfig:AzureEntraIdClientId", AZURE_ENTRA_ID_CLIENT_ID },
-                    { "EnvironmentConfig:AzureEntraIdClientSecret", AZURE_ENTRA_ID_CLIENT_SECRET },
                     { "EnvironmentConfig:MicrosoftSsoEnabled", MICROSOFT_SSO_ENABLED.ToString() },
                     { "EnvironmentConfig:MicrosoftSsoClientId", MICROSOFT_SSO_CLIENT_ID },
                     { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },

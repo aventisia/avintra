@@ -27,12 +27,6 @@ public class EnvironmentConfig
     public string PostgresqlWorkspaceDbName { get; set; } = "WorkspaceDb";
     public string AzureBlobStorageConnectionString { get; set; } = string.Empty;
 
-    // Azure Entra ID
-    public bool AzureEntraIdEnabled { get; set; }
-    public string AzureTenantId { get; set; } = string.Empty;
-    public string AzureEntraIdClientId { get; set; } = string.Empty;
-    public string AzureEntraIdClientSecret { get; set; } = string.Empty;
-
     // Single sign-on
     public bool MicrosoftSsoEnabled { get; set; }
 
