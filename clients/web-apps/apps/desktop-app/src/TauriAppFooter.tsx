@@ -1,15 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 
+import { isTauriEnv } from "./lib/setupStore";
+
 interface UserMetaData {
   os_id: string;
   username: string;
   hostname: string;
   app_version: string;
 }
-
-/** True when running inside the Tauri webview (IPC available). */
-const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 /** Component renders a TauriAppFooter */
 const TauriAppFooter = () => {
@@ -20,7 +19,7 @@ const TauriAppFooter = () => {
     let isMounted = true;
 
     const getUserMetadata = async () => {
-      if (!isTauri()) {
+      if (!isTauriEnv()) {
         if (isMounted) {
           setIsLoading(false);
         }
@@ -57,7 +56,7 @@ const TauriAppFooter = () => {
     os_id: "browser",
   };
 
-  if (!isTauri() && !import.meta.env.DEV) {
+  if (!isTauriEnv() && !import.meta.env.DEV) {
     return null;
   }
 

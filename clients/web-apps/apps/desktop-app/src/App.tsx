@@ -14,6 +14,7 @@ import {
   clearSetupState,
   getSavedServiceUrl,
   getSavedSetupStep,
+  isTauriEnv,
   setSavedServiceUrl,
   setSetupStep,
 } from "./lib/setupStore";
@@ -24,8 +25,6 @@ type RunnerStep = "install" | "update";
 type Step = "service-url" | "desktop-update" | { type: "runner"; kind: RunnerStep };
 
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
-
-const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 function App() {
   return <SetupFlow />;
@@ -131,16 +130,10 @@ function SetupFlow() {
   };
 
   const handleOpenWebApp = async () => {
-    if (!isTauri()) return;
-
-    const target = `${appBaseUrl}/accounts/login`;
     try {
-      new URL(target);
-      await openUrl(target);
+      await openUrl(`${appBaseUrl}/accounts/login`);
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.error("Open web app error:", err);
-      }
+      console.error("Open web app error:", err);
     }
   };
 
@@ -161,7 +154,7 @@ function SetupFlow() {
     <div className="relative flex min-h-screen flex-col bg-background">
       <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
         <img src="/logo.svg" alt="Aventisia" className="h-7" />
-        {isTauri() && step !== "service-url" && appBaseUrl !== "" && (
+        {isTauriEnv() && step !== "service-url" && appBaseUrl !== "" && (
           <Button type="button" variant="outline" size="sm" onClick={handleOpenWebApp}>
             <span className="inline-flex items-center gap-1.5">
               Open web app

@@ -9,7 +9,8 @@ export type SetupStep = "service-url" | "desktop-update" | "runner" | "login";
 let storeInstance: Store | null = null;
 let tauriUnavailable = false;
 
-function isTauriEnv(): boolean {
+/** True when running inside the Tauri webview (IPC available). */
+export function isTauriEnv(): boolean {
   return (
     typeof window !== "undefined" &&
     (window as Window & { __TAURI_INTERNALS__?: unknown }).__TAURI_INTERNALS__ !== undefined
