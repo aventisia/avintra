@@ -127,6 +127,7 @@ export const BlockNode = memo(
           selected={selected}
           nodeData={data}
           nodeId={id}
+          shape="circle"
           glyph={<PackageIcon />}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}

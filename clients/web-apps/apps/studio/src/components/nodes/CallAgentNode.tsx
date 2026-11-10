@@ -129,6 +129,7 @@ export const CallAgentNode = memo(
           selected={selected}
           nodeData={data}
           nodeId={id}
+          shape="circle"
           glyph={<RobotIcon />}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}

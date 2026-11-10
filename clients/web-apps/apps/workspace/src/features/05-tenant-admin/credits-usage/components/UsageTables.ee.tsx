@@ -56,7 +56,7 @@ const UsageTables = () => {
 
   return (
     <div className="space-y-4 rounded-lg border bg-surface p-4">
-      <p className="text-base font-medium">Usage by Users &amp; Agents</p>
+      <p className="text-heading">Usage by users &amp; agents</p>
 
       <Tabs defaultValue="users">
         <TabsList className="grid w-full grid-cols-2 rounded-none border-b bg-transparent px-3 text-base">
