@@ -7,8 +7,8 @@
         <Nullable>enable</Nullable>
         <AssemblyName>RunnerApp</AssemblyName>
         <RootNamespace>RunnerApp</RootNamespace>
-        <Version>0.2.36</Version>
-        <InformationalVersion>0.2.36</InformationalVersion>
+        <Version>0.2.38</Version>
+        <InformationalVersion>0.2.38</InformationalVersion>
 
         <!--
       macOS shell: portable framework-dependent executable for now.
