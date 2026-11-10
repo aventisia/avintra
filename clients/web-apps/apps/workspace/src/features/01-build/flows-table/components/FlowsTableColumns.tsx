@@ -112,6 +112,8 @@ export const flowsTableColumns = ({
         accessLevel={row.original.accessLevel}
         isTenantWideAccess={row.original.isTenantWideAccess || false}
         folderId={row.original.folderId}
+        isArchived={row.original.isArchived || false}
+        isPublished={row.original.isPublished || false}
       />
     ),
   }),

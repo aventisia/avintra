@@ -1,0 +1,37 @@
+meta {
+  name: Publish version for archive guard checks
+  type: http
+  seq: 37
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/publish
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{ARCHIVE_GUARD_FLOW_VERSION_ID}}",
+    "flowId": "{{ARCHIVE_GUARD_FLOW_ID}}",
+    "name": "{{ARCHIVE_GUARD_FLOW_NAME}}",
+    "type": "Agent"
+  }
+}
+
+script:post-response {
+  test("flow version is published", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}
+
+docs {
+  > Publishes the draft so the guard has an unarchived published version to refuse.
+  > Published versions cannot be deleted, so this agent stays in the local database
+  > after the run; that is the expected residue of this check.
+}
