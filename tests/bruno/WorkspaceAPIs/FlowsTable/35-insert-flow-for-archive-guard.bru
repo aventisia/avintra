@@ -1,0 +1,33 @@
+meta {
+  name: Insert flow for archive guard checks
+  type: http
+  seq: 35
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "type": "Agent",
+    "name": "Archive guard agent {{$randomProductName}} {{$randomInt}}",
+    "description": "Created to verify the published-versions archive guard."
+  }
+}
+
+script:post-response {
+  test("flow is created for the archive guard checks", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("ARCHIVE_GUARD_FLOW_ID", res.getBody().data.id);
+    bru.setGlobalEnvVar("ARCHIVE_GUARD_FLOW_NAME", res.getBody().data.name);
+  }
+}

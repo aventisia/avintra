@@ -8,6 +8,7 @@ public class AgentTableService : IAgentTableService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
 
     public AgentTableService(
@@ -17,7 +18,8 @@ public class AgentTableService : IAgentTableService
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService,
         IResourceUserAccessService resourceUserAccessService,
-        IResourceFlowAccessService resourceFlowAccessService)
+        IResourceFlowAccessService resourceFlowAccessService,
+        IUserManagementGuardService userManagementGuardService)
     {
         // Extract the user ID from the HTTP context and assign it to _userId.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -28,6 +30,7 @@ public class AgentTableService : IAgentTableService
         _currentTenantService = currentTenantService;
         _resourceUserAccessService = resourceUserAccessService;
         _resourceFlowAccessService = resourceFlowAccessService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Retrieves a list of published flow versions for a specific flow by its identifier.
@@ -220,6 +223,118 @@ public class AgentTableService : IAgentTableService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while updating the flow version.");
+        }
+
+        return serviceResponse;
+    }
+
+    // IMPORTANT NOTE: the Disable flag is not written here; archive and disable stay independent.
+    public async Task<ServiceResponse<int>> ArchiveFlowVersionsAsync(Guid flowId)
+    {
+        var serviceResponse = ServiceResponse<int>.Create("Failed to archive the agent. Please try again", 500);
+
+        try
+        {
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowId)
+                .SingleOrDefaultAsync();
+
+            if (flow == null)
+            {
+                return serviceResponse.Update("Agent does not exist", 404);
+            }
+
+            var canManageArchive = await CanManageArchiveAsync(flow);
+            if (!canManageArchive)
+            {
+                _logger.LogWarning("Unauthorized agent archive. User {UserId}, Flow {FlowId}", _userId, flow.Id);
+                return serviceResponse.Update("You do not have access to archive this agent.", 403);
+            }
+
+            var flowVersions = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.FlowId == flowId)
+                .ToListAsync();
+
+            // IMPORTANT NOTE: the guard scans every version, so archiving can never leave an
+            // unarchived published version detached.
+            if (flowVersions.Any(version => version.IsPublished && !version.IsArchived))
+            {
+                _logger.LogWarning("Agent archive denied. FlowId: {FlowId} has published versions.", flow.Id);
+                return serviceResponse.Update(
+                    "Agent cannot be archived because it has published versions. Archive those published versions first.",
+                    409);
+            }
+
+            var versionsToArchive = flowVersions.Where(version => !version.IsArchived).ToList();
+            if (versionsToArchive.Count == 0)
+            {
+                return flowVersions.Count == 0
+                    ? serviceResponse.Update("Agent has no versions", 404)
+                    : serviceResponse.Update("Agent is already archived", 200, 0);
+            }
+
+            await ArchiveVersionsInTransactionAsync(versionsToArchive);
+
+            return serviceResponse.Update("Agent archived", 200, versionsToArchive.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while archiving the agent.");
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<int>> UnarchiveFlowVersionsAsync(Guid flowId)
+    {
+        var serviceResponse = ServiceResponse<int>.Create("Failed to unarchive the agent. Please try again", 500);
+
+        try
+        {
+            var flow = await _unitOfWork.FlowRepo
+                .GetByConditionAsync(w => w.Id == flowId)
+                .SingleOrDefaultAsync();
+
+            if (flow == null)
+            {
+                return serviceResponse.Update("Agent does not exist", 404);
+            }
+
+            var canManageArchive = await CanManageArchiveAsync(flow);
+            if (!canManageArchive)
+            {
+                _logger.LogWarning("Unauthorized agent unarchive. User {UserId}, Flow {FlowId}", _userId, flow.Id);
+                return serviceResponse.Update("You do not have access to unarchive this agent.", 403);
+            }
+
+            var archivedVersions = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.FlowId == flowId && w.IsArchived)
+                .ToListAsync();
+
+            if (archivedVersions.Count == 0)
+            {
+                return serviceResponse.Update("Agent is not archived", 200, 0);
+            }
+
+            // IMPORTANT NOTE: only the flag flips; detached relationships and deleted
+            // resources are not restored.
+            foreach (var flowVersion in archivedVersions)
+            {
+                flowVersion.IsArchived = false;
+                flowVersion.LastModifiedByUserId = _userId;
+                _unitOfWork.FlowVersionRepo.Update(flowVersion);
+            }
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            return serviceResponse.Update("Agent unarchived", 200, archivedVersions.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while unarchiving the agent.");
         }
 
         return serviceResponse;
@@ -795,6 +910,61 @@ public class AgentTableService : IAgentTableService
 
         // Return the service response.
         return serviceResponse;
+    }
+
+    private async Task<bool> CanManageArchiveAsync(Flow flow)
+    {
+        if (_userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()))
+        {
+            return true;
+        }
+
+        var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+            _userId,
+            flow.Id,
+            ResourceTypeEnum.Flow,
+            flow.CreatedByUserId,
+            false,
+            new[]
+            {
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.Edit,
+            });
+
+        return hasAccess;
+    }
+
+    // IMPORTANT NOTE: the flags are saved before the per-version cleanup so the orphan scan
+    // sees the fan-out's other versions as archived instead of in use, and the whole archive
+    // commits or rolls back together.
+    private async Task ArchiveVersionsInTransactionAsync(List<FlowVersion> versionsToArchive)
+    {
+        await _unitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            foreach (var flowVersion in versionsToArchive)
+            {
+                flowVersion.IsArchived = true;
+                flowVersion.LastModifiedByUserId = _userId;
+                _unitOfWork.FlowVersionRepo.Update(flowVersion);
+            }
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                throw new InvalidOperationException("Failed to save the archived agent versions.");
+            }
+
+            foreach (var flowVersion in versionsToArchive)
+            {
+                await ArchiveFlowVersionAsync(flowVersion);
+
+                // IMPORTANT NOTE: flush each version's staged deletions before the next pass, so a
+                // resource shared by two versions is not attached to the change tracker twice.
+                if (!await _unitOfWork.SaveAsync(true))
+                {
+                    throw new InvalidOperationException("Failed to save the archived agent relationships.");
+                }
+            }
+        });
     }
 
     // Archives a flow version: captures what it referenced, detaches every active

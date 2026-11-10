@@ -1,0 +1,32 @@
+meta {
+  name: Insert second version for unarchive checks
+  type: http
+  seq: 42
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow-version/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowId": "{{UNARCHIVE_FLOW_ID}}"
+  }
+}
+
+script:post-response {
+  test("second draft version is created", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > The flow was created with one version; these two inserts bring it to three, so the
+  > single archive call must fan out over all three.
+}

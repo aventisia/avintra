@@ -1,0 +1,33 @@
+meta {
+  name: Archive agent blocked by published version
+  type: http
+  seq: 38
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/agent/{{ARCHIVE_GUARD_FLOW_ID}}/archive
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const text = typeof body === "string" ? body : JSON.stringify(body);
+
+  test("archive is refused with 409", function() {
+    expect(res.getStatus()).to.equal(409);
+  });
+
+  test("refusal explains that published versions must be archived first", function() {
+    expect(text).to.contain("published versions");
+  });
+}
+
+docs {
+  > AC2: the guard scans every version of the agent, so an unarchived published version
+  > blocks the archive and the explanation names the published versions.
+}

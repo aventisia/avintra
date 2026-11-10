@@ -1,0 +1,26 @@
+meta {
+  name: Unarchive agent
+  type: http
+  seq: 46
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/agent/{{UNARCHIVE_FLOW_ID}}/unarchive
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("unarchive returns the number of unarchived versions", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(3);
+  });
+}
+
+docs {
+  > AC3: unarchive restores every version the archive call archived.
+}

@@ -195,6 +195,8 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
             accessLevel={flow.accessLevel}
             isTenantWideAccess={flow.isTenantWideAccess || false}
             folderId={flow.folderId}
+            isArchived={flow.isArchived || false}
+            isPublished={flow.isPublished || false}
           />
         </div>
       </div>

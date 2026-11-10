@@ -36,6 +36,24 @@ public class AgentTableController : BaseApiController
         return ResultHelper(await _agentTableService.UpdateFlowVersionAsync(agentTableDto));
     }
 
+    /// <summary>
+    /// Archives the latest version of a flow together with its other unarchived draft versions.
+    /// </summary>
+    [HttpPost("{flowId}/archive")]
+    public async Task<ActionResult<ServiceResponse<int>>> ArchiveFlowVersions(Guid flowId)
+    {
+        return ResultHelper(await _agentTableService.ArchiveFlowVersionsAsync(flowId));
+    }
+
+    /// <summary>
+    /// Unarchives every archived version of a flow.
+    /// </summary>
+    [HttpPost("{flowId}/unarchive")]
+    public async Task<ActionResult<ServiceResponse<int>>> UnarchiveFlowVersions(Guid flowId)
+    {
+        return ResultHelper(await _agentTableService.UnarchiveFlowVersionsAsync(flowId));
+    }
+
     // Retrieves a list of draft (executing) flow versions for a specific flow identified by its flowId.
     [HttpGet("execute-flow-version")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetExecuteFlowVersionsAsync(Guid? flowId)
